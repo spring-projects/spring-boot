@@ -1,0 +1,4 @@
+org.springframework.bootstrap.context.annotation.EnableAutoConfiguration=\
+org.springframework.bootstrap.autoconfigure.service.ServiceAutoConfiguration
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.bootstrap.logging.LoggingInitializer

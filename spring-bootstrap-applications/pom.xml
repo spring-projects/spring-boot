@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.bootstrap</groupId>
+		<artifactId>spring-bootstrap-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>spring-bootstrap-applications</artifactId>
+	<packaging>pom</packaging>
+	<properties>
+		<main.basedir>${project.basedir}/..</main.basedir>
+	</properties>
+	<modules>
+		<module>spring-bootstrap-application</module>
+		<module>spring-bootstrap-batch-application</module>
+		<module>spring-bootstrap-integration-application</module>
+		<module>spring-bootstrap-jpa-application</module>
+		<module>spring-bootstrap-web-application</module>
+	</modules>
+</project>

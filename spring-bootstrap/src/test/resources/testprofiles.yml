@@ -1,0 +1,9 @@
+---
+my:
+  property: fromyamlfile
+  other: notempty
+---
+spring:
+  profiles: dev
+my:
+  property: fromdevprofile

@@ -1,0 +1,11 @@
+org.springframework.bootstrap.context.annotation.EnableAutoConfiguration=\
+org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.data.JpaRepositoriesAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.EmbeddedJettyAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.EmbeddedTomcatAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.bootstrap.ConfigFileApplicationContextInitializer,\
+org.springframework.bootstrap.EnvironmentDelegateApplicationContextInitializer
