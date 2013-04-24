@@ -32,10 +32,10 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifMissingClasses("org.springframework.web.servlet.mvc.Controller")
+		dependencies.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
 				.add("org.springframework", "spring-webmvc", "4.0.0.BOOTSTRAP-SNAPSHOT");
 
-		dependencies.ifMissingClasses("org.apache.catalina.startup.Tomcat",
+		dependencies.ifAnyMissingClasses("org.apache.catalina.startup.Tomcat",
 				"org.eclipse.jetty.server.Server").add("org.eclipse.jetty",
 				"jetty-webapp", "8.1.10.v20130312");
 

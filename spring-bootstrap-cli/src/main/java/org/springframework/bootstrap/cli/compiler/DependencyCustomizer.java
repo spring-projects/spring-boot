@@ -60,12 +60,34 @@ public class DependencyCustomizer {
 	}
 
 	/**
-	 * Create a nested {@link DependencyCustomizer} that only applies if the specified
-	 * class names are not on the class path.
+	 * Create a nested {@link DependencyCustomizer} that only applies if any of the
+	 * specified class names are not on the class path.
 	 * @param classNames the class names to test
 	 * @return a nested {@link DependencyCustomizer}
 	 */
-	public DependencyCustomizer ifMissingClasses(final String... classNames) {
+	public DependencyCustomizer ifAnyMissingClasses(final String... classNames) {
+		return new DependencyCustomizer(this) {
+			@Override
+			protected boolean canAdd() {
+				for (String classname : classNames) {
+					try {
+						DependencyCustomizer.this.loader.loadClass(classname);
+					} catch (Exception e) {
+						return true;
+					}
+				}
+				return DependencyCustomizer.this.canAdd();
+			}
+		};
+	}
+
+	/**
+	 * Create a nested {@link DependencyCustomizer} that only applies if all of the
+	 * specified class names are not on the class path.
+	 * @param classNames the class names to test
+	 * @return a nested {@link DependencyCustomizer}
+	 */
+	public DependencyCustomizer ifAllMissingClasses(final String... classNames) {
 		return new DependencyCustomizer(this) {
 			@Override
 			protected boolean canAdd() {
@@ -79,6 +101,86 @@ public class DependencyCustomizer {
 				return DependencyCustomizer.this.canAdd();
 			}
 		};
+	}
+
+	/**
+	 * Create a nested {@link DependencyCustomizer} that only applies if the specified
+	 * paths are on the class path.
+	 * @param paths the paths to test
+	 * @return a nested {@link DependencyCustomizer}
+	 */
+	public DependencyCustomizer ifAllResourcesPresent(final String... paths) {
+		return new DependencyCustomizer(this) {
+			@Override
+			protected boolean canAdd() {
+				for (String path : paths) {
+					try {
+						if (DependencyCustomizer.this.loader.getResource(path) == null) {
+							return false;
+						}
+						return true;
+					} catch (Exception e) {
+					}
+				}
+				return DependencyCustomizer.this.canAdd();
+			}
+		};
+	}
+
+	/**
+	 * Create a nested {@link DependencyCustomizer} that only applies at least one of the
+	 * specified paths is on the class path.
+	 * @param paths the paths to test
+	 * @return a nested {@link DependencyCustomizer}
+	 */
+	public DependencyCustomizer ifAnyResourcesPresent(final String... paths) {
+		return new DependencyCustomizer(this) {
+			@Override
+			protected boolean canAdd() {
+				for (String path : paths) {
+					try {
+						if (DependencyCustomizer.this.loader.getResource(path) != null) {
+							return true;
+						}
+						return false;
+					} catch (Exception e) {
+					}
+				}
+				return DependencyCustomizer.this.canAdd();
+			}
+		};
+	}
+
+	/**
+	 * Create a nested {@link DependencyCustomizer} that only applies the specified one
+	 * was not yet added.
+	 * @return a nested {@link DependencyCustomizer}
+	 */
+	public DependencyCustomizer ifNotAdded(final String group, final String module) {
+		return new DependencyCustomizer(this) {
+			@Override
+			protected boolean canAdd() {
+				if (DependencyCustomizer.this.contains(group, module)) {
+					return false;
+				}
+				return DependencyCustomizer.this.canAdd();
+			}
+		};
+	}
+
+	/**
+	 * @param group the group ID
+	 * @param module the module ID
+	 * @return true if this module is already in the dependencies
+	 */
+	protected boolean contains(String group, String module) {
+		for (Map<String, Object> dependency : this.dependencies) {
+			if (group.equals(dependency.get("group"))
+					&& module.equals(dependency.get("module"))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -113,7 +215,7 @@ public class DependencyCustomizer {
 
 	/**
 	 * Strategy called to test if dependencies can be added. Subclasses override as
-	 * requred.
+	 * required.
 	 */
 	protected boolean canAdd() {
 		return true;

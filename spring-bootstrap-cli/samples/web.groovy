@@ -1,4 +1,3 @@
-@org.springframework.bootstrap.context.annotation.EnableAutoConfiguration
 @Controller
 class Example {
 

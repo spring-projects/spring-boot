@@ -29,6 +29,7 @@ import org.springframework.bootstrap.cli.compiler.GroovyCompiler;
  * changes.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class BootstrapRunner {
 
@@ -71,11 +72,7 @@ public class BootstrapRunner {
 	public synchronized void compileAndRun() throws Exception {
 		try {
 
-			// Shutdown gracefully any running container
-			if (this.runThread != null) {
-				this.runThread.shutdown();
-				this.runThread = null;
-			}
+			stop();
 
 			// Compile
 			Class<?>[] classes = this.compiler.compile(this.file);
@@ -140,7 +137,7 @@ public class BootstrapRunner {
 		}
 
 		/**
-		 * Shutdown the thread, closing any previously opened appplication context.
+		 * Shutdown the thread, closing any previously opened application context.
 		 */
 		public synchronized void shutdown() {
 			if (this.applicationContext != null) {
@@ -188,4 +185,12 @@ public class BootstrapRunner {
 		}
 
 	}
+
+	public void stop() {
+		if (this.runThread != null) {
+			this.runThread.shutdown();
+			this.runThread = null;
+		}
+	}
+
 }

@@ -48,7 +48,9 @@ public class RunCommand extends OptionParsingCommand {
 
 	private OptionSpec<Void> verboseOption;
 
-	private OptionSpec<Void> quiteOption;
+	private OptionSpec<Void> quietOption;
+
+	private BootstrapRunner runner;
 
 	public RunCommand() {
 		super("run", "Run a spring groovy script");
@@ -57,6 +59,12 @@ public class RunCommand extends OptionParsingCommand {
 	@Override
 	public String getUsageHelp() {
 		return "[options] <file>";
+	}
+
+	public void stop() {
+		if (this.runner != null) {
+			this.runner.stop();
+		}
 	}
 
 	@Override
@@ -71,7 +79,7 @@ public class RunCommand extends OptionParsingCommand {
 		this.noGuessDependenciesOption = parser.accepts("no-guess-dependencies",
 				"Do not attempt to guess dependencies");
 		this.verboseOption = parser.acceptsAll(asList("verbose", "v"), "Verbose logging");
-		this.quiteOption = parser.acceptsAll(asList("quiet", "q"), "Quiet logging");
+		this.quietOption = parser.acceptsAll(asList("quiet", "q"), "Quiet logging");
 		return parser;
 	}
 
@@ -87,8 +95,9 @@ public class RunCommand extends OptionParsingCommand {
 
 		BootstrapRunnerConfiguration configuration = new BootstrapRunnerConfigurationAdapter(
 				options);
-		new BootstrapRunner(configuration, file, args.toArray(new String[args.size()]))
-				.compileAndRun();
+		this.runner = new BootstrapRunner(configuration, file,
+				args.toArray(new String[args.size()]));
+		this.runner.compileAndRun();
 	}
 
 	private File getFileArgument(List<String> nonOptionArguments) {
@@ -136,7 +145,7 @@ public class RunCommand extends OptionParsingCommand {
 			if (this.options.has(RunCommand.this.verboseOption)) {
 				return Level.FINEST;
 			}
-			if (this.options.has(RunCommand.this.quiteOption)) {
+			if (this.options.has(RunCommand.this.quietOption)) {
 				return Level.OFF;
 			}
 			return Level.INFO;

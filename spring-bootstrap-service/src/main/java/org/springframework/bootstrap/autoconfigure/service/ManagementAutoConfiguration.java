@@ -15,7 +15,6 @@
  */
 package org.springframework.bootstrap.autoconfigure.service;
 
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ public class ManagementAutoConfiguration implements ApplicationContextAware,
 	private ApplicationContext parent;
 	private ConfigurableApplicationContext context;
 
-	@ConditionalOnExpression("${container.port} == ${container.management_port}")
+	@ConditionalOnExpression("${container.port:8080} == ${container.management_port:8080}")
 	@Configuration
 	@Import({ VarzAutoConfiguration.class, HealthzAutoConfiguration.class })
 	public static class ManagementEndpointsConfiguration {

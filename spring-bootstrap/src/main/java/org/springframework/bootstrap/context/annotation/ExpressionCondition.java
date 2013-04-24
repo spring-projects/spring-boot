@@ -15,12 +15,15 @@
  */
 package org.springframework.bootstrap.context.annotation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.ClassMetadata;
 
 /**
  * A Condition that evaluates a SpEL expression.
@@ -30,6 +33,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 public class ExpressionCondition implements Condition {
 
+	private static Log logger = LogFactory.getLog(ExpressionCondition.class);
+
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String value = (String) metadata.getAnnotationAttributes(
@@ -37,6 +42,14 @@ public class ExpressionCondition implements Condition {
 		if (!value.startsWith("#{")) {
 			// For convenience allow user to provide bare expression with no #{} wrapper
 			value = "#{" + value + "}";
+		}
+		if (logger.isDebugEnabled()) {
+			StringBuilder builder = new StringBuilder("Evaluating expression");
+			if (metadata instanceof ClassMetadata) {
+				builder.append(" on " + ((ClassMetadata) metadata).getClassName());
+			}
+			builder.append(": " + value);
+			logger.debug(builder.toString());
 		}
 		// Explicitly allow environment placeholders inside the expression
 		value = context.getEnvironment().resolvePlaceholders(value);

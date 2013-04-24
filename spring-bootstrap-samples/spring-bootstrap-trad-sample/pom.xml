@@ -7,7 +7,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-bootstrap-trad-sample</artifactId>
-	<name>Spring Bootstrap Trad Sample</name>
+	<name>spring-bootstrap-trad-sample</name>
 	<packaging>war</packaging>
 
 	<properties>
