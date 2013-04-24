@@ -17,7 +17,7 @@
 package org.springframework.bootstrap.cli;
 
 /**
- * {@link Command} to displat the 'version' number.
+ * {@link Command} to display the 'version' number.
  * 
  * @author Phillip Webb
  */
@@ -29,7 +29,8 @@ public class VersionCommand extends AbstractCommand {
 
 	@Override
 	public void run(String... args) {
-		throw new IllegalStateException("Not implemented"); // FIXME
+		// FIXME: add version introspection
+		throw new IllegalStateException("Not implemented");
 	}
 
 }

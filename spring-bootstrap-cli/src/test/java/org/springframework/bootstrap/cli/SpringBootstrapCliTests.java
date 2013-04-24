@@ -159,7 +159,7 @@ public class SpringBootstrapCliTests {
 		assertThat(new NoSuchOptionException("name").getMessage(),
 				equalTo("Unknown option: --name"));
 		assertThat(new NoSuchCommandException("name").getMessage(),
-				equalTo("spr: 'name' is not a valid command. See 'spr --help'."));
+				equalTo("spring: 'name' is not a valid command. See 'spring --help'."));
 	}
 
 	@Test

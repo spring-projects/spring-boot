@@ -21,14 +21,10 @@
         <dependency>
           <groupId>org.apache.tomcat.embed</groupId>
           <artifactId>tomcat-embed-core</artifactId>
-          <version>7.0.35</version>
-          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.apache.tomcat.embed</groupId>
           <artifactId>tomcat-embed-logging-juli</artifactId>
-          <version>7.0.35</version>
-          <scope>compile</scope>
         </dependency>
       </dependencies>
     </profile>
@@ -38,10 +34,20 @@
         <dependency>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-webapp</artifactId>
+          <version>8.1.9.v20130131</version>
+          <scope>compile</scope>
+          <exclusions>
+            <exclusion>
+              <artifactId>javax.servlet</artifactId>
+              <groupId>org.eclipse.jetty.orbit</groupId>
+            </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
-          <groupId>javax.servlet</groupId>
-          <artifactId>javax.servlet-api</artifactId>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-jsp</artifactId>
+          <version>8.1.9.v20130131</version>
+          <scope>compile</scope>
         </dependency>
       </dependencies>
     </profile>

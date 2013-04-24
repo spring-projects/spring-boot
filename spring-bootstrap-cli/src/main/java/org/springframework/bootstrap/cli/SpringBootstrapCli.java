@@ -40,7 +40,7 @@ import java.util.Set;
  */
 public class SpringBootstrapCli {
 
-	public static final String CLI_APP = "spr";
+	public static final String CLI_APP = "spring";
 
 	private static final Set<BootstrapCliException.Option> NO_EXCEPTION_OPTIONS = EnumSet
 			.noneOf(BootstrapCliException.Option.class);
@@ -53,7 +53,7 @@ public class SpringBootstrapCli {
 	 */
 	public SpringBootstrapCli() {
 		setCommands(Arrays.asList(new VersionCommand(), new RunCommand(),
-				new CreateCommand()));
+				new CreateCommand(), new CleanCommand()));
 	}
 
 	/**
@@ -143,8 +143,8 @@ public class SpringBootstrapCli {
 			}
 		}
 		System.out.println("");
-		System.out
-				.println("See 'spr help <command>' for more information on a specific command.");
+		System.out.println("See '" + CLI_APP
+				+ " help <command>' for more information on a specific command.");
 	}
 
 	protected void errorMessage(String message) {
