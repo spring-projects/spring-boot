@@ -18,13 +18,12 @@ package org.springframework.bootstrap.context.embedded;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -194,7 +193,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 
 		if (initializers.isEmpty()) {
 
-			SortedSet<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
+			List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
 			for (Entry<String, Servlet> servletBean : servletBeans) {
 				String url = (servletBeans.size() == 1 ? "/" : "/"
 						+ servletBean.getKey().toLowerCase() + "/*");
@@ -258,16 +257,17 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		}
 	}
 
-	private <T> SortedSet<Entry<String, T>> getOrderedBeansOfType(Class<T> type) {
-		SortedSet<Entry<String, T>> beans = new TreeSet<Entry<String, T>>(
-				new Comparator<Entry<String, T>>() {
-					@Override
-					public int compare(Entry<String, T> o1, Entry<String, T> o2) {
-						return AnnotationAwareOrderComparator.INSTANCE.compare(
-								o1.getValue(), o2.getValue());
-					}
-				});
+	private <T> List<Entry<String, T>> getOrderedBeansOfType(Class<T> type) {
+		List<Entry<String, T>> beans = new ArrayList<Entry<String, T>>();
+		Comparator<Entry<String, T>> comparator = new Comparator<Entry<String, T>>() {
+			@Override
+			public int compare(Entry<String, T> o1, Entry<String, T> o2) {
+				return AnnotationAwareOrderComparator.INSTANCE.compare(o1.getValue(),
+						o2.getValue());
+			}
+		};
 		beans.addAll(getBeanFactory().getBeansOfType(type, true, true).entrySet());
+		Collections.sort(beans, comparator);
 		return beans;
 	}
 

@@ -33,8 +33,6 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.bootstrap.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.bootstrap.context.embedded.FilterRegistrationBean;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -242,6 +240,22 @@ public class EmbeddedWebApplicationContextTests {
 		InOrder ordered = inOrder(initializer1, initializer2);
 		ordered.verify(initializer1).onStartup(servletContext);
 		ordered.verify(initializer2).onStartup(servletContext);
+	}
+
+	@Test
+	public void unorderedServletContextInitializerBeans() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		ServletContextInitializer initializer1 = mock(ServletContextInitializer.class);
+		ServletContextInitializer initializer2 = mock(ServletContextInitializer.class);
+		this.context.registerBeanDefinition("initializerBean2",
+				beanDefinition(initializer2));
+		this.context.registerBeanDefinition("initializerBean1",
+				beanDefinition(initializer1));
+		this.context.refresh();
+		ServletContext servletContext = getEmbeddedServletContainerFactory()
+				.getServletContext();
+		verify(initializer1).onStartup(servletContext);
+		verify(initializer2).onStartup(servletContext);
 	}
 
 	@Test
