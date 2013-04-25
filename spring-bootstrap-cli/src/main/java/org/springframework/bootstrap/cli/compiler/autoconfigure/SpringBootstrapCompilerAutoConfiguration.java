@@ -38,16 +38,16 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		DependencyCustomizer customizer = dependencies.ifAnyMissingClasses(
+		dependencies.ifAnyMissingClasses(
 				"org.springframework.bootstrap.SpringApplication").add(
 				"org.springframework.bootstrap", "spring-bootstrap", "0.0.1-SNAPSHOT");
-		customizer = customizer.ifAnyResourcesPresent("logback.xml").add(
-				"ch.qos.logback", "logback-classic", "1.0.7");
-		customizer = customizer.ifNotAdded("cg.qos.logback", "logback-classic")
+		dependencies.ifAnyResourcesPresent("logback.xml").add("ch.qos.logback",
+				"logback-classic", "1.0.7");
+		dependencies.ifNotAdded("cg.qos.logback", "logback-classic")
 				.ifAnyResourcesPresent("log4j.properties", "log4j.xml")
 				.add("org.slf4j", "slf4j-log4j12", "1.7.1")
 				.add("log4j", "log4j", "1.2.16");
-		customizer = customizer.ifNotAdded("ch.qos.logback", "logback-classic")
+		dependencies.ifNotAdded("ch.qos.logback", "logback-classic")
 				.ifNotAdded("org.slf4j", "slf4j-log4j12")
 				.add("org.slf4j", "slf4j-jdk14", "1.7.1");
 		// FIXME get the version
