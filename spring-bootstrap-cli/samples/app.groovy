@@ -1,9 +1,9 @@
 package org.test
 
 @Component
-class Example implements org.springframework.bootstrap.CommandLineRunner {
+class Example implements CommandLineRunner {
 
-	@org.springframework.beans.factory.annotation.Autowired
+	@Autowired
 	private MyService myService;
 
 	public void run(String... args) {
