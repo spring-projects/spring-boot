@@ -156,7 +156,8 @@ class BeanDefinitionLoader {
 	private boolean isComponent(Class<?> type) {
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.isAnonymousClass() || type.getName().contains("$_closure")) {
+		if (type.isAnonymousClass() || type.getName().contains("$_closure")
+				|| type.getConstructors() == null || type.getConstructors().length == 0) {
 			return false;
 		}
 		return true;
