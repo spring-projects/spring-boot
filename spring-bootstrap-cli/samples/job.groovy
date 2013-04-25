@@ -1,6 +1,5 @@
 package org.test
 
-@GrabResolver(name='spring-milestone', root='http://repo.springframework.org/milestone')
 @Grab("org.hsqldb:hsqldb-j5:2.0.0")
 @Configuration
 @EnableBatchProcessing
@@ -33,6 +32,7 @@ class JobConfig {
 	}
 }
 
+import groovy.util.logging.Log
 import org.springframework.util.StringUtils
 import groovy.util.logging.Log
 

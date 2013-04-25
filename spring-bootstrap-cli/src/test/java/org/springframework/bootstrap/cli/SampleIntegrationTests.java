@@ -55,12 +55,17 @@ public class SampleIntegrationTests {
 	@BeforeClass
 	public static void clean() {
 		// SpringBootstrapCli.main("clean");
-		// System.setProperty("ivy.message.logger.level", "4");
+		// System.setProperty("ivy.message.logger.level", "3");
 	}
 
 	@Test
 	public void appSample() throws Exception {
 		start("samples/app.groovy");
+	}
+
+	@Test
+	public void jobSample() throws Exception {
+		start("samples/job.groovy");
 	}
 
 	@Test
@@ -71,6 +76,11 @@ public class SampleIntegrationTests {
 	@Test
 	public void serviceSample() throws Exception {
 		start("samples/service.groovy");
+	}
+
+	@Test
+	public void integrationSample() throws Exception {
+		start("samples/integration.groovy");
 	}
 
 }

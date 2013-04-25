@@ -16,7 +16,11 @@
 
 package org.springframework.bootstrap.cli.compiler.autoconfigure;
 
+import groovy.grape.Grape;
 import groovy.lang.GroovyClassLoader;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -78,9 +82,21 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 	public void applyToMainClass(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
-		if (true) {
+		if (true) { // FIXME: add switch for auto config
 			addEnableAutoConfigurationAnnotation(source, classNode);
 		}
+		// FIXME: allow the extra resolvers to be switched on (off by default)
+		addExtraResolvers();
+	}
+
+	private void addExtraResolvers() {
+		Map<String, Object> resolver = new HashMap<String, Object>();
+		resolver.put("name", "spring-milestone");
+		resolver.put("root", "http://repo.springframework.org/milestone");
+		Grape.addResolver(resolver);
+		resolver.put("name", "spring-snapshot");
+		resolver.put("root", "http://repo.springframework.org/snapshot");
+		Grape.addResolver(resolver);
 	}
 
 	private void addEnableAutoConfigurationAnnotation(SourceUnit source,
