@@ -38,7 +38,7 @@ import static java.util.Arrays.asList;
  */
 public class RunCommand extends OptionParsingCommand {
 
-	private OptionSpec<Void> noWatchOption; // FIXME
+	private OptionSpec<Void> watchOption;
 
 	private OptionSpec<Void> editOption;
 
@@ -70,8 +70,8 @@ public class RunCommand extends OptionParsingCommand {
 	@Override
 	protected OptionParser createOptionParser() {
 		OptionParser parser = new OptionParser();
-		this.noWatchOption = parser.accepts("no-watch",
-				"Do not watch the specified file for changes");
+		this.watchOption = parser
+				.accepts("watch", "Watch the specified file for changes");
 		this.editOption = parser.acceptsAll(asList("edit", "e"),
 				"Open the file with the default system editor");
 		this.noGuessImportsOption = parser.accepts("no-guess-imports",
@@ -127,7 +127,7 @@ public class RunCommand extends OptionParsingCommand {
 
 		@Override
 		public boolean isWatchForFileChanges() {
-			return !this.options.has(RunCommand.this.noWatchOption);
+			return this.options.has(RunCommand.this.watchOption);
 		}
 
 		@Override

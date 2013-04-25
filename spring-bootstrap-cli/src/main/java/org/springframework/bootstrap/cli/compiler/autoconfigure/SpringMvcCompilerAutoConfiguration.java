@@ -32,7 +32,8 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
+		dependencies
+				.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
 				.add("org.springframework", "spring-webmvc", "4.0.0.BOOTSTRAP-SNAPSHOT");
 
 		dependencies.ifAnyMissingClasses("org.apache.catalina.startup.Tomcat",
@@ -42,8 +43,8 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 		// FIXME restore Tomcat when we can get reload to work
 		// dependencies.ifMissingClasses("org.apache.catalina.startup.Tomcat",
 		// "org.eclipse.jetty.server.Server")
-		// .add("org.apache.tomcat.embed", "tomcat-embed-core", "7.0.37")
-		// .add("org.apache.tomcat.embed", "tomcat-embed-logging-juli", "7.0.37");
+		// .add("org.apache.tomcat.embed", "tomcat-embed-core", "7.0.39")
+		// .add("org.apache.tomcat.embed", "tomcat-embed-logging-juli", "7.0.39");
 	}
 
 	@Override

@@ -119,6 +119,7 @@ public class BootstrapRunner {
 			if (classes.length != 0) {
 				setContextClassLoader(classes[0].getClassLoader());
 			}
+			setDaemon(true);
 		}
 
 		@Override
@@ -164,6 +165,7 @@ public class BootstrapRunner {
 
 		public FileWatchThread() {
 			this.previous = BootstrapRunner.this.file.lastModified();
+			setDaemon(false);
 		}
 
 		@Override
