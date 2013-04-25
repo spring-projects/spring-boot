@@ -31,6 +31,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringBatchCompilerAutoConfiguration;
 import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringBootstrapCompilerAutoConfiguration;
 import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringMvcCompilerAutoConfiguration;
 
@@ -54,6 +55,7 @@ public class GroovyCompiler {
 	private static final CompilerAutoConfiguration[] COMPILER_AUTO_CONFIGURATIONS = {
 			new SpringBootstrapCompilerAutoConfiguration(),
 			new SpringMvcCompilerAutoConfiguration(),
+			new SpringBatchCompilerAutoConfiguration(),
 			new SpringBootstrapCompilerAutoConfiguration() };
 
 	private GroovyCompilerConfiguration configuration;

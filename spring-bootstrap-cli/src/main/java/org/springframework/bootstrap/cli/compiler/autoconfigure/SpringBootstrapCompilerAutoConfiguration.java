@@ -55,7 +55,8 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("javax.sql.DataSource",
+		imports.addImports("javax.sql.DataSource", "javax.annotation.PostConstruct",
+				"javax.annotation.PreDestroy",
 				"org.springframework.stereotype.Controller",
 				"org.springframework.stereotype.Service",
 				"org.springframework.stereotype.Component",
@@ -67,6 +68,8 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 				"org.springframework.context.annotation.Scope",
 				"org.springframework.context.annotation.Configuration",
 				"org.springframework.context.annotation.Bean",
+				"org.springframework.core.io.ResourceLoader",
+				"org.springframework.bootstrap.CommandLineRunner",
 				"org.springframework.bootstrap.context.annotation.EnableAutoConfiguration");
 		imports.addStarImports("org.springframework.stereotype");
 	}
