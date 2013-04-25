@@ -16,16 +16,25 @@
 package org.springframework.bootstrap.cli;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 import org.apache.ivy.util.FileUtil;
 
 /**
- * {@link Command} to 'clean' up grapes.
+ * {@link Command} to 'clean' up grapes, removing cached dependencies and forcing a
+ * download on the next attempt to resolve.
  * 
  * @author Dave Syer
  * 
  */
-public class CleanCommand extends AbstractCommand {
+public class CleanCommand extends OptionParsingCommand {
+
+	private OptionSpec<Void> allOption;
 
 	public CleanCommand() {
 		super("clean",
@@ -33,7 +42,19 @@ public class CleanCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public String getUsageHelp() {
+		return "[options] <dependencies>";
+	}
+
+	@Override
+	protected OptionParser createOptionParser() {
+		OptionParser parser = new OptionParser();
+		this.allOption = parser.accepts("all", "Clean all files (not just snapshots)");
+		return parser;
+	}
+
+	@Override
+	protected void run(OptionSet options) throws Exception {
 
 		String dir = System.getenv("GROOVY_HOME");
 		String userdir = System.getProperty("user.home");
@@ -54,12 +75,31 @@ public class CleanCommand extends AbstractCommand {
 		}
 
 		File grapes = new File(home, "grapes");
-		// TODO: add support for other packages as args
-		String[] packages = new String[] { "org.springframework.bootstrap" };
-		for (String pkg : packages) {
-			File file = new File(grapes, pkg);
+		ArrayList<String> specs = new ArrayList<String>(options.nonOptionArguments());
+		if (!specs.contains("org.springframework.bootstrap")) {
+			specs.add(0, "org.springframework.bootstrap");
+		}
+		for (String spec : specs) {
+			String group = spec;
+			String module = null;
+			if (spec.contains(":")) {
+				group = spec.substring(0, spec.indexOf(":"));
+				module = spec.substring(spec.indexOf(":") + 1);
+			}
+			File file = module == null ? new File(grapes, group) : new File(new File(
+					grapes, group), module);
 			if (file.exists()) {
-				FileUtil.forceDelete(file);
+				if (options.has(this.allOption)
+						|| group.equals("org.springframework.bootstrap")) {
+					FileUtil.forceDelete(file);
+				} else {
+					for (Object obj : FileUtil.listAll(file, Collections.emptyList())) {
+						File candidate = (File) obj;
+						if (candidate.getName().contains("SNAPSHOT")) {
+							FileUtil.forceDelete(candidate);
+						}
+					}
+				}
 			}
 		}
 

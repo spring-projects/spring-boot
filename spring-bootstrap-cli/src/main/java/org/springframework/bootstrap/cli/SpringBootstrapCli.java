@@ -138,7 +138,8 @@ public class SpringBootstrapCli {
 		System.out.println("Available commands are:");
 		for (Command command : this.commands) {
 			if (!command.isOptionCommand()) {
-				System.out.println(String.format("   %1$-15s %2$s", command.getName(),
+				System.out.println(String.format("\n  %1$s %2$-15s\n    %3$s",
+						command.getName(), command.getUsageHelp(),
 						command.getDescription()));
 			}
 		}
