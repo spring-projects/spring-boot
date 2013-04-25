@@ -14,7 +14,12 @@ class JobConfig {
 
 	@Bean
 	protected Tasklet tasklet() {
-		return new SampleTasklet()
+		return new Tasklet() { 
+          @Override
+          RepeatStatus execute(StepContribution contribution, ChunkContext context) {
+            return RepeatStatus.FINISHED
+          }
+        }
 	}
 
 	@Bean
@@ -25,13 +30,6 @@ class JobConfig {
 	@Bean
 	protected Step step1() throws Exception {
 		return steps.get("step1").tasklet(tasklet()).build()
-	}
-}
-
-class SampleTasklet implements Tasklet {
-	@Override
-	RepeatStatus execute(StepContribution contribution, ChunkContext context) {
-		return RepeatStatus.FINISHED
 	}
 }
 

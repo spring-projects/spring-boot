@@ -71,4 +71,4 @@ if $cygwin; then
     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-${JAVA_HOME}/bin/java -cp "$CLASSPATH" org.springframework.bootstrap.cli.SpringBootstrapCli $*
+${JAVA_HOME}/bin/java ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.bootstrap.cli.SpringBootstrapCli $*

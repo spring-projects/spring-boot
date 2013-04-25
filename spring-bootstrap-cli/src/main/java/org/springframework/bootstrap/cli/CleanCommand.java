@@ -34,6 +34,10 @@ import org.apache.ivy.util.FileUtil;
  */
 public class CleanCommand extends OptionParsingCommand {
 
+	private static enum Layout {
+		IVY, MAVEN;
+	}
+
 	private OptionSpec<Void> allOption;
 
 	public CleanCommand() {
@@ -55,28 +59,18 @@ public class CleanCommand extends OptionParsingCommand {
 
 	@Override
 	protected void run(OptionSet options) throws Exception {
+		clean(options, getGrapesHome(options), Layout.IVY);
+		clean(options, getMavenHome(options), Layout.MAVEN);
+	}
 
-		String dir = System.getenv("GROOVY_HOME");
-		String userdir = System.getProperty("user.home");
+	private void clean(OptionSet options, File root, Layout layout) {
 
-		File home;
-		if (dir == null || !new File(dir).exists()) {
-			dir = userdir;
-			home = new File(dir, ".groovy");
-		} else {
-			home = new File(dir);
-		}
-		if (dir == null || !new File(dir).exists()) {
+		if (root == null || !root.exists()) {
 			return;
 		}
 
-		if (!home.exists()) {
-			return;
-		}
-
-		File grapes = new File(home, "grapes");
 		ArrayList<String> specs = new ArrayList<String>(options.nonOptionArguments());
-		if (!specs.contains("org.springframework.bootstrap")) {
+		if (!specs.contains("org.springframework.bootstrap") && layout == Layout.IVY) {
 			specs.add(0, "org.springframework.bootstrap");
 		}
 		for (String spec : specs) {
@@ -86,8 +80,7 @@ public class CleanCommand extends OptionParsingCommand {
 				group = spec.substring(0, spec.indexOf(":"));
 				module = spec.substring(spec.indexOf(":") + 1);
 			}
-			File file = module == null ? new File(grapes, group) : new File(new File(
-					grapes, group), module);
+			File file = getModulePath(root, group, module, layout);
 			if (file.exists()) {
 				if (options.has(this.allOption)
 						|| group.equals("org.springframework.bootstrap")) {
@@ -102,7 +95,52 @@ public class CleanCommand extends OptionParsingCommand {
 				}
 			}
 		}
-
 	}
 
+	private File getModulePath(File root, String group, String module, Layout layout) {
+		File parent = root;
+		if (layout == Layout.IVY) {
+			parent = new File(parent, group);
+		} else {
+			for (String path : group.split("\\.")) {
+				parent = new File(parent, path);
+			}
+		}
+
+		if (module == null) {
+			return parent;
+		}
+		return new File(parent, module);
+	}
+
+	private File getGrapesHome(OptionSet options) {
+
+		String dir = System.getenv("GROOVY_HOME");
+		String userdir = System.getProperty("user.home");
+
+		File home;
+		if (dir == null || !new File(dir).exists()) {
+			dir = userdir;
+			home = new File(dir, ".groovy");
+		} else {
+			home = new File(dir);
+		}
+		if (dir == null || !new File(dir).exists()) {
+			return null;
+		}
+
+		File grapes = new File(home, "grapes");
+		return grapes;
+	}
+
+	private File getMavenHome(OptionSet options) {
+		String dir = System.getProperty("user.home");
+
+		if (dir == null || !new File(dir).exists()) {
+			return null;
+		}
+		File home = new File(dir);
+		File grapes = new File(new File(home, ".m2"), "repository");
+		return grapes;
+	}
 }

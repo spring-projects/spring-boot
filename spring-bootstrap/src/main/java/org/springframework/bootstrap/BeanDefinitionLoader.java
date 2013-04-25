@@ -116,8 +116,12 @@ class BeanDefinitionLoader {
 	private int load(Object source) {
 		Assert.notNull(source, "Source must not be null");
 		if (source instanceof Class<?>) {
-			this.annotatedReader.register((Class<?>) source);
-			return 1;
+			Class<?> type = (Class<?>) source;
+			if (isComponent(type)) {
+				this.annotatedReader.register(type);
+				return 1;
+			}
+			return 0;
 		}
 
 		if (source instanceof Resource) {
@@ -147,6 +151,15 @@ class BeanDefinitionLoader {
 		}
 
 		throw new IllegalArgumentException("Invalid source '" + source + "'");
+	}
+
+	private boolean isComponent(Class<?> type) {
+		// Nested anonymous classes are not eligible for registration, nor are groovy
+		// closures
+		if (type.isAnonymousClass() || type.getName().contains("$_closure")) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

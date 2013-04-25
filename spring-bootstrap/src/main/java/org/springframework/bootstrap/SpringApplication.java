@@ -297,11 +297,11 @@ public class SpringApplication {
 			}
 		}
 
-		if (context instanceof AbstractApplicationContext) {
+		if (context instanceof AbstractApplicationContext && this.environment != null) {
 			((AbstractApplicationContext) context).setEnvironment(this.environment);
 		}
 
-		if (context instanceof GenericApplicationContext) {
+		if (context instanceof GenericApplicationContext && this.resourceLoader != null) {
 			((GenericApplicationContext) context).setResourceLoader(this.resourceLoader);
 		}
 	}
