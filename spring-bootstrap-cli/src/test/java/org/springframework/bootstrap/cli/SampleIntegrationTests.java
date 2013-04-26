@@ -15,14 +15,22 @@
  */
 package org.springframework.bootstrap.cli;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.ivy.util.FileUtil;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dave Syer
@@ -31,6 +39,25 @@ import org.junit.Test;
 public class SampleIntegrationTests {
 
 	private RunCommand command;
+
+	private PrintStream savedOutput;
+	private ByteArrayOutputStream output;
+
+	@Before
+	public void init() {
+		this.savedOutput = System.out;
+		this.output = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(this.output));
+	}
+
+	@After
+	public void clear() {
+		System.setOut(this.savedOutput);
+	}
+
+	private String getOutput() {
+		return this.output.toString();
+	}
 
 	private void start(final String sample) throws Exception {
 		Future<RunCommand> future = Executors.newSingleThreadExecutor().submit(
@@ -61,26 +88,39 @@ public class SampleIntegrationTests {
 	@Test
 	public void appSample() throws Exception {
 		start("samples/app.groovy");
+		String output = getOutput();
+		assertTrue("Wrong output: " + output, output.contains("Hello World"));
 	}
 
 	@Test
 	public void jobSample() throws Exception {
 		start("samples/job.groovy");
+		String output = getOutput();
+		assertTrue("Wrong output: " + output,
+				output.contains("completed with the following parameters"));
 	}
 
 	@Test
 	public void webSample() throws Exception {
 		start("samples/web.groovy");
+		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
+				.openStream());
+		assertEquals("World!", result);
 	}
 
 	@Test
 	public void serviceSample() throws Exception {
 		start("samples/service.groovy");
+		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
+				.openStream());
+		assertEquals("{\"message\":\"Hello World!\"}", result);
 	}
 
 	@Test
 	public void integrationSample() throws Exception {
 		start("samples/integration.groovy");
+		String output = getOutput();
+		assertTrue("Wrong output: " + output, output.contains("Hello, World"));
 	}
 
 }

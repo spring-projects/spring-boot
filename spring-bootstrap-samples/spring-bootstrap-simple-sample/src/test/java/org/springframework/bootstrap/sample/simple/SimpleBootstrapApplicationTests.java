@@ -4,28 +4,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
 public class SimpleBootstrapApplicationTests {
 
-	private static PrintStream savedOutput;
-	private static ByteArrayOutputStream output;
+	private PrintStream savedOutput;
+	private ByteArrayOutputStream output;
 	private String profiles;
 
-	@BeforeClass
-	public static void init() {
-		savedOutput = System.out;
-		output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(output));
-	}
-
 	@Before
-	public void before() {
+	public void init() {
+		this.savedOutput = System.out;
+		this.output = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(this.output));
 		this.profiles = System.getProperty("spring.profiles.active");
 	}
 
@@ -36,15 +30,11 @@ public class SimpleBootstrapApplicationTests {
 		} else {
 			System.clearProperty("spring.profiles.active");
 		}
+		System.setOut(this.savedOutput);
 	}
 
-	@AfterClass
-	public static void clear() {
-		System.setOut(savedOutput);
-	}
-
-	private static String getOutput() {
-		return output.toString();
+	private String getOutput() {
+		return this.output.toString();
 	}
 
 	@Test
