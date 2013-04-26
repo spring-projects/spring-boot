@@ -16,6 +16,12 @@
 
 package org.springframework.bootstrap.cli.compiler.autoconfigure;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.bootstrap.cli.compiler.AstUtils;
@@ -33,8 +39,8 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 	public boolean matches(ClassNode classNode) {
 		// Slightly weird detection algorithm because there is no @Enable annotation for
 		// Integration
-		return AstUtils.hasLeastOneAnnotation(classNode, "MessageEndpoint")
-				|| classNode.getName().contains("SpringIntegration");
+		return AstUtils.hasLeastOneAnnotation(classNode, "MessageEndpoint",
+				"EnableIntegrationPatterns");
 	}
 
 	@Override
@@ -59,6 +65,15 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 				"org.springframework.integration.annotation.Headers",
 				"org.springframework.integration.annotation.Payload",
 				"org.springframework.integration.annotation.Payloads",
+				EnableIntegrationPatterns.class.getCanonicalName(),
+				"org.springframework.integration.dsl.groovy.MessageFlow",
 				"org.springframework.integration.dsl.groovy.builder.IntegrationBuilder");
+	}
+
+	@Target(ElementType.TYPE)
+	@Documented
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface EnableIntegrationPatterns {
+
 	}
 }
