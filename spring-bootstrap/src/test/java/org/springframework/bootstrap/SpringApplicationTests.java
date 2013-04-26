@@ -24,6 +24,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.ApplicationContext;
@@ -37,6 +38,7 @@ import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -66,6 +68,13 @@ public class SpringApplicationTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	private ApplicationContext context;
+
+	private Environment getEnvironment() {
+		if (this.context instanceof ConfigurableApplicationContext) {
+			return ((ConfigurableApplicationContext) this.context).getEnvironment();
+		}
+		throw new IllegalStateException("No Environment available");
+	}
 
 	@After
 	public void close() {
@@ -250,6 +259,17 @@ public class SpringApplicationTests {
 		assertNotNull(this.context);
 	}
 
+	@Test
+	public void defaultCommandLineArgs() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setDefaultCommandLineArgs("--foo", "--bar=spam", "bucket");
+		application.setWebEnvironment(false);
+		this.context = application.run("--bar=foo", "bucket", "crap");
+		assertThat(this.context, instanceOf(AnnotationConfigApplicationContext.class));
+		assertThat(getEnvironment().getProperty("bar"), equalTo("foo"));
+		assertThat(getEnvironment().getProperty("foo"), equalTo(""));
+	}
+
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
 			Class<?> propertySourceClass) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
@@ -311,6 +331,7 @@ public class SpringApplicationTests {
 	}
 
 	@Configuration
+	@EnableAutoConfiguration
 	static class ExampleWebConfig {
 
 		@Bean

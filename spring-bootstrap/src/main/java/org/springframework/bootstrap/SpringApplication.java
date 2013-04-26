@@ -19,7 +19,9 @@ package org.springframework.bootstrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -33,7 +35,6 @@ import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
@@ -41,6 +42,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -150,6 +152,8 @@ public class SpringApplication {
 	private boolean webEnvironment;
 
 	private List<ApplicationContextInitializer<?>> initializers;
+
+	private String[] defaultCommandLineArgs;
 
 	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
@@ -316,11 +320,74 @@ public class SpringApplication {
 		if (environment instanceof ConfigurableEnvironment) {
 			ConfigurableEnvironment configurable = (ConfigurableEnvironment) environment;
 			if (this.addCommandLineProperties) {
-				CommandLinePropertySource<?> propertySource = new SimpleCommandLinePropertySource(
-						args);
+				PropertySource<?> propertySource = new SimpleCommandLinePropertySource(
+						mergeCommandLineArgs(this.defaultCommandLineArgs, args));
 				configurable.getPropertySources().addFirst(propertySource);
 			}
 		}
+	}
+
+	/**
+	 * Merge two sets of command lines, the defaults and the ones passed in at run time.
+	 * 
+	 * @param defaults the default values
+	 * @param args the ones passed in at runtime
+	 * @return a new command line
+	 */
+	protected String[] mergeCommandLineArgs(String[] defaults, String[] args) {
+
+		if (defaults == null || defaults.length == 0) {
+			return args;
+		}
+
+		List<String> result = new ArrayList<String>();
+		Map<String, String> options = new LinkedHashMap<String, String>();
+
+		for (String arg : defaults) {
+			if (isOptionArg(arg)) {
+				addOptionArg(options, arg);
+			} else {
+				result.add(arg);
+			}
+		}
+		for (String arg : args) {
+			if (isOptionArg(arg)) {
+				addOptionArg(options, arg);
+			} else if (!result.contains(arg)) {
+				result.add(arg);
+			}
+		}
+
+		List<String> optionsList = new ArrayList<String>();
+		for (String key : options.keySet()) {
+			String value = options.get(key);
+			optionsList.add("--" + key + (value == null ? "" : "=" + value));
+		}
+		result.addAll(0, optionsList);
+
+		return result.toArray(new String[result.size()]);
+
+	}
+
+	private boolean isOptionArg(String arg) {
+		return arg.startsWith("--");
+	}
+
+	private void addOptionArg(Map<String, String> map, String arg) {
+		String optionText = arg.substring(2, arg.length());
+		String optionName;
+		String optionValue = null;
+		if (optionText.contains("=")) {
+			optionName = optionText.substring(0, optionText.indexOf("="));
+			optionValue = optionText.substring(optionText.indexOf("=") + 1,
+					optionText.length());
+		} else {
+			optionName = optionText;
+		}
+		if (optionName.isEmpty()) {
+			throw new IllegalArgumentException("Invalid argument syntax: " + arg);
+		}
+		map.put(optionName, optionValue);
 	}
 
 	/**
@@ -392,6 +459,15 @@ public class SpringApplication {
 	 */
 	public void setAddCommandLineProperties(boolean addCommandLineProperties) {
 		this.addCommandLineProperties = addCommandLineProperties;
+	}
+
+	/**
+	 * Set some default command line arguments which can be overridden by those passed
+	 * into the run methods.
+	 * @param defaultCommandLineArgs the default command line args to set
+	 */
+	public void setDefaultCommandLineArgs(String... defaultCommandLineArgs) {
+		this.defaultCommandLineArgs = defaultCommandLineArgs;
 	}
 
 	/**
