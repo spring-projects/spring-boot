@@ -16,6 +16,8 @@
 
 package org.springframework.bootstrap;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +30,7 @@ import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWe
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
@@ -128,6 +131,24 @@ public class SpringApplicationTests {
 		application.setApplicationContextClass(StaticApplicationContext.class);
 		this.context = application.run();
 		assertThat(this.context, instanceOf(StaticApplicationContext.class));
+	}
+
+	@Test
+	public void specificApplicationContextInitializer() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
+		application
+				.addInitializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
+					@Override
+					public void initialize(ConfigurableApplicationContext context) {
+						reference.set(context);
+					}
+				});
+		this.context = application.run("--foo=bar");
+		assertThat(this.context, sameInstance(reference.get()));
+		// Custom initializers do not switch off the defaults
+		assertThat(getEnvironment().getProperty("foo"), equalTo("bar"));
 	}
 
 	@Test
