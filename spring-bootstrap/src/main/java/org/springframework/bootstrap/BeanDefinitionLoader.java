@@ -24,12 +24,14 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 /**
@@ -154,6 +156,11 @@ class BeanDefinitionLoader {
 	}
 
 	private boolean isComponent(Class<?> type) {
+		// This has to be a bit of a guess. The only way to be sure that this type is
+		// eligible is to make a bean definition out of it and try to instantiate it.
+		if (AnnotationUtils.findAnnotation(type, Component.class) != null) {
+			return true;
+		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
 		if (type.isAnonymousClass() || type.getName().contains("$_closure")
