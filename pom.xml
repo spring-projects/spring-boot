@@ -22,6 +22,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<dependency.springframework.version>4.0.0.BOOTSTRAP-SNAPSHOT</dependency.springframework.version>
 		<dependency.security.javaconfig.version>1.0.0.CI-SNAPSHOT</dependency.security.javaconfig.version>
+		<dependency.spring.integration.version>2.2.3.RELEASE</dependency.spring.integration.version>
+		<dependency.spring.batch.version>2.2.0.RC1</dependency.spring.batch.version>
 		<main.basedir>${project.basedir}</main.basedir>
 	</properties>
 	<repositories>
@@ -31,6 +33,14 @@
 			<url>http://maven.springframework.org/snapshot</url>
 			<snapshots>
 				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>http://maven.springframework.org/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
@@ -356,6 +366,16 @@
 				<artifactId>spring-tx</artifactId>
 				<version>${dependency.springframework.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.batch</groupId>
+				<artifactId>spring-batch-core</artifactId>
+				<version>${dependency.spring.batch.version}</version>
+			</dependency>
+            <dependency>
+              <groupId>org.springframework.integration</groupId>
+              <artifactId>spring-integration-core</artifactId>
+              <version>${dependency.spring.integration.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-jpa</artifactId>
