@@ -75,13 +75,13 @@ public class BootstrapRunner {
 			stop();
 
 			// Compile
-			Class<?>[] classes = this.compiler.compile(this.files);
-			if (classes.length == 0) {
+			Object[] sources = this.compiler.sources(this.files);
+			if (sources.length == 0) {
 				throw new RuntimeException("No classes found in '" + this.files + "'");
 			}
 
 			// Run in new thread to ensure that the context classloader is setup
-			this.runThread = new RunThread(classes);
+			this.runThread = new RunThread(sources);
 			this.runThread.start();
 			this.runThread.join();
 
@@ -106,18 +106,18 @@ public class BootstrapRunner {
 	 */
 	private class RunThread extends Thread {
 
-		private final Class<?>[] classes;
+		private final Object[] sources;
 
 		private Object applicationContext;
 
 		/**
 		 * Create a new {@link RunThread} instance.
-		 * @param classes the classes to launch
+		 * @param sources the sources to launch
 		 */
-		public RunThread(Class<?>... classes) {
-			this.classes = classes;
-			if (classes.length != 0) {
-				setContextClassLoader(classes[0].getClassLoader());
+		public RunThread(Object... sources) {
+			this.sources = sources;
+			if (sources.length != 0 && sources[0] instanceof Class) {
+				setContextClassLoader(((Class<?>) sources[0]).getClassLoader());
 			}
 			setDaemon(true);
 		}
@@ -130,7 +130,7 @@ public class BootstrapRunner {
 						"org.springframework.bootstrap.SpringApplication");
 				Method method = application.getMethod("run", Object[].class,
 						String[].class);
-				this.applicationContext = method.invoke(null, this.classes,
+				this.applicationContext = method.invoke(null, this.sources,
 						BootstrapRunner.this.args);
 			} catch (Exception ex) {
 				ex.printStackTrace();

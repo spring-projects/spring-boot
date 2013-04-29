@@ -22,6 +22,7 @@ import groovy.lang.GroovyClassLoader.ClassCollector;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.codehaus.groovy.ast.ClassNode;
@@ -79,6 +80,21 @@ public class GroovyCompiler {
 				compilerConfiguration);
 		compilerConfiguration
 				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
+	}
+
+	public Object[] sources(File[] files) throws CompilationFailedException, IOException {
+		List<File> compilables = new ArrayList<File>();
+		List<Object> others = new ArrayList<Object>();
+		for (File file : files) {
+			if (file.getName().endsWith(".groovy") || file.getName().endsWith(".java")) {
+				compilables.add(file);
+			} else {
+				others.add(file);
+			}
+		}
+		Class<?>[] compiled = compile(compilables.toArray(new File[compilables.size()]));
+		others.addAll(0, Arrays.asList(compiled));
+		return others.toArray(new Object[others.size()]);
 	}
 
 	/**

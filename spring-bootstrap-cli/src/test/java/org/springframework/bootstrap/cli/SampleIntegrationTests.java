@@ -134,4 +134,11 @@ public class SampleIntegrationTests {
 		assertTrue("Wrong output: " + output, output.contains("Hello, World"));
 	}
 
+	@Test
+	public void xmlSample() throws Exception {
+		start("samples/app.xml", "samples/runner.groovy");
+		String output = getOutput();
+		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+	}
+
 }
