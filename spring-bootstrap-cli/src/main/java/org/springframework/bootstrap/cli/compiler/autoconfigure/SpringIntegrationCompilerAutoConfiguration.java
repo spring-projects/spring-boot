@@ -58,6 +58,7 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 	@Override
 	public void applyImports(ImportCustomizer imports) {
 		imports.addImports("org.springframework.integration.Message",
+				"org.springframework.integration.support.MessageBuilder",
 				"org.springframework.integration.MessageChannel",
 				"org.springframework.integration.MessageHeaders",
 				"org.springframework.integration.annotation.MessageEndpoint",

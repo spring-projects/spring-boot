@@ -40,6 +40,10 @@ public class CleanCommand extends OptionParsingCommand {
 
 	private OptionSpec<Void> allOption;
 
+	private OptionSpec<Void> ivyOption;
+
+	private OptionSpec<Void> mvnOption;
+
 	public CleanCommand() {
 		super("clean",
 				"Clean up groovy grapes (useful if snapshots are needed and you need an update)");
@@ -54,13 +58,24 @@ public class CleanCommand extends OptionParsingCommand {
 	protected OptionParser createOptionParser() {
 		OptionParser parser = new OptionParser();
 		this.allOption = parser.accepts("all", "Clean all files (not just snapshots)");
+		this.ivyOption = parser.accepts("ivy",
+				"Clean just ivy (grapes) cache. Default is on unless --maven is used.");
+		this.mvnOption = parser.accepts("maven",
+				"Clean just maven cache. Default is off.");
 		return parser;
 	}
 
 	@Override
 	protected void run(OptionSet options) throws Exception {
-		clean(options, getGrapesHome(options), Layout.IVY);
-		clean(options, getMavenHome(options), Layout.MAVEN);
+		if (!options.has(this.ivyOption)) {
+			clean(options, getGrapesHome(options), Layout.IVY);
+		}
+		if (options.has(this.mvnOption)) {
+			if (options.has(this.ivyOption)) {
+				clean(options, getGrapesHome(options), Layout.IVY);
+			}
+			clean(options, getMavenHome(options), Layout.MAVEN);
+		}
 	}
 
 	private void clean(OptionSet options, File root, Layout layout) {

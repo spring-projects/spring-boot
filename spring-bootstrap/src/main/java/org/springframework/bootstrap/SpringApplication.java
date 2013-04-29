@@ -423,7 +423,11 @@ public class SpringApplication {
 				.getBeansOfType(CommandLineRunner.class).values());
 		AnnotationAwareOrderComparator.sort(runners);
 		for (CommandLineRunner runner : runners) {
-			runner.run(args);
+			try {
+				runner.run(args);
+			} catch (Exception e) {
+				throw new IllegalStateException("Failed to execute CommandLineRunner", e);
+			}
 		}
 	}
 

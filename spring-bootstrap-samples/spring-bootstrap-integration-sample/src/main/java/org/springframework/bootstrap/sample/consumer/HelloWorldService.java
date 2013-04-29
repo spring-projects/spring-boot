@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.sample.service;
+package org.springframework.bootstrap.sample.consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

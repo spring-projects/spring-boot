@@ -28,7 +28,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
+import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
@@ -64,7 +64,7 @@ public class SecurityAutoConfiguration {
 		}
 
 		@Override
-		protected void configure(HttpConfiguration http) throws Exception {
+		protected void configure(HttpConfigurator http) throws Exception {
 			http.antMatcher("/**").httpBasic().and().anonymous().disable();
 			if (this.security.isRequireSsl()) {
 				http.requiresChannel().antMatchers("/**").requiresSecure();

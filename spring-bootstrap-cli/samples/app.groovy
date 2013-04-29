@@ -4,10 +4,10 @@ package org.test
 class Example implements CommandLineRunner {
 
 	@Autowired
-	private MyService myService;
+	private MyService myService
 
-	public void run(String... args) {
-		print "Hello " + this.myService.sayWorld();
+	void run(String... args) {
+		print "Hello " + this.myService.sayWorld()
 	}
 }
 
@@ -15,8 +15,8 @@ class Example implements CommandLineRunner {
 @Service
 class MyService {
 
-	public String sayWorld() {
-		return "World!";
+	String sayWorld() {
+		return "World!"
 	}
 }
 

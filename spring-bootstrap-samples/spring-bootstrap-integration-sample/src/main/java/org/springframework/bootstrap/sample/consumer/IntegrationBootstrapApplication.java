@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.sample.service;
+package org.springframework.bootstrap.sample.consumer;
 
 import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;

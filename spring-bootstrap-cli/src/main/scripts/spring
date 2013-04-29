@@ -57,7 +57,7 @@ if [ -f build.gradle ]; then
 fi
 mkdir -p "${TARGETDIR%/}"
 
-CLASSPATH="${SPRING_BIN}":"${TARGETDIR}"
+CLASSPATH="${CLASSPATH}":"${SPRING_BIN}":"${TARGETDIR}"
 
 for f in "${SPRING_HOME}"/lib/*.jar; do
     CLASSPATH="${CLASSPATH}":$f
