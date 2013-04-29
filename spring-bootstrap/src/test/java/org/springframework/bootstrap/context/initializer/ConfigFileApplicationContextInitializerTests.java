@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap;
+package org.springframework.bootstrap.context.initializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.bootstrap.context.initializer.ConfigFileApplicationContextInitializer;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;

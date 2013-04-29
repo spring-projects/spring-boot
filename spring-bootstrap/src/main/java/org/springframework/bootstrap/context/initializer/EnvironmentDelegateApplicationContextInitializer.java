@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap;
+package org.springframework.bootstrap.context.initializer;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap;
+package org.springframework.bootstrap.context.initializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,7 @@ import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.bootstrap.context.initializer.EnvironmentDelegateApplicationContextInitializer;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

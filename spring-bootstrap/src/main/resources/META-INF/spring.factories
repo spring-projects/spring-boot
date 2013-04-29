@@ -8,5 +8,5 @@ org.springframework.bootstrap.autoconfigure.web.EmbeddedJettyAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.EmbeddedTomcatAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration
 org.springframework.context.ApplicationContextInitializer=\
-org.springframework.bootstrap.ConfigFileApplicationContextInitializer,\
-org.springframework.bootstrap.EnvironmentDelegateApplicationContextInitializer
+org.springframework.bootstrap.context.initializer.ConfigFileApplicationContextInitializer,\
+org.springframework.bootstrap.context.initializer.EnvironmentDelegateApplicationContextInitializer
