@@ -114,11 +114,12 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	/**
 	 * Sets the port that the embedded servlet container should listen on. If not
-	 * specified port '8080' will be used.
+	 * specified port '8080' will be used. Use port 0 to switch off the server completely.
+	 * 
 	 * @param port the port to set
 	 */
 	public void setPort(int port) {
-		if (port < 1 || port > 65535) {
+		if (port < 0 || port > 65535) {
 			throw new IllegalArgumentException("Port must be between 1 and 65535");
 		}
 		this.port = port;

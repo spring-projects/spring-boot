@@ -32,7 +32,9 @@ import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmptyEmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
@@ -91,8 +93,11 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	@Override
-	public JettyEmbeddedServletContainer getEmbdeddedServletContainer(
+	public EmbeddedServletContainer getEmbdeddedServletContainer(
 			ServletContextInitializer... initializers) {
+		if (getPort() == 0) {
+			return new EmptyEmbeddedServletContainer();
+		}
 		Server server = new Server(getPort());
 
 		WebAppContext context = new WebAppContext();

@@ -38,10 +38,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
-import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
-import org.springframework.bootstrap.context.embedded.FilterRegistrationBean;
-import org.springframework.bootstrap.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -88,6 +84,17 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
 		assertThat(getResponse("http://localhost:8080/hello"), equalTo("Hello World"));
+	}
+
+	@Test
+	public void emptyServer() throws Exception {
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setPort(0);
+		this.container = factory
+				.getEmbdeddedServletContainer(exampleServletRegistration());
+		this.thrown.expect(ConnectException.class);
+		this.thrown.expectMessage("Connection refused");
+		getResponse("http://localhost:8080/hello");
 	}
 
 	@Test
