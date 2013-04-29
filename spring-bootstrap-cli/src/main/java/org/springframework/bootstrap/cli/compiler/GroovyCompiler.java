@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyClassLoader.ClassCollector;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +27,10 @@ import java.util.List;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -49,6 +52,7 @@ import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringMvcCompile
  * <ul>
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class GroovyCompiler {
 
@@ -79,24 +83,37 @@ public class GroovyCompiler {
 
 	/**
 	 * Compile the specified Groovy source files, applying any
-	 * {@link CompilerAutoConfiguration}s. All classes defined in the file will be
-	 * returned from this method with the first item being the primary class (defined at
-	 * the top of the file).
+	 * {@link CompilerAutoConfiguration}s. All classes defined in the files will be
+	 * returned from this method.
 	 * @param file the file to compile
 	 * @return compiled classes
 	 * @throws CompilationFailedException
 	 * @throws IOException
 	 */
-	public Class<?>[] compile(File file) throws CompilationFailedException, IOException {
+	public Class<?>[] compile(File... file) throws CompilationFailedException,
+			IOException {
+
 		this.loader.clearCache();
 		List<Class<?>> classes = new ArrayList<Class<?>>();
-		Class<?> mainClass = this.loader.parseClass(file);
-		for (Class<?> loadedClass : this.loader.getLoadedClasses()) {
-			classes.add(loadedClass);
+
+		CompilerConfiguration compilerConfiguration = this.loader.getConfiguration();
+
+		CompilationUnit compilationUnit = new CompilationUnit(compilerConfiguration,
+				null, this.loader);
+		SourceUnit sourceUnit = new SourceUnit(file[0], compilerConfiguration,
+				this.loader, compilationUnit.getErrorCollector());
+		ClassCollector collector = this.loader.createCollector(compilationUnit,
+				sourceUnit);
+		compilationUnit.setClassgenCallback(collector);
+
+		compilationUnit.addSources(file);
+		compilationUnit.compile(Phases.CLASS_GENERATION);
+		for (Object loadedClass : collector.getLoadedClasses()) {
+			classes.add((Class<?>) loadedClass);
 		}
-		classes.remove(mainClass);
-		classes.add(0, mainClass);
+
 		return classes.toArray(new Class<?>[classes.size()]);
+
 	}
 
 	/**

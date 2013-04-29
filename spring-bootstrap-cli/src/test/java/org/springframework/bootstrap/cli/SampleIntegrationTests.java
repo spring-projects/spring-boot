@@ -59,7 +59,7 @@ public class SampleIntegrationTests {
 		return this.output.toString();
 	}
 
-	private void start(final String sample) throws Exception {
+	private void start(final String... sample) throws Exception {
 		Future<RunCommand> future = Executors.newSingleThreadExecutor().submit(
 				new Callable<RunCommand>() {
 					@Override
@@ -94,10 +94,21 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void jobSample() throws Exception {
-		start("samples/job.groovy");
+		start("samples/job.groovy", "foo=bar");
 		String output = getOutput();
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
+	}
+
+	@Test
+	public void jobWebSample() throws Exception {
+		start("samples/job.groovy", "samples/web.groovy", "foo=bar");
+		String output = getOutput();
+		assertTrue("Wrong output: " + output,
+				output.contains("completed with the following parameters"));
+		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
+				.openStream());
+		assertEquals("World!", result);
 	}
 
 	@Test

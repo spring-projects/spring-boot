@@ -18,6 +18,7 @@ package org.springframework.bootstrap.cli;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -31,9 +32,11 @@ import org.springframework.bootstrap.cli.runner.BootstrapRunnerConfiguration;
 import static java.util.Arrays.asList;
 
 /**
- * {@link Command} to 'run' a spring groovy script.
+ * {@link Command} to 'run' a groovy script or scripts.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
+ * 
  * @see BootstrapRunner
  */
 public class RunCommand extends OptionParsingCommand {
@@ -58,7 +61,7 @@ public class RunCommand extends OptionParsingCommand {
 
 	@Override
 	public String getUsageHelp() {
-		return "[options] <file>";
+		return "[options] <files> [--] [args]";
 	}
 
 	public void stop() {
@@ -86,30 +89,40 @@ public class RunCommand extends OptionParsingCommand {
 	@Override
 	protected void run(OptionSet options) throws Exception {
 		List<String> nonOptionArguments = options.nonOptionArguments();
-		File file = getFileArgument(nonOptionArguments);
-		List<String> args = nonOptionArguments.subList(1, nonOptionArguments.size());
+		File[] files = getFileArguments(nonOptionArguments);
+		List<String> args = nonOptionArguments.subList(files.length,
+				nonOptionArguments.size());
 
 		if (options.has(this.editOption)) {
-			Desktop.getDesktop().edit(file);
+			Desktop.getDesktop().edit(files[0]);
 		}
 
 		BootstrapRunnerConfiguration configuration = new BootstrapRunnerConfigurationAdapter(
 				options);
-		this.runner = new BootstrapRunner(configuration, file,
+		this.runner = new BootstrapRunner(configuration, files,
 				args.toArray(new String[args.size()]));
 		this.runner.compileAndRun();
 	}
 
-	private File getFileArgument(List<String> nonOptionArguments) {
-		if (nonOptionArguments.size() == 0) {
+	private File[] getFileArguments(List<String> nonOptionArguments) {
+		List<File> files = new ArrayList<File>();
+		for (String filename : nonOptionArguments) {
+			if ("--".equals(filename)) {
+				break;
+			}
+			// TODO: add support for strict Java compilation
+			// TODO: add support for recursive search in directory
+			if (filename.endsWith(".groovy") || filename.endsWith(".java")) {
+				File file = new File(filename);
+				if (file.isFile() && file.canRead()) {
+					files.add(file);
+				}
+			}
+		}
+		if (files.size() == 0) {
 			throw new RuntimeException("Please specify a file to run");
 		}
-		String filename = nonOptionArguments.get(0);
-		File file = new File(filename);
-		if (!file.isFile() || !file.canRead()) {
-			throw new RuntimeException("Unable to read '" + filename + "'");
-		}
-		return file;
+		return files.toArray(new File[files.size()]);
 	}
 
 	/**

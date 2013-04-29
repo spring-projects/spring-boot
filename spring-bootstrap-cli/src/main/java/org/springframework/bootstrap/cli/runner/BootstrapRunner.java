@@ -37,7 +37,7 @@ public class BootstrapRunner {
 
 	private BootstrapRunnerConfiguration configuration;
 
-	private final File file;
+	private final File[] files;
 
 	private final String[] args;
 
@@ -50,13 +50,13 @@ public class BootstrapRunner {
 	/**
 	 * Create a new {@link BootstrapRunner} instance.
 	 * @param configuration the configuration
-	 * @param file the file to compile/watch
+	 * @param files the files to compile/watch
 	 * @param args input arguments
 	 */
-	public BootstrapRunner(final BootstrapRunnerConfiguration configuration, File file,
-			String... args) {
+	public BootstrapRunner(final BootstrapRunnerConfiguration configuration,
+			File[] files, String... args) {
 		this.configuration = configuration;
-		this.file = file;
+		this.files = files;
 		this.args = args;
 		this.compiler = new GroovyCompiler(configuration);
 		if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
@@ -75,9 +75,9 @@ public class BootstrapRunner {
 			stop();
 
 			// Compile
-			Class<?>[] classes = this.compiler.compile(this.file);
+			Class<?>[] classes = this.compiler.compile(this.files);
 			if (classes.length == 0) {
-				throw new RuntimeException("No classes found in '" + this.file + "'");
+				throw new RuntimeException("No classes found in '" + this.files + "'");
 			}
 
 			// Run in new thread to ensure that the context classloader is setup
@@ -164,7 +164,13 @@ public class BootstrapRunner {
 		private long previous;
 
 		public FileWatchThread() {
-			this.previous = BootstrapRunner.this.file.lastModified();
+			this.previous = 0;
+			for (File file : BootstrapRunner.this.files) {
+				long current = file.lastModified();
+				if (current > this.previous) {
+					this.previous = current;
+				}
+			}
 			setDaemon(false);
 		}
 
@@ -173,10 +179,12 @@ public class BootstrapRunner {
 			while (true) {
 				try {
 					Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-					long current = BootstrapRunner.this.file.lastModified();
-					if (this.previous < current) {
-						this.previous = current;
-						compileAndRun();
+					for (File file : BootstrapRunner.this.files) {
+						long current = file.lastModified();
+						if (this.previous < current) {
+							this.previous = current;
+							compileAndRun();
+						}
 					}
 				} catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();

@@ -20,11 +20,18 @@ import javax.sql.DataSource;
 
 import org.springframework.batch.support.DatabaseType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.stereotype.Component;
 
+/**
+ * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
+ * 
+ * @author Dave Syer
+ * 
+ */
 @Component
 public class BatchDatabaseInitializer {
 
@@ -34,6 +41,9 @@ public class BatchDatabaseInitializer {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
+	@Value("${spring.batch.schema:classpath:org/springframework/batch/core/schema-@@platform@@.sql}")
+	private String schemaLocation = "classpath:org/springframework/batch/core/schema-@@platform@@.sql";
+
 	@PostConstruct
 	protected void initialize() throws Exception {
 		String platform = DatabaseType.fromMetaData(this.dataSource).toString()
@@ -42,12 +52,9 @@ public class BatchDatabaseInitializer {
 			platform = "hsqldb";
 		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator
-				.addScript(this.resourceLoader
-						.getResource("org/springframework/batch/core/schema-" + platform
-								+ ".sql"));
+		populator.addScript(this.resourceLoader.getResource(this.schemaLocation.replace(
+				"@@platform@@", platform)));
 		populator.setContinueOnError(true);
 		DatabasePopulatorUtils.execute(populator, this.dataSource);
 	}
-
 }

@@ -35,13 +35,16 @@ import org.codehaus.groovy.control.SourceUnit;
  * resources.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	private Map<String, byte[]> classResources = new HashMap<String, byte[]>();
+	private CompilerConfiguration configuration;
 
 	public ExtendedGroovyClassLoader(ClassLoader loader, CompilerConfiguration config) {
 		super(loader, config);
+		this.configuration = config;
 	}
 
 	@Override
@@ -54,8 +57,12 @@ class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		return resourceStream;
 	}
 
+	public CompilerConfiguration getConfiguration() {
+		return this.configuration;
+	}
+
 	@Override
-	protected ClassCollector createCollector(CompilationUnit unit, SourceUnit su) {
+	public ClassCollector createCollector(CompilationUnit unit, SourceUnit su) {
 		InnerLoader loader = AccessController
 				.doPrivileged(new PrivilegedAction<InnerLoader>() {
 					@Override

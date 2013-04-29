@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.context.annotation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,8 +48,17 @@ public abstract class AutoConfigurationUtils {
 
 	public static void storeBasePackages(ConfigurableListableBeanFactory beanFactory,
 			List<String> basePackages) {
-		beanFactory.registerSingleton(BASE_PACKAGES_BEAN,
-				Collections.unmodifiableList(basePackages));
+		if (!beanFactory.containsBean(BASE_PACKAGES_BEAN)) {
+			beanFactory.registerSingleton(BASE_PACKAGES_BEAN, new ArrayList<String>(
+					basePackages));
+		} else {
+			List<String> packages = getBasePackages(beanFactory);
+			for (String pkg : basePackages) {
+				if (packages.contains(pkg)) {
+					packages.add(pkg);
+				}
+			}
+		}
 	}
 
 }
