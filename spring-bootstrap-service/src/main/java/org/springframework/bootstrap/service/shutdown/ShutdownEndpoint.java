@@ -48,10 +48,13 @@ public class ShutdownEndpoint implements ApplicationContextAware,
 	@Autowired
 	private ContainerProperties configuration = new ContainerProperties();
 
+	private boolean shuttingDown = false;
+
 	@RequestMapping(value = "${endpoints.shutdown.path:/shutdown}", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> shutdown() {
 		if (this.configuration.isAllowShutdown()) {
+			this.shuttingDown = true;
 			return Collections.<String, Object> singletonMap("message",
 					"Shutting down, bye...");
 		} else {
@@ -70,7 +73,8 @@ public class ShutdownEndpoint implements ApplicationContextAware,
 	@Override
 	public void onApplicationEvent(ServletRequestHandledEvent event) {
 
-		if (this.context != null && this.configuration.isAllowShutdown()) {
+		if (this.context != null && this.configuration.isAllowShutdown()
+				&& this.shuttingDown) {
 
 			new Thread(new Runnable() {
 				@Override
