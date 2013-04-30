@@ -40,15 +40,15 @@ public class ManagementAutoConfiguration implements ApplicationContextAware,
 	private ApplicationContext parent;
 	private ConfigurableApplicationContext context;
 
+	@Autowired
+	private ContainerProperties configuration = new ContainerProperties();
+
 	@ConditionalOnExpression("${container.port:8080} == ${container.management_port:8080}")
 	@Configuration
 	@Import({ VarzAutoConfiguration.class, HealthzAutoConfiguration.class,
-			ShutdownAutoConfiguration.class })
+			ShutdownAutoConfiguration.class, TraceAutoConfiguration.class })
 	public static class ManagementEndpointsConfiguration {
 	}
-
-	@Autowired
-	private ContainerProperties configuration = new ContainerProperties();
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
@@ -73,7 +73,7 @@ public class ManagementAutoConfiguration implements ApplicationContextAware,
 			context.setParent(this.parent);
 			context.register(ManagementContainerConfiguration.class,
 					VarzAutoConfiguration.class, HealthzAutoConfiguration.class,
-					ShutdownAutoConfiguration.class);
+					ShutdownAutoConfiguration.class, TraceAutoConfiguration.class);
 			context.refresh();
 			this.context = context;
 		}

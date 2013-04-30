@@ -16,11 +16,19 @@
 
 package org.springframework.bootstrap.autoconfigure.service;
 
+import java.util.List;
+
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.service.annotation.EnableConfigurationProperties;
 import org.springframework.bootstrap.service.properties.ContainerProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for service apps.
@@ -31,7 +39,20 @@ import org.springframework.context.annotation.Import;
 @Import({ ManagementAutoConfiguration.class, MetricAutoConfiguration.class,
 		ContainerConfiguration.class, SecurityAutoConfiguration.class,
 		MetricFilterAutoConfiguration.class })
-public class ServiceAutoConfiguration {
+public class ServiceAutoConfiguration extends WebMvcConfigurationSupport {
+
+	@Override
+	protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+		addDefaultHttpMessageConverters(converters);
+		for (HttpMessageConverter<?> converter : converters) {
+			if (converter instanceof MappingJackson2HttpMessageConverter) {
+				MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
+				jacksonConverter.getObjectMapper().registerModule(new JodaModule());
+				jacksonConverter.getObjectMapper().disable(
+						SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+			}
+		}
+	}
 
 	/*
 	 * ContainerProperties has to be declared in a non-conditional bean, so that it gets

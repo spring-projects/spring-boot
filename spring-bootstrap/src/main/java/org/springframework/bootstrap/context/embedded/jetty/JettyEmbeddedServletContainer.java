@@ -56,7 +56,6 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	@Override
 	public synchronized void stop() {
 		try {
-			this.server.setGracefulShutdown(10000);
 			this.server.stop();
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();

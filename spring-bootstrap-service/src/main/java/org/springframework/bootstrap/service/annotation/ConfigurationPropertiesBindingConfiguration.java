@@ -19,11 +19,14 @@ package org.springframework.bootstrap.service.annotation;
 import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.bootstrap.bind.PropertySourcesBindingPostProcessor;
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
@@ -46,6 +49,10 @@ public class ConfigurationPropertiesBindingConfiguration {
 
 	@Autowired(required = false)
 	private Environment environment;
+
+	@Autowired(required = false)
+	@Qualifier(ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME)
+	private ConversionService conversionService;
 
 	/**
 	 * Lifecycle hook that binds application properties to any bean whose type is
@@ -72,6 +79,7 @@ public class ConfigurationPropertiesBindingConfiguration {
 		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
 		validator.afterPropertiesSet();
 		processor.setValidator(validator);
+		processor.setConversionService(this.conversionService);
 		processor.setPropertySources(propertySources);
 		return processor;
 	}

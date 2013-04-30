@@ -21,6 +21,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.validation.Validator;
 
@@ -32,6 +33,8 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 	private PropertySources propertySources;
 
 	private Validator validator;
+
+	private ConversionService conversionService;
 
 	/**
 	 * @param propertySources
@@ -45,6 +48,13 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 	 */
 	public void setValidator(Validator validator) {
 		this.validator = validator;
+	}
+
+	/**
+	 * @param conversionService the conversionService to set
+	 */
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
 	}
 
 	@Override
@@ -63,6 +73,7 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 					bean);
 			factory.setPropertySources(this.propertySources);
 			factory.setValidator(this.validator);
+			factory.setConversionService(this.conversionService);
 			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
 			String targetName = "".equals(annotation.value()) ? ("".equals(annotation

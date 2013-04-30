@@ -32,8 +32,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.bootstrap.bind.RelaxedDataBinderTests.OAuthConfiguration.OAuthConfigurationValidator;
 import org.springframework.context.support.StaticMessageSource;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.validation.BindingResult;
@@ -54,6 +55,8 @@ public class RelaxedDataBinderTests {
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
+
+	private ConversionService conversionService;
 
 	@Test
 	public void testBindString() throws Exception {
@@ -106,6 +109,23 @@ public class RelaxedDataBinderTests {
 		TargetWithNestedObject target = new TargetWithNestedObject();
 		bind(target, "nested.foo: bar\n" + "nested.value: 123");
 		assertEquals(123, target.getNested().getValue());
+	}
+
+	@Test
+	public void testBindNestedList() throws Exception {
+		TargetWithNestedList target = new TargetWithNestedList();
+		bind(target, "nested: bar,foo");
+		bind(target, "nested[0]: bar");
+		bind(target, "nested[1]: foo");
+		assertEquals("[bar, foo]", target.getNested().toString());
+	}
+
+	@Test
+	public void testBindNestedListCommaDelimitedONly() throws Exception {
+		TargetWithNestedList target = new TargetWithNestedList();
+		this.conversionService = new DefaultConversionService();
+		bind(target, "nested: bar,foo");
+		assertEquals("[bar, foo]", target.getNested().toString());
 	}
 
 	@Test
@@ -174,94 +194,11 @@ public class RelaxedDataBinderTests {
 		LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
 		validatorFactoryBean.afterPropertiesSet();
 		binder.setValidator(validatorFactoryBean);
+		binder.setConversionService(this.conversionService);
 		binder.bind(new MutablePropertyValues(properties));
 		binder.validate();
 
 		return binder.getBindingResult();
-	}
-
-	@Documented
-	@Target({ ElementType.TYPE })
-	@Retention(RUNTIME)
-	@Constraint(validatedBy = OAuthConfigurationValidator.class)
-	public @interface ValidOAuthConfiguration {
-	}
-
-	@ValidOAuthConfiguration
-	public static class OAuthConfiguration {
-
-		private Client client;
-
-		private Map<String, OAuthClient> clients;
-
-		public Client getClient() {
-			return this.client;
-		}
-
-		public void setClient(Client client) {
-			this.client = client;
-		}
-
-		public Map<String, OAuthClient> getClients() {
-			return this.clients;
-		}
-
-		public void setClients(Map<String, OAuthClient> clients) {
-			this.clients = clients;
-		}
-
-		public static class Client {
-
-			private List<String> autoapprove;
-
-			public List<String> getAutoapprove() {
-				return this.autoapprove;
-			}
-
-			public void setAutoapprove(List<String> autoapprove) {
-				this.autoapprove = autoapprove;
-			}
-
-		}
-
-		public static class OAuthClient {
-
-			private String id;
-
-			public String getId() {
-				return this.id;
-			}
-
-			public void setId(String id) {
-				this.id = id;
-			}
-
-		}
-
-		public static class OAuthConfigurationValidator implements
-				ConstraintValidator<ValidOAuthConfiguration, OAuthConfiguration> {
-
-			@Override
-			public void initialize(ValidOAuthConfiguration constraintAnnotation) {
-			}
-
-			@Override
-			public boolean isValid(OAuthConfiguration value,
-					ConstraintValidatorContext context) {
-				boolean valid = true;
-				if (value.client != null && value.client.autoapprove != null) {
-					if (value.clients != null) {
-						context.buildConstraintViolationWithTemplate(
-								"Please use oauth.clients to specifiy autoapprove not client.autoapprove")
-								.addConstraintViolation();
-						valid = false;
-					}
-				}
-				return valid;
-			}
-
-		}
-
 	}
 
 	@Documented
@@ -328,6 +265,18 @@ public class RelaxedDataBinderTests {
 		}
 
 		public void setNested(Map<String, Object> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithNestedList {
+		private List<String> nested;
+
+		public List<String> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<String> nested) {
 			this.nested = nested;
 		}
 	}

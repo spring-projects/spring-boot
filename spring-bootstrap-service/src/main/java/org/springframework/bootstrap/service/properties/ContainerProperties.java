@@ -38,6 +38,8 @@ public class ContainerProperties {
 
 	private Tomcat tomcat = new Tomcat();
 
+	private boolean dumpRequests;
+
 	public Tomcat getTomcat() {
 		return this.tomcat;
 	}
@@ -72,6 +74,14 @@ public class ContainerProperties {
 
 	public void setAllowShutdown(boolean allowShutdown) {
 		this.allowShutdown = allowShutdown;
+	}
+
+	public boolean isDumpRequests() {
+		return this.dumpRequests;
+	}
+
+	public void setDumpRequests(boolean dumpRequests) {
+		this.dumpRequests = dumpRequests;
 	}
 
 	public static class Tomcat {

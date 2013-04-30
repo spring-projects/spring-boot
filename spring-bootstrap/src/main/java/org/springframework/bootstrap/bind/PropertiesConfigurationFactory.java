@@ -28,6 +28,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindException;
@@ -67,6 +68,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	private boolean initialized = false;
 
 	private String targetName;
+
+	private ConversionService conversionService;
 
 	/**
 	 * @param target the target object to bind too
@@ -143,6 +146,13 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	}
 
 	/**
+	 * @param conversionService the conversionService to set
+	 */
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
+
+	/**
 	 * @param validator the validator to set
 	 */
 	public void setValidator(Validator validator) {
@@ -175,6 +185,9 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			}
 			if (this.validator != null) {
 				dataBinder.setValidator(this.validator);
+			}
+			if (this.conversionService != null) {
+				dataBinder.setConversionService(this.conversionService);
 			}
 			dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 			dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);

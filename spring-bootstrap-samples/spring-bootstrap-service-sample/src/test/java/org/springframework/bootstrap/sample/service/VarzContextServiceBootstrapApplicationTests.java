@@ -91,7 +91,7 @@ public class VarzContextServiceBootstrapApplicationTests {
 	@Test
 	public void testHealthz() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "healthz", String.class);
+				"http://localhost:" + managementPort + "/healthz", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}
