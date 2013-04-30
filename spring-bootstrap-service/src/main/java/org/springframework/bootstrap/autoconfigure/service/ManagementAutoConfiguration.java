@@ -42,7 +42,8 @@ public class ManagementAutoConfiguration implements ApplicationContextAware,
 
 	@ConditionalOnExpression("${container.port:8080} == ${container.management_port:8080}")
 	@Configuration
-	@Import({ VarzAutoConfiguration.class, HealthzAutoConfiguration.class })
+	@Import({ VarzAutoConfiguration.class, HealthzAutoConfiguration.class,
+			ShutdownAutoConfiguration.class })
 	public static class ManagementEndpointsConfiguration {
 	}
 
@@ -71,7 +72,8 @@ public class ManagementAutoConfiguration implements ApplicationContextAware,
 			AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 			context.setParent(this.parent);
 			context.register(ManagementContainerConfiguration.class,
-					VarzAutoConfiguration.class, HealthzAutoConfiguration.class);
+					VarzAutoConfiguration.class, HealthzAutoConfiguration.class,
+					ShutdownAutoConfiguration.class);
 			context.refresh();
 			this.context = context;
 		}

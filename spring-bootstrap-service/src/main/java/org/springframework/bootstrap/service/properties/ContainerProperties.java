@@ -34,6 +34,8 @@ public class ContainerProperties {
 
 	private String contextPath;
 
+	private boolean allowShutdown = false;
+
 	private Tomcat tomcat = new Tomcat();
 
 	public Tomcat getTomcat() {
@@ -62,6 +64,14 @@ public class ContainerProperties {
 
 	public void setManagementPort(int managementPort) {
 		this.managementPort = managementPort;
+	}
+
+	public boolean isAllowShutdown() {
+		return this.allowShutdown;
+	}
+
+	public void setAllowShutdown(boolean allowShutdown) {
+		this.allowShutdown = allowShutdown;
 	}
 
 	public static class Tomcat {
