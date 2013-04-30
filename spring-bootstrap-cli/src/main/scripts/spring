@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # OS specific support (must be 'true' or 'false').
 cygwin=false;
@@ -48,8 +48,14 @@ fi
 
 if [ "$SPRING_HOME" == "" ]; then
     SPRING_HOME=`cd "$(dirname $0)"/.. && pwd`
+else
+    if [ ! -d "${SPRING_HOME}" ]; then
+        echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
+	    echo "Please rectify and restart."
+        exit 2
+    fi
+    SPRING_HOME=`cd "${SPRING_HOME}" && pwd`
 fi
-SPRING_HOME=`cd "${SPRING_HOME}" && pwd`
 SPRING_BIN=$(dirname $0)
 
 TARGETDIR=target/classes
@@ -60,15 +66,7 @@ mkdir -p "${TARGETDIR%/}"
 
 CLASSPATH="${CLASSPATH}":"${SPRING_BIN}":"${TARGETDIR}"
 
-if [ ! "${SPRING_BIN}" == "${SPRING_HOME}" ]; then
-    CLASSPATH="${CLASSPATH}":"${SPRING_HOME}"/classes
-fi
-
-for f in "${SPRING_HOME}"/lib/*.jar; do
-    [ -f $f ] && CLASSPATH="${CLASSPATH}":$f
-done
-
-for f in "${SPRING_HOME}"/*.jar; do
+for f in "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar "${SPRING_HOME}"/classes; do
     [ -f $f ] && CLASSPATH="${CLASSPATH}":$f
 done
 

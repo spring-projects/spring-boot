@@ -35,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.core.Ordered;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.Assert;
@@ -51,7 +52,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Dave Syer
  * 
  */
-public class SecurityFilterPostProcessor implements BeanPostProcessor {
+public class SecurityFilterPostProcessor implements BeanPostProcessor, Ordered {
 
 	private final static Log logger = LogFactory
 			.getLog(SecurityFilterPostProcessor.class);
@@ -59,6 +60,20 @@ public class SecurityFilterPostProcessor implements BeanPostProcessor {
 	private List<String> ignore = Collections.emptyList();
 
 	private TraceRepository traceRepository = new InMemoryTraceRepository();
+
+	private int order = Integer.MAX_VALUE;
+
+	/**
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
 
 	/**
 	 * @param traceRepository

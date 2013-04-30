@@ -99,11 +99,13 @@ public class CleanCommand extends OptionParsingCommand {
 			if (file.exists()) {
 				if (options.has(this.allOption)
 						|| group.equals("org.springframework.bootstrap")) {
+					System.out.println("Deleting: " + file);
 					FileUtil.forceDelete(file);
 				} else {
 					for (Object obj : FileUtil.listAll(file, Collections.emptyList())) {
 						File candidate = (File) obj;
 						if (candidate.getName().contains("SNAPSHOT")) {
+							System.out.println("Deleting: " + candidate);
 							FileUtil.forceDelete(candidate);
 						}
 					}

@@ -37,6 +37,7 @@ import org.springframework.bootstrap.service.properties.ContainerProperties;
 import org.springframework.bootstrap.service.properties.ContainerProperties.Tomcat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
 /**
@@ -48,6 +49,7 @@ import org.springframework.util.StringUtils;
 // the right order
 @Configuration
 @ConditionalOnClass({ Servlet.class })
+@Order(Integer.MIN_VALUE)
 public class ContainerConfiguration implements BeanPostProcessor, BeanFactoryAware {
 
 	private BeanFactory beanFactory;

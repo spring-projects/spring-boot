@@ -18,17 +18,19 @@ package org.springframework.bootstrap.autoconfigure.service;
 
 import javax.servlet.Servlet;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.bootstrap.service.properties.ContainerProperties;
 import org.springframework.bootstrap.service.trace.InMemoryTraceRepository;
 import org.springframework.bootstrap.service.trace.SecurityFilterPostProcessor;
 import org.springframework.bootstrap.service.trace.TraceEndpoint;
 import org.springframework.bootstrap.service.trace.TraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -41,24 +43,34 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnMissingBean({ TraceEndpoint.class })
 public class TraceAutoConfiguration {
 
-	@Autowired
-	private ContainerProperties configuration = new ContainerProperties();
-
 	@Autowired(required = false)
 	private TraceRepository traceRepository = new InMemoryTraceRepository();
 
 	@Bean
-	@ConditionalOnMissingBean({ TraceRepository.class })
+	@ConditionalOnMissingBean(TraceRepository.class)
 	protected TraceRepository traceRepository() {
 		return this.traceRepository;
 	}
 
-	@Bean
-	public SecurityFilterPostProcessor securityFilterPostProcessor() {
-		SecurityFilterPostProcessor processor = new SecurityFilterPostProcessor(
-				traceRepository());
-		processor.setDumpRequests(this.configuration.isDumpRequests());
-		return processor;
+	@Configuration
+	@ConditionalOnClass(SecurityFilterChain.class)
+	public static class SecurityFilterPostProcessorConfiguration {
+
+		@Autowired
+		private TraceRepository traceRepository;
+
+		@Value("${container.dump_requests:false}")
+		private boolean dumpRequests;
+
+		@Bean
+		public SecurityFilterPostProcessor securityFilterPostProcessor(
+				BeanFactory beanFactory) {
+			SecurityFilterPostProcessor processor = new SecurityFilterPostProcessor(
+					this.traceRepository);
+			processor.setDumpRequests(this.dumpRequests);
+			return processor;
+		}
+
 	}
 
 	@Bean
