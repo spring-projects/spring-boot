@@ -18,6 +18,7 @@ package org.springframework.bootstrap.autoconfigure.batch;
 
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.bootstrap.CommandLineRunner;
+import org.springframework.bootstrap.ExitCodeGenerator;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -43,6 +44,12 @@ public class BatchAutoConfiguration {
 	@ConditionalOnMissingBean({ CommandLineRunner.class })
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner() {
 		return new JobLauncherCommandLineRunner();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ ExitCodeGenerator.class })
+	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
+		return new JobExecutionExitCodeGenerator();
 	}
 
 }

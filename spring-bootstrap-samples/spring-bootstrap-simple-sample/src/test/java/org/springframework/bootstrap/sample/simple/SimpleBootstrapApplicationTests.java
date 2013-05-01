@@ -45,7 +45,7 @@ public class SimpleBootstrapApplicationTests {
 	}
 
 	@Test
-	public void testCommandLoneOverrides() throws Exception {
+	public void testCommandLineOverrides() throws Exception {
 		SimpleBootstrapApplication.main(new String[] { "--name=Gordon" });
 		String output = getOutput();
 		assertTrue("Wrong output: " + output, output.contains("Hello Gordon"));

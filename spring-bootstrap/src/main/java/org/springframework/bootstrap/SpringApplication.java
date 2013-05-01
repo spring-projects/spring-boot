@@ -563,4 +563,49 @@ public class SpringApplication {
 		return new SpringApplication(sources).run(args);
 	}
 
+	/**
+	 * Static helper that can be used to exit a {@link SpringApplication} and obtain a
+	 * code indicating success (0) or otherwise. Does not throw exceptions but should
+	 * print stack traces of any encountered.
+	 * @param context the context to close if possible
+	 * @return the outcome (0 if successful)
+	 */
+	public static int exit(ApplicationContext context,
+			ExitCodeGenerator... exitCodeGenerators) {
+
+		int code = 0;
+
+		List<ExitCodeGenerator> exiters = new ArrayList<ExitCodeGenerator>(
+				Arrays.asList(exitCodeGenerators));
+
+		try {
+
+			exiters.addAll(context.getBeansOfType(ExitCodeGenerator.class).values());
+
+			for (ExitCodeGenerator exiter : exiters) {
+				try {
+					int value = exiter.getExitCode();
+					if (value > code || value < 0 && value < code) {
+						code = value;
+					}
+				} catch (Exception e) {
+					code = code == 0 ? 1 : code;
+					e.printStackTrace();
+				}
+			}
+
+			if (context instanceof ConfigurableApplicationContext) {
+				ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;
+				closable.close();
+			}
+
+		} catch (Exception e) {
+			code = code == 0 ? 1 : code;
+			e.printStackTrace();
+		}
+
+		return code;
+
+	}
+
 }

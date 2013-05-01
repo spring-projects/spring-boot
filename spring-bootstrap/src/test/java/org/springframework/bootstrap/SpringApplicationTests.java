@@ -51,6 +51,7 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -277,6 +278,29 @@ public class SpringApplicationTests {
 		this.context = SpringApplication.run(new Object[] { ExampleWebConfig.class,
 				Object.class }, new String[0]);
 		assertNotNull(this.context);
+	}
+
+	@Test
+	public void exit() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		ApplicationContext context = application.run();
+		assertNotNull(context);
+		assertEquals(0, SpringApplication.exit(context));
+	}
+
+	@Test
+	public void exitWithExplicitCOde() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		ApplicationContext context = application.run();
+		assertNotNull(context);
+		assertEquals(2, SpringApplication.exit(context, new ExitCodeGenerator() {
+			@Override
+			public int getExitCode() {
+				return 2;
+			}
+		}));
 	}
 
 	@Test

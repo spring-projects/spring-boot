@@ -21,18 +21,22 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.CommandLineRunner;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
 // FIXME: what to do with more than one Job?
-public class JobLauncherCommandLineRunner implements CommandLineRunner {
+public class JobLauncherCommandLineRunner implements CommandLineRunner,
+		ApplicationEventPublisherAware {
 
 	private static Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
 
@@ -45,18 +49,24 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner {
 	@Autowired
 	private Job job;
 
-	public void run(String... args) {
-		logger.info("Running default command line with: " + Arrays.asList(args));
-		launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args,
-				"="));
+	private ApplicationEventPublisher publisher;
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+		this.publisher = publisher;
 	}
 
-	protected void launchJobFromProperties(Properties properties) {
-		try {
-			this.jobLauncher.run(this.job,
-					this.converter.getJobParameters(properties));
-		} catch (JobExecutionException e) {
-			throw new IllegalStateException("Could not run job", e);
+	public void run(String... args) throws JobExecutionException {
+		logger.info("Running default command line with: " + Arrays.asList(args));
+		launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args, "="));
+	}
+
+	protected void launchJobFromProperties(Properties properties)
+			throws JobExecutionException {
+		JobExecution execution = this.jobLauncher.run(this.job,
+				this.converter.getJobParameters(properties));
+		if (this.publisher != null) {
+			this.publisher.publishEvent(new JobExecutionEvent(execution));
 		}
 	}
 }
