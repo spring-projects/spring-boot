@@ -15,7 +15,9 @@
  */
 package org.springframework.bootstrap.service.properties;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 
@@ -28,14 +30,19 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 @ConfigurationProperties(name = "endpoints", ignoreUnknownFields = false)
 public class EndpointsProperties {
 
+	@Valid
 	private Endpoint varz = new Endpoint("/varz");
 
+	@Valid
 	private Endpoint healthz = new Endpoint("/healthz");
 
+	@Valid
 	private Endpoint error = new Endpoint("/error");
 
+	@Valid
 	private Endpoint shutdown = new Endpoint("/shutdown");
 
+	@Valid
 	private Endpoint trace = new Endpoint("/trace");
 
 	public Endpoint getVarz() {
@@ -61,6 +68,7 @@ public class EndpointsProperties {
 	public static class Endpoint {
 
 		@NotNull
+		@Pattern(regexp = "/[^/]*", message = "Path must start with /")
 		private String path;
 
 		public Endpoint() {
