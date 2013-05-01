@@ -274,8 +274,8 @@ public class SpringApplicationTests {
 
 	@Test
 	public void runComponents() throws Exception {
-		this.context = SpringApplication.runComponents(new Class<?>[] {
-				ExampleWebConfig.class, Object.class });
+		this.context = SpringApplication.run(new Object[] { ExampleWebConfig.class,
+				Object.class }, new String[0]);
 		assertNotNull(this.context);
 	}
 

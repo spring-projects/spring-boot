@@ -47,8 +47,6 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.type.StandardAnnotationMetadata;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -565,23 +563,4 @@ public class SpringApplication {
 		return new SpringApplication(sources).run(args);
 	}
 
-	/**
-	 * Static helper that can be used to run a {@link SpringApplication} from the
-	 * specified {@code @Component} sources. Any class not annotated or meta-annotated
-	 * with {@code @Component} will be ignored.
-	 * @param classes the source classes to consider loading
-	 * @param args the application arguments (usually passed from a Java main method)
-	 * @return the running {@link ApplicationContext}
-	 */
-	public static ApplicationContext runComponents(Class<?>[] classes, String... args) {
-		List<Class<?>> componentClasses = new ArrayList<Class<?>>();
-		for (Class<?> candidate : classes) {
-			StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
-					candidate);
-			if (metadata.isAnnotated(Component.class.getName())) {
-				componentClasses.add(candidate);
-			}
-		}
-		return new SpringApplication(componentClasses.toArray()).run(args);
-	}
 }
