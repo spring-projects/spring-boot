@@ -26,6 +26,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.bootstrap.SpringApplication.AutoMain;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.ApplicationContext;
@@ -150,6 +151,15 @@ public class SpringApplicationTests {
 		assertThat(this.context, sameInstance(reference.get()));
 		// Custom initializers do not switch off the defaults
 		assertThat(getEnvironment().getProperty("foo"), equalTo("bar"));
+	}
+
+	@Test
+	public void emptytApplicationContext() throws Exception {
+		// This is the class that will be used for main()
+		SpringApplication application = new SpringApplication(AutoMain.class);
+		this.context = application.run();
+		assertThat(this.context,
+				instanceOf(AnnotationConfigEmbeddedWebApplicationContext.class));
 	}
 
 	@Test

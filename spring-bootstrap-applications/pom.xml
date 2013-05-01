@@ -11,6 +11,7 @@
 	<packaging>pom</packaging>
 	<properties>
 		<main.basedir>${project.basedir}/..</main.basedir>
+        <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
 	</properties>
 	<modules>
 		<module>spring-bootstrap-application</module>
@@ -19,4 +20,81 @@
 		<module>spring-bootstrap-jpa-application</module>
 		<module>spring-bootstrap-web-application</module>
 	</modules>
-</project>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+    <build>
+      <pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <dependencies>
+              <dependency>
+                <groupId>org.springframework.bootstrap</groupId>
+                <artifactId>spring-bootstrap</artifactId>
+                <version>${spring.bootstrap.version}</version>
+              </dependency>
+            </dependencies>
+            <configuration>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+							</filter>
+              </filters>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>shade</goal>
+                </goals>
+                <configuration>
+                  <transformers>
+                    <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                      <resource>META-INF/spring.handlers</resource>
+                    </transformer>
+                    <transformer
+                        implementation="org.springframework.bootstrap.maven.PropertiesMergingResourceTransformer">
+                      <resource>META-INF/spring.factories</resource>
+                    </transformer>
+                    <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                      <resource>META-INF/spring.schemas</resource>
+                    </transformer>
+                    <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                    <transformer
+                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                      <mainClass>${start-class}</mainClass>
+                    </transformer>
+                  </transformers>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </pluginManagement>
+    </build>
+ </project>

@@ -27,6 +27,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.bootstrap.autoconfigure.batch.BatchAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.data.JpaRepositoriesAutoConfiguration;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -606,6 +609,15 @@ public class SpringApplication {
 
 		return code;
 
+	}
+
+	public static void main(String[] args) {
+		run(new Class<?>[] { AutoMain.class }, args);
+	}
+
+	@EnableAutoConfiguration(exclude = { JpaRepositoriesAutoConfiguration.class,
+			BatchAutoConfiguration.class })
+	public static class AutoMain {
 	}
 
 }
