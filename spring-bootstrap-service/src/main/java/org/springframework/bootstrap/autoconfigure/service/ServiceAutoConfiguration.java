@@ -18,10 +18,13 @@ package org.springframework.bootstrap.autoconfigure.service;
 
 import java.util.List;
 
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.service.annotation.EnableConfigurationProperties;
+import org.springframework.bootstrap.service.properties.EndpointsProperties;
 import org.springframework.bootstrap.service.properties.ManagementServerProperties;
 import org.springframework.bootstrap.service.properties.ServerProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -62,6 +65,12 @@ public class ServiceAutoConfiguration extends WebMvcConfigurationSupport {
 	@EnableConfigurationProperties({ ServerProperties.class,
 			ManagementServerProperties.class })
 	public static class ServerPropertiesConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(EndpointsProperties.class)
+		public EndpointsProperties endpointsProperties() {
+			return new EndpointsProperties();
+		}
 	}
 
 }
