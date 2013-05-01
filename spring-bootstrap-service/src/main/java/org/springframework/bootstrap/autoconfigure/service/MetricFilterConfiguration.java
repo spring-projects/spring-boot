@@ -50,7 +50,7 @@ import org.springframework.web.util.UrlPathHelper;
 // FIXME: make this conditional
 // @ConditionalOnBean({ CounterService.class, GaugeService.class })
 @ConditionalOnClass({ Servlet.class })
-public class MetricFilterAutoConfiguration {
+public class MetricFilterConfiguration {
 
 	@Autowired(required = false)
 	private CounterService counterService;
@@ -84,24 +84,28 @@ public class MetricFilterAutoConfiguration {
 			DateTime t0 = new DateTime();
 			try {
 				chain.doFilter(request, response);
-				status = servletResponse.getStatus();
 			} finally {
+				try {
+					status = servletResponse.getStatus();
+				} catch (Exception e) {
+					// ignore
+				}
 				set("response", suffix, new Duration(t0, new DateTime()).getMillis());
 				increment("status." + status, suffix);
 			}
 		}
 
 		private void increment(String prefix, String suffix) {
-			if (MetricFilterAutoConfiguration.this.counterService != null) {
+			if (MetricFilterConfiguration.this.counterService != null) {
 				String key = getKey(prefix + suffix);
-				MetricFilterAutoConfiguration.this.counterService.increment(key);
+				MetricFilterConfiguration.this.counterService.increment(key);
 			}
 		}
 
 		private void set(String prefix, String suffix, double value) {
-			if (MetricFilterAutoConfiguration.this.gaugeService != null) {
+			if (MetricFilterConfiguration.this.gaugeService != null) {
 				String key = getKey(prefix + suffix);
-				MetricFilterAutoConfiguration.this.gaugeService.set(key, value);
+				MetricFilterConfiguration.this.gaugeService.set(key, value);
 			}
 		}
 

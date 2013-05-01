@@ -24,28 +24,26 @@ import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
- * Integration tests for separate management and main service ports.
+ * Integration tests for switching off management endpoints.
  * 
  * @author Dave Syer
  * 
  */
-public class VarzContextServiceBootstrapApplicationTests {
+public class NoVarzContextServiceBootstrapApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 
-	private static int port = 9000;
-	private static int managementPort = 9001;
+	private static int managementPort = 0;
 
 	@BeforeClass
 	public static void start() throws Exception {
-		final String[] args = new String[] { "--server.port=" + port,
-				"--management.port=" + managementPort };
+		final String[] args = new String[] { "--management.port=" + managementPort };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
@@ -69,46 +67,20 @@ public class VarzContextServiceBootstrapApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:" + port, Map.class);
+				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Hello Phil", body.get("message"));
 	}
 
-	@Test
-	public void testVarz() throws Exception {
+	@Test(expected = ResourceAccessException.class)
+	public void testVarzNotAvailable() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
 				"http://localhost:" + managementPort + "/varz", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.200.root"));
-	}
-
-	@Test
-	public void testHealthz() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/healthz", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
-	}
-
-	@Test
-	public void testErrorPage() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/error", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals(999, body.get("status"));
-	}
-
-	private RestTemplate getRestTemplate() {
-		return getRestTemplate(null, null);
+		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {

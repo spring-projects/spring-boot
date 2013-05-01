@@ -20,7 +20,8 @@ import java.util.List;
 
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.service.annotation.EnableConfigurationProperties;
-import org.springframework.bootstrap.service.properties.ContainerProperties;
+import org.springframework.bootstrap.service.properties.ManagementServerProperties;
+import org.springframework.bootstrap.service.properties.ServerProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -36,9 +37,9 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
  * @author Dave Syer
  */
 @Configuration
-@Import({ ManagementAutoConfiguration.class, MetricAutoConfiguration.class,
-		ContainerConfiguration.class, SecurityAutoConfiguration.class,
-		MetricFilterAutoConfiguration.class })
+@Import({ ManagementConfiguration.class, MetricConfiguration.class,
+		ServerConfiguration.class, SecurityConfiguration.class,
+		MetricFilterConfiguration.class })
 public class ServiceAutoConfiguration extends WebMvcConfigurationSupport {
 
 	@Override
@@ -55,11 +56,12 @@ public class ServiceAutoConfiguration extends WebMvcConfigurationSupport {
 	}
 
 	/*
-	 * ContainerProperties has to be declared in a non-conditional bean, so that it gets
+	 * ServerProperties has to be declared in a non-conditional bean, so that it gets
 	 * added to the context early enough
 	 */
-	@EnableConfigurationProperties(ContainerProperties.class)
-	public static class ContainerPropertiesConfiguration {
+	@EnableConfigurationProperties({ ServerProperties.class,
+			ManagementServerProperties.class })
+	public static class ServerPropertiesConfiguration {
 	}
 
 }

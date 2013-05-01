@@ -33,8 +33,8 @@ import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFa
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.service.error.ErrorEndpoint;
-import org.springframework.bootstrap.service.properties.ContainerProperties;
-import org.springframework.bootstrap.service.properties.ContainerProperties.Tomcat;
+import org.springframework.bootstrap.service.properties.ServerProperties;
+import org.springframework.bootstrap.service.properties.ServerProperties.Tomcat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -45,12 +45,12 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-// Slight hack here (BeanPostProcessor), to force the container properties to be bound in
+// Slight hack here (BeanPostProcessor), to force the server properties to be bound in
 // the right order
 @Configuration
 @ConditionalOnClass({ Servlet.class })
 @Order(Integer.MIN_VALUE)
-public class ContainerConfiguration implements BeanPostProcessor, BeanFactoryAware {
+public class ServerConfiguration implements BeanPostProcessor, BeanFactoryAware {
 
 	private BeanFactory beanFactory;
 
@@ -89,8 +89,8 @@ public class ContainerConfiguration implements BeanPostProcessor, BeanFactoryAwa
 					&& !this.initialized) {
 
 				// Cannot use @Autowired because the injection happens too early
-				ContainerProperties configuration = this.beanFactory
-						.getBean(ContainerProperties.class);
+				ServerProperties configuration = this.beanFactory
+						.getBean(ServerProperties.class);
 
 				AbstractEmbeddedServletContainerFactory factory = (AbstractEmbeddedServletContainerFactory) bean;
 				factory.setPort(configuration.getPort());
@@ -114,7 +114,7 @@ public class ContainerConfiguration implements BeanPostProcessor, BeanFactoryAwa
 	}
 
 	private void configureTomcat(TomcatEmbeddedServletContainerFactory tomcatFactory,
-			ContainerProperties configuration) {
+			ServerProperties configuration) {
 
 		Tomcat tomcat = configuration.getTomcat();
 		if (tomcat.getBasedir() != null) {

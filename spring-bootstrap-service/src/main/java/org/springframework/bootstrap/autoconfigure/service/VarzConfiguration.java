@@ -18,27 +18,40 @@ package org.springframework.bootstrap.autoconfigure.service;
 
 import javax.servlet.Servlet;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.bootstrap.service.shutdown.ShutdownEndpoint;
+import org.springframework.bootstrap.service.metrics.MetricRepository;
+import org.springframework.bootstrap.service.varz.PublicMetrics;
+import org.springframework.bootstrap.service.varz.VanillaPublicMetrics;
+import org.springframework.bootstrap.service.varz.VarzEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for /shutdown endpoint.
+ * {@link EnableAutoConfiguration Auto-configuration} for /varz endpoint.
  * 
  * @author Dave Syer
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnMissingBean({ ShutdownEndpoint.class })
-public class ShutdownAutoConfiguration {
+@ConditionalOnMissingBean({ VarzEndpoint.class })
+public class VarzConfiguration {
+
+	@Autowired
+	private MetricRepository repository;
+
+	@Autowired(required = false)
+	private PublicMetrics metrics;
 
 	@Bean
-	public ShutdownEndpoint shutdownEndpoint() {
-		return new ShutdownEndpoint();
+	public VarzEndpoint varzEndpoint() {
+		if (this.metrics == null) {
+			this.metrics = new VanillaPublicMetrics(this.repository);
+		}
+		return new VarzEndpoint(this.metrics);
 	}
 
 }

@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 @ConditionalOnMissingBean({ WebSecurityConfiguration.class })
 @EnableWebSecurity
 @EnableConfigurationProperties(SecurityProperties.class)
-public class SecurityAutoConfiguration {
+public class SecurityConfiguration {
 
 	@Component
 	public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {

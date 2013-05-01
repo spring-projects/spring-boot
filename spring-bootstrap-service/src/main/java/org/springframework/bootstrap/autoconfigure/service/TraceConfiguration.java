@@ -41,25 +41,25 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnMissingBean({ TraceEndpoint.class })
-public class TraceAutoConfiguration {
+public class TraceConfiguration {
 
-	@Autowired(required = false)
-	private TraceRepository traceRepository = new InMemoryTraceRepository();
-
-	@Bean
-	@ConditionalOnMissingBean(TraceRepository.class)
-	protected TraceRepository traceRepository() {
-		return this.traceRepository;
-	}
+	@Autowired
+	private TraceRepository traceRepository;
 
 	@Configuration
 	@ConditionalOnClass(SecurityFilterChain.class)
 	public static class SecurityFilterPostProcessorConfiguration {
 
-		@Autowired
-		private TraceRepository traceRepository;
+		@Autowired(required = false)
+		private TraceRepository traceRepository = new InMemoryTraceRepository();
 
-		@Value("${container.dump_requests:false}")
+		@Bean
+		@ConditionalOnMissingBean(TraceRepository.class)
+		protected TraceRepository traceRepository() {
+			return this.traceRepository;
+		}
+
+		@Value("${management.dump_requests:false}")
 		private boolean dumpRequests;
 
 		@Bean

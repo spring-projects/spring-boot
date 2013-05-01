@@ -37,7 +37,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnMissingBean({ HealthzEndpoint.class })
-public class HealthzAutoConfiguration {
+public class HealthzConfiguration {
 
 	@Autowired(required = false)
 	private HealthIndicator<? extends Object> healthIndicator = new VanillaHealthIndicator();

@@ -20,7 +20,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.context.annotation.ConditionalOnExpression;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.bootstrap.service.properties.ContainerProperties;
+import org.springframework.bootstrap.service.properties.ManagementServerProperties;
+import org.springframework.bootstrap.service.properties.ServerProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -34,19 +35,23 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * 
  */
 @Configuration
-public class ManagementAutoConfiguration implements ApplicationContextAware,
-		DisposableBean, ApplicationListener<ContextRefreshedEvent> {
+@ConditionalOnExpression("${management.port:8080}>0")
+public class ManagementConfiguration implements ApplicationContextAware, DisposableBean,
+		ApplicationListener<ContextRefreshedEvent> {
 
 	private ApplicationContext parent;
 	private ConfigurableApplicationContext context;
 
 	@Autowired
-	private ContainerProperties configuration = new ContainerProperties();
+	private ServerProperties configuration = new ServerProperties();
 
-	@ConditionalOnExpression("${container.port:8080} == ${container.management_port:8080}")
+	@Autowired
+	private ManagementServerProperties management = new ManagementServerProperties();
+
+	@ConditionalOnExpression("${server.port:8080} == ${management.port:8080}")
 	@Configuration
-	@Import({ VarzAutoConfiguration.class, HealthzAutoConfiguration.class,
-			ShutdownAutoConfiguration.class, TraceAutoConfiguration.class })
+	@Import({ VarzConfiguration.class, HealthzConfiguration.class,
+			ShutdownConfiguration.class, TraceConfiguration.class })
 	public static class ManagementEndpointsConfiguration {
 	}
 
@@ -68,12 +73,12 @@ public class ManagementAutoConfiguration implements ApplicationContextAware,
 		if (event.getSource() != this.parent) {
 			return;
 		}
-		if (this.configuration.getPort() != this.configuration.getManagementPort()) {
+		if (this.configuration.getPort() != this.management.getPort()) {
 			AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 			context.setParent(this.parent);
-			context.register(ManagementContainerConfiguration.class,
-					VarzAutoConfiguration.class, HealthzAutoConfiguration.class,
-					ShutdownAutoConfiguration.class, TraceAutoConfiguration.class);
+			context.register(ManagementServerConfiguration.class,
+					VarzConfiguration.class, HealthzConfiguration.class,
+					ShutdownConfiguration.class, TraceConfiguration.class);
 			context.refresh();
 			this.context = context;
 		}

@@ -13,44 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.service;
 
+import javax.servlet.Servlet;
+
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.bootstrap.service.metrics.CounterService;
-import org.springframework.bootstrap.service.metrics.DefaultCounterService;
-import org.springframework.bootstrap.service.metrics.DefaultGaugeService;
-import org.springframework.bootstrap.service.metrics.GaugeService;
-import org.springframework.bootstrap.service.metrics.InMemoryMetricRepository;
-import org.springframework.bootstrap.service.metrics.MetricRepository;
+import org.springframework.bootstrap.service.shutdown.ShutdownEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for metrics services.
+ * {@link EnableAutoConfiguration Auto-configuration} for /shutdown endpoint.
  * 
  * @author Dave Syer
- * 
  */
 @Configuration
-public class MetricAutoConfiguration {
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnMissingBean({ ShutdownEndpoint.class })
+public class ShutdownConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean({ CounterService.class })
-	public CounterService counterService() {
-		return new DefaultCounterService(metricRepository());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean({ GaugeService.class })
-	public GaugeService gaugeService() {
-		return new DefaultGaugeService(metricRepository());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean({ MetricRepository.class })
-	protected MetricRepository metricRepository() {
-		return new InMemoryMetricRepository();
+	public ShutdownEndpoint shutdownEndpoint() {
+		return new ShutdownEndpoint();
 	}
 
 }

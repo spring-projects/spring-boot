@@ -33,6 +33,6 @@ import org.springframework.context.annotation.Import;
 @Import(ConfigurationPropertiesImportSelector.class)
 public @interface EnableConfigurationProperties {
 
-	Class<?> value() default void.class;
+	Class<?>[] value() default { void.class };
 
 }

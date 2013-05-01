@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.service.properties.ContainerProperties;
+import org.springframework.bootstrap.service.properties.ManagementServerProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -46,7 +46,7 @@ public class ShutdownEndpoint implements ApplicationContextAware,
 	private ConfigurableApplicationContext context;
 
 	@Autowired
-	private ContainerProperties configuration = new ContainerProperties();
+	private ManagementServerProperties configuration = new ManagementServerProperties();
 
 	private boolean shuttingDown = false;
 

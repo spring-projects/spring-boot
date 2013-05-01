@@ -18,34 +18,31 @@ package org.springframework.bootstrap.service.properties;
 
 import java.io.File;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 
 /**
- * Properties for the web container (e.g. port and path settings).
+ * Properties for the web server (e.g. port and path settings).
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "container", ignoreUnknownFields = false)
-public class ContainerProperties {
+@ConfigurationProperties(name = "server", ignoreUnknownFields = false)
+public class ServerProperties {
 
 	private int port = 8080;
 
-	private int managementPort = this.port;
-
-	private String contextPath;
-
-	private boolean allowShutdown = false;
+	@NotNull
+	private String contextPath = "";
 
 	private Tomcat tomcat = new Tomcat();
-
-	private boolean dumpRequests;
 
 	public Tomcat getTomcat() {
 		return this.tomcat;
 	}
 
 	public String getContextPath() {
-		return this.contextPath == null ? "" : this.contextPath;
+		return this.contextPath;
 	}
 
 	public void setContextPath(String contextPath) {
@@ -58,30 +55,6 @@ public class ContainerProperties {
 
 	public void setPort(int port) {
 		this.port = port;
-	}
-
-	public int getManagementPort() {
-		return this.managementPort;
-	}
-
-	public void setManagementPort(int managementPort) {
-		this.managementPort = managementPort;
-	}
-
-	public boolean isAllowShutdown() {
-		return this.allowShutdown;
-	}
-
-	public void setAllowShutdown(boolean allowShutdown) {
-		this.allowShutdown = allowShutdown;
-	}
-
-	public boolean isDumpRequests() {
-		return this.dumpRequests;
-	}
-
-	public void setDumpRequests(boolean dumpRequests) {
-		this.dumpRequests = dumpRequests;
 	}
 
 	public static class Tomcat {

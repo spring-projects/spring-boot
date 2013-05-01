@@ -13,45 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.autoconfigure.service;
 
-import javax.servlet.Servlet;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
+import org.springframework.bootstrap.service.metrics.CounterService;
+import org.springframework.bootstrap.service.metrics.DefaultCounterService;
+import org.springframework.bootstrap.service.metrics.DefaultGaugeService;
+import org.springframework.bootstrap.service.metrics.GaugeService;
+import org.springframework.bootstrap.service.metrics.InMemoryMetricRepository;
 import org.springframework.bootstrap.service.metrics.MetricRepository;
-import org.springframework.bootstrap.service.varz.PublicMetrics;
-import org.springframework.bootstrap.service.varz.VanillaPublicMetrics;
-import org.springframework.bootstrap.service.varz.VarzEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for /varz endpoint.
+ * {@link EnableAutoConfiguration Auto-configuration} for metrics services.
  * 
  * @author Dave Syer
+ * 
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnMissingBean({ VarzEndpoint.class })
-public class VarzAutoConfiguration {
-
-	@Autowired
-	private MetricRepository repository;
-
-	@Autowired(required = false)
-	private PublicMetrics metrics;
+public class MetricConfiguration {
 
 	@Bean
-	public VarzEndpoint varzEndpoint() {
-		if (this.metrics == null) {
-			this.metrics = new VanillaPublicMetrics(this.repository);
-		}
-		return new VarzEndpoint(this.metrics);
+	@ConditionalOnMissingBean({ CounterService.class })
+	public CounterService counterService() {
+		return new DefaultCounterService(metricRepository());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ GaugeService.class })
+	public GaugeService gaugeService() {
+		return new DefaultGaugeService(metricRepository());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ MetricRepository.class })
+	protected MetricRepository metricRepository() {
+		return new InMemoryMetricRepository();
 	}
 
 }

@@ -30,7 +30,7 @@ import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.service.error.ErrorEndpoint;
-import org.springframework.bootstrap.service.properties.ContainerProperties;
+import org.springframework.bootstrap.service.properties.ManagementServerProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,10 +45,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  */
 @Configuration
 @EnableWebMvc
-public class ManagementContainerConfiguration implements BeanPostProcessor {
+public class ManagementServerConfiguration implements BeanPostProcessor {
 
 	@Autowired
-	private ContainerProperties configuration = new ContainerProperties();
+	private ManagementServerProperties configuration = new ManagementServerProperties();
 
 	private boolean initialized = false;
 
@@ -103,7 +103,7 @@ public class ManagementContainerConfiguration implements BeanPostProcessor {
 					&& !this.initialized) {
 
 				AbstractEmbeddedServletContainerFactory factory = (AbstractEmbeddedServletContainerFactory) bean;
-				factory.setPort(this.configuration.getManagementPort());
+				factory.setPort(this.configuration.getPort());
 				factory.setContextPath(this.configuration.getContextPath());
 
 				factory.setErrorPages(Collections
