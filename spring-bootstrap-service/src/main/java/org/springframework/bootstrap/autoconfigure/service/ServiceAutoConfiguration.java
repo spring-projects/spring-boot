@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.bootstrap.service.annotation.EnableConfigurationProperties;
+import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.bootstrap.service.properties.EndpointsProperties;
 import org.springframework.bootstrap.service.properties.ManagementServerProperties;
 import org.springframework.bootstrap.service.properties.ServerProperties;

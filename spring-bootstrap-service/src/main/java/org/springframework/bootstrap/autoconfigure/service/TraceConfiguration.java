@@ -30,7 +30,6 @@ import org.springframework.bootstrap.service.trace.TraceEndpoint;
 import org.springframework.bootstrap.service.trace.TraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -47,7 +46,6 @@ public class TraceConfiguration {
 	private TraceRepository traceRepository;
 
 	@Configuration
-	@ConditionalOnClass(SecurityFilterChain.class)
 	public static class SecurityFilterPostProcessorConfiguration {
 
 		@Autowired(required = false)
@@ -63,6 +61,7 @@ public class TraceConfiguration {
 		private boolean dumpRequests;
 
 		@Bean
+		@ConditionalOnClass(name = "org.springframework.security.web.SecurityFilterChain")
 		public SecurityFilterPostProcessor securityFilterPostProcessor(
 				BeanFactory beanFactory) {
 			SecurityFilterPostProcessor processor = new SecurityFilterPostProcessor(

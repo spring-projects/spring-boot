@@ -2,7 +2,7 @@ package org.springframework.bootstrap.sample.consumer;
 
 import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.bootstrap.service.annotation.EnableConfigurationProperties;
+import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;

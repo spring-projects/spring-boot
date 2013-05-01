@@ -2,13 +2,13 @@ package org.springframework.bootstrap.sample.service;
 
 import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.bootstrap.service.annotation.EnableConfigurationProperties;
+import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAutoConfiguration
-@EnableConfigurationProperties(ServiceProperties.class)
+@EnableConfigurationProperties
 @ComponentScan
 public class ServiceBootstrapApplication {
 

@@ -16,14 +16,16 @@
 package org.springframework.bootstrap.sample.service;
 
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 @ConfigurationProperties(name = "service", ignoreUnknownFields = false)
+@Component
 public class ServiceProperties {
 
 	private String name = "World";
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {

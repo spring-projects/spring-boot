@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.service.annotation;
+package org.springframework.bootstrap.context.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -30,9 +30,9 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(ConfigurationPropertiesImportSelector.class)
+@Import(EnableConfigurationPropertiesImportSelector.class)
 public @interface EnableConfigurationProperties {
 
-	Class<?>[] value() default { void.class };
+	Class<?>[] value() default {};
 
 }

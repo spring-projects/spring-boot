@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.service.annotation;
+package org.springframework.bootstrap.context.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
@@ -39,14 +38,14 @@ import org.springframework.util.MultiValueMap;
  * 
  * @author Dave Syer
  */
-public class ConfigurationPropertiesImportSelector implements ImportSelector {
+public class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				EnableConfigurationProperties.class.getName(), false);
-		Object type = attributes.getFirst("value");
-		if (type == void.class) {
+		Object[] type = (Object[]) attributes.getFirst("value");
+		if (type == null || type.length == 0) {
 			return new String[] { ConfigurationPropertiesBindingConfiguration.class
 					.getName() };
 		}
@@ -74,7 +73,7 @@ public class ConfigurationPropertiesImportSelector implements ImportSelector {
 			ArrayList<Class<?>> result = new ArrayList<Class<?>>();
 			for (Object object : list) {
 				for (Object value : (Object[]) object) {
-					if (value instanceof Class) {
+					if (value instanceof Class && value != void.class) {
 						result.add((Class<?>) value);
 					}
 				}

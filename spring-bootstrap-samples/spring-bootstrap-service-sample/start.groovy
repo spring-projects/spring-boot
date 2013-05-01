@@ -1,4 +1,4 @@
-@Configuration
-@Import(org.springframework.bootstrap.sample.service.ServiceBootstrapApplication)
-class Start { 
+@Grab("org.springframework.bootstrap:spring-bootstrap-service:0.0.1-SNAPSHOT")
+@Grab("org.springframework.bootstrap:spring-bootstrap-web-application:0.0.1-SNAPSHOT")
+class Start {
 }
