@@ -56,16 +56,18 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
          <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
          <start-class>org.springframework.bootstrap.SpringApplication</start-class>
       </properties>
-      <dependency>
-        <groupId>org.springframework.bootstrap</groupId>
-        <artifactId>spring-bootstrap-web-application</artifactId>
-        <version>${spring.bootstrap.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.bootstrap</groupId>
-        <artifactId>spring-bootstrap-service</artifactId>
-        <version>${spring.bootstrap.version}</version>
-      </dependency>
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-web-application</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-service</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+      </dependencies>
       <build>
         <plugins>
           <plugin>
@@ -77,7 +79,7 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
     </project>
 
 If you like Gradle, that's fine, and you will know what to do with
-those co-ordinates.  The first one adds Spring Bootstrap auto
+those dependencies.  The first dependency adds Spring Bootstrap auto
 configuration and the Jetty container to your application, and the
 second one adds some more opinionated stuff like the default
 management endpoints.  If you prefer Tomcat FIXME: use a different
