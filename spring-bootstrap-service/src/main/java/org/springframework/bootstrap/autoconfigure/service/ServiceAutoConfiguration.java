@@ -32,7 +32,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for service apps.
@@ -42,7 +41,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 @Configuration
 @Import({ ManagementConfiguration.class, MetricConfiguration.class,
 		ServerConfiguration.class, SecurityConfiguration.class,
-		MetricFilterConfiguration.class })
+		MetricFilterConfiguration.class, AuditConfiguration.class })
 public class ServiceAutoConfiguration extends WebMvcConfigurationSupport {
 
 	@Override
@@ -51,7 +50,6 @@ public class ServiceAutoConfiguration extends WebMvcConfigurationSupport {
 		for (HttpMessageConverter<?> converter : converters) {
 			if (converter instanceof MappingJackson2HttpMessageConverter) {
 				MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
-				jacksonConverter.getObjectMapper().registerModule(new JodaModule());
 				jacksonConverter.getObjectMapper().disable(
 						SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 			}

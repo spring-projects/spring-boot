@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.service.trace;
+package org.springframework.bootstrap.service.security;
 
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.bootstrap.service.trace.SecurityFilterPostProcessor.WebRequestLoggingFilter;
+import org.springframework.bootstrap.service.security.SecurityFilterPostProcessor;
+import org.springframework.bootstrap.service.security.SecurityFilterPostProcessor.WebRequestLoggingFilter;
+import org.springframework.bootstrap.service.trace.InMemoryTraceRepository;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.Assert.assertEquals;

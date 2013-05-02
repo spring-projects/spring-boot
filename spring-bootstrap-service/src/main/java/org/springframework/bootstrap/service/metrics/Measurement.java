@@ -16,24 +16,24 @@
 
 package org.springframework.bootstrap.service.metrics;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 /**
  * @author Dave Syer
  */
 public class Measurement {
 
-	private DateTime dateTime;
+	private Date timestamp;
 
 	private Metric metric;
 
-	public Measurement(DateTime dateTime, Metric metric) {
-		this.dateTime = dateTime;
+	public Measurement(Date timestamp, Metric metric) {
+		this.timestamp = timestamp;
 		this.metric = metric;
 	}
 
-	public DateTime getDateTime() {
-		return this.dateTime;
+	public Date getTimestamp() {
+		return this.timestamp;
 	}
 
 	public Metric getMetric() {
@@ -42,7 +42,7 @@ public class Measurement {
 
 	@Override
 	public String toString() {
-		return "Measurement [dateTime=" + this.dateTime + ", metric=" + this.metric + "]";
+		return "Measurement [dateTime=" + this.timestamp + ", metric=" + this.metric + "]";
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class Measurement {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ ((this.dateTime == null) ? 0 : this.dateTime.hashCode());
+				+ ((this.timestamp == null) ? 0 : this.timestamp.hashCode());
 		result = prime * result + ((this.metric == null) ? 0 : this.metric.hashCode());
 		return result;
 	}
@@ -64,10 +64,10 @@ public class Measurement {
 		if (getClass() != obj.getClass())
 			return false;
 		Measurement other = (Measurement) obj;
-		if (this.dateTime == null) {
-			if (other.dateTime != null)
+		if (this.timestamp == null) {
+			if (other.timestamp != null)
 				return false;
-		} else if (!this.dateTime.equals(other.dateTime))
+		} else if (!this.timestamp.equals(other.timestamp))
 			return false;
 		if (this.metric == null) {
 			if (other.metric != null)

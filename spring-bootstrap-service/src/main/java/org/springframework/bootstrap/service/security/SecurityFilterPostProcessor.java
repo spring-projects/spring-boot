@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.service.trace;
+package org.springframework.bootstrap.service.security;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -35,6 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.bootstrap.service.trace.InMemoryTraceRepository;
+import org.springframework.bootstrap.service.trace.TraceRepository;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;

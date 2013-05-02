@@ -22,8 +22,9 @@ production, and in other environments.
 |Logging  |Logback, Log4j or JDK | Whatever is on the classpath. Sensible defaults. |
 |Database |HSQLDB or H2     | Per classpath, or define a DataSource to override |
 |Externalized configuration | Properties or YAML | Support for Spring profiles. Bind automatically to @Bean. |
+|Audit                      | Spring Security and Spring ApplicationEvent |Flexible abstraction with sensible defaults for security events |
 |Validation                 | JSR-303    | |
-|Management endpoints       | Spring MVC | Health, basic metrics, request tracing, shutdown |
+|Management endpoints       | Spring MVC | Health, basic metrics, request tracing, shutdown, thread dumps |
 |Error pages                | Spring MVC | Sensible defaults based on exception and status code |
 |JSON                       |Jackson 2 | |
 |ORM                        |Spring Data JPA | If on the classpath |
@@ -33,7 +34,7 @@ production, and in other environments.
 # Getting Started
 
 You will need Java (6 at least) and a build tool (Maven is what we use
-below, but you are more than wecome to use gradle).  These can be
+below, but you are more than welcome to use gradle).  These can be
 downloaded or installed easily in most operating systems.  FIXME:
 short instructions for Mac and Linux.
 
@@ -101,12 +102,17 @@ Then in another terminal
 you if the application is running and healthy. `/varz` is the default
 location for the metrics endpoint - it gives you basic counts and
 response timing data by default but there are plenty of ways to
-customize it.
+customize it.  You can also try `/trace` and `/dump` to get some
+interesting information about how and what your app is doing.
+
+What about the home page?
 
     $ curl localhost:8080/
     {"status": 404, "error": "Not Found", "message": "Not Found"}
 
-That's OK, we haven't added any business content yet.
+That's OK, we haven't added any business content yet.  But it shows
+that there are sensible defaults built in for rendering HTTP and
+server-side errors.
 
 ## Adding a business endpoint
 
@@ -146,7 +152,48 @@ and re-package:
     $ curl localhost:8080/
     {"message": "Hello World"}
 
-# Add a database
+# Adding security
+
+If you add Spring Security java config to your runtime classpath you
+will enable HTTP basic authentication by default on all the endpoints.
+In the `pom.xml` it would look like this:
+
+        <dependency>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-javaconfig</artifactId>
+          <version>1.0.0.BUILD-SNAPSHOT</version>
+        </dependency>
+
+(Spring Security java config is still work in progress so we have used
+a snapshot.  Beware of sudden changes.  FIXME: update to full
+release.)
+
+Try it out:
+
+    $ curl localhost:8080/
+    {"status": 403, "error": "Forbidden", "message": "Access Denied"}
+    $ curl user:password@localhost:8080/
+    {"message": "Hello World"}
+
+The default auto configuration has an in-memory user database with one
+entry.  If you want to extend or expand that, or point to a database
+or directory server, you only need to provide a `@Bean` definition for
+an `AuthenticationManager`, e.g. in your `SampleController`:
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+      return new AuthenticationBuilder().inMemoryAuthentication().withUser("client")
+          .password("secret").roles("USER").and().and().build();
+    }
+
+Try it out:
+
+    $ curl user:password@localhost:8080/
+    {"status": 403, "error": "Forbidden", "message": "Access Denied"}
+    $ curl client:secret@localhost:8080/
+    {"message": "Hello World"}
+
+# Adding a database
 
 Just add `spring-jdbc` and an embedded database to your dependencies:
 

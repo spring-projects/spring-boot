@@ -15,6 +15,8 @@
  */
 package org.springframework.bootstrap.service.audit.listener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.bootstrap.service.audit.AuditEventRepository;
 import org.springframework.context.ApplicationListener;
 
@@ -24,6 +26,8 @@ import org.springframework.context.ApplicationListener;
  */
 public class AuditListener implements ApplicationListener<AuditApplicationEvent> {
 
+	private static Log logger = LogFactory.getLog(AuditListener.class);
+
 	private final AuditEventRepository auditEventRepository;
 
 	public AuditListener(AuditEventRepository auditEventRepository) {
@@ -32,6 +36,7 @@ public class AuditListener implements ApplicationListener<AuditApplicationEvent>
 
 	@Override
 	public void onApplicationEvent(AuditApplicationEvent event) {
+		logger.info(event.getAuditEvent());
 		this.auditEventRepository.add(event.getAuditEvent());
 	}
 

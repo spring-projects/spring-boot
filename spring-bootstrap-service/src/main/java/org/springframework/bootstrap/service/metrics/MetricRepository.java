@@ -17,17 +17,16 @@
 package org.springframework.bootstrap.service.metrics;
 
 import java.util.Collection;
-
-import org.joda.time.DateTime;
+import java.util.Date;
 
 /**
  * @author Dave Syer
  */
 public interface MetricRepository {
 
-	void increment(String metricName, int amount, DateTime dateTime);
+	void increment(String metricName, int amount, Date timestamp);
 
-	void set(String metricName, double value, DateTime dateTime);
+	void set(String metricName, double value, Date timestamp);
 
 	void delete(String metricName);
 

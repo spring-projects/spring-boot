@@ -15,9 +15,8 @@
  */
 package org.springframework.bootstrap.service.trace;
 
+import java.util.Date;
 import java.util.Map;
-
-import org.joda.time.DateTime;
 
 /**
  * @author Dave Syer
@@ -25,17 +24,17 @@ import org.joda.time.DateTime;
  */
 public class Trace {
 
-	private DateTime timestamp;
+	private Date timestamp;
 
 	private Map<String, Object> info;
 
-	public Trace(DateTime timestamp, Map<String, Object> info) {
+	public Trace(Date timestamp, Map<String, Object> info) {
 		super();
 		this.timestamp = timestamp;
 		this.info = info;
 	}
 
-	public DateTime getTimestamp() {
+	public Date getTimestamp() {
 		return this.timestamp;
 	}
 

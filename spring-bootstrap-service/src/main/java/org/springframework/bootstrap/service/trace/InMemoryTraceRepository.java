@@ -17,10 +17,9 @@ package org.springframework.bootstrap.service.trace;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.joda.time.DateTime;
 
 /**
  * @author Dave Syer
@@ -48,7 +47,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 
 	@Override
 	public void add(Map<String, Object> map) {
-		Trace trace = new Trace(new DateTime(), map);
+		Trace trace = new Trace(new Date(), map);
 		synchronized (this.traces) {
 			while (this.traces.size() >= this.capacity) {
 				this.traces.remove(0);

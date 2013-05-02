@@ -16,7 +16,7 @@
 
 package org.springframework.bootstrap.service.metrics;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 /**
  * @author Dave Syer
@@ -35,7 +35,7 @@ public class DefaultGaugeService implements GaugeService {
 
 	@Override
 	public void set(String metricName, double value) {
-		this.metricRepository.set(wrap(metricName), value, new DateTime());
+		this.metricRepository.set(wrap(metricName), value, new Date());
 	}
 
 	private String wrap(String metricName) {

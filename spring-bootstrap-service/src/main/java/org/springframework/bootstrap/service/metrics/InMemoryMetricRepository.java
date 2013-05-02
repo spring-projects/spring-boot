@@ -18,10 +18,9 @@ package org.springframework.bootstrap.service.metrics;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.joda.time.DateTime;
 
 /**
  * @author Dave Syer
@@ -31,27 +30,27 @@ public class InMemoryMetricRepository implements MetricRepository {
 	private ConcurrentMap<String, Measurement> metrics = new ConcurrentHashMap<String, Measurement>();
 
 	@Override
-	public void increment(String metricName, int amount, DateTime dateTime) {
+	public void increment(String metricName, int amount, Date timestamp) {
 		Measurement current = this.metrics.get(metricName);
 		if (current != null) {
 			Metric metric = current.getMetric();
 			this.metrics.replace(metricName, current,
-					new Measurement(dateTime, metric.increment(amount)));
+					new Measurement(timestamp, metric.increment(amount)));
 		} else {
-			this.metrics.putIfAbsent(metricName, new Measurement(dateTime, new Metric(
+			this.metrics.putIfAbsent(metricName, new Measurement(timestamp, new Metric(
 					metricName, amount)));
 		}
 	}
 
 	@Override
-	public void set(String metricName, double value, DateTime dateTime) {
+	public void set(String metricName, double value, Date timestamp) {
 		Measurement current = this.metrics.get(metricName);
 		if (current != null) {
 			Metric metric = current.getMetric();
 			this.metrics.replace(metricName, current,
-					new Measurement(dateTime, metric.set(value)));
+					new Measurement(timestamp, metric.set(value)));
 		} else {
-			this.metrics.putIfAbsent(metricName, new Measurement(dateTime, new Metric(
+			this.metrics.putIfAbsent(metricName, new Measurement(timestamp, new Metric(
 					metricName, value)));
 		}
 	}

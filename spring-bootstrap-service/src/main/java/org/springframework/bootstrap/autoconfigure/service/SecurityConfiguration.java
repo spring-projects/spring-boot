@@ -24,34 +24,48 @@ import org.springframework.bootstrap.context.annotation.EnableConfigurationPrope
 import org.springframework.bootstrap.service.properties.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
 import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Dave Syer
  */
 @Configuration
 @ConditionalOnClass({ EnableWebSecurity.class })
-@ConditionalOnMissingBean({ WebSecurityConfiguration.class })
 @EnableWebSecurity
 @EnableConfigurationProperties(SecurityProperties.class)
 public class SecurityConfiguration {
 
-	@Component
-	public static class WebSecurityAdapter extends WebSecurityConfigurerAdapter {
+	@Bean
+	@ConditionalOnMissingBean({ AuthenticationEventPublisher.class })
+	public AuthenticationEventPublisher authenticationEventPublisher() {
+		return new DefaultAuthenticationEventPublisher();
+	}
+
+	@Bean
+	public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
+		return new BoostrapWebSecurityConfigurerAdapter();
+	}
+
+	private static class BoostrapWebSecurityConfigurerAdapter extends
+			WebSecurityConfigurerAdapter {
 
 		@Value("${endpoints.healthz.path:/healthz}")
 		private String healthzPath = "/healthz";
 
 		@Autowired
 		private SecurityProperties security;
+
+		@Autowired
+		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		@Override
 		protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
@@ -69,6 +83,17 @@ public class SecurityConfiguration {
 			if (this.security.isRequireSsl()) {
 				http.requiresChannel().antMatchers("/**").requiresSecure();
 			}
+
+		}
+
+		@Override
+		protected AuthenticationManager authenticationManager() throws Exception {
+			AuthenticationManager manager = super.authenticationManager();
+			if (manager instanceof ProviderManager) {
+				((ProviderManager) manager)
+						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
+			}
+			return manager;
 		}
 
 	}
@@ -84,4 +109,5 @@ public class SecurityConfiguration {
 		}
 
 	}
+
 }

@@ -90,4 +90,10 @@ public class AuditEvent {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return "AuditEvent [timestamp=" + this.timestamp + ", principal="
+				+ this.principal + ", type=" + this.type + ", data=" + this.data + "]";
+	}
+
 }

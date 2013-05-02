@@ -27,8 +27,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
@@ -81,7 +79,7 @@ public class MetricFilterConfiguration {
 			UrlPathHelper helper = new UrlPathHelper();
 			String suffix = helper.getPathWithinApplication(servletRequest);
 			int status = 999;
-			DateTime t0 = new DateTime();
+			long t0 = System.currentTimeMillis();
 			try {
 				chain.doFilter(request, response);
 			} finally {
@@ -90,7 +88,7 @@ public class MetricFilterConfiguration {
 				} catch (Exception e) {
 					// ignore
 				}
-				set("response", suffix, new Duration(t0, new DateTime()).getMillis());
+				set("response", suffix, System.currentTimeMillis() - t0);
 				increment("status." + status, suffix);
 			}
 		}

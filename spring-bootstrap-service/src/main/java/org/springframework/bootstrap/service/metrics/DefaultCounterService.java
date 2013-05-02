@@ -16,7 +16,7 @@
 
 package org.springframework.bootstrap.service.metrics;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 /**
  * @author Dave Syer
@@ -35,17 +35,17 @@ public class DefaultCounterService implements CounterService {
 
 	@Override
 	public void increment(String metricName) {
-		this.counterRepository.increment(wrap(metricName), 1, new DateTime());
+		this.counterRepository.increment(wrap(metricName), 1, new Date());
 	}
 
 	@Override
 	public void decrement(String metricName) {
-		this.counterRepository.increment(wrap(metricName), -1, new DateTime());
+		this.counterRepository.increment(wrap(metricName), -1, new Date());
 	}
 
 	@Override
 	public void reset(String metricName) {
-		this.counterRepository.set(wrap(metricName), 0, new DateTime());
+		this.counterRepository.set(wrap(metricName), 0, new Date());
 	}
 
 	private String wrap(String metricName) {
