@@ -89,16 +89,16 @@ public class ServerConfiguration implements BeanPostProcessor, BeanFactoryAware 
 					&& !this.initialized) {
 
 				// Cannot use @Autowired because the injection happens too early
-				ServerProperties configuration = this.beanFactory
+				ServerProperties server = this.beanFactory
 						.getBean(ServerProperties.class);
 
 				AbstractEmbeddedServletContainerFactory factory = (AbstractEmbeddedServletContainerFactory) bean;
-				factory.setPort(configuration.getPort());
-				factory.setContextPath(configuration.getContextPath());
+				factory.setPort(server.getPort());
+				factory.setContextPath(server.getContextPath());
 
 				if (factory instanceof TomcatEmbeddedServletContainerFactory) {
 					configureTomcat((TomcatEmbeddedServletContainerFactory) factory,
-							configuration);
+							server);
 				}
 
 				factory.setErrorPages(Collections

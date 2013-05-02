@@ -31,6 +31,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
@@ -42,6 +43,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @Configuration
 public class ConfigurationPropertiesBindingConfiguration {
 
+	public final static String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+
 	@Autowired(required = false)
 	private PropertySourcesPlaceholderConfigurer configurer;
 
@@ -51,6 +54,17 @@ public class ConfigurationPropertiesBindingConfiguration {
 	@Autowired(required = false)
 	@Qualifier(ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME)
 	private ConversionService conversionService;
+
+	@Autowired(required = false)
+	@Qualifier(VALIDATOR_BEAN_NAME)
+	private Validator validator;
+
+	@Bean
+	@ConditionalOnMissingBean(name = VALIDATOR_BEAN_NAME)
+	@ConditionalOnClass(name = "javax.validation.Validator")
+	protected Validator configurationPropertiesValidator() {
+		return new LocalValidatorFactoryBean();
+	}
 
 	/**
 	 * Lifecycle hook that binds application properties to any bean whose type is
@@ -74,9 +88,7 @@ public class ConfigurationPropertiesBindingConfiguration {
 			}
 		}
 		PropertySourcesBindingPostProcessor processor = new PropertySourcesBindingPostProcessor();
-		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-		validator.afterPropertiesSet();
-		processor.setValidator(validator);
+		processor.setValidator(this.validator);
 		processor.setConversionService(this.conversionService);
 		processor.setPropertySources(propertySources);
 		return processor;

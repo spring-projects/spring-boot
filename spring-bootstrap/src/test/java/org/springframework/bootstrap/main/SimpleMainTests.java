@@ -56,6 +56,8 @@ public class SimpleMainTests {
 	public void xmlContext() throws Exception {
 		Spring.main(new String[] { Spring.class.getName(),
 				"org/springframework/bootstrap/sample-beans.xml" });
+		this.context = Spring.getApplicationContext();
+		assertNotNull(this.context);
 	}
 
 }

@@ -41,7 +41,7 @@ abstract class AbstractOnBeanCondition implements Condition {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				annotationClass().getName(), true);
 		List<String> beanClasses = collect(attributes, "value");
-		List<String> beanNames = collect(attributes, "value");
+		List<String> beanNames = collect(attributes, "name");
 		Assert.isTrue(beanClasses.size() > 0 || beanNames.size() > 0,
 				"@" + ClassUtils.getShortName(annotationClass())
 						+ " annotations must specify at least one bean");
