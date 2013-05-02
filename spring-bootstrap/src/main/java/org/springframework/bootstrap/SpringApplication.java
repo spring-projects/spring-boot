@@ -611,6 +611,15 @@ public class SpringApplication {
 
 	}
 
+	/**
+	 * A basic main that can be used to launch an autoconfigured application. Useful for
+	 * demos and testing, perhaps less for production use (where the run methods are more
+	 * appropriate).
+	 * 
+	 * @param args command line arguments
+	 * @see #run(Object[], String[])
+	 * @see #run(Object, String...)
+	 */
 	public static void main(String[] args) {
 		run(new Class<?>[] { AutoMain.class }, args);
 	}
