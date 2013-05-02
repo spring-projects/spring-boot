@@ -23,7 +23,7 @@ production, and in other environments.
 |Database |HSQLDB or H2     | Per classpath, or define a DataSource to override |
 |Externalized configuration | Properties or YAML | Support for Spring profiles. Bind automatically to @Bean. |
 |Audit                      | Spring Security and Spring ApplicationEvent |Flexible abstraction with sensible defaults for security events |
-|Validation                 | JSR-303    | |
+|Validation                 | JSR-303    |If on the classpath |
 |Management endpoints       | Spring MVC | Health, basic metrics, request tracing, shutdown, thread dumps |
 |Error pages                | Spring MVC | Sensible defaults based on exception and status code |
 |JSON                       |Jackson 2 | |
@@ -35,8 +35,11 @@ production, and in other environments.
 
 You will need Java (6 at least) and a build tool (Maven is what we use
 below, but you are more than welcome to use gradle).  These can be
-downloaded or installed easily in most operating systems.  FIXME:
-short instructions for Mac and Linux.
+downloaded or installed easily in most operating systems.  For Ubuntu:
+
+    $ sudo apt-get install openjdk-6-jdk maven
+
+<!--FIXME: short instructions for Mac.-->
 
 ## A basic project
 
@@ -53,19 +56,14 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
         <artifactId>spring-bootstrap-applications</artifactId>
         <version>0.0.1-SNAPSHOT</version>
       </parent>
-      <properties>
-         <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
-      </properties>
       <dependencies>
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
           <artifactId>spring-bootstrap-web-application</artifactId>
-          <version>${spring.bootstrap.version}</version>
         </dependency>
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
           <artifactId>spring-bootstrap-service</artifactId>
-          <version>${spring.bootstrap.version}</version>
         </dependency>
       </dependencies>
       <build>
@@ -82,8 +80,8 @@ If you like Gradle, that's fine, and you will know what to do with
 those dependencies.  The first dependency adds Spring Bootstrap auto
 configuration and the Jetty container to your application, and the
 second one adds some more opinionated stuff like the default
-management endpoints.  If you prefer Tomcat FIXME: use a different
-dependency.
+management endpoints.  If you prefer Tomcat you can just add the
+embedded Tomcat jars to your classpath instead of Jetty.
 
 You should be able to run it already:
 
@@ -143,7 +141,6 @@ use the main method to launch it from your project jar.  Just add a
 the fully qualified name of your `SampleController`, e.g.
 
       <properties>
-         <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
          <start-class>com.mycompany.sample.SampleController</start-class>
       </properties>
 
@@ -171,7 +168,7 @@ on a class and run it.
 
 4. Find feature in Gradle that does the same thing.
 
-5. Use the Spring executable.  FIXME: document this maybe.
+5. Use the Spring executable.  <!--FIXME: document this maybe.-->
 
 ## Externalizing configuration
 
@@ -301,8 +298,9 @@ In the `pom.xml` it would look like this:
         </dependency>
 
 (Spring Security java config is still work in progress so we have used
-a snapshot.  Beware of sudden changes.  FIXME: update to full
-release.)
+a snapshot.  Beware of sudden changes.)
+
+<!--FIXME: update Spring Security to full release -->
 
 Try it out:
 
@@ -333,4 +331,57 @@ Try it out:
 
 Just add `spring-jdbc` and an embedded database to your dependencies:
 
-FIXME: TBD
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+        </dependency>
+
+Then you will be able to inject a `DataSource` into your controller:
+
+    @Controller
+    @EnableAutoConfiguration
+    @EnableConfigurationProperties(ServiceProperties.class)
+    public class SampleController {
+    
+      private JdbcTemplate jdbcTemplate;
+    
+      @Autowired
+      public SampleController(DataSource dataSource) {
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+      }
+
+      @RequestMapping("/")
+      @ResponseBody
+      public Map<String, String> helloWorld() {
+        return jdbcTemplate.queryForMap("SELECT * FROM MESSAGES WHERE ID=?", 0);
+      }
+    
+      ...
+    }
+ 
+ The app will run (going back to the default security configuration):
+ 
+           $ curl user:password@localhost:8080/
+           {"error":"Internal Server Error", "status":500, "exception":...}
+           
+ but there's no data in the database yet and the `MESSAGES` table
+ doesn't even exist, so there's an error.  One easy way to fix it is
+ to provide a `schema.sql` script in the root of the classpath, e.g.
+ 
+    create table MESSAGES (
+      ID BIGINT NOT NULL PRIMARY KEY,
+      MESSAGE VARCHAR(255)
+    );
+    INSERT INTO MESSAGES (ID, MESSAGE) VALUES (0, 'Hello Phil');
+
+Now when you run the app you get a sensible response:
+
+       $ curl user:password@localhost:8080/
+       {"ID":0, "MESSAGE":"Hello Phil"}
+       
+Obviously, this is only the start, but hopefully you have a good grasp
+of the basics and are ready to try it out yourself.

@@ -21,6 +21,25 @@
 		<module>spring-bootstrap-jpa-application</module>
 		<module>spring-bootstrap-web-application</module>
 	</modules>
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-service</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-web-application</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

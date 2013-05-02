@@ -20,8 +20,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -29,10 +32,15 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.AsyncUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -53,6 +61,23 @@ public class EmbeddedDatabaseAutoConfiguration {
 	}
 
 	private ExecutorService executorService;
+
+	@Autowired
+	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+
+	@Value("${spring.jdbc.schema:classpath:schema.sql}")
+	private String schemaLocation = "classpath:schema.sql"; // FIXME: DB platform
+
+	@PostConstruct
+	protected void initialize() throws Exception {
+		Resource resource = this.resourceLoader.getResource(this.schemaLocation);
+		if (resource.exists()) {
+			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+			populator.addScript(resource);
+			populator.setContinueOnError(true);
+			DatabasePopulatorUtils.execute(populator, dataSource());
+		}
+	}
 
 	@Bean
 	public DataSource dataSource() {
