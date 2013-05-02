@@ -154,7 +154,141 @@ and re-package:
     $ curl localhost:8080/
     {"message": "Hello World"}
 
-# Adding security
+## Running the application
+
+You can package the app and run it as a jar (as above) and that's very
+convenient for production usage.  Or there are other options, many of
+which are more convenient at development time.  Here are a few:
+
+1. Use the Maven exec plugin, e.g.
+
+        $ mvn exec:java -Dexec.mainClass=com.mycompany.sample.SampleController
+        
+2. Run directly in your IDE, e.g. Eclipse or IDEA let you right click
+on a class and run it.
+
+3. Use a different Maven plugin.
+
+4. Find feature in Gradle that does the same thing.
+
+5. Use the Spring executable.  FIXME: document this maybe.
+
+## Externalizing configuration
+
+Spring Bootstrap likes you to externalize your configuration so you
+can work with the same application code in different environments.  To
+get started with this you create a file in the root of your classpath
+(`src/main/resources` if using Maven) - if you like YAML you can call
+it `application.yml`, e.g.:
+
+    server:
+      port: 9000
+    management:
+      port: 9001
+    logging:
+      file: target/log.out
+
+or if you like Java `Properties` files, you can call it
+`application.properties`, e.g.:
+
+    server.port: 9000
+    management.port: 9001
+    logging.file: target/log.out
+
+Those examples are properties that Spring Bootstrap itself binds to
+out of the box, so if you make that change and run the app again, you
+will find the home page on port 9000 instead of 8080:
+
+    $ curl localhost:9000/
+    {"message": "Hello World"}
+
+and the management endpoints on port 9001 instead of 8080:
+
+    $ curl localhost:9001/healthz
+    ok
+
+To externalize business configuration you can simply add a default
+value to your configuration file, e.g.
+
+    server:
+      port: 9000
+    management:
+      port: 9001
+    logging:
+      file: target/log.out
+    service:
+      message: Awesome Message
+
+and then bind to it in the application code.  The simplest way to do
+that is to simply refer to it in an `@Value` annotation, e.g.
+
+    @Controller
+    @EnableAutoConfiguration
+    public class SampleController {
+    
+      @Value("${service.message:Hello World}")
+      private String value = "Goodbye Everypone"
+
+      @RequestMapping("/")
+      @ResponseBody
+      public Map<String, String> helloWorld() {
+        return Collections.singletonMap("message", message);
+      }
+    
+      ...
+    }
+
+That's a little bit confusing because we have provided a message value
+in three different places - in the external configuration ("Awesome
+Message"), in the `@Value` annotation after the colon ("Hello World"),
+and in the filed initializer ("Goodbye Everyone").  That was only to
+show you how and you only need it once, so it's your choice (it's
+useful for unit testing to have the Java initializer as well as the
+external value).  Note that the YAML object is flattened using period
+separators.
+
+For simple Strings where you have sensible defaults `@Value` is
+perfect, but if you want more and you like everything strongly typed
+then you can have Spring bind the properties and validate them
+automatically in a separate value object.  For instance:
+
+    // ServiceProperties.java
+    @ConfigurationProperties(name="service")
+    public class ServiceProperties {
+        private String message;
+        private int value = 0;
+        ... getters and setters
+    }
+    
+    // SampleController.java
+    @Controller
+    @EnableAutoConfiguration
+    @EnableConfigurationProperties(ServiceProperties.class)
+    public class SampleController {
+    
+      @Autowired
+      private ServiceProperties properties;
+
+      @RequestMapping("/")
+      @ResponseBody
+      public Map<String, String> helloWorld() {
+        return Collections.singletonMap("message", properties.getMessage());
+      }
+    
+      ...
+    }
+    
+When you ask to
+`@EnableConfigurationProperties(ServiceProperties.class)` you are
+saying you want a bean of type `ServiceProperties` and that you want
+to bind it to the Spring Environment.  The Spring Environment is a
+collection of name-value pairs taken from (in order of decreasing
+precedence) 1) the command line, 2) the external configuration file,
+3) System properties, 4) the OS environment.  Validation is done based
+on JSR-303 annotations by default provided that library (and an
+implementation) is on the classpath.
+
+## Adding security
 
 If you add Spring Security java config to your runtime classpath you
 will enable HTTP basic authentication by default on all the endpoints.
@@ -195,7 +329,7 @@ Try it out:
     $ curl client:secret@localhost:8080/
     {"message": "Hello World"}
 
-# Adding a database
+## Adding a database
 
 Just add `spring-jdbc` and an embedded database to your dependencies:
 
