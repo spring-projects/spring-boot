@@ -16,6 +16,9 @@
 
 package org.springframework.bootstrap.service.trace;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -42,6 +45,13 @@ public class TraceEndpoint {
 	@ResponseBody
 	public List<Trace> trace() {
 		return this.tracer.traces();
+	}
+
+	@RequestMapping("${endpoints.dump.path:/dump}")
+	@ResponseBody
+	public List<ThreadInfo> dump() {
+		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
+				true));
 	}
 
 }

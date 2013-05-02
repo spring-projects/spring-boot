@@ -45,6 +45,9 @@ public class EndpointsProperties {
 	@Valid
 	private Endpoint trace = new Endpoint("/trace");
 
+	@Valid
+	private Endpoint dump = new Endpoint("/dump");
+
 	public Endpoint getVarz() {
 		return this.varz;
 	}
@@ -63,6 +66,10 @@ public class EndpointsProperties {
 
 	public Endpoint getTrace() {
 		return this.trace;
+	}
+
+	public Endpoint getDump() {
+		return this.dump;
 	}
 
 	public static class Endpoint {
