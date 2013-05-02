@@ -63,7 +63,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 public @interface EnableAutoConfiguration {
 
 	/**
-	 * Exclude a specific auto-configuration class such that it will never be applied.
+	 * Exclude specific auto-configuration classes such that they will never be applied.
 	 */
 	Class<?>[] exclude() default {};
 

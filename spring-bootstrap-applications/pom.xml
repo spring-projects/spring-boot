@@ -12,6 +12,7 @@
 	<properties>
 		<main.basedir>${project.basedir}/..</main.basedir>
         <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
+        <start-class>org.springframework.bootstrap.main.Spring</start-class>
 	</properties>
 	<modules>
 		<module>spring-bootstrap-application</module>

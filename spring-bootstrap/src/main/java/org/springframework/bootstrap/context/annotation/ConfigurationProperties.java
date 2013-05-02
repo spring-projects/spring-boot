@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.bootstrap.bind.PropertySourcesBindingPostProcessor;
 
 /**
  * Annotation for externalized configuration. Add this to a class definition if you want

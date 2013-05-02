@@ -27,10 +27,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.bootstrap.autoconfigure.batch.BatchAutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.data.JpaRepositoriesAutoConfiguration;
-import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
-import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -60,9 +56,8 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
  * application:
  * 
  * <ul>
- * <li>Create an appropriate {@link ApplicationContext} instance (
- * {@link AnnotationConfigApplicationContext} or
- * {@link AnnotationConfigEmbeddedWebApplicationContext} depending on your classpath)</li>
+ * <li>Create an appropriate {@link ApplicationContext} instance (depending on your
+ * classpath)</li>
  * 
  * <li>Register a {@link CommandLinePropertySource} to expose command line arguments as
  * Spring properties</li>
@@ -128,7 +123,7 @@ public class SpringApplication {
 	private static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
 
-	private static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework.bootstrap."
+	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework.bootstrap."
 			+ "context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
@@ -499,9 +494,8 @@ public class SpringApplication {
 
 	/**
 	 * Sets the type of Spring {@link ApplicationContext} that will be created. If not
-	 * specified defaults to {@link AnnotationConfigEmbeddedWebApplicationContext} for web
-	 * based applications or {@link AnnotationConfigApplicationContext} for non web based
-	 * applications.
+	 * specified defaults to {@link #DEFAULT_WEB_CONTEXT_CLASS} for web based applications
+	 * or {@link AnnotationConfigApplicationContext} for non web based applications.
 	 * @param applicationContextClass the context class to set
 	 * @see #setApplicationContext(ApplicationContext)
 	 */
@@ -512,9 +506,9 @@ public class SpringApplication {
 
 	/**
 	 * Sets a Spring {@link ApplicationContext} that will be used for the application. If
-	 * not specified an {@link AnnotationConfigEmbeddedWebApplicationContext} will be
-	 * created for web based applications or an {@link AnnotationConfigApplicationContext}
-	 * for non web based applications.
+	 * not specified an {@link #DEFAULT_WEB_CONTEXT_CLASS} will be created for web based
+	 * applications or an {@link AnnotationConfigApplicationContext} for non web based
+	 * applications.
 	 * @param applicationContext the spring application context.
 	 * @see #setApplicationContextClass(Class)
 	 */
@@ -609,24 +603,6 @@ public class SpringApplication {
 
 		return code;
 
-	}
-
-	/**
-	 * A basic main that can be used to launch an autoconfigured application. Useful for
-	 * demos and testing, perhaps less for production use (where the run methods are more
-	 * appropriate).
-	 * 
-	 * @param args command line arguments
-	 * @see #run(Object[], String[])
-	 * @see #run(Object, String...)
-	 */
-	public static void main(String[] args) {
-		run(new Class<?>[] { AutoMain.class }, args);
-	}
-
-	@EnableAutoConfiguration(exclude = { JpaRepositoriesAutoConfiguration.class,
-			BatchAutoConfiguration.class })
-	public static class AutoMain {
 	}
 
 }

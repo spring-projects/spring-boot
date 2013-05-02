@@ -16,6 +16,7 @@
 package org.springframework.bootstrap.autoconfigure.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.service.audit.AuditEventRepository;
 import org.springframework.bootstrap.service.audit.InMemoryAuditEventRepository;
@@ -47,11 +48,13 @@ public class AuditConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
 	public AuthenticationAuditListener authenticationAuditListener() throws Exception {
 		return new AuthenticationAuditListener();
 	}
 
 	@Bean
+	@ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();
 	}

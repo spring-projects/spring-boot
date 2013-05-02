@@ -55,7 +55,6 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
       </parent>
       <properties>
          <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
-         <start-class>org.springframework.bootstrap.SpringApplication</start-class>
       </properties>
       <dependencies>
         <dependency>
@@ -139,11 +138,14 @@ endpoint.  An endpoint can be implemented as a Spring MVC
 You can launch that straight away using the Spring Bootstrap CLI
 (without the `@EnableAutoConfiguration` and even without the import
 statements that your IDE will add if you are using one), or you can
-use the main method to launch it from your project jar.  Just change
-the `start-class` in the `pom` above to the fully qualified name of
-your `SampleController`, e.g.
+use the main method to launch it from your project jar.  Just add a
+`start-class` in the properties section of the `pom` above pointing to
+the fully qualified name of your `SampleController`, e.g.
 
-    <start-class>com.mycompany.sample.SampleController</start-class>
+      <properties>
+         <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
+         <start-class>com.mycompany.sample.SampleController</start-class>
+      </properties>
 
 and re-package:
 

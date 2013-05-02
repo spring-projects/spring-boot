@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.bind;
+package org.springframework.bootstrap.context.annotation;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
