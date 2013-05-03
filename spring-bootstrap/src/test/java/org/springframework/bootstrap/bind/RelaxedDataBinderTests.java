@@ -17,6 +17,7 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -179,6 +180,26 @@ public class RelaxedDataBinderTests {
 				"vanilla");
 		assertEquals(0, result.getErrorCount());
 		assertEquals(123, target.getValue());
+	}
+
+	@Test
+	public void testBindMap() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "spam: bar\n" + "vanilla.value: 123",
+				"vanilla");
+		assertEquals(0, result.getErrorCount());
+		assertEquals("123", target.get("value"));
+	}
+
+	@Test
+	public void testBindMapNestedInMap() throws Exception {
+		Map<String, Object> target = new LinkedHashMap<String, Object>();
+		BindingResult result = bind(target, "spam: bar\n" + "vanilla.foo.value: 123",
+				"vanilla");
+		assertEquals(0, result.getErrorCount());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) target.get("foo");
+		assertEquals("123", map.get("value"));
 	}
 
 	private BindingResult bind(Object target, String values) throws Exception {

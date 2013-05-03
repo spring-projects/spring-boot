@@ -31,6 +31,9 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 public class EndpointsProperties {
 
 	@Valid
+	private Endpoint info = new Endpoint("/info");
+
+	@Valid
 	private Endpoint varz = new Endpoint("/varz");
 
 	@Valid
@@ -47,6 +50,10 @@ public class EndpointsProperties {
 
 	@Valid
 	private Endpoint dump = new Endpoint("/dump");
+
+	public Endpoint getInfo() {
+		return this.info;
+	}
 
 	public Endpoint getVarz() {
 		return this.varz;

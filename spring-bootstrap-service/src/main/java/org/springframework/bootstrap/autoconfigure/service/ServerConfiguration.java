@@ -37,6 +37,7 @@ import org.springframework.bootstrap.service.properties.ServerProperties;
 import org.springframework.bootstrap.service.properties.ServerProperties.Tomcat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
 
@@ -50,6 +51,7 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass({ Servlet.class })
 @Order(Integer.MIN_VALUE)
+@Import(InfoConfiguration.class)
 public class ServerConfiguration implements BeanPostProcessor, BeanFactoryAware {
 
 	private BeanFactory beanFactory;

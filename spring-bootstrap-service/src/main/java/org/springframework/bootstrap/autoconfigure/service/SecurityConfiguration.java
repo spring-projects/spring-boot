@@ -61,6 +61,9 @@ public class SecurityConfiguration {
 		@Value("${endpoints.healthz.path:/healthz}")
 		private String healthzPath = "/healthz";
 
+		@Value("${endpoints.info.path:/info}")
+		private String infoPath = "/info";
+
 		@Autowired
 		private SecurityProperties security;
 
@@ -70,6 +73,7 @@ public class SecurityConfiguration {
 		@Override
 		protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
 			ignoredRequests.antMatchers(this.healthzPath);
+			ignoredRequests.antMatchers(this.infoPath);
 		}
 
 		@Override
