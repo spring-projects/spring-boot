@@ -159,7 +159,7 @@ which are more convenient at development time.  Here are a few:
 
 1. Use the Maven exec plugin, e.g.
 
-        $ mvn exec:java -Dexec.mainClass=com.mycompany.sample.SampleController
+        $ mvn exec:java
         
 2. Run directly in your IDE, e.g. Eclipse or IDEA let you right click
 on a class and run it.

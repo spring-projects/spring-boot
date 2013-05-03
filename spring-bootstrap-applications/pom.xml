@@ -37,9 +37,29 @@
           <artifactId>spring-bootstrap-web-application</artifactId>
           <version>${spring.bootstrap.version}</version>
         </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-jpa-application</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-batch-application</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-integration-application</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
       </dependencies>
     </dependencyManagement>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -59,6 +79,13 @@
     <build>
       <pluginManagement>
         <plugins>
+          <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+               <configuration>
+                    <mainClass>${start-class}</mainClass>
+                </configuration>
+           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
