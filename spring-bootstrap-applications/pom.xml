@@ -82,7 +82,8 @@
           <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-               <configuration>
+                <configuration>
+					<includePluginDependencies>true</includePluginDependencies>
                     <mainClass>${start-class}</mainClass>
                 </configuration>
            </plugin>
@@ -97,6 +98,7 @@
               </dependency>
             </dependencies>
             <configuration>
+              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
               <createDependencyReducedPom>true</createDependencyReducedPom>
               <filters>
                 <filter>

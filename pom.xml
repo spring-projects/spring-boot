@@ -20,10 +20,11 @@
 	<properties>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<dependency.springframework.version>4.0.0.BOOTSTRAP-SNAPSHOT</dependency.springframework.version>
-		<dependency.security.javaconfig.version>1.0.0.CI-SNAPSHOT</dependency.security.javaconfig.version>
-		<dependency.spring.integration.version>2.2.3.RELEASE</dependency.spring.integration.version>
-		<dependency.spring.batch.version>2.2.0.RC1</dependency.spring.batch.version>
+		<spring.version>4.0.0.BOOTSTRAP-SNAPSHOT</spring.version>
+		<spring.security.javaconfig.version>1.0.0.CI-SNAPSHOT</spring.security.javaconfig.version>
+		<spring.integration.version>2.2.3.RELEASE</spring.integration.version>
+		<spring.batch.version>2.2.0.RC1</spring.batch.version>
+        <tomcat.version>7.0.39</tomcat.version>
 	</properties>
 	<repositories>
 		<repository>
@@ -251,17 +252,17 @@
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-core</artifactId>
-				<version>7.0.39</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-logging-juli</artifactId>
-				<version>7.0.39</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-jasper</artifactId>
-				<version>7.0.39</version>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
@@ -317,27 +318,27 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-javaconfig</artifactId>
-				<version>${dependency.security.javaconfig.version}</version>
+				<version>${spring.security.javaconfig.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-aop</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-expression</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
                 <exclusions>
                   <exclusion>
                     <groupId>commons-logging</groupId>
@@ -348,47 +349,47 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-jdbc</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-tx</artifactId>
-				<version>${dependency.springframework.version}</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.batch</groupId>
 				<artifactId>spring-batch-core</artifactId>
-				<version>${dependency.spring.batch.version}</version>
+				<version>${spring.batch.version}</version>
 			</dependency>
             <dependency>
               <groupId>org.springframework.integration</groupId>
               <artifactId>spring-integration-core</artifactId>
-              <version>${dependency.spring.integration.version}</version>
+              <version>${spring.integration.version}</version>
             </dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>

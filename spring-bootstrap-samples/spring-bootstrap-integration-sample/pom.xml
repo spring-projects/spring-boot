@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>org.springframework.integration</groupId>
 			<artifactId>spring-integration-file</artifactId>
-			<version>${dependency.spring.integration.version}</version>
+			<version>${spring.integration.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
