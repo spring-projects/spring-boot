@@ -24,7 +24,6 @@
 		<dependency.security.javaconfig.version>1.0.0.CI-SNAPSHOT</dependency.security.javaconfig.version>
 		<dependency.spring.integration.version>2.2.3.RELEASE</dependency.spring.integration.version>
 		<dependency.spring.batch.version>2.2.0.RC1</dependency.spring.batch.version>
-		<main.basedir>${project.basedir}</main.basedir>
 	</properties>
 	<repositories>
 		<repository>
@@ -126,11 +125,11 @@
 					<additionalConfig>
 						<file>
 							<name>.settings/org.eclipse.jdt.ui.prefs</name>
-							<location>${main.basedir}/eclipse/org.eclipse.jdt.ui.prefs</location>
+							<url>http://static.springsource.org/sts/jdtconfig/org.eclipse.jdt.ui.prefs</url>
 						</file>
 						<file>
 							<name>.settings/org.eclipse.jdt.core.prefs</name>
-							<location>${main.basedir}/eclipse/org.eclipse.jdt.core.prefs</location>
+							<url>http://static.springsource.org/sts/jdtconfig/org.eclipse.jdt.core.prefs</url>
 						</file>
 					</additionalConfig>
 				</configuration>
@@ -288,6 +287,11 @@
             <dependency>
               <groupId>org.eclipse.jetty</groupId>
               <artifactId>jetty-jsp</artifactId>
+              <version>8.1.9.v20130131</version>
+            </dependency>
+            <dependency>
+              <groupId>org.eclipse.jetty</groupId>
+              <artifactId>jetty-annotations</artifactId>
               <version>8.1.9.v20130131</version>
             </dependency>
 			<dependency>

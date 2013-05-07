@@ -10,7 +10,6 @@
 	<artifactId>spring-bootstrap-data-sample</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<main.basedir>${project.basedir}/../..</main.basedir>
 		<start-class>org.springframework.bootstrap.sample.data.DataBootstrapApplication</start-class>
 	</properties>
 	<dependencies>

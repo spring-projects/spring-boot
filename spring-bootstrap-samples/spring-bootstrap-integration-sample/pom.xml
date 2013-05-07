@@ -10,7 +10,6 @@
 	<artifactId>spring-bootstrap-integration-sample</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<main.basedir>${project.basedir}/../..</main.basedir>
 		<start-class>org.springframework.bootstrap.sample.service.IntegrationBootstrapApplication</start-class>
 	</properties>
 	<dependencies>

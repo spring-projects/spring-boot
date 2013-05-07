@@ -12,7 +12,6 @@
 
 	<properties>
 		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>
-		<main.basedir>${project.basedir}/../..</main.basedir>
 	</properties>
 
 	<profiles>

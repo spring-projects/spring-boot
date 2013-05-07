@@ -10,7 +10,6 @@
 	<artifactId>spring-bootstrap-service-sample</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<main.basedir>${project.basedir}/../..</main.basedir>
 		<start-class>org.springframework.bootstrap.sample.service.ServiceBootstrapApplication</start-class>
 	</properties>
 	<profiles>

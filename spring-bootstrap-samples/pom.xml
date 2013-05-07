@@ -9,9 +9,6 @@
 	</parent>
 	<artifactId>spring-bootstrap-samples</artifactId>
 	<packaging>pom</packaging>
-	<properties>
-		<main.basedir>${project.basedir}/..</main.basedir>
-	</properties>
 	<modules>
 		<module>spring-bootstrap-sample</module>
 		<module>spring-bootstrap-data-sample</module>

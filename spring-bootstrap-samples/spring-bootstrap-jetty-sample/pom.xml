@@ -10,7 +10,6 @@
 	<artifactId>spring-bootstrap-jetty-sample</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<main.basedir>${project.basedir}/../..</main.basedir>
 		<start-class>org.springframework.bootstrap.sample.jetty.JettyBootstrapApplication</start-class>
 	</properties>
 	<dependencies>

@@ -9,9 +9,6 @@
 	</parent>
 	<artifactId>spring-bootstrap-sample</artifactId>
 	<packaging>pom</packaging>
-	<properties>
-		<main.basedir>${project.basedir}/../..</main.basedir>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

@@ -10,7 +10,6 @@
 	<artifactId>spring-bootstrap-simple-sample</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<main.basedir>${project.basedir}/../..</main.basedir>
 		<start-class>org.springframework.bootstrap.sample.simple.SimpleBootstrapApplication</start-class>
 	</properties>
 	<dependencies>

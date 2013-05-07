@@ -120,7 +120,6 @@
     </dependency>
   </dependencies>
   <properties>
-    <main.basedir>${project.basedir}/..</main.basedir>
     <start-class>org.springframework.bootstrap.cli.SpringBootstrapCli</start-class>
   </properties>
 </project>

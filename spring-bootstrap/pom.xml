@@ -9,9 +9,6 @@
 	</parent>
 	<artifactId>spring-bootstrap</artifactId>
 	<packaging>jar</packaging>
-	<properties>
-		<main.basedir>${project.basedir}/..</main.basedir>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
