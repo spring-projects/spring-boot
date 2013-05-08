@@ -9,6 +9,8 @@
 	<artifactId>spring-bootstrap-starters</artifactId>
 	<packaging>pom</packaging>
 	<properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring.bootstrap.version>0.5.0.BUILD-SNAPSHOT</spring.bootstrap.version>
         <start-class>org.springframework.bootstrap.main.Spring</start-class>
 	</properties>
