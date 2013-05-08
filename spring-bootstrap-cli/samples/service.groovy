@@ -1,6 +1,6 @@
 package org.test
 
-@Grab("org.springframework.bootstrap:spring-bootstrap-service:0.0.1-SNAPSHOT")
+@Grab("org.springframework.bootstrap:spring-bootstrap-actuator:0.5.0.BUILD-SNAPSHOT")
 
 @Controller
 class SampleController {

@@ -44,7 +44,7 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses(
 				"org.springframework.bootstrap.SpringApplication").add(
-				"org.springframework.bootstrap", "spring-bootstrap", "0.0.1-SNAPSHOT");
+				"org.springframework.bootstrap", "spring-bootstrap", "0.5.0.BUILD-SNAPSHOT");
 		dependencies.ifAnyResourcesPresent("logback.xml").add("ch.qos.logback",
 				"logback-classic", "1.0.7");
 		dependencies.ifNotAdded("cg.qos.logback", "logback-classic")
