@@ -26,24 +26,90 @@
 		<spring.batch.version>2.2.0.RC1</spring.batch.version>
         <tomcat.version>7.0.39</tomcat.version>
 	</properties>
-	<repositories>
-		<repository>
+    <profiles>
+		<profile>
+			<id>staging</id>
+			<distributionManagement>
+				<site>
+					<id>spring-site-staging</id>
+					<url>file:///${java.io.tmpdir}/spring-retry/docs</url>
+				</site>
+				<repository>
+					<id>spring-milestone-staging</id>
+					<url>file:///${java.io.tmpdir}/spring-retry/milestone</url>
+				</repository>
+				<snapshotRepository>
+					<id>spring-snapshot-staging</id>
+					<url>file:///${java.io.tmpdir}/spring-retry/snapshot</url>
+				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>milestone</id>
+			<distributionManagement>
+			  <repository>
+				<id>spring-milestone</id>
+				<name>Spring Milestone Repository</name>
+				<url>s3://maven.springframework.org/milestone</url>
+			  </repository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>central</id>
+			<distributionManagement>
+			  <snapshotRepository>
+				<id>sonatype-nexus-snapshots</id>
+				<name>Sonatype Nexus Snapshots</name>
+				<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			  </snapshotRepository>
+			  <repository>
+				<id>sonatype-nexus-staging</id>
+				<name>Nexus Release Repository</name>
+				<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			  </repository>
+			</distributionManagement>
+			<build>
+			  <plugins>
+				<plugin>
+				  <groupId>org.apache.maven.plugins</groupId>
+				  <artifactId>maven-gpg-plugin</artifactId>
+				  <executions>
+					<execution>
+					  <id>sign-artifacts</id>
+					  <phase>verify</phase>
+					  <goals>
+						<goal>sign</goal>
+					  </goals>
+					</execution>
+				  </executions>
+				</plugin>
+			  </plugins>
+			</build>
+		</profile>
+      <profile>
+        <id>bootstrap</id>
+        <!-- deactivate when released -->
+        <activation><activeByDefault>true</activeByDefault></activation>
+        <repositories>
+          <repository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>
 			<url>http://maven.springframework.org/snapshot</url>
 			<snapshots>
-				<enabled>true</enabled>
+              <enabled>true</enabled>
 			</snapshots>
-		</repository>
-		<repository>
+          </repository>
+          <repository>
 			<id>spring-milestones</id>
 			<name>Spring Milestones</name>
 			<url>http://maven.springframework.org/milestone</url>
 			<snapshots>
-				<enabled>false</enabled>
+              <enabled>false</enabled>
 			</snapshots>
-		</repository>
-	</repositories>
+          </repository>
+        </repositories>
+      </profile>
+	</profiles>
 	<build>
 		<pluginManagement>
 			<plugins>
