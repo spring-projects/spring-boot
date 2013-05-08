@@ -23,8 +23,8 @@ import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.util.Assert;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * Jetty {@link Configuration} that calls {@link ServletContextInitializer}s.

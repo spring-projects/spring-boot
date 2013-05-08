@@ -18,7 +18,6 @@ package org.springframework.bootstrap.autoconfigure.jdbc;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -32,7 +31,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.core.task.AsyncUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -56,8 +54,6 @@ public class EmbeddedDatabaseAutoConfiguration {
 		EMBEDDED_DATABASE_TYPE_CLASSES.put(EmbeddedDatabaseType.HSQL,
 				"org.hsqldb.Database");
 	}
-
-	private ExecutorService executorService;
 
 	// FIXME: DB platform
 	@Value("${spring.jdbc.schema:classpath*:schema.sql}")
@@ -83,7 +79,7 @@ public class EmbeddedDatabaseAutoConfiguration {
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
 				.setType(getEmbeddedDatabaseType());
-		return AsyncUtils.submitVia(this.executorService, builder).build();
+		return builder.build();
 	}
 
 	public static EmbeddedDatabaseType getEmbeddedDatabaseType() {

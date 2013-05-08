@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.springframework.util.Assert;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Servlet}s in a Servlet 3.0+

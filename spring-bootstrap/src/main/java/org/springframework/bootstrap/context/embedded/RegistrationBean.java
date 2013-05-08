@@ -23,7 +23,6 @@ import javax.servlet.Registration;
 
 import org.springframework.core.Conventions;
 import org.springframework.util.Assert;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * Base class for {@link ServletRegistrationBean servlet} and

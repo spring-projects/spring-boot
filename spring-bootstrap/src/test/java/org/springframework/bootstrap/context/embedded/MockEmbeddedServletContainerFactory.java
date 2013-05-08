@@ -38,7 +38,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * Mock {@link EmbeddedServletContainerFactory}.

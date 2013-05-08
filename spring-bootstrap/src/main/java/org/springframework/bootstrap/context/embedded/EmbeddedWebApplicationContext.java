@@ -40,7 +40,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.Resource;
-import org.springframework.web.ServletContextInitializer;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.ServletContextAware;
@@ -48,7 +47,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.context.support.ServletContextAwareProcessor;
 import org.springframework.web.context.support.ServletContextResource;
-import org.springframework.web.context.support.WebApplicationContextServletContextAwareProcessor;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**

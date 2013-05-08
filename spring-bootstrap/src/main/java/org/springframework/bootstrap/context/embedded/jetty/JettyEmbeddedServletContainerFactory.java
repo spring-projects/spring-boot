@@ -37,12 +37,12 @@ import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmptyEmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
+import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create

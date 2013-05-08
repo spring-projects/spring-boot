@@ -44,7 +44,6 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.ServletContextInitializer;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;

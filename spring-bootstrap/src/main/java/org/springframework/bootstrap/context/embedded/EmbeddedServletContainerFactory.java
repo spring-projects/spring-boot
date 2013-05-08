@@ -18,7 +18,6 @@ package org.springframework.bootstrap.context.embedded;
 
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * Factory interface that can be used to create {@link EmbeddedServletContainer}s.

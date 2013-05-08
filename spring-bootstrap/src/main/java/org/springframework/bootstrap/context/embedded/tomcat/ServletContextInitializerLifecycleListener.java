@@ -22,8 +22,8 @@ import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
+import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.util.Assert;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * Tomcat {@link LifecycleListener} that calls {@link ServletContextInitializer}s.

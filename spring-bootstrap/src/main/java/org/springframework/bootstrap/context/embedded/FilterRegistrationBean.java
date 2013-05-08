@@ -29,7 +29,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.springframework.util.Assert;
-import org.springframework.web.ServletContextInitializer;
 
 /**
  * A {@link ServletContextInitializer} to register {@link Filter}s in a Servlet 3.0+

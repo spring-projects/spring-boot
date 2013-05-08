@@ -37,7 +37,6 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
-import org.springframework.web.ServletContextInitializer;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
