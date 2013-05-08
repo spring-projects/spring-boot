@@ -120,7 +120,7 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	public void serviceSample() throws Exception {
+	public void actuatorSample() throws Exception {
 		start("samples/service.groovy");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
 				.openStream());

@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
-import org.springframework.bootstrap.service.properties.EndpointsProperties;
+import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
