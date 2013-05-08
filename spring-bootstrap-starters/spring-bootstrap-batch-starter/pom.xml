@@ -4,16 +4,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.bootstrap</groupId>
-		<artifactId>spring-bootstrap-applications</artifactId>
+		<artifactId>spring-bootstrap-starters</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-bootstrap-integration-application</artifactId>
+	<artifactId>spring-bootstrap-batch-starter</artifactId>
 	<packaging>pom</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-bootstrap-application</artifactId>
+			<artifactId>spring-bootstrap-starter</artifactId>
 			<version>${project.version}</version>
+			<type>pom</type>
 		</dependency>
 	</dependencies>
 </project>

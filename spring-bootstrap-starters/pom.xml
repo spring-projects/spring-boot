@@ -7,18 +7,18 @@
 		<artifactId>spring-bootstrap-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-bootstrap-applications</artifactId>
+	<artifactId>spring-bootstrap-starters</artifactId>
 	<packaging>pom</packaging>
 	<properties>
         <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
         <start-class>org.springframework.bootstrap.main.Spring</start-class>
 	</properties>
 	<modules>
-		<module>spring-bootstrap-application</module>
-		<module>spring-bootstrap-batch-application</module>
-		<module>spring-bootstrap-integration-application</module>
-		<module>spring-bootstrap-jpa-application</module>
-		<module>spring-bootstrap-web-application</module>
+		<module>spring-bootstrap-starter</module>
+		<module>spring-bootstrap-batch-starter</module>
+		<module>spring-bootstrap-integration-starter</module>
+		<module>spring-bootstrap-jpa-starter</module>
+		<module>spring-bootstrap-web-starter</module>
 	</modules>
     <dependencyManagement>
       <dependencies>
@@ -34,22 +34,22 @@
         </dependency>
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-web-application</artifactId>
+          <artifactId>spring-bootstrap-web-starter</artifactId>
           <version>${spring.bootstrap.version}</version>
         </dependency>
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-jpa-application</artifactId>
+          <artifactId>spring-bootstrap-jpa-starter</artifactId>
           <version>${spring.bootstrap.version}</version>
         </dependency>
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-batch-application</artifactId>
+          <artifactId>spring-bootstrap-batch-starter</artifactId>
           <version>${spring.bootstrap.version}</version>
         </dependency>
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-integration-application</artifactId>
+          <artifactId>spring-bootstrap-integration-starter</artifactId>
           <version>${spring.bootstrap.version}</version>
         </dependency>
       </dependencies>
