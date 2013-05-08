@@ -16,6 +16,8 @@
 
 package org.springframework.bootstrap.actuate.properties;
 
+import java.net.InetAddress;
+
 import javax.validation.constraints.NotNull;
 
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
@@ -29,6 +31,8 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 public class ManagementServerProperties {
 
 	private int port = 8080;
+
+	private InetAddress address;
 
 	@NotNull
 	private String contextPath = "";
@@ -49,6 +53,14 @@ public class ManagementServerProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(InetAddress address) {
+		this.address = address;
 	}
 
 	public String getContextPath() {

@@ -104,6 +104,7 @@ public class ManagementServerConfiguration implements BeanPostProcessor {
 
 				AbstractEmbeddedServletContainerFactory factory = (AbstractEmbeddedServletContainerFactory) bean;
 				factory.setPort(this.configuration.getPort());
+				factory.setAddress(this.configuration.getAddress());
 				factory.setContextPath(this.configuration.getContextPath());
 
 				factory.setErrorPages(Collections

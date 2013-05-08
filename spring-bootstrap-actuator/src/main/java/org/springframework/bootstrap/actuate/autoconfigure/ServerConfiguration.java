@@ -96,6 +96,7 @@ public class ServerConfiguration implements BeanPostProcessor, BeanFactoryAware 
 
 				AbstractEmbeddedServletContainerFactory factory = (AbstractEmbeddedServletContainerFactory) bean;
 				factory.setPort(server.getPort());
+				factory.setAddress(server.getAddress());
 				factory.setContextPath(server.getContextPath());
 
 				if (factory instanceof TomcatEmbeddedServletContainerFactory) {

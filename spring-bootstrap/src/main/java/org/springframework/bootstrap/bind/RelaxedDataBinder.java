@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.bind;
 
+import java.net.InetAddress;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,9 @@ public class RelaxedDataBinder extends DataBinder {
 	@Override
 	protected void doBind(MutablePropertyValues propertyValues) {
 		propertyValues = modifyProperties(propertyValues, getTarget());
+		// Harmless additional property editor comes in very handy sometimes...
+		getPropertyEditorRegistry().registerCustomEditor(InetAddress.class,
+				new InetAddressEditor());
 		super.doBind(propertyValues);
 	}
 

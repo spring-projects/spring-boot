@@ -36,6 +36,7 @@ import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardService;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
+import org.apache.coyote.AbstractProtocol;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
@@ -121,7 +122,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		} else {
 			Connector connector = new Connector(
 					"org.apache.coyote.http11.Http11NioProtocol");
-			connector.setPort(getPort());
+			customizeConnector(connector);
 			this.tomcat.getService().addConnector(connector);
 			this.tomcat.setConnector(connector);
 		}
@@ -179,6 +180,14 @@ public class TomcatEmbeddedServletContainerFactory extends
 		context.addChild(jspServlet);
 		context.addServletMapping("*.jsp", "jsp");
 		context.addServletMapping("*.jspx", "jsp");
+	}
+
+	private void customizeConnector(Connector connector) {
+		connector.setPort(getPort());
+		if (connector.getProtocolHandler() instanceof AbstractProtocol
+				&& getAddress() != null) {
+			((AbstractProtocol) connector.getProtocolHandler()).setAddress(getAddress());
+		}
 	}
 
 	/**
@@ -339,8 +348,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 				}
 				StandardService service = new StandardService();
 				service.setName(name);
-				Connector connector = new Connector("HTTP/1.1");
-				connector.setPort(getPort());
+				Connector connector = new Connector(
+						"org.apache.coyote.http11.Http11NioProtocol");
+				customizeConnector(connector);
 				service.addConnector(connector);
 				StandardEngine engine = new StandardEngine();
 				engine.setName(name);

@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.context.embedded;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -55,6 +56,8 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	private File documentRoot;
 
 	private Set<ErrorPage> errorPages = new LinkedHashSet<ErrorPage>();
+
+	private InetAddress address;
 
 	/**
 	 * Create a new {@link AbstractEmbeddedServletContainerFactory} instance.
@@ -130,6 +133,22 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 */
 	public int getPort() {
 		return this.port;
+	}
+
+	/**
+	 * If you need the server to bind to a specific network address, provide one here.
+	 * 
+	 * @param address the address to set (defaults to null)
+	 */
+	public void setAddress(InetAddress address) {
+		this.address = address;
+	}
+
+	/**
+	 * @return the address the embedded container binds to
+	 */
+	public InetAddress getAddress() {
+		return this.address;
 	}
 
 	/**

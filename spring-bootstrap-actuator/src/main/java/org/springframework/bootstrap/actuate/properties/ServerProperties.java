@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.actuate.properties;
 
 import java.io.File;
+import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,6 +32,8 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 public class ServerProperties {
 
 	private int port = 8080;
+
+	private InetAddress address;
 
 	@NotNull
 	private String contextPath = "";
@@ -55,6 +58,14 @@ public class ServerProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(InetAddress address) {
+		this.address = address;
 	}
 
 	public static class Tomcat {

@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.context.embedded.jetty;
 
 import java.io.File;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -98,7 +99,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (getPort() == 0) {
 			return new EmptyEmbeddedServletContainer();
 		}
-		Server server = new Server(getPort());
+		Server server = new Server(new InetSocketAddress(getAddress(), getPort()));
 
 		WebAppContext context = new WebAppContext();
 		if (this.resourceLoader != null) {
