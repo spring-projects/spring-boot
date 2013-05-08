@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
  * Basic integration tests for service demo application.
  * 
  * @author Dave Syer
- * 
  */
 public class DataBootstrapApplicationTests {
 

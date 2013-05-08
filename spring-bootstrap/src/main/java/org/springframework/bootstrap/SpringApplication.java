@@ -389,6 +389,7 @@ public class SpringApplication {
 	/**
 	 * Load beans into the application context.
 	 * @param context the context to load beans into
+	 * @param sources the sources to load
 	 */
 	protected void load(ApplicationContext context, Object[] sources) {
 		Assert.isInstanceOf(BeanDefinitionRegistry.class, context);
@@ -408,6 +409,9 @@ public class SpringApplication {
 
 	/**
 	 * Factory method used to create the {@link BeanDefinitionLoader}.
+	 * @param registry the bean definition registry
+	 * @param sources the sources to load
+	 * @return the {@link BeanDefinitionLoader} that will be used to load beans
 	 */
 	protected BeanDefinitionLoader createBeanDefinitionLoader(
 			BeanDefinitionRegistry registry, Object[] sources) {
@@ -439,6 +443,7 @@ public class SpringApplication {
 	/**
 	 * Sets if this application is running within a web environment. If not specified will
 	 * attempt to deduce the environment based on the classpath.
+	 * @param webEnvironment if the application is running in a web environment
 	 */
 	public void setWebEnvironment(boolean webEnvironment) {
 		this.webEnvironment = webEnvironment;
@@ -447,6 +452,7 @@ public class SpringApplication {
 	/**
 	 * Sets if the Spring banner should be displayed when the application runs. Defaults
 	 * to {@code true}.
+	 * @param showBanner if the banner should be shown
 	 * @see #printBanner()
 	 */
 	public void setShowBanner(boolean showBanner) {
@@ -456,6 +462,7 @@ public class SpringApplication {
 	/**
 	 * Sets if a {@link CommandLinePropertySource} should be added to the application
 	 * context in order to expose arguments. Defaults to {@code true}.
+	 * @param addCommandLineProperties if command line arguments should be exposed
 	 */
 	public void setAddCommandLineProperties(boolean addCommandLineProperties) {
 		this.addCommandLineProperties = addCommandLineProperties;
@@ -472,6 +479,7 @@ public class SpringApplication {
 
 	/**
 	 * Sets the bean name generator that should be used when generating bean names.
+	 * @param beanNameGenerator the bean name generator
 	 */
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.beanNameGenerator = beanNameGenerator;
@@ -479,6 +487,7 @@ public class SpringApplication {
 
 	/**
 	 * Sets the underlying environment that should be used when loading.
+	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		this.environment = environment;
@@ -486,6 +495,7 @@ public class SpringApplication {
 
 	/**
 	 * Sets the {@link ResourceLoader} that should be used when loading resources.
+	 * @param resourceLoader the resource loader
 	 */
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
@@ -517,6 +527,8 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Sets the {@link ApplicationContextInitializer} that will be applied to the Spring
+	 * {@link ApplicationContext}. Any existing initializers will be replaced.
 	 * @param initializers the initializers to set
 	 */
 	public void setInitializers(
@@ -525,13 +537,17 @@ public class SpringApplication {
 	}
 
 	/**
-	 * @param initializers
+	 * Add {@link ApplicationContextInitializer}s to be applied to the Spring
+	 * {@link ApplicationContext} .
+	 * @param initializers the initializers to add
 	 */
 	public void addInitializers(ApplicationContextInitializer<?>... initializers) {
 		this.initializers.addAll(Arrays.asList(initializers));
 	}
 
 	/**
+	 * Returns a mutable list of the {@link ApplicationContextInitializer}s that will be
+	 * applied to the Spring {@link ApplicationContext}.
 	 * @return the initializers
 	 */
 	public List<ApplicationContextInitializer<?>> getInitializers() {

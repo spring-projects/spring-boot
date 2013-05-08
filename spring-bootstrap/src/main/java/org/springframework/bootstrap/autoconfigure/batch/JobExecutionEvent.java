@@ -27,7 +27,7 @@ public class JobExecutionEvent extends ApplicationEvent {
 	private JobExecution execution;
 
 	/**
-	 * @param execution
+	 * @param execution the job execution
 	 */
 	public JobExecutionEvent(JobExecution execution) {
 		super(execution);

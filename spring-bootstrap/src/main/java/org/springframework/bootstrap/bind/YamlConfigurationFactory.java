@@ -71,6 +71,7 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 	/**
 	 * Sets a validation constructor which will be applied to the YAML doc to see whether
 	 * it matches the expected Javabean.
+	 * @param type the root type
 	 */
 	public YamlConfigurationFactory(Class<?> type) {
 		Assert.notNull(type);

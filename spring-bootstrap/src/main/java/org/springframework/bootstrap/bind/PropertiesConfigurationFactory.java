@@ -97,7 +97,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	 * <p>
 	 * Default is "true". Turn this off to enforce that all bind parameters must have a
 	 * matching field in the target object.
-	 * <p>
+	 * @param ignoreUnknownFields if unknown fields should be ignored
 	 */
 	public void setIgnoreUnknownFields(boolean ignoreUnknownFields) {
 		this.ignoreUnknownFields = ignoreUnknownFields;
@@ -110,14 +110,14 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	 * <p>
 	 * Default is "false". Turn this on to ignore bind parameters for nested objects in
 	 * non-existing parts of the target object graph.
-	 * <p>
+	 * @param ignoreInvalidFields if invalid fields should be ignored
 	 */
 	public void setIgnoreInvalidFields(boolean ignoreInvalidFields) {
 		this.ignoreInvalidFields = ignoreInvalidFields;
 	}
 
 	/**
-	 * @param targetName
+	 * @param targetName the target name to set
 	 */
 	public void setTargetName(String targetName) {
 		this.targetName = targetName;
