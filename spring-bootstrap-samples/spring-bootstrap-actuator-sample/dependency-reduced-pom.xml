@@ -3,7 +3,7 @@
   <parent>
     <artifactId>spring-bootstrap-samples</artifactId>
     <groupId>org.springframework.bootstrap</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.5.0.BUILD-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>spring-bootstrap-actuator-sample</artifactId>

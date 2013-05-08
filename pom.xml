@@ -55,14 +55,14 @@
 			</url>
 		</site>
 		<repository>
-			<id>spring-release</id>
+			<id>spring-repo-release</id>
 			<name>Spring Release Repository</name>
-			<url>s3://maven.springframework.org/release</url>
+			<url>http://repo.springsource.org/libs-release-local</url>
 		</repository>
 		<snapshotRepository>
-			<id>spring-snapshot</id>
+			<id>spring-repo-snapshot</id>
 			<name>Spring Snapshot Repository</name>
-			<url>s3://maven.springframework.org/snapshot</url>
+			<url>http://repo.springsource.org/libs-snapshot-local</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -88,9 +88,9 @@
 			<id>milestone</id>
 			<distributionManagement>
 			  <repository>
-				<id>spring-milestone</id>
+				<id>spring-repo-milestone</id>
 				<name>Spring Milestone Repository</name>
-				<url>s3://maven.springframework.org/milestone</url>
+				<url>https://repo.springsource.org/libs-milestone-local</url>
 			  </repository>
 			</distributionManagement>
 		</profile>
@@ -213,6 +213,10 @@
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
 					<version>2.9</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-exec-plugin</artifactId>
+					<version>1.2.1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
