@@ -67,7 +67,7 @@ public class BootstrapRunner {
 	/**
 	 * Compile and run the application. This method is synchronized as it can be called by
 	 * file monitoring threads.
-	 * @throws Exception
+	 * @throws Exception on error
 	 */
 	public synchronized void compileAndRun() throws Exception {
 		try {

@@ -31,7 +31,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.SourceUnit;
 
 /**
- * Extension of the {@link GroovyClassLoader} that support for obtaining '.class' files as
+ * Extension of the {@link GroovyClassLoader} with support for obtaining '.class' files as
  * resources.
  * 
  * @author Phillip Webb

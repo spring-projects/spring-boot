@@ -34,7 +34,7 @@ import org.springframework.bootstrap.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Bootstrap.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
