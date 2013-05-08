@@ -30,7 +30,6 @@ import ch.qos.logback.core.joran.spi.JoranException;
  * Logging initializer for <a href="http://logback.qos.ch">logback</a>.
  * 
  * @author Dave Syer
- * 
  */
 public abstract class LogbackConfigurer {
 

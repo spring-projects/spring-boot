@@ -26,7 +26,6 @@ import org.springframework.util.SystemPropertyUtils;
  * Logging initializer for {@link Logger java.util.logging}.
  * 
  * @author Dave Syer
- * 
  */
 public abstract class JavaLoggerConfigurer {
 

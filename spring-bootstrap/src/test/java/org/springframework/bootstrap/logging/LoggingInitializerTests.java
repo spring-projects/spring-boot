@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dave Syer
- * 
  */
 public class LoggingInitializerTests {
 

@@ -13,29 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.logging;
 
 import java.lang.management.ManagementFactory;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.Log4jConfigurer;
 
 /**
- * <p>
  * An {@link ApplicationContextInitializer} that configures a logging framework depending
  * on what it finds on the classpath and in the {@link Environment}. If the environment
  * contains a property <code>logging.config</code> then that will be used to initialize
  * the logging system, otherwise a default location is used. The classpath is probed for
  * log4j and logback and if those are present they will be reconfigured, otherwise vanilla
- * <code>java.util.logging</code> will be used.
- * </p>
+ * <code>java.util.logging</code> will be used. </p>
  * 
  * <p>
  * The default config locations are <code>classpath:log4j.properties</code> or
@@ -57,11 +58,20 @@ import org.springframework.util.Log4jConfigurer;
  * <li><code>PID</code> is set to the value of the current process ID if it can be
  * determined</li>
  * </ul>
- * @author Dave Syer
  * 
+ * @author Dave Syer
+ * @author Phillip Webb
  */
 public class LoggingInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+
+	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
+	static {
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING = new HashMap<String, String>();
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.file", "LOG_FILE");
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.path", "LOG_PATH");
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("PID", "PID");
+	}
 
 	private int order = Integer.MIN_VALUE + 1;
 
@@ -72,94 +82,22 @@ public class LoggingInitializer implements
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 
-		String configLocation = getDefaultConfigLocation();
-
 		ConfigurableEnvironment environment = applicationContext.getEnvironment();
 
-		if (environment.containsProperty("logging.config")) {
-			configLocation = environment.getProperty("logging.config");
+		for (Map.Entry<String, String> mapping : ENVIRONMENT_SYSTEM_PROPERTY_MAPPING
+				.entrySet()) {
+			if (environment.containsProperty(mapping.getKey())) {
+				System.setProperty(mapping.getValue(),
+						environment.getProperty(mapping.getKey()));
+			}
 		}
 
-		if (environment.containsProperty("logging.file")) {
-			String location = environment.getProperty("logging.file");
-			System.setProperty("LOG_FILE", location);
-		}
-
-		if (environment.containsProperty("logging.path")) {
-			String location = environment.getProperty("logging.path");
-			System.setProperty("LOG_PATH", location);
-		}
-
-		if (!environment.containsProperty("PID")) {
+		if (System.getProperty("PID") == null) {
 			System.setProperty("PID", getPid());
 		}
 
-		initLogging(applicationContext, configLocation);
-
-	}
-
-	private void initLogging(ResourceLoader resourceLoader, String configLocation) {
-		try {
-			if (isLog4jPresent()) {
-				Log4jConfigurer.initLogging(configLocation);
-			} else {
-				if (isLogbackPresent()) {
-					LogbackConfigurer.initLogging(configLocation);
-				} else {
-					JavaLoggerConfigurer.initLogging(configLocation);
-				}
-			}
-		} catch (RuntimeException e) {
-			throw e;
-
-		} catch (Exception e) {
-			throw new IllegalStateException("Cannot initialize logging from "
-					+ configLocation, e);
-		}
-	}
-
-	private boolean isLogbackPresent() {
-		return ClassUtils.isPresent("ch.qos.logback.core.Appender",
-				ClassUtils.getDefaultClassLoader());
-	}
-
-	private boolean isLog4jPresent() {
-		return ClassUtils.isPresent("org.apache.log4j.PropertyConfigurator",
-				ClassUtils.getDefaultClassLoader());
-	}
-
-	private String getDefaultConfigLocation() {
-
-		String defaultPath = ClassUtils.getPackageName(LoggingInitializer.class).replace(
-				".", "/")
-				+ "/";
-
-		if (isLog4jPresent()) {
-			String path = "log4j.xml";
-			if (!new ClassPathResource(path).exists()) {
-				path = "log4j.properties";
-				if (!new ClassPathResource(path).exists()) {
-					path = defaultPath + path;
-				}
-			}
-			return "classpath:" + path;
-		}
-
-		if (isLogbackPresent()) {
-			String path = "logback.xml";
-			if (!new ClassPathResource(path).exists()) {
-				path = defaultPath + path;
-			}
-			return "classpath:" + path;
-		}
-
-		String path = "logging.properties";
-		if (!new ClassPathResource(path).exists()) {
-			path = defaultPath + path;
-		}
-
-		return "classpath:" + path;
-
+		LoggingSystem system = LoggingSystem.get(applicationContext.getClassLoader());
+		system.init(applicationContext);
 	}
 
 	private String getPid() {
@@ -178,4 +116,104 @@ public class LoggingInitializer implements
 	public int getOrder() {
 		return this.order;
 	}
+
+	private static enum LoggingSystem {
+
+		/**
+		 * Log4J
+		 */
+		LOG4J("org.apache.log4j.PropertyConfigurator", "log4j.xml", "log4j.properties") {
+
+			@Override
+			protected void doInit(ApplicationContext applicationContext,
+					String configLocation) throws Exception {
+				Log4jConfigurer.initLogging(configLocation);
+			}
+		},
+
+		/**
+		 * Logback
+		 */
+		LOGBACK("ch.qos.logback.core.Appender", "logback.xml") {
+
+			@Override
+			protected void doInit(ApplicationContext applicationContext,
+					String configLocation) throws Exception {
+				LogbackConfigurer.initLogging(configLocation);
+			}
+		},
+
+		/**
+		 * Java Util Logging
+		 */
+		JAVA(null, "logging.properties") {
+
+			@Override
+			protected void doInit(ApplicationContext applicationContext,
+					String configLocation) throws Exception {
+				JavaLoggerConfigurer.initLogging(configLocation);
+			}
+		};
+
+		private final String className;
+
+		private final String[] paths;
+
+		private LoggingSystem(String className, String... paths) {
+			this.className = className;
+			this.paths = paths;
+		}
+
+		public void init(ApplicationContext applicationContext) {
+			String configLocation = getConfigLocation(applicationContext);
+			try {
+				doInit(applicationContext, configLocation);
+			} catch (RuntimeException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new IllegalStateException("Cannot initialize logging from "
+						+ configLocation, ex);
+			}
+
+		}
+
+		protected abstract void doInit(ApplicationContext applicationContext,
+				String configLocation) throws Exception;
+
+		private String getConfigLocation(ApplicationContext applicationContext) {
+			Environment environment = applicationContext.getEnvironment();
+			ClassLoader classLoader = applicationContext.getClassLoader();
+
+			// User specified config
+			if (environment.containsProperty("logging.config")) {
+				return environment.getProperty("logging.config");
+			}
+
+			// Common patterns
+			for (String path : this.paths) {
+				ClassPathResource resource = new ClassPathResource(path, classLoader);
+				if (resource.exists()) {
+					return "classpath:" + path;
+				}
+			}
+
+			// Fallback to the default
+			String defaultPath = ClassUtils.getPackageName(LoggingInitializer.class);
+			defaultPath = defaultPath.replace(".", "/");
+			defaultPath = defaultPath + "/" + this.paths[this.paths.length - 1];
+			return "classpath:" + defaultPath;
+		}
+
+		public static LoggingSystem get(ClassLoader classLoader) {
+			for (LoggingSystem loggingSystem : values()) {
+				String className = loggingSystem.className;
+				if (className == null || ClassUtils.isPresent(className, classLoader)) {
+					return loggingSystem;
+				}
+			}
+			return JAVA;
+		}
+
+	}
+
 }
