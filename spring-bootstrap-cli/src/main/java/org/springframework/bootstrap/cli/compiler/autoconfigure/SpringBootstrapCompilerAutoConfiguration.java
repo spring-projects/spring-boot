@@ -50,10 +50,12 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 		dependencies.ifNotAdded("cg.qos.logback", "logback-classic")
 				.ifAnyResourcesPresent("log4j.properties", "log4j.xml")
 				.add("org.slf4j", "slf4j-log4j12", "1.7.1")
-				.add("log4j", "log4j", "1.2.16");
+				.add("log4j", "log4j", "1.2.16")
+				.add("org.slf4j", "jcl-over-slf4j", "1.7.1");
 		dependencies.ifNotAdded("ch.qos.logback", "logback-classic")
 				.ifNotAdded("org.slf4j", "slf4j-log4j12")
-				.add("org.slf4j", "slf4j-jdk14", "1.7.1");
+				.add("org.slf4j", "slf4j-jdk14", "1.7.1")
+				.add("org.slf4j", "jcl-over-slf4j", "1.7.1");
 		// FIXME get the version
 	}
 
