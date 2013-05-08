@@ -9,7 +9,7 @@
 	<artifactId>spring-bootstrap-starters</artifactId>
 	<packaging>pom</packaging>
 	<properties>
-        <spring.bootstrap.version>0.0.1-SNAPSHOT</spring.bootstrap.version>
+        <spring.bootstrap.version>0.5.0.BUILD-SNAPSHOT</spring.bootstrap.version>
         <start-class>org.springframework.bootstrap.main.Spring</start-class>
 	</properties>
 	<modules>
