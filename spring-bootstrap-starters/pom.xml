@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-service</artifactId>
+          <artifactId>spring-bootstrap-actuator</artifactId>
           <version>${spring.bootstrap.version}</version>
         </dependency>
         <dependency>

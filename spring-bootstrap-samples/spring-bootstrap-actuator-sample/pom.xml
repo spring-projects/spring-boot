@@ -7,7 +7,7 @@
 		<artifactId>spring-bootstrap-samples</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-bootstrap-service-sample</artifactId>
+	<artifactId>spring-bootstrap-actuator-sample</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<start-class>org.springframework.bootstrap.sample.service.ServiceBootstrapApplication</start-class>
@@ -89,7 +89,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-bootstrap-service</artifactId>
+			<artifactId>spring-bootstrap-actuator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

@@ -6,7 +6,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>spring-bootstrap-service-sample</artifactId>
+  <artifactId>spring-bootstrap-actuator-sample</artifactId>
   <build>
     <plugins>
       <plugin>

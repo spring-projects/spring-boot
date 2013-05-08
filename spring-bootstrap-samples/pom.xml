@@ -16,7 +16,7 @@
 		<module>spring-bootstrap-simple-sample</module>
 		<module>spring-bootstrap-tomcat-sample</module>
 		<module>spring-bootstrap-profile-sample</module>
-		<module>spring-bootstrap-service-sample</module>
+		<module>spring-bootstrap-actuator-sample</module>
 		<module>spring-bootstrap-trad-sample</module>
 		<module>spring-bootstrap-xml-sample</module>
 	</modules>

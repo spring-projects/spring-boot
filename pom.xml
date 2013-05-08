@@ -11,7 +11,7 @@
 	</prerequisites>
 	<modules>
 		<module>spring-bootstrap</module>
-		<module>spring-bootstrap-service</module>
+		<module>spring-bootstrap-actuator</module>
 		<module>spring-bootstrap-starters</module>
 		<module>spring-bootstrap-launcher</module>
 		<module>spring-bootstrap-samples</module>
