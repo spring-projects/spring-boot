@@ -27,9 +27,8 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Externalized configuration for server properties
- * 
+ *
  * @author Dave Syer
- * 
  */
 public class ServerPropertiesTests {
 
@@ -41,7 +40,7 @@ public class ServerPropertiesTests {
 		binder.bind(new MutablePropertyValues(Collections.singletonMap("server.address",
 				"127.0.0.1")));
 		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(InetAddress.getLocalHost(), this.properties.getAddress());
+		assertEquals(InetAddress.getByName("127.0.0.1"), this.properties.getAddress());
 	}
 
 	@Test
