@@ -579,46 +579,56 @@ public class SpringApplication {
 	/**
 	 * Static helper that can be used to exit a {@link SpringApplication} and obtain a
 	 * code indicating success (0) or otherwise. Does not throw exceptions but should
-	 * print stack traces of any encountered.
+	 * print stack traces of any encountered. Applies the specified
+	 * {@link ExitCodeGenerator} in addition to any Spring beans that implement
+	 * {@link ExitCodeGenerator}. In the case of multiple exit codes the highest value
+	 * will be used (or if all values are negative, the lowest value will be used)
 	 * @param context the context to close if possible
+	 * @param exitCodeGenerators exist code generators
 	 * @return the outcome (0 if successful)
 	 */
 	public static int exit(ApplicationContext context,
 			ExitCodeGenerator... exitCodeGenerators) {
-
-		int code = 0;
-
-		List<ExitCodeGenerator> exiters = new ArrayList<ExitCodeGenerator>(
-				Arrays.asList(exitCodeGenerators));
-
+		int exitCode = 0;
 		try {
-
-			exiters.addAll(context.getBeansOfType(ExitCodeGenerator.class).values());
-
-			for (ExitCodeGenerator exiter : exiters) {
-				try {
-					int value = exiter.getExitCode();
-					if (value > code || value < 0 && value < code) {
-						code = value;
-					}
-				} catch (Exception e) {
-					code = code == 0 ? 1 : code;
-					e.printStackTrace();
-				}
-			}
-
-			if (context instanceof ConfigurableApplicationContext) {
-				ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;
-				closable.close();
+			try {
+				List<ExitCodeGenerator> generators = new ArrayList<ExitCodeGenerator>();
+				generators.addAll(Arrays.asList(exitCodeGenerators));
+				generators.addAll(context.getBeansOfType(ExitCodeGenerator.class)
+						.values());
+				exitCode = getExitCode(generators);
+			} finally {
+				close(context);
 			}
 
 		} catch (Exception e) {
-			code = code == 0 ? 1 : code;
 			e.printStackTrace();
+			exitCode = (exitCode == 0 ? 1 : exitCode);
 		}
+		return exitCode;
+	}
 
-		return code;
+	private static int getExitCode(List<ExitCodeGenerator> exitCodeGenerators) {
+		int exitCode = 0;
+		for (ExitCodeGenerator exitCodeGenerator : exitCodeGenerators) {
+			try {
+				int value = exitCodeGenerator.getExitCode();
+				if (value > 0 && value > exitCode || value < 0 && value < exitCode) {
+					exitCode = value;
+				}
+			} catch (Exception e) {
+				exitCode = (exitCode == 0 ? 1 : exitCode);
+				e.printStackTrace();
+			}
+		}
+		return exitCode;
+	}
 
+	private static void close(ApplicationContext context) {
+		if (context instanceof ConfigurableApplicationContext) {
+			ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;
+			closable.close();
+		}
 	}
 
 }
