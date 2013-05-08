@@ -16,8 +16,6 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
-import java.util.Collections;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,8 +105,7 @@ public class ManagementServerConfiguration implements BeanPostProcessor {
 				factory.setAddress(this.configuration.getAddress());
 				factory.setContextPath(this.configuration.getContextPath());
 
-				factory.setErrorPages(Collections
-						.singleton(new ErrorPage(this.errorPath)));
+				factory.addErrorPages(new ErrorPage(this.errorPath));
 				this.initialized = true;
 
 			}

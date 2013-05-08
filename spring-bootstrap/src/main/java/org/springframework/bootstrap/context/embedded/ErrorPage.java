@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.context.embedded;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -31,14 +32,14 @@ public class ErrorPage {
 
 	private Class<? extends Throwable> exception = null;
 
-	private int status = 0;
+	private HttpStatus status = null;
 
 	public ErrorPage(String path) {
 		super();
 		this.path = path;
 	}
 
-	public ErrorPage(int status, String path) {
+	public ErrorPage(HttpStatus status, String path) {
 		super();
 		this.status = status;
 		this.path = path;
@@ -71,10 +72,19 @@ public class ErrorPage {
 	/**
 	 * The HTTP status value that this error page matches.
 	 * 
+	 * @return the status
+	 */
+	public HttpStatus getStatus() {
+		return this.status;
+	}
+
+	/**
+	 * The HTTP status value that this error page matches.
+	 * 
 	 * @return the status value (or 0 for a page that matches any status)
 	 */
-	public int getStatus() {
-		return this.status;
+	public int getStatusCode() {
+		return this.status == null ? 0 : this.status.value();
 	}
 
 	/**
@@ -91,7 +101,7 @@ public class ErrorPage {
 	 * types)?
 	 */
 	public boolean isGlobal() {
-		return this.status == 0 && this.exception == null;
+		return this.status == null && this.exception == null;
 	}
 
 	@Override
@@ -100,7 +110,7 @@ public class ErrorPage {
 		int result = 1;
 		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
-		result = prime * result + this.status;
+		result = prime * result + this.getStatusCode();
 		return result;
 	}
 

@@ -16,8 +16,6 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
-import java.util.Collections;
-
 import javax.servlet.Servlet;
 
 import org.apache.catalina.valves.AccessLogValve;
@@ -104,8 +102,7 @@ public class ServerConfiguration implements BeanPostProcessor, BeanFactoryAware 
 							server);
 				}
 
-				factory.setErrorPages(Collections
-						.singleton(new ErrorPage(this.errorPath)));
+				factory.addErrorPages(new ErrorPage(this.errorPath));
 				this.initialized = true;
 
 			}

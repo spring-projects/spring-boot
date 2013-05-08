@@ -209,7 +209,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 			org.apache.catalina.deploy.ErrorPage tomcatPage = new org.apache.catalina.deploy.ErrorPage();
 			tomcatPage.setLocation(errorPage.getPath());
 			tomcatPage.setExceptionType(errorPage.getExceptionName());
-			tomcatPage.setErrorCode(errorPage.getStatus());
+			tomcatPage.setErrorCode(errorPage.getStatusCode());
 			context.addErrorPage(tomcatPage);
 		}
 	}

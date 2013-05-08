@@ -2,6 +2,7 @@
 *.sw?
 .#*
 *#
+*~
 /build
 .classpath
 .project

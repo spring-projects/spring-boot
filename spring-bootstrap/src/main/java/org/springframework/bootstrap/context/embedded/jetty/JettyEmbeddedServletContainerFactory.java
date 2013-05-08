@@ -67,6 +67,8 @@ public class JettyEmbeddedServletContainerFactory extends
 
 	private ResourceLoader resourceLoader;
 
+	private WebAppContext context = new WebAppContext();
+
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainerFactory} instance.
 	 */
@@ -101,29 +103,29 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 		Server server = new Server(new InetSocketAddress(getAddress(), getPort()));
 
-		WebAppContext context = new WebAppContext();
 		if (this.resourceLoader != null) {
-			context.setClassLoader(this.resourceLoader.getClassLoader());
+			this.context.setClassLoader(this.resourceLoader.getClassLoader());
 		}
 		String contextPath = getContextPath();
-		context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
-		configureDocumentRoot(context);
+		this.context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath
+				: "/");
+		configureDocumentRoot(this.context);
 		if (getRegisterDefaultServlet()) {
-			addDefaultServlet(context);
+			addDefaultServlet(this.context);
 		}
 		if (getRegisterJspServlet()
 				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
 						.getClassLoader())) {
-			addJspServlet(context);
+			addJspServlet(this.context);
 		}
 
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		Configuration[] configurations = getWebAppContextConfigurations(context,
+		Configuration[] configurations = getWebAppContextConfigurations(this.context,
 				initializersToUse);
-		context.setConfigurations(configurations);
-		postProcessWebAppContext(context);
+		this.context.setConfigurations(configurations);
+		postProcessWebAppContext(this.context);
 
-		server.setHandler(context);
+		server.setHandler(this.context);
 		return getJettyEmbeddedServletContainer(server);
 	}
 
@@ -187,23 +189,7 @@ public class JettyEmbeddedServletContainerFactory extends
 			@Override
 			public void configure(WebAppContext context) throws Exception {
 				ErrorHandler errorHandler = context.getErrorHandler();
-				if (errorHandler instanceof ErrorPageErrorHandler) {
-					ErrorPageErrorHandler handler = (ErrorPageErrorHandler) errorHandler;
-					for (ErrorPage errorPage : getErrorPages()) {
-						if (errorPage.isGlobal()) {
-							handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE,
-									errorPage.getPath());
-						} else {
-							if (errorPage.getExceptionName() != null) {
-								handler.addErrorPage(errorPage.getExceptionName(),
-										errorPage.getPath());
-							} else {
-								handler.addErrorPage(errorPage.getStatus(),
-										errorPage.getPath());
-							}
-						}
-					}
-				}
+				addJettyErrorPages(errorHandler, getErrorPages());
 			}
 		};
 	}
@@ -269,11 +255,33 @@ public class JettyEmbeddedServletContainerFactory extends
 
 	/**
 	 * Add {@link Configuration}s that will be applied to the {@link WebAppContext} before
-	 * the server is create.
+	 * the server is started.
+	 * 
 	 * @param configurations the configurations to add
 	 */
 	public void addConfigurations(Configuration... configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
 		this.configurations.addAll(Arrays.asList(configurations));
+	}
+
+	private void addJettyErrorPages(ErrorHandler errorHandler,
+			Collection<ErrorPage> errorPages) {
+		if (errorHandler instanceof ErrorPageErrorHandler) {
+			ErrorPageErrorHandler handler = (ErrorPageErrorHandler) errorHandler;
+			for (ErrorPage errorPage : errorPages) {
+				if (errorPage.isGlobal()) {
+					handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE,
+							errorPage.getPath());
+				} else {
+					if (errorPage.getExceptionName() != null) {
+						handler.addErrorPage(errorPage.getExceptionName(),
+								errorPage.getPath());
+					} else {
+						handler.addErrorPage(errorPage.getStatusCode(),
+								errorPage.getPath());
+					}
+				}
+			}
+		}
 	}
 }
