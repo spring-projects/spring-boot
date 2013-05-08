@@ -26,21 +26,62 @@
 		<spring.batch.version>2.2.0.RC1</spring.batch.version>
         <tomcat.version>7.0.39</tomcat.version>
 	</properties>
+
+	<scm>
+		<url>http://github.com/SpringSource/spring-bootstrap</url>
+		<connection>scm:git:git://github.com/SpringSource/spring-bootstrap.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/SpringSource/spring-bootstrap.git</developerConnection>
+    </scm>
+
+	<developers>
+		<developer>
+			<id>dsyer</id>
+			<name>Dave Syer</name>
+			<email>dsyer@gopivotal.com</email>
+		</developer>
+		<developer>
+			<id>phillweb</id>
+			<name>Phillip Webb</name>
+			<email>pweb@gopivotal.com</email>
+		</developer>
+	</developers>
+
+	<distributionManagement>
+		<!-- see 'staging' profile for dry-run deployment settings -->
+		<downloadUrl>http://www.springsource.com/download/community
+		</downloadUrl>
+		<site>
+			<id>spring-docs</id>
+			<url>scp://static.springframework.org/var/www/domains/springframework.org/static/htdocs/spring-bootstrap/docs/${project.version}
+			</url>
+		</site>
+		<repository>
+			<id>spring-release</id>
+			<name>Spring Release Repository</name>
+			<url>s3://maven.springframework.org/release</url>
+		</repository>
+		<snapshotRepository>
+			<id>spring-snapshot</id>
+			<name>Spring Snapshot Repository</name>
+			<url>s3://maven.springframework.org/snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
+
     <profiles>
 		<profile>
 			<id>staging</id>
 			<distributionManagement>
 				<site>
 					<id>spring-site-staging</id>
-					<url>file:///${java.io.tmpdir}/spring-retry/docs</url>
+					<url>file:///${java.io.tmpdir}/spring-bootstrap/docs</url>
 				</site>
 				<repository>
 					<id>spring-milestone-staging</id>
-					<url>file:///${java.io.tmpdir}/spring-retry/milestone</url>
+					<url>file:///${java.io.tmpdir}/spring-bootstrap/milestone</url>
 				</repository>
 				<snapshotRepository>
 					<id>spring-snapshot-staging</id>
-					<url>file:///${java.io.tmpdir}/spring-retry/snapshot</url>
+					<url>file:///${java.io.tmpdir}/spring-bootstrap/snapshot</url>
 				</snapshotRepository>
 			</distributionManagement>
 		</profile>
