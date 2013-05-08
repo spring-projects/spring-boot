@@ -256,6 +256,11 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<!-- is using JDK 8
+					<additionalparam>-Xdoclint:none -quiet</additionalparam>
+					 -->
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
