@@ -284,13 +284,67 @@ startup process, add a comma-delimited list of class names to the
 `Environment` property `context.initializer.classes` (can be specified
 via `application.properties`).
 
-## Security - User Details
+## Info Endpoint
+
+By default the Actuator adds an `/info` endpoint to the main server.
+It contains the commit and timestamp information from `git.properties`
+(if that file exists) and also any properties it finds in the
+environment with prefix "info".  To populate `git.properties` in a
+Maven build you can use the excellent
+[git-commit-id-plugin](https://github.com/ktoso/maven-git-commit-id-plugin).
+To populate the "info" map all you need to do is add some stuff to
+`application.properties`, e.g.
+
+    info.app.name: MyService
+    info.app.description: My awesome service
+    info.app.version: 1.0.0
+
+## Security - Basic Authentication
+
+To secure your endpoints just add Spring Security Javaconfig to the
+classpath.  By default HTTP Basic authentication will be applied to
+every request in the main server (and the management server if it is
+running on the same port).  There is a single account by default, and
+you can test it like this:
+
+    $ mvn user:password@localhost:8080/info
+    ... stuff comes out
 
 ## Security - HTTPS
 
-## XML Content
+Ensuring that all your main endpoints are only available over HTTPS is
+an important chore for any application.  If you are using Tomcat as a
+servlet container, then the Actuator will add Tomcat's own
+`RemoteIpValve` automatically if it detects some environment settings,
+and you should be able to rely on the `HttpServletRequest` to report
+whether or not it is secure (even downstream of the real SSL
+termination endpoint).  The standard behaviour is determined by the
+presence or absence of certain request headers ("x-forwarded-for" and
+"x-forwarded-proto"), whose names are conventional, so it should work
+with most front end proxies.  You switch on the valve by adding some
+entries to `application.properties`, e.g.
+
+    server.tomcat.remote_ip_header: x-forwarded-for
+    server.tomcat.protocol_header: x-forwarded-proto
+    
+(Or you can add the `RemoteIpValve` yourself by adding a
+`TomcatEmbeddedServletContainerFactory` bean.)
+
+TODO: Spring Security configuration for 'require channel'.
 
 ## Audit Events
+
+The Actuator has a flexible audit framework that will publish events
+once Spring Security is in play (authentication success and failure
+and access denied exceptions by default).  This can be very useful for
+reporting, and also to implement a lock-out policy based on
+authentication failures.
+
+You can also choose to use the audit services for your own business
+events.  To do that you can either inject the existing
+`AuditEventRepository` into your own components and use that directly,
+or you can simply publish `AuditApplicationEvent` via the Spring
+`ApplicationContext` (using `ApplicationEventPublisherAware`).
 
 ## Metrics Customization
 
