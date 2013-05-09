@@ -16,8 +16,6 @@
 
 package org.springframework.bootstrap.context.annotation;
 
-import java.lang.reflect.Field;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -30,7 +28,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -78,15 +75,14 @@ public class ConfigurationPropertiesBindingConfiguration {
 
 		if (this.configurer != null) {
 			propertySources = extractPropertySources(this.configurer);
+		} else if (this.environment instanceof ConfigurableEnvironment) {
+			propertySources = flattenPropertySources(((ConfigurableEnvironment) this.environment)
+					.getPropertySources());
 		} else {
-			if (this.environment instanceof ConfigurableEnvironment) {
-				propertySources = flattenPropertySources(((ConfigurableEnvironment) this.environment)
-						.getPropertySources());
-			} else {
-				// empty, so not very useful, but fulfils the contract
-				propertySources = new MutablePropertySources();
-			}
+			// empty, so not very useful, but fulfils the contract
+			propertySources = new MutablePropertySources();
 		}
+
 		PropertySourcesBindingPostProcessor processor = new PropertySourcesBindingPostProcessor();
 		processor.setValidator(this.validator);
 		processor.setConversionService(this.conversionService);
@@ -117,7 +113,7 @@ public class ConfigurationPropertiesBindingConfiguration {
 	 */
 	private void flattenPropertySources(PropertySource<?> propertySource,
 			MutablePropertySources result) {
-		Object source = getField(propertySource, "source");
+		Object source = propertySource.getSource();
 		if (source instanceof ConfigurableEnvironment) {
 			ConfigurableEnvironment environment = (ConfigurableEnvironment) source;
 			for (PropertySource<?> childSource : environment.getPropertySources()) {
@@ -140,17 +136,9 @@ public class ConfigurationPropertiesBindingConfiguration {
 	 */
 	private PropertySources extractPropertySources(
 			PropertySourcesPlaceholderConfigurer configurer) {
-		PropertySources propertySources = (PropertySources) getField(configurer,
-				"propertySources");
+		PropertySources propertySources = configurer.getAppliedPropertySources();
 		// Flatten the sources into a single list so they can be iterated
 		return flattenPropertySources(propertySources);
-	}
-
-	private Object getField(Object target, String name) {
-		// Hack, hack, hackety, hack...
-		Field field = ReflectionUtils.findField(target.getClass(), name);
-		ReflectionUtils.makeAccessible(field);
-		return ReflectionUtils.getField(field, target);
 	}
 
 }
