@@ -69,7 +69,7 @@ public class SampleIntegrationTests {
 						return command;
 					}
 				});
-		this.command = future.get(10, TimeUnit.SECONDS);
+		this.command = future.get(30, TimeUnit.SECONDS);
 	}
 
 	@After
@@ -121,7 +121,7 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void actuatorSample() throws Exception {
-		start("samples/service.groovy");
+		start("samples/actuator.groovy");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
 				.openStream());
 		assertEquals("{\"message\":\"Hello World!\"}", result);
