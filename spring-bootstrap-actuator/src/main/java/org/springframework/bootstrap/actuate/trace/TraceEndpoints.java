@@ -29,14 +29,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  */
 @Controller
-public class TraceEndpoint {
+public class TraceEndpoints {
 
 	private TraceRepository tracer;
 
 	/**
 	 * @param tracer
 	 */
-	public TraceEndpoint(TraceRepository tracer) {
+	public TraceEndpoints(TraceRepository tracer) {
 		super();
 		this.tracer = tracer;
 	}

@@ -18,9 +18,12 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.actuate.trace.TraceEndpoints;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
 import org.springframework.bootstrap.actuate.trace.TraceRepository;
+import org.springframework.bootstrap.actuate.trace.WebRequestLoggingFilter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -34,16 +37,26 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnMissingBean({ TraceEndpoints.class })
-public class TraceConfiguration {
+public class TraceFilterConfiguration {
 
-	@Autowired
-	private TraceRepository traceRepository;
+	@Autowired(required = false)
+	private TraceRepository traceRepository = new InMemoryTraceRepository();
+
+	@Value("${management.dump_requests:false}")
+	private boolean dumpRequests;
 
 	@Bean
-	public TraceEndpoints traceEndpoint() {
-		return new TraceEndpoints(this.traceRepository);
+	@ConditionalOnMissingBean(TraceRepository.class)
+	protected TraceRepository traceRepository() {
+		return this.traceRepository;
+	}
+
+	@Bean
+	@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+	public WebRequestLoggingFilter securityFilterPostProcessor(BeanFactory beanFactory) {
+		WebRequestLoggingFilter filter = new WebRequestLoggingFilter(this.traceRepository);
+		filter.setDumpRequests(this.dumpRequests);
+		return filter;
 	}
 
 }
