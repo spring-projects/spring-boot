@@ -20,6 +20,7 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 
 /**
@@ -30,6 +31,7 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
 @ConfigurationProperties(name = "management", ignoreUnknownFields = false)
 public class ManagementServerProperties {
 
+	@Value("${server.port:8080}")
 	private int port = 8080;
 
 	private InetAddress address;

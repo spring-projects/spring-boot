@@ -35,7 +35,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * 
  */
 @Configuration
-@ConditionalOnExpression("${management.port:8080}>0")
+@ConditionalOnExpression("${management.port:${server.port:8080}}>0")
 public class ManagementConfiguration implements ApplicationContextAware, DisposableBean,
 		ApplicationListener<ContextRefreshedEvent> {
 
@@ -48,7 +48,7 @@ public class ManagementConfiguration implements ApplicationContextAware, Disposa
 	@Autowired
 	private ManagementServerProperties management = new ManagementServerProperties();
 
-	@ConditionalOnExpression("${server.port:8080} == ${management.port:8080}")
+	@ConditionalOnExpression("${server.port:8080} == ${management.port:${server.port:8080}}")
 	@Configuration
 	@Import({ VarzConfiguration.class, HealthzConfiguration.class,
 			ShutdownConfiguration.class, TraceConfiguration.class })
