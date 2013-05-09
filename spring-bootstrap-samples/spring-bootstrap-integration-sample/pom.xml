@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.bootstrap</groupId>
 		<artifactId>spring-bootstrap-samples</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-bootstrap-integration-sample</artifactId>
 	<packaging>jar</packaging>
@@ -14,8 +14,8 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-bootstrap-service</artifactId>
+			<groupId>org.springframework.bootstrap</groupId>
+			<artifactId>spring-bootstrap-actuator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

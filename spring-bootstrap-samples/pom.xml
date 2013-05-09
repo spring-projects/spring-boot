@@ -13,6 +13,7 @@
 		<module>spring-bootstrap-actuator-sample</module>
 		<module>spring-bootstrap-batch-sample</module>
 		<module>spring-bootstrap-data-sample</module>
+		<module>spring-bootstrap-integration-sample</module>
 		<module>spring-bootstrap-jetty-sample</module>
 		<module>spring-bootstrap-simple-sample</module>
 		<module>spring-bootstrap-tomcat-sample</module>
