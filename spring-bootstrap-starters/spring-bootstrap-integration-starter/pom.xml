@@ -7,12 +7,16 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-bootstrap-integration-starter</artifactId>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-bootstrap-starter</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-core</artifactId>
 		</dependency>
 	</dependencies>
 </project>
