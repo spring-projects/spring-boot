@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 @Configuration
 @Import({ ManagementConfiguration.class, MetricConfiguration.class,
-		ServerConfiguration.class, SecurityConfiguration.class,
+		ServerConfiguration.class, SecurityConfiguration.class, TraceConfiguration.class,
 		MetricFilterConfiguration.class, AuditConfiguration.class })
 public class ActuatorAutoConfiguration extends WebMvcConfigurationSupport {
 

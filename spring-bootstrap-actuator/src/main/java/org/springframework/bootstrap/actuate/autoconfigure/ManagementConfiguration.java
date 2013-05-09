@@ -51,7 +51,7 @@ public class ManagementConfiguration implements ApplicationContextAware, Disposa
 	@ConditionalOnExpression("${server.port:8080} == ${management.port:${server.port:8080}}")
 	@Configuration
 	@Import({ VarzConfiguration.class, HealthzConfiguration.class,
-			ShutdownConfiguration.class, TraceConfiguration.class })
+			ShutdownConfiguration.class })
 	public static class ManagementEndpointsConfiguration {
 	}
 
@@ -78,7 +78,7 @@ public class ManagementConfiguration implements ApplicationContextAware, Disposa
 			context.setParent(this.parent);
 			context.register(ManagementServerConfiguration.class,
 					VarzConfiguration.class, HealthzConfiguration.class,
-					ShutdownConfiguration.class, TraceConfiguration.class);
+					ShutdownConfiguration.class);
 			context.refresh();
 			this.context = context;
 		}

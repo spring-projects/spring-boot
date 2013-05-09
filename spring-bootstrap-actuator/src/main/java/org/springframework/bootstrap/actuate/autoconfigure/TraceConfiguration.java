@@ -21,10 +21,10 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.bootstrap.actuate.security.SecurityFilterPostProcessor;
 import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
 import org.springframework.bootstrap.actuate.trace.TraceEndpoint;
 import org.springframework.bootstrap.actuate.trace.TraceRepository;
+import org.springframework.bootstrap.actuate.trace.WebRequestLoggingFilter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -38,43 +38,33 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnMissingBean({ TraceEndpoint.class })
 public class TraceConfiguration {
 
-	@Autowired
-	private TraceRepository traceRepository;
+	@Autowired(required = false)
+	private TraceRepository traceRepository = new InMemoryTraceRepository();
 
-	@Configuration
-	public static class SecurityFilterPostProcessorConfiguration {
+	@Value("${management.dump_requests:false}")
+	private boolean dumpRequests;
 
-		@Autowired(required = false)
-		private TraceRepository traceRepository = new InMemoryTraceRepository();
-
-		@Bean
-		@ConditionalOnMissingBean(TraceRepository.class)
-		protected TraceRepository traceRepository() {
-			return this.traceRepository;
-		}
-
-		@Value("${management.dump_requests:false}")
-		private boolean dumpRequests;
-
-		@Bean
-		@ConditionalOnClass(name = "org.springframework.security.web.SecurityFilterChain")
-		public SecurityFilterPostProcessor securityFilterPostProcessor(
-				BeanFactory beanFactory) {
-			SecurityFilterPostProcessor processor = new SecurityFilterPostProcessor(
-					this.traceRepository);
-			processor.setDumpRequests(this.dumpRequests);
-			return processor;
-		}
-
+	@Bean
+	@ConditionalOnMissingBean(TraceRepository.class)
+	protected TraceRepository traceRepository() {
+		return this.traceRepository;
 	}
 
 	@Bean
+	@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+	@ConditionalOnMissingBean({ TraceEndpoint.class })
 	public TraceEndpoint traceEndpoint() {
 		return new TraceEndpoint(this.traceRepository);
+	}
+
+	@Bean
+	@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+	public WebRequestLoggingFilter securityFilterPostProcessor(BeanFactory beanFactory) {
+		WebRequestLoggingFilter filter = new WebRequestLoggingFilter(this.traceRepository);
+		filter.setDumpRequests(this.dumpRequests);
+		return filter;
 	}
 
 }

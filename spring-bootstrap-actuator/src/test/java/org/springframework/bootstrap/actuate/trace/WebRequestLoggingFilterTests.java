@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate.security;
+package org.springframework.bootstrap.actuate.trace;
 
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.security.SecurityFilterPostProcessor;
-import org.springframework.bootstrap.actuate.security.SecurityFilterPostProcessor.WebRequestLoggingFilter;
 import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
+import org.springframework.bootstrap.actuate.trace.WebRequestLoggingFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.junit.Assert.assertEquals;
@@ -29,17 +28,16 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  * 
  */
-public class SecurityFilterPostProcessorTests {
+public class WebRequestLoggingFilterTests {
 
-	private SecurityFilterPostProcessor processor = new SecurityFilterPostProcessor(
+	private WebRequestLoggingFilter filter = new WebRequestLoggingFilter(
 			new InMemoryTraceRepository());
 
 	@Test
 	public void filterDumpsRequest() {
-		WebRequestLoggingFilter filter = this.processor.new WebRequestLoggingFilter("foo");
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
 		request.addHeader("Accept", "application/json");
-		Map<String, Object> trace = filter.getTrace(request);
+		Map<String, Object> trace = this.filter.getTrace(request);
 		assertEquals("GET", trace.get("method"));
 		assertEquals("/foo", trace.get("path"));
 		assertEquals("{Accept=application/json}", trace.get("headers").toString());

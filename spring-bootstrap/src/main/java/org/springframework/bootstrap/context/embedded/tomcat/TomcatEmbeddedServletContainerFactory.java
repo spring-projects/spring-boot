@@ -182,7 +182,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		context.addServletMapping("*.jspx", "jsp");
 	}
 
-	private void customizeConnector(Connector connector) {
+	// Needs to be protected so it can be used by subclasses
+	protected void customizeConnector(Connector connector) {
 		connector.setPort(getPort());
 		if (connector.getProtocolHandler() instanceof AbstractProtocol
 				&& getAddress() != null) {
