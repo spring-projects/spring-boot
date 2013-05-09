@@ -10,12 +10,13 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>spring-bootstrap-sample</module>
+		<module>spring-bootstrap-actuator-sample</module>
+		<module>spring-bootstrap-batch-sample</module>
 		<module>spring-bootstrap-data-sample</module>
 		<module>spring-bootstrap-jetty-sample</module>
 		<module>spring-bootstrap-simple-sample</module>
 		<module>spring-bootstrap-tomcat-sample</module>
 		<module>spring-bootstrap-profile-sample</module>
-		<module>spring-bootstrap-actuator-sample</module>
 		<module>spring-bootstrap-trad-sample</module>
 		<module>spring-bootstrap-xml-sample</module>
 	</modules>
@@ -145,4 +146,25 @@
           </plugin>
         </plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+          <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+          </dependency>
+		</dependencies>
+	</dependencyManagement>
+	<dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <scope>runtime</scope>
+      </dependency>
+	</dependencies>
 </project>

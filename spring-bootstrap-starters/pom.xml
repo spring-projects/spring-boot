@@ -16,6 +16,7 @@
 	</properties>
 	<modules>
 		<module>spring-bootstrap-starter</module>
+		<module>spring-bootstrap-actuator-starter</module>
 		<module>spring-bootstrap-batch-starter</module>
 		<module>spring-bootstrap-integration-starter</module>
 		<module>spring-bootstrap-jpa-starter</module>
@@ -31,6 +32,16 @@
         <dependency>
           <groupId>org.springframework.bootstrap</groupId>
           <artifactId>spring-bootstrap-actuator</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-starter</artifactId>
+          <version>${spring.bootstrap.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.bootstrap</groupId>
+          <artifactId>spring-bootstrap-actuator-starter</artifactId>
           <version>${spring.bootstrap.version}</version>
         </dependency>
         <dependency>

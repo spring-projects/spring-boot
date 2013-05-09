@@ -120,11 +120,9 @@ Spring Bootstrap.  Features include:
   configuration, e.g. `@ConditionalOnBean`,
   `@ConditionalOnMissingBean` and `@ConditionalOnClass`.
 
-### Spring Bootstrap Service
+### Spring Bootstrap Actuator
 
-<!-- FIXME: change the name -->
-
-Spring Bootstrap Service uses auto-configuration features to decorate
+Spring Bootstrap Actuator uses auto-configuration features to decorate
 your application with features that make it instantly deployable and
 supportable in production.  For instance if you are writing a JSON web
 service then it will provide a server, security, logging, externalized
@@ -132,11 +130,9 @@ configuration, management endpoints, an audit abstraction, and more.
 If you want to switch off the built in features, or extend or replace
 them, it makes that really easy as well.
 
-### Spring Bootstrap Applications
+### Spring Bootstrap Starters
 
-<!-- FIXME: change the name -->
-
-Spring Bootstrap Applications are a set of convenient dependency
+Spring Bootstrap Starters are a set of convenient dependency
 descriptors that you can include in your application.  You get a
 one-stop-shop for all the Spring and related technology that you need
 without having to hunt through sample code and copy paste loads of
