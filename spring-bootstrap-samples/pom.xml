@@ -151,6 +151,7 @@
           <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
