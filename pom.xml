@@ -19,7 +19,7 @@
 	<properties>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>4.0.0.BOOTSTRAP-SNAPSHOT</spring.version>
+		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<spring.security.javaconfig.version>1.0.0.CI-SNAPSHOT</spring.security.javaconfig.version>
 		<spring.integration.version>2.2.3.RELEASE</spring.integration.version>
 		<spring.batch.version>2.2.0.RC1</spring.batch.version>
