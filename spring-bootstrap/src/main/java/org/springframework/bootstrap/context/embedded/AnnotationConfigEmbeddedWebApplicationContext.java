@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.context.embedded;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigUtils;
@@ -54,6 +55,10 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	private final AnnotatedBeanDefinitionReader reader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
+
+	private Class<?>[] annotatedClasses;
+
+	private String[] basePackages;
 
 	/**
 	 * Create a new {@link AnnotationConfigEmbeddedWebApplicationContext} that needs to be
@@ -149,9 +154,9 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * @see #refresh()
 	 */
 	public void register(Class<?>... annotatedClasses) {
+		this.annotatedClasses = annotatedClasses;
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
-		this.reader.register(annotatedClasses);
 	}
 
 	/**
@@ -162,14 +167,25 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * @see #refresh()
 	 */
 	public void scan(String... basePackages) {
+		this.basePackages = basePackages;
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
-		this.scanner.scan(basePackages);
 	}
 
 	@Override
 	protected void prepareRefresh() {
 		this.scanner.clearCache();
 		super.prepareRefresh();
+	}
+
+	@Override
+	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		super.postProcessBeanFactory(beanFactory);
+		if (this.basePackages != null && this.basePackages.length > 0) {
+			this.scanner.scan(this.basePackages);
+		}
+		if (this.annotatedClasses != null && this.annotatedClasses.length > 0) {
+			this.reader.register(this.annotatedClasses);
+		}
 	}
 
 }

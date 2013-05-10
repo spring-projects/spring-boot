@@ -144,10 +144,10 @@ public class TomcatEmbeddedServletContainerFactory extends
 		if (this.resourceLoader != null) {
 			context.setParentClassLoader(this.resourceLoader.getClassLoader());
 		}
-		if (getRegisterDefaultServlet()) {
+		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
-		if (getRegisterJspServlet()
+		if (isRegisterJspServlet()
 				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
 						.getClassLoader())) {
 			addJspServlet(context);

@@ -17,12 +17,18 @@
 package org.springframework.bootstrap.context.embedded;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
 
 import org.junit.Test;
-import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.context.embedded.config.ExampleEmbeddedWebApplicationConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AnnotationConfigEmbeddedWebApplicationContext}.
@@ -64,10 +70,95 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		verifyContext();
 	}
 
+	@Test
+	public void createAndInitializeCyclic() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				ServletContextAwareEmbeddedConfiguration.class);
+		verifyContext();
+		// You can't initialize the application context and inject the servlet context
+		// because of a cycle - we'd like this to be not null but it never will be
+		assertNull(this.context.getBean(ServletContextAwareEmbeddedConfiguration.class)
+				.getServletContext());
+	}
+
+	@Test
+	public void createAndInitializeWithRoot() throws Exception {
+		AnnotationConfigEmbeddedWebApplicationContext parent = new AnnotationConfigEmbeddedWebApplicationContext(
+				EmbeddedContainerConfiguration.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(ServletContextAwareConfiguration.class);
+		this.context.setParent(parent);
+		this.context.setServletContext(parent.getServletContext());
+		this.context.refresh();
+		verifyContext();
+		assertNotNull(this.context.getBean(ServletContextAwareConfiguration.class)
+				.getServletContext());
+	}
+
 	private void verifyContext() {
 		MockEmbeddedServletContainerFactory containerFactory = this.context
 				.getBean(MockEmbeddedServletContainerFactory.class);
 		Servlet servlet = this.context.getBean(Servlet.class);
 		verify(containerFactory.getServletContext()).addServlet("servlet", servlet);
+	}
+
+	@Configuration
+	@EnableWebMvc
+	public static class ServletContextAwareEmbeddedConfiguration implements
+			ServletContextAware {
+
+		private ServletContext servletContext;
+
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			return new MockEmbeddedServletContainerFactory();
+		}
+
+		@Bean
+		public Servlet servlet() {
+			return new MockServlet();
+		}
+
+		@Override
+		public void setServletContext(ServletContext servletContext) {
+			this.servletContext = servletContext;
+		}
+
+		public ServletContext getServletContext() {
+			return this.servletContext;
+		}
+
+	}
+
+	@Configuration
+	public static class EmbeddedContainerConfiguration {
+
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			return new MockEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	@Configuration
+	@EnableWebMvc
+	public static class ServletContextAwareConfiguration implements ServletContextAware {
+
+		private ServletContext servletContext;
+
+		@Bean
+		public Servlet servlet() {
+			return new MockServlet();
+		}
+
+		@Override
+		public void setServletContext(ServletContext servletContext) {
+			this.servletContext = servletContext;
+		}
+
+		public ServletContext getServletContext() {
+			return this.servletContext;
+		}
+
 	}
 }

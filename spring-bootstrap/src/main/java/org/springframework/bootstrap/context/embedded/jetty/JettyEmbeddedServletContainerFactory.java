@@ -110,10 +110,10 @@ public class JettyEmbeddedServletContainerFactory extends
 		this.context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath
 				: "/");
 		configureDocumentRoot(this.context);
-		if (getRegisterDefaultServlet()) {
+		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(this.context);
 		}
-		if (getRegisterJspServlet()
+		if (isRegisterJspServlet()
 				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
 						.getClassLoader())) {
 			addJspServlet(this.context);

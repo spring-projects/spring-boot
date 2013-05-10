@@ -20,17 +20,15 @@ import javax.servlet.Servlet;
 
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.actuate.error.ErrorEndpoint;
 import org.springframework.bootstrap.actuate.properties.ServerProperties;
 import org.springframework.bootstrap.actuate.properties.ServerProperties.Tomcat;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
-import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
@@ -50,23 +48,13 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ Servlet.class })
 @Order(Integer.MIN_VALUE)
 @Import(InfoConfiguration.class)
-public class ServerConfiguration implements BeanPostProcessor, BeanFactoryAware {
+public class ServerConfiguration implements EmbeddedServletContainerCustomizer {
 
+	@Autowired
 	private BeanFactory beanFactory;
-
-	// Don't do this! We don't get a callback for our own dependencies (lifecycle).
-	// @Autowired
-	// private AbstractEmbeddedServletContainerFactory factory;
-
-	private boolean initialized = false;
 
 	@Value("${endpoints.error.path:/error}")
 	private String errorPath = "/error";
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
-	}
 
 	@Bean
 	public ErrorEndpoint errorEndpoint() {
@@ -74,42 +62,20 @@ public class ServerConfiguration implements BeanPostProcessor, BeanFactoryAware 
 	}
 
 	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
-		return bean;
-	}
+	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
 
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+		// Need to do a look up here to make it lazy
+		ServerProperties server = this.beanFactory.getBean(ServerProperties.class);
 
-		if (bean instanceof EmbeddedServletContainerFactory) {
+		factory.setPort(server.getPort());
+		factory.setAddress(server.getAddress());
+		factory.setContextPath(server.getContextPath());
 
-			if (bean instanceof AbstractEmbeddedServletContainerFactory
-					&& !this.initialized) {
-
-				// Cannot use @Autowired because the injection happens too early
-				ServerProperties server = this.beanFactory
-						.getBean(ServerProperties.class);
-
-				AbstractEmbeddedServletContainerFactory factory = (AbstractEmbeddedServletContainerFactory) bean;
-				factory.setPort(server.getPort());
-				factory.setAddress(server.getAddress());
-				factory.setContextPath(server.getContextPath());
-
-				if (factory instanceof TomcatEmbeddedServletContainerFactory) {
-					configureTomcat((TomcatEmbeddedServletContainerFactory) factory,
-							server);
-				}
-
-				factory.addErrorPages(new ErrorPage(this.errorPath));
-				this.initialized = true;
-
-			}
-
+		if (factory instanceof TomcatEmbeddedServletContainerFactory) {
+			configureTomcat((TomcatEmbeddedServletContainerFactory) factory, server);
 		}
 
-		return bean;
+		factory.addErrorPages(new ErrorPage(this.errorPath));
 
 	}
 

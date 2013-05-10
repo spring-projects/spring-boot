@@ -79,7 +79,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void startServlet() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
 		assertThat(getResponse("http://localhost:8080/hello"), equalTo("Hello World"));
@@ -87,7 +87,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void emptyServer() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		factory.setPort(0);
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
@@ -98,7 +98,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void stopServlet() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
 		this.container.stop();
@@ -109,7 +109,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	@Ignore
 	public void restartWithKeepAlive() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
 
@@ -130,7 +130,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void startServletAndFilter() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory.getEmbdeddedServletContainer(
 				exampleServletRegistration(), new FilterRegistrationBean(
 						new ExampleFilter()));
@@ -140,7 +140,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void startBlocksUntilReadyToServe() throws Exception {
 		// FIXME Assume.group(TestGroup.LONG_RUNNING);
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		final Date[] date = new Date[1];
 		this.container = factory
 				.getEmbdeddedServletContainer(new ServletContextInitializer() {
@@ -160,7 +160,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void specificPort() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		factory.setPort(8081);
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
@@ -169,7 +169,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void specificContextRoot() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		factory.setContextPath("/say");
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
@@ -200,7 +200,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void doubleStop() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbdeddedServletContainer(exampleServletRegistration());
 		this.container.stop();
@@ -209,7 +209,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void multipleConfigurations() throws Exception {
-		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		ServletContextInitializer[] initializers = new ServletContextInitializer[6];
 		for (int i = 0; i < initializers.length; i++) {
 			initializers[i] = mock(ServletContextInitializer.class);

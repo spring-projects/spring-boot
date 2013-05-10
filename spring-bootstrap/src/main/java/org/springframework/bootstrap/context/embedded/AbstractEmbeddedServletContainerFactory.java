@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * @since 4.0
  */
 public abstract class AbstractEmbeddedServletContainerFactory implements
-		EmbeddedServletContainerFactory {
+		ConfigurableEmbeddedServletContainerFactory {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -170,6 +170,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * @see #setInitializers
 	 * @see #getInitializers
 	 */
+	@Override
 	public void addInitializers(ServletContextInitializer... initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers.addAll(Arrays.asList(initializers));
@@ -181,6 +182,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * parameters.
 	 * @return the initializers
 	 */
+	@Override
 	public List<ServletContextInitializer> getInitializers() {
 		return this.initializers;
 	}
@@ -190,6 +192,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * files.
 	 * @param documentRoot the document root or {@code null} if not required
 	 */
+	@Override
 	public void setDocumentRoot(File documentRoot) {
 		this.documentRoot = documentRoot;
 	}
@@ -198,6 +201,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Returns the document root which will be used by the web context to serve static
 	 * files.
 	 */
+	@Override
 	public File getDocumentRoot() {
 		return this.documentRoot;
 	}
@@ -206,6 +210,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Sets the error pages that will be used when handling exceptions.
 	 * @param errorPages the error pages
 	 */
+	@Override
 	public void setErrorPages(Set<ErrorPage> errorPages) {
 		Assert.notNull(errorPages, "ErrorPages must not be null");
 		this.errorPages = new LinkedHashSet<ErrorPage>(errorPages);
@@ -215,6 +220,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Adds error pages that will be used when handling exceptions.
 	 * @param errorPages the error pages
 	 */
+	@Override
 	public void addErrorPages(ErrorPage... errorPages) {
 		Assert.notNull(this.initializers, "ErrorPages must not be null");
 		this.errorPages.addAll(Arrays.asList(errorPages));
@@ -224,6 +230,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Returns a mutable set of {@link ErrorPage}s that will be used when handling
 	 * exceptions.
 	 */
+	@Override
 	public Set<ErrorPage> getErrorPages() {
 		return this.errorPages;
 	}
@@ -233,6 +240,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * files from the {@link #setDocumentRoot(File) document root} will be served.
 	 * @param registerDefaultServlet if the default servlet should be registered
 	 */
+	@Override
 	public void setRegisterDefaultServlet(boolean registerDefaultServlet) {
 		this.registerDefaultServlet = registerDefaultServlet;
 	}
@@ -243,7 +251,8 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * 
 	 * @return true if the JSP servlet is to be registered
 	 */
-	protected boolean getRegisterJspServlet() {
+	@Override
+	public boolean isRegisterJspServlet() {
 		return this.registerJspServlet;
 	}
 
@@ -253,6 +262,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * will be served.
 	 * @param registerJspServlet if the JSP servlet should be registered
 	 */
+	@Override
 	public void setRegisterJspServlet(boolean registerJspServlet) {
 		this.registerJspServlet = registerJspServlet;
 	}
@@ -262,7 +272,8 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * 
 	 * @return true if the default servlet is to be registered
 	 */
-	protected boolean getRegisterDefaultServlet() {
+	@Override
+	public boolean isRegisterDefaultServlet() {
 		return this.registerDefaultServlet;
 	}
 
@@ -275,6 +286,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * 
 	 * @param jspServletClassName the class name for the JSP servlet if used
 	 */
+	@Override
 	public void setJspServletClassName(String jspServletClassName) {
 		this.jspServletClassName = jspServletClassName;
 	}

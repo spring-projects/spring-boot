@@ -16,12 +16,6 @@
 
 package org.springframework.bootstrap.context.embedded;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -29,6 +23,7 @@ import java.util.NoSuchElementException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -36,25 +31,27 @@ import javax.servlet.ServletRegistration;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Mock {@link EmbeddedServletContainerFactory}.
  * 
  * @author Phillip Webb
  */
-public class MockEmbeddedServletContainerFactory implements
-		EmbeddedServletContainerFactory {
+public class MockEmbeddedServletContainerFactory extends
+		AbstractEmbeddedServletContainerFactory {
 
 	private MockEmbeddedServletContainer container;
-
-	private int port;
 
 	@Override
 	public EmbeddedServletContainer getEmbdeddedServletContainer(
 			ServletContextInitializer... initializers) {
-		this.container = spy(new MockEmbeddedServletContainer(initializers, port));
+		this.container = spy(new MockEmbeddedServletContainer(initializers, getPort()));
 		return this.container;
 	}
 
@@ -63,19 +60,17 @@ public class MockEmbeddedServletContainerFactory implements
 	}
 
 	public ServletContext getServletContext() {
-		return getContainer().servletContext;
+		return getContainer() == null ? null : getContainer().servletContext;
 	}
 
 	public RegisteredServlet getRegisteredServlet(int index) {
-		return getContainer().getRegisteredServlets().get(index);
+		return getContainer() == null ? null : getContainer().getRegisteredServlets()
+				.get(index);
 	}
 
 	public RegisteredFilter getRegisteredFilter(int index) {
-		return getContainer().getRegisteredFilters().get(index);
-	}
-
-	public void setPort(int port) {
-		this.port = port;
+		return getContainer() == null ? null : getContainer().getRegisteredFilters().get(
+				index);
 	}
 
 	public static class MockEmbeddedServletContainer implements EmbeddedServletContainer {
@@ -128,6 +123,8 @@ public class MockEmbeddedServletContainerFactory implements
 						MockEmbeddedServletContainer.<String> emptyEnumeration());
 				given(this.servletContext.getAttributeNames()).willReturn(
 						MockEmbeddedServletContainer.<String> emptyEnumeration());
+				given(this.servletContext.getNamedDispatcher("default")).willReturn(
+						mock(RequestDispatcher.class));
 				for (ServletContextInitializer initializer : this.initializers) {
 					initializer.onStartup(this.servletContext);
 				}
@@ -178,7 +175,7 @@ public class MockEmbeddedServletContainerFactory implements
 		}
 
 		public int getPort() {
-			return port;
+			return this.port;
 		}
 	}
 

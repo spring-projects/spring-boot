@@ -17,7 +17,7 @@
 package org.springframework.bootstrap.context.embedded;
 
 /**
- * Simple interface that represents a fully configure embedded servlet container (for
+ * Simple interface that represents a fully configured embedded servlet container (for
  * example Tomcat or Jetty). Allows the container to be {@link #stop() stopped}.
  * 
  * <p>

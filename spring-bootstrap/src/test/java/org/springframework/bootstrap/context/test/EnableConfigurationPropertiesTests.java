@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.context.annotation;
+package org.springframework.bootstrap.context.test;
 
 import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

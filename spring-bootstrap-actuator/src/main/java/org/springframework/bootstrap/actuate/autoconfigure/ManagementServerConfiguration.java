@@ -25,6 +25,7 @@ import org.springframework.bootstrap.actuate.error.ErrorEndpoint;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
@@ -100,7 +101,7 @@ public class ManagementServerConfiguration implements BeanPostProcessor {
 			if (bean instanceof AbstractEmbeddedServletContainerFactory
 					&& !this.initialized) {
 
-				AbstractEmbeddedServletContainerFactory factory = (AbstractEmbeddedServletContainerFactory) bean;
+				ConfigurableEmbeddedServletContainerFactory factory = (ConfigurableEmbeddedServletContainerFactory) bean;
 				factory.setPort(this.configuration.getPort());
 				factory.setAddress(this.configuration.getAddress());
 				factory.setContextPath(this.configuration.getContextPath());
