@@ -36,10 +36,12 @@ public class AuditConfiguration {
 	@Autowired(required = false)
 	private AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
 
-	@Bean
 	@ConditionalOnMissingBean(AuditEventRepository.class)
-	public AuditEventRepository auditEventRepository() throws Exception {
-		return this.auditEventRepository;
+	protected static class AuditEventRepositoryConfiguration {
+		@Bean
+		public AuditEventRepository auditEventRepository() throws Exception {
+			return new InMemoryAuditEventRepository();
+		}
 	}
 
 	@Bean
