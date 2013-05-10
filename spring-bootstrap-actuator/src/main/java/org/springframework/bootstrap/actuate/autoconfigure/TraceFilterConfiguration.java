@@ -42,9 +42,6 @@ public class TraceFilterConfiguration {
 	@Autowired(required = false)
 	private TraceRepository traceRepository = new InMemoryTraceRepository();
 
-	@Value("${management.dump_requests:false}")
-	private boolean dumpRequests;
-
 	@ConditionalOnMissingBean(TraceRepository.class)
 	@Configuration
 	protected static class TraceRepositoryConfiguration {
@@ -54,12 +51,24 @@ public class TraceFilterConfiguration {
 		}
 	}
 
-	@Bean
 	@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-	public WebRequestLoggingFilter securityFilterPostProcessor(BeanFactory beanFactory) {
-		WebRequestLoggingFilter filter = new WebRequestLoggingFilter(this.traceRepository);
-		filter.setDumpRequests(this.dumpRequests);
-		return filter;
+	protected static class WebRequestLoggingFilterConfiguration {
+
+		@Autowired
+		private TraceRepository traceRepository;
+
+		@Value("${management.dump_requests:false}")
+		private boolean dumpRequests;
+
+		@Bean
+		public WebRequestLoggingFilter webRequestLoggingFilter(BeanFactory beanFactory) {
+
+			WebRequestLoggingFilter filter = new WebRequestLoggingFilter(
+					this.traceRepository);
+			filter.setDumpRequests(this.dumpRequests);
+			return filter;
+		}
+
 	}
 
 }

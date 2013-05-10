@@ -16,8 +16,6 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
-import java.util.List;
-
 import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.actuate.properties.ServerProperties;
@@ -27,11 +25,6 @@ import org.springframework.bootstrap.context.annotation.EnableConfigurationPrope
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for service apps.
@@ -39,23 +32,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author Dave Syer
  */
 @Configuration
-@Import({ ManagementConfiguration.class, MetricConfiguration.class,
-		ServerConfiguration.class, SecurityConfiguration.class,
-		TraceFilterConfiguration.class, MetricFilterConfiguration.class,
-		AuditConfiguration.class })
-public class ActuatorAutoConfiguration extends WebMvcConfigurationSupport {
-
-	@Override
-	protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-		addDefaultHttpMessageConverters(converters);
-		for (HttpMessageConverter<?> converter : converters) {
-			if (converter instanceof MappingJackson2HttpMessageConverter) {
-				MappingJackson2HttpMessageConverter jacksonConverter = (MappingJackson2HttpMessageConverter) converter;
-				jacksonConverter.getObjectMapper().disable(
-						SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-			}
-		}
-	}
+@Import({ ActuatorWebConfiguration.class, ManagementConfiguration.class,
+		MetricConfiguration.class, ServerConfiguration.class,
+		SecurityConfiguration.class, TraceFilterConfiguration.class,
+		MetricFilterConfiguration.class, AuditConfiguration.class })
+public class ActuatorAutoConfiguration {
 
 	/*
 	 * ServerProperties has to be declared in a non-conditional bean, so that it gets
@@ -70,6 +51,7 @@ public class ActuatorAutoConfiguration extends WebMvcConfigurationSupport {
 		public EndpointsProperties endpointsProperties() {
 			return new EndpointsProperties();
 		}
+
 	}
 
 }
