@@ -45,10 +45,13 @@ public class TraceFilterConfiguration {
 	@Value("${management.dump_requests:false}")
 	private boolean dumpRequests;
 
-	@Bean
 	@ConditionalOnMissingBean(TraceRepository.class)
-	protected TraceRepository traceRepository() {
-		return this.traceRepository;
+	@Configuration
+	protected static class TraceRepositoryConfiguration {
+		@Bean
+		public TraceRepository traceRepository() {
+			return new InMemoryTraceRepository();
+		}
 	}
 
 	@Bean

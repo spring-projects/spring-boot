@@ -58,13 +58,11 @@ public class ConfigurationPropertiesBindingConfiguration {
 
 	@ConditionalOnMissingBean(name = VALIDATOR_BEAN_NAME)
 	@ConditionalOnClass(name = "javax.validation.Validator")
-	public static class ValidatorConfiguration {
-
+	protected static class ValidatorConfiguration {
 		@Bean
 		protected Validator configurationPropertiesValidator() {
 			return new LocalValidatorFactoryBean();
 		}
-
 	}
 
 	/**
