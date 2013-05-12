@@ -289,15 +289,45 @@ via `application.properties`).
 By default the Actuator adds an `/info` endpoint to the main server.
 It contains the commit and timestamp information from `git.properties`
 (if that file exists) and also any properties it finds in the
-environment with prefix "info".  To populate `git.properties` in a
+environment with prefix "info".
+
+To populate `git.properties` in a
 Maven build you can use the excellent
 [git-commit-id-plugin](https://github.com/ktoso/maven-git-commit-id-plugin).
+
 To populate the "info" map all you need to do is add some stuff to
 `application.properties`, e.g.
 
     info.app.name: MyService
     info.app.description: My awesome service
     info.app.version: 1.0.0
+
+If you are using Maven you can automcatically populate info properties
+from the project using resource filtering.  In your `pom.xml` you
+have (inside the `<build/>` element):
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+and then in the `application.properties` you can refer to project
+properties via placeholders, e.g.
+
+    project.artifactId: myproject
+    project.name: Demo
+    project.version: X.X.X.X
+    project.description: Demo project for info endpoint
+    info.build.artifact: ${project.artifactId}
+    info.build.name: ${project.name}
+    info.build.description: ${project.description}
+    info.build.version: ${project.version}
+    
+(notice that in the example we used `project.*` to set some values to
+be used as fallbacks if the Maven resource filtering has for some
+reason not been switched on).
 
 ## Security - Basic Authentication
 
