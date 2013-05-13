@@ -50,9 +50,6 @@ import org.springframework.util.ClassUtils;
 @ConditionalOnMissingBean(DataSource.class)
 public class EmbeddedDatabaseAutoConfiguration {
 
-	private static Log logger = LogFactory
-			.getLog(EmbeddedDatabaseAutoConfiguration.class);
-
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_TYPE_CLASSES;
 	static {
 		EMBEDDED_DATABASE_TYPE_CLASSES = new LinkedHashMap<EmbeddedDatabaseType, String>();
@@ -99,6 +96,8 @@ public class EmbeddedDatabaseAutoConfiguration {
 	}
 
 	static class EmbeddedDatabaseCondition implements Condition {
+
+		private static Log logger = LogFactory.getLog(EmbeddedDatabaseCondition.class);
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
