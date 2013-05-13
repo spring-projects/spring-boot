@@ -53,7 +53,7 @@ You need to build from source for now, but when it's done instructions will look
     Hello World!
 
 
-## What? It's Groovy then? or like Grails? or another Roo?
+## What? It's Groovy then? or like Grails? or Roo?
 
 There is a command line tool that uses Groovy underneath so that we
 can present simple snippets that can just run just like the slimline
@@ -129,6 +129,15 @@ service then it will provide a server, security, logging, externalized
 configuration, management endpoints, an audit abstraction, and more.
 If you want to switch off the built in features, or extend or replace
 them, it makes that really easy as well.
+
+### Service Wrappers and Deployability
+
+Spring Bootstrap helps you to take that last step from finishing a
+development iteration to getting the code running in production.
+Without having to think too much about it, other than choosing your
+deployment environment (CentOS, Ubuntu, Windows etc) you should be
+able to stand up an instance, or multiple instances, of your component
+and have them fit seamlessly into the operating system environment.
 
 ### Spring Bootstrap Starters
 
