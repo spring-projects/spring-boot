@@ -19,6 +19,8 @@ package org.springframework.bootstrap.context.annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -34,6 +36,8 @@ import org.springframework.util.MultiValueMap;
  */
 class OnClassCondition implements Condition {
 
+	private static Log logger = LogFactory.getLog(OnClassCondition.class);
+
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
@@ -45,7 +49,14 @@ class OnClassCondition implements Condition {
 			Assert.isTrue(classNames.size() > 0,
 					"@ConditionalOnClass annotations must specify at least one class value");
 			for (String className : classNames) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Checking for class: " + className);
+				}
 				if (!ClassUtils.isPresent(className, context.getClassLoader())) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Found class: " + className
+								+ " (search terminated with matches=false)");
+					}
 					return false;
 				}
 			}

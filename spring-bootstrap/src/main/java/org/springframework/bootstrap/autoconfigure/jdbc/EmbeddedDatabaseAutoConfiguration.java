@@ -22,6 +22,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -47,6 +49,9 @@ import org.springframework.util.ClassUtils;
 @Conditional(EmbeddedDatabaseAutoConfiguration.EmbeddedDatabaseCondition.class)
 @ConditionalOnMissingBean(DataSource.class)
 public class EmbeddedDatabaseAutoConfiguration {
+
+	private static Log logger = LogFactory
+			.getLog(EmbeddedDatabaseAutoConfiguration.class);
 
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_TYPE_CLASSES;
 	static {
@@ -100,7 +105,14 @@ public class EmbeddedDatabaseAutoConfiguration {
 			if (!ClassUtils.isPresent(
 					"org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType",
 					context.getClassLoader())) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Spring JDBC not detected (EmbeddedDatabaseCondition evaluated false).");
+				}
 				return false;
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug("Spring JDBC detected (embedded database type is "
+						+ getEmbeddedDatabaseType() + ").");
 			}
 			return getEmbeddedDatabaseType() != null;
 		}

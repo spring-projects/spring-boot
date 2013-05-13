@@ -19,6 +19,8 @@ package org.springframework.bootstrap.context.annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -35,6 +37,8 @@ import org.springframework.util.MultiValueMap;
  */
 class OnResourceCondition implements Condition {
 
+	private static Log logger = LogFactory.getLog(OnResourceCondition.class);
+
 	private ResourceLoader loader = new DefaultResourceLoader();
 
 	@Override
@@ -47,7 +51,14 @@ class OnResourceCondition implements Condition {
 			Assert.isTrue(locations.size() > 0,
 					"@ConditionalOnResource annotations must specify at least one resource location");
 			for (String location : locations) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Checking for resource: " + location);
+				}
 				if (!this.loader.getResource(location).exists()) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("Found resource: " + location
+								+ " (search terminated with matches=false)");
+					}
 					return false;
 				}
 			}

@@ -19,6 +19,8 @@ package org.springframework.bootstrap.context.annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -33,6 +35,8 @@ import org.springframework.util.MultiValueMap;
  * @author Phillip Webb
  */
 abstract class AbstractOnBeanCondition implements Condition {
+
+	private static Log logger = LogFactory.getLog(OnBeanCondition.class);
 
 	protected abstract Class<?> annotationClass();
 
@@ -49,6 +53,9 @@ abstract class AbstractOnBeanCondition implements Condition {
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();
 
+		if (logger.isDebugEnabled()) {
+			logger.debug("Looking for beans with class: " + beanClasses);
+		}
 		for (String beanClass : beanClasses) {
 			try {
 				// eagerInit set to false to prevent early instantiation (some
@@ -65,13 +72,20 @@ abstract class AbstractOnBeanCondition implements Condition {
 			}
 		}
 
+		if (logger.isDebugEnabled()) {
+			logger.debug("Looking for beans with names: " + beanNames);
+		}
 		for (String beanName : beanNames) {
 			if (context.getBeanFactory().containsBeanDefinition(beanName)) {
 				beanNamesFound.add(beanName);
 			}
 		}
 
-		return evaluate(beanClassesFound, beanNamesFound);
+		boolean result = evaluate(beanClassesFound, beanNamesFound);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Finished matching and result is matches" + result);
+		}
+		return result;
 	}
 
 	protected boolean evaluate(List<String> beanClassesFound, List<String> beanNamesFound) {

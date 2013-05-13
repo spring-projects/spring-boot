@@ -57,7 +57,11 @@ public class ExpressionCondition implements Condition {
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		BeanExpressionContext expressionContext = (beanFactory != null) ? new BeanExpressionContext(
 				beanFactory, null) : null;
-		return (Boolean) resolver.evaluate(value, expressionContext);
+		Boolean result = (Boolean) resolver.evaluate(value, expressionContext);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Finished matching and result is matches=" + result);
+		}
+		return result;
 	}
 
 }
