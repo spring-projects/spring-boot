@@ -7,7 +7,8 @@
 			<pattern>${LOG_PATTERN}</pattern>
 		</encoder>
 	</appender>
-	<logger name="org.springframework.beans.factory.annotation" level="TRACE" />
+	<logger name="org.springframework.bootstrap.context.annotation" level="TRACE" />
+	<logger name="org.thymeleaf" level="TRACE" />
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />
 	</root>

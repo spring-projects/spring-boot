@@ -36,7 +36,7 @@ import org.springframework.util.MultiValueMap;
  */
 abstract class AbstractOnBeanCondition implements Condition {
 
-	private static Log logger = LogFactory.getLog(OnBeanCondition.class);
+	protected Log logger = LogFactory.getLog(getClass());
 
 	protected abstract Class<?> annotationClass();
 
@@ -53,8 +53,8 @@ abstract class AbstractOnBeanCondition implements Condition {
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("Looking for beans with class: " + beanClasses);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Looking for beans with class: " + beanClasses);
 		}
 		for (String beanClass : beanClasses) {
 			try {
@@ -72,8 +72,8 @@ abstract class AbstractOnBeanCondition implements Condition {
 			}
 		}
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("Looking for beans with names: " + beanNames);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Looking for beans with names: " + beanNames);
 		}
 		for (String beanName : beanNames) {
 			if (context.getBeanFactory().containsBeanDefinition(beanName)) {
@@ -82,8 +82,8 @@ abstract class AbstractOnBeanCondition implements Condition {
 		}
 
 		boolean result = evaluate(beanClassesFound, beanNamesFound);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Finished matching and result is matches" + result);
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Finished matching and result is matches: " + result);
 		}
 		return result;
 	}

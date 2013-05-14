@@ -3,10 +3,10 @@
   <parent>
     <artifactId>spring-bootstrap-samples</artifactId>
     <groupId>org.springframework.bootstrap</groupId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.5.0.BUILD-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>spring-bootstrap-service-sample</artifactId>
+  <artifactId>spring-bootstrap-integration-sample</artifactId>
   <build>
     <plugins>
       <plugin>
@@ -14,77 +14,6 @@
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>tomcat</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.tomcat.embed</groupId>
-          <artifactId>tomcat-embed-core</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.tomcat.embed</groupId>
-          <artifactId>tomcat-embed-logging-juli</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>jetty</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-webapp</artifactId>
-          <version>8.1.9.v20130131</version>
-          <scope>compile</scope>
-          <exclusions>
-            <exclusion>
-              <artifactId>javax.servlet</artifactId>
-              <groupId>org.eclipse.jetty.orbit</groupId>
-            </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-jsp</artifactId>
-          <version>8.1.9.v20130131</version>
-          <scope>compile</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>juli</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-jdk14</artifactId>
-          <version>1.7.2</version>
-          <scope>compile</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>log4j</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>logback</id>
-      <dependencies>
-        <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -128,8 +57,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <main.basedir>${project.basedir}/../..</main.basedir>
-    <start-class>org.springframework.bootstrap.sample.service.ServiceBootstrapApplication</start-class>
+    <start-class>org.springframework.bootstrap.sample.service.IntegrationBootstrapApplication</start-class>
   </properties>
 </project>
 

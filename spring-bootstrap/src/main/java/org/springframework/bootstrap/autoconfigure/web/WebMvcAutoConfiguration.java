@@ -18,6 +18,8 @@ package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration.WebMvcConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
@@ -25,11 +27,16 @@ import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.format.Formatter;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -51,6 +58,9 @@ public class WebMvcAutoConfiguration {
 	@EnableWebMvc
 	public static class WebMvcConfiguration extends WebMvcConfigurerAdapter {
 
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
 		@Bean
 		public DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
@@ -60,6 +70,29 @@ public class WebMvcAutoConfiguration {
 		public void configureDefaultServletHandling(
 				DefaultServletHandlerConfigurer configurer) {
 			configurer.enable();
+		}
+
+		@Override
+		public void addFormatters(FormatterRegistry registry) {
+			for (Converter<?, ?> converter : this.beanFactory.getBeansOfType(
+					Converter.class).values()) {
+				registry.addConverter(converter);
+			}
+			for (GenericConverter converter : this.beanFactory.getBeansOfType(
+					GenericConverter.class).values()) {
+				registry.addConverter(converter);
+			}
+			for (Formatter<?> formatter : this.beanFactory
+					.getBeansOfType(Formatter.class).values()) {
+				registry.addFormatter(formatter);
+			}
+		}
+
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/**").addResourceLocations("/")
+					.addResourceLocations("classpath:/static")
+					.addResourceLocations("classpath:/");
 		}
 
 	}

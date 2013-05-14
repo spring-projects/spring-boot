@@ -320,7 +320,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 */
 	protected final File getValidDocumentRoot() {
 		File[] roots = new File[] { getDocumentRoot(), new File("src/main/webapp"),
-				new File("public") };
+				new File("public"), new File("static") };
 		for (File root : roots) {
 			if (root != null && root.exists() && root.isDirectory()) {
 				return root.getAbsoluteFile();

@@ -290,7 +290,7 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void exitWithExplicitCOde() throws Exception {
+	public void exitWithExplicitCode() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		ApplicationContext context = application.run();

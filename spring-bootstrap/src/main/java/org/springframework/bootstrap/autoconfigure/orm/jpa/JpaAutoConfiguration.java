@@ -53,7 +53,7 @@ public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 	private ConfigurableListableBeanFactory beanFactory;
 
 	@Bean
-	public PlatformTransactionManager txManager() {
+	public PlatformTransactionManager transactionManager() {
 		return new JpaTransactionManager(entityManagerFactory().getObject());
 	}
 

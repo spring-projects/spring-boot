@@ -19,6 +19,7 @@ package org.springframework.bootstrap.autoconfigure.orm.jpa;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -36,7 +37,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass(name = "org.hibernate.ejb.HibernateEntityManager")
+@ConditionalOnClass(HibernateEntityManager.class)
 @EnableTransactionManagement
 public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 

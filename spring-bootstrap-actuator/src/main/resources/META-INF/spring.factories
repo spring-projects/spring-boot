@@ -1,4 +1,2 @@
 org.springframework.bootstrap.context.annotation.EnableAutoConfiguration=\
 org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration
-org.springframework.context.ApplicationContextInitializer=\
-org.springframework.bootstrap.logging.LoggingInitializer

@@ -61,6 +61,9 @@ class OnClassCondition implements Condition {
 				}
 			}
 		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("Classes not found (search terminated with matches=true)");
+		}
 		return true;
 	}
 

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.logging;
+package org.springframework.bootstrap.context.initializer;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.bootstrap.logging.JavaLoggerConfigurer;
+import org.springframework.bootstrap.logging.LogbackConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -198,7 +200,7 @@ public class LoggingInitializer implements
 			}
 
 			// Fallback to the default
-			String defaultPath = ClassUtils.getPackageName(LoggingInitializer.class);
+			String defaultPath = ClassUtils.getPackageName(JavaLoggerConfigurer.class);
 			defaultPath = defaultPath.replace(".", "/");
 			defaultPath = defaultPath + "/" + this.paths[this.paths.length - 1];
 			return "classpath:" + defaultPath;

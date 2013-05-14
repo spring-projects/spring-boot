@@ -309,6 +309,11 @@
 				<artifactId>javax.servlet-api</artifactId>
 				<version>3.0.1</version>
 			</dependency>
+            <dependency>
+              <groupId>javax.servlet</groupId>
+              <artifactId>jstl</artifactId>
+              <version>1.2</version>
+            </dependency>
 			<dependency>
               <groupId>org.hibernate.javax.persistence</groupId>
               <artifactId>hibernate-jpa-2.0-api</artifactId>
@@ -525,6 +530,16 @@
 				<artifactId>snakeyaml</artifactId>
 				<version>1.12</version>
 			</dependency>
+            <dependency>
+              <groupId>org.thymeleaf</groupId>
+              <artifactId>thymeleaf-spring3</artifactId>
+              <version>2.0.16</version>
+            </dependency>
+            <dependency>
+              <groupId>nz.net.ultraq.web.thymeleaf</groupId>
+              <artifactId>thymeleaf-layout-dialect</artifactId>
+              <version>1.0.6</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
