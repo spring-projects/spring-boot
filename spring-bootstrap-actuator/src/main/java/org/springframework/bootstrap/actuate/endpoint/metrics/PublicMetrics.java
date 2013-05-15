@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.health;
+package org.springframework.bootstrap.actuate.endpoint.metrics;
+
+import java.util.Collection;
+
+import org.springframework.bootstrap.actuate.metrics.Metric;
 
 /**
  * @author Dave Syer
  */
-public class VanillaHealthIndicator implements HealthIndicator<String> {
+public interface PublicMetrics {
 
-	@Override
-	public String health() {
-		return "ok";
-	}
+	/**
+	 * @return an indication of current state through metrics
+	 */
+	Collection<Metric> metrics();
 
 }

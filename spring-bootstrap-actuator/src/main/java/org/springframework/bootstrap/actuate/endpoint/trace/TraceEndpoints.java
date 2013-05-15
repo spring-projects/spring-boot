@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.info;
+package org.springframework.bootstrap.actuate.endpoint.trace;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.util.Arrays;
+import java.util.List;
 
+import org.springframework.bootstrap.actuate.trace.Trace;
+import org.springframework.bootstrap.actuate.trace.TraceRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,26 +31,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  */
 @Controller
-public class InfoEndpoint {
+public class TraceEndpoints {
 
-	private Map<String, Object> info;
+	private TraceRepository tracer;
 
 	/**
-	 * @param info
+	 * @param tracer
 	 */
-	public InfoEndpoint(Map<String, Object> info) {
-		this.info = new LinkedHashMap<String, Object>(info);
-		this.info.putAll(getAdditionalInfo());
+	public TraceEndpoints(TraceRepository tracer) {
+		super();
+		this.tracer = tracer;
 	}
 
-	@RequestMapping("${endpoints.info.path:/info}")
+	@RequestMapping("${endpoints.trace.path:/trace}")
 	@ResponseBody
-	public Map<String, Object> info() {
-		return this.info;
+	public List<Trace> trace() {
+		return this.tracer.traces();
 	}
 
-	protected Map<String, Object> getAdditionalInfo() {
-		return Collections.emptyMap();
+	@RequestMapping("${endpoints.dump.path:/dump}")
+	@ResponseBody
+	public List<ThreadInfo> dump() {
+		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
+				true));
 	}
 
 }

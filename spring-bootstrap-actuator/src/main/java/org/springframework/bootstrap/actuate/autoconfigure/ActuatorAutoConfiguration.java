@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @Import({ ActuatorWebConfiguration.class, ManagementConfiguration.class,
-		MetricConfiguration.class, ServerConfiguration.class,
+		MetricRepositoryConfiguration.class, ServerConfiguration.class,
 		SecurityConfiguration.class, TraceFilterConfiguration.class,
 		MetricFilterConfiguration.class, AuditConfiguration.class })
 public class ActuatorAutoConfiguration {

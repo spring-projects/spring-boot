@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.varz;
+package org.springframework.bootstrap.actuate.endpoint.metrics;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

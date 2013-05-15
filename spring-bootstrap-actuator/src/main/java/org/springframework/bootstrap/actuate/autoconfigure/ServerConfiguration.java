@@ -23,7 +23,7 @@ import org.apache.catalina.valves.RemoteIpValve;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.bootstrap.actuate.error.ErrorEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
 import org.springframework.bootstrap.actuate.properties.ServerProperties;
 import org.springframework.bootstrap.actuate.properties.ServerProperties.Tomcat;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;

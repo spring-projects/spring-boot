@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.health;
+package org.springframework.bootstrap.actuate.endpoint.health;
 
 /**
  * @author Dave Syer
  */
-public interface HealthIndicator<T> {
+public class VanillaHealthIndicator implements HealthIndicator<String> {
 
-	/**
-	 * @return an indication of health
-	 */
-	T health();
+	@Override
+	public String health() {
+		return "ok";
+	}
 
 }

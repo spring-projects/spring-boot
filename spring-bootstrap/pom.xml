@@ -116,12 +116,12 @@
 			<artifactId>thymeleaf-layout-dialect</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- Test -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<scope>test</scope>
+			<optional>true</optional>
 		</dependency>
+		<!-- Test -->
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>

@@ -18,7 +18,7 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
 
-import org.springframework.bootstrap.actuate.shutdown.ShutdownEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.shutdown.ShutdownEndpoint;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;

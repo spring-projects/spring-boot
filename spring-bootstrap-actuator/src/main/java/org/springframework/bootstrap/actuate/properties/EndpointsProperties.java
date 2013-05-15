@@ -34,10 +34,10 @@ public class EndpointsProperties {
 	private Endpoint info = new Endpoint("/info");
 
 	@Valid
-	private Endpoint varz = new Endpoint("/varz");
+	private Endpoint metrics = new Endpoint("/metrics");
 
 	@Valid
-	private Endpoint healthz = new Endpoint("/healthz");
+	private Endpoint health = new Endpoint("/health");
 
 	@Valid
 	private Endpoint error = new Endpoint("/error");
@@ -55,12 +55,12 @@ public class EndpointsProperties {
 		return this.info;
 	}
 
-	public Endpoint getVarz() {
-		return this.varz;
+	public Endpoint getMetrics() {
+		return this.metrics;
 	}
 
-	public Endpoint getHealthz() {
-		return this.healthz;
+	public Endpoint getHealth() {
+		return this.health;
 	}
 
 	public Endpoint getError() {

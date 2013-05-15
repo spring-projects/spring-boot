@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.varz;
+package org.springframework.bootstrap.actuate.endpoint.info;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.bootstrap.actuate.metrics.Metric;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,25 +28,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  */
 @Controller
-public class VarzEndpoint {
+public class InfoEndpoint {
 
-	private PublicMetrics metrics;
+	private Map<String, Object> info;
 
 	/**
-	 * @param metrics
+	 * @param info
 	 */
-	public VarzEndpoint(PublicMetrics metrics) {
-		this.metrics = metrics;
+	public InfoEndpoint(Map<String, Object> info) {
+		this.info = new LinkedHashMap<String, Object>(info);
+		this.info.putAll(getAdditionalInfo());
 	}
 
-	@RequestMapping("${endpoints.varz.path:/varz}")
+	@RequestMapping("${endpoints.info.path:/info}")
 	@ResponseBody
-	public Map<String, Object> varz() {
-		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (Metric metric : this.metrics.metrics()) {
-			result.put(metric.getName(), metric.getValue());
-		}
-		return result;
+	public Map<String, Object> info() {
+		return this.info;
+	}
+
+	protected Map<String, Object> getAdditionalInfo() {
+		return Collections.emptyMap();
 	}
 
 }

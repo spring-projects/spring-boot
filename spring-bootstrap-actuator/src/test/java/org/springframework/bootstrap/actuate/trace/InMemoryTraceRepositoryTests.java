@@ -19,8 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.trace.InMemoryTraceRepository;
-import org.springframework.bootstrap.actuate.trace.Trace;
 
 import static org.junit.Assert.assertEquals;
 

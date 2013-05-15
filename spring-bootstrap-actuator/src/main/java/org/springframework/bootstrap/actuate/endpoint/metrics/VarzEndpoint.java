@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.trace;
+package org.springframework.bootstrap.actuate.endpoint.metrics;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.springframework.bootstrap.actuate.metrics.Metric;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -29,29 +28,25 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  */
 @Controller
-public class TraceEndpoints {
+public class VarzEndpoint {
 
-	private TraceRepository tracer;
+	private PublicMetrics metrics;
 
 	/**
-	 * @param tracer
+	 * @param metrics
 	 */
-	public TraceEndpoints(TraceRepository tracer) {
-		super();
-		this.tracer = tracer;
+	public VarzEndpoint(PublicMetrics metrics) {
+		this.metrics = metrics;
 	}
 
-	@RequestMapping("${endpoints.trace.path:/trace}")
+	@RequestMapping("${endpoints.varz.path:/varz}")
 	@ResponseBody
-	public List<Trace> trace() {
-		return this.tracer.traces();
-	}
-
-	@RequestMapping("${endpoints.dump.path:/dump}")
-	@ResponseBody
-	public List<ThreadInfo> dump() {
-		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
-				true));
+	public Map<String, Object> varz() {
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		for (Metric metric : this.metrics.metrics()) {
+			result.put(metric.getName(), metric.getValue());
+		}
+		return result;
 	}
 
 }

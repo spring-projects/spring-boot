@@ -14,32 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.health;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+package org.springframework.bootstrap.actuate.endpoint.health;
 
 /**
  * @author Dave Syer
  */
-@Controller
-public class HealthzEndpoint<T> {
-
-	private HealthIndicator<? extends T> indicator;
+public interface HealthIndicator<T> {
 
 	/**
-	 * @param indicator
+	 * @return an indication of health
 	 */
-	public HealthzEndpoint(HealthIndicator<? extends T> indicator) {
-		super();
-		this.indicator = indicator;
-	}
-
-	@RequestMapping("${endpoints.healthz.path:/healthz}")
-	@ResponseBody
-	public T healthz() {
-		return this.indicator.health();
-	}
+	T health();
 
 }

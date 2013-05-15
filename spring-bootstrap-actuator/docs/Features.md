@@ -378,7 +378,7 @@ or you can simply publish `AuditApplicationEvent` via the Spring
 
 ## Metrics Customization
 
-Metrics come out on the `/varz` endpoint.  You can add additional
+Metrics come out on the `/metrics` endpoint.  You can add additional
 metrics by injecting a `MetricsRepository` into your application
 components and adding metrics whenever you need to.  To customize the
 `MetricsRepository` itself, just add a bean definition of that type to
@@ -387,7 +387,7 @@ for now).
 
 ## Customizing the Health Indicator
 
-The application always tells you if it's healthy via the `/healthz`
+The application always tells you if it's healthy via the `/health`
 endpoint.  By default it just responds to a GET witha 200 status and a
 plain text body containing "ok".  If you want to add more detailed
 information (e.g. a description of the current state of the

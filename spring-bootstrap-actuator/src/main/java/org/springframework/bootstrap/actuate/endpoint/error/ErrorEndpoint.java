@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.error;
+package org.springframework.bootstrap.actuate.endpoint.error;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

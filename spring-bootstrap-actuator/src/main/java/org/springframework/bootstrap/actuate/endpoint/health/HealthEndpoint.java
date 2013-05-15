@@ -14,20 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.varz;
+package org.springframework.bootstrap.actuate.endpoint.health;
 
-import java.util.Collection;
-
-import org.springframework.bootstrap.actuate.metrics.Metric;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author Dave Syer
  */
-public interface PublicMetrics {
+@Controller
+public class HealthEndpoint<T> {
+
+	private HealthIndicator<? extends T> indicator;
 
 	/**
-	 * @return an indication of current state through metrics
+	 * @param indicator
 	 */
-	Collection<Metric> metrics();
+	public HealthEndpoint(HealthIndicator<? extends T> indicator) {
+		super();
+		this.indicator = indicator;
+	}
+
+	@RequestMapping("${endpoints.healthz.path:/healthz}")
+	@ResponseBody
+	public T healthz() {
+		return this.indicator.health();
+	}
 
 }

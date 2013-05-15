@@ -19,7 +19,7 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.actuate.trace.TraceEndpoints;
+import org.springframework.bootstrap.actuate.endpoint.trace.TraceEndpoints;
 import org.springframework.bootstrap.actuate.trace.TraceRepository;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;

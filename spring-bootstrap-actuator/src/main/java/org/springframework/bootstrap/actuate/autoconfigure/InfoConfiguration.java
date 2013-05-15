@@ -26,7 +26,7 @@ import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.bootstrap.actuate.info.InfoEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.info.InfoEndpoint;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;

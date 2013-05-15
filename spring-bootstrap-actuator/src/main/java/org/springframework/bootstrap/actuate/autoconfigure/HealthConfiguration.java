@@ -13,44 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
-import org.springframework.bootstrap.actuate.metrics.CounterService;
-import org.springframework.bootstrap.actuate.metrics.DefaultCounterService;
-import org.springframework.bootstrap.actuate.metrics.DefaultGaugeService;
-import org.springframework.bootstrap.actuate.metrics.GaugeService;
-import org.springframework.bootstrap.actuate.metrics.InMemoryMetricRepository;
-import org.springframework.bootstrap.actuate.metrics.MetricRepository;
+import javax.servlet.Servlet;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.actuate.endpoint.health.HealthEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.health.HealthIndicator;
+import org.springframework.bootstrap.actuate.endpoint.health.VanillaHealthIndicator;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for metrics services.
+ * {@link EnableAutoConfiguration Auto-configuration} for /health endpoint.
  * 
  * @author Dave Syer
- * 
  */
 @Configuration
-public class MetricConfiguration {
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnMissingBean({ HealthEndpoint.class })
+public class HealthConfiguration {
+
+	@Autowired(required = false)
+	private HealthIndicator<? extends Object> healthIndicator = new VanillaHealthIndicator();
 
 	@Bean
-	@ConditionalOnMissingBean({ CounterService.class })
-	public CounterService counterService() {
-		return new DefaultCounterService(metricRepository());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean({ GaugeService.class })
-	public GaugeService gaugeService() {
-		return new DefaultGaugeService(metricRepository());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean({ MetricRepository.class })
-	protected MetricRepository metricRepository() {
-		return new InMemoryMetricRepository();
+	public HealthEndpoint<? extends Object> healthzEndpoint() {
+		return new HealthEndpoint<Object>(this.healthIndicator);
 	}
 
 }

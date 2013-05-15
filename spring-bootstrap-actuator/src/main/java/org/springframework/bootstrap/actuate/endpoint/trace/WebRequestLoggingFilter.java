@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate.trace;
+package org.springframework.bootstrap.actuate.endpoint.trace;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.bootstrap.actuate.trace.TraceRepository;
 import org.springframework.core.Ordered;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -21,7 +21,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.bootstrap.actuate.error.ErrorEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
