@@ -8,7 +8,6 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-bootstrap-ui-sample</artifactId>
-	<packaging>war</packaging>
 	<properties>
 		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>
 		<start-class>org.springframework.bootstrap.sample.ui.UiBootstrapApplication</start-class>
