@@ -22,7 +22,7 @@
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<spring.security.javaconfig.version>1.0.0.CI-SNAPSHOT</spring.security.javaconfig.version>
 		<spring.integration.version>2.2.3.RELEASE</spring.integration.version>
-		<spring.batch.version>2.2.0.RC1</spring.batch.version>
+		<spring.batch.version>2.2.0.RC2</spring.batch.version>
         <tomcat.version>7.0.39</tomcat.version>
 	</properties>
 
@@ -433,7 +433,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-entitymanager</artifactId>
-				<version>4.1.9.Final</version>
+				<version>4.2.1.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>
