@@ -16,9 +16,9 @@
 
 package org.springframework.bootstrap.context.annotation;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link Condition} that checks that specific beans are missing.
@@ -34,7 +34,7 @@ class OnMissingBeanCondition extends AbstractOnBeanCondition {
 	}
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		return !super.matches(context, metadata);
+	protected boolean evaluate(List<String> beanClassesFound, List<String> beanNamesFound) {
+		return !super.evaluate(beanClassesFound, beanNamesFound);
 	}
 }

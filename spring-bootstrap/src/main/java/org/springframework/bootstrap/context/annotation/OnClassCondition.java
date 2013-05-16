@@ -62,7 +62,7 @@ class OnClassCondition implements Condition {
 			}
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("All classes found (search terminated with matches=true)");
+			logger.debug("Match result is: true");
 		}
 		return true;
 	}

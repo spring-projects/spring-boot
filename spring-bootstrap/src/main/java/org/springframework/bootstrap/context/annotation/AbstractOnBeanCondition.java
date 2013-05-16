@@ -79,12 +79,20 @@ abstract class AbstractOnBeanCondition implements Condition {
 		if (this.logger.isDebugEnabled()) {
 			if (!beanClasses.isEmpty()) {
 				this.logger.debug("Looking for beans with class: " + beanClasses);
-				this.logger.debug("Found beans with classes: " + beanClassesFound);
+				if (beanClassesFound.isEmpty()) {
+					this.logger.debug("Found no beans");
+				} else {
+					this.logger.debug("Found beans with classes: " + beanClassesFound);
+				}
 			}
 
 			if (!beanNames.isEmpty()) {
 				this.logger.debug("Looking for beans with names: " + beanNames);
-				this.logger.debug("Found beans with names: " + beanNamesFound);
+				if (beanNamesFound.isEmpty()) {
+					this.logger.debug("Found no beans");
+				} else {
+					this.logger.debug("Found beans with names: " + beanNamesFound);
+				}
 			}
 			this.logger.debug("Match result is: " + result);
 		}

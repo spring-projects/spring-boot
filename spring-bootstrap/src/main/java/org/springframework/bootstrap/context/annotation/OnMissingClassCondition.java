@@ -60,6 +60,9 @@ class OnMissingClassCondition implements Condition {
 				}
 			}
 		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("Match result is: true");
+		}
 		return true;
 	}
 

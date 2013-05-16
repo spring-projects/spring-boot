@@ -34,7 +34,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 @Configuration
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean(JpaRepositoryFactoryBean.class)
-@Import(JpaRepositoriesAutoConfigureRegistrar.class)
+@Import({ JpaComponentScanDetector.class, JpaRepositoriesAutoConfigureRegistrar.class })
 public class JpaRepositoriesAutoConfiguration {
 
 }
