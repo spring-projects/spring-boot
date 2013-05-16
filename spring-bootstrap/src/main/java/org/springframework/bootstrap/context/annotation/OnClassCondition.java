@@ -54,7 +54,7 @@ class OnClassCondition implements Condition {
 				}
 				if (!ClassUtils.isPresent(className, context.getClassLoader())) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Found class: " + className
+						logger.debug("Class not found: " + className
 								+ " (search terminated with matches=false)");
 					}
 					return false;
@@ -62,7 +62,7 @@ class OnClassCondition implements Condition {
 			}
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("Classes not found (search terminated with matches=true)");
+			logger.debug("All classes found (search terminated with matches=true)");
 		}
 		return true;
 	}

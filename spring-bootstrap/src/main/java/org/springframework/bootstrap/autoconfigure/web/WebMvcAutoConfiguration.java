@@ -91,6 +91,7 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/**").addResourceLocations("/")
+					.addResourceLocations("classpath:/META-INF/resources/")
 					.addResourceLocations("classpath:/static")
 					.addResourceLocations("classpath:/");
 		}

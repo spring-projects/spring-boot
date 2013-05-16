@@ -33,6 +33,7 @@ import org.springframework.util.MultiValueMap;
  * Base for {@link OnBeanCondition} and {@link OnMissingBeanCondition}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 abstract class AbstractOnBeanCondition implements Condition {
 
@@ -53,9 +54,6 @@ abstract class AbstractOnBeanCondition implements Condition {
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();
 
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Looking for beans with class: " + beanClasses);
-		}
 		for (String beanClass : beanClasses) {
 			try {
 				// eagerInit set to false to prevent early instantiation (some
@@ -71,10 +69,6 @@ abstract class AbstractOnBeanCondition implements Condition {
 			} catch (ClassNotFoundException ex) {
 			}
 		}
-
-		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Looking for beans with names: " + beanNames);
-		}
 		for (String beanName : beanNames) {
 			if (context.getBeanFactory().containsBeanDefinition(beanName)) {
 				beanNamesFound.add(beanName);
@@ -83,7 +77,16 @@ abstract class AbstractOnBeanCondition implements Condition {
 
 		boolean result = evaluate(beanClassesFound, beanNamesFound);
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Finished matching and result is matches: " + result);
+			if (!beanClasses.isEmpty()) {
+				this.logger.debug("Looking for beans with class: " + beanClasses);
+				this.logger.debug("Found beans with classes: " + beanClassesFound);
+			}
+
+			if (!beanNames.isEmpty()) {
+				this.logger.debug("Looking for beans with names: " + beanNames);
+				this.logger.debug("Found beans with names: " + beanNamesFound);
+			}
+			this.logger.debug("Match result is: " + result);
 		}
 		return result;
 	}
