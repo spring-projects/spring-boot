@@ -15,6 +15,7 @@
  */
 package org.springframework.bootstrap.autoconfigure.jdbc;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
@@ -30,14 +31,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TomcatDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
+	private org.apache.tomcat.jdbc.pool.DataSource pool;
+
 	@Bean
 	public DataSource dataSource() {
-		org.apache.tomcat.jdbc.pool.DataSource pool = new org.apache.tomcat.jdbc.pool.DataSource();
-		pool.setDriverClassName(getDriverClassName());
-		pool.setUrl(getUrl());
-		pool.setUsername(getUsername());
-		pool.setPassword(getPassword());
-		return pool;
+		this.pool = new org.apache.tomcat.jdbc.pool.DataSource();
+		this.pool.setDriverClassName(getDriverClassName());
+		this.pool.setUrl(getUrl());
+		this.pool.setUsername(getUsername());
+		this.pool.setPassword(getPassword());
+		return this.pool;
+	}
+
+	@PreDestroy
+	public void close() {
+		if (this.pool != null) {
+			this.pool.close();
+		}
 	}
 
 }

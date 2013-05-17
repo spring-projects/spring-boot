@@ -15,6 +15,9 @@
  */
 package org.springframework.bootstrap.autoconfigure.jdbc;
 
+import java.sql.SQLException;
+
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -22,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
  * Configuration for a Commons DBCP database pool. The DBCP pool is popular but not
@@ -34,16 +38,29 @@ import org.springframework.context.annotation.Configuration;
 public class BasicDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
 	private static Log logger = LogFactory.getLog(BasicDataSourceConfiguration.class);
+	private BasicDataSource pool;
 
 	@Bean
 	public DataSource dataSource() {
 		logger.info("Hint: using Commons DBCP BasicDataSource. It's going to work, but the Tomcat DataSource is more reliable.");
-		BasicDataSource pool = new BasicDataSource();
-		pool.setDriverClassName(getDriverClassName());
-		pool.setUrl(getUrl());
-		pool.setUsername(getUsername());
-		pool.setPassword(getPassword());
-		return pool;
+		this.pool = new BasicDataSource();
+		this.pool.setDriverClassName(getDriverClassName());
+		this.pool.setUrl(getUrl());
+		this.pool.setUsername(getUsername());
+		this.pool.setPassword(getPassword());
+		return this.pool;
+	}
+
+	@PreDestroy
+	public void close() {
+		if (this.pool != null) {
+			try {
+				this.pool.close();
+			} catch (SQLException e) {
+				throw new DataAccessResourceFailureException(
+						"Could not close data source", e);
+			}
+		}
 	}
 
 }

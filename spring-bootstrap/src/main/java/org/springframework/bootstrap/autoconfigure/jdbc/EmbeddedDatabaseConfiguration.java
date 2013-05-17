@@ -19,11 +19,13 @@ package org.springframework.bootstrap.autoconfigure.jdbc;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.ClassUtils;
@@ -36,25 +38,42 @@ import org.springframework.util.ClassUtils;
 @Configuration
 public class EmbeddedDatabaseConfiguration {
 
-	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_TYPE_CLASSES;
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_DRIVER_CLASSES;
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_URLS;
+
+	private EmbeddedDatabase database;
+
 	static {
-		EMBEDDED_DATABASE_TYPE_CLASSES = new LinkedHashMap<EmbeddedDatabaseType, String>();
-		EMBEDDED_DATABASE_TYPE_CLASSES.put(EmbeddedDatabaseType.HSQL,
-				"org.hsqldb.Database");
+
 		EMBEDDED_DATABASE_DRIVER_CLASSES = new LinkedHashMap<EmbeddedDatabaseType, String>();
+		EMBEDDED_DATABASE_DRIVER_CLASSES.put(EmbeddedDatabaseType.H2, "org.h2.Driver");
+		EMBEDDED_DATABASE_DRIVER_CLASSES.put(EmbeddedDatabaseType.DERBY,
+				"org.apache.derby.jdbc.EmbeddedDriver");
 		EMBEDDED_DATABASE_DRIVER_CLASSES.put(EmbeddedDatabaseType.HSQL,
 				"org.hsqldb.jdbcDriver");
+
 		EMBEDDED_DATABASE_URLS = new LinkedHashMap<EmbeddedDatabaseType, String>();
+		EMBEDDED_DATABASE_URLS.put(EmbeddedDatabaseType.H2,
+				"jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
+		EMBEDDED_DATABASE_URLS.put(EmbeddedDatabaseType.DERBY,
+				"jdbc:derby:memory:testdb;create=true");
 		EMBEDDED_DATABASE_URLS.put(EmbeddedDatabaseType.HSQL, "jdbc:hsqldb:mem:testdb");
+
 	}
 
 	@Bean
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
 				.setType(getEmbeddedDatabaseType());
-		return builder.build();
+		this.database = builder.build();
+		return this.database;
+	}
+
+	@PreDestroy
+	public void close() {
+		if (this.database != null) {
+			this.database.shutdown();
+		}
 	}
 
 	public static String getEmbeddedDatabaseDriverClass(
@@ -67,7 +86,7 @@ public class EmbeddedDatabaseConfiguration {
 	}
 
 	public static EmbeddedDatabaseType getEmbeddedDatabaseType() {
-		for (Map.Entry<EmbeddedDatabaseType, String> entry : EMBEDDED_DATABASE_TYPE_CLASSES
+		for (Map.Entry<EmbeddedDatabaseType, String> entry : EMBEDDED_DATABASE_DRIVER_CLASSES
 				.entrySet()) {
 			if (ClassUtils.isPresent(entry.getValue(),
 					EmbeddedDatabaseConfiguration.class.getClassLoader())) {
