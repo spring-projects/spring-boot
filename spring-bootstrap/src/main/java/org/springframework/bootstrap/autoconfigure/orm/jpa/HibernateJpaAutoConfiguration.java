@@ -45,6 +45,14 @@ import org.springframework.util.StringUtils;
 @Import(JpaComponentScanDetector.class)
 public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 
+	public static enum DDLAUTO {
+		none, validate, update, create, create_drop;
+		@Override
+		public String toString() {
+			return this.name().toLowerCase().replace("_", "-");
+		}
+	}
+
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_DIALECTS;
 	static {
 		EMBEDDED_DATABASE_DIALECTS = new LinkedHashMap<EmbeddedDatabaseType, String>();
@@ -61,15 +69,14 @@ public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 	@Value("${spring.jpa.showSql:${spring.jpa.show_sql:false}}")
 	private boolean showSql;
 
-	@Value("${spring.jpa.generateDdl:${spring.jpa.generate_ddl:false}}")
-	private boolean generateDdl;
+	@Value("${spring.jpa.ddlAuto:${spring.jpa.ddl_auto:none}}")
+	private DDLAUTO ddlAuto;
 
 	@Bean
 	@Override
 	public JpaVendorAdapter jpaVendorAdapter() {
 		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
 		adapter.setShowSql(this.showSql);
-		adapter.setGenerateDdl(this.generateDdl);
 		if (StringUtils.hasText(this.databasePlatform)) {
 			adapter.setDatabasePlatform(this.databasePlatform);
 		}
@@ -84,6 +91,10 @@ public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 		// FIXME: detect EhCache
 		properties.put("hibernate.cache.provider_class",
 				"org.hibernate.cache.HashtableCacheProvider");
+		if (this.ddlAuto != DDLAUTO.none) {
+			properties.put("hibernate.hbm2ddl.auto", this.ddlAuto.toString());
+		}
+
 	}
 
 }
