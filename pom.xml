@@ -394,6 +394,11 @@
               <artifactId>tomcat-jdbc</artifactId>
               <version>${tomcat.version}</version>
             </dependency>
+            <dependency>
+              <groupId>commons-dbcp</groupId>
+              <artifactId>commons-dbcp</artifactId>
+              <version>1.4</version>
+            </dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy</artifactId>
@@ -477,7 +482,23 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
+				<version>${spring.version}</version>
+                <exclusions>
+                  <exclusion>
+					<groupId>quartz</groupId>
+					<artifactId>quartz</artifactId>
+                  </exclusion>
+                </exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jms</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
@@ -494,6 +515,17 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
 				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-oxm</artifactId>
+				<version>${spring.version}</version>
+                <exclusions>
+                  <exclusion>
+					<groupId>commons-lang</groupId>
+					<artifactId>commons-lang</artifactId>
+                  </exclusion>
+                </exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
