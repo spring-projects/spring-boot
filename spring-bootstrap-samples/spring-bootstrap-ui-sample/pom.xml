@@ -54,7 +54,10 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 			</plugin>
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
+				<artifactId>maven-shade-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-exec-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
