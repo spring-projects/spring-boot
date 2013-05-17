@@ -16,6 +16,9 @@
 
 package org.springframework.bootstrap.autoconfigure.web;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -31,6 +34,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -42,6 +47,8 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
@@ -113,12 +120,37 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/resources/**").addResourceLocations("/")
+					.addResourceLocations("classpath:/META-INF/resources/")
+					.addResourceLocations("classpath:/resources")
+					.addResourceLocations("classpath:/");
 			registry.addResourceHandler("/**").addResourceLocations("/")
 					.addResourceLocations("classpath:/META-INF/resources/")
 					.addResourceLocations("classpath:/static")
 					.addResourceLocations("classpath:/");
 		}
 
+	}
+
+	@Configuration
+	public static class FaviconConfiguration {
+
+		@Bean
+		public SimpleUrlHandlerMapping faviconHandlerMapping() {
+			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+			mapping.setOrder(Integer.MIN_VALUE + 1);
+			mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
+					faviconRequestHandler()));
+			return mapping;
+		}
+
+		@Bean
+		protected ResourceHttpRequestHandler faviconRequestHandler() {
+			ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
+			requestHandler.setLocations(Arrays.<Resource> asList(new ClassPathResource(
+					"/")));
+			return requestHandler;
+		}
 	}
 
 }
