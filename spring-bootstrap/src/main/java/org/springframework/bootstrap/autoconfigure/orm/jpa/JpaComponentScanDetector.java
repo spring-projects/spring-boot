@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.autoconfigure.data;
+package org.springframework.bootstrap.autoconfigure.orm.jpa;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.bootstrap.autoconfigure.data.JpaRepositoriesAutoConfiguration;
 import org.springframework.bootstrap.context.annotation.AutoConfigurationUtils;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.context.annotation.ComponentScan;

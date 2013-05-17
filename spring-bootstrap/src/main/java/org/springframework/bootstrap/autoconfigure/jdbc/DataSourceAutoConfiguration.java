@@ -82,7 +82,7 @@ public class DataSourceAutoConfiguration {
 
 	@Configuration
 	@Conditional(DataSourceAutoConfiguration.SomeDatabaseCondition.class)
-	// FIXME: make this @ConditionalOnBean(DataSorce.class)
+	// FIXME: make this @ConditionalOnBean(DataSource.class)
 	protected static class JdbcTemplateConfiguration {
 
 		@Autowired(required = false)

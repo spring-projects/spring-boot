@@ -20,16 +20,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.hibernate.ejb.HibernateEntityManager;
-import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hibernate JPA.
@@ -39,6 +42,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ConditionalOnClass(HibernateEntityManager.class)
 @EnableTransactionManagement
+@Import(JpaComponentScanDetector.class)
 public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_DIALECTS;
@@ -48,24 +52,36 @@ public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 				"org.hibernate.dialect.HSQLDialect");
 	}
 
+	@Value("${spring.jpa.databasePlatform:${spring.jpa.database_platform:}}")
+	private String databasePlatform;
+
+	@Value("${spring.jpa.database:DEFAULT}")
+	private Database database = Database.DEFAULT;
+
+	@Value("${spring.jpa.showSql:${spring.jpa.show_sql:false}}")
+	private boolean showSql;
+
+	@Value("${spring.jpa.generateDdl:${spring.jpa.generate_ddl:false}}")
+	private boolean generateDdl;
+
 	@Bean
 	@Override
 	public JpaVendorAdapter jpaVendorAdapter() {
-		return new HibernateJpaVendorAdapter();
+		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+		adapter.setShowSql(this.showSql);
+		adapter.setGenerateDdl(this.generateDdl);
+		if (StringUtils.hasText(this.databasePlatform)) {
+			adapter.setDatabasePlatform(this.databasePlatform);
+		}
+		adapter.setDatabase(this.database);
+		return adapter;
 	}
 
 	@Override
 	protected void configure(
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
-		if (isAutoConfiguredDataSource()) {
-			properties.put("hibernate.hbm2ddl.auto", "create-drop");
-			String dialect = EMBEDDED_DATABASE_DIALECTS
-					.get(EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType());
-			if (dialect != null) {
-				properties.put("hibernate.dialect", dialect);
-			}
-		}
+		// FIXME: detect EhCache
 		properties.put("hibernate.cache.provider_class",
 				"org.hibernate.cache.HashtableCacheProvider");
 	}

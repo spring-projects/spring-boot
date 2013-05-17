@@ -18,6 +18,8 @@ package org.springframework.bootstrap.autoconfigure.data;
 import javax.persistence.EntityManagerFactory;
 
 import org.junit.Test;
+import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.data.test.City;
 import org.springframework.bootstrap.autoconfigure.data.test.CityRepository;
 import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.bootstrap.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -40,9 +42,9 @@ public class JpaRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
-				EmbeddedDatabaseConfiguration.class,
+				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
-				HibernateJpaAutoConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
 		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
@@ -50,7 +52,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ComponentScan("org.springframework.bootstrap.autoconfigure.data.test")
+	@ComponentScan(basePackageClasses = City.class)
 	protected static class TestConfiguration {
 
 	}

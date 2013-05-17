@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration for a Commons DBCP database pool. The DBCP pool is popular but not
- * recommended in high volume environments.
+ * recommended in high volume environments (the Tomcat DataSource is more reliable).
  * 
  * @author Dave Syer
  * 
