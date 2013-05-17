@@ -18,6 +18,8 @@ package org.springframework.bootstrap.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,8 +33,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BasicDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
+	private static Log logger = LogFactory.getLog(BasicDataSourceConfiguration.class);
+
 	@Bean
 	public DataSource dataSource() {
+		logger.info("Hint: using Commons DBCP BasicDataSource. It's going to work, but the Tomcat DataSource is more reliable.");
 		BasicDataSource pool = new BasicDataSource();
 		pool.setDriverClassName(getDriverClassName());
 		pool.setUrl(getUrl());

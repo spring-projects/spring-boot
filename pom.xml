@@ -24,6 +24,7 @@
 		<spring.integration.version>2.2.3.RELEASE</spring.integration.version>
 		<spring.batch.version>2.2.0.RC2</spring.batch.version>
         <tomcat.version>7.0.39</tomcat.version>
+        <aspectj.version>1.7.2</aspectj.version>
 	</properties>
 
 	<scm>
@@ -562,6 +563,16 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjrt</artifactId>
+              <version>${aspectj.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.aspectj</groupId>
+              <artifactId>aspectjweaver</artifactId>
+              <version>${aspectj.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
