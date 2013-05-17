@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.bootstrap.context.initializer.LoggingInitializer;
+import org.springframework.bootstrap.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
 
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class LoggingInitializerTests {
 
-	private LoggingInitializer initializer = new LoggingInitializer();
+	private LoggingApplicationContextInitializer initializer = new LoggingApplicationContextInitializer();
 
 	private PrintStream savedOutput;
 	private ByteArrayOutputStream output;
