@@ -19,7 +19,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.junit.Test;
 import org.springframework.bootstrap.autoconfigure.data.test.CityRepository;
-import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.bootstrap.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,7 +40,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
-				EmbeddedDatabaseAutoConfiguration.class,
+				EmbeddedDatabaseConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
 				HibernateJpaAutoConfiguration.class);
 		this.context.refresh();

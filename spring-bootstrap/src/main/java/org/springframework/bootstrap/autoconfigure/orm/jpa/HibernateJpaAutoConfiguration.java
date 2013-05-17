@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.hibernate.ejb.HibernateEntityManager;
-import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -61,7 +61,7 @@ public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 		if (isAutoConfiguredDataSource()) {
 			properties.put("hibernate.hbm2ddl.auto", "create-drop");
 			String dialect = EMBEDDED_DATABASE_DIALECTS
-					.get(EmbeddedDatabaseAutoConfiguration.getEmbeddedDatabaseType());
+					.get(EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType());
 			if (dialect != null) {
 				properties.put("hibernate.dialect", dialect);
 			}

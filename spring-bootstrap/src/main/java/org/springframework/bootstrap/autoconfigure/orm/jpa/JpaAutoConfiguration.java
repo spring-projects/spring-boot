@@ -27,7 +27,7 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseAutoConfiguration;
+import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.bootstrap.context.annotation.AutoConfigurationUtils;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
@@ -69,14 +69,14 @@ public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
-	 * {@link EmbeddedDatabaseAutoConfiguration}.
+	 * {@link EmbeddedDatabaseConfiguration}.
 	 * @return true if the data source was auto-configured.
 	 */
 	protected boolean isAutoConfiguredDataSource() {
 		try {
 			BeanDefinition beanDefinition = this.beanFactory
 					.getBeanDefinition("dataSource");
-			return EmbeddedDatabaseAutoConfiguration.class.getName().equals(
+			return EmbeddedDatabaseConfiguration.class.getName().equals(
 					beanDefinition.getFactoryBeanName());
 		} catch (NoSuchBeanDefinitionException e) {
 			return false;

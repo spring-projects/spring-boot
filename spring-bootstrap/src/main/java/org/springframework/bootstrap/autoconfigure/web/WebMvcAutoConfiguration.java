@@ -18,9 +18,11 @@ package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration.WebMvcConfiguration;
+import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
@@ -31,13 +33,17 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.BeanNameViewResolver;
+import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
@@ -60,6 +66,23 @@ public class WebMvcAutoConfiguration {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
+
+		@ConditionalOnBean(View.class)
+		@Bean
+		public BeanNameViewResolver beanNameViewResolver() {
+			BeanNameViewResolver resolver = new BeanNameViewResolver();
+			resolver.setOrder(0);
+			return resolver;
+		}
+
+		@ConditionalOnBean(View.class)
+		@Bean
+		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
+			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
+			resolver.setContentNegotiationManager(beanFactory
+					.getBean(ContentNegotiationManager.class));
+			return resolver;
+		}
 
 		@Bean
 		public DispatcherServlet dispatcherServlet() {
