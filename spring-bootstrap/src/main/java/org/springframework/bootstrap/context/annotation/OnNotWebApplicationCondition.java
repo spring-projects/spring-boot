@@ -37,20 +37,25 @@ class OnNotWebApplicationCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+		String checking = ConditionLogUtils.getPrefix(logger, metadata);
+
 		if (!ClassUtils.isPresent(
 				"org.springframework.web.context.support.GenericWebApplicationContext",
 				null)) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Web application classes not found");
+				logger.debug(checking + "Web application classes not found");
 			}
 			return true;
 		}
 		boolean result = !StringUtils.arrayToCommaDelimitedString(
 				context.getBeanFactory().getRegisteredScopeNames()).contains("session");
 		if (logger.isDebugEnabled()) {
-			logger.debug("Web application context found: " + !result);
+			logger.debug(checking + "Web application context found: " + !result);
 		}
+
 		return result;
+
 	}
 
 }

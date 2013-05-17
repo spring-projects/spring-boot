@@ -43,6 +43,9 @@ abstract class AbstractOnBeanCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+		String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
+
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				annotationClass().getName(), true);
 		List<String> beanClasses = collect(attributes, "value");
@@ -78,23 +81,27 @@ abstract class AbstractOnBeanCondition implements Condition {
 		boolean result = evaluate(beanClassesFound, beanNamesFound);
 		if (this.logger.isDebugEnabled()) {
 			if (!beanClasses.isEmpty()) {
-				this.logger.debug("Looking for beans with class: " + beanClasses);
+				this.logger.debug(checking + "Looking for beans with class: "
+						+ beanClasses);
 				if (beanClassesFound.isEmpty()) {
-					this.logger.debug("Found no beans");
+					this.logger.debug(checking + "Found no beans");
 				} else {
-					this.logger.debug("Found beans with classes: " + beanClassesFound);
+					this.logger.debug(checking + "Found beans with classes: "
+							+ beanClassesFound);
 				}
 			}
 
 			if (!beanNames.isEmpty()) {
-				this.logger.debug("Looking for beans with names: " + beanNames);
+				this.logger
+						.debug(checking + "Looking for beans with names: " + beanNames);
 				if (beanNamesFound.isEmpty()) {
-					this.logger.debug("Found no beans");
+					this.logger.debug(checking + "Found no beans");
 				} else {
-					this.logger.debug("Found beans with names: " + beanNamesFound);
+					this.logger.debug(checking + "Found beans with names: "
+							+ beanNamesFound);
 				}
 			}
-			this.logger.debug("Match result is: " + result);
+			this.logger.debug(checking + "Match result is: " + result);
 		}
 		return result;
 	}

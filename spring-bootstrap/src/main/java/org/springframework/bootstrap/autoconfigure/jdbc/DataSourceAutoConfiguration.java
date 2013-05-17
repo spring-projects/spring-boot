@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.bootstrap.context.annotation.ConditionLogUtils;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -144,12 +145,15 @@ public class DataSourceAutoConfiguration {
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
+
 			if (this.tomcatCondition.matches(context, metadata)
 					|| this.dbcpCondition.matches(context, metadata)
 					|| this.embeddedCondition.matches(context, metadata)) {
 				if (this.logger.isDebugEnabled()) {
-					this.logger
-							.debug("Existing auto database detected: match result true");
+					this.logger.debug(checking
+							+ "Existing auto database detected: match result true");
 				}
 				return true;
 			}
@@ -157,9 +161,15 @@ public class DataSourceAutoConfiguration {
 					context.getBeanFactory(), DataSource.class, true, false).length > 0) {
 				if (this.logger.isDebugEnabled()) {
 					this.logger
-							.debug("Existing bean configured database detected: match result true");
+							.debug(checking
+									+ "Existing bean configured database detected: match result true");
 				}
 				return true;
+			}
+			if (this.logger.isDebugEnabled()) {
+				this.logger
+						.debug(checking
+								+ "Existing bean configured database not detected: match result false");
 			}
 			return false;
 		}
@@ -202,9 +212,12 @@ public class DataSourceAutoConfiguration {
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
+
 			if (!ClassUtils.isPresent(getDataSourecClassName(), null)) {
 				if (this.logger.isDebugEnabled()) {
-					this.logger.debug("Tomcat DataSource pool not found");
+					this.logger.debug(checking + "Tomcat DataSource pool not found");
 				}
 				return false;
 			}
@@ -212,7 +225,8 @@ public class DataSourceAutoConfiguration {
 					"spring.database.driverClassName");
 			String url = context.getEnvironment().getProperty("spring.database.url");
 			if (this.logger.isDebugEnabled()) {
-				this.logger.debug("Spring JDBC detected (embedded database type is "
+				this.logger.debug(checking
+						+ "Spring JDBC detected (embedded database type is "
 						+ EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType() + ").");
 			}
 			if (driverClassName == null) {
@@ -228,9 +242,14 @@ public class DataSourceAutoConfiguration {
 			if (driverClassName != null && url != null
 					&& ClassUtils.isPresent(driverClassName, null)) {
 				if (this.logger.isDebugEnabled()) {
-					this.logger.debug("Driver class " + driverClassName + " found");
+					this.logger.debug(checking + "Driver class " + driverClassName
+							+ " found");
 				}
 				return true;
+			}
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug(checking + "Driver class " + driverClassName
+						+ " not found");
 			}
 			return false;
 		}
@@ -247,16 +266,21 @@ public class DataSourceAutoConfiguration {
 
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
+
 			if (this.tomcatCondition.matches(context, metadata)
 					|| this.dbcpCondition.matches(context, metadata)) {
 				if (this.logger.isDebugEnabled()) {
 					this.logger
-							.debug("Existing non-embedded database detected: match result false");
+							.debug(checking
+									+ "Existing non-embedded database detected: match result false");
 				}
 				return false;
 			}
 			if (this.logger.isDebugEnabled()) {
-				this.logger.debug("Spring JDBC detected (embedded database type is "
+				this.logger.debug(checking
+						+ "Spring JDBC detected (embedded database type is "
 						+ EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType() + ").");
 			}
 			return EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType() != null;

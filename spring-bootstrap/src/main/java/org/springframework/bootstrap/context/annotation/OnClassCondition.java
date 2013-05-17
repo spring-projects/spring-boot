@@ -40,6 +40,9 @@ class OnClassCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+		String checking = ConditionLogUtils.getPrefix(logger, metadata);
+
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				ConditionalOnClass.class.getName(), true);
 		if (attributes != null) {
@@ -50,11 +53,11 @@ class OnClassCondition implements Condition {
 					"@ConditionalOnClass annotations must specify at least one class value");
 			for (String className : classNames) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("Checking for class: " + className);
+					logger.debug(checking + "Looking for class: " + className);
 				}
 				if (!ClassUtils.isPresent(className, context.getClassLoader())) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Class not found: " + className
+						logger.debug(checking + "Class not found: " + className
 								+ " (search terminated with matches=false)");
 					}
 					return false;
@@ -62,7 +65,7 @@ class OnClassCondition implements Condition {
 			}
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("Match result is: true");
+			logger.debug(checking + "Match result is: true");
 		}
 		return true;
 	}

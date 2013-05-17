@@ -43,6 +43,9 @@ class OnResourceCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+		String checking = ConditionLogUtils.getPrefix(logger, metadata);
+
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				ConditionalOnClass.class.getName(), true);
 		if (attributes != null) {
@@ -52,16 +55,19 @@ class OnResourceCondition implements Condition {
 					"@ConditionalOnResource annotations must specify at least one resource location");
 			for (String location : locations) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("Checking for resource: " + location);
+					logger.debug(checking + "Checking for resource: " + location);
 				}
 				if (!this.loader.getResource(location).exists()) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Found resource: " + location
+						logger.debug(checking + "Found resource: " + location
 								+ " (search terminated with matches=false)");
 					}
 					return false;
 				}
 			}
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug(checking + "Match result is: true");
 		}
 		return true;
 	}

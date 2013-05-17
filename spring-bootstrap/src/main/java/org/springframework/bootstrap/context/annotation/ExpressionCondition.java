@@ -37,6 +37,9 @@ public class ExpressionCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+		String checking = ConditionLogUtils.getPrefix(logger, metadata);
+
 		String value = (String) metadata.getAnnotationAttributes(
 				ConditionalOnExpression.class.getName()).get("value");
 		if (!value.startsWith("#{")) {
@@ -44,7 +47,8 @@ public class ExpressionCondition implements Condition {
 			value = "#{" + value + "}";
 		}
 		if (logger.isDebugEnabled()) {
-			StringBuilder builder = new StringBuilder("Evaluating expression");
+			StringBuilder builder = new StringBuilder(checking)
+					.append("Evaluating expression");
 			if (metadata instanceof ClassMetadata) {
 				builder.append(" on " + ((ClassMetadata) metadata).getClassName());
 			}
@@ -59,7 +63,7 @@ public class ExpressionCondition implements Condition {
 				beanFactory, null) : null;
 		Boolean result = (Boolean) resolver.evaluate(value, expressionContext);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Finished matching and result is matches=" + result);
+			logger.debug(checking + "Finished matching and result is matches=" + result);
 		}
 		return result;
 	}

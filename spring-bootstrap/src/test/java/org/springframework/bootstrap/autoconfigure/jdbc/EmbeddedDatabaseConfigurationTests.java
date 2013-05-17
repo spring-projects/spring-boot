@@ -26,13 +26,14 @@ import static org.junit.Assert.assertNotNull;
  * @author Dave Syer
  * 
  */
-public class TomcatDataSourceAutoConfigurationTests {
+public class EmbeddedDatabaseConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private AnnotationConfigApplicationContext context;
 
 	@Test
-	public void testDataSourceExists() throws Exception {
-		this.context.register(TomcatDataSourceConfiguration.class);
+	public void testDefaultEmbeddedDatabase() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmbeddedDatabaseConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 	}

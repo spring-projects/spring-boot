@@ -40,6 +40,9 @@ class OnMissingClassCondition implements Condition {
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+		String checking = ConditionLogUtils.getPrefix(logger, metadata);
+
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				ConditionalOnMissingClass.class.getName(), true);
 		if (attributes != null) {
@@ -49,11 +52,11 @@ class OnMissingClassCondition implements Condition {
 					"@ConditionalOnMissingClass annotations must specify at least one class value");
 			for (String className : classNames) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("Checking for class: " + className);
+					logger.debug(checking + "Looking for class: " + className);
 				}
 				if (ClassUtils.isPresent(className, context.getClassLoader())) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Found class: " + className
+						logger.debug(checking + "Found class: " + className
 								+ " (search terminated with matches=false)");
 					}
 					return false;
@@ -61,7 +64,7 @@ class OnMissingClassCondition implements Condition {
 			}
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("Match result is: true");
+			logger.debug(checking + "Match result is: true");
 		}
 		return true;
 	}
