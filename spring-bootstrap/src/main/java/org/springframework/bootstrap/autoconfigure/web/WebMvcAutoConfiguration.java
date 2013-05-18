@@ -122,11 +122,11 @@ public class WebMvcAutoConfiguration {
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/resources/**").addResourceLocations("/")
 					.addResourceLocations("classpath:/META-INF/resources/")
-					.addResourceLocations("classpath:/resources")
+					.addResourceLocations("classpath:/resources/")
 					.addResourceLocations("classpath:/");
 			registry.addResourceHandler("/**").addResourceLocations("/")
 					.addResourceLocations("classpath:/META-INF/resources/")
-					.addResourceLocations("classpath:/static")
+					.addResourceLocations("classpath:/static/")
 					.addResourceLocations("classpath:/");
 		}
 
