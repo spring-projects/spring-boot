@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
@@ -35,16 +36,14 @@ import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
-import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringBatchCompilerAutoConfiguration;
-import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringBootstrapCompilerAutoConfiguration;
-import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringIntegrationCompilerAutoConfiguration;
-import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringMvcCompilerAutoConfiguration;
 
 /**
  * Compiler for Groovy source files. Primarily a simple Facade for
  * {@link GroovyClassLoader#parseClass(File)} with the following additional features:
  * <ul>
- * <li>{@link CompilerAutoConfiguration} strategies will de applied during compilation</li>
+ * <li>{@link CompilerAutoConfiguration} strategies will be read from
+ * <code>META-INF/services/org.springframework.bootstrap.cli.compiler.CompilerAutoConfiguration</code>
+ * (per the standard java {@link ServiceLoader} contract) and applied during compilation</li>
  * 
  * <li>Multiple classes can be returned if the Groovy source defines more than one Class</li>
  * 
@@ -56,14 +55,6 @@ import org.springframework.bootstrap.cli.compiler.autoconfigure.SpringMvcCompile
  * @author Dave Syer
  */
 public class GroovyCompiler {
-
-	// FIXME could be a strategy
-	private static final CompilerAutoConfiguration[] COMPILER_AUTO_CONFIGURATIONS = {
-			new SpringBootstrapCompilerAutoConfiguration(),
-			new SpringMvcCompilerAutoConfiguration(),
-			new SpringBatchCompilerAutoConfiguration(),
-			new SpringIntegrationCompilerAutoConfiguration(),
-			new SpringBootstrapCompilerAutoConfiguration() };
 
 	private GroovyCompilerConfiguration configuration;
 
@@ -146,10 +137,14 @@ public class GroovyCompiler {
 				throws CompilationFailedException {
 			ImportCustomizer importCustomizer = new ImportCustomizer();
 
+			ServiceLoader<CompilerAutoConfiguration> customizers = ServiceLoader.load(
+					CompilerAutoConfiguration.class,
+					GroovyCompiler.class.getClassLoader());
+
 			// Early sweep to get dependencies
 			DependencyCustomizer dependencyCustomizer = new DependencyCustomizer(
 					GroovyCompiler.this.loader);
-			for (CompilerAutoConfiguration autoConfiguration : COMPILER_AUTO_CONFIGURATIONS) {
+			for (CompilerAutoConfiguration autoConfiguration : customizers) {
 				if (autoConfiguration.matches(classNode)) {
 					if (GroovyCompiler.this.configuration.isGuessDependencies()) {
 						autoConfiguration.applyDependencies(dependencyCustomizer);
@@ -159,7 +154,7 @@ public class GroovyCompiler {
 			dependencyCustomizer.call();
 
 			// Additional auto configuration
-			for (CompilerAutoConfiguration autoConfiguration : COMPILER_AUTO_CONFIGURATIONS) {
+			for (CompilerAutoConfiguration autoConfiguration : customizers) {
 				if (autoConfiguration.matches(classNode)) {
 					if (GroovyCompiler.this.configuration.isGuessImports()) {
 						autoConfiguration.applyImports(importCustomizer);
