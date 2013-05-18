@@ -30,9 +30,8 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.ExpressionUrlAuthorizations;
 import org.springframework.security.config.annotation.web.HttpConfigurator;
-import org.springframework.security.config.annotation.web.SpringSecurityFilterChainBuilder.IgnoredRequestRegistry;
+import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 
 /**
@@ -71,23 +70,17 @@ public class SecurityConfiguration {
 		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		@Override
-		protected void ignoredRequests(IgnoredRequestRegistry ignoredRequests) {
-			ignoredRequests.antMatchers(this.healthzPath);
-			ignoredRequests.antMatchers(this.infoPath);
-		}
-
-		@Override
-		protected void authorizeUrls(ExpressionUrlAuthorizations interceptUrls) {
-			interceptUrls.antMatchers("/**").hasRole("USER");
-		}
-
-		@Override
 		protected void configure(HttpConfigurator http) throws Exception {
 			http.antMatcher("/**").httpBasic().and().anonymous().disable();
 			if (this.security.isRequireSsl()) {
 				http.requiresChannel().antMatchers("/**").requiresSecure();
 			}
+			http.authorizeUrls().antMatchers("/**").hasRole("USER");
+		}
 
+		@Override
+		public void configure(WebSecurityConfiguration builder) throws Exception {
+			builder.ignoring().antMatchers(this.healthzPath, this.infoPath);
 		}
 
 		@Override
