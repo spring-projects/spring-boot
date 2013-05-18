@@ -4,6 +4,7 @@ org.springframework.bootstrap.autoconfigure.MessageSourceAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.data.JpaRepositoriesAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.batch.BatchAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.EmbeddedContainerCustomizerConfiguration,\
