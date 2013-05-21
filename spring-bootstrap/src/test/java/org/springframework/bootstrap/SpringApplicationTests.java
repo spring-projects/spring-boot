@@ -38,9 +38,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -232,7 +232,8 @@ public class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		application.run();
-		assertThat(hasPropertySource(environment, CommandLinePropertySource.class),
+		assertThat(
+				hasPropertySource(environment, MapPropertySource.class, "commandLineArgs"),
 				equalTo(true));
 	}
 
@@ -244,7 +245,8 @@ public class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		application.run();
-		assertThat(hasPropertySource(environment, CommandLinePropertySource.class),
+		assertThat(
+				hasPropertySource(environment, MapPropertySource.class, "commandLineArgs"),
 				equalTo(false));
 	}
 
@@ -315,9 +317,10 @@ public class SpringApplicationTests {
 	}
 
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
-			Class<?> propertySourceClass) {
+			Class<?> propertySourceClass, String name) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
-			if (propertySourceClass.isInstance(source)) {
+			if (propertySourceClass.isInstance(source)
+					&& (name == null || name.equals(source.getName()))) {
 				return true;
 			}
 		}

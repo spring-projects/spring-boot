@@ -41,8 +41,8 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -316,8 +316,10 @@ public class SpringApplication {
 		if (environment instanceof ConfigurableEnvironment) {
 			ConfigurableEnvironment configurable = (ConfigurableEnvironment) environment;
 			if (this.addCommandLineProperties) {
-				PropertySource<?> propertySource = new SimpleCommandLinePropertySource(
-						mergeCommandLineArgs(this.defaultCommandLineArgs, args));
+				// Don't use SimpleCommandLinePropertySource (SPR-10579)
+				PropertySource<?> propertySource = new MapPropertySource(
+						"commandLineArgs", mergeCommandLineArgs(
+								this.defaultCommandLineArgs, args));
 				configurable.getPropertySources().addFirst(propertySource);
 			}
 		}
@@ -330,38 +332,35 @@ public class SpringApplication {
 	 * @param args the ones passed in at runtime
 	 * @return a new command line
 	 */
-	protected String[] mergeCommandLineArgs(String[] defaults, String[] args) {
+	protected Map<String, Object> mergeCommandLineArgs(String[] defaults, String[] args) {
 
-		if (defaults == null || defaults.length == 0) {
-			return args;
+		if (defaults == null) {
+			defaults = new String[0];
 		}
 
-		List<String> result = new ArrayList<String>();
-		Map<String, String> options = new LinkedHashMap<String, String>();
+		List<String> nonopts = new ArrayList<String>();
+		Map<String, Object> options = new LinkedHashMap<String, Object>();
 
 		for (String arg : defaults) {
 			if (isOptionArg(arg)) {
 				addOptionArg(options, arg);
 			} else {
-				result.add(arg);
+				nonopts.add(arg);
 			}
 		}
 		for (String arg : args) {
 			if (isOptionArg(arg)) {
 				addOptionArg(options, arg);
-			} else if (!result.contains(arg)) {
-				result.add(arg);
+			} else if (!nonopts.contains(arg)) {
+				nonopts.add(arg);
 			}
 		}
 
-		List<String> optionsList = new ArrayList<String>();
-		for (String key : options.keySet()) {
-			String value = options.get(key);
-			optionsList.add("--" + key + (value == null ? "" : "=" + value));
+		for (String key : nonopts) {
+			options.put(key, "");
 		}
-		result.addAll(0, optionsList);
 
-		return result.toArray(new String[result.size()]);
+		return options;
 
 	}
 
@@ -369,10 +368,10 @@ public class SpringApplication {
 		return arg.startsWith("--");
 	}
 
-	private void addOptionArg(Map<String, String> map, String arg) {
+	private void addOptionArg(Map<String, Object> map, String arg) {
 		String optionText = arg.substring(2, arg.length());
 		String optionName;
-		String optionValue = null;
+		String optionValue = "";
 		if (optionText.contains("=")) {
 			optionName = optionText.substring(0, optionText.indexOf("="));
 			optionValue = optionText.substring(optionText.indexOf("=") + 1,
