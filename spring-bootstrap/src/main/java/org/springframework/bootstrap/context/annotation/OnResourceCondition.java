@@ -47,7 +47,7 @@ class OnResourceCondition implements Condition {
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
-				ConditionalOnClass.class.getName(), true);
+				ConditionalOnResource.class.getName(), true);
 		if (attributes != null) {
 			List<String> locations = new ArrayList<String>();
 			collectValues(locations, attributes.get("resources"));
@@ -59,7 +59,7 @@ class OnResourceCondition implements Condition {
 				}
 				if (!this.loader.getResource(location).exists()) {
 					if (logger.isDebugEnabled()) {
-						logger.debug(checking + "Found resource: " + location
+						logger.debug(checking + "Resource not found: " + location
 								+ " (search terminated with matches=false)");
 					}
 					return false;
