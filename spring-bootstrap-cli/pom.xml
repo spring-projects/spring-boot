@@ -87,6 +87,11 @@
 			<artifactId>groovy</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-templates</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.ivy</groupId>
 			<artifactId>ivy</artifactId>
 			<version>2.3.0</version>

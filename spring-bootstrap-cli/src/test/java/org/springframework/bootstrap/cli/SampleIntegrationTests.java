@@ -93,6 +93,13 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void templateSample() throws Exception {
+		start("samples/template.groovy");
+		String output = getOutput();
+		assertTrue("Wrong output: " + output, output.contains("Hello World!"));
+	}
+
+	@Test
 	public void jobSample() throws Exception {
 		start("samples/job.groovy", "foo=bar");
 		String output = getOutput();
