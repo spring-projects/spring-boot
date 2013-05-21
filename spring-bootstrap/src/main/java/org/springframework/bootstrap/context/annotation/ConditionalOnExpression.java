@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Conditional;
  * @author Dave Syer
  * 
  */
-@Conditional(ExpressionCondition.class)
+@Conditional(OnExpressionCondition.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface ConditionalOnExpression {

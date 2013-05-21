@@ -22,6 +22,7 @@ import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.ClassMetadata;
 
@@ -31,9 +32,9 @@ import org.springframework.core.type.ClassMetadata;
  * @author Dave Syer
  * 
  */
-public class ExpressionCondition implements Condition {
+public class OnExpressionCondition implements Condition {
 
-	private static Log logger = LogFactory.getLog(ExpressionCondition.class);
+	private static Log logger = LogFactory.getLog(OnExpressionCondition.class);
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -61,6 +62,9 @@ public class ExpressionCondition implements Condition {
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		BeanExpressionContext expressionContext = (beanFactory != null) ? new BeanExpressionContext(
 				beanFactory, null) : null;
+		if (resolver == null) {
+			resolver = new StandardBeanExpressionResolver();
+		}
 		Boolean result = (Boolean) resolver.evaluate(value, expressionContext);
 		if (logger.isDebugEnabled()) {
 			logger.debug(checking + "Finished matching and result is matches=" + result);
