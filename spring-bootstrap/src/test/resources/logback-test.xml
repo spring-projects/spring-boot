@@ -8,6 +8,7 @@
 		</encoder>
 	</appender>
 	<logger name="org.springframework.bootstrap.context.annotation" level="TRACE" />
+	<logger name="org.springframework.bootstrap.config" level="TRACE" />
 	<logger name="org.thymeleaf" level="TRACE" />
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />

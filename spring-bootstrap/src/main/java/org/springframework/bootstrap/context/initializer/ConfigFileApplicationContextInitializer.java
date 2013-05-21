@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.springframework.bootstrap.config.YamlProcessor.ArrayDocumentMatcher;
 import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
+import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
 import org.springframework.bootstrap.config.YamlPropertiesFactoryBean;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -226,21 +227,20 @@ public class ConfigFileApplicationContextInitializer implements
 			List<DocumentMatcher> matchers = new ArrayList<DocumentMatcher>();
 			matchers.add(new DocumentMatcher() {
 				@Override
-				public boolean matches(Properties properties) {
+				public MatchStatus matches(Properties properties) {
 					String[] profiles = applicationContext.getEnvironment()
 							.getActiveProfiles();
-					if (profiles.length > 0) {
-						return new ArrayDocumentMatcher("spring.profiles", profiles)
-								.matches(properties);
-					} else {
-						return properties.getProperty("spring.profiles", "NONE")
-								.contains("default");
+					if (profiles.length == 0) {
+						profiles = new String[] { "default" };
 					}
+					return new ArrayDocumentMatcher("spring.profiles", profiles)
+							.matches(properties);
+
 				}
 			});
 			matchers.add(new DocumentMatcher() {
 				@Override
-				public boolean matches(Properties properties) {
+				public MatchStatus matches(Properties properties) {
 					if (!properties.containsKey("spring.profiles")) {
 						Set<String> profiles = StringUtils
 								.commaDelimitedListToSet(properties.getProperty(
@@ -250,9 +250,9 @@ public class ConfigFileApplicationContextInitializer implements
 							applicationContext.getEnvironment().addActiveProfile(profile);
 						}
 						// matches default profile
-						return true;
+						return MatchStatus.FOUND;
 					} else {
-						return false;
+						return MatchStatus.NOT_FOUND;
 					}
 				}
 			});

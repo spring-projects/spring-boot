@@ -16,6 +16,8 @@
 package org.springframework.bootstrap.autoconfigure.batch;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -34,7 +36,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 @Component
-// FIXME: what to do with more than one Job?
 public class JobLauncherCommandLineRunner implements CommandLineRunner,
 		ApplicationEventPublisherAware {
 
@@ -46,8 +47,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	@Autowired
 	private JobLauncher jobLauncher;
 
-	@Autowired
-	private Job job;
+	@Autowired(required = false)
+	private Collection<Job> jobs = Collections.emptySet();
 
 	private ApplicationEventPublisher publisher;
 
@@ -63,10 +64,12 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 
 	protected void launchJobFromProperties(Properties properties)
 			throws JobExecutionException {
-		JobExecution execution = this.jobLauncher.run(this.job,
-				this.converter.getJobParameters(properties));
-		if (this.publisher != null) {
-			this.publisher.publishEvent(new JobExecutionEvent(execution));
+		for (Job job : this.jobs) {
+			JobExecution execution = this.jobLauncher.run(job,
+					this.converter.getJobParameters(properties));
+			if (this.publisher != null) {
+				this.publisher.publishEvent(new JobExecutionEvent(execution));
+			}
 		}
 	}
 }

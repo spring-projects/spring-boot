@@ -44,13 +44,29 @@ public class YamlProcessor {
 	}
 
 	public interface DocumentMatcher {
-		boolean matches(Properties properties);
+		MatchStatus matches(Properties properties);
 	}
 
 	private static final Log logger = LogFactory.getLog(YamlProcessor.class);
 
 	public static enum ResolutionMethod {
 		OVERRIDE, OVERRIDE_AND_IGNORE, FIRST_FOUND
+	}
+
+	public static enum MatchStatus {
+
+		/**
+		 * A match was found.
+		 */
+		FOUND,
+		/**
+		 * A match was not found.
+		 */
+		NOT_FOUND,
+		/**
+		 * Not enough information to decide.
+		 */
+		ABSTAIN
 	}
 
 	private ResolutionMethod resolutionMethod = ResolutionMethod.OVERRIDE;
@@ -93,8 +109,9 @@ public class YamlProcessor {
 	}
 
 	/**
-	 * Flag indicating that a document that contains none of the keys in the
-	 * {@link #setDocumentMatchers(List) document matchers} will nevertheless match.
+	 * Flag indicating that a document for which all the
+	 * {@link #setDocumentMatchers(List) document matchers} abstain will nevertheless
+	 * match.
 	 * 
 	 * @param matchDefault the flag to set (default true)
 	 */
@@ -185,15 +202,19 @@ public class YamlProcessor {
 			callback.process(properties, map);
 		} else {
 			boolean valueFound = false;
+			MatchStatus result = MatchStatus.ABSTAIN;
 			for (DocumentMatcher matcher : this.documentMatchers) {
-				if (matcher.matches(properties)) {
+				MatchStatus match = matcher.matches(properties);
+				result = match.ordinal() < result.ordinal() ? match : result;
+				if (match == MatchStatus.FOUND) {
+					logger.debug("Matched document with document matcher: " + properties);
 					callback.process(properties, map);
 					valueFound = true;
 					// No need to check for more matches
 					break;
 				}
 			}
-			if (!valueFound && this.matchDefault) {
+			if (result == MatchStatus.ABSTAIN && this.matchDefault) {
 				logger.debug("Matched document with default matcher: " + map);
 				callback.process(properties, map);
 			} else if (!valueFound) {
@@ -241,41 +262,6 @@ public class YamlProcessor {
 	}
 
 	/**
-	 * Matches a document containing a given key and where the value of that key matches
-	 * one of the given values (interpreted as a regex).
-	 * 
-	 * @author Dave Syer
-	 * 
-	 */
-	public static class SimpleDocumentMatcher implements DocumentMatcher {
-
-		private String key;
-
-		private String[] patterns;
-
-		public SimpleDocumentMatcher(final String key, final String... patterns) {
-			this.key = key;
-			this.patterns = patterns;
-
-		}
-
-		@Override
-		public boolean matches(Properties properties) {
-			if (!properties.containsKey(this.key)) {
-				return false;
-			}
-			String value = properties.getProperty(this.key);
-			for (String pattern : this.patterns) {
-				if (value == null || value.matches(pattern)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-	}
-
-	/**
 	 * Matches a document containing a given key and where the value of that key is an
 	 * array containing one of the given values, or where one of the values matches one of
 	 * the given values (interpreted as regexes).
@@ -296,20 +282,20 @@ public class YamlProcessor {
 		}
 
 		@Override
-		public boolean matches(Properties properties) {
+		public MatchStatus matches(Properties properties) {
 			if (!properties.containsKey(this.key)) {
-				return false;
+				return MatchStatus.ABSTAIN;
 			}
 			Set<String> values = StringUtils.commaDelimitedListToSet(properties
 					.getProperty(this.key));
 			for (String pattern : this.patterns) {
 				for (String value : values) {
 					if (value.matches(pattern)) {
-						return true;
+						return MatchStatus.FOUND;
 					}
 				}
 			}
-			return false;
+			return MatchStatus.NOT_FOUND;
 		}
 
 	}

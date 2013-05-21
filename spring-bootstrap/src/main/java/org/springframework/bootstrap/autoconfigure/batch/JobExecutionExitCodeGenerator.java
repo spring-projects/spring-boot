@@ -39,8 +39,8 @@ public class JobExecutionExitCodeGenerator implements
 	@Override
 	public int getExitCode() {
 		for (JobExecution execution : this.executions) {
-			if (execution.getStatus().isUnsuccessful()) {
-				return 2;
+			if (execution.getStatus().ordinal() > 0) {
+				return execution.getStatus().ordinal();
 			}
 		}
 		return 0;
