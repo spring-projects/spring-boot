@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.cli.compiler;
 
+import groovy.grape.Grape;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 
@@ -23,7 +24,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.codehaus.groovy.ast.ClassNode;
@@ -69,6 +72,10 @@ public class GroovyCompiler {
 		CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 		this.loader = new ExtendedGroovyClassLoader(getClass().getClassLoader(),
 				compilerConfiguration);
+
+		// FIXME: allow the extra resolvers to be switched on (off by default)
+		addExtraResolvers();
+
 		compilerConfiguration
 				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
 	}
@@ -135,6 +142,7 @@ public class GroovyCompiler {
 		@Override
 		public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
 				throws CompilationFailedException {
+
 			ImportCustomizer importCustomizer = new ImportCustomizer();
 
 			ServiceLoader<CompilerAutoConfiguration> customizers = ServiceLoader.load(
@@ -175,6 +183,16 @@ public class GroovyCompiler {
 			importCustomizer.call(source, context, classNode);
 		}
 
+	}
+
+	private void addExtraResolvers() {
+		Map<String, Object> resolver = new HashMap<String, Object>();
+		resolver.put("name", "spring-milestone");
+		resolver.put("root", "http://repo.springsource.org/milestone");
+		Grape.addResolver(resolver);
+		resolver.put("name", "spring-snapshot");
+		resolver.put("root", "http://repo.springsource.org/snapshot");
+		Grape.addResolver(resolver);
 	}
 
 }

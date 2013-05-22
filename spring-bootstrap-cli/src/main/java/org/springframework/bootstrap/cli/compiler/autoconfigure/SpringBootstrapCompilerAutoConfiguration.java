@@ -16,11 +16,7 @@
 
 package org.springframework.bootstrap.cli.compiler.autoconfigure;
 
-import groovy.grape.Grape;
 import groovy.lang.GroovyClassLoader;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -34,7 +30,7 @@ import org.springframework.bootstrap.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Bootstrap.
- *
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -44,7 +40,8 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses(
 				"org.springframework.bootstrap.SpringApplication").add(
-				"org.springframework.bootstrap", "spring-bootstrap", "0.5.0.BUILD-SNAPSHOT");
+				"org.springframework.bootstrap", "spring-bootstrap",
+				"0.5.0.BUILD-SNAPSHOT");
 		dependencies.ifAnyResourcesPresent("logback.xml").add("ch.qos.logback",
 				"logback-classic", "1.0.7");
 		dependencies.ifNotAdded("cg.qos.logback", "logback-classic")
@@ -90,18 +87,6 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 		if (true) { // FIXME: add switch for auto config
 			addEnableAutoConfigurationAnnotation(source, classNode);
 		}
-		// FIXME: allow the extra resolvers to be switched on (off by default)
-		addExtraResolvers();
-	}
-
-	private void addExtraResolvers() {
-		Map<String, Object> resolver = new HashMap<String, Object>();
-		resolver.put("name", "spring-milestone");
-		resolver.put("root", "http://repo.springframework.org/milestone");
-		Grape.addResolver(resolver);
-		resolver.put("name", "spring-snapshot");
-		resolver.put("root", "http://repo.springframework.org/snapshot");
-		Grape.addResolver(resolver);
 	}
 
 	private void addEnableAutoConfigurationAnnotation(SourceUnit source,
