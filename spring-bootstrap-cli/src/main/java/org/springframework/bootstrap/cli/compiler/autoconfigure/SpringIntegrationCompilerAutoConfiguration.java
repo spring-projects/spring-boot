@@ -29,7 +29,7 @@ import org.springframework.bootstrap.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.bootstrap.cli.compiler.DependencyCustomizer;
 
 /**
- * {@link CompilerAutoConfiguration} for Spring Batch.
+ * {@link CompilerAutoConfiguration} for Spring Integration.
  * 
  * @author Dave Syer
  */
@@ -39,7 +39,7 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 	public boolean matches(ClassNode classNode) {
 		// Slightly weird detection algorithm because there is no @Enable annotation for
 		// Integration
-		return AstUtils.hasLeastOneAnnotation(classNode, "MessageEndpoint",
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "MessageEndpoint",
 				"EnableIntegrationPatterns");
 	}
 
