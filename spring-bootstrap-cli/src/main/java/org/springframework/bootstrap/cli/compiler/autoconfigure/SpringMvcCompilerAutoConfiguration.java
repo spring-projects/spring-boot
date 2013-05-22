@@ -50,7 +50,7 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasLeastOneAnnotation(classNode, "Controller", "EnableWebMvc");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller", "EnableWebMvc");
 	}
 
 	@Override
