@@ -16,7 +16,6 @@
 
 package org.springframework.bootstrap.autoconfigure;
 
-import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -28,9 +27,9 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  * {@link PropertySourcesPlaceholderConfigurer}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 @Configuration
-@ConditionalOnMissingBean(PropertySourcesPlaceholderConfigurer.class)
 public class PropertyPlaceholderAutoConfiguration {
 
 	@Bean

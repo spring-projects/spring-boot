@@ -13,34 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.Servlet;
 
 import org.apache.catalina.startup.Tomcat;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.Loader;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link TomcatEmbeddedServletContainerFactory}.
+ * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet container.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
+ * 
  */
-@Configuration
-@ConditionalOnClass({ Servlet.class, Tomcat.class })
-@ConditionalOnMissingBean(EmbeddedServletContainerFactory.class)
-public class EmbeddedTomcatAutoConfiguration {
+@Import(ServerPropertiesConfiguration.class)
+public class EmbeddedContainerConfiguration {
 
-	@Bean
-	public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
-		return new TomcatEmbeddedServletContainerFactory();
+	@Configuration
+	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class })
+	@ConditionalOnMissingBean(EmbeddedServletContainerFactory.class)
+	protected static class EmbeddedJettyAutoConfiguration {
+
+		@Bean
+		public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
+			return new JettyEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ Servlet.class, Tomcat.class })
+	@ConditionalOnMissingBean(EmbeddedServletContainerFactory.class)
+	protected static class EmbeddedTomcatAutoConfiguration {
+
+		@Bean
+		public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
+			return new TomcatEmbeddedServletContainerFactory();
+		}
+
 	}
 
 }

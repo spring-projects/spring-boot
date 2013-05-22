@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.actuate.properties;
+package org.springframework.bootstrap.properties;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -27,7 +27,7 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Externalized configuration for server properties
- *
+ * 
  * @author Dave Syer
  */
 public class ServerPropertiesTests {

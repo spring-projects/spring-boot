@@ -43,7 +43,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class })
+@ConditionalOnClass({ Servlet.class, EmbeddedServletContainerCustomizer.class })
 public class EmbeddedContainerCustomizerConfiguration {
 
 	@Autowired(required = false)

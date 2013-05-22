@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.actuate.properties;
+package org.springframework.bootstrap.properties;
 
 import java.io.File;
 import java.net.InetAddress;

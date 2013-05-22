@@ -7,9 +7,8 @@ org.springframework.bootstrap.autoconfigure.data.JpaRepositoriesAutoConfiguratio
 org.springframework.bootstrap.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.batch.BatchAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.EmbeddedContainerConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.EmbeddedContainerCustomizerConfiguration,\
-org.springframework.bootstrap.autoconfigure.web.EmbeddedJettyAutoConfiguration,\
-org.springframework.bootstrap.autoconfigure.web.EmbeddedTomcatAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.bootstrap.context.initializer.ConfigFileApplicationContextInitializer,\
