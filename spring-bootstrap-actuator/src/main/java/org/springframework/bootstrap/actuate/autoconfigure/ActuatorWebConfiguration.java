@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @Configuration
-public class ActuatorWebConfiguration extends WebMvcConfigurationSupport {
+public class ActuatorWebConfiguration extends DelegatingWebMvcConfiguration {
 
 	@Override
 	protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -46,6 +46,7 @@ public class ActuatorWebConfiguration extends WebMvcConfigurationSupport {
 						SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 			}
 		}
+		super.configureMessageConverters(converters);
 	}
 
 }
