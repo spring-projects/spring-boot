@@ -50,7 +50,7 @@ public class ServiceBootstrapApplicationTests {
 										.run(ServiceBootstrapApplication.class);
 							}
 						});
-		context = future.get(10, TimeUnit.SECONDS);
+		context = future.get(30, TimeUnit.SECONDS);
 	}
 
 	@AfterClass

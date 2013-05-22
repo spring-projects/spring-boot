@@ -20,6 +20,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
+import org.springframework.bootstrap.context.annotation.EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesHolder;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
@@ -68,19 +69,27 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 			throws BeansException {
 		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
 				bean.getClass(), ConfigurationProperties.class);
-		if (annotation != null) {
+		Object target = bean;
+		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
+			if (bean instanceof ConfigurationPropertiesHolder) {
+				target = ((ConfigurationPropertiesHolder) bean).getTarget();
+			}
 			PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
-					bean);
+					target);
 			factory.setPropertySources(this.propertySources);
 			factory.setValidator(this.validator);
 			factory.setConversionService(this.conversionService);
-			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
-			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
-			String targetName = "".equals(annotation.value()) ? ("".equals(annotation
-					.name()) ? null : annotation.name()) : annotation.value();
+			String targetName = null;
+			if (annotation != null) {
+				factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
+				factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
+				targetName = "".equals(annotation.value()) ? (""
+						.equals(annotation.name()) ? null : annotation.name())
+						: annotation.value();
+			}
 			factory.setTargetName(targetName);
 			try {
-				bean = factory.getObject();
+				target = factory.getObject(); // throwaway
 			} catch (BeansException e) {
 				throw e;
 			} catch (Exception e) {

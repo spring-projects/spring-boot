@@ -23,6 +23,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.MultiValueMap;
 
@@ -64,8 +65,20 @@ public class EnableConfigurationPropertiesImportSelector implements ImportSelect
 							EnableConfigurationProperties.class.getName(), false);
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
-				registry.registerBeanDefinition(type.getName(), BeanDefinitionBuilder
-						.genericBeanDefinition(type).getBeanDefinition());
+				String name = type.getName();
+				if (!registry.containsBeanDefinition(name)) {
+					registry.registerBeanDefinition(name, BeanDefinitionBuilder
+							.genericBeanDefinition(type).getBeanDefinition());
+					ConfigurationProperties properties = AnnotationUtils.findAnnotation(
+							type, ConfigurationProperties.class);
+					if (properties == null) {
+						BeanDefinitionBuilder builder = BeanDefinitionBuilder
+								.genericBeanDefinition(ConfigurationPropertiesHolder.class);
+						builder.addConstructorArgReference(name);
+						registry.registerBeanDefinition(name + ".HOLDER",
+								builder.getBeanDefinition());
+					}
+				}
 			}
 		}
 
@@ -79,6 +92,20 @@ public class EnableConfigurationPropertiesImportSelector implements ImportSelect
 				}
 			}
 			return result;
+		}
+
+	}
+
+	public static class ConfigurationPropertiesHolder {
+
+		private Object target;
+
+		public ConfigurationPropertiesHolder(Object target) {
+			this.target = target;
+		}
+
+		public Object getTarget() {
+			return this.target;
 		}
 
 	}
