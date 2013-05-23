@@ -28,9 +28,9 @@ import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.authentication.AuthenticationBuilder;
+import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.HttpConfigurator;
+import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 
@@ -70,7 +70,7 @@ public class SecurityConfiguration {
 		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		@Override
-		protected void configure(HttpConfigurator http) throws Exception {
+		protected void configure(HttpConfiguration http) throws Exception {
 			http.antMatcher("/**").httpBasic().and().anonymous().disable();
 			if (this.security.isRequireSsl()) {
 				http.requiresChannel().antMatchers("/**").requiresSecure();
@@ -101,8 +101,9 @@ public class SecurityConfiguration {
 
 		@Bean
 		public AuthenticationManager authenticationManager() throws Exception {
-			return new AuthenticationBuilder().inMemoryAuthentication().withUser("user")
-					.password("password").roles("USER").and().and().build();
+			return new AuthenticationManagerBuilder().inMemoryAuthentication()
+					.withUser("user").password("password").roles("USER").and().and()
+					.build();
 		}
 
 	}
