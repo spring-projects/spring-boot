@@ -75,11 +75,11 @@ public class NoManagementServiceBootstrapApplicationTests {
 	}
 
 	@Test(expected = ResourceAccessException.class)
-	public void testVarzNotAvailable() throws Exception {
+	public void testMetricsNotAvailable() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:" + managementPort + "/varz", Map.class);
+				"http://localhost:" + managementPort + "/metrics", Map.class);
 		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
 	}
 

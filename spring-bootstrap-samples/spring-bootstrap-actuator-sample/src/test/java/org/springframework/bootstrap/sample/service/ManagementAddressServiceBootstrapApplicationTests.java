@@ -77,11 +77,11 @@ public class ManagementAddressServiceBootstrapApplicationTests {
 	}
 
 	@Test
-	public void testVarz() throws Exception {
+	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/varz", Map.class);
+				"http://localhost:" + managementPort + "/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -89,9 +89,9 @@ public class ManagementAddressServiceBootstrapApplicationTests {
 	}
 
 	@Test
-	public void testHealthz() throws Exception {
+	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/healthz", String.class);
+				"http://localhost:" + managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}

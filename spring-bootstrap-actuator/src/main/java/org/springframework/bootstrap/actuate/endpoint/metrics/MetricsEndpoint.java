@@ -39,9 +39,9 @@ public class MetricsEndpoint {
 		this.metrics = metrics;
 	}
 
-	@RequestMapping("${endpoints.varz.path:/varz}")
+	@RequestMapping("${endpoints.metrics.path:/metrics}")
 	@ResponseBody
-	public Map<String, Object> varz() {
+	public Map<String, Object> metrics() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		for (Metric metric : this.metrics.metrics()) {
 			result.put(metric.getName(), metric.getValue());

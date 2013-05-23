@@ -36,9 +36,9 @@ public class HealthEndpoint<T> {
 		this.indicator = indicator;
 	}
 
-	@RequestMapping("${endpoints.healthz.path:/healthz}")
+	@RequestMapping("${endpoints.health.path:/health}")
 	@ResponseBody
-	public T healthz() {
+	public T health() {
 		return this.indicator.health();
 	}
 

@@ -57,8 +57,8 @@ public class SecurityConfiguration {
 	private static class BoostrapWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
-		@Value("${endpoints.healthz.path:/healthz}")
-		private String healthzPath = "/healthz";
+		@Value("${endpoints.health.path:/health}")
+		private String healthPath = "/health";
 
 		@Value("${endpoints.info.path:/info}")
 		private String infoPath = "/info";
@@ -80,7 +80,7 @@ public class SecurityConfiguration {
 
 		@Override
 		public void configure(WebSecurityConfiguration builder) throws Exception {
-			builder.ignoring().antMatchers(this.healthzPath, this.infoPath);
+			builder.ignoring().antMatchers(this.healthPath, this.infoPath);
 		}
 
 		@Override

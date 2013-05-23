@@ -85,13 +85,13 @@ You should be able to run it already:
 
 Then in another terminal
 
-    $ curl localhost:8080/healthz
+    $ curl localhost:8080/health
     ok
-    $ curl localhost:8080/varz
-    {"counter.status.200.healthz":1.0,"gauge.response.healthz":10.0,"mem":120768.0,"mem.free":105012.0,"processors":4.0}
+    $ curl localhost:8080/metrics
+    {"counter.status.200.health":1.0,"gauge.response.health":10.0,"mem":120768.0,"mem.free":105012.0,"processors":4.0}
     
-`/healthz` is the default location for the health endpoint - it tells
-you if the application is running and healthy. `/varz` is the default
+`/health` is the default location for the health endpoint - it tells
+you if the application is running and healthy. `/metrics` is the default
 location for the metrics endpoint - it gives you basic counts and
 response timing data by default but there are plenty of ways to
 customize it.  You can also try `/trace` and `/dump` to get some
@@ -196,7 +196,7 @@ will find the home page on port 9000 instead of 8080:
 
 and the management endpoints on port 9001 instead of 8080:
 
-    $ curl localhost:9001/healthz
+    $ curl localhost:9001/health
     ok
 
 To externalize business configuration you can simply add a default

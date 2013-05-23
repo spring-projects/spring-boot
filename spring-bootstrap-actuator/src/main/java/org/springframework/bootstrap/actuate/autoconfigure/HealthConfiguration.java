@@ -43,7 +43,7 @@ public class HealthConfiguration {
 	private HealthIndicator<? extends Object> healthIndicator = new VanillaHealthIndicator();
 
 	@Bean
-	public HealthEndpoint<? extends Object> healthzEndpoint() {
+	public HealthEndpoint<? extends Object> healthEndpoint() {
 		return new HealthEndpoint<Object>(this.healthIndicator);
 	}
 

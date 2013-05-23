@@ -18,10 +18,16 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -39,6 +45,37 @@ public class SecurityConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManager.class));
+	}
+
+	@Test
+	public void testOverrideAuthenticationManager() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(TestConfiguration.class, SecurityConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
+				this.context.getBean(AuthenticationManager.class));
+	}
+
+	@Configuration
+	protected static class TestConfiguration {
+
+		private AuthenticationManager authenticationManager;
+
+		@Bean
+		public AuthenticationManager myAuthenticationManager() {
+			this.authenticationManager = new AuthenticationManager() {
+
+				@Override
+				public Authentication authenticate(Authentication authentication)
+						throws AuthenticationException {
+					return new TestingAuthenticationToken("foo", "bar");
+				}
+			};
+			return this.authenticationManager;
+		}
+
 	}
 
 }

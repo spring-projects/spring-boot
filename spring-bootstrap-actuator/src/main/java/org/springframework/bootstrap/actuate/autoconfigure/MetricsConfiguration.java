@@ -19,9 +19,9 @@ package org.springframework.bootstrap.actuate.autoconfigure;
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.actuate.endpoint.metrics.MetricsEndpoint;
 import org.springframework.bootstrap.actuate.endpoint.metrics.PublicMetrics;
 import org.springframework.bootstrap.actuate.endpoint.metrics.VanillaPublicMetrics;
-import org.springframework.bootstrap.actuate.endpoint.metrics.MetricsEndpoint;
 import org.springframework.bootstrap.actuate.metrics.MetricRepository;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for /varz endpoint.
+ * {@link EnableAutoConfiguration Auto-configuration} for /metrics endpoint.
  * 
  * @author Dave Syer
  */

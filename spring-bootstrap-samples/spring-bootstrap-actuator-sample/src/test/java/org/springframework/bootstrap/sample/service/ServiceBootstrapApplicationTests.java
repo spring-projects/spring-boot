@@ -84,11 +84,11 @@ public class ServiceBootstrapApplicationTests {
 	}
 
 	@Test
-	public void testVarz() throws Exception {
+	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080/varz", Map.class);
+				"http://localhost:8080/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -96,9 +96,9 @@ public class ServiceBootstrapApplicationTests {
 	}
 
 	@Test
-	public void testHealthz() throws Exception {
+	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/healthz", String.class);
+				"http://localhost:8080/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}

@@ -65,9 +65,9 @@ public class ManagementServiceBootstrapApplicationTests {
 	}
 
 	@Test
-	public void testHealthz() throws Exception {
+	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/healthz", String.class);
+				"http://localhost:" + managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}
