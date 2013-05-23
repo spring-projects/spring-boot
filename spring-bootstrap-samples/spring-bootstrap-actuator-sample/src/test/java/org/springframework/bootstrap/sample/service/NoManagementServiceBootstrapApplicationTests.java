@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  * 
  */
-public class NoVarzContextServiceBootstrapApplicationTests {
+public class NoManagementServiceBootstrapApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 

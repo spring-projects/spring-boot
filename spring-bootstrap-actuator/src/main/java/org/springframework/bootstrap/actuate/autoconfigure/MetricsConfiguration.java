@@ -21,7 +21,7 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.endpoint.metrics.PublicMetrics;
 import org.springframework.bootstrap.actuate.endpoint.metrics.VanillaPublicMetrics;
-import org.springframework.bootstrap.actuate.endpoint.metrics.VarzEndpoint;
+import org.springframework.bootstrap.actuate.endpoint.metrics.MetricsEndpoint;
 import org.springframework.bootstrap.actuate.metrics.MetricRepository;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
@@ -37,7 +37,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
-@ConditionalOnMissingBean({ VarzEndpoint.class })
+@ConditionalOnMissingBean({ MetricsEndpoint.class })
 public class MetricsConfiguration {
 
 	@Autowired
@@ -47,11 +47,11 @@ public class MetricsConfiguration {
 	private PublicMetrics metrics;
 
 	@Bean
-	public VarzEndpoint varzEndpoint() {
+	public MetricsEndpoint metricsEndpoint() {
 		if (this.metrics == null) {
 			this.metrics = new VanillaPublicMetrics(this.repository);
 		}
-		return new VarzEndpoint(this.metrics);
+		return new MetricsEndpoint(this.metrics);
 	}
 
 }

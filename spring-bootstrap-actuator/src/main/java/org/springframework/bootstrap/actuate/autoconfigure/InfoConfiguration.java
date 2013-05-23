@@ -16,16 +16,14 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.annotation.Resource;
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.actuate.endpoint.info.InfoEndpoint;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
@@ -35,8 +33,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -49,55 +48,52 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnMissingBean({ InfoEndpoint.class })
 public class InfoConfiguration {
 
-	@Resource(name = "infoMap")
-	private Map<String, Object> infoMap;
-
 	@Autowired
-	@Qualifier("gitInfo")
-	private GitInfo gitInfo;
+	private InfoPropertiesConfiguration properties;
 
 	@Bean
-	public Map<String, Object> applicationInfo() {
+	protected Map<String, Object> applicationInfo() throws Exception {
 		LinkedHashMap<String, Object> info = new LinkedHashMap<String, Object>();
-		info.putAll(this.infoMap);
-		if (this.gitInfo.getBranch() != null) {
-			info.put("git", this.gitInfo);
+		info.putAll(this.properties.infoMap());
+		GitInfo gitInfo = this.properties.gitInfo();
+		if (gitInfo.getBranch() != null) {
+			info.put("git", gitInfo);
 		}
 		return info;
 	}
 
 	@Bean
-	public InfoEndpoint infoEndpoint() {
+	public InfoEndpoint infoEndpoint() throws Exception {
 		return new InfoEndpoint(applicationInfo());
 	}
 
-	@Configuration
-	public static class InfoPropertiesConfiguration {
+	@Component
+	protected static class InfoPropertiesConfiguration {
 
 		@Autowired
 		private ConfigurableEnvironment environment = new StandardEnvironment();
 
-		@Bean
-		public PropertiesConfigurationFactory<GitInfo> gitInfo() throws IOException {
+		@Value("${spring.git.properties:classpath:git.properties}")
+		private Resource gitProperties;
+
+		public GitInfo gitInfo() throws Exception {
 			PropertiesConfigurationFactory<GitInfo> factory = new PropertiesConfigurationFactory<GitInfo>(
 					new GitInfo());
 			factory.setTargetName("git");
 			Properties properties = new Properties();
-			if (new ClassPathResource("git.properties").exists()) {
-				properties = PropertiesLoaderUtils.loadProperties(new ClassPathResource(
-						"git.properties"));
+			if (this.gitProperties.exists()) {
+				properties = PropertiesLoaderUtils.loadProperties(this.gitProperties);
 			}
 			factory.setProperties(properties);
-			return factory;
+			return factory.getObject();
 		}
 
-		@Bean
-		public PropertiesConfigurationFactory<Map<String, Object>> infoMap() {
+		public Map<String, Object> infoMap() throws Exception {
 			PropertiesConfigurationFactory<Map<String, Object>> factory = new PropertiesConfigurationFactory<Map<String, Object>>(
 					new LinkedHashMap<String, Object>());
 			factory.setTargetName("info");
 			factory.setPropertySources(this.environment.getPropertySources());
-			return factory;
+			return factory.getObject();
 		}
 
 	}

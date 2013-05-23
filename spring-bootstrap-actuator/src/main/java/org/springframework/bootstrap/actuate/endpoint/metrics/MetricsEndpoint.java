@@ -28,14 +28,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  */
 @Controller
-public class VarzEndpoint {
+public class MetricsEndpoint {
 
 	private PublicMetrics metrics;
 
 	/**
 	 * @param metrics
 	 */
-	public VarzEndpoint(PublicMetrics metrics) {
+	public MetricsEndpoint(PublicMetrics metrics) {
 		this.metrics = metrics;
 	}
 

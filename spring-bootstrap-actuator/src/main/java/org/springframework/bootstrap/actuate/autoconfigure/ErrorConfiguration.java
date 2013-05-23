@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ConditionalOnClass({ Servlet.class })
 @Import(InfoConfiguration.class)
-public class ServerConfiguration implements EmbeddedServletContainerCustomizer {
+public class ErrorConfiguration implements EmbeddedServletContainerCustomizer {
 
 	@Value("${endpoints.error.path:/error}")
 	private String errorPath = "/error";

@@ -16,9 +16,9 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
+import org.springframework.bootstrap.autoconfigure.web.EmbeddedContainerCustomizerConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnExpression;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.properties.ServerProperties;
@@ -26,8 +26,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 
 /**
@@ -36,8 +38,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
  */
 @Configuration
 @ConditionalOnExpression("${management.port:${server.port:8080}}>0")
-public class ManagementConfiguration implements ApplicationContextAware, DisposableBean,
-		ApplicationListener<ContextRefreshedEvent> {
+public class ManagementConfiguration implements ApplicationContextAware {
 
 	private ApplicationContext parent;
 	private ConfigurableApplicationContext context;
@@ -61,27 +62,42 @@ public class ManagementConfiguration implements ApplicationContextAware, Disposa
 		this.parent = applicationContext;
 	}
 
-	@Override
-	public void destroy() throws Exception {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Bean
+	public ApplicationListener<ContextClosedEvent> managementContextClosedListener() {
+		return new ApplicationListener<ContextClosedEvent>() {
+			@Override
+			public void onApplicationEvent(ContextClosedEvent event) {
+				if (event.getSource() != ManagementConfiguration.this.parent) {
+					return;
+				}
+				if (ManagementConfiguration.this.context != null) {
+					ManagementConfiguration.this.context.close();
+				}
+			}
+		};
 	}
 
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (event.getSource() != this.parent) {
-			return;
-		}
-		if (this.configuration.getPort() != this.management.getPort()) {
-			AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
-			context.setParent(this.parent);
-			context.register(ManagementServerConfiguration.class,
-					MetricsConfiguration.class, HealthConfiguration.class,
-					ShutdownConfiguration.class, TraceConfiguration.class);
-			context.refresh();
-			this.context = context;
-		}
+	@Bean
+	public ApplicationListener<ContextRefreshedEvent> managementContextRefeshedListener() {
+		return new ApplicationListener<ContextRefreshedEvent>() {
+			@Override
+			public void onApplicationEvent(ContextRefreshedEvent event) {
+				if (event.getSource() != ManagementConfiguration.this.parent) {
+					return;
+				}
+				if (ManagementConfiguration.this.configuration.getPort() != ManagementConfiguration.this.management
+						.getPort()) {
+					AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
+					context.setParent(ManagementConfiguration.this.parent);
+					context.register(EmbeddedContainerCustomizerConfiguration.class,
+							ManagementServerConfiguration.class,
+							MetricsConfiguration.class, HealthConfiguration.class,
+							ShutdownConfiguration.class, TraceConfiguration.class);
+					context.refresh();
+					ManagementConfiguration.this.context = context;
+				}
+			}
+		};
 	}
 
 }

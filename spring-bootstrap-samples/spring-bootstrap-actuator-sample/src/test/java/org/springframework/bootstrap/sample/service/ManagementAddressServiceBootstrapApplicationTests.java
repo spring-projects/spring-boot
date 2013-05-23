@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * 
  */
-public class VarzAddressServiceBootstrapApplicationTests {
+public class ManagementAddressServiceBootstrapApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 

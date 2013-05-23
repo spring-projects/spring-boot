@@ -16,16 +16,14 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
-import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
@@ -34,6 +32,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -44,15 +43,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  */
 @Configuration
 @EnableWebMvc
-public class ManagementServerConfiguration implements BeanPostProcessor {
-
-	@Autowired
-	private ManagementServerProperties configuration = new ManagementServerProperties();
-
-	private boolean initialized = false;
-
-	@Value("${endpoints.error.path:/error}")
-	private String errorPath = "/error";
+public class ManagementServerConfiguration {
 
 	@Bean
 	public DispatcherServlet dispatcherServlet() {
@@ -86,34 +77,25 @@ public class ManagementServerConfiguration implements BeanPostProcessor {
 		return new JettyEmbeddedServletContainerFactory();
 	}
 
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName)
-			throws BeansException {
-		return bean;
-	}
+	@Component
+	protected static class ServerCustomizationConfiguration implements
+			EmbeddedServletContainerCustomizer {
 
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName)
-			throws BeansException {
+		@Value("${endpoints.error.path:/error}")
+		private String errorPath = "/error";
 
-		if (bean instanceof EmbeddedServletContainerFactory) {
+		@Autowired
+		private ApplicationContext beanFactory;
 
-			if (bean instanceof AbstractEmbeddedServletContainerFactory
-					&& !this.initialized) {
-
-				ConfigurableEmbeddedServletContainerFactory factory = (ConfigurableEmbeddedServletContainerFactory) bean;
-				factory.setPort(this.configuration.getPort());
-				factory.setAddress(this.configuration.getAddress());
-				factory.setContextPath(this.configuration.getContextPath());
-
-				factory.addErrorPages(new ErrorPage(this.errorPath));
-				this.initialized = true;
-
-			}
-
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+			ManagementServerProperties configuration = this.beanFactory
+					.getBean(ManagementServerProperties.class);
+			factory.setPort(configuration.getPort());
+			factory.setAddress(configuration.getAddress());
+			factory.setContextPath(configuration.getContextPath());
+			factory.addErrorPages(new ErrorPage(this.errorPath));
 		}
-
-		return bean;
 
 	}
 

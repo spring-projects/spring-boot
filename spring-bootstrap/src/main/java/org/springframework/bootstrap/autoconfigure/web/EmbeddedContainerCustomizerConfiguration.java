@@ -17,28 +17,26 @@
 package org.springframework.bootstrap.autoconfigure.web;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.Servlet;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link JettyEmbeddedServletContainerFactory}.
+ * {@link EmbeddedServletContainerCustomizer}.
  * 
  * @author Dave Syer
  */
@@ -46,12 +44,14 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 @ConditionalOnClass({ Servlet.class, EmbeddedServletContainerCustomizer.class })
 public class EmbeddedContainerCustomizerConfiguration {
 
-	@Autowired(required = false)
-	private Set<EmbeddedServletContainerCustomizer> customizers = new HashSet<EmbeddedServletContainerCustomizer>();
-
 	@Bean
-	public BeanPostProcessor embeddedContainerCustomizerBeanPostProcessor() {
-		return new EmbeddedContainerCustomizerBeanPostProcessor(this.customizers);
+	public BeanPostProcessor embeddedContainerCustomizerBeanPostProcessor(
+			ListableBeanFactory beanFactory) {
+		// Look these up, not autowired because we don't want the ones from the parent
+		// context
+		Collection<EmbeddedServletContainerCustomizer> customizers = beanFactory
+				.getBeansOfType(EmbeddedServletContainerCustomizer.class).values();
+		return new EmbeddedContainerCustomizerBeanPostProcessor(customizers);
 	}
 
 	private static final class EmbeddedContainerCustomizerBeanPostProcessor implements
@@ -60,7 +60,7 @@ public class EmbeddedContainerCustomizerConfiguration {
 		private List<EmbeddedServletContainerCustomizer> customizers;
 
 		public EmbeddedContainerCustomizerBeanPostProcessor(
-				Set<EmbeddedServletContainerCustomizer> customizers) {
+				Collection<EmbeddedServletContainerCustomizer> customizers) {
 			final List<EmbeddedServletContainerCustomizer> list = new ArrayList<EmbeddedServletContainerCustomizer>(
 					customizers);
 			Collections.sort(list, new AnnotationAwareOrderComparator());
