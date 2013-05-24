@@ -84,8 +84,9 @@ public class SpringBootstrapCli {
 			Set<BootstrapCliException.Option> options = NO_EXCEPTION_OPTIONS;
 			if (ex instanceof BootstrapCliException) {
 				options = ((BootstrapCliException) ex).getOptions();
+			} else {
+				errorMessage(ex.getMessage());
 			}
-			errorMessage(ex.getMessage());
 			if (options.contains(BootstrapCliException.Option.SHOW_USAGE)) {
 				showUsage();
 			}

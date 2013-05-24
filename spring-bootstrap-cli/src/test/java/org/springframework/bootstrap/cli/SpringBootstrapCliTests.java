@@ -124,8 +124,7 @@ public class SpringBootstrapCliTests {
 	public void handlesNoSuchOptionException() throws Exception {
 		int status = this.cli.runAndHandleErrors("--missing");
 		assertThat(status, equalTo(1));
-		assertThat(this.calls,
-				equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE, Call.SHOW_USAGE)));
+		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.SHOW_USAGE)));
 	}
 
 	@Test
