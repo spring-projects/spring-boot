@@ -17,7 +17,7 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
 import org.springframework.bootstrap.actuate.properties.SecurityProperties;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
@@ -33,6 +33,8 @@ import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 /**
  * @author Dave Syer
@@ -57,30 +59,43 @@ public class SecurityConfiguration {
 	private static class BoostrapWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
-		@Value("${endpoints.health.path:/health}")
-		private String healthPath = "/health";
-
-		@Value("${endpoints.info.path:/info}")
-		private String infoPath = "/info";
-
 		@Autowired
 		private SecurityProperties security;
+
+		@Autowired
+		private EndpointsProperties endpoints;
 
 		@Autowired
 		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		@Override
 		protected void configure(HttpConfiguration http) throws Exception {
-			http.antMatcher("/**").httpBasic().and().anonymous().disable();
 			if (this.security.isRequireSsl()) {
 				http.requiresChannel().antMatchers("/**").requiresSecure();
 			}
-			http.authorizeUrls().antMatchers("/**").hasRole("USER");
+			if (this.security.getBasic().isEnabled()) {
+				http.authenticationEntryPoint(entryPoint())
+						.antMatcher(this.security.getBasic().getPath()).httpBasic()
+						.authenticationEntryPoint(entryPoint()).and().anonymous()
+						.disable();
+				http.authorizeUrls().antMatchers("/**")
+						.hasRole(this.security.getBasic().getRole());
+			}
+			// No cookies for service endpoints by default
+			http.sessionManagement().sessionCreationPolicy(this.security.getSessions());
+		}
+
+		private AuthenticationEntryPoint entryPoint() {
+			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+			entryPoint.setRealmName(this.security.getBasic().getRealm());
+			return entryPoint;
 		}
 
 		@Override
 		public void configure(WebSecurityConfiguration builder) throws Exception {
-			builder.ignoring().antMatchers(this.healthPath, this.infoPath);
+			builder.ignoring().antMatchers(this.endpoints.getHealth().getPath(),
+					this.endpoints.getInfo().getPath(),
+					this.endpoints.getError().getPath());
 		}
 
 		@Override

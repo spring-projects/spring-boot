@@ -17,9 +17,10 @@
 package org.springframework.bootstrap.actuate.properties;
 
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
+import org.springframework.security.config.annotation.web.SessionCreationPolicy;
 
 /**
- * Properties for the security aspects of the service.
+ * Properties for the security aspects of an application.
  * 
  * @author Dave Syer
  */
@@ -28,11 +29,76 @@ public class SecurityProperties {
 
 	private boolean requireSsl;
 
+	private Basic basic = new Basic();
+
+	private SessionCreationPolicy sessions = SessionCreationPolicy.stateless;
+
+	public SessionCreationPolicy getSessions() {
+		return this.sessions;
+	}
+
+	public void setSessions(SessionCreationPolicy sessions) {
+		this.sessions = sessions;
+	}
+
+	public Basic getBasic() {
+		return this.basic;
+	}
+
+	public void setBasic(Basic basic) {
+		this.basic = basic;
+	}
+
 	public boolean isRequireSsl() {
-		return requireSsl;
+		return this.requireSsl;
 	}
 
 	public void setRequireSsl(boolean requireSsl) {
 		this.requireSsl = requireSsl;
 	}
+
+	public static class Basic {
+
+		private boolean enabled = true;
+
+		private String realm = "Spring";
+
+		private String path = "/**";
+
+		private String role = "USER";
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getRealm() {
+			return this.realm;
+		}
+
+		public void setRealm(String realm) {
+			this.realm = realm;
+		}
+
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			this.path = path;
+		}
+
+		public String getRole() {
+			return this.role;
+		}
+
+		public void setRole(String role) {
+			this.role = role;
+		}
+
+	}
+
 }

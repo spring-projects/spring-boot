@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.sample.service;
+package org.springframework.bootstrap.sample.test;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.sample.service.ServiceBootstrapApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,7 @@ public class ManagementServiceBootstrapApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
 				"http://localhost:" + port, Map.class);
-		assertEquals(HttpStatus.FORBIDDEN, entity.getStatusCode());
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test

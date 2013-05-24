@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.sample.service;
+package org.springframework.bootstrap.sample.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.sample.service.ServiceBootstrapApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -35,24 +36,19 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  * 
  */
-public class ManagementAddressServiceBootstrapApplicationTests {
+public class ShutdownServiceBootstrapApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 
-	private static int port = 9000;
-	private static int managementPort = 9001;
-
 	@BeforeClass
 	public static void start() throws Exception {
-		final String[] args = new String[] { "--server.port=" + port,
-				"--management.port=" + managementPort };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
 								return (ConfigurableApplicationContext) SpringApplication
-										.run(ServiceBootstrapApplication.class, args);
+										.run(ServiceBootstrapApplication.class);
 							}
 						});
 		context = future.get(10, TimeUnit.SECONDS);
@@ -69,7 +65,7 @@ public class ManagementAddressServiceBootstrapApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:" + port, Map.class);
+				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -77,38 +73,15 @@ public class ManagementAddressServiceBootstrapApplicationTests {
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
-		testHome(); // makes sure some requests have been made
+	public void testShutdown() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/metrics", Map.class);
+		ResponseEntity<Map> entity = getRestTemplate("user", "password").postForEntity(
+				"http://localhost:8080/shutdown", null, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.200.root"));
-	}
-
-	@Test
-	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
-	}
-
-	@Test
-	public void testErrorPage() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/error", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals(999, body.get("status"));
-	}
-
-	private RestTemplate getRestTemplate() {
-		return getRestTemplate(null, null);
+		assertTrue("Wrong body: " + body,
+				((String) body.get("message")).contains("Shutting down"));
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {

@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.sample.service;
+package org.springframework.bootstrap.sample.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.sample.service.ServiceBootstrapApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -24,30 +25,33 @@ import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
- * Integration tests for separate management and main service ports.
+ * Integration tests for switching off management endpoints.
  * 
  * @author Dave Syer
  * 
  */
-public class ShutdownServiceBootstrapApplicationTests {
+public class NoManagementServiceBootstrapApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 
+	private static int managementPort = 0;
+
 	@BeforeClass
 	public static void start() throws Exception {
+		final String[] args = new String[] { "--management.port=" + managementPort };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
 								return (ConfigurableApplicationContext) SpringApplication
-										.run(ServiceBootstrapApplication.class);
+										.run(ServiceBootstrapApplication.class, args);
 							}
 						});
 		context = future.get(10, TimeUnit.SECONDS);
@@ -71,16 +75,13 @@ public class ShutdownServiceBootstrapApplicationTests {
 		assertEquals("Hello Phil", body.get("message"));
 	}
 
-	@Test
-	public void testShutdown() throws Exception {
+	@Test(expected = ResourceAccessException.class)
+	public void testMetricsNotAvailable() throws Exception {
+		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").postForEntity(
-				"http://localhost:8080/shutdown", null, Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body,
-				((String) body.get("message")).contains("Shutting down"));
+		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+				"http://localhost:" + managementPort + "/metrics", Map.class);
+		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {

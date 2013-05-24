@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.sample.service;
+package org.springframework.bootstrap.sample.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,14 +9,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
-import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
+import org.springframework.bootstrap.sample.service.ServiceBootstrapApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,75 +28,88 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Integration tests for endpoints configuration.
+ * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  * 
  */
-public class EndpointsPropertiesServiceBootstrapApplicationTests {
+public class ManagementAddressServiceBootstrapApplicationTests {
 
-	private ConfigurableApplicationContext context;
+	private static ConfigurableApplicationContext context;
 
-	private void start(final Class<?> configuration, final String... args)
-			throws Exception {
+	private static int port = 9000;
+	private static int managementPort = 9001;
+
+	@BeforeClass
+	public static void start() throws Exception {
+		final String[] args = new String[] { "--server.port=" + port,
+				"--management.port=" + managementPort };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
 								return (ConfigurableApplicationContext) SpringApplication
-										.run(configuration, args);
+										.run(ServiceBootstrapApplication.class, args);
 							}
 						});
-		this.context = future.get(10, TimeUnit.SECONDS);
+		context = future.get(10, TimeUnit.SECONDS);
 	}
 
-	@After
-	public void stop() {
-		if (this.context != null) {
-			this.context.close();
+	@AfterClass
+	public static void stop() {
+		if (context != null) {
+			context.close();
 		}
 	}
 
 	@Test
-	public void testCustomErrorPath() throws Exception {
-		start(ServiceBootstrapApplication.class, "--endpoints.error.path=/oops");
-		testError();
-	}
-
-	@Test
-	public void testCustomEndpointsProperties() throws Exception {
-		start(CustomServiceBootstrapApplication.class, "--endpoints.error.path=/oops");
-		testError();
-	}
-
-	private void testError() {
+	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080/oops", Map.class);
+				"http://localhost:" + port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("None", body.get("error"));
+		assertEquals("Hello Phil", body.get("message"));
+	}
+
+	@Test
+	public void testMetrics() throws Exception {
+		testHome(); // makes sure some requests have been made
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/metrics", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertTrue("Wrong body: " + body, body.containsKey("counter.status.200.root"));
+	}
+
+	@Test
+	public void testHealth() throws Exception {
+		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/health", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertEquals("ok", entity.getBody());
+	}
+
+	@Test
+	public void testErrorPage() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/error", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
 		assertEquals(999, body.get("status"));
 	}
 
-	@Configuration
-	@Import(ServiceBootstrapApplication.class)
-	public static class CustomServiceBootstrapApplication {
-		@Bean
-		CustomEndpointsProperties endpointsProperties() {
-			return new CustomEndpointsProperties();
-		}
-	}
-
-	public static class CustomEndpointsProperties extends EndpointsProperties {
-		@Override
-		public Endpoint getError() {
-			return new Endpoint("/oops");
-		}
+	private RestTemplate getRestTemplate() {
+		return getRestTemplate(null, null);
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {

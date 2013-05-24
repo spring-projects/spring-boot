@@ -1,4 +1,4 @@
-package org.springframework.bootstrap.sample.service;
+package org.springframework.bootstrap.sample.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,11 +9,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
+import org.springframework.bootstrap.sample.service.ServiceBootstrapApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,98 +31,54 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
- * Basic integration tests for service demo application.
+ * Integration tests for endpoints configuration.
  * 
  * @author Dave Syer
  * 
  */
-public class ServiceBootstrapApplicationTests {
+public class EndpointsPropertiesServiceBootstrapApplicationTests {
 
-	private static ConfigurableApplicationContext context;
+	private ConfigurableApplicationContext context;
 
-	@BeforeClass
-	public static void start() throws Exception {
+	private void start(final Class<?> configuration, final String... args)
+			throws Exception {
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
 								return (ConfigurableApplicationContext) SpringApplication
-										.run(ServiceBootstrapApplication.class);
+										.run(configuration, args);
 							}
 						});
-		context = future.get(30, TimeUnit.SECONDS);
+		this.context = future.get(10, TimeUnit.SECONDS);
 	}
 
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
+	@After
+	public void stop() {
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
 	@Test
-	public void testHomeIsSecure() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
-		// FIXME: should be UNAUTHORIZED?
-		assertEquals(HttpStatus.FORBIDDEN, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Wrong body: " + body, "Forbidden", body.get("error"));
+	public void testCustomErrorPath() throws Exception {
+		start(ServiceBootstrapApplication.class, "--endpoints.error.path=/oops");
+		testError();
 	}
 
 	@Test
-	public void testHome() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
+	public void testCustomEndpointsProperties() throws Exception {
+		start(CustomServiceBootstrapApplication.class, "--endpoints.error.path=/oops");
+		testError();
 	}
 
-	@Test
-	public void testMetrics() throws Exception {
-		testHome(); // makes sure some requests have been made
+	private void testError() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080/metrics", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.200.root"));
-	}
-
-	@Test
-	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
-	}
-
-	@Test
-	public void testErrorPage() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080/foo", Map.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals(500, body.get("status"));
-	}
-
-	@Test
-	public void testErrorPageDirectAccess() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080/error", Map.class);
+				"http://localhost:8080/oops", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -126,8 +86,20 @@ public class ServiceBootstrapApplicationTests {
 		assertEquals(999, body.get("status"));
 	}
 
-	private RestTemplate getRestTemplate() {
-		return getRestTemplate(null, null);
+	@Configuration
+	@Import(ServiceBootstrapApplication.class)
+	public static class CustomServiceBootstrapApplication {
+		@Bean
+		CustomEndpointsProperties endpointsProperties() {
+			return new CustomEndpointsProperties();
+		}
+	}
+
+	public static class CustomEndpointsProperties extends EndpointsProperties {
+		@Override
+		public Endpoint getError() {
+			return new Endpoint("/oops");
+		}
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {
