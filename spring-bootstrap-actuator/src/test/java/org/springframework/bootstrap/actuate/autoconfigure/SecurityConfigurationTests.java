@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.junit.Test;
+import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +42,7 @@ public class SecurityConfigurationTests {
 	public void testWebConfiguration() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityConfiguration.class,
+		this.context.register(SecurityConfiguration.class, EndpointsProperties.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManager.class));
@@ -52,7 +53,7 @@ public class SecurityConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, SecurityConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+				EndpointsProperties.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
