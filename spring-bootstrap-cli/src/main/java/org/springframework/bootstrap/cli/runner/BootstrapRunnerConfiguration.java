@@ -38,4 +38,9 @@ public interface BootstrapRunnerConfiguration extends GroovyCompilerConfiguratio
 	 */
 	Level getLogLevel();
 
+	/**
+	 * Returns {@code true} if the dependencies should be cached locally
+	 */
+	boolean isLocal();
+
 }

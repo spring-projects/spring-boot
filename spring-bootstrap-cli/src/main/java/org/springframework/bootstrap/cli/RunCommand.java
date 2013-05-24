@@ -53,6 +53,8 @@ public class RunCommand extends OptionParsingCommand {
 
 	private OptionSpec<Void> quietOption;
 
+	private OptionSpec<Void> localOption;
+
 	private BootstrapRunner runner;
 
 	public RunCommand() {
@@ -75,6 +77,8 @@ public class RunCommand extends OptionParsingCommand {
 		OptionParser parser = new OptionParser();
 		this.watchOption = parser
 				.accepts("watch", "Watch the specified file for changes");
+		this.localOption = parser.accepts("local",
+				"Accumulate the dependencies in a local folder (./grapes)");
 		this.editOption = parser.acceptsAll(asList("edit", "e"),
 				"Open the file with the default system editor");
 		this.noGuessImportsOption = parser.accepts("no-guess-imports",
@@ -99,6 +103,9 @@ public class RunCommand extends OptionParsingCommand {
 
 		BootstrapRunnerConfiguration configuration = new BootstrapRunnerConfigurationAdapter(
 				options);
+		if (configuration.isLocal() && System.getProperty("grape.root") == null) {
+			System.setProperty("grape.root", ".");
+		}
 		this.runner = new BootstrapRunner(configuration, files,
 				args.toArray(new String[args.size()]));
 		this.runner.compileAndRun();
@@ -151,6 +158,11 @@ public class RunCommand extends OptionParsingCommand {
 		@Override
 		public boolean isGuessDependencies() {
 			return !this.options.has(RunCommand.this.noGuessDependenciesOption);
+		}
+
+		@Override
+		public boolean isLocal() {
+			return this.options.has(RunCommand.this.localOption);
 		}
 
 		@Override

@@ -66,7 +66,7 @@ mkdir -p "${TARGETDIR%/}"
 
 CLASSPATH="${CLASSPATH}":"${SPRING_BIN}":"${TARGETDIR}"
 
-for f in "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar "${SPRING_HOME}"/classes; do
+for f in "${SPRING_HOME}"/classes "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
     [ -f $f ] && CLASSPATH="${CLASSPATH}":$f
 done
 
