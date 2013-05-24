@@ -11,6 +11,7 @@
             <directory>src/main/scripts</directory>
             <outputDirectory>bin</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
+           	<fileMode>755</fileMode>
         </fileSet>
         <fileSet>
             <directory>src/main/resources</directory>
