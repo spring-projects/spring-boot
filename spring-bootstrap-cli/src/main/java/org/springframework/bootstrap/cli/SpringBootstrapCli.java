@@ -63,6 +63,7 @@ public class SpringBootstrapCli {
 				this.commands.add(command);
 			}
 		}
+		this.commands.add(0, new HelpOptionCommand());
 		this.commands.add(0, new HelpCommand());
 	}
 
@@ -73,6 +74,7 @@ public class SpringBootstrapCli {
 	 */
 	public void setCommands(List<? extends Command> commands) {
 		this.commands = new ArrayList<Command>(commands);
+		this.commands.add(0, new HelpOptionCommand());
 		this.commands.add(0, new HelpCommand());
 	}
 
@@ -94,7 +96,8 @@ public class SpringBootstrapCli {
 			Set<BootstrapCliException.Option> options = NO_EXCEPTION_OPTIONS;
 			if (ex instanceof BootstrapCliException) {
 				options = ((BootstrapCliException) ex).getOptions();
-			} else {
+			}
+			if (!(ex instanceof NoHelpCommandArgumentsException)) {
 				errorMessage(ex.getMessage());
 			}
 			if (options.contains(BootstrapCliException.Option.SHOW_USAGE)) {
@@ -122,37 +125,23 @@ public class SpringBootstrapCli {
 	}
 
 	private Command find(String name) {
-		boolean isOption = name.startsWith("--");
-		if (isOption) {
-			name = name.substring(2);
-		}
 		for (Command candidate : this.commands) {
-			if ((isOption && candidate.isOptionCommand() || !isOption)
-					&& candidate.getName().equals(name)) {
+			if (candidate.getName().equals(name)) {
 				return candidate;
 			}
 		}
-		throw (isOption ? new NoSuchOptionException(name) : new NoSuchCommandException(
-				name));
+		throw new NoSuchCommandException(name);
 	}
 
 	protected void showUsage() {
 		System.out.print("usage: " + CLI_APP + " ");
-		for (Command command : this.commands) {
-			if (command.isOptionCommand()) {
-				System.out.print("[--" + command.getName() + "] ");
-			}
-		}
 		System.out.println("");
 		System.out.println("       <command> [<args>]");
 		System.out.println("");
 		System.out.println("Available commands are:");
 		for (Command command : this.commands) {
-			if (!command.isOptionCommand()) {
-				System.out.println(String.format("\n  %1$s %2$-15s\n    %3$s",
-						command.getName(), command.getUsageHelp(),
-						command.getDescription()));
-			}
+			System.out.println(String.format("\n  %1$s %2$-15s\n    %3$s",
+					command.getName(), command.getUsageHelp(), command.getDescription()));
 		}
 		System.out.println("");
 		System.out.println("See '" + CLI_APP
@@ -179,6 +168,13 @@ public class SpringBootstrapCli {
 		return rtn.toArray(new String[rtn.size()]);
 	}
 
+	private class HelpOptionCommand extends HelpCommand {
+		@Override
+		public String getName() {
+			return "--help";
+		}
+	}
+
 	/**
 	 * Internal {@link Command} used for 'help' and '--help' requests.
 	 */
@@ -191,7 +187,7 @@ public class SpringBootstrapCli {
 			}
 			String commandName = args[0];
 			for (Command command : SpringBootstrapCli.this.commands) {
-				if (!command.isOptionCommand() && command.getName().equals(commandName)) {
+				if (command.getName().equals(commandName)) {
 					System.out.println(CLI_APP + " " + command.getName() + " - "
 							+ command.getDescription());
 					System.out.println();
@@ -210,11 +206,6 @@ public class SpringBootstrapCli {
 		@Override
 		public String getName() {
 			return "help";
-		}
-
-		@Override
-		public boolean isOptionCommand() {
-			return false;
 		}
 
 		@Override

@@ -19,14 +19,13 @@ package org.springframework.bootstrap.cli.command;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import joptsimple.OptionParser;
-
 import org.springframework.bootstrap.cli.Command;
 
 /**
- * Base class for any {@link Command}s that use an {@link OptionParser}.
+ * Base class for any {@link Command}s that use an {@link OptionHandler}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public abstract class OptionParsingCommand extends AbstractCommand {
 

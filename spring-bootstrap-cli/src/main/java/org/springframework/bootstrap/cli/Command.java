@@ -23,6 +23,7 @@ import java.io.PrintStream;
  * A single command that can be run from the CLI.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  * @see #run(String...)
  */
 public interface Command {
@@ -31,13 +32,6 @@ public interface Command {
 	 * Returns the name of the command.
 	 */
 	String getName();
-
-	/**
-	 * Returns {@code true} if this is an 'option command'. An option command is a special
-	 * type of command that usually makes more sense to present as if it is an option. For
-	 * example '--help'.
-	 */
-	boolean isOptionCommand();
 
 	/**
 	 * Returns a description of the command.

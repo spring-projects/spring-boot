@@ -22,6 +22,7 @@ import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.springframework.bootstrap.cli.Command;
 
 /**
  * @author Dave Syer
@@ -43,7 +44,7 @@ public class ScriptCompilationCustomizer extends CompilationCustomizer {
 		ImportCustomizer importCustomizer = new ImportCustomizer();
 		importCustomizer.addImports("joptsimple.OptionParser", "joptsimple.OptionSet",
 				OptionParsingCommand.class.getCanonicalName(),
-				OptionHandler.class.getCanonicalName());
+				Command.class.getCanonicalName(), OptionHandler.class.getCanonicalName());
 		importCustomizer.call(source, context, classNode);
 	}
 

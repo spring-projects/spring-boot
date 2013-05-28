@@ -26,7 +26,7 @@ import org.springframework.bootstrap.cli.Command;
 public class VersionCommand extends AbstractCommand {
 
 	public VersionCommand() {
-		super("version", "Show the version", true);
+		super("--version", "Show the version");
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link SpringBootstrapCli}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class SpringBootstrapCliTests {
 
@@ -35,9 +36,6 @@ public class SpringBootstrapCliTests {
 
 	@Mock
 	private Command regularCommand;
-
-	@Mock
-	private Command optionCommand;
 
 	private Set<Call> calls = EnumSet.noneOf(Call.class);
 
@@ -66,10 +64,7 @@ public class SpringBootstrapCliTests {
 		};
 		given(this.regularCommand.getName()).willReturn("command");
 		given(this.regularCommand.getDescription()).willReturn("A regular command");
-		given(this.optionCommand.getName()).willReturn("option");
-		given(this.optionCommand.getDescription()).willReturn("An optional command");
-		given(this.optionCommand.isOptionCommand()).willReturn(true);
-		this.cli.setCommands(Arrays.asList(this.regularCommand, this.optionCommand));
+		this.cli.setCommands(Arrays.asList(this.regularCommand));
 	}
 
 	@Test
@@ -85,24 +80,6 @@ public class SpringBootstrapCliTests {
 	}
 
 	@Test
-	public void runOptionCommand() throws Exception {
-		this.cli.run("--option", "--arg1", "arg2");
-		verify(this.optionCommand).run("--arg1", "arg2");
-	}
-
-	@Test
-	public void runOptionCommandWithoutOption() throws Exception {
-		this.cli.run("option", "--arg1", "arg2");
-		verify(this.optionCommand).run("--arg1", "arg2");
-	}
-
-	@Test
-	public void runOptionOnNonOptionCommand() throws Exception {
-		this.thrown.expect(NoSuchOptionException.class);
-		this.cli.run("--command", "--arg1", "arg2");
-	}
-
-	@Test
 	public void missingCommand() throws Exception {
 		this.thrown.expect(NoSuchCommandException.class);
 		this.cli.run("missing");
@@ -110,7 +87,7 @@ public class SpringBootstrapCliTests {
 
 	@Test
 	public void handlesSuccess() throws Exception {
-		int status = this.cli.runAndHandleErrors("--option");
+		int status = this.cli.runAndHandleErrors("command");
 		assertThat(status, equalTo(0));
 		assertThat(this.calls, equalTo((Set<Call>) EnumSet.noneOf(Call.class)));
 	}
@@ -123,10 +100,10 @@ public class SpringBootstrapCliTests {
 	}
 
 	@Test
-	public void handlesNoSuchOptionException() throws Exception {
-		int status = this.cli.runAndHandleErrors("--missing");
+	public void handlesNoSuchCommand() throws Exception {
+		int status = this.cli.runAndHandleErrors("missing");
 		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.SHOW_USAGE)));
+		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE)));
 	}
 
 	@Test
@@ -157,8 +134,6 @@ public class SpringBootstrapCliTests {
 
 	@Test
 	public void exceptionMessages() throws Exception {
-		assertThat(new NoSuchOptionException("name").getMessage(),
-				equalTo("Unknown option: --name"));
 		assertThat(new NoSuchCommandException("name").getMessage(),
 				equalTo("spring: 'name' is not a valid command. See 'spring --help'."));
 	}
@@ -173,6 +148,12 @@ public class SpringBootstrapCliTests {
 	public void helpNoCommand() throws Exception {
 		this.thrown.expect(NoHelpCommandArgumentsException.class);
 		this.cli.run("help");
+	}
+
+	@Test
+	public void helpLikeOption() throws Exception {
+		this.thrown.expect(NoHelpCommandArgumentsException.class);
+		this.cli.run("--help");
 	}
 
 	@Test
