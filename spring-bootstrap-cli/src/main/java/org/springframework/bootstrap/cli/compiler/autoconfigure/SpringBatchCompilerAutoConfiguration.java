@@ -32,7 +32,7 @@ public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfigurat
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasLeastOneAnnotation(classNode, "EnableBatchProcessing");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableBatchProcessing");
 	}
 
 	@Override
