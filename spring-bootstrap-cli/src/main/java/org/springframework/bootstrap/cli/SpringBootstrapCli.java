@@ -16,10 +16,13 @@
 
 package org.springframework.bootstrap.cli;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
@@ -29,14 +32,12 @@ import java.util.Set;
  * 
  * <p>
  * The '-d' and '--debug' switches are handled by this class, however, most argument
- * parsing is left to the {@link Command} implementation. The {@link OptionParsingCommand}
- * class provides a convenient base for command that need to parse arguments.
+ * parsing is left to the {@link Command} implementation.
  * 
  * @author Phillip Webb
  * @see #main(String...)
  * @see BootstrapCliException
  * @see Command
- * @see OptionParsingCommand
  */
 public class SpringBootstrapCli {
 
@@ -52,8 +53,17 @@ public class SpringBootstrapCli {
 	 * commands.
 	 */
 	public SpringBootstrapCli() {
-		setCommands(Arrays.asList(new VersionCommand(), new RunCommand(),
-				new CreateCommand(), new CleanCommand()));
+		setCommands(ServiceLoader.load(CommandFactory.class, getClass().getClassLoader()));
+	}
+
+	private void setCommands(Iterable<CommandFactory> iterable) {
+		this.commands = new ArrayList<Command>();
+		for (CommandFactory factory : iterable) {
+			for (Command command : factory.getCommands()) {
+				this.commands.add(command);
+			}
+		}
+		this.commands.add(0, new HelpCommand());
 	}
 
 	/**
@@ -61,7 +71,7 @@ public class SpringBootstrapCli {
 	 * 'help' command will be automatically provided in addition to this list.
 	 * @param commands the commands to add
 	 */
-	protected void setCommands(List<? extends Command> commands) {
+	public void setCommands(List<? extends Command> commands) {
 		this.commands = new ArrayList<Command>(commands);
 		this.commands.add(0, new HelpCommand());
 	}
@@ -172,11 +182,7 @@ public class SpringBootstrapCli {
 	/**
 	 * Internal {@link Command} used for 'help' and '--help' requests.
 	 */
-	private class HelpCommand extends AbstractCommand {
-
-		public HelpCommand() {
-			super("help", "Show command help", true);
-		}
+	private class HelpCommand implements Command {
 
 		@Override
 		public void run(String... args) throws Exception {
@@ -200,6 +206,46 @@ public class SpringBootstrapCli {
 			}
 			throw new NoSuchCommandException(commandName);
 		}
+
+		@Override
+		public String getName() {
+			return "help";
+		}
+
+		@Override
+		public boolean isOptionCommand() {
+			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Get help on commands";
+		}
+
+		@Override
+		public String getUsageHelp() {
+			return null;
+		}
+
+		@Override
+		public void printHelp(PrintStream out) throws IOException {
+		}
+
+	}
+
+	static class NoHelpCommandArgumentsException extends BootstrapCliException {
+
+		private static final long serialVersionUID = 1L;
+
+		public NoHelpCommandArgumentsException() {
+			super(Option.SHOW_USAGE);
+		}
+
+	}
+
+	static class NoArgumentsException extends BootstrapCliException {
+
+		private static final long serialVersionUID = 1L;
 
 	}
 

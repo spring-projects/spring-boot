@@ -72,15 +72,17 @@ public class GroovyCompiler {
 		CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 		this.loader = new ExtendedGroovyClassLoader(getClass().getClassLoader(),
 				compilerConfiguration);
-
 		// FIXME: allow the extra resolvers to be switched on (off by default)
 		addExtraResolvers();
-
 		compilerConfiguration
 				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
 	}
 
-	public Object[] sources(File[] files) throws CompilationFailedException, IOException {
+	public void addCompilationCustomizers(CompilationCustomizer... customizers) {
+		this.loader.getConfiguration().addCompilationCustomizers(customizers);
+	}
+
+	public Object[] sources(File... files) throws CompilationFailedException, IOException {
 		List<File> compilables = new ArrayList<File>();
 		List<Object> others = new ArrayList<Object>();
 		for (File file : files) {
@@ -124,6 +126,18 @@ public class GroovyCompiler {
 		compilationUnit.compile(Phases.CLASS_GENERATION);
 		for (Object loadedClass : collector.getLoadedClasses()) {
 			classes.add((Class<?>) loadedClass);
+		}
+		ClassNode mainClassNode = (ClassNode) compilationUnit.getAST().getClasses()
+				.get(0);
+		Class<?> mainClass = null;
+		for (Class<?> loadedClass : classes) {
+			if (mainClassNode.getName().equals(loadedClass.getName())) {
+				mainClass = loadedClass;
+			}
+		}
+		if (mainClass != null) {
+			classes.remove(mainClass);
+			classes.add(0, mainClass);
 		}
 
 		return classes.toArray(new Class<?>[classes.size()]);

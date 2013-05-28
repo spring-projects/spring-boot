@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.bootstrap.cli.SpringBootstrapCli.NoArgumentsException;
+import org.springframework.bootstrap.cli.SpringBootstrapCli.NoHelpCommandArgumentsException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

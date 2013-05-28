@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.cli;
+package org.springframework.bootstrap.cli.command;
 
 import java.io.IOException;
 import java.io.PrintStream;
+
+import org.springframework.bootstrap.cli.Command;
 
 /**
  * Abstract {@link Command} implementation.

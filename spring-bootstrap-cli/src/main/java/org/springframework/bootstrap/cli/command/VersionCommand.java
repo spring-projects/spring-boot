@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.cli;
+package org.springframework.bootstrap.cli.command;
+
+import org.springframework.bootstrap.cli.Command;
 
 /**
- * Exception thrown when the 'help' command is issued without any arguments.
+ * {@link Command} to display the 'version' number.
  * 
  * @author Phillip Webb
  */
-class NoHelpCommandArgumentsException extends BootstrapCliException {
+public class VersionCommand extends AbstractCommand {
 
-	private static final long serialVersionUID = 1L;
+	public VersionCommand() {
+		super("version", "Show the version", true);
+	}
 
-	public NoHelpCommandArgumentsException() {
-		super(Option.SHOW_USAGE);
+	@Override
+	public void run(String... args) {
+		// FIXME: add version introspection
+		throw new IllegalStateException("Not implemented");
 	}
 
 }

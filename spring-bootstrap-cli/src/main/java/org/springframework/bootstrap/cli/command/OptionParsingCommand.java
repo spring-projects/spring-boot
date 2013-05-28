@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.cli;
+package org.springframework.bootstrap.cli.command;
 
 import java.io.IOException;
 import java.io.PrintStream;
 
 import joptsimple.OptionParser;
-import joptsimple.OptionSet;
+
+import org.springframework.bootstrap.cli.Command;
 
 /**
  * Base class for any {@link Command}s that use an {@link OptionParser}.
@@ -29,26 +30,25 @@ import joptsimple.OptionSet;
  */
 public abstract class OptionParsingCommand extends AbstractCommand {
 
-	private OptionParser parser;
+	private OptionHandler handler;
 
-	public OptionParsingCommand(String name, String description) {
+	public OptionParsingCommand(String name, String description, OptionHandler handler) {
 		super(name, description);
-		this.parser = createOptionParser();
+		this.handler = handler;
 	}
-
-	protected abstract OptionParser createOptionParser();
 
 	@Override
 	public void printHelp(PrintStream out) throws IOException {
-		this.parser.printHelpOn(out);
+		this.handler.printHelp(out);
 	}
 
 	@Override
 	public final void run(String... args) throws Exception {
-		OptionSet options = parser.parse(args);
-		run(options);
+		this.handler.run(args);
 	}
 
-	protected abstract void run(OptionSet options) throws Exception;
+	protected OptionHandler getHandler() {
+		return this.handler;
+	}
 
 }

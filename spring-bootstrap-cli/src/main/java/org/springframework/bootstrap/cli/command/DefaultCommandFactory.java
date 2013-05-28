@@ -13,16 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.bootstrap.cli.command;
 
-package org.springframework.bootstrap.cli;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.bootstrap.cli.Command;
+import org.springframework.bootstrap.cli.CommandFactory;
 
 /**
- * Exception thrown when no CLI options are specified.
+ * @author Dave Syer
  * 
- * @author Phillip Webb
  */
-class NoArgumentsException extends BootstrapCliException {
+public class DefaultCommandFactory implements CommandFactory {
 
-	private static final long serialVersionUID = 1L;
+	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command> asList(
+			new VersionCommand(), new RunCommand(), new CleanCommand());
+
+	@Override
+	public Collection<Command> getCommands() {
+		return DEFAULT_COMMANDS;
+	}
 
 }

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.cli;
+package org.springframework.bootstrap.cli.command;
 
-import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import static java.util.Arrays.*;
+import org.springframework.bootstrap.cli.Command;
+
+import static java.util.Arrays.asList;
 
 /**
  * {@link Command} to 'create' a new spring groovy script.
@@ -29,7 +30,7 @@ import static java.util.Arrays.*;
 public class CreateCommand extends OptionParsingCommand {
 
 	public CreateCommand() {
-		super("create", "Create an new spring groovy script");
+		super("create", "Create an new spring groovy script", new CreateOptionHandler());
 	}
 
 	@Override
@@ -37,18 +38,20 @@ public class CreateCommand extends OptionParsingCommand {
 		return "[options] <file>";
 	}
 
-	@Override
-	protected OptionParser createOptionParser() {
-		OptionParser parser = new OptionParser();
-		parser.acceptsAll(asList("overwite", "f"), "Overwrite any existing file");
-		parser.accepts("type", "Create a specific application type").withOptionalArg()
-				.ofType(String.class).describedAs("web, batch, integration");
-		return parser;
-	}
+	private static class CreateOptionHandler extends OptionHandler {
 
-	@Override
-	protected void run(OptionSet options) {
-		throw new IllegalStateException("Not implemented"); // FIXME
+		@Override
+		protected void options() {
+			option(asList("overwite", "f"), "Overwrite any existing file");
+			option("type", "Create a specific application type").withOptionalArg()
+					.ofType(String.class).describedAs("web, batch, integration");
+		}
+
+		@Override
+		protected void run(OptionSet options) {
+			throw new IllegalStateException("Not implemented"); // FIXME
+		}
+
 	}
 
 }

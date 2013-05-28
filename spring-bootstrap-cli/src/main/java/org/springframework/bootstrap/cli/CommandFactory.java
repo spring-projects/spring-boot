@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.cli;
 
+import java.util.Collection;
+
 /**
- * {@link Command} to display the 'version' number.
+ * @author Dave Syer
  * 
- * @author Phillip Webb
  */
-public class VersionCommand extends AbstractCommand {
+public interface CommandFactory {
 
-	public VersionCommand() {
-		super("version", "Show the version", true);
-	}
-
-	@Override
-	public void run(String... args) {
-		// FIXME: add version introspection
-		throw new IllegalStateException("Not implemented");
-	}
+	Collection<Command> getCommands();
 
 }
