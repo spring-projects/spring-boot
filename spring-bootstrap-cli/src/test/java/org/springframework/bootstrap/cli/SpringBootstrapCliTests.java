@@ -1,6 +1,5 @@
 package org.springframework.bootstrap.cli;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
@@ -18,7 +17,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -141,7 +139,7 @@ public class SpringBootstrapCliTests {
 	@Test
 	public void help() throws Exception {
 		this.cli.run("help", "command");
-		verify(this.regularCommand).printHelp((PrintStream) anyObject());
+		verify(this.regularCommand).getHelp();
 	}
 
 	@Test

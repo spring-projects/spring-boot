@@ -16,8 +16,6 @@
 
 package org.springframework.bootstrap.cli;
 
-import java.io.IOException;
-import java.io.PrintStream;
 
 /**
  * A single command that can be run from the CLI.
@@ -40,17 +38,16 @@ public interface Command {
 
 	/**
 	 * Returns usage help for the command. This should be a simple one-line string
-	 * describing basic usage. eg. '[options] &lt;file&gt;'. Do not include the name of
+	 * describing basic usage. e.g. '[options] &lt;file&gt;'. Do not include the name of
 	 * the command in this string.
 	 */
 	String getUsageHelp();
 
 	/**
-	 * Prints help for the command.
-	 * @param out the output writer to display help
-	 * @throws IOException
+	 * Gets full help text for the command, e.g. a longer description and one line per
+	 * option.
 	 */
-	void printHelp(PrintStream out) throws IOException;
+	String getHelp();
 
 	/**
 	 * Run the command.

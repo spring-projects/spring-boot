@@ -16,9 +16,6 @@
 
 package org.springframework.bootstrap.cli.command;
 
-import java.io.IOException;
-import java.io.PrintStream;
-
 import org.springframework.bootstrap.cli.Command;
 
 /**
@@ -59,7 +56,8 @@ public abstract class AbstractCommand implements Command {
 	}
 
 	@Override
-	public void printHelp(PrintStream out) throws IOException {
+	public String getHelp() {
+		return null;
 	}
 
 }

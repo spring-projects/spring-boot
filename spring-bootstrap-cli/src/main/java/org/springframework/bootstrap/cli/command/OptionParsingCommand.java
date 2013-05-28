@@ -16,9 +16,6 @@
 
 package org.springframework.bootstrap.cli.command;
 
-import java.io.IOException;
-import java.io.PrintStream;
-
 import org.springframework.bootstrap.cli.Command;
 
 /**
@@ -37,8 +34,8 @@ public abstract class OptionParsingCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void printHelp(PrintStream out) throws IOException {
-		this.handler.printHelp(out);
+	public String getHelp() {
+		return this.handler.getHelp();
 	}
 
 	@Override

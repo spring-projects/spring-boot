@@ -16,8 +16,6 @@
 
 package org.springframework.bootstrap.cli;
 
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -196,7 +194,9 @@ public class SpringBootstrapCli {
 								+ " " + command.getUsageHelp());
 						System.out.println();
 					}
-					command.printHelp(System.out);
+					if (command.getHelp() != null) {
+						System.out.println(command.getHelp());
+					}
 					return;
 				}
 			}
@@ -219,7 +219,8 @@ public class SpringBootstrapCli {
 		}
 
 		@Override
-		public void printHelp(PrintStream out) throws IOException {
+		public String getHelp() {
+			return null;
 		}
 
 	}

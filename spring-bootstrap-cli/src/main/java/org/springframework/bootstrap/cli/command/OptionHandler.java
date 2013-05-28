@@ -15,8 +15,9 @@
  */
 package org.springframework.bootstrap.cli.command;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.io.OutputStream;
 import java.util.Collection;
 
 import joptsimple.OptionParser;
@@ -56,8 +57,14 @@ public abstract class OptionHandler {
 
 	protected abstract void run(OptionSet options) throws Exception;
 
-	public void printHelp(PrintStream out) throws IOException {
-		getParser().printHelpOn(out);
+	public String getHelp() {
+		OutputStream out = new ByteArrayOutputStream();
+		try {
+			getParser().printHelpOn(out);
+		} catch (IOException e) {
+			return "Help not available";
+		}
+		return out.toString();
 	}
 
 }

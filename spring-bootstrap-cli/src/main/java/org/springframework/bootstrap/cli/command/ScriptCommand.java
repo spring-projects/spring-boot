@@ -19,7 +19,6 @@ import groovy.lang.Script;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.URL;
 
 import org.apache.ivy.util.FileUtil;
@@ -29,12 +28,12 @@ import org.springframework.bootstrap.cli.compiler.GroovyCompiler;
 import org.springframework.bootstrap.cli.compiler.GroovyCompilerConfiguration;
 
 /**
- * {@link Command} to run a script.
+ * {@link Command} to run a Groovy script.
  * 
  * @author Dave Syer
  * 
  */
-public class ScriptCommand extends AbstractCommand {
+public class ScriptCommand implements Command {
 
 	private static String[] DEFAULT_PATHS = new String[] { "${SPRING_HOME}/ext",
 			"${SPRING_HOME}/bin" };
@@ -45,20 +44,44 @@ public class ScriptCommand extends AbstractCommand {
 
 	private Object main;
 
-	public ScriptCommand(String name, String description) {
-		super(name, description);
+	private String name;
+
+	public ScriptCommand(String script) {
+		this.name = script;
 	}
 
 	@Override
-	public void printHelp(PrintStream out) throws IOException {
-		if (getMain() instanceof OptionHandler) {
-			((OptionHandler) getMain()).printHelp(out);
+	public String getName() {
+		if (getMain() instanceof Command) {
+			return ((Command) getMain()).getName();
 		}
+		return this.name;
+	}
+
+	@Override
+	public String getDescription() {
+		if (getMain() instanceof Command) {
+			return ((Command) getMain()).getDescription();
+		}
+		return this.name;
+	}
+
+	@Override
+	public String getHelp() {
+		if (getMain() instanceof OptionHandler) {
+			return ((OptionHandler) getMain()).getHelp();
+		}
+		if (getMain() instanceof Command) {
+			return ((Command) getMain()).getHelp();
+		}
+		return null;
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		if (getMain() instanceof OptionHandler) {
+		if (getMain() instanceof Command) {
+			((Command) getMain()).run(args);
+		} else if (getMain() instanceof OptionHandler) {
 			((OptionHandler) getMain()).run(args);
 		} else if (this.main instanceof Runnable) {
 			((Runnable) this.main).run();
@@ -80,6 +103,9 @@ public class ScriptCommand extends AbstractCommand {
 
 	@Override
 	public String getUsageHelp() {
+		if (getMain() instanceof Command) {
+			return ((Command) getMain()).getDescription();
+		}
 		return "[options] <args>";
 	}
 
@@ -88,7 +114,7 @@ public class ScriptCommand extends AbstractCommand {
 			try {
 				this.main = getMainClass().newInstance();
 			} catch (Exception e) {
-				throw new IllegalStateException("Cannot create main class: " + getName(),
+				throw new IllegalStateException("Cannot create main class: " + this.name,
 						e);
 			}
 		}
@@ -98,7 +124,7 @@ public class ScriptCommand extends AbstractCommand {
 	private void compile() {
 		GroovyCompiler compiler = new GroovyCompiler(new ScriptConfiguration());
 		compiler.addCompilationCustomizers(new ScriptCompilationCustomizer());
-		File source = locateSource(getName());
+		File source = locateSource(this.name);
 		Class<?>[] classes;
 		try {
 			classes = compiler.compile(source);

@@ -17,9 +17,6 @@ package org.springframework.bootstrap.cli.command;
 
 import groovy.lang.Script;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -33,21 +30,34 @@ public class ScriptCommandTests {
 
 	public static boolean executed = false;
 
+	@Test(expected = IllegalStateException.class)
+	public void testMissing() throws Exception {
+		ScriptCommand command = new ScriptCommand("missing");
+		command.run("World");
+	}
+
 	@Test
 	public void testScript() throws Exception {
-		ScriptCommand command = new ScriptCommand("script", "Run a test command");
+		ScriptCommand command = new ScriptCommand("script");
 		command.run("World");
 		assertEquals("World",
 				((String[]) ((Script) command.getMain()).getProperty("args"))[0]);
 	}
 
 	@Test
+	public void testCommand() throws Exception {
+		ScriptCommand command = new ScriptCommand("command");
+		assertEquals("My script command", command.getUsageHelp());
+		command.run("World");
+		assertTrue(executed);
+	}
+
+	@Test
 	public void testOptions() throws Exception {
-		ScriptCommand command = new ScriptCommand("test", "Run a test command");
+		ScriptCommand command = new ScriptCommand("test");
 		command.run("World", "--foo");
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		((OptionHandler) command.getMain()).printHelp(new PrintStream(out));
-		assertTrue("Wrong output: " + out, out.toString().contains("--foo"));
+		String out = ((OptionHandler) command.getMain()).getHelp();
+		assertTrue("Wrong output: " + out, out.contains("--foo"));
 		assertTrue(executed);
 	}
 
