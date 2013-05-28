@@ -15,11 +15,13 @@
  */
 package org.springframework.bootstrap.cli.command;
 
+import groovy.lang.GroovyObjectSupport;
 import groovy.lang.Script;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -45,6 +47,30 @@ public class ScriptCommandTests {
 	}
 
 	@Test
+	public void testLocateFile() throws Exception {
+		ScriptCommand command = new ScriptCommand(
+				"src/test/resources/commands/script.groovy");
+		command.setPaths(new String[] { "." });
+		command.run("World");
+		assertEquals("World",
+				((String[]) ((Script) command.getMain()).getProperty("args"))[0]);
+	}
+
+	@Test
+	public void testRunnable() throws Exception {
+		ScriptCommand command = new ScriptCommand("runnable");
+		command.run("World");
+		assertTrue(executed);
+	}
+
+	@Test
+	public void testClosure() throws Exception {
+		ScriptCommand command = new ScriptCommand("closure");
+		command.run("World");
+		assertTrue(executed);
+	}
+
+	@Test
 	public void testCommand() throws Exception {
 		ScriptCommand command = new ScriptCommand("command");
 		assertEquals("My script command", command.getUsageHelp());
@@ -53,11 +79,41 @@ public class ScriptCommandTests {
 	}
 
 	@Test
+	public void testDuplicateClassName() throws Exception {
+		ScriptCommand command1 = new ScriptCommand("handler");
+		ScriptCommand command2 = new ScriptCommand("command");
+		assertNotSame(command1.getMain().getClass(), command2.getMain().getClass());
+		assertEquals(command1.getMain().getClass().getName(), command2.getMain()
+				.getClass().getName());
+	}
+
+	@Test
 	public void testOptions() throws Exception {
-		ScriptCommand command = new ScriptCommand("test");
-		command.run("World", "--foo");
+		ScriptCommand command = new ScriptCommand("handler");
 		String out = ((OptionHandler) command.getMain()).getHelp();
 		assertTrue("Wrong output: " + out, out.contains("--foo"));
+		command.run("World", "--foo");
+		assertTrue(executed);
+	}
+
+	@Test
+	public void testMixin() throws Exception {
+		ScriptCommand command = new ScriptCommand("mixin");
+		GroovyObjectSupport object = (GroovyObjectSupport) command.getMain();
+		String out = (String) object.getProperty("help");
+		assertTrue("Wrong output: " + out, out.contains("--foo"));
+		command.run("World", "--foo");
+		assertTrue(executed);
+	}
+
+	@Test
+	public void testMixinWithBlock() throws Exception {
+		ScriptCommand command = new ScriptCommand("test");
+		GroovyObjectSupport object = (GroovyObjectSupport) command.getMain();
+		String out = (String) object.getProperty("help");
+		System.err.println(out);
+		assertTrue("Wrong output: " + out, out.contains("--foo"));
+		command.run("World", "--foo", "--bar=2");
 		assertTrue(executed);
 	}
 

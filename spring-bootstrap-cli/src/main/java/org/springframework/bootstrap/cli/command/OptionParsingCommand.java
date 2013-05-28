@@ -19,7 +19,7 @@ package org.springframework.bootstrap.cli.command;
 import org.springframework.bootstrap.cli.Command;
 
 /**
- * Base class for any {@link Command}s that use an {@link OptionHandler}.
+ * Base class for a {@link Command} that uses an {@link OptionHandler}.
  * 
  * @author Phillip Webb
  * @author Dave Syer

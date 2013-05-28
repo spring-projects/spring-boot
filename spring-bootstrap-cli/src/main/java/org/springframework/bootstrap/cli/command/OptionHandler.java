@@ -15,6 +15,8 @@
  */
 package org.springframework.bootstrap.cli.command;
 
+import groovy.lang.Closure;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,9 +30,10 @@ import joptsimple.OptionSpecBuilder;
  * @author Dave Syer
  * 
  */
-public abstract class OptionHandler {
+public class OptionHandler {
 
 	private OptionParser parser;
+	private Closure<Void> closure;
 
 	public OptionSpecBuilder option(String name, String description) {
 		return getParser().accepts(name, description);
@@ -40,7 +43,7 @@ public abstract class OptionHandler {
 		return getParser().acceptsAll(aliases, description);
 	}
 
-	private OptionParser getParser() {
+	public OptionParser getParser() {
 		if (this.parser == null) {
 			this.parser = new OptionParser();
 			options();
@@ -48,14 +51,23 @@ public abstract class OptionHandler {
 		return this.parser;
 	}
 
-	protected abstract void options();
+	protected void options() {
+		if (this.closure != null) {
+			this.closure.call();
+		}
+	}
+
+	public void setOptions(Closure<Void> closure) {
+		this.closure = closure;
+	}
 
 	public final void run(String... args) throws Exception {
 		OptionSet options = getParser().parse(args);
 		run(options);
 	}
 
-	protected abstract void run(OptionSet options) throws Exception;
+	protected void run(OptionSet options) throws Exception {
+	}
 
 	public String getHelp() {
 		OutputStream out = new ByteArrayOutputStream();

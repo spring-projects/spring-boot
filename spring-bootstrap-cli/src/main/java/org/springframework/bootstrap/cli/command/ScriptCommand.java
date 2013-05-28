@@ -15,11 +15,17 @@
  */
 package org.springframework.bootstrap.cli.command;
 
+import groovy.lang.Closure;
+import groovy.lang.GroovyObjectSupport;
+import groovy.lang.MetaClass;
+import groovy.lang.MetaMethod;
 import groovy.lang.Script;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+
+import joptsimple.OptionParser;
 
 import org.apache.ivy.util.FileUtil;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -79,16 +85,32 @@ public class ScriptCommand implements Command {
 
 	@Override
 	public void run(String... args) throws Exception {
-		if (getMain() instanceof Command) {
-			((Command) getMain()).run(args);
-		} else if (getMain() instanceof OptionHandler) {
+		run(getMain(), args);
+	}
+
+	private void run(Object main, String[] args) throws Exception {
+		if (main instanceof Command) {
+			((Command) main).run(args);
+		} else if (main instanceof OptionHandler) {
 			((OptionHandler) getMain()).run(args);
-		} else if (this.main instanceof Runnable) {
-			((Runnable) this.main).run();
-		} else if (this.main instanceof Script) {
+		} else if (main instanceof Closure) {
+			((Closure<?>) main).call((Object[]) args);
+		} else if (main instanceof Runnable) {
+			((Runnable) main).run();
+		} else if (main instanceof Script) {
 			Script script = (Script) this.main;
 			script.setProperty("args", args);
-			script.run();
+			if (this.main instanceof GroovyObjectSupport) {
+				GroovyObjectSupport object = (GroovyObjectSupport) this.main;
+				if (object.getMetaClass().hasProperty(object, "parser") != null) {
+					OptionParser parser = (OptionParser) object.getProperty("parser");
+					if (parser != null) {
+						script.setProperty("options", parser.parse(args));
+					}
+				}
+			}
+			Object result = script.run();
+			run(result, args);
 		}
 	}
 
@@ -117,6 +139,16 @@ public class ScriptCommand implements Command {
 				throw new IllegalStateException("Cannot create main class: " + this.name,
 						e);
 			}
+			if (this.main instanceof OptionHandler) {
+				((OptionHandler) this.main).options();
+			} else if (this.main instanceof GroovyObjectSupport) {
+				GroovyObjectSupport object = (GroovyObjectSupport) this.main;
+				MetaClass metaClass = object.getMetaClass();
+				MetaMethod options = metaClass.getMetaMethod("options", null);
+				if (options != null) {
+					options.doMethodInvoke(this.main, null);
+				}
+			}
 		}
 		return this.main;
 	}
@@ -144,16 +176,25 @@ public class ScriptCommand implements Command {
 	}
 
 	private File locateSource(String name) {
-		String resource = "commands/" + name + ".groovy";
+		String resource = name;
+		if (!name.endsWith(".groovy")) {
+			resource = "commands/" + name + ".groovy";
+		}
 		URL url = getClass().getClassLoader().getResource(resource);
 		File file = null;
 		if (url != null) {
-			try {
-				file = File.createTempFile(name, ".groovy");
-				FileUtil.copy(url, file, null);
-			} catch (IOException e) {
-				throw new IllegalStateException("Could not create temp file for source: "
-						+ name);
+			if (url.toString().startsWith("file:")) {
+				file = new File(url.toString().substring("file:".length()));
+			} else {
+				// probably in JAR file
+				try {
+					file = File.createTempFile(name, ".groovy");
+					file.deleteOnExit();
+					FileUtil.copy(url, file, null);
+				} catch (IOException e) {
+					throw new IllegalStateException(
+							"Could not create temp file for source: " + name);
+				}
 			}
 		} else {
 			String home = System.getProperty("SPRING_HOME", System.getenv("SPRING_HOME"));
