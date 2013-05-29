@@ -39,6 +39,13 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	private Properties data = new Properties();
 
+	/**
+	 * @return the data the properties being merged
+	 */
+	public Properties getData() {
+		return this.data;
+	}
+
 	@Override
 	public boolean canTransformResource(String resource) {
 		if (this.resource != null && this.resource.equalsIgnoreCase(resource)) {

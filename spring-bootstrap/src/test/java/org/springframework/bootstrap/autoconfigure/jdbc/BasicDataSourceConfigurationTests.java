@@ -35,6 +35,7 @@ public class BasicDataSourceConfigurationTests {
 		this.context.register(BasicDataSourceConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
+		context.close();
 	}
 
 }

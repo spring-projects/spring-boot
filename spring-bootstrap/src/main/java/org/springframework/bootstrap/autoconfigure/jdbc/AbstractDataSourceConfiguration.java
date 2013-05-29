@@ -67,7 +67,7 @@ public class AbstractDataSourceConfiguration {
 				.getEmbeddedDatabaseType();
 		this.url = EmbeddedDatabaseConfiguration
 				.getEmbeddedDatabaseUrl(embeddedDatabaseType);
-		if (!StringUtils.hasText(this.driverClassName)) {
+		if (!StringUtils.hasText(this.url)) {
 			throw new BeanCreationException(
 					"Cannot determine embedded database url for database type "
 							+ embeddedDatabaseType

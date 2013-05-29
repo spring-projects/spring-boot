@@ -15,20 +15,21 @@
  */
 package org.springframework.bootstrap.autoconfigure.web;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.bootstrap.TestUtils;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.properties.ServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.MapPropertySource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,27 +44,48 @@ public class ServerPropertiesConfigurationTests {
 
 	private AnnotationConfigEmbeddedWebApplicationContext context;
 
-	private Map<String, Object> environment = new HashMap<String, Object>();
-
 	@Before
 	public void init() {
 		containerFactory = Mockito
 				.mock(ConfigurableEmbeddedServletContainerFactory.class);
 	}
 
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(EmbeddedContainerConfiguration.class,
+				EmbeddedContainerCustomizerConfiguration.class,
 				ServerPropertiesConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		this.environment.put("server.port", "9000");
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("test", this.environment));
+		TestUtils.addEnviroment(this.context, "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertNotNull(server);
 		assertEquals(9000, server.getPort());
+		Mockito.verify(containerFactory).setPort(9000);
+	}
+
+	@Test
+	public void tomcatProperties() throws Exception {
+		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(EmbeddedContainerCustomizerConfiguration.class,
+				EmbeddedContainerConfiguration.class,
+				ServerPropertiesConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo");
+		this.context.refresh();
+		ServerProperties server = this.context.getBean(ServerProperties.class);
+		assertNotNull(server);
+		assertEquals(new File("target/foo"), server.getTomcat().getBasedir());
+		Mockito.verify(containerFactory).setPort(8080);
 	}
 
 	@Configuration

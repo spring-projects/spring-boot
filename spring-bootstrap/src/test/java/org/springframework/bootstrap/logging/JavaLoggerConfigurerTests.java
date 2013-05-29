@@ -70,4 +70,14 @@ public class JavaLoggerConfigurerTests {
 		JavaLoggerConfigurer.initLogging("classpath:logging-nonexistent.properties");
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testBadUrlConfigLocation() throws Exception {
+		JavaLoggerConfigurer.initLogging("http://nosuchhost");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullConfigLocation() throws Exception {
+		JavaLoggerConfigurer.initLogging(null);
+	}
+
 }

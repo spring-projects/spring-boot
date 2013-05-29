@@ -36,6 +36,7 @@ public class EmbeddedDatabaseConfigurationTests {
 		this.context.register(EmbeddedDatabaseConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
+		this.context.close();
 	}
 
 }

@@ -17,6 +17,8 @@ package org.springframework.bootstrap.properties;
 
 import java.net.InetAddress;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
@@ -48,6 +50,21 @@ public class ServerPropertiesTests {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.port", "9000")));
 		assertEquals(9000, this.properties.getPort());
+	}
+
+	@Test
+	public void testTomcatBinding() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.access_log_pattern", "%h %t '%r' %s %b");
+		map.put("server.tomcat.protocol_header", "X-Forwarded-Protocol");
+		map.put("server.tomcat.remote_ip_header", "Remote-Ip");
+		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
+				map));
+		assertEquals("%h %t '%r' %s %b", this.properties.getTomcat()
+				.getAccessLogPattern());
+		assertEquals("Remote-Ip", this.properties.getTomcat().getRemoteIpHeader());
+		assertEquals("X-Forwarded-Protocol", this.properties.getTomcat()
+				.getProtocolHeader());
 	}
 
 }

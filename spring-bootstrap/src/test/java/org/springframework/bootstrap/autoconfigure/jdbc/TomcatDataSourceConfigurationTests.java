@@ -15,10 +15,18 @@
  */
 package org.springframework.bootstrap.autoconfigure.jdbc;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.sql.DataSource;
 
+import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.util.ReflectionUtils;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -29,6 +37,15 @@ import static org.junit.Assert.assertNotNull;
 public class TomcatDataSourceConfigurationTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private Map<Object, Object> old;
+	private Map<Object, Object> map;
+
+	@After
+	public void restore() {
+		if (this.map != null && this.old != null) {
+			this.map.putAll(this.old);
+		}
+	}
 
 	@Test
 	public void testDataSourceExists() throws Exception {
@@ -37,4 +54,33 @@ public class TomcatDataSourceConfigurationTests {
 		assertNotNull(this.context.getBean(DataSource.class));
 	}
 
+	@Test(expected = BeanCreationException.class)
+	public void testBadUrl() throws Exception {
+		this.map = getField(EmbeddedDatabaseConfiguration.class, "EMBEDDED_DATABASE_URLS");
+		this.old = new HashMap<Object, Object>(this.map);
+		this.map.clear();
+		this.context.register(TomcatDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(DataSource.class));
+	}
+
+	@Test(expected = BeanCreationException.class)
+	public void testBadDriverClass() throws Exception {
+		this.map = getField(EmbeddedDatabaseConfiguration.class,
+				"EMBEDDED_DATABASE_DRIVER_CLASSES");
+		this.old = new HashMap<Object, Object>(this.map);
+		this.map.clear();
+		this.context.register(TomcatDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(DataSource.class));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getField(Class<?> target, String name) {
+		Field field = ReflectionUtils.findField(target, name, null);
+		ReflectionUtils.makeAccessible(field);
+		return (T) ReflectionUtils.getField(field, target);
+	}
 }

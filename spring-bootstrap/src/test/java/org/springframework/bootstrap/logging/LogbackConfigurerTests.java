@@ -70,4 +70,14 @@ public class LogbackConfigurerTests {
 		LogbackConfigurer.initLogging("classpath:logback-nonexistent.xml");
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testBadUrlConfigLocation() throws Exception {
+		LogbackConfigurer.initLogging("http://nosuchhost/foo.xml");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullConfigLocation() throws Exception {
+		LogbackConfigurer.initLogging(null);
+	}
+
 }
