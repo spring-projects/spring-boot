@@ -36,6 +36,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.stereotype.Controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,30 +58,64 @@ public class ManagementConfigurationTests {
 	@Test
 	public void testManagementConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(MetricRepositoryConfiguration.class,
-						TraceFilterConfiguration.class,
-						ServerPropertiesConfiguration.class,
-						ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
-						ManagementConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(MetricRepositoryConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
+				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				ManagementAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(HealthEndpoint.class));
+	}
+
+	@Test
+	public void testSuppressManagementConfiguration() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		TestUtils.addEnviroment(this.context, "management.port:0");
+		this.context.register(MetricRepositoryConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
+				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				ManagementAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(HealthEndpoint.class).length);
+	}
+
+	@Test
+	public void testManagementConfigurationExtensions() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MetricRepositoryConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
+				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				ManagementAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, NewEndpoint.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(NewEndpoint.class));
+	}
+
+	@Test
+	public void testManagementConfigurationExtensionsOrderDependence() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(NewEndpoint.class, MetricRepositoryConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
+				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				ManagementAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(NewEndpoint.class));
 	}
 
 	@Test
 	public void testChildContextCreated() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		TestUtils.addEnviroment(this.context, "server.port:7000", "management.port:7001");
-		this.context
-				.register(ParentContext.class, MetricRepositoryConfiguration.class,
-						TraceFilterConfiguration.class,
-						ServerPropertiesConfiguration.class,
-						ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
-						ManagementConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(ParentContext.class, MetricRepositoryConfiguration.class,
+				TraceFilterConfiguration.class, ServerPropertiesConfiguration.class,
+				ActuatorAutoConfiguration.ServerPropertiesConfiguration.class,
+				ManagementAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class, NewEndpoint.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(HealthEndpoint.class).length);
+		assertEquals(0, this.context.getBeanNamesForType(NewEndpoint.class).length);
 	}
 
 	@Configuration
@@ -114,6 +149,12 @@ public class ManagementConfigurationTests {
 				}
 			};
 		}
+	}
+
+	@Controller
+	@ConditionalOnManagementContext
+	protected static class NewEndpoint {
+
 	}
 
 }

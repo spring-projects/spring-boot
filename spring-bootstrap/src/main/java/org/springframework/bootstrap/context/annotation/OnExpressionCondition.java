@@ -65,7 +65,7 @@ public class OnExpressionCondition implements Condition {
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}
-		Boolean result = (Boolean) resolver.evaluate(value, expressionContext);
+		boolean result = (Boolean) resolver.evaluate(value, expressionContext);
 		if (logger.isDebugEnabled()) {
 			logger.debug(checking + "Finished matching and result is matches=" + result);
 		}

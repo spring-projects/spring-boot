@@ -7,7 +7,7 @@
 		<artifactId>spring-bootstrap-samples</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-bootstrap-ui-sample</artifactId>
+	<artifactId>spring-bootstrap-actuator-ui-sample</artifactId>
 	<properties>
 		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>
 		<start-class>org.springframework.bootstrap.sample.ui.UiBootstrapApplication</start-class>
@@ -19,16 +19,13 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-bootstrap-actuator</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf</groupId>
 			<artifactId>thymeleaf-spring3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nz.net.ultraq.web.thymeleaf</groupId>
-			<artifactId>thymeleaf-layout-dialect</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -46,6 +43,10 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-javaconfig</artifactId>
 		</dependency>
 	</dependencies>
 	<build>

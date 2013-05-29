@@ -1,2 +1,4 @@
 org.springframework.bootstrap.context.annotation.EnableAutoConfiguration=\
-org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration
+org.springframework.bootstrap.actuate.autoconfigure.ActuatorAutoConfiguration,\
+org.springframework.bootstrap.actuate.autoconfigure.SecurityAutoConfiguration,\
+org.springframework.bootstrap.actuate.autoconfigure.ManagementAutoConfiguration

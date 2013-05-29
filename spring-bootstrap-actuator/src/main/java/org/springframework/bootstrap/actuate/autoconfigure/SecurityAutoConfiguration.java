@@ -31,7 +31,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityConfiguration;
+import org.springframework.security.config.annotation.web.WebSecurityBuilder;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -43,7 +43,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 @ConditionalOnClass({ EnableWebSecurity.class })
 @EnableWebSecurity
 @EnableConfigurationProperties(SecurityProperties.class)
-public class SecurityConfiguration {
+public class SecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ AuthenticationEventPublisher.class })
@@ -92,7 +92,7 @@ public class SecurityConfiguration {
 		}
 
 		@Override
-		public void configure(WebSecurityConfiguration builder) throws Exception {
+		public void configure(WebSecurityBuilder builder) throws Exception {
 			builder.ignoring().antMatchers(this.endpoints.getHealth().getPath(),
 					this.endpoints.getInfo().getPath(),
 					this.endpoints.getError().getPath());

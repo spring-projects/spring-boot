@@ -31,9 +31,8 @@ import org.springframework.context.annotation.Import;
  * @author Dave Syer
  */
 @Configuration
-@Import({ ActuatorWebConfiguration.class, ManagementConfiguration.class,
-		MetricRepositoryConfiguration.class, ErrorConfiguration.class,
-		SecurityConfiguration.class, TraceFilterConfiguration.class,
+@Import({ ActuatorWebConfiguration.class, MetricRepositoryConfiguration.class,
+		ErrorConfiguration.class, TraceFilterConfiguration.class,
 		MetricFilterConfiguration.class, AuditConfiguration.class })
 public class ActuatorAutoConfiguration {
 

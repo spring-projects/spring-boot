@@ -42,7 +42,7 @@ public class SecurityConfigurationTests {
 	public void testWebConfiguration() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityConfiguration.class, EndpointsProperties.class,
+		this.context.register(SecurityAutoConfiguration.class, EndpointsProperties.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManager.class));
@@ -52,7 +52,7 @@ public class SecurityConfigurationTests {
 	public void testOverrideAuthenticationManager() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class, SecurityConfiguration.class,
+		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
 				EndpointsProperties.class, PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
