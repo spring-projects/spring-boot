@@ -49,9 +49,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.withSettings;
 
@@ -190,9 +190,32 @@ public class EmbeddedWebApplicationContextTests {
 		ordered.verify(servletContext).addServlet("servletBean1", servlet1);
 		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping(
-				"/servletbean1/*");
+				"/servletBean1/*");
 		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
-				"/servletbean2/*");
+				"/servletBean2/*");
+	}
+
+	@Test
+	public void multipleServletBeansWithMainDispatcher() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		Servlet servlet1 = mock(Servlet.class,
+				withSettings().extraInterfaces(Ordered.class));
+		given(((Ordered) servlet1).getOrder()).willReturn(1);
+		Servlet servlet2 = mock(Servlet.class,
+				withSettings().extraInterfaces(Ordered.class));
+		given(((Ordered) servlet2).getOrder()).willReturn(2);
+		this.context.registerBeanDefinition("servletBean2", beanDefinition(servlet2));
+		this.context
+				.registerBeanDefinition("dispatcherServlet", beanDefinition(servlet1));
+		this.context.refresh();
+		MockEmbeddedServletContainerFactory escf = getEmbeddedServletContainerFactory();
+		ServletContext servletContext = escf.getServletContext();
+		InOrder ordered = inOrder(servletContext);
+		ordered.verify(servletContext).addServlet("dispatcherServlet", servlet1);
+		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
+		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
+		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
+				"/servletBean2/*");
 	}
 
 	@Test
@@ -258,7 +281,8 @@ public class EmbeddedWebApplicationContextTests {
 	}
 
 	@Test
-	public void servletContextInitializerBeansSkipsServletsAndFilters() throws Exception {
+	public void servletContextInitializerBeansDoesNotSkipServletsAndFilters()
+			throws Exception {
 		addEmbeddedServletContainerFactoryBean();
 		ServletContextInitializer initializer = mock(ServletContextInitializer.class);
 		Servlet servlet = mock(Servlet.class);
@@ -271,8 +295,27 @@ public class EmbeddedWebApplicationContextTests {
 		ServletContext servletContext = getEmbeddedServletContainerFactory()
 				.getServletContext();
 		verify(initializer).onStartup(servletContext);
-		verify(servletContext, never()).addServlet(anyString(), (Servlet) anyObject());
-		verify(servletContext, never()).addFilter(anyString(), (Filter) anyObject());
+		verify(servletContext).addServlet(anyString(), (Servlet) anyObject());
+		verify(servletContext).addFilter(anyString(), (Filter) anyObject());
+	}
+
+	@Test
+	public void servletContextInitializerBeansSkipsRegisteredServletsAndFilters()
+			throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		Servlet servlet = mock(Servlet.class);
+		Filter filter = mock(Filter.class);
+		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet, "/foo");
+		initializer.addFilters(filter);
+		this.context.registerBeanDefinition("initializerBean",
+				beanDefinition(initializer));
+		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));
+		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
+		this.context.refresh();
+		ServletContext servletContext = getEmbeddedServletContainerFactory()
+				.getServletContext();
+		verify(servletContext, atMost(1)).addServlet(anyString(), (Servlet) anyObject());
+		verify(servletContext, atMost(1)).addFilter(anyString(), (Filter) anyObject());
 	}
 
 	@Test

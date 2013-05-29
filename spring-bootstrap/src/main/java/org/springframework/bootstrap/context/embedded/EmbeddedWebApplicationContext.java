@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -86,6 +87,14 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @see EmbeddedServletContainerFactory
  */
 public class EmbeddedWebApplicationContext extends GenericWebApplicationContext {
+
+	/**
+	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
+	 * is deemed to be the "main" servlet and is automatically given a mapping of "/" by
+	 * default. To change the default behaviour you can use a
+	 * {@link ServletRegistrationBean} or a different bean name.
+	 */
+	public static final String DISPATCHER_SERVLET_NAME = "dispatcherServlet";
 
 	private EmbeddedServletContainer embeddedServletContainer;
 
@@ -184,29 +193,45 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	protected Collection<ServletContextInitializer> getServletContextInitializerBeans() {
 
 		Set<ServletContextInitializer> initializers = new LinkedHashSet<ServletContextInitializer>();
+		Set<Object> targets = new HashSet<Object>();
 
 		for (Entry<String, ServletContextInitializer> initializerBean : getOrderedBeansOfType(ServletContextInitializer.class)) {
-			initializers.add(initializerBean.getValue());
+			ServletContextInitializer initializer = initializerBean.getValue();
+			if (initializer instanceof RegistrationBean) {
+				targets.add(((RegistrationBean) initializer).getRegistrationTarget());
+			}
+			if (initializer instanceof ServletRegistrationBean) {
+				targets.addAll(((ServletRegistrationBean) initializer).getFilters());
+			}
+			initializers.add(initializer);
 		}
 
-		if (initializers.isEmpty()) {
-
-			List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
-			for (Entry<String, Servlet> servletBean : servletBeans) {
-				String url = (servletBeans.size() == 1 ? "/" : "/"
-						+ servletBean.getKey().toLowerCase() + "/*");
-				ServletRegistrationBean registration = new ServletRegistrationBean(
-						servletBean.getValue(), url);
-				registration.setName(servletBean.getKey());
-				initializers.add(registration);
+		List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
+		for (Entry<String, Servlet> servletBean : servletBeans) {
+			String name = servletBean.getKey();
+			Servlet servlet = servletBean.getValue();
+			if (targets.contains(servlet)) {
+				continue;
 			}
-
-			for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {
-				FilterRegistrationBean registration = new FilterRegistrationBean(
-						filterBean.getValue());
-				registration.setName(filterBean.getKey());
-				initializers.add(registration);
+			String url = (servletBeans.size() == 1 ? "/" : "/" + name + "/*");
+			if (name.equals(DISPATCHER_SERVLET_NAME)) {
+				url = "/"; // always map the main dispatcherServlet to "/"
 			}
+			ServletRegistrationBean registration = new ServletRegistrationBean(servlet,
+					url);
+			registration.setName(name);
+			initializers.add(registration);
+		}
+
+		for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {
+			String name = filterBean.getKey();
+			Filter filter = filterBean.getValue();
+			if (targets.contains(filter)) {
+				continue;
+			}
+			FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+			registration.setName(name);
+			initializers.add(registration);
 		}
 
 		return initializers;

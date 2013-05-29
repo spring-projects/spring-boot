@@ -216,7 +216,12 @@ public class FilterRegistrationBean extends RegistrationBean {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.filter, "Filter must not be null");
-		configure(servletContext.addFilter(getOrDeduceName(this.filter), this.filter));
+		configure(servletContext.addFilter(getName(), this.filter));
+	}
+
+	@Override
+	public Object getRegistrationTarget() {
+		return this.filter;
 	}
 
 	/**

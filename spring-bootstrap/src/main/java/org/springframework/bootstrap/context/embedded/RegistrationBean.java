@@ -50,6 +50,13 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 	}
 
 	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return getOrDeduceName(getRegistrationTarget());
+	}
+
+	/**
 	 * Sets if asynchronous operations are support for this registration. If not specified
 	 * defaults to {@code true}.
 	 */
@@ -61,7 +68,7 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 	 * Returns if asynchronous operations are support for this registration.
 	 */
 	public boolean isAsyncSupported() {
-		return asyncSupported;
+		return this.asyncSupported;
 	}
 
 	/**
@@ -93,11 +100,19 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 	}
 
 	/**
+	 * The target of the registration (e.g. a Servlet or a Filter) that can be used to
+	 * guess its name if none is supplied explicitly.
+	 * 
+	 * @return the target of this registration
+	 */
+	public abstract Object getRegistrationTarget();
+
+	/**
 	 * Deduces the name for this registration. Will return user specified name or fallback
 	 * to convention based naming.
 	 * @param value the object used for convention based names
 	 */
-	protected final String getOrDeduceName(Object value) {
+	private String getOrDeduceName(Object value) {
 		return (this.name != null ? this.name : Conventions.getVariableName(value));
 	}
 
