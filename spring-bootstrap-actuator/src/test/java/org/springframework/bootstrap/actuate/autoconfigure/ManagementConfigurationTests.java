@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
+import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -132,6 +133,14 @@ public class ManagementConfigurationTests {
 						@Override
 						public Dynamic addServlet(String servletName, Servlet servlet) {
 							return Mockito.mock(Dynamic.class);
+						}
+
+						@Override
+						public javax.servlet.FilterRegistration.Dynamic addFilter(
+								String filterName, Filter filter) {
+							// TODO: remove this when @ConditionalOnBean works
+							return Mockito
+									.mock(javax.servlet.FilterRegistration.Dynamic.class);
 						}
 					};
 					for (ServletContextInitializer initializer : initializers) {

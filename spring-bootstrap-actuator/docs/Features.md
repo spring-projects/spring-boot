@@ -168,6 +168,27 @@ a jar which wraps `SpringApplication`:
 
     $ java -jar myproject.jar --spring.config.name=myproject
 
+## Providing Defaults for Externalized Configuration
+
+For `@ConfigurationProperties` beans that are provided by the
+framework itself you can always change the values that are bound to it
+by changing `application.properties`.  But it is sometimes also useful
+to change the default values imperatively in Java, so get more control
+over the process.  You can do this by declaring a bean of the same
+type in your application context, e.g. for the server properties:
+
+    @AssertMissingBean(ServerProperties.class)
+    @Bean
+    public ServerProperties serverProperties() {
+        ServerProperties server = new ServerProperties();
+        server.setPort(8888);
+        return server;
+    }
+
+Note the use of `@AssertMissingBean` to guard against any mistakes
+where the bean is already defined (and therefore might already have
+been bound).
+
 ## Server Configuration
 
 The `ServerProperties` are bound to application properties, and
@@ -337,8 +358,12 @@ every request in the main server (and the management server if it is
 running on the same port).  There is a single account by default, and
 you can test it like this:
 
-    $ mvn user:password@localhost:8080/info
+    $ mvn user:password@localhost:8080/metrics
     ... stuff comes out
+
+If the management server is running on a different port it is
+unsecured by default.  If you want to secure it you can add a security
+auto configuration explicitly
 
 ## Security - HTTPS
 
@@ -357,10 +382,14 @@ entries to `application.properties`, e.g.
     server.tomcat.remote_ip_header: x-forwarded-for
     server.tomcat.protocol_header: x-forwarded-proto
     
-(Or you can add the `RemoteIpValve` yourself by adding a
+(The presence of either of those properties will switch on the
+valve. Or you can add the `RemoteIpValve` yourself by adding a
 `TomcatEmbeddedServletContainerFactory` bean.)
 
-TODO: Spring Security configuration for 'require channel'.
+Spring Security can also be configured to require a secure channel for
+all (or some requests). To switch that on in an Actuator application
+you just need to set `security.require_https: true` in
+`application.properties`.
 
 ## Audit Events
 

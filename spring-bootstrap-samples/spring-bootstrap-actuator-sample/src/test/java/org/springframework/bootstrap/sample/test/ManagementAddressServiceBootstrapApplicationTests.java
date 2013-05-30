@@ -28,7 +28,6 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -83,10 +82,7 @@ public class ManagementAddressServiceBootstrapApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
 				"http://localhost:" + managementPort + "/metrics", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.200.root"));
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test

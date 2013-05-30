@@ -16,6 +16,11 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
 import org.springframework.bootstrap.actuate.properties.SecurityProperties;
@@ -23,11 +28,16 @@ import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
@@ -58,6 +68,7 @@ public class SecurityAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean({ BoostrapWebSecurityConfigurerAdapter.class })
 	public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
 		return new BoostrapWebSecurityConfigurerAdapter();
 	}
@@ -76,20 +87,42 @@ public class SecurityAutoConfiguration {
 
 		@Override
 		protected void configure(HttpConfiguration http) throws Exception {
+
 			if (this.security.isRequireSsl()) {
-				http.requiresChannel().antMatchers("/**").requiresSecure();
+				http.requiresChannel().anyRequest().requiresSecure();
 			}
+
 			if (this.security.getBasic().isEnabled()) {
-				HttpConfiguration matcher = http.antMatcher(this.security.getBasic()
-						.getPath());
-				matcher.authenticationEntryPoint(entryPoint()).antMatcher("/**")
-						.httpBasic().authenticationEntryPoint(entryPoint()).and()
-						.anonymous().disable();
-				matcher.authorizeUrls().antMatchers("/**")
+
+				String[] paths = getSecurePaths();
+
+				HttpConfiguration matcher = http.requestMatchers().antMatchers(paths);
+				matcher.authenticationEntryPoint(entryPoint()).httpBasic()
+						.authenticationEntryPoint(entryPoint()).and().anonymous()
+						.disable();
+				matcher.authorizeUrls().anyRequest()
 						.hasRole(this.security.getBasic().getRole());
+
 			}
+
 			// No cookies for service endpoints by default
 			http.sessionManagement().sessionCreationPolicy(this.security.getSessions());
+
+		}
+
+		private String[] getSecurePaths() {
+			List<String> list = new ArrayList<String>();
+			for (String path : this.security.getBasic().getPath()) {
+				path = path == null ? "" : path.trim();
+				if (path.equals("/**")) {
+					return new String[] { path };
+				}
+				if (!path.equals("")) {
+					list.add(path);
+				}
+			}
+			list.addAll(Arrays.asList(this.endpoints.getSecurePaths()));
+			return list.toArray(new String[list.size()]);
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
@@ -100,9 +133,8 @@ public class SecurityAutoConfiguration {
 
 		@Override
 		public void configure(WebSecurityBuilder builder) throws Exception {
-			builder.ignoring().antMatchers(this.endpoints.getHealth().getPath(),
-					this.endpoints.getInfo().getPath(),
-					this.endpoints.getError().getPath());
+			builder.ignoring().antMatchers(this.security.getIgnored())
+					.antMatchers(this.endpoints.getOpenPaths());
 		}
 
 		@Override
@@ -117,7 +149,7 @@ public class SecurityAutoConfiguration {
 
 	}
 
-	@ConditionalOnMissingBean(AuthenticationManager.class)
+	@Conditional(NoUserSuppliedAuthenticationManager.class)
 	@Configuration
 	public static class AuthenticationManagerConfiguration {
 
@@ -126,6 +158,23 @@ public class SecurityAutoConfiguration {
 			return new AuthenticationManagerBuilder().inMemoryAuthentication()
 					.withUser("user").password("password").roles("USER").and().and()
 					.build();
+		}
+
+	}
+
+	private static class NoUserSuppliedAuthenticationManager implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			String[] beans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+					context.getBeanFactory(), AuthenticationManager.class, false, false);
+			for (String bean : beans) {
+				if (!BeanIds.AUTHENTICATION_MANAGER.equals(bean)) {
+					// Not the one supplied by Spring Security automatically
+					return false;
+				}
+			}
+			return true;
 		}
 
 	}

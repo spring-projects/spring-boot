@@ -74,6 +74,7 @@ public class SpringBootstrapCompilerAutoConfiguration extends CompilerAutoConfig
 				"org.springframework.context.annotation.Bean",
 				"org.springframework.context.ApplicationContext",
 				"org.springframework.context.MessageSource",
+				"org.springframework.core.annotation.Order",
 				"org.springframework.core.io.ResourceLoader",
 				"org.springframework.bootstrap.CommandLineRunner",
 				"org.springframework.bootstrap.context.annotation.EnableAutoConfiguration");

@@ -33,7 +33,8 @@ public class SecurityProperties {
 
 	private SessionCreationPolicy sessions = SessionCreationPolicy.stateless;
 
-	private String[] ignored = new String[0];
+	private String[] ignored = new String[] { "/css/**", "/js/**", "/images/**",
+			"/**/favicon.ico" };
 
 	public SessionCreationPolicy getSessions() {
 		return this.sessions;
@@ -73,7 +74,7 @@ public class SecurityProperties {
 
 		private String realm = "Spring";
 
-		private String path = "/**";
+		private String[] path = new String[] { "/**" };
 
 		private String role = "USER";
 
@@ -93,12 +94,12 @@ public class SecurityProperties {
 			this.realm = realm;
 		}
 
-		public String getPath() {
+		public String[] getPath() {
 			return this.path;
 		}
 
-		public void setPath(String path) {
-			this.path = path;
+		public void setPath(String... paths) {
+			this.path = paths;
 		}
 
 		public String getRole() {

@@ -4,19 +4,14 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.bootstrap.SpringApplication;
-import org.springframework.bootstrap.actuate.autoconfigure.ConditionalOnManagementContext;
-import org.springframework.bootstrap.actuate.autoconfigure.ManagementAutoConfiguration;
-import org.springframework.bootstrap.actuate.autoconfigure.SecurityAutoConfiguration;
-import org.springframework.bootstrap.context.annotation.ConditionalOnExpression;
+import org.springframework.bootstrap.actuate.properties.SecurityProperties;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-		ManagementAutoConfiguration.class })
+@EnableAutoConfiguration
 @ComponentScan
 @Controller
 public class ActuatorUiBootstrapApplication {
@@ -33,19 +28,11 @@ public class ActuatorUiBootstrapApplication {
 		SpringApplication.run(ActuatorUiBootstrapApplication.class, args);
 	}
 
-	@Configuration
-	@ConditionalOnExpression("${server.port:8080} != ${management.port:${server.port:8080}}")
-	@Import(ManagementAutoConfiguration.class)
-	protected static class ManagementConfiguration {
-
-	}
-
-	@Configuration
-	@ConditionalOnExpression("${server.port:8080} != ${management.port:${server.port:8080}}")
-	@ConditionalOnManagementContext
-	@Import(SecurityAutoConfiguration.class)
-	protected static class ManagementSecurityConfiguration {
-
+	@Bean
+	public SecurityProperties securityProperties() {
+		SecurityProperties security = new SecurityProperties();
+		security.getBasic().setPath(""); // empty
+		return security;
 	}
 
 }

@@ -16,12 +16,22 @@
 
 package org.springframework.bootstrap.actuate.autoconfigure;
 
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.actuate.endpoint.error.ErrorEndpoint;
 import org.springframework.bootstrap.actuate.properties.ManagementServerProperties;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
@@ -31,8 +41,10 @@ import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServl
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -43,6 +55,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  */
 @Configuration
 @EnableWebMvc
+@Import(ManagementSecurityConfiguration.class)
 public class ManagementServerConfiguration {
 
 	@Bean
@@ -97,6 +110,31 @@ public class ManagementServerConfiguration {
 			factory.addErrorPages(new ErrorPage(this.errorPath));
 		}
 
+	}
+
+}
+
+@Configuration
+@ConditionalOnClass(name = {
+		"org.springframework.security.config.annotation.web.EnableWebSecurity",
+		"javax.servlet.Filter" })
+class ManagementSecurityConfiguration {
+
+	@Bean
+	// TODO: enable and get rid of the empty filter when @ConditionalOnBean works
+	// @ConditionalOnBean(name = "springSecurityFilterChain")
+	public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
+		BeanFactory parent = beanFactory.getParentBeanFactory();
+		if (parent != null && parent.containsBean("springSecurityFilterChain")) {
+			return parent.getBean("springSecurityFilterChain", Filter.class);
+		}
+		return new GenericFilterBean() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response,
+					FilterChain chain) throws IOException, ServletException {
+				chain.doFilter(request, response);
+			}
+		};
 	}
 
 }

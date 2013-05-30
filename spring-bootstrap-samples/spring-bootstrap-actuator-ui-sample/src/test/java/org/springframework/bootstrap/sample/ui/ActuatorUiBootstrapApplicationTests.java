@@ -1,6 +1,7 @@
 package org.springframework.bootstrap.sample.ui;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -66,6 +67,14 @@ public class ActuatorUiBootstrapApplicationTests {
 				"http://localhost:8080/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
+	}
+
+	@Test
+	public void testMetrics() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+				"http://localhost:8080/metrics", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	private RestTemplate getRestTemplate() {

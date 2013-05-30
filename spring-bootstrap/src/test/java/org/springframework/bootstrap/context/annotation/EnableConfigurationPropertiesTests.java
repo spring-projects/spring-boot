@@ -49,6 +49,15 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testArrayPropertiesBinding() {
+		this.context.register(TestConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo", "array:1,2,3");
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
+		assertEquals(3, this.context.getBean(TestProperties.class).getArray().length);
+	}
+
+	@Test
 	public void testPropertiesBindingWithoutAnnotation() {
 		this.context.register(MoreConfiguration.class);
 		TestUtils.addEnviroment(this.context, "name:foo");
@@ -186,6 +195,7 @@ public class EnableConfigurationPropertiesTests {
 	@ConfigurationProperties
 	protected static class TestProperties {
 		private String name;
+		private int[] array;
 
 		public String getName() {
 			return this.name;
@@ -193,6 +203,14 @@ public class EnableConfigurationPropertiesTests {
 
 		public void setName(String name) {
 			this.name = name;
+		}
+
+		public void setArray(int... values) {
+			this.array = values;
+		}
+
+		public int[] getArray() {
+			return this.array;
 		}
 	}
 

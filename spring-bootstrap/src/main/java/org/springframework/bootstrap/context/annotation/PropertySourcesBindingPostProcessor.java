@@ -23,6 +23,7 @@ import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesHolder;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.validation.Validator;
 
@@ -39,6 +40,8 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 	private Validator validator;
 
 	private ConversionService conversionService;
+
+	private DefaultConversionService defaultConversionService = new DefaultConversionService();
 
 	/**
 	 * @param propertySources
@@ -81,7 +84,10 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 					target);
 			factory.setPropertySources(this.propertySources);
 			factory.setValidator(this.validator);
-			factory.setConversionService(this.conversionService);
+			// If no explicit conversion service is provided we add one so that (at least)
+			// comma-separated arrays of convertibles can be bound automatically
+			factory.setConversionService(this.conversionService == null ? this.defaultConversionService
+					: this.conversionService);
 			String targetName = null;
 			if (annotation != null) {
 				factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
