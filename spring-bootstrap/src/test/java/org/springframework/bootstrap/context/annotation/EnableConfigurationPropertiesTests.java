@@ -15,14 +15,17 @@
  */
 package org.springframework.bootstrap.context.annotation;
 
-import java.util.Collections;
+import javax.annotation.PostConstruct;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.stereotype.Component;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Dave Syer
@@ -35,12 +38,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testBasicPropertiesBinding() {
 		this.context.register(TestConfiguration.class);
-		this.context
-				.getEnvironment()
-				.getPropertySources()
-				.addFirst(
-						new MapPropertySource("test", Collections
-								.<String, Object> singletonMap("name", "foo")));
+		TestUtils.addEnviroment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
 		assertEquals("foo", this.context.getBean(TestProperties.class).getName());
@@ -49,12 +47,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testPropertiesBindingWithoutAnnotation() {
 		this.context.register(MoreConfiguration.class);
-		this.context
-				.getEnvironment()
-				.getPropertySources()
-				.addFirst(
-						new MapPropertySource("test", Collections
-								.<String, Object> singletonMap("name", "foo")));
+		TestUtils.addEnviroment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(MoreProperties.class).length);
 		assertEquals("foo", this.context.getBean(MoreProperties.class).getName());
@@ -68,9 +61,52 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals(1, this.context.getBeanNamesForType(MoreProperties.class).length);
 	}
 
+	@Test
+	public void testBindingWithParentContext() {
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.register(TestConfiguration.class);
+		parent.refresh();
+		TestUtils.addEnviroment(this.context, "name:foo");
+		this.context.setParent(parent);
+		this.context.register(TestConfiguration.class, TestConsumer.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
+		assertEquals(1, parent.getBeanNamesForType(TestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestConsumer.class).getName());
+	}
+
+	@Test
+	public void testBindingOnlyParentContext() {
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		TestUtils.addEnviroment(parent, "name:foo");
+		parent.register(TestConfiguration.class);
+		parent.refresh();
+		this.context.setParent(parent);
+		this.context.register(TestConsumer.class);
+		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(TestProperties.class).length);
+		assertEquals(1, parent.getBeanNamesForType(TestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestConsumer.class).getName());
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(TestProperties.class)
 	protected static class TestConfiguration {
+	}
+
+	@Component
+	protected static class TestConsumer {
+		@Autowired
+		private TestProperties properties;
+
+		@PostConstruct
+		public void init() {
+			assertNotNull(this.properties);
+		}
+
+		public String getName() {
+			return this.properties.getName();
+		}
 	}
 
 	@Configuration
