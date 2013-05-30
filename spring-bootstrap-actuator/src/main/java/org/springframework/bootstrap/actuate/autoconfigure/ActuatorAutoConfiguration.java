@@ -40,8 +40,14 @@ public class ActuatorAutoConfiguration {
 	 * ServerProperties has to be declared in a non-conditional bean, so that it gets
 	 * added to the context early enough
 	 */
-	@EnableConfigurationProperties(ManagementServerProperties.class)
+	@EnableConfigurationProperties
 	public static class ServerPropertiesConfiguration {
+
+		@ConditionalOnMissingBean(ManagementServerProperties.class)
+		@Bean(name = "org.springframework.bootstrap.actuate.properties.ManagementServerProperties")
+		public ManagementServerProperties managementServerProperties() {
+			return new ManagementServerProperties();
+		}
 
 		@Bean
 		@ConditionalOnMissingBean(EndpointsProperties.class)

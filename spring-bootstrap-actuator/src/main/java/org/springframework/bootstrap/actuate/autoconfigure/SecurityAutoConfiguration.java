@@ -42,8 +42,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 @Configuration
 @ConditionalOnClass({ EnableWebSecurity.class })
 @EnableWebSecurity
-@EnableConfigurationProperties(SecurityProperties.class)
+@EnableConfigurationProperties
 public class SecurityAutoConfiguration {
+
+	@ConditionalOnMissingBean(SecurityProperties.class)
+	@Bean(name = "org.springframework.bootstrap.actuate.properties.SecurityProperties")
+	public SecurityProperties securityProperties() {
+		return new SecurityProperties();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean({ AuthenticationEventPublisher.class })
@@ -74,11 +80,12 @@ public class SecurityAutoConfiguration {
 				http.requiresChannel().antMatchers("/**").requiresSecure();
 			}
 			if (this.security.getBasic().isEnabled()) {
-				http.authenticationEntryPoint(entryPoint())
-						.antMatcher(this.security.getBasic().getPath()).httpBasic()
-						.authenticationEntryPoint(entryPoint()).and().anonymous()
-						.disable();
-				http.authorizeUrls().antMatchers("/**")
+				HttpConfiguration matcher = http.antMatcher(this.security.getBasic()
+						.getPath());
+				matcher.authenticationEntryPoint(entryPoint()).antMatcher("/**")
+						.httpBasic().authenticationEntryPoint(entryPoint()).and()
+						.anonymous().disable();
+				matcher.authorizeUrls().antMatchers("/**")
 						.hasRole(this.security.getBasic().getRole());
 			}
 			// No cookies for service endpoints by default

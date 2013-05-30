@@ -19,12 +19,14 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.properties.ServerProperties;
 import org.springframework.bootstrap.properties.ServerProperties.Tomcat;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
@@ -33,11 +35,17 @@ import org.springframework.util.StringUtils;
  * 
  */
 @Configuration
-@EnableConfigurationProperties(ServerProperties.class)
+@EnableConfigurationProperties
 public class ServerPropertiesConfiguration implements EmbeddedServletContainerCustomizer {
 
 	@Autowired
 	private BeanFactory beanFactory;
+
+	@ConditionalOnMissingBean(ServerProperties.class)
+	@Bean(name = "org.springframework.bootstrap.properties.ServerProperties")
+	public ServerProperties serverProperties() {
+		return new ServerProperties();
+	}
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
