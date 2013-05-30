@@ -15,13 +15,18 @@
  */
 package org.springframework.bootstrap.context.annotation;
 
+import java.util.Arrays;
+
 import javax.annotation.PostConstruct;
 
 import org.junit.Test;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 
 import static org.junit.Assert.assertEquals;
@@ -51,6 +56,45 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(MoreProperties.class).length);
 		assertEquals("foo", this.context.getBean(MoreProperties.class).getName());
+	}
+
+	@Test
+	public void testPropertiesBindingWithDefaultsInXml() {
+		this.context.register(TestConfiguration.class, DefaultXmlConfiguration.class);
+		this.context.refresh();
+		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
+		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
+		assertEquals("bar", this.context.getBean(TestProperties.class).getName());
+	}
+
+	@Test(expected = BeanCreationException.class)
+	public void testPropertiesBindingWithDefaultsInBeanMethodReverseOrder() {
+		this.context.register(TestBeanConfiguration.class, DefaultConfiguration.class);
+		this.context.refresh();
+		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
+		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
+		assertEquals("bar", this.context.getBean(TestProperties.class).getName());
+	}
+
+	@Test
+	public void testPropertiesBindingWithDefaultsInBeanMethod() {
+		this.context.register(DefaultConfiguration.class, TestBeanConfiguration.class);
+		this.context.refresh();
+		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
+		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
+		assertEquals("bar", this.context.getBean(TestProperties.class).getName());
+	}
+
+	// Maybe we could relax the condition that causes this exception but Spring makes it
+	// difficult because it is impossible for DefaultConfiguration to override a bean
+	// definition created with a direct regsistration (as opposed to a @Bean)
+	@Test(expected = BeanCreationException.class)
+	public void testPropertiesBindingWithDefaults() {
+		this.context.register(DefaultConfiguration.class, TestConfiguration.class);
+		this.context.refresh();
+		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
+		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
+		assertEquals("bar", this.context.getBean(TestProperties.class).getName());
 	}
 
 	@Test
@@ -92,6 +136,32 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@EnableConfigurationProperties(TestProperties.class)
 	protected static class TestConfiguration {
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class TestBeanConfiguration {
+		@ConditionalOnMissingBean(TestProperties.class)
+		@Bean(name = "org.springframework.bootstrap.context.annotation.EnableConfigurationPropertiesTests$TestProperties")
+		public TestProperties testProperties() {
+			return new TestProperties();
+		}
+	}
+
+	@Configuration
+	protected static class DefaultConfiguration {
+		@Bean
+		@AssertMissingBean(TestProperties.class)
+		public TestProperties testProperties() {
+			TestProperties test = new TestProperties();
+			test.setName("bar");
+			return test;
+		}
+	}
+
+	@Configuration
+	@ImportResource("org/springframework/bootstrap/context/annotation/testProperties.xml")
+	protected static class DefaultXmlConfiguration {
 	}
 
 	@Component

@@ -38,8 +38,18 @@ import org.springframework.util.MultiValueMap;
 abstract class AbstractOnBeanCondition implements Condition {
 
 	protected Log logger = LogFactory.getLog(getClass());
+	private List<String> beanClasses;
+	private List<String> beanNames;
 
 	protected abstract Class<?> annotationClass();
+
+	protected List<String> getBeanClasses() {
+		return this.beanClasses;
+	}
+
+	protected List<String> getBeanNames() {
+		return this.beanNames;
+	}
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -48,16 +58,16 @@ abstract class AbstractOnBeanCondition implements Condition {
 
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				annotationClass().getName(), true);
-		List<String> beanClasses = collect(attributes, "value");
-		List<String> beanNames = collect(attributes, "name");
-		Assert.isTrue(beanClasses.size() > 0 || beanNames.size() > 0,
-				"@" + ClassUtils.getShortName(annotationClass())
-						+ " annotations must specify at least one bean");
+		this.beanClasses = collect(attributes, "value");
+		this.beanNames = collect(attributes, "name");
+		Assert.isTrue(this.beanClasses.size() > 0 || this.beanNames.size() > 0, "@"
+				+ ClassUtils.getShortName(annotationClass())
+				+ " annotations must specify at least one bean");
 
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();
 
-		for (String beanClass : beanClasses) {
+		for (String beanClass : this.beanClasses) {
 			try {
 				// eagerInit set to false to prevent early instantiation (some
 				// factory beans will not be able to determine their object type at this
@@ -72,7 +82,7 @@ abstract class AbstractOnBeanCondition implements Condition {
 			} catch (ClassNotFoundException ex) {
 			}
 		}
-		for (String beanName : beanNames) {
+		for (String beanName : this.beanNames) {
 			if (context.getBeanFactory().containsBeanDefinition(beanName)) {
 				beanNamesFound.add(beanName);
 			}
@@ -80,9 +90,9 @@ abstract class AbstractOnBeanCondition implements Condition {
 
 		boolean result = evaluate(beanClassesFound, beanNamesFound);
 		if (this.logger.isDebugEnabled()) {
-			if (!beanClasses.isEmpty()) {
+			if (!this.beanClasses.isEmpty()) {
 				this.logger.debug(checking + "Looking for beans with class: "
-						+ beanClasses);
+						+ this.beanClasses);
 				if (beanClassesFound.isEmpty()) {
 					this.logger.debug(checking + "Found no beans");
 				} else {
@@ -91,9 +101,9 @@ abstract class AbstractOnBeanCondition implements Condition {
 				}
 			}
 
-			if (!beanNames.isEmpty()) {
-				this.logger
-						.debug(checking + "Looking for beans with names: " + beanNames);
+			if (!this.beanNames.isEmpty()) {
+				this.logger.debug(checking + "Looking for beans with names: "
+						+ this.beanNames);
 				if (beanNamesFound.isEmpty()) {
 					this.logger.debug(checking + "Found no beans");
 				} else {
