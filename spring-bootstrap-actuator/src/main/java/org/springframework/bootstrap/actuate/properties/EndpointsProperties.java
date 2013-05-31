@@ -51,6 +51,9 @@ public class EndpointsProperties {
 	@Valid
 	private Endpoint dump = new Endpoint("/dump");
 
+	@Valid
+	private Endpoint beans = new Endpoint("/beans");
+
 	public Endpoint getInfo() {
 		return this.info;
 	}
@@ -77,6 +80,10 @@ public class EndpointsProperties {
 
 	public Endpoint getDump() {
 		return this.dump;
+	}
+
+	public Endpoint getBeans() {
+		return this.beans;
 	}
 
 	public static class Endpoint {

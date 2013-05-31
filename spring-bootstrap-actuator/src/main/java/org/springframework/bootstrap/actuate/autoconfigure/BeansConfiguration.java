@@ -13,22 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
+import javax.servlet.Servlet;
+
+import org.springframework.bootstrap.actuate.endpoint.beans.BeansEndpoint;
+import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
+import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.DispatcherServlet;
 
 /**
- * Convenient collector for all the management endpoints (stuff that goes in the
- * management context whether it is a child context or not).
+ * {@link EnableAutoConfiguration Auto-configuration} for /beans endpoint.
  * 
  * @author Dave Syer
- * 
  */
 @Configuration
-@ConditionalOnManagementContext
-@Import({ MetricsConfiguration.class, HealthConfiguration.class,
-		ShutdownConfiguration.class, TraceConfiguration.class, BeansConfiguration.class })
-public class ManagementEndpointsRegistration {
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnMissingBean({ BeansEndpoint.class })
+public class BeansConfiguration {
+
+	@Bean
+	public BeansEndpoint beansEndpoint() {
+		return new BeansEndpoint();
+	}
 
 }
