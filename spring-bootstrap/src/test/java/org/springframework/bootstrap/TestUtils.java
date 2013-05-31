@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap;
 
 import java.util.HashMap;
@@ -23,7 +24,6 @@ import org.springframework.core.env.MapPropertySource;
 
 /**
  * @author Dave Syer
- * 
  */
 public class TestUtils {
 

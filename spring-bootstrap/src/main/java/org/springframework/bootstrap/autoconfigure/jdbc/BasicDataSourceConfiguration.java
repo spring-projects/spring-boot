@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.jdbc;
 
 import java.sql.SQLException;
@@ -32,17 +33,18 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * recommended in high volume environments (the Tomcat DataSource is more reliable).
  * 
  * @author Dave Syer
- * 
  */
 @Configuration
 public class BasicDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
 	private static Log logger = LogFactory.getLog(BasicDataSourceConfiguration.class);
+
 	private BasicDataSource pool;
 
 	@Bean
 	public DataSource dataSource() {
-		logger.info("Hint: using Commons DBCP BasicDataSource. It's going to work, but the Tomcat DataSource is more reliable.");
+		logger.info("Hint: using Commons DBCP BasicDataSource. It's going to work, "
+				+ "but the Tomcat DataSource is more reliable.");
 		this.pool = new BasicDataSource();
 		this.pool.setDriverClassName(getDriverClassName());
 		this.pool.setUrl(getUrl());

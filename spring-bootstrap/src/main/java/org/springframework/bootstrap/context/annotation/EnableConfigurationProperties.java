@@ -35,4 +35,5 @@ public @interface EnableConfigurationProperties {
 
 	Class<?>[] value() default {};
 
+	// FIXME Javadoc
 }

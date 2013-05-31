@@ -31,7 +31,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 /**
  * {@link EmbeddedWebApplicationContext} that accepts annotated classes as input - in
  * particular {@link org.springframework.context.annotation.Configuration
- * <code>@Configuration</code>} -annotated classes, but also plain
+ * <code>@Configuration</code>}-annotated classes, but also plain
  * {@link org.springframework.stereotype.Component <code>@Component</code>} classes and
  * JSR-330 compliant classes using {@code javax.inject} annotations. Allows for
  * registering classes one by one (specifying class names as config location) as well as
@@ -43,7 +43,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * to deliberately override certain bean definitions via an extra Configuration class.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see #register(Class...)
  * @see #scan(String...)
  * @see EmbeddedWebApplicationContext

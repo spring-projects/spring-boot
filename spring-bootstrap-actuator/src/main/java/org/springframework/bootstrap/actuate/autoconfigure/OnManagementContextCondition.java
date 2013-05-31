@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import java.util.Collection;
@@ -35,7 +36,6 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Dave Syer
  * 
  * @see ConditionalOnManagementContext
- * 
  */
 public class OnManagementContextCondition implements Condition {
 

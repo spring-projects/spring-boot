@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.context.embedded;
 
 /**
@@ -24,10 +25,13 @@ package org.springframework.bootstrap.context.embedded;
  * than injecting them with <code>@Autowired</code>.
  * 
  * @author Dave Syer
- * 
  */
 public interface EmbeddedServletContainerCustomizer {
 
+	/**
+	 * Customize the specified {@link ConfigurableEmbeddedServletContainerFactory}.
+	 * @param factory the factory to customize
+	 */
 	void customize(ConfigurableEmbeddedServletContainerFactory factory);
 
 }

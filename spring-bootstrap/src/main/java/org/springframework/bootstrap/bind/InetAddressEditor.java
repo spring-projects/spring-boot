@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.bind;
 
 import java.beans.PropertyEditor;
@@ -21,8 +22,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 /**
- * @author Dave Syer
+ * {@link PropertyEditor} for {@link InetAddress} objects.
  * 
+ * @author Dave Syer
  */
 public class InetAddressEditor extends PropertyEditorSupport implements PropertyEditor {
 

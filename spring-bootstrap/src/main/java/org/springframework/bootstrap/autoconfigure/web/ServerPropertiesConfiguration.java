@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.web;
 
 import org.apache.catalina.valves.AccessLogValve;
@@ -31,8 +32,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * @author Dave Syer
+ * {@link EmbeddedServletContainerCustomizer} that configures the
+ * {@link ConfigurableEmbeddedServletContainerFactory} from a {@link ServerProperties}
+ * bean.
  * 
+ * @author Dave Syer
  */
 @Configuration
 @EnableConfigurationProperties

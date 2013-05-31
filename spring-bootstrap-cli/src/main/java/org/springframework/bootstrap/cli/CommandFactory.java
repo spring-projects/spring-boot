@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.cli;
 
 import java.util.Collection;
+import java.util.ServiceLoader;
 
 /**
- * @author Dave Syer
+ * Factory used to create CLI {@link Command}s. Intended for use with a Java
+ * {@link ServiceLoader}.
  * 
+ * @author Dave Syer
  */
 public interface CommandFactory {
 
+	/**
+	 * Returns the CLI {@link Command}s.
+	 * @return The commands
+	 */
 	Collection<Command> getCommands();
 
 }

@@ -35,7 +35,6 @@ import org.yaml.snakeyaml.Yaml;
  * Base class for Yaml factories.
  * 
  * @author Dave Syer
- * @since 3.2
  */
 public class YamlProcessor {
 

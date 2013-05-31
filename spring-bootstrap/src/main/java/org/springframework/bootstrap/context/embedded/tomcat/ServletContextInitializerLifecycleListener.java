@@ -29,7 +29,6 @@ import org.springframework.util.Assert;
  * Tomcat {@link LifecycleListener} that calls {@link ServletContextInitializer}s.
  * 
  * @author Phillip Webb
- * @since 4.0
  */
 public class ServletContextInitializerLifecycleListener implements LifecycleListener {
 

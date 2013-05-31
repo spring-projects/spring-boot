@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.batch;
 
 import java.util.ArrayList;
@@ -23,8 +24,9 @@ import org.springframework.bootstrap.ExitCodeGenerator;
 import org.springframework.context.ApplicationListener;
 
 /**
- * @author Dave Syer
+ * {@link ExitCodeGenerator} for {@link JobExecutionEvent}s.
  * 
+ * @author Dave Syer
  */
 public class JobExecutionExitCodeGenerator implements
 		ApplicationListener<JobExecutionEvent>, ExitCodeGenerator {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.context.annotation;
 
 import org.apache.commons.logging.Log;
@@ -21,8 +22,9 @@ import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.MethodMetadata;
 
 /**
- * @author Dave Syer
+ * General utilities for constructing {@code @Conditional} log messages.
  * 
+ * @author Dave Syer
  */
 public class ConditionLogUtils {
 

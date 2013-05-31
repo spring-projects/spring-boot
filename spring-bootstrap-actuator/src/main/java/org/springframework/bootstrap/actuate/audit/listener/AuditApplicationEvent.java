@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.audit.listener;
 
 import org.springframework.bootstrap.actuate.audit.AuditEvent;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * @author Dave Syer
+ * {@link ApplicationEvent} to encapsulate {@link AuditEvent}s.
  * 
+ * @author Dave Syer
  */
 public class AuditApplicationEvent extends ApplicationEvent {
 

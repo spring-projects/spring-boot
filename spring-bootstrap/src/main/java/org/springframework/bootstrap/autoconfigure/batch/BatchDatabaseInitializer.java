@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.batch;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +31,6 @@ import org.springframework.stereotype.Component;
  * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
  * 
  * @author Dave Syer
- * 
  */
 @Component
 public class BatchDatabaseInitializer {

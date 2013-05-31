@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.orm.jpa;
 
 import javax.sql.DataSource;
@@ -31,7 +32,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dave Syer
- * 
  */
 public class HibernateJpaAutoConfigurationTests {
 

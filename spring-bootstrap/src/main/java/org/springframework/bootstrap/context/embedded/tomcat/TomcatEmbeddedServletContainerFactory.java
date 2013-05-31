@@ -41,7 +41,6 @@ import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletCon
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.EmptyEmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
@@ -55,12 +54,11 @@ import org.springframework.util.ClassUtils;
  * {@link ServletContextInitializer}s or Tomcat {@link LifecycleListener}s.
  * 
  * <p>
- * Unless explicitly configured otherwise this factory will created containers that listen
- * for HTTP requests on port 8080.
+ * Unless explicitly configured otherwise this factory will created containers that
+ * listens for HTTP requests on port 8080.
  * 
  * @author Phillip Webb
  * @author Dave Syer
- * @since 4.0
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
@@ -110,7 +108,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	public EmbeddedServletContainer getEmbdeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		if (getPort() == 0) {
-			return new EmptyEmbeddedServletContainer();
+			return EmbeddedServletContainer.NONE;
 		}
 		File baseDir = (this.baseDirectory != null ? this.baseDirectory
 				: createTempDir("tomcat"));
@@ -345,7 +343,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 					ServletContextInitializer... initializers) {
 
 				if (getPort() == 0) {
-					return new EmptyEmbeddedServletContainer();
+					return EmbeddedServletContainer.NONE;
 				}
 				StandardService service = new StandardService();
 				service.setName(name);

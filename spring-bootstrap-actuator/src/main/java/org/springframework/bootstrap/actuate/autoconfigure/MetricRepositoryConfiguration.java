@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.bootstrap.actuate.metrics.CounterService;
@@ -30,7 +31,6 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for metrics services.
  * 
  * @author Dave Syer
- * 
  */
 @Configuration
 public class MetricRepositoryConfiguration {

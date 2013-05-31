@@ -25,10 +25,21 @@ package org.springframework.bootstrap.context.embedded;
  * {@link EmbeddedServletContainerFactory}.
  * 
  * @author Phillip Webb
- * @since 4.0
+ * @author Dave Syer
  * @see EmbeddedServletContainerFactory
  */
 public interface EmbeddedServletContainer {
+
+	/**
+	 * An empty {@link EmbeddedServletContainer} that does nothing.
+	 */
+	public static final EmbeddedServletContainer NONE = new EmbeddedServletContainer() {
+
+		@Override
+		public void stop() throws EmbeddedServletContainerException {
+			// Do nothing
+		}
+	};
 
 	/**
 	 * Stops the embedded servlet container. Calling this method on an already stopped

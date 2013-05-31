@@ -16,7 +16,6 @@
 
 package org.springframework.bootstrap.cli;
 
-
 /**
  * A single command that can be run from the CLI.
  * 

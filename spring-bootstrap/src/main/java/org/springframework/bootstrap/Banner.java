@@ -38,12 +38,12 @@ abstract class Banner {
 	 * @param printStream the output print stream
 	 */
 	public static void write(PrintStream printStream) {
-		System.out.println();
+		printStream.println();
 		for (String line : BANNER) {
 			printStream.println(line);
 		}
-		System.out.println();
-		System.out.println();
+		printStream.println();
+		printStream.println();
 	}
 
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.cli.command;
 
 import java.io.File;
@@ -30,7 +31,6 @@ import org.springframework.bootstrap.cli.Command;
  * download on the next attempt to resolve.
  * 
  * @author Dave Syer
- * 
  */
 public class CleanCommand extends OptionParsingCommand {
 

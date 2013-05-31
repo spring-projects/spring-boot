@@ -104,7 +104,6 @@ public class BeanDefinitionLoaderTests {
 		int loaded = loader.load();
 		assertThat(loaded, equalTo(1));
 		assertTrue(this.registry.containsBean("myComponent"));
-
 	}
 
 }

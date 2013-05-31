@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.jdbc;
 
 import javax.sql.DataSource;
@@ -24,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Dave Syer
- * 
  */
 public class BasicDataSourceConfigurationTests {
 
@@ -35,7 +35,7 @@ public class BasicDataSourceConfigurationTests {
 		this.context.register(BasicDataSourceConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
-		context.close();
+		this.context.close();
 	}
 
 }

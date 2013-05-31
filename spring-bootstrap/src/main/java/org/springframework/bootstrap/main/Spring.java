@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.main;
 
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ import org.springframework.util.ClassUtils;
  * the {@link SpringApplication} run methods are often more convenient).
  * 
  * @author Dave Syer
- * 
  */
 @Configuration
 @EnableAutoConfiguration

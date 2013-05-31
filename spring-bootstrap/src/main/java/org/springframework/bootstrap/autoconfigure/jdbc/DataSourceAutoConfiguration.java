@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.jdbc;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.annotation.ConditionLogUtils;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -50,13 +52,16 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * @author Dave Syer
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
  * 
+ * @author Dave Syer
  */
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class /* Spring JDBC */)
 // @ConditionalOnMissingBean(DataSource.class)
 public class DataSourceAutoConfiguration {
+
+	// FIXME see above
 
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 

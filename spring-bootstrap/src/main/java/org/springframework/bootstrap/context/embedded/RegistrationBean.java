@@ -29,7 +29,6 @@ import org.springframework.util.Assert;
  * {@link FilterRegistrationBean filter} registration beans.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see ServletRegistrationBean
  * @see FilterRegistrationBean
  */

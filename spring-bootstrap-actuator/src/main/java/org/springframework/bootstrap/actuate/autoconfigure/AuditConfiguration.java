@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Dave Syer
- * 
  */
 @Configuration
 public class AuditConfiguration {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap;
 
 import org.junit.Ignore;
@@ -24,8 +25,8 @@ import org.springframework.bootstrap.main.SimpleMainTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
- * @author Dave Syer
  * 
+ * @author Dave Syer
  */
 @RunWith(Suite.class)
 @SuiteClasses({ SimpleMainTests.class, JettyEmbeddedServletContainerFactoryTests.class })

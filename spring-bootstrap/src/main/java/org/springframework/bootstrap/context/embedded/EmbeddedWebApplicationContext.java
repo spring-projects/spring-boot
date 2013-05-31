@@ -81,7 +81,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * {@link XmlEmbeddedWebApplicationContext} variants.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see AnnotationConfigEmbeddedWebApplicationContext
  * @see XmlEmbeddedWebApplicationContext
  * @see EmbeddedServletContainerFactory

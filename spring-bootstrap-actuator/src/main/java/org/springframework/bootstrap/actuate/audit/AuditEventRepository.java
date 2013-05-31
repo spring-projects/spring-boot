@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.audit;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * @author Dave Syer
+ * Repository for {@link AuditEvent}s.
  * 
+ * @author Dave Syer
  */
 public interface AuditEventRepository {
 

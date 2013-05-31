@@ -25,7 +25,6 @@ import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServl
  * {@link AbstractEmbeddedServletContainerFactory} when possible.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see EmbeddedServletContainer
  * @see AbstractEmbeddedServletContainerFactory
  * @see JettyEmbeddedServletContainerFactory

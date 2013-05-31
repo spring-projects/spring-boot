@@ -42,15 +42,15 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ CommandLineRunner.class })
-	@ConditionalOnBean({ JobLauncher.class })
+	@ConditionalOnMissingBean(CommandLineRunner.class)
+	@ConditionalOnBean(JobLauncher.class)
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner() {
 		return new JobLauncherCommandLineRunner();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ ExitCodeGenerator.class })
-	@ConditionalOnBean({ JobLauncher.class })
+	@ConditionalOnMissingBean(ExitCodeGenerator.class)
+	@ConditionalOnBean(JobLauncher.class)
 	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}

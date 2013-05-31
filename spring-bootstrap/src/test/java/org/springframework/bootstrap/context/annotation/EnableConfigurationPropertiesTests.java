@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Dave Syer
- * 
  */
 public class EnableConfigurationPropertiesTests {
 

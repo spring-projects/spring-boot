@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.batch;
 
 import java.util.Arrays;
@@ -35,6 +36,11 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+/**
+ * {@link CommandLineRunner} to {@link JobLauncher launch} Spring Batch jobs.
+ * 
+ * @author Dave Syer
+ */
 @Component
 public class JobLauncherCommandLineRunner implements CommandLineRunner,
 		ApplicationEventPublisherAware {

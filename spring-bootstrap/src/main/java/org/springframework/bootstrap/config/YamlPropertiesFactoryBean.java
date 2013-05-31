@@ -65,8 +65,6 @@ import org.springframework.beans.factory.FactoryBean;
  * </pre>
  * 
  * @author Dave Syer
- * @since 3.2
- * 
  */
 public class YamlPropertiesFactoryBean extends YamlProcessor implements
 		FactoryBean<Properties> {

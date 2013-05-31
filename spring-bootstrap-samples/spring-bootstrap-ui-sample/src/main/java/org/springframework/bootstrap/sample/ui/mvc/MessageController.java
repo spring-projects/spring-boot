@@ -10,6 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package org.springframework.bootstrap.sample.ui.mvc;
 
 import javax.validation.Valid;
@@ -27,56 +28,42 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- *
  * @author Rob Winch
- *
  */
 @Controller
 @RequestMapping("/")
 public class MessageController {
-    private MessageRepository messageRepository;
+	private MessageRepository messageRepository;
 
-    @Autowired
-    public MessageController(MessageRepository messageRepository) {
-        this.messageRepository = messageRepository;
-    }
+	@Autowired
+	public MessageController(MessageRepository messageRepository) {
+		this.messageRepository = messageRepository;
+	}
 
-    @RequestMapping
-    public ModelAndView list() {
-        Iterable<Message> messages = messageRepository.findAll();
-        return new ModelAndView("messages/list", "messages", messages);
-    }
+	@RequestMapping
+	public ModelAndView list() {
+		Iterable<Message> messages = this.messageRepository.findAll();
+		return new ModelAndView("messages/list", "messages", messages);
+	}
 
-    @RequestMapping("{id}")
-    public ModelAndView view(@PathVariable("id")
-    Message message) {
-        return new ModelAndView("messages/view", "message", message);
-    }
+	@RequestMapping("{id}")
+	public ModelAndView view(@PathVariable("id") Message message) {
+		return new ModelAndView("messages/view", "message", message);
+	}
 
-    @RequestMapping(params = "form", method = RequestMethod.GET)
-    public String createForm(@ModelAttribute
-    Message message) {
-        return "messages/form";
-    }
+	@RequestMapping(params = "form", method = RequestMethod.GET)
+	public String createForm(@ModelAttribute Message message) {
+		return "messages/form";
+	}
 
-    @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView create(@Valid
-    Message message, BindingResult result, RedirectAttributes redirect) {
-        if (result.hasErrors()) {
-            return new ModelAndView("messages/form", "formErrors",
-                result.getAllErrors());
-        }
-        message = messageRepository.save(message);
-        redirect.addFlashAttribute("globalMessage",
-            "Successfully created a new message");
-        return new ModelAndView("redirect:/{message.id}",
-            "message.id", message.getId());
-    }
+	@RequestMapping(method = RequestMethod.POST)
+	public ModelAndView create(@Valid Message message, BindingResult result,
+			RedirectAttributes redirect) {
+		if (result.hasErrors()) {
+			return new ModelAndView("messages/form", "formErrors", result.getAllErrors());
+		}
+		message = this.messageRepository.save(message);
+		redirect.addFlashAttribute("globalMessage", "Successfully created a new message");
+		return new ModelAndView("redirect:/{message.id}", "message.id", message.getId());
+	}
 }
-
-
-
-
-
-
-

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import java.lang.annotation.ElementType;
@@ -31,7 +32,6 @@ import org.springframework.context.annotation.Conditional;
  * endpoints.
  * 
  * @author Dave Syer
- * 
  */
 @Conditional(OnManagementContextCondition.class)
 @Retention(RetentionPolicy.RUNTIME)

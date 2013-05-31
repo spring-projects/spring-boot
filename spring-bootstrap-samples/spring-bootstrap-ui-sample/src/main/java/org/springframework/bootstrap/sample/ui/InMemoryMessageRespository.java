@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.sample.ui;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +22,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Dave Syer
- * 
  */
 public class InMemoryMessageRespository implements MessageRepository {
 

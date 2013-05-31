@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.cli.command;
 
 import groovy.lang.Closure;
@@ -37,7 +38,6 @@ import org.springframework.bootstrap.cli.compiler.GroovyCompilerConfiguration;
  * {@link Command} to run a Groovy script.
  * 
  * @author Dave Syer
- * 
  */
 public class ScriptCommand implements Command {
 

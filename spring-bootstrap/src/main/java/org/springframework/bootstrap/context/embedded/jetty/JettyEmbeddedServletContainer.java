@@ -27,7 +27,6 @@ import org.springframework.util.Assert;
  * {@link JettyEmbeddedServletContainerFactory} and not directly.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {

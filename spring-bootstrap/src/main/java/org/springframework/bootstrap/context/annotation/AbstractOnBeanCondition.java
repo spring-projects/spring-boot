@@ -38,7 +38,9 @@ import org.springframework.util.MultiValueMap;
 abstract class AbstractOnBeanCondition implements Condition {
 
 	protected Log logger = LogFactory.getLog(getClass());
+
 	private List<String> beanClasses;
+
 	private List<String> beanNames;
 
 	protected abstract Class<?> annotationClass();
@@ -90,30 +92,24 @@ abstract class AbstractOnBeanCondition implements Condition {
 
 		boolean result = evaluate(beanClassesFound, beanNamesFound);
 		if (this.logger.isDebugEnabled()) {
-			if (!this.beanClasses.isEmpty()) {
-				this.logger.debug(checking + "Looking for beans with class: "
-						+ this.beanClasses);
-				if (beanClassesFound.isEmpty()) {
-					this.logger.debug(checking + "Found no beans");
-				} else {
-					this.logger.debug(checking + "Found beans with classes: "
-							+ beanClassesFound);
-				}
-			}
-
-			if (!this.beanNames.isEmpty()) {
-				this.logger.debug(checking + "Looking for beans with names: "
-						+ this.beanNames);
-				if (beanNamesFound.isEmpty()) {
-					this.logger.debug(checking + "Found no beans");
-				} else {
-					this.logger.debug(checking + "Found beans with names: "
-							+ beanNamesFound);
-				}
-			}
+			logFoundResults(checking, "class", this.beanClasses, beanClassesFound);
+			logFoundResults(checking, "name", this.beanNames, beanClassesFound);
 			this.logger.debug(checking + "Match result is: " + result);
 		}
 		return result;
+	}
+
+	private void logFoundResults(String prefix, String type, List<?> candidates,
+			List<?> found) {
+		if (!candidates.isEmpty()) {
+			this.logger.debug(prefix + "Looking for beans with " + type + ": "
+					+ candidates);
+			if (found.isEmpty()) {
+				this.logger.debug(prefix + "Found no beans");
+			} else {
+				this.logger.debug(prefix + "Found beans with " + type + ": " + found);
+			}
+		}
 	}
 
 	protected boolean evaluate(List<String> beanClassesFound, List<String> beanNamesFound) {

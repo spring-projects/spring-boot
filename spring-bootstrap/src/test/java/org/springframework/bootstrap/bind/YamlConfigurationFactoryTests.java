@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.bootstrap.bind;
 
-import static org.junit.Assert.assertEquals;
+package org.springframework.bootstrap.bind;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,9 +30,10 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Dave Syer
- * 
  */
 public class YamlConfigurationFactoryTests {
 
@@ -44,14 +44,14 @@ public class YamlConfigurationFactoryTests {
 	private Map<Class<?>, Map<String, String>> aliases = new HashMap<Class<?>, Map<String, String>>();
 
 	private Foo createFoo(final String yaml) throws Exception {
-		factory = new YamlConfigurationFactory<Foo>(Foo.class);
-		factory.setYaml(yaml);
-		factory.setExceptionIfInvalid(true);
-		factory.setPropertyAliases(aliases);
-		factory.setValidator(validator);
-		factory.setMessageSource(new StaticMessageSource());
-		factory.afterPropertiesSet();
-		return factory.getObject();
+		this.factory = new YamlConfigurationFactory<Foo>(Foo.class);
+		this.factory.setYaml(yaml);
+		this.factory.setExceptionIfInvalid(true);
+		this.factory.setPropertyAliases(this.aliases);
+		this.factory.setValidator(this.validator);
+		this.factory.setMessageSource(new StaticMessageSource());
+		this.factory.afterPropertiesSet();
+		return this.factory.getObject();
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class YamlConfigurationFactoryTests {
 
 	@Test
 	public void testValidYamlWithAliases() throws Exception {
-		aliases.put(Foo.class, Collections.singletonMap("foo-name", "name"));
+		this.aliases.put(Foo.class, Collections.singletonMap("foo-name", "name"));
 		Foo foo = createFoo("foo-name: blah\nbar: blah");
 		assertEquals("blah", foo.name);
 	}
@@ -74,8 +74,8 @@ public class YamlConfigurationFactoryTests {
 
 	@Test(expected = BindException.class)
 	public void missingPropertyCausesValidationError() throws Exception {
-		validator = new SpringValidatorAdapter(Validation.buildDefaultValidatorFactory()
-				.getValidator());
+		this.validator = new SpringValidatorAdapter(Validation
+				.buildDefaultValidatorFactory().getValidator());
 		createFoo("bar: blah");
 	}
 

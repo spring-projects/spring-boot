@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.jdbc;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -24,7 +25,6 @@ import org.springframework.util.StringUtils;
  * Base class for configuration of a database pool.
  * 
  * @author Dave Syer
- * 
  */
 public class AbstractDataSourceConfiguration {
 

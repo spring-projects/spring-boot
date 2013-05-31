@@ -23,15 +23,18 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * Configuration annotation for a conditional element that depends on teh value of a SpEL
+ * Configuration annotation for a conditional element that depends on the value of a SpEL
  * expression.
  * 
  * @author Dave Syer
- * 
  */
 @Conditional(OnExpressionCondition.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface ConditionalOnExpression {
+
+	/**
+	 * The SpEL expression.
+	 */
 	String value() default "true";
 }

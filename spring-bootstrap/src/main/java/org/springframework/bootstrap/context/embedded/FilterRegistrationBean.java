@@ -44,7 +44,6 @@ import org.springframework.util.Assert;
  * will be associated to '/*'. The filter name will be deduced if not specified.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see ServletContextInitializer
  * @see ServletContext#addFilter(String, Filter)
  */

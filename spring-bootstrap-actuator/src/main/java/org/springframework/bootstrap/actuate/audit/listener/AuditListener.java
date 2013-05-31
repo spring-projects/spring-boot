@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.audit.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.bootstrap.actuate.audit.AuditEvent;
 import org.springframework.bootstrap.actuate.audit.AuditEventRepository;
 import org.springframework.context.ApplicationListener;
 
 /**
- * @author Dave Syer
+ * {@link ApplicationListener} for {@link AuditEvent}s.
  * 
+ * @author Dave Syer
  */
 public class AuditListener implements ApplicationListener<AuditApplicationEvent> {
 

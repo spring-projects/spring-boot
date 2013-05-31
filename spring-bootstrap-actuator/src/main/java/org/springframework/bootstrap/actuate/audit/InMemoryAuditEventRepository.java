@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Dave Syer
+ * In-memory {@link AuditEventRepository} implementation.
  * 
+ * @author Dave Syer
  */
 public class InMemoryAuditEventRepository implements AuditEventRepository {
 

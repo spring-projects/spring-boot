@@ -55,7 +55,7 @@ import org.springframework.bootstrap.launcher.data.RandomAccessDataFile;
  * <li>A nested {@link JarFile} can be
  * {@link #getNestedJarFile(ZipEntry, JarEntryFilter...) obtained} for embedded JAR files
  * (as long as their entry is not compressed).</li>
- * <li>Entry data can be {@link #getData(ZipEntry) accessed} as {@link RandomAccessData}.</li>
+ * <li>Entry data can be accessed as {@link RandomAccessData}.</li>
  * </ul>
  * 
  * @author Phillip Webb
@@ -154,7 +154,7 @@ public class RandomAccessJarFile extends JarFile {
 	}
 
 	protected final RandomAccessDataFile getRootJarFile() {
-		return rootJarFile;
+		return this.rootJarFile;
 	}
 
 	@Override
@@ -270,8 +270,7 @@ public class RandomAccessJarFile extends JarFile {
 	}
 
 	/**
-	 * Return a URL that can be used to access this JAR file. The returned URL will
-	 * connect using a {@link RandomAccessJarURLConnection}. NOTE: the specified URL
+	 * Return a URL that can be used to access this JAR file. NOTE: the specified URL
 	 * cannot be serialized and or cloned.
 	 * @return the URL
 	 * @throws MalformedURLException
@@ -425,9 +424,9 @@ public class RandomAccessJarFile extends JarFile {
 				// supported
 				this.contentType = (this.jarEntryName == null ? "x-java/jar" : null);
 				this.contentType = (this.contentType == null ? guessContentTypeFromName(this.jarEntryName)
-						: contentType);
+						: this.contentType);
 				this.contentType = (this.contentType == null ? "content/unknown"
-						: contentType);
+						: this.contentType);
 			}
 			return this.contentType;
 		}

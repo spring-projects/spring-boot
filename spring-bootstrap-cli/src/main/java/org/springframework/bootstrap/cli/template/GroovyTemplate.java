@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.cli.template;
 
 import groovy.text.GStringTemplateEngine;
@@ -28,9 +29,10 @@ import org.codehaus.groovy.control.CompilationFailedException;
 
 /**
  * @author Dave Syer
- * 
  */
 public class GroovyTemplate {
+
+	// FIXME is this used?
 
 	public static String template(String name) throws IOException,
 			CompilationFailedException, ClassNotFoundException {

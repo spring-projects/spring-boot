@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.cli.command;
 
 import groovy.lang.Mixin;
@@ -50,7 +51,6 @@ import org.springframework.bootstrap.cli.Command;
  * Customizer for the compilation of CLI commands.
  * 
  * @author Dave Syer
- * 
  */
 public class ScriptCompilationCustomizer extends CompilationCustomizer {
 

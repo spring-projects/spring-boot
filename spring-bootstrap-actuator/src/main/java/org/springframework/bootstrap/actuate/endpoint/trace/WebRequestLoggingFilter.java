@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.endpoint.trace;
 
 import java.io.IOException;
@@ -41,7 +42,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Dave Syer
- * 
  */
 public class WebRequestLoggingFilter implements Filter, Ordered {
 

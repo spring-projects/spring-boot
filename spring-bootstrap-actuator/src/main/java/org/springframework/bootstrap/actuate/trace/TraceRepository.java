@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.trace;
 
 import java.util.List;
@@ -23,7 +24,6 @@ import java.util.Map;
  * be used for analysing contextual information like HTTP headers.
  * 
  * @author Dave Syer
- * 
  */
 public interface TraceRepository {
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.bind;
 
 import java.util.Collections;
@@ -28,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * @author Dave Syer
- * 
  */
 public class PropertySourcesPropertyValuesTests {
 

@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import java.util.List;
 
 import javax.servlet.Servlet;
 
+import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration.WebMvcConfiguration;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -29,8 +31,9 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
- * @author Dave Syer
+ * {@link WebMvcConfiguration} for actuator.
  * 
+ * @author Dave Syer
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @Configuration

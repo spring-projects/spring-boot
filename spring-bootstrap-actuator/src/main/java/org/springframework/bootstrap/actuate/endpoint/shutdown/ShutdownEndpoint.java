@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.endpoint.shutdown;
 
 import java.util.Collections;
@@ -35,7 +36,6 @@ import org.springframework.web.context.support.ServletRequestHandledEvent;
 
 /**
  * @author Dave Syer
- * 
  */
 @Controller
 public class ShutdownEndpoint implements ApplicationContextAware,

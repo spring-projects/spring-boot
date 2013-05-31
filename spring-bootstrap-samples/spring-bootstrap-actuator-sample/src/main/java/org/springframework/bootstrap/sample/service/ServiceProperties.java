@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.sample.service;
 
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;

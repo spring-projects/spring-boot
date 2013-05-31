@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.batch;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * @author Dave Syer
+ * Spring {@link ApplicationEvent} encapsulating a {@link JobExecution}.
  * 
+ * @author Dave Syer
  */
 public class JobExecutionEvent extends ApplicationEvent {
 

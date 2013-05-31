@@ -41,7 +41,6 @@ import org.springframework.util.Assert;
  * omitted when mapping to '/*'. The servlet name will be deduced if not specified.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see ServletContextInitializer
  * @see ServletContext#addServlet(String, Servlet)
  */

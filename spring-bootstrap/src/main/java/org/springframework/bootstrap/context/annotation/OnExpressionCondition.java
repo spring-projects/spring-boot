@@ -30,7 +30,7 @@ import org.springframework.core.type.ClassMetadata;
  * A Condition that evaluates a SpEL expression.
  * 
  * @author Dave Syer
- * 
+ * @see ConditionalOnExpression
  */
 public class OnExpressionCondition implements Condition {
 

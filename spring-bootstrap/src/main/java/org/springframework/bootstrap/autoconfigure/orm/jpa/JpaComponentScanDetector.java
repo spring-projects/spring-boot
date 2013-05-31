@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.orm.jpa;
 
 import java.io.IOException;
@@ -46,12 +47,10 @@ import org.springframework.util.StringUtils;
 
 /**
  * Helper to detect a component scan declared in the enclosing context (normally on a
- * <code>@Configuration</code> class). Once the component scan is detected, the base
- * packages are stored for retrieval later by the {@link JpaRepositoriesAutoConfiguration}
- * .
+ * {@code @Configuration} class). Once the component scan is detected, the base packages
+ * are stored for retrieval later by the {@link JpaRepositoriesAutoConfiguration} .
  * 
  * @author Dave Syer
- * 
  */
 class JpaComponentScanDetector implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 

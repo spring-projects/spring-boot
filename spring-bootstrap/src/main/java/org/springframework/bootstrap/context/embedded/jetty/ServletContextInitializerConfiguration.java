@@ -30,7 +30,6 @@ import org.springframework.util.Assert;
  * Jetty {@link Configuration} that calls {@link ServletContextInitializer}s.
  * 
  * @author Phillip Webb
- * @since 4.0
  */
 public class ServletContextInitializerConfiguration extends AbstractConfiguration {
 
@@ -61,8 +60,9 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 
 		@Override
 		protected void doStart() throws Exception {
-			ServletContext servletContext = contextHandler.getServletContext();
-			for (ServletContextInitializer initializer : initializers) {
+			ServletContext servletContext = ServletContextInitializerConfiguration.this.contextHandler
+					.getServletContext();
+			for (ServletContextInitializer initializer : ServletContextInitializerConfiguration.this.initializers) {
 				initializer.onStartup(servletContext);
 			}
 		}

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +24,6 @@ import org.springframework.context.annotation.Import;
  * management context whether it is a child context or not).
  * 
  * @author Dave Syer
- * 
  */
 @Configuration
 @ConditionalOnManagementContext

@@ -36,7 +36,6 @@ import static java.util.Arrays.asList;
  * 
  * @author Phillip Webb
  * @author Dave Syer
- * 
  * @see BootstrapRunner
  */
 public class RunCommand extends OptionParsingCommand {

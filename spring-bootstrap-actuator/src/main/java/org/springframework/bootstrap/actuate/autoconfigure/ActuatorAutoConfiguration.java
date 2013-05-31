@@ -36,10 +36,9 @@ import org.springframework.context.annotation.Import;
 		MetricFilterConfiguration.class, AuditConfiguration.class })
 public class ActuatorAutoConfiguration {
 
-	/*
-	 * ServerProperties has to be declared in a non-conditional bean, so that it gets
-	 * added to the context early enough
-	 */
+	// ServerProperties has to be declared in a non-conditional bean, so that it gets
+	// added to the context early enough
+
 	@EnableConfigurationProperties
 	public static class ServerPropertiesConfiguration {
 

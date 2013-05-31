@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.context.annotation;
 
 import org.junit.Test;
@@ -26,7 +27,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dave Syer
- * 
  */
 public class OnResourceConditionTests {
 

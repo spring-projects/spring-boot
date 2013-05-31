@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.cli.command;
 
 import groovy.lang.Closure;
@@ -27,12 +28,15 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 
 /**
- * @author Dave Syer
+ * A handler that parses and handles options.
  * 
+ * @author Dave Syer
+ * @see OptionParsingCommand
  */
 public class OptionHandler {
 
 	private OptionParser parser;
+
 	private Closure<Void> closure;
 
 	public OptionSpecBuilder option(String name, String description) {

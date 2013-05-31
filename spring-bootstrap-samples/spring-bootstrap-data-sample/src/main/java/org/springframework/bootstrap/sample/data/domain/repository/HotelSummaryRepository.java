@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.bootstrap.sample.data.domain.repository;
 
 import java.util.List;
@@ -40,12 +56,12 @@ public class HotelSummaryRepository {
 		StringBuilder queryString = new StringBuilder(FIND_BY_CITY_QUERY);
 		applySorting(queryString, pageable == null ? null : pageable.getSort());
 
-		Query query = entityManager.createQuery(queryString.toString());
+		Query query = this.entityManager.createQuery(queryString.toString());
 		query.setParameter(1, city);
 		query.setFirstResult(pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
 
-		Query countQuery = entityManager.createQuery(FIND_BY_CITY_COUNT_QUERY);
+		Query countQuery = this.entityManager.createQuery(FIND_BY_CITY_COUNT_QUERY);
 		countQuery.setParameter(1, city);
 
 		@SuppressWarnings("unchecked")
@@ -58,7 +74,7 @@ public class HotelSummaryRepository {
 
 	@SuppressWarnings("unchecked")
 	public List<RatingCount> findRatingCounts(Hotel hotel) {
-		Query query = entityManager.createQuery(FIND_RATING_COUNTS_QUERY);
+		Query query = this.entityManager.createQuery(FIND_RATING_COUNTS_QUERY);
 		query.setParameter(1, hotel);
 		return query.getResultList();
 	}

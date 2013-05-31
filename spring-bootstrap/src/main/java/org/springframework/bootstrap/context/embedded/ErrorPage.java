@@ -24,7 +24,6 @@ import org.springframework.util.ObjectUtils;
  * the {@literal &lt;error-page&gt;} element traditionally found in web.xml.
  * 
  * @author Dave Syer
- * @since 4.0
  */
 public class ErrorPage {
 

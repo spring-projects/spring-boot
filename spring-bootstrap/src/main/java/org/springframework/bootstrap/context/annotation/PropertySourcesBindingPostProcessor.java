@@ -27,6 +27,9 @@ import org.springframework.core.env.PropertySources;
 import org.springframework.validation.Validator;
 
 /**
+ * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
+ * {@link ConfigurationProperties}.
+ * 
  * @author Dave Syer
  */
 public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {

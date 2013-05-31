@@ -33,7 +33,6 @@ import org.springframework.util.Assert;
  * 
  * @author Phillip Webb
  * @author Dave Syer
- * @since 4.0
  */
 public abstract class AbstractEmbeddedServletContainerFactory implements
 		ConfigurableEmbeddedServletContainerFactory {

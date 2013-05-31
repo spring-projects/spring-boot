@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.cli.command;
 
 import java.util.Arrays;
@@ -23,8 +24,9 @@ import org.springframework.bootstrap.cli.Command;
 import org.springframework.bootstrap.cli.CommandFactory;
 
 /**
- * @author Dave Syer
+ * Default implementation of {@link CommandFactory}.
  * 
+ * @author Dave Syer
  */
 public class DefaultCommandFactory implements CommandFactory {
 

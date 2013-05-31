@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.audit;
 
 import java.util.Collections;
@@ -26,7 +27,6 @@ import java.util.Map;
  * such an event.
  * 
  * @author Dave Syer
- * 
  */
 public class AuditEvent {
 

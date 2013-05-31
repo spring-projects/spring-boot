@@ -28,7 +28,6 @@ import org.springframework.util.Assert;
  * {@link TomcatEmbeddedServletContainerFactory} and not directly.
  * 
  * @author Phillip Webb
- * @since 4.0
  * @see TomcatEmbeddedServletContainerFactory
  */
 public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer {
@@ -53,7 +52,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			Thread awaitThread = new Thread() {
 				@Override
 				public void run() {
-					tomcat.getServer().await();
+					TomcatEmbeddedServletContainer.this.tomcat.getServer().await();
 				};
 			};
 			awaitThread.setDaemon(false);

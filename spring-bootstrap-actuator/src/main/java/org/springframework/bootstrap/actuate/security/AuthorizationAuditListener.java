@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.security;
 
 import java.util.HashMap;
@@ -29,7 +30,6 @@ import org.springframework.security.access.event.AuthorizationFailureEvent;
 
 /**
  * @author Dave Syer
- * 
  */
 public class AuthorizationAuditListener implements
 		ApplicationListener<AbstractAuthorizationEvent>, ApplicationEventPublisherAware {
