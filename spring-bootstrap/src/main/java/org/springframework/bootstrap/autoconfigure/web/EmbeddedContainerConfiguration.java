@@ -28,7 +28,8 @@ import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServlet
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.type.AnnotationMetadata;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet container.
@@ -37,13 +38,21 @@ import org.springframework.context.annotation.Import;
  * @author Dave Syer
  * 
  */
-@Import(ServerPropertiesConfiguration.class)
-public class EmbeddedContainerConfiguration {
+public class EmbeddedContainerConfiguration implements ImportSelector {
+
+	@Override
+	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+		// Don't import the classes directly because that might trigger loading them - use
+		// an import selector and the class name instead
+		return new String[] { ServerPropertiesConfiguration.class.getName(),
+				EmbeddedJettyAutoConfiguration.class.getName(),
+				EmbeddedTomcatAutoConfiguration.class.getName() };
+	}
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class })
 	@ConditionalOnMissingBean(EmbeddedServletContainerFactory.class)
-	protected static class EmbeddedJettyAutoConfiguration {
+	public static class EmbeddedJettyAutoConfiguration {
 
 		@Bean
 		public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory() {
@@ -55,7 +64,7 @@ public class EmbeddedContainerConfiguration {
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
 	@ConditionalOnMissingBean(EmbeddedServletContainerFactory.class)
-	protected static class EmbeddedTomcatAutoConfiguration {
+	public static class EmbeddedTomcatAutoConfiguration {
 
 		@Bean
 		public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
