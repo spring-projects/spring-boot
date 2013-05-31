@@ -116,7 +116,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass({ LayoutDialect.class })
+	@ConditionalOnClass(name = "nz.net.ultraq.web.thymeleaf.LayoutDialect")
 	@ConditionalOnMissingBean(SpringTemplateEngine.class)
 	protected static class ThymeleafWebLayoutConfiguration {
 

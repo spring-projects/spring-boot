@@ -128,6 +128,19 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void uiSample() throws Exception {
+		// To run this one from the command line you need to add target/test-classes to
+		// CLASSPATH
+		start("samples/ui.groovy");
+		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
+				.openStream());
+		assertTrue("Wrong output: " + result, result.contains("Hello World"));
+		result = FileUtil.readEntirely(new URL(
+				"http://localhost:8080/css/bootstrap.min.css").openStream());
+		assertTrue("Wrong output: " + result, result.contains("container"));
+	}
+
+	@Test
 	public void actuatorSample() throws Exception {
 		start("samples/actuator.groovy");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
