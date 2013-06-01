@@ -68,6 +68,10 @@ public class ServerProperties {
 		this.address = address;
 	}
 
+	public void setLoader(String value) {
+		// no op
+	}
+
 	public static class Tomcat {
 
 		private String accessLogPattern;
