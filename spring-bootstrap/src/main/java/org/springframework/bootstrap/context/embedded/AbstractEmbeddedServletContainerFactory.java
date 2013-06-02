@@ -17,7 +17,12 @@
 package org.springframework.bootstrap.context.embedded;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -36,6 +41,9 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractEmbeddedServletContainerFactory implements
 		ConfigurableEmbeddedServletContainerFactory {
+
+	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
+			"static" };
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -291,7 +299,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	}
 
 	/**
-	 * @return the JS{ servlet class name
+	 * @return the JSP servlet class name
 	 */
 	protected String getJspServletClassName() {
 		return this.jspServletClassName;
@@ -318,18 +326,54 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * warning and returning {@code null} otherwise.
 	 */
 	protected final File getValidDocumentRoot() {
-		File[] roots = new File[] { getDocumentRoot(), new File("src/main/webapp"),
-				new File("public"), new File("static") };
-		for (File root : roots) {
+
+		// User specified
+		if (getDocumentRoot() != null) {
+			return getDocumentRoot();
+		}
+
+		// Packaged as a WAR file
+		File warFile = getCodeSourceArchive();
+		if (warFile.exists() && !warFile.isDirectory()
+				&& warFile.getName().toLowerCase().endsWith(".war")) {
+			return warFile.getAbsoluteFile();
+		}
+
+		// Common DocRoots
+		for (String commonDocRoot : COMMON_DOC_ROOTS) {
+			File root = new File(commonDocRoot);
 			if (root != null && root.exists() && root.isDirectory()) {
 				return root.getAbsoluteFile();
 			}
 		}
+
 		if (this.logger.isWarnEnabled()) {
-			this.logger.warn("None of the document roots " + roots
+			this.logger.warn("None of the document roots "
+					+ Arrays.asList(COMMON_DOC_ROOTS)
 					+ " point to a directory and will be ignored.");
 		}
 		return null;
+	}
+
+	private File getCodeSourceArchive() {
+		try {
+			CodeSource codeSource = getClass().getProtectionDomain().getCodeSource();
+			URL location = (codeSource == null ? null : codeSource.getLocation());
+			if (location == null) {
+				return null;
+			}
+			String path = location.getPath();
+			URLConnection connection = location.openConnection();
+			if (connection instanceof JarURLConnection) {
+				path = ((JarURLConnection) connection).getJarFile().getName();
+			}
+			if (path.indexOf("!/") != -1) {
+				path = path.substring(0, path.indexOf("!/"));
+			}
+			return new File(path);
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 }

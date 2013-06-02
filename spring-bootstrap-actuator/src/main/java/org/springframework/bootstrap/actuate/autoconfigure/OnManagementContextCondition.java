@@ -34,7 +34,6 @@ import org.springframework.core.type.AnnotationMetadata;
  * (the application context with the management endpoints).
  * 
  * @author Dave Syer
- * 
  * @see ConditionalOnManagementContext
  */
 public class OnManagementContextCondition implements Condition {

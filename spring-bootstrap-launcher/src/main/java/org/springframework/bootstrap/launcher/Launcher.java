@@ -96,12 +96,12 @@ public abstract class Launcher {
 		Enumeration<JarEntry> jarEntries = jarFile.entries();
 		while (jarEntries.hasMoreElements()) {
 			JarEntry jarEntry = jarEntries.nextElement();
-			this.logger.fine("Adding: " + jarEntry.getName());
 			if (isNestedJarFile(jarEntry)) {
+				this.logger.fine("Adding: " + jarEntry.getName());
 				lib.add(jarFile.getNestedJarFile(jarEntry));
 			}
 		}
-		this.logger.fine("Done");
+		this.logger.fine("Added " + lib.size() + " entries");
 		postProcessLib(jarFile, lib);
 		ClassLoader classLoader = createClassLoader(lib);
 		launch(args, jarFile, classLoader);

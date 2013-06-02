@@ -57,6 +57,7 @@ public class ManagementAutoConfiguration implements ApplicationContextAware {
 			.getName() + ".MEMO";
 
 	private ApplicationContext parent;
+
 	private ConfigurableApplicationContext context;
 
 	@Autowired
