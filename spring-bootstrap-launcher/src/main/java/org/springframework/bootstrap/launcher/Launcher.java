@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
+import java.util.logging.Logger;
 
 import org.springframework.bootstrap.launcher.jar.RandomAccessJarFile;
 
@@ -36,6 +37,8 @@ import org.springframework.bootstrap.launcher.jar.RandomAccessJarFile;
  * @author Phillip Webb
  */
 public abstract class Launcher {
+
+	private Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * The main runner class. This must be loaded by the created ClassLoader so cannot be
@@ -93,10 +96,12 @@ public abstract class Launcher {
 		Enumeration<JarEntry> jarEntries = jarFile.entries();
 		while (jarEntries.hasMoreElements()) {
 			JarEntry jarEntry = jarEntries.nextElement();
+			this.logger.fine("Adding: " + jarEntry.getName());
 			if (isNestedJarFile(jarEntry)) {
 				lib.add(jarFile.getNestedJarFile(jarEntry));
 			}
 		}
+		this.logger.fine("Done");
 		postProcessLib(jarFile, lib);
 		ClassLoader classLoader = createClassLoader(lib);
 		launch(args, jarFile, classLoader);
