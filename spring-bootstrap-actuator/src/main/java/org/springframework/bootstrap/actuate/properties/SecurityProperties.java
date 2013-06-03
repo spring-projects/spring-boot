@@ -33,6 +33,8 @@ public class SecurityProperties {
 
 	private SessionCreationPolicy sessions = SessionCreationPolicy.stateless;
 
+	private String[] ignored = new String[0];
+
 	public SessionCreationPolicy getSessions() {
 		return this.sessions;
 	}
@@ -55,6 +57,14 @@ public class SecurityProperties {
 
 	public void setRequireSsl(boolean requireSsl) {
 		this.requireSsl = requireSsl;
+	}
+
+	public void setIgnored(String... ignored) {
+		this.ignored = ignored;
+	}
+
+	public String[] getIgnored() {
+		return this.ignored;
 	}
 
 	public static class Basic {

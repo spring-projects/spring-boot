@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.actuate.properties;
 
 import javax.validation.Valid;
@@ -26,6 +25,7 @@ import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
  * Externalized configuration for endpoints (e.g. paths)
  * 
  * @author Dave Syer
+ * 
  */
 @ConfigurationProperties(name = "endpoints", ignoreUnknownFields = false)
 public class EndpointsProperties {
@@ -107,6 +107,16 @@ public class EndpointsProperties {
 		public void setPath(String path) {
 			this.path = path;
 		}
+	}
+
+	public String[] getSecurePaths() {
+		return new String[] { getMetrics().getPath(), getBeans().getPath(),
+				getDump().getPath(), getShutdown().getPath(), getTrace().getPath() };
+	}
+
+	public String[] getOpenPaths() {
+		return new String[] { getHealth().getPath(), getInfo().getPath(),
+				getError().getPath() };
 	}
 
 }
