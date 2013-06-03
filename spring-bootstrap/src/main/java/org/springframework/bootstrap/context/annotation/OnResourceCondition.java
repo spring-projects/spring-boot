@@ -39,7 +39,7 @@ class OnResourceCondition implements Condition {
 
 	private static Log logger = LogFactory.getLog(OnResourceCondition.class);
 
-	private ResourceLoader loader = new DefaultResourceLoader();
+	private ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -48,6 +48,8 @@ class OnResourceCondition implements Condition {
 
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				ConditionalOnResource.class.getName(), true);
+		ResourceLoader loader = context.getResourceLoader() == null ? this.defaultResourceLoader
+				: context.getResourceLoader();
 		if (attributes != null) {
 			List<String> locations = new ArrayList<String>();
 			collectValues(locations, attributes.get("resources"));
@@ -57,7 +59,7 @@ class OnResourceCondition implements Condition {
 				if (logger.isDebugEnabled()) {
 					logger.debug(checking + "Checking for resource: " + location);
 				}
-				if (!this.loader.getResource(location).exists()) {
+				if (!loader.getResource(location).exists()) {
 					if (logger.isDebugEnabled()) {
 						logger.debug(checking + "Resource not found: " + location
 								+ " (search terminated with matches=false)");
