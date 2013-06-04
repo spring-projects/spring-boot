@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link ApplicationContextInitializer} that configures the context environment by
  * loading properties from well known file locations. By default properties will be loaded
- * from 'application.properties' and/or 'application.yaml' files in the following
+ * from 'application.properties' and/or 'application.yml' files in the following
  * locations:
  * <ul>
  * <li>classpath:</li>
@@ -55,7 +55,7 @@ import org.springframework.util.StringUtils;
  * 
  * <p>
  * Additional files will also be loaded based on active profiles. For example if a 'web'
- * profile is active 'application-web.properties' and 'application-web.yaml' will be
+ * profile is active 'application-web.properties' and 'application-web.yml' will be
  * considered.
  * 
  * <p>
@@ -78,7 +78,7 @@ public class ConfigFileApplicationContextInitializer implements
 
 	private String name = "${spring.config.name:application}";
 
-	private int order = Integer.MIN_VALUE;
+	private int order = Integer.MIN_VALUE + 10;
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
