@@ -138,7 +138,7 @@ public class ServiceBootstrapApplicationTests {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = (Map<String, Object>) entity.getBody().get(0);
 		assertTrue("Wrong body: " + body,
-				((String) body.get("context")).startsWith("org.springframework"));
+				((String) body.get("context")).startsWith("application"));
 	}
 
 	private RestTemplate getRestTemplate() {

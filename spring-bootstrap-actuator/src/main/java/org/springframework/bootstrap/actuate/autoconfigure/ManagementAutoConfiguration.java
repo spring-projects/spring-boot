@@ -40,7 +40,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
@@ -103,8 +102,6 @@ public class ManagementAutoConfiguration implements ApplicationContextAware {
 						.getPort()) {
 					AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 					context.setParent(ManagementAutoConfiguration.this.parent);
-					context.setEnvironment((ConfigurableEnvironment) ManagementAutoConfiguration.this.parent
-							.getEnvironment());
 					context.register(assembleConfigClasses(ManagementAutoConfiguration.this.parent));
 					context.refresh();
 					ManagementAutoConfiguration.this.context = context;

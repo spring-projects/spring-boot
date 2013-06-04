@@ -13,4 +13,6 @@ org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.bootstrap.context.initializer.ConfigFileApplicationContextInitializer,\
 org.springframework.bootstrap.context.initializer.LoggingApplicationContextInitializer,\
+org.springframework.bootstrap.context.initializer.VcapApplicationContextInitializer,\
+org.springframework.bootstrap.context.initializer.ContextIdApplicationContextInitializer,\
 org.springframework.bootstrap.context.initializer.EnvironmentDelegateApplicationContextInitializer
