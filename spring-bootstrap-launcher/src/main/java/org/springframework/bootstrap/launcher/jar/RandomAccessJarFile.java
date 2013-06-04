@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.launcher.jar;
 
 import java.io.BufferedInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -181,7 +182,7 @@ public class RandomAccessJarFile extends JarFile {
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
 		InputStream inputStream = getData(ze).getInputStream();
 		if (ze.getMethod() == ZipEntry.DEFLATED) {
-			inputStream = new InflaterInputStream(inputStream, new Inflater(true), 512);
+			inputStream = new ZipInflaterInputStream(inputStream);
 		}
 		return inputStream;
 	}
@@ -430,5 +431,34 @@ public class RandomAccessJarFile extends JarFile {
 			}
 			return this.contentType;
 		}
+	}
+
+	/**
+	 * {@link InflaterInputStream} that support the writing of an extra "dummy" byte which
+	 * is required with JDK 6
+	 */
+	private static class ZipInflaterInputStream extends InflaterInputStream {
+
+		private boolean extraBytesWritten;
+
+		public ZipInflaterInputStream(InputStream inputStream) {
+			super(inputStream, new Inflater(true), 512);
+		}
+
+		@Override
+		protected void fill() throws IOException {
+			try {
+				super.fill();
+			} catch (EOFException ex) {
+				if (this.extraBytesWritten) {
+					throw ex;
+				}
+				this.len = 1;
+				this.buf[0] = 0x0;
+				this.extraBytesWritten = true;
+				this.inf.setInput(this.buf, 0, this.len);
+			}
+		}
+
 	}
 }
