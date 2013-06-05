@@ -21,6 +21,8 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * Thin wrapper for Jackson 2 {@link ObjectMapper}.
+ * 
  * @author Dave Syer
  * 
  */

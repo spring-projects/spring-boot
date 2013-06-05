@@ -25,11 +25,24 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * Really basic JSON parser for when you have nothing else available. Comes with some
+ * limitations with respect to the JSON specification (e.g. only supports String values),
+ * so users will probably prefer to have a library handle things instead (Jackson or Snake
+ * YAML are supported).
+ * 
+ * @see #instance()
+ * 
  * @author Dave Syer
  * 
  */
 public class SimpleJsonParser implements JsonParser {
 
+	/**
+	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
+	 * (2), then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
+	 * 
+	 * @return a {@link JsonParser}
+	 */
 	public static JsonParser instance() {
 		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
 			return new YamlParser();

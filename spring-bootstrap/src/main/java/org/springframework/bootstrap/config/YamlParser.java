@@ -21,6 +21,8 @@ import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
 
 /**
+ * Thin wrapper for Snake {@link Yaml}.
+ * 
  * @author Dave Syer
  * 
  */
