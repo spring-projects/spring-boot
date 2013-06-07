@@ -20,10 +20,12 @@
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>4.0.0.M1</spring.version>
+		<spring.security.version>3.1.3.RELEASE</spring.security.version>
 		<spring.security.javaconfig.version>1.0.0.CI-SNAPSHOT</spring.security.javaconfig.version>
 		<spring.integration.version>2.2.3.RELEASE</spring.integration.version>
-		<spring.batch.version>2.2.0.RC2</spring.batch.version>
+		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
         <tomcat.version>7.0.39</tomcat.version>
+        <jetty.version>8.1.9.v20130131</jetty.version>
         <aspectj.version>1.7.2</aspectj.version>
 	</properties>
 
@@ -417,7 +419,7 @@
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
-				<version>8.1.9.v20130131</version>
+				<version>${jetty.version}</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>javax.servlet</artifactId>
@@ -428,17 +430,17 @@
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-util</artifactId>
-				<version>8.1.9.v20130131</version>
+				<version>${jetty.version}</version>
 			</dependency>
             <dependency>
               <groupId>org.eclipse.jetty</groupId>
               <artifactId>jetty-jsp</artifactId>
-              <version>8.1.9.v20130131</version>
+              <version>${jetty.version}</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.jetty</groupId>
               <artifactId>jetty-annotations</artifactId>
-              <version>8.1.9.v20130131</version>
+              <version>${jetty.version}</version>
             </dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
