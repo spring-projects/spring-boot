@@ -18,6 +18,7 @@ package org.springframework.bootstrap.actuate.endpoint.error;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Basic fallback global error endpoint, rendering servlet container error codes and
@@ -46,10 +48,17 @@ public class ErrorEndpoint {
 
 	private Log logger = LogFactory.getLog(ErrorEndpoint.class);
 
-	@RequestMapping("${endpoints.error.path:/error}")
+	@RequestMapping(value = "${endpoints.error.path:/error}", produces = "text/html")
+	public ModelAndView errorHtml(HttpServletRequest request) {
+		Map<String, Object> map = error(request);
+		return new ModelAndView("error", map);
+	}
+
+	@RequestMapping(value = "${endpoints.error.path:/error}")
 	@ResponseBody
 	public Map<String, Object> error(HttpServletRequest request) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		map.put("timestamp", new Date());
 		try {
 			Throwable error = (Throwable) request
 					.getAttribute("javax.servlet.error.exception");
@@ -88,4 +97,5 @@ public class ErrorEndpoint {
 			return map;
 		}
 	}
+
 }
