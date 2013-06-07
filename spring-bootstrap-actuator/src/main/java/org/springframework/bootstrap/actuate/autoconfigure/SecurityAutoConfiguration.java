@@ -28,6 +28,7 @@ import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean
 import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
@@ -41,6 +42,44 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 /**
+ * <p>
+ * Auto configuration for security of a web application or service. By default everything
+ * is secured with HTTP Basic authentication except the
+ * {@link SecurityProperties#getIgnored() explicitly ignored} paths (defaults to
+ * <code>/css&#47;**, /js&#47;**, /images&#47;**, &#47;**&#47;favicon.ico</code>). Many
+ * aspects of the behaviour can be controller with {@link SecurityProperties} via
+ * externalized application properties (or via an bean definition of that type to set the
+ * defaults). The user details for authentication are just placeholders
+ * <code>(username=user,
+ * password=password)</code> but can easily be customized by providing a bean definition
+ * of type {@link AuthenticationManager}. Also provides audit logging of authentication
+ * events.
+ * </p>
+ * 
+ * <p>
+ * The framework {@link EndpointsProperties} configuration bean has explicitly
+ * {@link EndpointsProperties#getSecurePaths() secure} and
+ * {@link EndpointsProperties#getOpenPaths() open} paths (by name) which are always
+ * respected by the filter created here. You can override the paths of those endpoints
+ * using application properties (e.g. <code>endpoints.info.path</code> is open, and
+ * <code>endpoints.metrics.path</code> is secure), but not the security aspects. The
+ * always secure paths are management endpoints that would be inadvisable to expose to all
+ * users.
+ * </p>
+ * 
+ * <p>
+ * Some common simple customizations:
+ * <ul>
+ * <li>Switch off security completely and permanently: remove Spring Security from the
+ * classpath</li>
+ * <li>Switch off security temporarily (e.g. for a dev environment): set
+ * <code>security.basic.enabled: false</code></li>
+ * <li>Customize the user details: add an AuthenticationManager bean</li>
+ * <li>Add form login for user facing resources: add a
+ * {@link WebSecurityConfigurerAdapter} and use {@link HttpConfiguration#formLogin()}</li>
+ * </ul>
+ * </p>
+ * 
  * @author Dave Syer
  */
 @Configuration
@@ -67,6 +106,8 @@ public class SecurityAutoConfiguration {
 		return new BoostrapWebSecurityConfigurerAdapter();
 	}
 
+	// Give user-supplied filters a chance to be last in line
+	@Order(Integer.MAX_VALUE - 10)
 	private static class BoostrapWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
