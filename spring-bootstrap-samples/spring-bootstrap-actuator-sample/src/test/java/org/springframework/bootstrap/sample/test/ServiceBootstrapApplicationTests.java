@@ -98,6 +98,28 @@ public class ServiceBootstrapApplicationTests {
 	}
 
 	@Test
+	public void testEnv() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+				"http://localhost:8080/env", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertTrue("Wrong body: " + body, body.containsKey("systemProperties"));
+	}
+
+	@Test
+	public void testEnvProperty() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+				"http://localhost:8080/env/logging.file", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertEquals("{logging.file=/tmp/logs/app.log}", body.toString());
+	}
+
+	@Test
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
 				"http://localhost:8080/health", String.class);

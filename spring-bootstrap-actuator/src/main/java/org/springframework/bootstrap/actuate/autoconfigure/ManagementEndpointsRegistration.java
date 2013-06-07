@@ -28,7 +28,8 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @ConditionalOnManagementContext
 @Import({ MetricsConfiguration.class, HealthConfiguration.class,
-		ShutdownConfiguration.class, TraceConfiguration.class, BeansConfiguration.class })
+		ShutdownConfiguration.class, TraceConfiguration.class, BeansConfiguration.class,
+		EnvConfiguration.class })
 public class ManagementEndpointsRegistration {
 
 }

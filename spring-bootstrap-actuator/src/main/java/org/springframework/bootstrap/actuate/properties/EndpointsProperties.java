@@ -54,6 +54,9 @@ public class EndpointsProperties {
 	@Valid
 	private Endpoint beans = new Endpoint("/beans");
 
+	@Valid
+	private Endpoint env = new Endpoint("/env");
+
 	public Endpoint getInfo() {
 		return this.info;
 	}
@@ -86,6 +89,10 @@ public class EndpointsProperties {
 		return this.beans;
 	}
 
+	public Endpoint getEnv() {
+		return this.env;
+	}
+
 	public static class Endpoint {
 
 		@NotNull
@@ -111,7 +118,8 @@ public class EndpointsProperties {
 
 	public String[] getSecurePaths() {
 		return new String[] { getMetrics().getPath(), getBeans().getPath(),
-				getDump().getPath(), getShutdown().getPath(), getTrace().getPath() };
+				getDump().getPath(), getShutdown().getPath(), getTrace().getPath(),
+				getEnv().getPath() };
 	}
 
 	public String[] getOpenPaths() {
