@@ -127,16 +127,25 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	}
 
 	private synchronized void createAndStartEmbeddedServletContainer() {
-		if (this.embeddedServletContainer == null) {
+		if (this.embeddedServletContainer == null && getServletContext() == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
 					.getEmbdeddedServletContainer(getServletContextInitializers());
-			WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
-					getServletContext());
-			WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
-					getServletContext());
-			initPropertySources();
+		} else if (getServletContext() != null) {
+			for (ServletContextInitializer initializer : getServletContextInitializers()) {
+				try {
+					initializer.onStartup(getServletContext());
+				} catch (ServletException e) {
+					throw new ApplicationContextException(
+							"Cannot initialize servlet context", e);
+				}
+			}
 		}
+		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
+				getServletContext());
+		WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
+				getServletContext());
+		initPropertySources();
 	}
 
 	/**
@@ -339,4 +348,5 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	public EmbeddedServletContainer getEmbeddedServletContainer() {
 		return this.embeddedServletContainer;
 	}
+
 }

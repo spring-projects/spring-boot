@@ -391,9 +391,8 @@ public class SpringApplication {
 	 * @param sources the sources to load
 	 */
 	protected void load(ApplicationContext context, Object[] sources) {
-		Assert.isInstanceOf(BeanDefinitionRegistry.class, context);
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(
-				(BeanDefinitionRegistry) context, sources);
+				getBeanDefinitionRegistry(context), sources);
 		if (this.beanNameGenerator != null) {
 			loader.setBeanNameGenerator(this.beanNameGenerator);
 		}
@@ -404,6 +403,17 @@ public class SpringApplication {
 			loader.setEnvironment(this.environment);
 		}
 		loader.load();
+	}
+
+	/**
+	 * @param context the application context
+	 * @return the BeanDefinitionRegistry if it can be determined
+	 */
+	private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
+		if (context instanceof BeanDefinitionRegistry) {
+			return (BeanDefinitionRegistry) context;
+		}
+		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
 
 	/**
