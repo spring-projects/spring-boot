@@ -23,6 +23,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
@@ -31,6 +33,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
  */
 @Configuration
 @ConditionalOnMissingBean(MessageSource.class)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class MessageSourceAutoConfiguration {
 
 	@Value("${spring.messages.basename:messages}")

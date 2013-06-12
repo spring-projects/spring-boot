@@ -78,4 +78,5 @@ class OnMissingClassCondition implements Condition {
 		}
 	}
 
+	// FIXME merge with OnClassCondition
 }

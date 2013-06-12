@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.springframework.bootstrap.config.JsonParser;
-import org.springframework.bootstrap.config.SimpleJsonParser;
+import org.springframework.bootstrap.config.JsonParserFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
@@ -89,7 +89,7 @@ public class VcapApplicationContextInitializer implements
 
 	private int order = Integer.MIN_VALUE + 11;
 
-	private JsonParser parser = SimpleJsonParser.instance();
+	private JsonParser parser = JsonParserFactory.getJsonParser();
 
 	public void setOrder(int order) {
 		this.order = order;

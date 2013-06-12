@@ -206,7 +206,6 @@ public class DataSourceAutoConfiguration {
 			}
 			return super.matches(context, metadata);
 		}
-
 	}
 
 	static abstract class NonEmbeddedDatabaseCondition implements Condition {

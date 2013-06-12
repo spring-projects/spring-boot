@@ -98,7 +98,7 @@ public class EnableConfigurationPropertiesTests {
 	// definition created with a direct regsistration (as opposed to a @Bean)
 	@Test(expected = BeanCreationException.class)
 	public void testPropertiesBindingWithDefaults() {
-		this.context.register(DefaultConfiguration.class, TestConfiguration.class);
+		this.context.register(TestConfiguration.class, DefaultConfiguration.class);
 		this.context.refresh();
 		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
 		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);

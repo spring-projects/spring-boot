@@ -18,28 +18,36 @@ package org.springframework.bootstrap.config;
 import java.util.List;
 import java.util.Map;
 
-import org.yaml.snakeyaml.Yaml;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Thin wrapper for Snake {@link Yaml}.
+ * Thin wrapper to adapt Jackson 2 {@link ObjectMapper} to {@link JsonParser}.
  * 
  * @author Dave Syer
- * 
+ * @see JsonParserFactory
  */
-public class YamlParser implements JsonParser {
+public class JacksonJsonParser implements JsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = new Yaml().loadAs(json, Map.class);
-		return map;
+		try {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = new ObjectMapper().readValue(json, Map.class);
+			return map;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Cannot parse JSON", e);
+		}
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		@SuppressWarnings("unchecked")
-		List<Object> list = new Yaml().loadAs(json, List.class);
-		return list;
+		try {
+			@SuppressWarnings("unchecked")
+			List<Object> list = new ObjectMapper().readValue(json, List.class);
+			return list;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Cannot parse JSON", e);
+		}
 	}
 
 }

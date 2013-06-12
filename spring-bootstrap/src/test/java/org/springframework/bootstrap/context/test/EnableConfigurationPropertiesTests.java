@@ -33,6 +33,8 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link EnableConfigurationProperties}.
+ * 
  * @author Dave Syer
  */
 public class EnableConfigurationPropertiesTests {
@@ -105,6 +107,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(name = "external")
 	public static class External {
+
 		private String name;
 
 		public String getName() {
@@ -118,6 +121,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(name = "another")
 	public static class Another {
+
 		private String name;
 
 		public String getName() {

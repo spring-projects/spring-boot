@@ -25,7 +25,6 @@ import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -42,7 +41,6 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass(HibernateEntityManager.class)
 @EnableTransactionManagement
-@Import(JpaComponentScanDetector.class)
 public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 
 	public static enum DDLAUTO {

@@ -27,6 +27,8 @@ import nz.net.ultraq.web.thymeleaf.LayoutDialect;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.bootstrap.context.annotation.AutoConfigureAfter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingClass;
@@ -49,6 +51,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
  */
 @Configuration
 @ConditionalOnClass(SpringTemplateEngine.class)
+@AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ThymeleafAutoConfiguration {
 
 	@Configuration

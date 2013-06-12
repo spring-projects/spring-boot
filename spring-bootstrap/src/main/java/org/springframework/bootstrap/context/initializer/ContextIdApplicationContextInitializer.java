@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.context.initializer;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
@@ -23,6 +24,25 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
 
 /**
+ * {@link ApplicationContextInitializer} that set the Spring
+ * {@link ApplicationContext#getId() ApplicationContext ID}. The following environment
+ * properties will be consulted to create the ID:
+ * <ul>
+ * <li>spring.application.name</li>
+ * <li>vcap.application.name</li>
+ * <li>spring.config.name</li>
+ * </ul>
+ * If no property is set the ID 'application' will be used.
+ * 
+ * <p>
+ * In addition the following environment properties will be consulted to append a relevant
+ * port or index:
+ * 
+ * <ul>
+ * <li>spring.application.index</li>
+ * <li>vcap.application.instance_index</li>
+ * <li>PORT</li>
+ * </ul>
  * 
  * @author Dave Syer
  */
@@ -58,6 +78,7 @@ public class ContextIdApplicationContextInitializer implements
 		if (index >= 0) {
 			name = name + ":" + index;
 		} else {
+			// FIXME do we want this
 			String profiles = StringUtils.arrayToCommaDelimitedString(environment
 					.getActiveProfiles());
 			if (StringUtils.hasText(profiles)) {

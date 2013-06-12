@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.autoconfigure.web;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 import javax.servlet.Servlet;
@@ -24,14 +25,15 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration.WebMvcConfiguration;
+import org.springframework.bootstrap.context.annotation.AutoConfigureAfter;
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
@@ -56,20 +58,20 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
+		WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
-@Import(WebMvcConfiguration.class)
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
+@AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 public class WebMvcAutoConfiguration {
 
-	/**
-	 * Nested configuration used because {@code @EnableWebMvc} will add HandlerAdapter and
-	 * HandlerMapping, causing the condition to fail and the additional DispatcherServlet
-	 * bean never to be registered if it were declared directly.
-	 */
+	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not
+	// on the classpath
 	@EnableWebMvc
-	public static class WebMvcConfiguration extends WebMvcConfigurerAdapter {
+	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -91,11 +93,6 @@ public class WebMvcAutoConfiguration {
 			return resolver;
 		}
 
-		@Bean
-		public DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
-		}
-
 		@Override
 		public void configureDefaultServletHandling(
 				DefaultServletHandlerConfigurer configurer) {
@@ -104,22 +101,27 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addFormatters(FormatterRegistry registry) {
-			for (Converter<?, ?> converter : this.beanFactory.getBeansOfType(
-					Converter.class).values()) {
+			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
 				registry.addConverter(converter);
 			}
-			for (GenericConverter converter : this.beanFactory.getBeansOfType(
-					GenericConverter.class).values()) {
+
+			for (GenericConverter converter : getBeansOfType(GenericConverter.class)) {
 				registry.addConverter(converter);
 			}
-			for (Formatter<?> formatter : this.beanFactory
-					.getBeansOfType(Formatter.class).values()) {
+
+			for (Formatter<?> formatter : getBeansOfType(Formatter.class)) {
 				registry.addFormatter(formatter);
 			}
 		}
 
+		private <T> Collection<T> getBeansOfType(Class<T> type) {
+			return this.beanFactory.getBeansOfType(type).values();
+		}
+
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			// FIXME exposing the root classpath is a security risk
+			// eg http://localhost:8080/org/springframework/bootstrap/Banner.class
 			registry.addResourceHandler("/resources/**").addResourceLocations("/")
 					.addResourceLocations("classpath:/META-INF/resources/")
 					.addResourceLocations("classpath:/resources/")
@@ -130,26 +132,25 @@ public class WebMvcAutoConfiguration {
 					.addResourceLocations("classpath:/");
 		}
 
-	}
+		@Configuration
+		public static class FaviconConfiguration {
 
-	@Configuration
-	public static class FaviconConfiguration {
+			@Bean
+			public SimpleUrlHandlerMapping faviconHandlerMapping() {
+				SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
+				mapping.setOrder(Integer.MIN_VALUE + 1);
+				mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
+						faviconRequestHandler()));
+				return mapping;
+			}
 
-		@Bean
-		public SimpleUrlHandlerMapping faviconHandlerMapping() {
-			SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
-			mapping.setOrder(Integer.MIN_VALUE + 1);
-			mapping.setUrlMap(Collections.singletonMap("**/favicon.ico",
-					faviconRequestHandler()));
-			return mapping;
-		}
-
-		@Bean
-		protected ResourceHttpRequestHandler faviconRequestHandler() {
-			ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
-			requestHandler.setLocations(Arrays.<Resource> asList(new ClassPathResource(
-					"/")));
-			return requestHandler;
+			@Bean
+			protected ResourceHttpRequestHandler faviconRequestHandler() {
+				ResourceHttpRequestHandler requestHandler = new ResourceHttpRequestHandler();
+				requestHandler.setLocations(Arrays
+						.<Resource> asList(new ClassPathResource("/")));
+				return requestHandler;
+			}
 		}
 	}
 

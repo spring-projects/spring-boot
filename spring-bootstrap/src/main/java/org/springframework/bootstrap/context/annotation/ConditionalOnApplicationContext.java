@@ -13,29 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.context.annotation;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * Configuration annotation for a conditional element that depends on the value of a SpEL
- * expression.
+ * {@link Conditional} that only matches specific {@link ApplicationContext}s and that can
+ * optionally create them.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
  */
-@Conditional(OnExpressionCondition.class)
-@Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
-public @interface ConditionalOnExpression {
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Conditional(OnApplicationContextCondition.class)
+public @interface ConditionalOnApplicationContext {
+
+	// FIXME complete of delete this
 
 	/**
-	 * The SpEL expression.
+	 * The ID of the application context.
 	 */
-	String value() default "true";
+	String value() default "";
+
+	// FIXME Strategy Interface Class, eg ApplicationContextCondition
+	// condition=SomethingSpecific.class
+
+	boolean createIfMissing() default false;
+
 }

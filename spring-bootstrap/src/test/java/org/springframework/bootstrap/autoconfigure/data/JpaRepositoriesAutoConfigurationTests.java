@@ -24,6 +24,7 @@ import org.springframework.bootstrap.autoconfigure.data.test.City;
 import org.springframework.bootstrap.autoconfigure.data.test.CityRepository;
 import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.bootstrap.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.bootstrap.context.annotation.ComponentScanDetectorConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
+				ComponentScanDetectorConfiguration.class,
 				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);

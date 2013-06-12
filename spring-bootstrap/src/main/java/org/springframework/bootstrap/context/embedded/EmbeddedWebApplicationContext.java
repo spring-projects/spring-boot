@@ -34,13 +34,12 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.ServletContextAware;
@@ -153,17 +152,22 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * @return a {@link EmbeddedServletContainerFactory} (never {@code null})
 	 */
 	protected EmbeddedServletContainerFactory getEmbeddedServletContainerFactory() {
-		try {
-			return getBeanFactory().getBean(EmbeddedServletContainerFactory.class);
-		} catch (NoUniqueBeanDefinitionException ex) {
-			throw new ApplicationContextException(
-					"Unable to start EmbeddedWebApplicationContext due to multiple "
-							+ "EmbeddedServletContainerFactory beans.", ex);
-		} catch (NoSuchBeanDefinitionException ex) {
+		// Use bean names so that we don't consider the hierarchy
+		String[] beanNames = getBeanFactory().getBeanNamesForType(
+				EmbeddedServletContainerFactory.class);
+		if (beanNames.length == 0) {
 			throw new ApplicationContextException(
 					"Unable to start EmbeddedWebApplicationContext due to missing "
-							+ "EmbeddedServletContainerFactory bean.", ex);
+							+ "EmbeddedServletContainerFactory bean.");
 		}
+		if (beanNames.length > 1) {
+			throw new ApplicationContextException(
+					"Unable to start EmbeddedWebApplicationContext due to multiple "
+							+ "EmbeddedServletContainerFactory beans : "
+							+ StringUtils.arrayToCommaDelimitedString(beanNames));
+		}
+		return getBeanFactory().getBean(beanNames[0],
+				EmbeddedServletContainerFactory.class);
 	}
 
 	/**

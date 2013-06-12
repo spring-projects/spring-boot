@@ -13,109 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.bootstrap.autoconfigure.web;
 
-import javax.servlet.Servlet;
-
-import org.junit.Test;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.bootstrap.context.annotation.ConditionalOnExpression;
-import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.MockEmbeddedServletContainerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.verify;
+import org.junit.Ignore;
 
 /**
- * @author Dave Syer
+ * Tests for {@link WebMvcAutoConfiguration}.
+ * 
+ * @author Phillip Webb
  */
+@Ignore
 public class WebMvcAutoConfigurationTests {
-
-	private AnnotationConfigEmbeddedWebApplicationContext context;
-
-	@Test
-	public void createFromConfigClass() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				WebMvcAutoConfiguration.class, EmbeddedContainerConfiguration.class);
-		verifyContext();
-	}
-
-	@Test
-	public void containerHasNoServletContext() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				WebMvcAutoConfiguration.class, EmbeddedContainerConfiguration.class,
-				EnsureContainerHasNoServletContext.class);
-		verifyContext();
-	}
-
-	@Test
-	public void customizeContainerThroughCallback() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				WebMvcAutoConfiguration.class, EmbeddedContainerConfiguration.class,
-				EmbeddedContainerCustomizerConfiguration.class,
-				CallbackEmbeddedContainerCustomizer.class);
-		verifyContext();
-		assertEquals(9000, getContainerFactory().getPort());
-	}
-
-	private void verifyContext() {
-		MockEmbeddedServletContainerFactory containerFactory = getContainerFactory();
-		Servlet servlet = this.context.getBean(Servlet.class);
-		verify(containerFactory.getServletContext()).addServlet("dispatcherServlet",
-				servlet);
-	}
-
-	private MockEmbeddedServletContainerFactory getContainerFactory() {
-		return this.context.getBean(MockEmbeddedServletContainerFactory.class);
-	}
-
-	@Configuration
-	@ConditionalOnExpression("true")
-	public static class EmbeddedContainerConfiguration {
-
-		@Bean
-		public EmbeddedServletContainerFactory containerFactory() {
-			return new MockEmbeddedServletContainerFactory();
-		}
-
-	}
-
-	@Component
-	public static class EnsureContainerHasNoServletContext implements BeanPostProcessor {
-
-		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName)
-				throws BeansException {
-			if (bean instanceof ConfigurableEmbeddedServletContainerFactory) {
-				MockEmbeddedServletContainerFactory containerFactory = (MockEmbeddedServletContainerFactory) bean;
-				assertNull(containerFactory.getServletContext());
-			}
-			return bean;
-		}
-
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) {
-			return bean;
-		}
-
-	}
-
-	@Component
-	public static class CallbackEmbeddedContainerCustomizer implements
-			EmbeddedServletContainerCustomizer {
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-			factory.setPort(9000);
-		}
-	}
+	// FIXME
 
 }

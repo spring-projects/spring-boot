@@ -26,6 +26,7 @@ import org.springframework.bootstrap.TestUtils;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.properties.ServerProperties;
@@ -36,6 +37,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link ServerPropertiesAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class ServerPropertiesConfigurationTests {
@@ -60,9 +63,7 @@ public class ServerPropertiesConfigurationTests {
 	@Test
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(EmbeddedContainerConfiguration.class,
-				EmbeddedContainerCustomizerConfiguration.class,
-				ServerPropertiesConfiguration.class,
+		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.port:9000");
 		this.context.refresh();
@@ -76,9 +77,7 @@ public class ServerPropertiesConfigurationTests {
 	public void tomcatProperties() throws Exception {
 		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(EmbeddedContainerCustomizerConfiguration.class,
-				EmbeddedContainerConfiguration.class,
-				ServerPropertiesConfiguration.class,
+		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo");
 		this.context.refresh();
@@ -89,11 +88,16 @@ public class ServerPropertiesConfigurationTests {
 	}
 
 	@Configuration
-	protected static class EmbeddedContainerConfiguration {
+	protected static class Config {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			return ServerPropertiesConfigurationTests.containerFactory;
+		}
+
+		@Bean
+		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
 		}
 
 	}

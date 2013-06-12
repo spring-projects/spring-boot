@@ -23,6 +23,6 @@ public class JacksonParserTests extends SimpleJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {
-		return new JacksonParser();
+		return new JacksonJsonParser();
 	}
 }

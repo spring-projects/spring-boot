@@ -25,6 +25,7 @@ package org.springframework.bootstrap.context.embedded;
  * than injecting them with <code>@Autowired</code>.
  * 
  * @author Dave Syer
+ * @see EmbeddedServletContainerCustomizerBeanPostProcessor
  */
 public interface EmbeddedServletContainerCustomizer {
 

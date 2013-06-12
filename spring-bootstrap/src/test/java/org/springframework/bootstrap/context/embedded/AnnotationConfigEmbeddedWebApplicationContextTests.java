@@ -86,7 +86,8 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		AnnotationConfigEmbeddedWebApplicationContext parent = new AnnotationConfigEmbeddedWebApplicationContext(
 				EmbeddedContainerConfiguration.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(ServletContextAwareConfiguration.class);
+		this.context.register(EmbeddedContainerConfiguration.class,
+				ServletContextAwareConfiguration.class);
 		this.context.setParent(parent);
 		this.context.refresh();
 		verifyContext();

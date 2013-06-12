@@ -35,6 +35,8 @@ import org.apache.maven.plugins.shade.resource.ResourceTransformer;
  */
 public class PropertiesMergingResourceTransformer implements ResourceTransformer {
 
+	// FIXME move out of core
+
 	String resource; // Set this in pom configuration with <resource>...</resource>
 
 	private Properties data = new Properties();

@@ -13,34 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
-import java.util.List;
-import java.util.Map;
+import org.springframework.util.ClassUtils;
 
 /**
- * Parser that can read JSON formatted strings into {@link Map}s or {@link List}s.
+ * Factory to create a {@link JsonParser}.
  * 
  * @author Dave Syer
- * @see JsonParserFactory
- * @see SimpleJsonParser
  * @see JacksonJsonParser
  * @see YamlJsonParser
+ * @see SimpleJsonParser
  */
-public interface JsonParser {
+public class JsonParserFactory {
 
 	/**
-	 * Parse the specified JSON string into a Map.
-	 * @param json the JSON to parse
-	 * @return the parsed JSON as a map
+	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
+	 * (2), then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
+	 * 
+	 * @return a {@link JsonParser}
 	 */
-	Map<String, Object> parseMap(String json);
-
-	/**
-	 * Parse the specified JSON string into a List.
-	 * @param json the JSON to parse
-	 * @return the parsed JSON as a list
-	 */
-	List<Object> parseList(String json);
-
+	public static JsonParser getJsonParser() {
+		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", null)) {
+			return new JacksonJsonParser();
+		}
+		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
+			return new YamlJsonParser();
+		}
+		return new SimpleJsonParser();
+	}
 }

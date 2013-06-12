@@ -23,6 +23,7 @@ import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfig
 import org.springframework.bootstrap.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.bootstrap.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.bootstrap.autoconfigure.orm.jpa.test.City;
+import org.springframework.bootstrap.context.annotation.ComponentScanDetectorConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -39,8 +40,8 @@ public class HibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testEntityManagerCreated() throws Exception {
-		this.context.register(EmbeddedDatabaseConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
+		this.context.register(ComponentScanDetectorConfiguration.class,
+				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
@@ -49,8 +50,8 @@ public class HibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testDataSourceTransactionManagerNotCreated() throws Exception {
-		this.context.register(EmbeddedDatabaseConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
+		this.context.register(ComponentScanDetectorConfiguration.class,
+				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();

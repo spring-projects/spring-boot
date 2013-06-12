@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Conditional;
  * not already contained in the {@link BeanFactory}, and throws an exception otherwise.
  * 
  * @author Dave Syer
+ * @see ConditionalOnMissingBean
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -51,5 +52,10 @@ public @interface AssertMissingBean {
 	 * @return the name of beans to check
 	 */
 	String[] name() default {};
+
+	/**
+	 * If the application context hierarchy (parent contexts) should be considered.
+	 */
+	boolean considerHierarchy() default true;
 
 }

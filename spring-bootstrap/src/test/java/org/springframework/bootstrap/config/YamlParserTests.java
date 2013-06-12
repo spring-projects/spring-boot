@@ -23,6 +23,6 @@ public class YamlParserTests extends SimpleJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {
-		return new YamlParser();
+		return new YamlJsonParser();
 	}
 }

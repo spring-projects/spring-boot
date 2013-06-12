@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -30,28 +30,10 @@ import org.springframework.util.StringUtils;
  * so users will probably prefer to have a library handle things instead (Jackson or Snake
  * YAML are supported).
  * 
- * @see #instance()
- * 
  * @author Dave Syer
- * 
+ * @see JsonParserFactory
  */
 public class SimpleJsonParser implements JsonParser {
-
-	/**
-	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
-	 * (2), then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
-	 * 
-	 * @return a {@link JsonParser}
-	 */
-	public static JsonParser instance() {
-		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
-			return new YamlParser();
-		}
-		if (ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", null)) {
-			return new JacksonParser();
-		}
-		return new SimpleJsonParser();
-	}
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
