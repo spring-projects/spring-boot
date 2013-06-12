@@ -16,18 +16,24 @@
 
 package org.springframework.bootstrap.context.annotation;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.context.annotation.Condition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
  * Base for {@link OnBeanCondition} and {@link OnMissingBeanCondition}.
@@ -35,65 +41,95 @@ import org.springframework.util.MultiValueMap;
  * @author Phillip Webb
  * @author Dave Syer
  */
-abstract class AbstractOnBeanCondition implements Condition {
+abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
-	private List<String> beanClasses;
-
-	private List<String> beanNames;
-
 	protected abstract Class<?> annotationClass();
 
-	protected List<String> getBeanClasses() {
-		return this.beanClasses;
-	}
-
-	protected List<String> getBeanNames() {
-		return this.beanNames;
+	@Override
+	public ConfigurationPhase getConfigurationPhase() {
+		return ConfigurationPhase.REGISTER_BEAN;
 	}
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
+				annotationClass().getName(), true);
+		final List<String> beanClasses = collect(attributes, "value");
+		final List<String> beanNames = collect(attributes, "name");
+
+		if (beanClasses.size() == 0) {
+			if (metadata instanceof MethodMetadata
+					&& metadata.isAnnotated(Bean.class.getName())) {
+				try {
+					final MethodMetadata methodMetadata = (MethodMetadata) metadata;
+					// We should be safe to load at this point since we are in the
+					// REGISTER_BEAN phase
+					Class<?> configClass = ClassUtils.forName(
+							methodMetadata.getDeclaringClassName(),
+							context.getClassLoader());
+					ReflectionUtils.doWithMethods(configClass, new MethodCallback() {
+						@Override
+						public void doWith(Method method)
+								throws IllegalArgumentException, IllegalAccessException {
+							if (methodMetadata.getMethodName().equals(method.getName())) {
+								beanClasses.add(method.getReturnType().getName());
+							}
+						}
+					});
+				} catch (Exception e) {
+				}
+			}
+		}
+
+		Assert.isTrue(beanClasses.size() > 0 || beanNames.size() > 0,
+				"@" + ClassUtils.getShortName(annotationClass())
+						+ " annotations must specify at least one bean");
+
+		return matches(context, metadata, beanClasses, beanNames);
+	}
+
+	protected boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata,
+			List<String> beanClasses, List<String> beanNames) throws LinkageError {
 
 		String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 
-		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
-				annotationClass().getName(), true);
-		this.beanClasses = collect(attributes, "value");
-		this.beanNames = collect(attributes, "name");
-		Assert.isTrue(this.beanClasses.size() > 0 || this.beanNames.size() > 0, "@"
-				+ ClassUtils.getShortName(annotationClass())
-				+ " annotations must specify at least one bean");
+		Boolean considerHierarchy = (Boolean) metadata.getAnnotationAttributes(
+				annotationClass().getName()).get("considerHierarchy");
+		considerHierarchy = (considerHierarchy == null ? false : considerHierarchy);
 
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();
 
-		for (String beanClass : this.beanClasses) {
+		for (String beanClass : beanClasses) {
 			try {
 				// eagerInit set to false to prevent early instantiation (some
 				// factory beans will not be able to determine their object type at this
 				// stage, so those are not eligible for matching this condition)
-				String[] beans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-						context.getBeanFactory(),
-						ClassUtils.forName(beanClass, context.getClassLoader()), false,
-						false);
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				Class<?> type = ClassUtils.forName(beanClass, context.getClassLoader());
+				String[] beans = (considerHierarchy ? BeanFactoryUtils
+						.beanNamesForTypeIncludingAncestors(beanFactory, type, false,
+								false) : beanFactory.getBeanNamesForType(type, false,
+						false));
 				if (beans.length != 0) {
 					beanClassesFound.add(beanClass);
 				}
 			} catch (ClassNotFoundException ex) {
 			}
 		}
-		for (String beanName : this.beanNames) {
-			if (context.getBeanFactory().containsBeanDefinition(beanName)) {
+		for (String beanName : beanNames) {
+			if (considerHierarchy ? context.getBeanFactory().containsBean(beanName)
+					: context.getBeanFactory().containsLocalBean(beanName)) {
 				beanNamesFound.add(beanName);
 			}
 		}
 
 		boolean result = evaluate(beanClassesFound, beanNamesFound);
 		if (this.logger.isDebugEnabled()) {
-			logFoundResults(checking, "class", this.beanClasses, beanClassesFound);
-			logFoundResults(checking, "name", this.beanNames, beanClassesFound);
+			logFoundResults(checking, "class", beanClasses, beanClassesFound);
+			logFoundResults(checking, "name", beanNames, beanClassesFound);
 			this.logger.debug(checking + "Match result is: " + result);
 		}
 		return result;
