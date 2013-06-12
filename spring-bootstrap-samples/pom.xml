@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.bootstrap</groupId>
@@ -88,14 +89,14 @@
 						</execution>
 					</executions>
 				</plugin>
-                <plugin>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>exec-maven-plugin</artifactId>
-                  <configuration>
-					<includePluginDependencies>true</includePluginDependencies>
-                    <mainClass>${start-class}</mainClass>
-                  </configuration>
-                </plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<configuration>
+						<includePluginDependencies>true</includePluginDependencies>
+						<mainClass>${start-class}</mainClass>
+					</configuration>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
@@ -127,17 +128,22 @@
 							</goals>
 							<configuration>
 								<transformers>
-									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.handlers</resource>
 									</transformer>
-									<transformer implementation="org.springframework.bootstrap.maven.PropertiesMergingResourceTransformer">
+									<transformer
+										implementation="org.springframework.bootstrap.maven.PropertiesMergingResourceTransformer">
 										<resource>META-INF/spring.factories</resource>
 									</transformer>
-									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.schemas</resource>
 									</transformer>
-									<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-									<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 										<mainClass>${start-class}</mainClass>
 									</transformer>
 								</transformers>
@@ -147,36 +153,36 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-        <plugins>
-          <plugin>
-            <!--skip deploy (these are just samples) -->
-            <artifactId>maven-deploy-plugin</artifactId>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </plugin>
-        </plugins>
+		<plugins>
+			<plugin>
+				<!--skip deploy (these are just samples) -->
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 	<dependencyManagement>
 		<dependencies>
-          <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-          </dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <scope>runtime</scope>
-      </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 </project>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.bootstrap</groupId>
@@ -15,51 +16,56 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-shade-plugin</artifactId>
-					<dependencies>
-						<dependency>
-							<groupId>${project.groupId}</groupId>
-							<artifactId>spring-bootstrap</artifactId>
-							<version>${project.version}</version>
-						</dependency>
-					</dependencies>
-					<configuration>
-						<createDependencyReducedPom>true</createDependencyReducedPom>
-						<filters>
-							<filter>
-								<artifact>*:*</artifact>
-								<excludes>
-									<exclude>META-INF/*.SF</exclude>
-									<exclude>META-INF/*.DSA</exclude>
-									<exclude>META-INF/*.RSA</exclude>
-								</excludes>
-							</filter>
-						</filters>
-					</configuration>
-					<executions>
-						<execution>
-							<phase>package</phase>
-							<goals>
-								<goal>shade</goal>
-							</goals>
-							<configuration>
-								<transformers>
-									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-										<resource>META-INF/spring.handlers</resource>
-									</transformer>
-									<transformer implementation="org.springframework.bootstrap.maven.PropertiesMergingResourceTransformer">
-										<resource>META-INF/spring.factories</resource>
-									</transformer>
-									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-										<resource>META-INF/spring.schemas</resource>
-									</transformer>
-									<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-									<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-										<mainClass>${start-class}</mainClass>
-									</transformer>
-								</transformers>
-							</configuration>
-						</execution>
-					</executions>
+				<dependencies>
+					<dependency>
+						<groupId>${project.groupId}</groupId>
+						<artifactId>spring-bootstrap</artifactId>
+						<version>${project.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<createDependencyReducedPom>true</createDependencyReducedPom>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.handlers</resource>
+								</transformer>
+								<transformer
+									implementation="org.springframework.bootstrap.maven.PropertiesMergingResourceTransformer">
+									<resource>META-INF/spring.factories</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.schemas</resource>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>${start-class}</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -94,12 +100,10 @@
 		<dependency>
 			<groupId>org.apache.ivy</groupId>
 			<artifactId>ivy</artifactId>
-			<version>2.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
-			<version>4.4</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.bootstrap</groupId>
@@ -9,10 +10,10 @@
 	<artifactId>spring-bootstrap-starters</artifactId>
 	<packaging>pom</packaging>
 	<properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.bootstrap.version>0.5.0.BUILD-SNAPSHOT</spring.bootstrap.version>
-        <start-class>org.springframework.bootstrap.main.Spring</start-class>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<spring.bootstrap.version>0.5.0.BUILD-SNAPSHOT</spring.bootstrap.version>
+		<start-class>org.springframework.bootstrap.main.Spring</start-class>
 	</properties>
 	<modules>
 		<module>spring-bootstrap-starter</module>
@@ -23,55 +24,55 @@
 		<module>spring-bootstrap-tomcat-starter</module>
 		<module>spring-bootstrap-web-starter</module>
 	</modules>
-    <dependencyManagement>
-      <dependencies>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-actuator</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-starter</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-actuator-starter</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-web-starter</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-tomcat-starter</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-jpa-starter</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-batch-starter</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-integration-starter</artifactId>
-          <version>${spring.bootstrap.version}</version>
-        </dependency>
-      </dependencies>
-    </dependencyManagement>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-actuator</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-actuator-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-web-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-tomcat-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-jpa-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-batch-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-integration-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -100,68 +101,73 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-    <build>
-      <pluginManagement>
-        <plugins>
-          <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <configuration>
-					<includePluginDependencies>true</includePluginDependencies>
-                    <mainClass>${start-class}</mainClass>
-                </configuration>
-           </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.springframework.bootstrap</groupId>
-                <artifactId>spring-bootstrap</artifactId>
-                <version>${spring.bootstrap.version}</version>
-              </dependency>
-            </dependencies>
-            <configuration>
-              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
-              <createDependencyReducedPom>true</createDependencyReducedPom>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<configuration>
+						<includePluginDependencies>true</includePluginDependencies>
+						<mainClass>${start-class}</mainClass>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-shade-plugin</artifactId>
+					<dependencies>
+						<dependency>
+							<groupId>org.springframework.bootstrap</groupId>
+							<artifactId>spring-bootstrap</artifactId>
+							<version>${spring.bootstrap.version}</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
+						<createDependencyReducedPom>true</createDependencyReducedPom>
+						<filters>
+							<filter>
+								<artifact>*:*</artifact>
+								<excludes>
+									<exclude>META-INF/*.SF</exclude>
+									<exclude>META-INF/*.DSA</exclude>
+									<exclude>META-INF/*.RSA</exclude>
+								</excludes>
 							</filter>
-              </filters>
-            </configuration>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <goals>
-                  <goal>shade</goal>
-                </goals>
-                <configuration>
-                  <transformers>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                      <resource>META-INF/spring.handlers</resource>
-                    </transformer>
-                    <transformer implementation="org.springframework.bootstrap.maven.PropertiesMergingResourceTransformer">
-                      <resource>META-INF/spring.factories</resource>
-                    </transformer>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                      <resource>META-INF/spring.schemas</resource>
-                    </transformer>
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                      <mainClass>${start-class}</mainClass>
-                    </transformer>
-                  </transformers>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </pluginManagement>
-    </build>
+						</filters>
+					</configuration>
+					<executions>
+						<execution>
+							<phase>package</phase>
+							<goals>
+								<goal>shade</goal>
+							</goals>
+							<configuration>
+								<transformers>
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+										<resource>META-INF/spring.handlers</resource>
+									</transformer>
+									<transformer
+										implementation="org.springframework.bootstrap.maven.PropertiesMergingResourceTransformer">
+										<resource>META-INF/spring.factories</resource>
+									</transformer>
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+										<resource>META-INF/spring.schemas</resource>
+									</transformer>
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+									<transformer
+										implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+										<mainClass>${start-class}</mainClass>
+									</transformer>
+								</transformers>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>
