@@ -16,15 +16,18 @@
 
 package org.springframework.bootstrap.context.annotation;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -37,24 +40,48 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
-		BeanClassLoaderAware {
+		BeanClassLoaderAware, ResourceLoaderAware {
 
 	private ClassLoader beanClassLoader;
 
+	private ResourceLoader resourceLoader;
+
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
-				.getAnnotationAttributes(EnableAutoConfiguration.class.getName(), true));
-		List<String> factories = new ArrayList<String>(
-				SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
-						this.beanClassLoader));
-		factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));
-		return factories.toArray(new String[factories.size()]);
+		try {
+			AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata
+					.getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
+							true));
+
+			// Find all possible auto configuration classes
+			List<String> factories = new ArrayList<String>(
+					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
+							this.beanClassLoader));
+
+			// Remove those specifically disabled
+			factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));
+
+			// Sort
+			factories = new AutoConfigurationSorter(this.resourceLoader)
+					.getInPriorityOrder(factories);
+
+			// Always add the ComponentScanDetector as the first in the list
+			factories.add(0, ComponentScanDetector.class.getName());
+
+			return factories.toArray(new String[factories.size()]);
+		} catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
+	}
+
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
 	}
 
 }

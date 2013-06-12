@@ -55,6 +55,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean
  * @see ConditionalOnClass
+ * @see AutoConfigureAfter
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
