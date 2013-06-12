@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.audit;
 
 import java.util.Collections;
 
 import org.junit.Test;
-import org.springframework.bootstrap.actuate.audit.AuditEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @author Dave Syer
+ * Tests for {@link AuditEvent}.
  * 
+ * @author Dave Syer
  */
 public class AuditEventTests {
 

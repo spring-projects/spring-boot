@@ -16,8 +16,18 @@
 
 package org.springframework.bootstrap.actuate.metrics;
 
+/**
+ * A service that can be used to manage a {@link Metric} as a gauge.
+ * 
+ * @author Dave Syer
+ */
 public interface GaugeService {
 
+	/**
+	 * Set the specified metric value
+	 * @param metricName the metric to set
+	 * @param value the value of the metric
+	 */
 	void set(String metricName, double value);
 
 }

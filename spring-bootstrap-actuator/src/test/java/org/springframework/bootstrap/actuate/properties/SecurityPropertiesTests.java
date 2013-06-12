@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.actuate.properties;
 
 import java.util.Collections;
 
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.bootstrap.actuate.properties.SecurityProperties;
 import org.springframework.bootstrap.bind.RelaxedDataBinder;
 import org.springframework.core.convert.support.DefaultConversionService;
 
@@ -26,8 +28,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @author Dave Syer
+ * Tests for {@link SecurityProperties}.
  * 
+ * @author Dave Syer
  */
 public class SecurityPropertiesTests {
 

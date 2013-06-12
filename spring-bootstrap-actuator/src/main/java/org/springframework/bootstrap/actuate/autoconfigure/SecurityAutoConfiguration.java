@@ -21,13 +21,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.bootstrap.actuate.properties.EndpointsProperties;
+import org.springframework.bootstrap.actuate.endpoint.Endpoint;
+import org.springframework.bootstrap.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.bootstrap.actuate.properties.SecurityProperties;
+import org.springframework.bootstrap.actuate.web.ErrorController;
 import org.springframework.bootstrap.context.annotation.ConditionalOnClass;
 import org.springframework.bootstrap.context.annotation.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,48 +41,40 @@ import org.springframework.security.config.annotation.authentication.Authenticat
 import org.springframework.security.config.annotation.web.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.HttpConfiguration;
 import org.springframework.security.config.annotation.web.WebSecurityBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityBuilder.IgnoredRequestRegistry;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
 /**
- * <p>
- * Auto configuration for security of a web application or service. By default everything
- * is secured with HTTP Basic authentication except the
+ * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or
+ * service. By default everything is secured with HTTP Basic authentication except the
  * {@link SecurityProperties#getIgnored() explicitly ignored} paths (defaults to
- * <code>/css&#47;**, /js&#47;**, /images&#47;**, &#47;**&#47;favicon.ico</code>). Many
- * aspects of the behaviour can be controller with {@link SecurityProperties} via
+ * <code>&#47;css&#47;**, &#47;js&#47;**, &#47;images&#47;**, &#47;**&#47;favicon.ico</code>
+ * ). Many aspects of the behavior can be controller with {@link SecurityProperties} via
  * externalized application properties (or via an bean definition of that type to set the
  * defaults). The user details for authentication are just placeholders
  * <code>(username=user,
  * password=password)</code> but can easily be customized by providing a bean definition
  * of type {@link AuthenticationManager}. Also provides audit logging of authentication
  * events.
- * </p>
  * 
  * <p>
- * The framework {@link EndpointsProperties} configuration bean has explicitly
- * {@link EndpointsProperties#getSecurePaths() secure} and
- * {@link EndpointsProperties#getOpenPaths() open} paths (by name) which are always
- * respected by the filter created here. You can override the paths of those endpoints
- * using application properties (e.g. <code>endpoints.info.path</code> is open, and
- * <code>endpoints.metrics.path</code> is secure), but not the security aspects. The
- * always secure paths are management endpoints that would be inadvisable to expose to all
- * users.
- * </p>
+ * The framework {@link Endpoint}s (used to expose application information to operations)
+ * include a {@link Endpoint#isSensitive() sensitive} configuration option which will be
+ * used as a security hint by the filter created here.
  * 
  * <p>
  * Some common simple customizations:
  * <ul>
  * <li>Switch off security completely and permanently: remove Spring Security from the
- * classpath</li>
+ * classpath or {@link EnableAutoConfiguration#exclude() exclude} this configuration.</li>
  * <li>Switch off security temporarily (e.g. for a dev environment): set
  * <code>security.basic.enabled: false</code></li>
  * <li>Customize the user details: add an AuthenticationManager bean</li>
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpConfiguration#formLogin()}</li>
  * </ul>
- * </p>
  * 
  * @author Dave Syer
  */
@@ -88,14 +84,14 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 @EnableConfigurationProperties
 public class SecurityAutoConfiguration {
 
-	@ConditionalOnMissingBean(SecurityProperties.class)
 	@Bean(name = "org.springframework.bootstrap.actuate.properties.SecurityProperties")
+	@ConditionalOnMissingBean
 	public SecurityProperties securityProperties() {
 		return new SecurityProperties();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ AuthenticationEventPublisher.class })
+	@ConditionalOnMissingBean
 	public AuthenticationEventPublisher authenticationEventPublisher() {
 		return new DefaultAuthenticationEventPublisher();
 	}
@@ -107,18 +103,23 @@ public class SecurityAutoConfiguration {
 	}
 
 	// Give user-supplied filters a chance to be last in line
-	@Order(Integer.MAX_VALUE - 10)
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	private static class BoostrapWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
+
+		private static final String[] NO_PATHS = new String[0];
 
 		@Autowired
 		private SecurityProperties security;
 
-		@Autowired
-		private EndpointsProperties endpoints;
+		@Autowired(required = false)
+		private EndpointHandlerMapping endpointHandlerMapping;
 
 		@Autowired
 		private AuthenticationEventPublisher authenticationEventPublisher;
+
+		@Autowired(required = false)
+		private ErrorController errorController;
 
 		@Override
 		protected void configure(HttpConfiguration http) throws Exception {
@@ -128,25 +129,22 @@ public class SecurityAutoConfiguration {
 			}
 
 			if (this.security.getBasic().isEnabled()) {
-
 				String[] paths = getSecurePaths();
 				http.exceptionHandling().authenticationEntryPoint(entryPoint()).and()
 						.requestMatchers().antMatchers(paths);
 				http.httpBasic().and().anonymous().disable();
 				http.authorizeUrls().anyRequest()
 						.hasRole(this.security.getBasic().getRole());
-
 			}
 
 			// No cookies for service endpoints by default
 			http.sessionManagement().sessionCreationPolicy(this.security.getSessions());
-
 		}
 
 		private String[] getSecurePaths() {
 			List<String> list = new ArrayList<String>();
 			for (String path : this.security.getBasic().getPath()) {
-				path = path == null ? "" : path.trim();
+				path = (path == null ? "" : path.trim());
 				if (path.equals("/**")) {
 					return new String[] { path };
 				}
@@ -154,7 +152,8 @@ public class SecurityAutoConfiguration {
 					list.add(path);
 				}
 			}
-			list.addAll(Arrays.asList(this.endpoints.getSecurePaths()));
+			// FIXME makes more sense to secure enpoints with a different role
+			list.addAll(Arrays.asList(getEndpointPaths(true)));
 			return list.toArray(new String[list.size()]);
 		}
 
@@ -166,8 +165,30 @@ public class SecurityAutoConfiguration {
 
 		@Override
 		public void configure(WebSecurityBuilder builder) throws Exception {
-			builder.ignoring().antMatchers(this.security.getIgnored())
-					.antMatchers(this.endpoints.getOpenPaths());
+			IgnoredRequestRegistry ignoring = builder.ignoring();
+			ignoring.antMatchers(this.security.getIgnored());
+			ignoring.antMatchers(getEndpointPaths(false));
+			if (this.errorController != null) {
+				ignoring.antMatchers(this.errorController.getErrorPath());
+			}
+		}
+
+		private String[] getEndpointPaths(boolean secure) {
+			if (this.endpointHandlerMapping == null) {
+				return NO_PATHS;
+			}
+
+			// FIXME this will still open up paths on the server when a management port is
+			// being used.
+
+			List<Endpoint<?>> endpoints = this.endpointHandlerMapping.getEndpoints();
+			List<String> paths = new ArrayList<String>(endpoints.size());
+			for (Endpoint<?> endpoint : endpoints) {
+				if (endpoint.isSensitive() == secure) {
+					paths.add(endpoint.getPath());
+				}
+			}
+			return paths.toArray(new String[paths.size()]);
 		}
 
 		@Override

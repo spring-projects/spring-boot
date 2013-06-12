@@ -29,6 +29,9 @@ import org.springframework.security.authentication.event.AbstractAuthenticationF
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 
 /**
+ * {@link ApplicationListener} expose Spring Security {@link AbstractAuthenticationEvent
+ * authentication events} as {@link AuditEvent}s.
+ * 
  * @author Dave Syer
  */
 public class AuthenticationAuditListener implements
@@ -43,30 +46,40 @@ public class AuthenticationAuditListener implements
 
 	@Override
 	public void onApplicationEvent(AbstractAuthenticationEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
 		if (event instanceof AbstractAuthenticationFailureEvent) {
-			data.put("type", ((AbstractAuthenticationFailureEvent) event).getException()
-					.getClass().getName());
-			data.put("message", ((AbstractAuthenticationFailureEvent) event)
-					.getException().getMessage());
-			publish(new AuditEvent(event.getAuthentication().getName(),
-					"AUTHENTICATION_FAILURE", data));
+			onAuthenticationFailureEvent((AbstractAuthenticationFailureEvent) event);
 		} else if (event instanceof AuthenticationSwitchUserEvent) {
-			if (event.getAuthentication().getDetails() != null) {
-				data.put("details", event.getAuthentication().getDetails());
-			}
-			data.put("target", ((AuthenticationSwitchUserEvent) event).getTargetUser()
-					.getUsername());
-			publish(new AuditEvent(event.getAuthentication().getName(),
-					"AUTHENTICATION_SWITCH", data));
-
+			onAuthenticationSwitchUserEvent((AuthenticationSwitchUserEvent) event);
 		} else {
-			if (event.getAuthentication().getDetails() != null) {
-				data.put("details", event.getAuthentication().getDetails());
-			}
-			publish(new AuditEvent(event.getAuthentication().getName(),
-					"AUTHENTICATION_SUCCESS", data));
+			onAuthenticationEvent(event);
 		}
+	}
+
+	private void onAuthenticationFailureEvent(AbstractAuthenticationFailureEvent event) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("type", event.getException().getClass().getName());
+		data.put("message", event.getException().getMessage());
+		publish(new AuditEvent(event.getAuthentication().getName(),
+				"AUTHENTICATION_FAILURE", data));
+	}
+
+	private void onAuthenticationSwitchUserEvent(AuthenticationSwitchUserEvent event) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		if (event.getAuthentication().getDetails() != null) {
+			data.put("details", event.getAuthentication().getDetails());
+		}
+		data.put("target", event.getTargetUser().getUsername());
+		publish(new AuditEvent(event.getAuthentication().getName(),
+				"AUTHENTICATION_SWITCH", data));
+	}
+
+	private void onAuthenticationEvent(AbstractAuthenticationEvent event) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		if (event.getAuthentication().getDetails() != null) {
+			data.put("details", event.getAuthentication().getDetails());
+		}
+		publish(new AuditEvent(event.getAuthentication().getName(),
+				"AUTHENTICATION_SUCCESS", data));
 	}
 
 	private void publish(AuditEvent event) {

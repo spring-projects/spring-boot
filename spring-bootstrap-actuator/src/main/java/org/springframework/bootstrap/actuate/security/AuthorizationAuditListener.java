@@ -29,6 +29,9 @@ import org.springframework.security.access.event.AuthenticationCredentialsNotFou
 import org.springframework.security.access.event.AuthorizationFailureEvent;
 
 /**
+ * {@link ApplicationListener} expose Spring Security {@link AbstractAuthorizationEvent
+ * authorization events} as {@link AuditEvent}s.
+ * 
  * @author Dave Syer
  */
 public class AuthorizationAuditListener implements
@@ -43,21 +46,27 @@ public class AuthorizationAuditListener implements
 
 	@Override
 	public void onApplicationEvent(AbstractAuthorizationEvent event) {
-		Map<String, Object> data = new HashMap<String, Object>();
 		if (event instanceof AuthenticationCredentialsNotFoundEvent) {
-			data.put("type", ((AuthenticationCredentialsNotFoundEvent) event)
-					.getCredentialsNotFoundException().getClass().getName());
-			data.put("message", ((AuthenticationCredentialsNotFoundEvent) event)
-					.getCredentialsNotFoundException().getMessage());
-			publish(new AuditEvent("<unknown>", "AUTHENTICATION_FAILURE", data));
+			onAuthenticationCredentialsNotFoundEvent((AuthenticationCredentialsNotFoundEvent) event);
 		} else if (event instanceof AuthorizationFailureEvent) {
-			data.put("type", ((AuthorizationFailureEvent) event)
-					.getAccessDeniedException().getClass().getName());
-			data.put("message", ((AuthorizationFailureEvent) event)
-					.getAccessDeniedException().getMessage());
-			publish(new AuditEvent(((AuthorizationFailureEvent) event)
-					.getAuthentication().getName(), "AUTHORIZATION_FAILURE", data));
+			onAuthorizationFailureEvent((AuthorizationFailureEvent) event);
 		}
+	}
+
+	private void onAuthenticationCredentialsNotFoundEvent(
+			AuthenticationCredentialsNotFoundEvent event) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("type", event.getCredentialsNotFoundException().getClass().getName());
+		data.put("message", event.getCredentialsNotFoundException().getMessage());
+		publish(new AuditEvent("<unknown>", "AUTHENTICATION_FAILURE", data));
+	}
+
+	private void onAuthorizationFailureEvent(AuthorizationFailureEvent event) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("type", event.getAccessDeniedException().getClass().getName());
+		data.put("message", event.getAccessDeniedException().getMessage());
+		publish(new AuditEvent(event.getAuthentication().getName(),
+				"AUTHORIZATION_FAILURE", data));
 	}
 
 	private void publish(AuditEvent event) {

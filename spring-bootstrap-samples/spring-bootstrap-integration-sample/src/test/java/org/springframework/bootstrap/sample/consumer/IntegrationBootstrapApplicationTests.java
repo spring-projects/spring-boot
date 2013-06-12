@@ -9,7 +9,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
-import org.springframework.bootstrap.sample.consumer.IntegrationBootstrapApplication;
 import org.springframework.bootstrap.sample.producer.ProducerApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -23,7 +22,6 @@ import static org.junit.Assert.assertTrue;
  * Basic integration tests for service demo application.
  * 
  * @author Dave Syer
- * 
  */
 public class IntegrationBootstrapApplicationTests {
 

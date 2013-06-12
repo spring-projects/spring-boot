@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.bootstrap.autoconfigure.web.EmbeddedContainerConfiguration;
+import org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.bootstrap.sample.tomcat.service.HelloWorldService;
 import org.springframework.bootstrap.sample.tomcat.web.SampleController;
@@ -38,7 +38,7 @@ public class NonAutoConfigurationBootstrapApplicationTests {
 	private static ConfigurableApplicationContext context;
 
 	@Configuration
-	@Import({ EmbeddedContainerConfiguration.class, WebMvcAutoConfiguration.class,
+	@Import({ EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
 	public static class NonAutoConfigurationBootstrapApplication {

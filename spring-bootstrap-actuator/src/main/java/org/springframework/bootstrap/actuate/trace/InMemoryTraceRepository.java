@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * In-memory implementation of {@link TraceRepository}.
+ * 
  * @author Dave Syer
  */
 public class InMemoryTraceRepository implements TraceRepository {
@@ -39,7 +41,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 	}
 
 	@Override
-	public List<Trace> traces() {
+	public List<Trace> findAll() {
 		synchronized (this.traces) {
 			return Collections.unmodifiableList(this.traces);
 		}

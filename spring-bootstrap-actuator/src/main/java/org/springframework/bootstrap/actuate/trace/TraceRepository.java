@@ -20,15 +20,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A repository for traces. Traces are simple documents (maps) with a timestamp, and can
- * be used for analysing contextual information like HTTP headers.
+ * A repository for {@link Trace}s.
  * 
  * @author Dave Syer
  */
 public interface TraceRepository {
 
-	List<Trace> traces();
+	/**
+	 * Find all {@link Trace} objects contained in the repository.
+	 */
+	List<Trace> findAll();
 
-	void add(Map<String, Object> trace);
+	/**
+	 * Add a new {@link Trace} object at the current time.
+	 * @param traceInfo trace information
+	 */
+	void add(Map<String, Object> traceInfo);
 
 }

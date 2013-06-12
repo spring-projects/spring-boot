@@ -19,33 +19,36 @@ package org.springframework.bootstrap.actuate.metrics;
 import java.util.Date;
 
 /**
+ * Default implementation of {@link CounterService}.
+ * 
  * @author Dave Syer
  */
 public class DefaultCounterService implements CounterService {
 
-	private MetricRepository counterRepository;
+	private MetricRepository repository;
 
 	/**
-	 * @param counterRepository
+	 * Create a {@link DefaultCounterService} instance.
+	 * @param repository the underlying repository used to manage metrics
 	 */
-	public DefaultCounterService(MetricRepository counterRepository) {
+	public DefaultCounterService(MetricRepository repository) {
 		super();
-		this.counterRepository = counterRepository;
+		this.repository = repository;
 	}
 
 	@Override
 	public void increment(String metricName) {
-		this.counterRepository.increment(wrap(metricName), 1, new Date());
+		this.repository.increment(wrap(metricName), 1, new Date());
 	}
 
 	@Override
 	public void decrement(String metricName) {
-		this.counterRepository.increment(wrap(metricName), -1, new Date());
+		this.repository.increment(wrap(metricName), -1, new Date());
 	}
 
 	@Override
 	public void reset(String metricName) {
-		this.counterRepository.set(wrap(metricName), 0, new Date());
+		this.repository.set(wrap(metricName), 0, new Date());
 	}
 
 	private String wrap(String metricName) {

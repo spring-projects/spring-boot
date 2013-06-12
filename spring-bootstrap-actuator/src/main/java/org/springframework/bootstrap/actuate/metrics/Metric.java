@@ -16,33 +16,63 @@
 
 package org.springframework.bootstrap.actuate.metrics;
 
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
+
 /**
+ * Immutable class that can be used to hold any arbitrary system measurement value. For
+ * example a metric might record the number of active connections.
+ * 
  * @author Dave Syer
+ * @see MetricRepository
+ * @see CounterService
  */
-public class Metric {
+public final class Metric {
 
 	private final String name;
 
 	private final double value;
 
+	/**
+	 * Create a new {@link Metric} instance.
+	 * @param name the name of the metric
+	 * @param value the value of the metric
+	 */
 	public Metric(String name, double value) {
 		super();
+		Assert.notNull(name, "Name must not be null");
 		this.name = name;
 		this.value = value;
 	}
 
+	/**
+	 * Returns the name of the metric.
+	 */
 	public String getName() {
 		return this.name;
 	}
 
+	/**
+	 * Returns the value of the metric.
+	 */
 	public double getValue() {
 		return this.value;
 	}
 
+	/**
+	 * Create a new {@link Metric} with an incremented value.
+	 * @param amount the amount that the new metric will differ from this one
+	 * @return a new {@link Metric} instance
+	 */
 	public Metric increment(int amount) {
 		return new Metric(this.name, new Double(((int) this.value) + amount));
 	}
 
+	/**
+	 * Create a new {@link Metric} with a different value.
+	 * @param value the value of the new metric
+	 * @return a new {@link Metric} instance
+	 */
 	public Metric set(double value) {
 		return new Metric(this.name, value);
 	}
@@ -54,32 +84,30 @@ public class Metric {
 
 	@Override
 	public int hashCode() {
+		int valueHashCode = ObjectUtils.hashCode(this.value);
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(this.value);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
+		result = prime * result + (valueHashCode ^ (valueHashCode >>> 32));
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Metric other = (Metric) obj;
-		if (this.name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!this.name.equals(other.name))
-			return false;
-		if (Double.doubleToLongBits(this.value) != Double.doubleToLongBits(other.value))
-			return false;
-		return true;
+		}
+		if (getClass() == obj.getClass()) {
+			Metric other = (Metric) obj;
+			boolean result = ObjectUtils.nullSafeEquals(this.name, other.name);
+			result &= Double.doubleToLongBits(this.value) == Double
+					.doubleToLongBits(other.value);
+			return result;
+		}
+		return super.equals(obj);
 	}
 
 }

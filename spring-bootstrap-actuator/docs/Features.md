@@ -61,7 +61,7 @@ the `*Properties` types in the Actuator jar.
 Spring Profiles are a way to segregate parts of the application
 configuration and make it only available in certain environments.  Any
 `@Component` that is marked with `@Profile` will only be loaded in the
-profile specified by the latter annotation.  
+profile specified by the latter annotation.
 
 Spring Bootstrap takes it a stage further.  If you include in your
 `application.properties` a value for a property named
@@ -69,7 +69,7 @@ Spring Bootstrap takes it a stage further.  If you include in your
 default.  E.g.
 
     spring.active.profiles: dev,hsqldb
-    
+
 ## Profile-dependent configuration
 
 Spring Bootstrap loads additional properties files if there are active
@@ -90,7 +90,7 @@ and declare one either explicitly (with `@Bean`) or implicitly by
 adding
 
     @EnableConfigurationProperties(MyProperties.class)
-    
+
 to one of your `@Configuration` (or `@Component`) classes.  Then you can
 
     @Autowired
@@ -214,7 +214,7 @@ generic `ServerProperties`, you can also bind `server.tomcat.*`
 properties in the application properties (see
 `ServerProperties.Tomcat`).
 
-* To enable the Tomcat access log valve (very common in production environments) 
+* To enable the Tomcat access log valve (very common in production environments)
 
 More fine-grained control of the Tomcat container is available if you
 need it.  Instead of letting Spring Bootstrap create the container for
@@ -247,16 +247,11 @@ can be used to specify
   on an internal or ops-facing network, for instance, or to only
   listen for connections from localhost (by specifying "127.0.0.1")
 
-* The context root of the management endpoints (TODO: does this work?)
-
-The `EndpointsProperties` are also bound, and you can use those to
-change the paths of the management endpoints, e.g.
-
-    endpoints.error.path: /errors/generic
+* The context root of the management endpoints
 
 ## Error Handling
 
-The Actuator provides an `/error` endpoint by default that handles all
+The Actuator provides an `/error` mapping by default that handles all
 errors in a sensible way.  If you want more specific error pages for
 some conditions, the embedded servlet containers support a uniform
 Java DSL for customizing the error handling.  To do this you have to
@@ -345,7 +340,7 @@ properties via placeholders, e.g.
     info.build.name: ${project.name}
     info.build.description: ${project.description}
     info.build.version: ${project.version}
-    
+
 (notice that in the example we used `project.*` to set some values to
 be used as fallbacks if the Maven resource filtering has for some
 reason not been switched on).
@@ -381,7 +376,7 @@ entries to `application.properties`, e.g.
 
     server.tomcat.remote_ip_header: x-forwarded-for
     server.tomcat.protocol_header: x-forwarded-proto
-    
+
 (The presence of either of those properties will switch on the
 valve. Or you can add the `RemoteIpValve` yourself by adding a
 `TomcatEmbeddedServletContainerFactory` bean.)

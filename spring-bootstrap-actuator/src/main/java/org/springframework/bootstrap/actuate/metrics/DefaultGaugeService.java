@@ -19,6 +19,8 @@ package org.springframework.bootstrap.actuate.metrics;
 import java.util.Date;
 
 /**
+ * Default implementation of {@link GaugeService}.
+ * 
  * @author Dave Syer
  */
 public class DefaultGaugeService implements GaugeService {

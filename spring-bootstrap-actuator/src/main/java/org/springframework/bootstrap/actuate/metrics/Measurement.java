@@ -18,10 +18,14 @@ package org.springframework.bootstrap.actuate.metrics;
 
 import java.util.Date;
 
+import org.springframework.util.ObjectUtils;
+
 /**
+ * A {@link Metric} at a given point in time.
+ * 
  * @author Dave Syer
  */
-public class Measurement {
+public final class Measurement {
 
 	private Date timestamp;
 
@@ -42,39 +46,34 @@ public class Measurement {
 
 	@Override
 	public String toString() {
-		return "Measurement [dateTime=" + this.timestamp + ", metric=" + this.metric + "]";
+		return "Measurement [dateTime=" + this.timestamp + ", metric=" + this.metric
+				+ "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((this.timestamp == null) ? 0 : this.timestamp.hashCode());
-		result = prime * result + ((this.metric == null) ? 0 : this.metric.hashCode());
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.timestamp);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.metric);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Measurement other = (Measurement) obj;
-		if (this.timestamp == null) {
-			if (other.timestamp != null)
-				return false;
-		} else if (!this.timestamp.equals(other.timestamp))
-			return false;
-		if (this.metric == null) {
-			if (other.metric != null)
-				return false;
-		} else if (!this.metric.equals(other.metric))
-			return false;
-		return true;
+		}
+		if (getClass() == obj.getClass()) {
+			Measurement other = (Measurement) obj;
+			boolean result = ObjectUtils.nullSafeEquals(this.timestamp, other.timestamp);
+			result &= ObjectUtils.nullSafeEquals(this.metric, other.metric);
+			return result;
+		}
+		return super.equals(obj);
 	}
 
 }

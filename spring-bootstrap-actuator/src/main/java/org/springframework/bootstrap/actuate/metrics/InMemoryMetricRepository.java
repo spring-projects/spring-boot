@@ -31,6 +31,7 @@ public class InMemoryMetricRepository implements MetricRepository {
 
 	@Override
 	public void increment(String metricName, int amount, Date timestamp) {
+		// FIXME this might not be thread safe
 		Measurement current = this.metrics.get(metricName);
 		if (current != null) {
 			Metric metric = current.getMetric();

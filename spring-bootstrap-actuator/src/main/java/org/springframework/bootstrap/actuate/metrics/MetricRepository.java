@@ -20,9 +20,17 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
+ * A Repository used to manage {@link Metric}s.
+ * 
  * @author Dave Syer
  */
 public interface MetricRepository {
+
+	// FIXME perhaps revisit this, there is no way to get timestamps
+	// could also simply, leaving increment to counter service
+
+	// Perhaps findAll, findOne should return Measurements
+	// put(String name, Callback -> process(Metric)
 
 	void increment(String metricName, int amount, Date timestamp);
 
