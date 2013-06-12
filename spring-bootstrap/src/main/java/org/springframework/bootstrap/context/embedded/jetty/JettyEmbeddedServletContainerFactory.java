@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
@@ -32,6 +34,7 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.AbstractConfiguration;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
@@ -66,6 +69,9 @@ public class JettyEmbeddedServletContainerFactory extends
 	private ResourceLoader resourceLoader;
 
 	private WebAppContext context = new WebAppContext();
+	
+	@Autowired(required=false)
+	private MultipartConfigElement multipartConfigElement = null;
 
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainerFactory} instance.
@@ -140,6 +146,12 @@ public class JettyEmbeddedServletContainerFactory extends
 
 	private void addDefaultServlet(WebAppContext context) {
 		ServletHolder holder = new ServletHolder();
+		if (hasMultipart()) {
+			System.out.println("Applying " + multipartConfigElement + " to servlet configuration.");
+			holder.getRegistration().setMultipartConfig(multipartConfigElement);
+		} else {
+			System.out.println("There is no multipartConfigElement!");
+		}
 		holder.setName("default");
 		holder.setClassName("org.eclipse.jetty.servlet.DefaultServlet");
 		holder.setInitParameter("dirAllowed", "false");
@@ -150,6 +162,12 @@ public class JettyEmbeddedServletContainerFactory extends
 
 	private void addJspServlet(WebAppContext context) {
 		ServletHolder holder = new ServletHolder();
+		if (hasMultipart()) {
+			System.out.println("Applying " + multipartConfigElement + " to servlet configuration.");
+			holder.getRegistration().setMultipartConfig(multipartConfigElement);
+		} else {
+			System.out.println("There is no multipartConfigElement!");
+		}
 		holder.setName("jsp");
 		holder.setClassName(getJspServletClassName());
 		holder.setInitParameter("fork", "false");
@@ -281,5 +299,9 @@ public class JettyEmbeddedServletContainerFactory extends
 				}
 			}
 		}
+	}
+
+	public boolean hasMultipart() {
+		return multipartConfigElement != null;
 	}
 }
