@@ -130,12 +130,10 @@ public class SecurityAutoConfiguration {
 			if (this.security.getBasic().isEnabled()) {
 
 				String[] paths = getSecurePaths();
-
-				HttpConfiguration matcher = http.requestMatchers().antMatchers(paths);
-				matcher.authenticationEntryPoint(entryPoint()).httpBasic()
-						.authenticationEntryPoint(entryPoint()).and().anonymous()
-						.disable();
-				matcher.authorizeUrls().anyRequest()
+				http.exceptionHandling().authenticationEntryPoint(entryPoint()).and()
+						.requestMatchers().antMatchers(paths);
+				http.httpBasic().and().anonymous().disable();
+				http.authorizeUrls().anyRequest()
 						.hasRole(this.security.getBasic().getRole());
 
 			}
