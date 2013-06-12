@@ -82,13 +82,12 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 	}
 
 	@Test
-	public void createAndInitializeWithRoot() throws Exception {
+	public void createAndInitializeWithParent() throws Exception {
 		AnnotationConfigEmbeddedWebApplicationContext parent = new AnnotationConfigEmbeddedWebApplicationContext(
 				EmbeddedContainerConfiguration.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(ServletContextAwareConfiguration.class);
 		this.context.setParent(parent);
-		this.context.setServletContext(parent.getServletContext());
 		this.context.refresh();
 		verifyContext();
 		assertNotNull(this.context.getBean(ServletContextAwareConfiguration.class)

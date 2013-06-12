@@ -130,15 +130,13 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		if (this.embeddedServletContainer == null && getServletContext() == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
-					.getEmbdeddedServletContainer(getServletContextInitializers());
+					.getEmbdeddedServletContainer(getSelfInitializer());
 		} else if (getServletContext() != null) {
-			for (ServletContextInitializer initializer : getServletContextInitializers()) {
-				try {
-					initializer.onStartup(getServletContext());
-				} catch (ServletException e) {
-					throw new ApplicationContextException(
-							"Cannot initialize servlet context", e);
-				}
+			try {
+				getSelfInitializer().onStartup(getServletContext());
+			} catch (ServletException e) {
+				throw new ApplicationContextException(
+						"Cannot initialize servlet context", e);
 			}
 		}
 		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
@@ -169,16 +167,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	}
 
 	/**
-	 * Returns all {@link ServletContextInitializer}s that should be applied.
-	 */
-	private ServletContextInitializer[] getServletContextInitializers() {
-		List<ServletContextInitializer> initializers = new ArrayList<ServletContextInitializer>();
-		initializers.add(getSelfInitializer());
-		initializers.addAll(getServletContextInitializerBeans());
-		return initializers.toArray(new ServletContextInitializer[initializers.size()]);
-	}
-
-	/**
 	 * Returns the {@link ServletContextInitializer} that will be used to complete the
 	 * setup of this {@link WebApplicationContext}.
 	 * @see #prepareEmbeddedWebApplicationContext(ServletContext)
@@ -188,6 +176,9 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
 				prepareEmbeddedWebApplicationContext(servletContext);
+				for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
+					beans.onStartup(servletContext);
+				}
 			}
 		};
 	}
