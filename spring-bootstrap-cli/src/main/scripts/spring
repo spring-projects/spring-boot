@@ -62,22 +62,15 @@ TARGETDIR=target/classes
 if [ -f build.gradle ]; then
     TARGETDIR=build/classes/main
 fi
-if [ -f ${TARGETDIR} ]; then
-	if [ "${CLASSPATH}" == "" ]; then
-		CLASSPATH="${TARGETDIR}"
-	else
-    	CLASSPATH="${CLASSPATH}":"${TARGETDIR}"
+
+for f in "${TARGETDIR}" "${SPRING_HOME}"/classes "${SPRING_BIN}" "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
+    if [ -f $f -o -d $f ]; then
+    	if [ "${CLASSPATH}" == "" ]; then
+			CLASSPATH="${f}"
+		else
+   			CLASSPATH="${CLASSPATH}":"${f}"
+		fi
 	fi
-fi
-
-if [ "${CLASSPATH}" == "" ]; then
-	CLASSPATH="${SPRING_BIN}"
-else
-   	CLASSPATH="${CLASSPATH}":"${SPRING_BIN}"
-fi
-
-for f in "${SPRING_HOME}"/classes "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
-    [ -f $f ] && CLASSPATH="${CLASSPATH}":$f
 done
 
 if $cygwin; then
