@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.autoconfigure.orm.jpa;
+package org.springframework.bootstrap.context.annotation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,8 +31,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.bootstrap.autoconfigure.data.JpaRepositoriesAutoConfiguration;
-import org.springframework.bootstrap.context.annotation.AutoConfigurationUtils;
+import org.springframework.bootstrap.autoconfigure.AutoConfigurationUtils;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -48,11 +47,13 @@ import org.springframework.util.StringUtils;
 /**
  * Helper to detect a component scan declared in the enclosing context (normally on a
  * {@code @Configuration} class). Once the component scan is detected, the base packages
- * are stored for retrieval later by the {@link JpaRepositoriesAutoConfiguration} .
+ * are stored for retrieval later.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
+ * @see AutoConfigurationUtils
  */
-class JpaComponentScanDetector implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+class ComponentScanDetector implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
