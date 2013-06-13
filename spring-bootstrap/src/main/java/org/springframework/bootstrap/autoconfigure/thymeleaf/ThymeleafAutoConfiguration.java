@@ -67,6 +67,9 @@ public class ThymeleafAutoConfiguration {
 		@Value("${spring.template.suffix:.html}")
 		private String suffix = ".html";
 
+		@Value("${spring.template.cache:true}")
+		private boolean cacheable;
+
 		@Value("${spring.template.mode:HTML5}")
 		private String templateMode = "HTML5";
 
@@ -94,6 +97,7 @@ public class ThymeleafAutoConfiguration {
 			resolver.setPrefix(this.prefix);
 			resolver.setSuffix(this.suffix);
 			resolver.setTemplateMode(this.templateMode);
+			resolver.setCacheable(this.cacheable);
 			return resolver;
 		}
 
