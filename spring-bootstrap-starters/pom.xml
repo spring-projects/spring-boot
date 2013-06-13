@@ -21,6 +21,7 @@
 		<module>spring-bootstrap-batch-starter</module>
 		<module>spring-bootstrap-integration-starter</module>
 		<module>spring-bootstrap-jpa-starter</module>
+		<module>spring-bootstrap-security-starter</module>
 		<module>spring-bootstrap-tomcat-starter</module>
 		<module>spring-bootstrap-web-starter</module>
 	</modules>
@@ -69,6 +70,11 @@
 			<dependency>
 				<groupId>org.springframework.bootstrap</groupId>
 				<artifactId>spring-bootstrap-integration-starter</artifactId>
+				<version>${spring.bootstrap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-security-starter</artifactId>
 				<version>${spring.bootstrap.version}</version>
 			</dependency>
 		</dependencies>
