@@ -18,11 +18,15 @@ package org.springframework.bootstrap.context.annotation;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.bootstrap.context.annotation.EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesHolder;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.PropertySources;
 import org.springframework.validation.Validator;
@@ -33,7 +37,8 @@ import org.springframework.validation.Validator;
  * 
  * @author Dave Syer
  */
-public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
+public class PropertySourcesBindingPostProcessor implements BeanPostProcessor,
+		BeanFactoryAware {
 
 	private PropertySources propertySources;
 
@@ -42,6 +47,10 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 	private ConversionService conversionService;
 
 	private DefaultConversionService defaultConversionService = new DefaultConversionService();
+
+	private BeanFactory beanFactory;
+
+	private boolean initialized = false;
 
 	/**
 	 * @param propertySources
@@ -62,6 +71,11 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 	 */
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
+	}
+
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
 	}
 
 	@Override
@@ -86,7 +100,7 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 			factory.setValidator(this.validator);
 			// If no explicit conversion service is provided we add one so that (at least)
 			// comma-separated arrays of convertibles can be bound automatically
-			factory.setConversionService(this.conversionService == null ? this.defaultConversionService
+			factory.setConversionService(this.conversionService == null ? getDefaultConversionService()
 					: this.conversionService);
 			String targetName = null;
 			if (annotation != null) {
@@ -106,6 +120,19 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor {
 			}
 		}
 		return bean;
+	}
+
+	/**
+	 * @return
+	 */
+	private ConversionService getDefaultConversionService() {
+		if (!this.initialized && this.beanFactory instanceof ListableBeanFactory) {
+			for (Converter<?, ?> converter : ((ListableBeanFactory) this.beanFactory)
+					.getBeansOfType(Converter.class).values()) {
+				this.defaultConversionService.addConverter(converter);
+			}
+		}
+		return this.defaultConversionService;
 	}
 
 }
