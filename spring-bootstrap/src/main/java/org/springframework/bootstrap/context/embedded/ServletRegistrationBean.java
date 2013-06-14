@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -55,6 +56,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	private int loadOnStartup = 1;
 
 	private Set<Filter> filters = new LinkedHashSet<Filter>();
+	
+	private MultipartConfigElement multipartConfigElement = null;
 
 	/**
 	 * Create a new {@link ServletRegistrationBean} instance.
@@ -71,6 +74,11 @@ public class ServletRegistrationBean extends RegistrationBean {
 	public ServletRegistrationBean(Servlet servlet, String... urlMappings) {
 		setServlet(servlet);
 		addUrlMappings(urlMappings);
+	}
+	
+	public ServletRegistrationBean(Servlet servlet, MultipartConfigElement multipartConfigElement, String... urlMappings) {
+		this(servlet, urlMappings);
+		this.multipartConfigElement = multipartConfigElement;
 	}
 
 	/**
@@ -159,6 +167,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.servlet, "Servlet must not be null");
+		System.out.println("ServletRegistrationBean::onStartup of the servlet...");
 		configure(servletContext.addServlet(getServletName(), this.servlet));
 		for (Filter filter : this.filters) {
 			FilterRegistrationBean filterRegistration = new FilterRegistrationBean(
@@ -181,5 +190,11 @@ public class ServletRegistrationBean extends RegistrationBean {
 		}
 		registration.addMapping(urlMapping);
 		registration.setLoadOnStartup(this.loadOnStartup);
+		if (multipartConfigElement != null) {
+			System.out.println("ServletRegistrationBean::configure Setting multipart config to " + multipartConfigElement);
+			registration.setMultipartConfig(multipartConfigElement);
+		} else {
+			System.out.println("ServletRegistrationBean::configure No multipartConfigElement");
+		}
 	}
 }
