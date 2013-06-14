@@ -39,5 +39,5 @@ public class MultipartAutoConfiguration {
 		System.out.println("Loading up a MultipartResolver!!!");
 	    return new StandardServletMultipartResolver();
 	}
-	
+
 }

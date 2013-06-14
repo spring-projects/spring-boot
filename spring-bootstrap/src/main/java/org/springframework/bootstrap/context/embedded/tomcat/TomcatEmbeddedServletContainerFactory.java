@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.MultipartConfigElement;
-
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleListener;
@@ -39,7 +37,6 @@ import org.apache.catalina.core.StandardService;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
@@ -81,9 +78,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private Tomcat tomcat = new Tomcat();
 	
-	@Autowired(required=false)
-	private MultipartConfigElement multipartConfigElement = null;
-
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
 	 */
@@ -164,12 +158,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private void addDefaultServlet(Context context) {
 		Wrapper defaultServlet = context.createWrapper();
-		if (hasMultipart()) {
-			System.out.println("Applying " + multipartConfigElement + " to servlet configuration.");
-			defaultServlet.setMultipartConfigElement(multipartConfigElement);
-		} else {
-			System.out.println("There is no multipartConfigElement!");
-		}
 		defaultServlet.setName("default");
 		defaultServlet.setServletClass("org.apache.catalina.servlets.DefaultServlet");
 		defaultServlet.addInitParameter("debug", "0");
@@ -183,12 +171,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private void addJspServlet(Context context) {
 		Wrapper jspServlet = context.createWrapper();
-		if (hasMultipart()) {
-			System.out.println("Applying " + multipartConfigElement + " to servlet configuration.");
-			jspServlet.setMultipartConfigElement(multipartConfigElement);
-		} else {
-			System.out.println("There is no multipartConfigElement!");
-		}
 		jspServlet.setName("jsp");
 		jspServlet.setServletClass(getJspServletClassName());
 		jspServlet.addInitParameter("fork", "false");
@@ -390,9 +372,4 @@ public class TomcatEmbeddedServletContainerFactory extends
 		};
 
 	}
-
-	public boolean hasMultipart() {
-		return multipartConfigElement != null;
-	}
-
 }
