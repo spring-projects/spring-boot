@@ -23,10 +23,12 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -34,6 +36,9 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
@@ -199,6 +204,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		Set<Object> targets = new HashSet<Object>();
 
 		for (Entry<String, ServletContextInitializer> initializerBean : getOrderedBeansOfType(ServletContextInitializer.class)) {
+			System.out.println("Investigating initializerBean " + initializerBean.getKey());
 			ServletContextInitializer initializer = initializerBean.getValue();
 			if (initializer instanceof RegistrationBean) {
 				targets.add(((RegistrationBean) initializer).getRegistrationTarget());
@@ -206,24 +212,46 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			if (initializer instanceof ServletRegistrationBean) {
 				targets.addAll(((ServletRegistrationBean) initializer).getFilters());
 			}
+			System.out.println("Adding initializer " + initializer);
 			initializers.add(initializer);
+		}
+		
+		Map<String, MultipartConfigElement> multipartConfigBeans;
+		MultipartConfigElement multipartConfigElement = null;
+		try {
+			multipartConfigBeans = getBeanFactory().getBeansOfType(MultipartConfigElement.class);
+			for (MultipartConfigElement bean : multipartConfigBeans.values()) {
+				System.out.println("Found bean " + bean);
+				multipartConfigElement = bean;
+			}
+		} catch (BeansException e) {
+			System.out.println(e.getMessage());
 		}
 
 		List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
 		for (Entry<String, Servlet> servletBean : servletBeans) {
-			String name = servletBean.getKey();
+			System.out.println("Found servlet " + servletBean);
+			final String name = servletBean.getKey();
 			Servlet servlet = servletBean.getValue();
 			if (targets.contains(servlet)) {
+				System.out.println("It was targeted, so moving on.");
 				continue;
 			}
 			String url = (servletBeans.size() == 1 ? "/" : "/" + name + "/*");
 			if (name.equals(DISPATCHER_SERVLET_NAME)) {
 				url = "/"; // always map the main dispatcherServlet to "/"
 			}
-			ServletRegistrationBean registration = new ServletRegistrationBean(servlet,
-					url);
-			registration.setName(name);
-			initializers.add(registration);
+			if (multipartConfigElement != null) {
+				System.out.println("Adding a ServletRegistrationBean with multipart configuration...");
+				initializers.add(new ServletRegistrationBean(servlet, multipartConfigElement, url) {{
+					setName(name);
+				}});
+			} else {
+				System.out.println("Adding a ServletRegistrationBean with NO multipart configuration...");
+				initializers.add(new ServletRegistrationBean(servlet, url) {{
+					setName(name);
+				}});
+			}
 		}
 
 		for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {

@@ -77,7 +77,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private Connector connector;
 
 	private Tomcat tomcat = new Tomcat();
-
+	
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
 	 */
@@ -372,5 +372,4 @@ public class TomcatEmbeddedServletContainerFactory extends
 		};
 
 	}
-
 }

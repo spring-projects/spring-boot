@@ -66,7 +66,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	private ResourceLoader resourceLoader;
 
 	private WebAppContext context = new WebAppContext();
-
+	
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainerFactory} instance.
 	 */
