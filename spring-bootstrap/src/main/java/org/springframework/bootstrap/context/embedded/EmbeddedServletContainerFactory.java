@@ -41,6 +41,6 @@ public interface EmbeddedServletContainerFactory {
 	 * @see EmbeddedServletContainer#stop()
 	 */
 	EmbeddedServletContainer getEmbdeddedServletContainer(
-			ServletContextInitializer... initializers); //TODO(6/14/2013) Fix name of method
+			ServletContextInitializer... initializers);
 
 }
