@@ -22,6 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -55,6 +56,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	private int loadOnStartup = 1;
 
 	private Set<Filter> filters = new LinkedHashSet<Filter>();
+	
+	private MultipartConfigElement multipartConfigElement = null;
 
 	/**
 	 * Create a new {@link ServletRegistrationBean} instance.
@@ -71,6 +74,11 @@ public class ServletRegistrationBean extends RegistrationBean {
 	public ServletRegistrationBean(Servlet servlet, String... urlMappings) {
 		setServlet(servlet);
 		addUrlMappings(urlMappings);
+	}
+	
+	public ServletRegistrationBean(Servlet servlet, MultipartConfigElement multipartConfigElement, String... urlMappings) {
+		this(servlet, urlMappings);
+		this.multipartConfigElement = multipartConfigElement;
 	}
 
 	/**
@@ -181,5 +189,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 		}
 		registration.addMapping(urlMapping);
 		registration.setLoadOnStartup(this.loadOnStartup);
+		if (multipartConfigElement != null) {
+			registration.setMultipartConfig(multipartConfigElement);
+		}
 	}
 }
