@@ -23,10 +23,12 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -208,10 +210,17 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			}
 			initializers.add(initializer);
 		}
+		
+		Map<String, MultipartConfigElement> multipartConfigBeans;
+		MultipartConfigElement multipartConfigElement = null;
+		multipartConfigBeans = getBeanFactory().getBeansOfType(MultipartConfigElement.class);
+		for (MultipartConfigElement bean : multipartConfigBeans.values()) {
+			multipartConfigElement = bean;
+		}
 
 		List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
 		for (Entry<String, Servlet> servletBean : servletBeans) {
-			String name = servletBean.getKey();
+			final String name = servletBean.getKey();
 			Servlet servlet = servletBean.getValue();
 			if (targets.contains(servlet)) {
 				continue;
@@ -220,10 +229,15 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			if (name.equals(DISPATCHER_SERVLET_NAME)) {
 				url = "/"; // always map the main dispatcherServlet to "/"
 			}
-			ServletRegistrationBean registration = new ServletRegistrationBean(servlet,
-					url);
-			registration.setName(name);
-			initializers.add(registration);
+			if (multipartConfigElement != null) {
+				initializers.add(new ServletRegistrationBean(servlet, multipartConfigElement, url) {{
+					setName(name);
+				}});
+			} else {
+				initializers.add(new ServletRegistrationBean(servlet, url) {{
+					setName(name);
+				}});
+			}
 		}
 
 		for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {
