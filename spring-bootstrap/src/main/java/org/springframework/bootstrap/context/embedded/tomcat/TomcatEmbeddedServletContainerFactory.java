@@ -105,7 +105,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	}
 
 	@Override
-	public EmbeddedServletContainer getEmbdeddedServletContainer(
+	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		if (getPort() == 0) {
 			return EmbeddedServletContainer.NONE;
@@ -339,7 +339,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		return new TomcatEmbeddedServletContainerFactory() {
 
 			@Override
-			public EmbeddedServletContainer getEmbdeddedServletContainer(
+			public EmbeddedServletContainer getEmbeddedServletContainer(
 					ServletContextInitializer... initializers) {
 
 				if (getPort() == 0) {

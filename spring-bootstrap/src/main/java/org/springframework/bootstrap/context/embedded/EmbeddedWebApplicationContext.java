@@ -130,7 +130,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		if (this.embeddedServletContainer == null && getServletContext() == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
-					.getEmbdeddedServletContainer(getSelfInitializer());
+					.getEmbeddedServletContainer(getSelfInitializer());
 		} else if (getServletContext() != null) {
 			try {
 				getSelfInitializer().onStartup(getServletContext());
