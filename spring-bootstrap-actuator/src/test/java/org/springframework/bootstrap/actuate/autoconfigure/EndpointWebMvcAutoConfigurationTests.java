@@ -15,8 +15,11 @@
  */
 package org.springframework.bootstrap.actuate.autoconfigure;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.io.FileNotFoundException;
-import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.URI;
 import java.nio.charset.Charset;
 
@@ -42,13 +45,11 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
 /**
  * Tests for {@link EndpointWebMvcAutoConfiguration}.
  * 
  * @author Phillip Webb
+ * @author Greg Turnquist
  */
 public class EndpointWebMvcAutoConfigurationTests {
 
@@ -170,7 +171,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			}
 		} catch (Exception ex) {
 			if (expected == null) {
-				if (ConnectException.class.isInstance(ex)
+				if (SocketException.class.isInstance(ex)
 						|| FileNotFoundException.class.isInstance(ex)) {
 					return;
 				}
