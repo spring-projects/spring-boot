@@ -159,7 +159,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	/**
 	 * Sets {@link ServletContextInitializer} that should be applied in addition to
-	 * {@link #getEmbdeddedServletContainer(ServletContextInitializer...)} parameters.
+	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters.
 	 * This method will replace any previously set or added initializers.
 	 * @param initializers the initializers to set
 	 * @see #addInitializers
@@ -172,7 +172,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	/**
 	 * Add {@link ServletContextInitializer}s to those that should be applied in addition
-	 * to {@link #getEmbdeddedServletContainer(ServletContextInitializer...)} parameters.
+	 * to {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters.
 	 * @param initializers the initializers to add
 	 * @see #setInitializers
 	 * @see #getInitializers
@@ -185,7 +185,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	/**
 	 * Returns a mutable list of {@link ServletContextInitializer} that should be applied
-	 * in addition to {@link #getEmbdeddedServletContainer(ServletContextInitializer...)}
+	 * in addition to {@link #getEmbeddedServletContainer(ServletContextInitializer...)}
 	 * parameters.
 	 * @return the initializers
 	 */
