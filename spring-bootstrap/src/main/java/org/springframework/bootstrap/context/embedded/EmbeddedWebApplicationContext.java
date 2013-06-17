@@ -131,7 +131,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		if (this.embeddedServletContainer == null && getServletContext() == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
-					.getEmbdeddedServletContainer(getSelfInitializer());
+					.getEmbeddedServletContainer(getSelfInitializer());
 		} else if (getServletContext() != null) {
 			try {
 				getSelfInitializer().onStartup(getServletContext());
@@ -211,9 +211,9 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			initializers.add(initializer);
 		}
 		
-		Map<String, MultipartConfigElement> multipartConfigBeans;
 		MultipartConfigElement multipartConfigElement = null;
-		multipartConfigBeans = getBeanFactory().getBeansOfType(MultipartConfigElement.class);
+		Map<String, MultipartConfigElement> multipartConfigBeans = 
+				getBeanFactory().getBeansOfType(MultipartConfigElement.class);
 		for (MultipartConfigElement bean : multipartConfigBeans.values()) {
 			multipartConfigElement = bean;
 		}

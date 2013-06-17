@@ -47,7 +47,7 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		}
 		factory.setConfigurations(Arrays.asList(configurations[0], configurations[1]));
 		factory.addConfigurations(configurations[2], configurations[3]);
-		this.container = factory.getEmbdeddedServletContainer();
+		this.container = factory.getEmbeddedServletContainer();
 		InOrder ordered = inOrder((Object[]) configurations);
 		for (Configuration configuration : configurations) {
 			ordered.verify(configuration).configure((WebAppContext) anyObject());

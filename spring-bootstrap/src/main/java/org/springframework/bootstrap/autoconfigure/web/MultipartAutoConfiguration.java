@@ -36,7 +36,6 @@ public class MultipartAutoConfiguration {
 	@ConditionalOnBean(MultipartConfigElement.class)
 	@Bean
 	public StandardServletMultipartResolver multipartResolver() {
-		System.out.println("Loading up a MultipartResolver!!!");
 	    return new StandardServletMultipartResolver();
 	}
 
