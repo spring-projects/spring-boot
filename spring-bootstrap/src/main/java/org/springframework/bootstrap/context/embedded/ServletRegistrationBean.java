@@ -56,8 +56,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 	private int loadOnStartup = 1;
 
 	private Set<Filter> filters = new LinkedHashSet<Filter>();
-	
-	private MultipartConfigElement multipartConfigElement = null;
+
+	private MultipartConfigElement multipartConfig;
 
 	/**
 	 * Create a new {@link ServletRegistrationBean} instance.
@@ -67,18 +67,13 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	/**
 	 * Create a new {@link ServletRegistrationBean} instance with the specified
-	 * {@link Servlet} and URL mapping.
+	 * {@link Servlet} and URL mappings.
 	 * @param servlet the servlet being mapped
 	 * @param urlMappings the URLs being mapped
 	 */
 	public ServletRegistrationBean(Servlet servlet, String... urlMappings) {
 		setServlet(servlet);
 		addUrlMappings(urlMappings);
-	}
-	
-	public ServletRegistrationBean(Servlet servlet, MultipartConfigElement multipartConfigElement, String... urlMappings) {
-		this(servlet, urlMappings);
-		this.multipartConfigElement = multipartConfigElement;
 	}
 
 	/**
@@ -153,6 +148,22 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
+	 * Set the the {@link MultipartConfigElement multi-part configuration}.
+	 * @param multipartConfig the muti-part configuration to set or {@code null}
+	 */
+	public void setMultipartConfig(MultipartConfigElement multipartConfig) {
+		this.multipartConfig = multipartConfig;
+	}
+
+	/**
+	 * Returns the {@link MultipartConfigElement multi-part configuration} to be applied
+	 * or {@code null}.
+	 */
+	public MultipartConfigElement getMultipartConfig() {
+		return this.multipartConfig;
+	}
+
+	/**
 	 * Returns the servlet name that will be registered.
 	 */
 	public String getServletName() {
@@ -189,8 +200,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 		}
 		registration.addMapping(urlMapping);
 		registration.setLoadOnStartup(this.loadOnStartup);
-		if (multipartConfigElement != null) {
-			registration.setMultipartConfig(multipartConfigElement);
+		if (this.multipartConfig != null) {
+			registration.setMultipartConfig(this.multipartConfig);
 		}
 	}
 }

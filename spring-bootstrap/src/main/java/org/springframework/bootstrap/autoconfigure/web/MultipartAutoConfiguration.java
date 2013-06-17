@@ -13,31 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.MultipartConfigElement;
 
 import org.springframework.bootstrap.context.annotation.ConditionalOnBean;
+import org.springframework.bootstrap.context.annotation.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 /**
- * Autoconfiguration for multipart uploads. It detects the existence of a
- * {@link MultipartConfigElement} in the app context and then adds critical beans
- * while also autowiring it into the Jetty/Tomcat embedded containers.
+ * {@link EnableAutoConfiguration Auto-configuration} for multi-part uploads. It detects
+ * the existence of a {@link MultipartConfigElement} in the app context and then adds
+ * critical beans while also autowiring it into the Jetty/Tomcat embedded containers.
  * 
  * @author Greg Turnquist
- *
  */
 @Configuration
 public class MultipartAutoConfiguration {
-	
-	@ConditionalOnBean(MultipartConfigElement.class)
+
 	@Bean
+	@ConditionalOnBean(MultipartConfigElement.class)
 	public StandardServletMultipartResolver multipartResolver() {
-		System.out.println("Loading up a MultipartResolver!!!");
-	    return new StandardServletMultipartResolver();
+		return new StandardServletMultipartResolver();
 	}
 
 }

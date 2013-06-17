@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.autoconfigure.web;
 
 import javax.servlet.MultipartConfigElement;
@@ -40,8 +41,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 /**
- * A series of embedded unit tests, based on an empty configuration, no multipart
- * configuration, and a multipart configuration, with both Jetty and Tomcat.
+ * Tests for {@link MultipartAutoConfiguration}. Tests an empty configuration, no
+ * multipart configuration, and a multipart configuration (with both Jetty and Tomcat).
  * 
  * @author Greg Turnquist
  * @author Dave Syer
@@ -51,7 +52,7 @@ public class MultipartAutoConfigurationTests {
 	private AnnotationConfigEmbeddedWebApplicationContext context;
 
 	@Rule
-	public ExpectedException exception = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 
 	@After
 	public void close() {
@@ -121,19 +122,6 @@ public class MultipartAutoConfigurationTests {
 		verifyServletWorks();
 	}
 
-	@Configuration
-	public static class ContainerWithNoMultipartTomcat {
-		@Bean
-		TomcatEmbeddedServletContainerFactory containerFactory() {
-			return new TomcatEmbeddedServletContainerFactory();
-		}
-
-		@Bean
-		WebController controller() {
-			return new WebController();
-		}
-	}
-
 	@Test
 	public void containerWithAutomatedMultipartJettyConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
@@ -144,6 +132,38 @@ public class MultipartAutoConfigurationTests {
 		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
 				this.context.getBean(StandardServletMultipartResolver.class));
 		verifyServletWorks();
+	}
+
+	@Test
+	public void containerWithAutomatedMultipartTomcatConfiguration() {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				ContainerWithEverythingTomcat.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				MultipartAutoConfiguration.class);
+		this.context.getBean(MultipartConfigElement.class);
+		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
+				this.context.getBean(StandardServletMultipartResolver.class));
+		verifyServletWorks();
+	}
+
+	private void verifyServletWorks() {
+		RestTemplate restTemplate = new RestTemplate();
+		assertEquals(restTemplate.getForObject("http://localhost:8080/", String.class),
+				"Hello");
+	}
+
+	@Configuration
+	public static class ContainerWithNoMultipartTomcat {
+
+		@Bean
+		TomcatEmbeddedServletContainerFactory containerFactory() {
+			return new TomcatEmbeddedServletContainerFactory();
+		}
+
+		@Bean
+		WebController controller() {
+			return new WebController();
+		}
 	}
 
 	@Configuration
@@ -162,18 +182,6 @@ public class MultipartAutoConfigurationTests {
 		WebController webController() {
 			return new WebController();
 		}
-	}
-
-	@Test
-	public void containerWithAutomatedMultipartTomcatConfiguration() {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ContainerWithEverythingTomcat.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				MultipartAutoConfiguration.class);
-		this.context.getBean(MultipartConfigElement.class);
-		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
-				this.context.getBean(StandardServletMultipartResolver.class));
-		verifyServletWorks();
 	}
 
 	@Configuration
@@ -202,12 +210,6 @@ public class MultipartAutoConfigurationTests {
 		String index() {
 			return "Hello";
 		}
-	}
-
-	private void verifyServletWorks() {
-		RestTemplate restTemplate = new RestTemplate();
-		assertEquals(restTemplate.getForObject("http://localhost:8080/", String.class),
-				"Hello");
 	}
 
 }
