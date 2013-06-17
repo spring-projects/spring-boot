@@ -94,7 +94,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	@Override
-	public EmbeddedServletContainer getEmbdeddedServletContainer(
+	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		if (getPort() == 0) {
 			return EmbeddedServletContainer.NONE;

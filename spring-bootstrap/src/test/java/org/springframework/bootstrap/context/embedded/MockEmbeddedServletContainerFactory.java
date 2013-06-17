@@ -49,7 +49,7 @@ public class MockEmbeddedServletContainerFactory extends
 	private MockEmbeddedServletContainer container;
 
 	@Override
-	public EmbeddedServletContainer getEmbdeddedServletContainer(
+	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		this.container = spy(new MockEmbeddedServletContainer(initializers, getPort()));
 		return this.container;
