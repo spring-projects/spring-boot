@@ -18,7 +18,7 @@ package org.springframework.bootstrap.context.embedded;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -56,6 +56,7 @@ import static org.mockito.Mockito.mock;
  * Base for testing classes that extends {@link AbstractEmbeddedServletContainerFactory}.
  * 
  * @author Phillip Webb
+ * @author Greg Turnquist
  */
 public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
@@ -91,8 +92,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.setPort(0);
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
-		this.thrown.expect(ConnectException.class);
-		this.thrown.expectMessage("Connection refused");
+		this.thrown.expect(SocketException.class);
 		getResponse("http://localhost:8080/hello");
 	}
 
@@ -102,7 +102,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.stop();
-		this.thrown.expect(ConnectException.class);
+		this.thrown.expect(SocketException.class);
 		getResponse("http://localhost:8080/hello");
 	}
 

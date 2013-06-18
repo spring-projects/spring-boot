@@ -16,7 +16,7 @@
 package org.springframework.bootstrap.actuate.autoconfigure;
 
 import java.io.FileNotFoundException;
-import java.net.ConnectException;
+import java.net.SocketException;
 import java.net.URI;
 import java.nio.charset.Charset;
 
@@ -49,6 +49,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link EndpointWebMvcAutoConfiguration}.
  * 
  * @author Phillip Webb
+ * @author Greg Turnquist
  */
 public class EndpointWebMvcAutoConfigurationTests {
 
@@ -170,7 +171,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 			}
 		} catch (Exception ex) {
 			if (expected == null) {
-				if (ConnectException.class.isInstance(ex)
+				if (SocketException.class.isInstance(ex)
 						|| FileNotFoundException.class.isInstance(ex)) {
 					return;
 				}
