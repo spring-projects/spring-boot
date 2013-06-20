@@ -14,6 +14,7 @@
 		<module>spring-bootstrap-actuator</module>
 		<module>spring-bootstrap-cli</module>
 		<module>spring-bootstrap-launcher</module>
+		<module>spring-bootstrap-maven-plugin</module>
 		<module>spring-bootstrap-samples</module>
 		<module>spring-bootstrap-starters</module>
 	</modules>
@@ -193,8 +194,16 @@
 					<version>2.4</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-invoker-plugin</artifactId>
+					<version>1.8</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.4</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-plugin-plugin</artifactId>
+					<version>3.2</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
