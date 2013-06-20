@@ -8,10 +8,7 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-bootstrap-profile-sample</artifactId>
-	<packaging>jar</packaging>
-	<properties>
-		<start-class>org.springframework.bootstrap.sample.simple.SimpleBootstrapApplication</start-class>
-	</properties>
+	<packaging>executable-jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -29,14 +26,4 @@
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 </project>

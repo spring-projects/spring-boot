@@ -28,6 +28,18 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<configuration>
+						<includePluginDependencies>true</includePluginDependencies>
+						<mainClass>${start-class}</mainClass>
+					</configuration>
+				</plugin>
+
+				<!-- Launcher Style -->
+
+				<plugin>
+					<!-- Copy dependencies before assembly -->
 					<artifactId>maven-dependency-plugin</artifactId>
 					<executions>
 						<execution>
@@ -64,6 +76,7 @@
 					</executions>
 				</plugin>
 				<plugin>
+					<!-- Assemble a complete JAR -->
 					<artifactId>maven-assembly-plugin</artifactId>
 					<configuration>
 						<descriptors>
@@ -89,14 +102,8 @@
 						</execution>
 					</executions>
 				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<configuration>
-						<includePluginDependencies>true</includePluginDependencies>
-						<mainClass>${start-class}</mainClass>
-					</configuration>
-				</plugin>
+
+				<!-- Shade Style -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
@@ -154,6 +161,14 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+			<plugin>
+				<!-- Support executable archives -->
+				<groupId>${project.groupId}</groupId>
+				<artifactId>spring-bootstrap-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<extensions>true</extensions>
+				<inherited>true</inherited>
+			</plugin>
 			<plugin>
 				<!--skip deploy (these are just samples) -->
 				<artifactId>maven-deploy-plugin</artifactId>

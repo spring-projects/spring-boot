@@ -108,8 +108,19 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<plugins>
+			<!-- Support bootstrap types -->
+			<plugin>
+				<groupId>org.springframework.bootstrap</groupId>
+				<artifactId>spring-bootstrap-maven-plugin</artifactId>
+				<version>${spring.bootstrap.version}</version>
+				<extensions>true</extensions>
+				<inherited>true</inherited>
+			</plugin>
+		</plugins>
 		<pluginManagement>
 			<plugins>
+				<!-- Allow exec plugin to launch the application -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
@@ -118,6 +129,8 @@
 						<mainClass>${start-class}</mainClass>
 					</configuration>
 				</plugin>
+
+				<!-- Support shade packaging -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
