@@ -32,6 +32,7 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
  * @author Greg Turnquist
  */
 @Configuration
+@ConditionalOnBean(MultipartConfigElement.class)
 public class MultipartAutoConfiguration {
 
 	@Bean
