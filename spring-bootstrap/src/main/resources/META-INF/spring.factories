@@ -10,6 +10,7 @@ org.springframework.bootstrap.autoconfigure.orm.jpa.HibernateJpaAutoConfiguratio
 org.springframework.bootstrap.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.ServerPropertiesAutoConfiguration,\
+org.springframework.bootstrap.autoconfigure.web.MultipartAutoConfiguration,\
 org.springframework.bootstrap.autoconfigure.web.WebMvcAutoConfiguration
 
 # Application Context Initializers
