@@ -18,9 +18,9 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>@project.groupId@</groupId>
-			<artifactId>spring-bootstrap</artifactId>
-			<version>@project.version@</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.2.3.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

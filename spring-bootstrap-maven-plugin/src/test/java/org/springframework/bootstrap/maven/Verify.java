@@ -24,9 +24,6 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.springframework.bootstrap.launcher.JarLauncher;
-import org.springframework.bootstrap.launcher.WarLauncher;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -110,7 +107,7 @@ public class Verify {
 		protected void verifyZipEntries(ZipFile zipFile, Map<String, ZipEntry> entries)
 				throws Exception {
 			super.verifyZipEntries(zipFile, entries);
-			assertHasEntryNameStartingWith(entries, "lib/spring-bootstrap");
+			assertHasEntryNameStartingWith(entries, "lib/spring-context");
 			assertHasEntryNameStartingWith(entries, "lib/spring-core");
 			assertHasEntryNameStartingWith(entries, "lib/javax.servlet-api-3.0.1.jar");
 			assertTrue("Unpacked launcher classes", entries.containsKey("org/"
@@ -121,8 +118,8 @@ public class Verify {
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
-			assertEquals(JarLauncher.class.getName(), manifest.getMainAttributes()
-					.getValue("Main-Class"));
+			assertEquals("org.springframework.bootstrap.launcher.JarLauncher", manifest
+					.getMainAttributes().getValue("Main-Class"));
 			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
 					.getValue("Start-Class"));
 		}
@@ -138,7 +135,7 @@ public class Verify {
 		protected void verifyZipEntries(ZipFile zipFile, Map<String, ZipEntry> entries)
 				throws Exception {
 			super.verifyZipEntries(zipFile, entries);
-			assertHasEntryNameStartingWith(entries, "WEB-INF/lib/spring-bootstrap");
+			assertHasEntryNameStartingWith(entries, "WEB-INF/lib/spring-context");
 			assertHasEntryNameStartingWith(entries, "WEB-INF/lib/spring-core");
 			assertHasEntryNameStartingWith(entries,
 					"WEB-INF/lib-provided/javax.servlet-api-3.0.1.jar");
@@ -151,8 +148,8 @@ public class Verify {
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
-			assertEquals(WarLauncher.class.getName(), manifest.getMainAttributes()
-					.getValue("Main-Class"));
+			assertEquals("org.springframework.bootstrap.launcher.WarLauncher", manifest
+					.getMainAttributes().getValue("Main-Class"));
 			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
 					.getValue("Start-Class"));
 		}
