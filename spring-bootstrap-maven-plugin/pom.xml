@@ -127,6 +127,11 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<version>3.0.10</version>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-bootstrap-launcher</artifactId>
 			<version>${project.version}</version>
