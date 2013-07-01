@@ -37,12 +37,12 @@ import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.config.annotation.authentication.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.HttpConfiguration;
-import org.springframework.security.config.annotation.web.WebSecurityBuilder;
-import org.springframework.security.config.annotation.web.WebSecurityBuilder.IgnoredRequestRegistry;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
@@ -73,7 +73,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
  * <code>security.basic.enabled: false</code></li>
  * <li>Customize the user details: add an AuthenticationManager bean</li>
  * <li>Add form login for user facing resources: add a
- * {@link WebSecurityConfigurerAdapter} and use {@link HttpConfiguration#formLogin()}</li>
+ * {@link WebSecurityConfigurerAdapter} and use {@link HttpSecurity#formLogin()}</li>
  * </ul>
  * 
  * @author Dave Syer
@@ -122,7 +122,7 @@ public class SecurityAutoConfiguration {
 		private ErrorController errorController;
 
 		@Override
-		protected void configure(HttpConfiguration http) throws Exception {
+		protected void configure(HttpSecurity http) throws Exception {
 
 			if (this.security.isRequireSsl()) {
 				http.requiresChannel().anyRequest().requiresSecure();
@@ -152,7 +152,7 @@ public class SecurityAutoConfiguration {
 					list.add(path);
 				}
 			}
-			// FIXME makes more sense to secure enpoints with a different role
+			// FIXME makes more sense to secure endpoints with a different role
 			list.addAll(Arrays.asList(getEndpointPaths(true)));
 			return list.toArray(new String[list.size()]);
 		}
@@ -164,8 +164,8 @@ public class SecurityAutoConfiguration {
 		}
 
 		@Override
-		public void configure(WebSecurityBuilder builder) throws Exception {
-			IgnoredRequestRegistry ignoring = builder.ignoring();
+		public void configure(WebSecurity builder) throws Exception {
+			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			ignoring.antMatchers(this.security.getIgnored());
 			ignoring.antMatchers(getEndpointPaths(false));
 			if (this.errorController != null) {

@@ -17,7 +17,7 @@
 package org.springframework.bootstrap.actuate.properties;
 
 import org.springframework.bootstrap.context.annotation.ConfigurationProperties;
-import org.springframework.security.config.annotation.web.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.SessionCreationPolicy;
 
 /**
  * Properties for the security aspects of an application.
