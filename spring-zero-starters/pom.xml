@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.zero</groupId>
+		<artifactId>spring-zero</artifactId>
+		<version>0.5.0.BUILD-SNAPSHOT</version>
+	</parent>
+	<artifactId>spring-zero-starters</artifactId>
+	<packaging>pom</packaging>
+	<properties>
+		<main.basedir>${basedir}/..</main.basedir>
+	</properties>
+	<modules>
+		<module>spring-zero-starter-actuator</module>
+		<module>spring-zero-starter-batch</module>
+		<module>spring-zero-starter-integration</module>
+		<module>spring-zero-starter-data-jpa</module>
+		<module>spring-zero-starter-security</module>
+		<module>spring-zero-starter</module>
+		<module>spring-zero-starter-web</module>
+	</modules>
+</project>

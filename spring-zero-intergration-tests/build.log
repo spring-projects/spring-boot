@@ -1,0 +1,495 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building spring-zero-integration-tests 0.0.1.BUILD-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-javadoc-plugin/2.9/maven-javadoc-plugin-2.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-javadoc-plugin/2.9/maven-javadoc-plugin-2.9.pom (16 KB at 1369.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-plugins/23/maven-plugins-23.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-plugins/23/maven-plugins-23.pom (9 KB at 2994.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/22/maven-parent-22.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/22/maven-parent-22.pom (30 KB at 4841.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/apache/11/apache-11.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/apache/11/apache-11.pom (15 KB at 3616.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-javadoc-plugin/2.9/maven-javadoc-plugin-2.9.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-javadoc-plugin/2.9/maven-javadoc-plugin-2.9.jar (354 KB at 8044.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-source-plugin/2.2.1/maven-source-plugin-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-source-plugin/2.2.1/maven-source-plugin-2.2.1.pom (7 KB at 2171.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-source-plugin/2.2.1/maven-source-plugin-2.2.1.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-source-plugin/2.2.1/maven-source-plugin-2.2.1.jar (30 KB at 5863.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-invoker-plugin/1.8/maven-invoker-plugin-1.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-invoker-plugin/1.8/maven-invoker-plugin-1.8.pom (13 KB at 4156.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-invoker-plugin/1.8/maven-invoker-plugin-1.8.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/plugins/maven-invoker-plugin/1.8/maven-invoker-plugin-1.8.jar (103 KB at 7913.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/2.0.6/plexus-utils-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/2.0.6/plexus-utils-2.0.6.pom (3 KB at 941.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/2.1/plexus-utils-2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/2.1/plexus-utils-2.1.pom (4 KB at 1969.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/sonatype/spice/spice-parent/16/spice-parent-16.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/sonatype/spice/spice-parent/16/spice-parent-16.pom (9 KB at 4081.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/sonatype/forge/forge-parent/5/forge-parent-5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/sonatype/forge/forge-parent/5/forge-parent-5.pom (9 KB at 2722.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.5/plexus-utils-1.5.5.pom (6 KB at 2513.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.11/plexus-1.0.11.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.11/plexus-1.0.11.pom (9 KB at 2919.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.0.6/maven-artifact-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.0.6/maven-artifact-2.0.6.pom (2 KB at 770.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.0.6/maven-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.0.6/maven-2.0.6.pom (9 KB at 4417.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/5/maven-parent-5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/5/maven-parent-5.pom (15 KB at 4960.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/apache/3/apache-3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/apache/3/apache-3.pom (4 KB at 1674.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.1/plexus-utils-1.4.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.1/plexus-utils-1.4.1.pom (2 KB at 1864.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.0.6/maven-model-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.0.6/maven-model-2.0.6.pom (3 KB at 1487.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-core/2.0.6/maven-core-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-core/2.0.6/maven-core-2.0.6.pom (7 KB at 6553.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.0.6/maven-settings-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.0.6/maven-settings-2.0.6.pom (2 KB at 977.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1.pom (4 KB at 1928.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-containers/1.0.3/plexus-containers-1.0.3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-containers/1.0.3/plexus-containers-1.0.3.pom (492 B at 480.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.4/plexus-1.0.4.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.4/plexus-1.0.4.pom (6 KB at 2801.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/junit/junit/4.11/junit-4.11.pom
+Downloaded: file:///Users/pwebb/.m2/repository/junit/junit/4.11/junit-4.11.pom (3 KB at 2289.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.pom (766 B at 748.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-parent/1.3/hamcrest-parent-1.3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-parent/1.3/hamcrest-parent-1.3.pom (2 KB at 1925.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.0.4/plexus-utils-1.0.4.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.0.4/plexus-utils-1.0.4.pom (7 KB at 3347.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.pom (4 KB at 1527.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-file/1.0-beta-2/wagon-file-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-file/1.0-beta-2/wagon-file-1.0-beta-2.pom (637 B at 311.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-providers/1.0-beta-2/wagon-providers-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-providers/1.0-beta-2/wagon-providers-1.0-beta-2.pom (2 KB at 1734.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon/1.0-beta-2/wagon-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon/1.0-beta-2/wagon-1.0-beta-2.pom (6 KB at 2872.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/4/maven-parent-4.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/4/maven-parent-4.pom (10 KB at 4880.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-2/wagon-provider-api-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-2/wagon-provider-api-1.0-beta-2.pom (680 B at 664.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-parameter-documenter/2.0.6/maven-plugin-parameter-documenter-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-parameter-documenter/2.0.6/maven-plugin-parameter-documenter-2.0.6.pom (2 KB at 1866.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-http-lightweight/1.0-beta-2/wagon-http-lightweight-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-http-lightweight/1.0-beta-2/wagon-http-lightweight-1.0-beta-2.pom (2 KB at 1334.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-http-shared/1.0-beta-2/wagon-http-shared-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-http-shared/1.0-beta-2/wagon-http-shared-1.0-beta-2.pom (845 B at 412.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/jtidy/jtidy/4aug2000r7-dev/jtidy-4aug2000r7-dev.pom
+Downloaded: file:///Users/pwebb/.m2/repository/jtidy/jtidy/4aug2000r7-dev/jtidy-4aug2000r7-dev.pom (2 KB at 638.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.pom (3 KB at 1098.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.0.6/maven-reporting-api-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.0.6/maven-reporting-api-2.0.6.pom (2 KB at 1710.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting/2.0.6/maven-reporting-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting/2.0.6/maven-reporting-2.0.6.pom (2 KB at 1405.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0-alpha-7/doxia-sink-api-1.0-alpha-7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0-alpha-7/doxia-sink-api-1.0-alpha-7.pom (424 B at 414.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia/1.0-alpha-7/doxia-1.0-alpha-7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia/1.0-alpha-7/doxia-1.0-alpha-7.pom (4 KB at 1910.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.0.6/maven-profile-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.0.6/maven-profile-2.0.6.pom (2 KB at 1933.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.6/maven-repository-metadata-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.6/maven-repository-metadata-2.0.6.pom (2 KB at 1806.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-error-diagnostics/2.0.6/maven-error-diagnostics-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-error-diagnostics/2.0.6/maven-error-diagnostics-2.0.6.pom (2 KB at 832.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.0.6/maven-project-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.0.6/maven-project-2.0.6.pom (3 KB at 2575.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.6/maven-artifact-manager-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.6/maven-artifact-manager-2.0.6.pom (3 KB at 2560.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.6/maven-plugin-registry-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.6/maven-plugin-registry-2.0.6.pom (2 KB at 1900.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.0/commons-cli-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.0/commons-cli-1.0.pom (3 KB at 2055.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.0.6/maven-plugin-api-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.0.6/maven-plugin-api-2.0.6.pom (2 KB at 710.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-ssh-external/1.0-beta-2/wagon-ssh-external-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-ssh-external/1.0-beta-2/wagon-ssh-external-1.0-beta-2.pom (2 KB at 1424.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-ssh-common/1.0-beta-2/wagon-ssh-common-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-ssh-common/1.0-beta-2/wagon-ssh-common-1.0-beta-2.pom (851 B at 415.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interactivity-api/1.0-alpha-4/plexus-interactivity-api-1.0-alpha-4.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interactivity-api/1.0-alpha-4/plexus-interactivity-api-1.0-alpha-4.pom (7 KB at 6924.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-7/plexus-container-default-1.0-alpha-7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-7/plexus-container-default-1.0-alpha-7.pom (2 KB at 1258.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/plexus/plexus-containers/1.0.2/plexus-containers-1.0.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/plexus/plexus-containers/1.0.2/plexus-containers-1.0.2.pom (471 B at 230.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/plexus/plexus-root/1.0.3/plexus-root-1.0.3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/plexus/plexus-root/1.0.3/plexus-root-1.0.3.pom (6 KB at 2939.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/plexus/plexus-utils/1.0.2/plexus-utils-1.0.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/plexus/plexus-utils/1.0.2/plexus-utils-1.0.2.pom (740 B at 361.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-descriptor/2.0.6/maven-plugin-descriptor-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-descriptor/2.0.6/maven-plugin-descriptor-2.0.6.pom (2 KB at 1970.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-monitor/2.0.6/maven-monitor-2.0.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-monitor/2.0.6/maven-monitor-2.0.6.pom (2 KB at 1224.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-ssh/1.0-beta-2/wagon-ssh-1.0-beta-2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-ssh/1.0-beta-2/wagon-ssh-1.0-beta-2.pom (2 KB at 846.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/com/jcraft/jsch/0.1.27/jsch-0.1.27.pom
+Downloaded: file:///Users/pwebb/.m2/repository/com/jcraft/jsch/0.1.27/jsch-0.1.27.pom (965 B at 942.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/classworlds/classworlds/1.1/classworlds-1.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/classworlds/classworlds/1.1/classworlds-1.1.pom (4 KB at 3246.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1/plexus-archiver-2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1/plexus-archiver-2.1.pom (3 KB at 2743.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.pom (4 KB at 3971.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-io/2.0.2/plexus-io-2.0.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-io/2.0.2/plexus-io-2.0.2.pom (2 KB at 1692.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.15/plexus-interpolation-1.15.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.15/plexus-interpolation-1.15.pom (1018 B at 994.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.7/plexus-utils-3.0.7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.7/plexus-utils-3.0.7.pom (3 KB at 2453.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/mockito/mockito-core/1.9.5/mockito-core-1.9.5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/mockito/mockito-core/1.9.5/mockito-core-1.9.5.pom (2 KB at 1417.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.pom (481 B at 469.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-parent/1.1/hamcrest-parent-1.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-parent/1.1/hamcrest-parent-1.1.pom (6 KB at 5739.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/objenesis/objenesis/1.0/objenesis-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/objenesis/objenesis/1.0/objenesis-1.0.pom (853 B at 833.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/hamcrest/hamcrest-library/1.3/hamcrest-library-1.3.pom (820 B at 800.8 KB/sec)
+[INFO] 
+[INFO] --- maven-javadoc-plugin:2.9:jar (attach-javadocs) @ spring-zero-integration-tests ---
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-core/2.2.1/maven-core-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-core/2.2.1/maven-core-2.2.1.pom (12 KB at 11360.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.2.1/maven-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.2.1/maven-2.2.1.pom (22 KB at 10941.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/11/maven-parent-11.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/11/maven-parent-11.pom (32 KB at 15824.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/apache/5/apache-5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/apache/5/apache-5.pom (5 KB at 2000.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1.pom (3 KB at 2127.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1.pom (4 KB at 1582.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.pom (7 KB at 3344.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/2.0.2/plexus-2.0.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/2.0.2/plexus-2.0.2.pom (12 KB at 11337.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.pom (889 B at 868.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-components/1.1.14/plexus-components-1.1.14.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-components/1.1.14/plexus-components-1.1.14.pom (6 KB at 5705.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/junit/junit/3.8.1/junit-3.8.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/junit/junit/3.8.1/junit-3.8.1.pom (998 B at 974.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-parameter-documenter/2.2.1/maven-plugin-parameter-documenter-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-parameter-documenter/2.2.1/maven-plugin-parameter-documenter-2.2.1.pom (2 KB at 1911.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-jdk14/1.5.6/slf4j-jdk14-1.5.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-jdk14/1.5.6/slf4j-jdk14-1.5.6.pom (2 KB at 1853.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-parent/1.5.6/slf4j-parent-1.5.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-parent/1.5.6/slf4j-parent-1.5.6.pom (8 KB at 3867.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-api/1.5.6/slf4j-api-1.5.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-api/1.5.6/slf4j-api-1.5.6.pom (3 KB at 2914.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/slf4j/jcl-over-slf4j/1.5.6/jcl-over-slf4j-1.5.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/slf4j/jcl-over-slf4j/1.5.6/jcl-over-slf4j-1.5.6.pom (3 KB at 2118.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.2.1/maven-reporting-api-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.2.1/maven-reporting-api-2.2.1.pom (2 KB at 904.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting/2.2.1/maven-reporting-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting/2.2.1/maven-reporting-2.2.1.pom (2 KB at 1409.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.1/doxia-sink-api-1.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.1/doxia-sink-api-1.1.pom (2 KB at 995.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia/1.1/doxia-1.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia/1.1/doxia-1.1.pom (15 KB at 14822.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-logging-api/1.1/doxia-logging-api-1.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-logging-api/1.1/doxia-logging-api-1.1.pom (2 KB at 1538.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-30/plexus-container-default-1.0-alpha-30.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-30/plexus-container-default-1.0-alpha-30.pom (4 KB at 3395.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-containers/1.0-alpha-30/plexus-containers-1.0-alpha-30.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-containers/1.0-alpha-30/plexus-containers-1.0-alpha-30.pom (2 KB at 1849.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.5/plexus-utils-1.4.5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.5/plexus-utils-1.4.5.pom (3 KB at 2211.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-classworlds/1.2-alpha-9/plexus-classworlds-1.2-alpha-9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-classworlds/1.2-alpha-9/plexus-classworlds-1.2-alpha-9.pom (4 KB at 3147.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.10/plexus-1.0.10.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.10/plexus-1.0.10.pom (9 KB at 8056.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1.pom (3 KB at 2120.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1.pom (2 KB at 772.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.pom (2 KB at 1827.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-error-diagnostics/2.2.1/maven-error-diagnostics-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-error-diagnostics/2.2.1/maven-error-diagnostics-2.2.1.pom (2 KB at 1668.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1.pom (3 KB at 1354.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1.pom (4 KB at 1515.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.pom (880 B at 429.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1.pom (2 KB at 1883.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.pom (8 KB at 3896.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/11/commons-parent-11.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/11/commons-parent-11.pom (25 KB at 12035.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/apache/4/apache-4.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/apache/4/apache-4.pom (5 KB at 4389.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1.pom (2 KB at 712.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-descriptor/2.2.1/maven-plugin-descriptor-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-descriptor/2.2.1/maven-plugin-descriptor-2.2.1.pom (3 KB at 2015.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-monitor/2.2.1/maven-monitor-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-monitor/2.2.1/maven-monitor-2.2.1.pom (2 KB at 1227.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-toolchain/2.2.1/maven-toolchain-2.2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-toolchain/2.2.1/maven-toolchain-2.2.1.pom (4 KB at 3265.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/3.0/maven-reporting-api-3.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/3.0/maven-reporting-api-3.0.pom (3 KB at 2317.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-shared-components/15/maven-shared-components-15.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-shared-components/15/maven-shared-components-15.pom (10 KB at 9118.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/16/maven-parent-16.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/16/maven-parent-16.pom (23 KB at 22726.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/apache/7/apache-7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/apache/7/apache-7.pom (15 KB at 14091.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0/doxia-sink-api-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0/doxia-sink-api-1.0.pom (2 KB at 1354.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia/1.0/doxia-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia/1.0/doxia-1.0.pom (10 KB at 9418.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/10/maven-parent-10.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/10/maven-parent-10.pom (31 KB at 15446.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-invoker/2.0.9/maven-invoker-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-invoker/2.0.9/maven-invoker-2.0.9.pom (6 KB at 5641.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-shared-components/9/maven-shared-components-9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-shared-components/9/maven-shared-components-9.pom (4 KB at 3418.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/8/maven-parent-8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/8/maven-parent-8.pom (24 KB at 23567.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.6/plexus-utils-1.5.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.6/plexus-utils-1.5.6.pom (6 KB at 5177.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.12/plexus-1.0.12.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.12/plexus-1.0.12.pom (10 KB at 9570.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.3/maven-common-artifact-filters-1.3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.3/maven-common-artifact-filters-1.3.pom (4 KB at 1807.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-shared-components/12/maven-shared-components-12.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-shared-components/12/maven-shared-components-12.pom (10 KB at 4559.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/13/maven-parent-13.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/13/maven-parent-13.pom (23 KB at 22103.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/apache/6/apache-6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/apache/6/apache-6.pom (13 KB at 12496.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.0.8/maven-artifact-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.0.8/maven-artifact-2.0.8.pom (2 KB at 1581.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.0.8/maven-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.0.8/maven-2.0.8.pom (12 KB at 11811.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/6/maven-parent-6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-parent/6/maven-parent-6.pom (20 KB at 19576.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.6/plexus-utils-1.4.6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.6/plexus-utils-1.4.6.pom (3 KB at 2211.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.0.8/maven-model-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.0.8/maven-model-2.0.8.pom (4 KB at 1533.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.0.8/maven-project-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.0.8/maven-project-2.0.8.pom (3 KB at 2646.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.0.8/maven-settings-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.0.8/maven-settings-2.0.8.pom (3 KB at 2009.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.0.8/maven-profile-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.0.8/maven-profile-2.0.8.pom (2 KB at 1989.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.8/maven-artifact-manager-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.8/maven-artifact-manager-2.0.8.pom (3 KB at 2636.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.8/maven-repository-metadata-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.8/maven-repository-metadata-2.0.8.pom (2 KB at 1856.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.8/maven-plugin-registry-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.8/maven-plugin-registry-2.0.8.pom (2 KB at 1952.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.0.8/maven-plugin-api-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.0.8/maven-plugin-api-2.0.8.pom (2 KB at 1459.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9/plexus-container-default-1.0-alpha-9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9/plexus-container-default-1.0-alpha-9.pom (2 KB at 1207.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.9/plexus-utils-1.4.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.9/plexus-utils-1.4.9.pom (3 KB at 2242.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.0/doxia-site-renderer-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.0/doxia-site-renderer-1.0.pom (5 KB at 4323.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sitetools/1.0/doxia-sitetools-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sitetools/1.0/doxia-sitetools-1.0.pom (10 KB at 9361.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-core/1.0/doxia-core-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-core/1.0/doxia-core-1.0.pom (3 KB at 1169.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.7/plexus-utils-1.5.7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.7/plexus-utils-1.5.7.pom (8 KB at 3937.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-7/plexus-i18n-1.0-beta-7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-7/plexus-i18n-1.0-beta-7.pom (2 KB at 1034.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-components/1.1.12/plexus-components-1.1.12.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-components/1.1.12/plexus-components-1.1.12.pom (3 KB at 2932.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.7/plexus-velocity-1.1.7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.7/plexus-velocity-1.1.7.pom (2 KB at 955.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-20/plexus-container-default-1.0-alpha-20.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-20/plexus-container-default-1.0-alpha-20.pom (3 KB at 1460.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-containers/1.0-alpha-20/plexus-containers-1.0-alpha-20.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-containers/1.0-alpha-20/plexus-containers-1.0-alpha-20.pom (2 KB at 263.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.3/plexus-utils-1.3.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.3/plexus-utils-1.3.pom (2 KB at 1009.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.8/plexus-1.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.8/plexus-1.0.8.pom (8 KB at 7060.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-classworlds/1.2-alpha-7/plexus-classworlds-1.2-alpha-7.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-classworlds/1.2-alpha-7/plexus-classworlds-1.2-alpha-7.pom (3 KB at 1158.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.9/plexus-1.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/1.0.9/plexus-1.0.9.pom (8 KB at 7500.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/velocity/velocity/1.5/velocity-1.5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/velocity/velocity/1.5/velocity-1.5.pom (8 KB at 3791.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.pom (6 KB at 2970.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.pom (10 KB at 9695.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/oro/oro/2.0.8/oro-2.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/oro/oro/2.0.8/oro-2.0.8.pom (140 B at 136.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.0/doxia-decoration-model-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.0/doxia-decoration-model-1.0.pom (4 KB at 3080.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.pom (11 KB at 10775.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.0/doxia-module-apt-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.0/doxia-module-apt-1.0.pom (3 KB at 2200.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-modules/1.0/doxia-modules-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-modules/1.0/doxia-modules-1.0.pom (3 KB at 2337.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.0/doxia-module-fml-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.0/doxia-module-fml-1.0.pom (3 KB at 1314.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.0/doxia-module-xdoc-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.0/doxia-module-xdoc-1.0.pom (3 KB at 1094.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.0/doxia-module-xhtml-1.0.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.0/doxia-module-xhtml-1.0.pom (2 KB at 1561.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6.pom (2 KB at 1718.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon/1.0-beta-6/wagon-1.0-beta-6.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/wagon/wagon/1.0-beta-6/wagon-1.0-beta-6.pom (13 KB at 12095.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.2/plexus-utils-1.4.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.2/plexus-utils-1.4.2.pom (2 KB at 1913.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4.pom (14 KB at 13648.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/9/commons-parent-9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/9/commons-parent-9.pom (22 KB at 21416.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-io/commons-io/2.2/commons-io-2.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-io/commons-io/2.2/commons-io-2.2.pom (11 KB at 10775.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/24/commons-parent-24.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/24/commons-parent-24.pom (47 KB at 46157.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/apache/9/apache-9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/apache/9/apache-9.pom (15 KB at 7402.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.pom (8 KB at 3790.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.pom (6 KB at 5140.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.pom (4 KB at 3735.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.pom (18 KB at 17934.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/5/commons-parent-5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/commons/commons-parent/5/commons-parent-5.pom (16 KB at 7832.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.pom
+Downloaded: file:///Users/pwebb/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.pom (3 KB at 1159.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/com/thoughtworks/qdox/qdox/1.12/qdox-1.12.pom
+Downloaded: file:///Users/pwebb/.m2/repository/com/thoughtworks/qdox/qdox/1.12/qdox-1.12.pom (19 KB at 18120.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1.2/plexus-archiver-2.1.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1.2/plexus-archiver-2.1.2.pom (4 KB at 17.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.2/plexus-utils-3.0.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.2/plexus-utils-3.0.2.pom (3 KB at 817.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.5/plexus-utils-3.0.5.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.5/plexus-utils-3.0.5.pom (3 KB at 1226.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-jdk14/1.5.6/slf4j-jdk14-1.5.6.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-api/1.5.6/slf4j-api-1.5.6.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/slf4j/jcl-over-slf4j/1.5.6/jcl-over-slf4j-1.5.6.jar
+Downloading: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interactivity-api/1.0-alpha-4/plexus-interactivity-api-1.0-alpha-4.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-jdk14/1.5.6/slf4j-jdk14-1.5.6.jar (9 KB at 4304.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/slf4j/slf4j-api/1.5.6/slf4j-api-1.5.6.jar (22 KB at 10907.2 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interactivity-api/1.0-alpha-4/plexus-interactivity-api-1.0-alpha-4.jar (14 KB at 6546.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/3.0/maven-reporting-api-3.0.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/slf4j/jcl-over-slf4j/1.5.6/jcl-over-slf4j-1.5.6.jar (17 KB at 8165.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-invoker/2.0.9/maven-invoker-2.0.9.jar
+Downloaded: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar (41 KB at 13386.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.3/maven-common-artifact-filters-1.3.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/3.0/maven-reporting-api-3.0.jar (11 KB at 5341.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0/doxia-sink-api-1.0.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-invoker/2.0.9/maven-invoker-2.0.9.jar (28 KB at 13809.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.0/doxia-site-renderer-1.0.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar (50 KB at 16580.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-core/1.0/doxia-core-1.0.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.3/maven-common-artifact-filters-1.3.jar (31 KB at 15165.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-7/plexus-i18n-1.0-beta-7.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0/doxia-sink-api-1.0.jar (10 KB at 4918.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.7/plexus-velocity-1.1.7.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-7/plexus-i18n-1.0-beta-7.jar (11 KB at 5131.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/velocity/velocity/1.5/velocity-1.5.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.0/doxia-site-renderer-1.0.jar (46 KB at 22713.4 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-core/1.0/doxia-core-1.0.jar (54 KB at 26831.1 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.7/plexus-velocity-1.1.7.jar (8 KB at 7488.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/oro/oro/2.0.8/oro-2.0.8.jar
+Downloading: file:///Users/pwebb/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.0/doxia-decoration-model-1.0.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.0/doxia-decoration-model-1.0.jar (48 KB at 11959.5 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/oro/oro/2.0.8/oro-2.0.8.jar (64 KB at 15932.9 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar (324 KB at 35993.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.0/doxia-module-fml-1.0.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.0/doxia-module-xdoc-1.0.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.0/doxia-module-apt-1.0.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.0/doxia-module-fml-1.0.jar (19 KB at 18110.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.0/doxia-module-xhtml-1.0.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.0/doxia-module-xdoc-1.0.jar (28 KB at 13572.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.0/doxia-module-apt-1.0.jar (46 KB at 15324.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-io/commons-io/2.2/commons-io-2.2.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.0/doxia-module-xhtml-1.0.jar (22 KB at 10647.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/velocity/velocity/1.5/velocity-1.5.jar (383 KB at 34812.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar
+Downloaded: file:///Users/pwebb/.m2/repository/commons-io/commons-io/2.2/commons-io-2.2.jar (170 KB at 33903.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar
+Downloaded: file:///Users/pwebb/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar (30 KB at 9793.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar
+Downloaded: file:///Users/pwebb/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4.jar (256 KB at 36524.7 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/com/thoughtworks/qdox/qdox/1.12/qdox-1.12.jar
+Downloaded: file:///Users/pwebb/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar (558 KB at 37191.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar
+Downloaded: file:///Users/pwebb/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar (60 KB at 9877.3 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar (298 KB at 29785.3 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1.2/plexus-archiver-2.1.2.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.5/plexus-utils-3.0.5.jar
+Downloaded: file:///Users/pwebb/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar (119 KB at 29558.1 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/com/thoughtworks/qdox/qdox/1.12/qdox-1.12.jar (176 KB at 29251.5 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar (359 KB at 39870.2 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1.2/plexus-archiver-2.1.2.jar (181 KB at 30087.2 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.5/plexus-utils-3.0.5.jar (226 KB at 32149.4 KB/sec)
+[INFO] Not executing Javadoc as the project is not a Java classpath-capable package
+[INFO] 
+[INFO] --- maven-source-plugin:2.2.1:jar-no-fork (attach-sources) @ spring-zero-integration-tests ---
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.0.9/maven-model-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-model/2.0.9/maven-model-2.0.9.pom (4 KB at 1533.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.0.9/maven-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven/2.0.9/maven-2.0.9.pom (19 KB at 18463.9 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.1/plexus-utils-1.5.1.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.1/plexus-utils-1.5.1.pom (3 KB at 2242.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.0.9/maven-artifact-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact/2.0.9/maven-artifact-2.0.9.pom (2 KB at 1581.1 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.0.9/maven-plugin-api-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-api/2.0.9/maven-plugin-api-2.0.9.pom (2 KB at 1459.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.0.9/maven-project-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-project/2.0.9/maven-project-2.0.9.pom (3 KB at 2646.5 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.0.9/maven-settings-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-settings/2.0.9/maven-settings-2.0.9.pom (3 KB at 2009.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.0.9/maven-profile-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-profile/2.0.9/maven-profile-2.0.9.pom (3 KB at 1001.0 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.9/maven-artifact-manager-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-artifact-manager/2.0.9/maven-artifact-manager-2.0.9.pom (3 KB at 1318.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.9/maven-repository-metadata-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-repository-metadata/2.0.9/maven-repository-metadata-2.0.9.pom (2 KB at 1856.4 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.9/maven-plugin-registry-2.0.9.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/maven-plugin-registry/2.0.9/maven-plugin-registry-2.0.9.pom (2 KB at 1924.8 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.8/plexus-utils-3.0.8.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.8/plexus-utils-3.0.8.pom (4 KB at 1534.2 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/3.2/plexus-3.2.pom
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus/3.2/plexus-3.2.pom (19 KB at 18306.6 KB/sec)
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.0.6/maven-reporting-api-2.0.6.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0-alpha-7/doxia-sink-api-1.0-alpha-7.jar
+Downloading: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.0/commons-cli-1.0.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.15/plexus-interpolation-1.15.jar
+Downloading: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.8/plexus-utils-3.0.8.jar
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0-alpha-7/doxia-sink-api-1.0-alpha-7.jar (6 KB at 2898.4 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.0.6/maven-reporting-api-2.0.6.jar (10 KB at 4854.0 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/commons-cli/commons-cli/1.0/commons-cli-1.0.jar (30 KB at 14705.6 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.15/plexus-interpolation-1.15.jar (60 KB at 19685.5 KB/sec)
+Downloaded: file:///Users/pwebb/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.8/plexus-utils-3.0.8.jar (227 KB at 37731.4 KB/sec)
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.704s
+[INFO] Finished at: Wed Jul 03 13:00:17 PDT 2013
+[INFO] Final Memory: 15M/355M
+[INFO] ------------------------------------------------------------------------

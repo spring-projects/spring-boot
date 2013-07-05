@@ -1,0 +1,7 @@
+# Application Context Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.bootstrap.context.initializer.ConfigFileApplicationContextInitializer,\
+org.springframework.bootstrap.context.initializer.ContextIdApplicationContextInitializer,\
+org.springframework.bootstrap.context.initializer.EnvironmentDelegateApplicationContextInitializer,\
+org.springframework.bootstrap.context.initializer.LoggingApplicationContextInitializer,\
+org.springframework.bootstrap.context.initializer.VcapApplicationContextInitializer
