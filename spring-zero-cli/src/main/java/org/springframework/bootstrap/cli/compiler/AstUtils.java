@@ -29,7 +29,8 @@ public abstract class AstUtils {
 	/**
 	 * Determine if an {@link AnnotatedNode} has one or more of the specified annotations.
 	 */
-	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node, String... annotations) {
+	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node,
+			String... annotations) {
 
 		for (AnnotationNode annotationNode : node.getAnnotations()) {
 			for (String annotation : annotations) {

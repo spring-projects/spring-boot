@@ -16,7 +16,6 @@
 
 package org.springframework.bootstrap.actuate.fixme;
 
-
 /**
  * @author Dave Syer
  */

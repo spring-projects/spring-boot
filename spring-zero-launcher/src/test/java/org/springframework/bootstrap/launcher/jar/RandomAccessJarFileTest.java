@@ -52,7 +52,7 @@ import org.springframework.bootstrap.launcher.data.RandomAccessDataFile;
 
 /**
  * Tests for {@link RandomAccessJarFile}.
- *
+ * 
  * @author Phillip Webb
  */
 public class RandomAccessJarFileTest {

@@ -38,8 +38,8 @@ public class NonAutoConfigurationBootstrapApplicationTests {
 	private static ConfigurableApplicationContext context;
 
 	@Configuration
-	@Import({ EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class })
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
 	public static class NonAutoConfigurationBootstrapApplication {
 

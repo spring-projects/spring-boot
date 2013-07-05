@@ -35,6 +35,7 @@ public abstract class SpringServletInitializer implements WebApplicationInitiali
 	/** Logger available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		WebApplicationContext rootAppContext = this
 				.createRootApplicationContext(servletContext);

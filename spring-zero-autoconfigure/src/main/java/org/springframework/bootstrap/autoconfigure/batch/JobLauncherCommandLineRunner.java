@@ -63,6 +63,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 		this.publisher = publisher;
 	}
 
+	@Override
 	public void run(String... args) throws JobExecutionException {
 		logger.info("Running default command line with: " + Arrays.asList(args));
 		launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args, "="));

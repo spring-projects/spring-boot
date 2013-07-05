@@ -98,6 +98,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * @param contextPath the contextPath to set
 	 * @see #getContextPath
 	 */
+	@Override
 	public void setContextPath(String contextPath) {
 		Assert.notNull(contextPath, "ContextPath must not be null");
 		if (contextPath.length() > 0) {
@@ -117,6 +118,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Returns the context path for the embedded servlet container. The path will start
 	 * with "/" and not end with "/". The root context is represented by an empty string.
 	 */
+	@Override
 	public String getContextPath() {
 		return this.contextPath;
 	}
@@ -127,6 +129,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * 
 	 * @param port the port to set
 	 */
+	@Override
 	public void setPort(int port) {
 		if (port < 0 || port > 65535) {
 			throw new IllegalArgumentException("Port must be between 1 and 65535");
@@ -137,6 +140,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	/**
 	 * Returns the port that the embedded servlet container should listen on.
 	 */
+	@Override
 	public int getPort() {
 		return this.port;
 	}
@@ -146,6 +150,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * 
 	 * @param address the address to set (defaults to null)
 	 */
+	@Override
 	public void setAddress(InetAddress address) {
 		this.address = address;
 	}
@@ -153,18 +158,20 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	/**
 	 * @return the address the embedded container binds to
 	 */
+	@Override
 	public InetAddress getAddress() {
 		return this.address;
 	}
 
 	/**
 	 * Sets {@link ServletContextInitializer} that should be applied in addition to
-	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters.
-	 * This method will replace any previously set or added initializers.
+	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters. This
+	 * method will replace any previously set or added initializers.
 	 * @param initializers the initializers to set
 	 * @see #addInitializers
 	 * @see #getInitializers
 	 */
+	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = new ArrayList<ServletContextInitializer>(initializers);
