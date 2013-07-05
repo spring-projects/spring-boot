@@ -34,6 +34,7 @@ import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardService;
+import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
@@ -139,9 +140,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		if (this.resourceLoader != null) {
-			context.setParentClassLoader(this.resourceLoader.getClassLoader());
-		}
+		context.setParentClassLoader(this.resourceLoader != null ? this.resourceLoader
+				.getClassLoader() : ClassUtils.getDefaultClassLoader());
+		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
+		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		context.setLoader(loader);
+
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
