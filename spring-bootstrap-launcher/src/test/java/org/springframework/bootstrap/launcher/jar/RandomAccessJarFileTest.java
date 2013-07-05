@@ -52,7 +52,7 @@ import org.springframework.bootstrap.launcher.data.RandomAccessDataFile;
 
 /**
  * Tests for {@link RandomAccessJarFile}.
- * 
+ *
  * @author Phillip Webb
  */
 public class RandomAccessJarFileTest {
@@ -296,6 +296,13 @@ public class RandomAccessJarFileTest {
 	@Test
 	public void getDirectoryInputStream() throws Exception {
 		InputStream inputStream = jarFile.getInputStream(jarFile.getEntry("d/"));
+		assertThat(inputStream, notNullValue());
+		assertThat(inputStream.read(), equalTo(-1));
+	}
+
+	@Test
+	public void getDirectoryInputStreamWithoutSlash() throws Exception {
+		InputStream inputStream = jarFile.getInputStream(jarFile.getEntry("d"));
 		assertThat(inputStream, notNullValue());
 		assertThat(inputStream.read(), equalTo(-1));
 	}

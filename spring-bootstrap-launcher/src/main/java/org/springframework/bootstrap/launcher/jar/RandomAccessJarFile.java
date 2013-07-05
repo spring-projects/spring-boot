@@ -175,7 +175,11 @@ public class RandomAccessJarFile extends JarFile {
 
 	@Override
 	public ZipEntry getEntry(String name) {
-		return this.entries.get(name);
+		JarEntry entry = this.entries.get(name);
+		if (entry == null && name != null && !name.endsWith("/")) {
+			entry = this.entries.get(name + "/");
+		}
+		return entry;
 	}
 
 	@Override
