@@ -21,9 +21,12 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
 import org.springframework.bootstrap.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -47,6 +50,17 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
+	}
+
+	@Test
+	public void testDefaultDataSourceCanBeOverridden() throws Exception {
+		this.context.register(TestDataSourceConfiguration.class,
+				DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue("DataSource is wrong type: " + dataSource,
+				dataSource instanceof BasicDataSource);
 	}
 
 	@Test
@@ -83,6 +97,22 @@ public class DataSourceAutoConfigurationTests {
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertEquals(new Integer(0),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
+	}
+
+	@Configuration
+	static class TestDataSourceConfiguration {
+
+		private BasicDataSource pool;
+
+		@Bean
+		public DataSource dataSource() {
+			this.pool = new BasicDataSource();
+			this.pool.setDriverClassName("org.hsqldb.jdbcDriver");
+			this.pool.setUrl("jdbc:hsqldb:overridedb");
+			this.pool.setUsername("sa");
+			return this.pool;
+		}
+
 	}
 
 }

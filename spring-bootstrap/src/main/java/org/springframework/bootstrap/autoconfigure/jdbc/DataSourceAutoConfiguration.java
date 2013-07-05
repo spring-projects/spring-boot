@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class /* Spring JDBC */)
-// @ConditionalOnMissingBean(DataSource.class)
+@ConditionalOnMissingBean(DataSource.class)
 public class DataSourceAutoConfiguration {
 
 	// FIXME see above
@@ -109,7 +109,7 @@ public class DataSourceAutoConfiguration {
 	}
 
 	// FIXME: DB platform
-	@Value("${spring.database.schema:classpath*:schema.sql}")
+	@Value("${spring.database.schema:classpath*:schema-${spring.database.platform:all}.sql}")
 	private String schemaLocations = "";
 
 	@PostConstruct

@@ -55,7 +55,7 @@ public class ManagementAddressServiceBootstrapApplicationTests {
 										.run(ServiceBootstrapApplication.class, args);
 							}
 						});
-		context = future.get(10, TimeUnit.SECONDS);
+		context = future.get(30, TimeUnit.SECONDS);
 	}
 
 	@AfterClass
