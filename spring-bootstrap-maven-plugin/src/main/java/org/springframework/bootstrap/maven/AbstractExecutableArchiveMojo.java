@@ -41,6 +41,8 @@ import org.codehaus.plexus.archiver.zip.ZipResource;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.resolution.ArtifactDescriptorRequest;
+import org.sonatype.aether.resolution.ArtifactDescriptorResult;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
@@ -281,19 +283,29 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 	private ZipFile addLauncherClasses(MavenArchiver archiver)
 			throws MojoExecutionException {
 		try {
-			ArtifactRequest request = new ArtifactRequest();
-			String version = getClass().getPackage().getImplementationVersion();
-			request.setArtifact(new DefaultArtifact(
-					"org.springframework.bootstrap:spring-bootstrap-launcher:" + version));
 			List<RemoteRepository> repositories = new ArrayList<RemoteRepository>();
 			repositories.addAll(this.project.getRemotePluginRepositories());
 			repositories.addAll(this.project.getRemoteProjectRepositories());
-			ArtifactResult result = this.repositorySystem.resolveArtifact(
-					this.repositorySystemSession, request);
-			if (result.getArtifact() == null) {
+
+			String version = getClass().getPackage().getImplementationVersion();
+			DefaultArtifact artifact = new DefaultArtifact(
+					"org.springframework.bootstrap:spring-bootstrap-launcher:" + version);
+			ArtifactDescriptorRequest descriptorRequest = new ArtifactDescriptorRequest(
+					artifact, repositories, "plugin");
+			ArtifactDescriptorResult descriptorResult = this.repositorySystem
+					.readArtifactDescriptor(this.repositorySystemSession,
+							descriptorRequest);
+
+			ArtifactRequest artifactRequest = new ArtifactRequest();
+			artifactRequest.setRepositories(repositories);
+			artifactRequest.setArtifact(descriptorResult.getArtifact());
+			ArtifactResult artifactResult = this.repositorySystem.resolveArtifact(
+					this.repositorySystemSession, artifactRequest);
+
+			if (artifactResult.getArtifact() == null) {
 				throw new MojoExecutionException("Unable to resolve launcher classes");
 			}
-			return addLauncherClasses(archiver, result.getArtifact().getFile());
+			return addLauncherClasses(archiver, artifactResult.getArtifact().getFile());
 		} catch (Exception ex) {
 			if (ex instanceof MojoExecutionException) {
 				throw (MojoExecutionException) ex;
