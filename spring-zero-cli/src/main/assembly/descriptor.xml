@@ -23,7 +23,7 @@
     <dependencySets>
         <dependencySet>
           <includes>
-            <include>org.springframework.bootstrap:spring-bootstrap-cli:jar:*</include>
+            <include>org.springframework.zero:spring-zero-cli:jar:*</include>
           </includes>
           <outputDirectory>lib</outputDirectory>
         </dependencySet>

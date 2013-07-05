@@ -1,12 +1,12 @@
-# Spring Bootstrap Actuator Feature Guide
+# Spring Zero Actuator Feature Guide
 
-Here are some (most, hopefully all) the features of Spring Bootstrap
+Here are some (most, hopefully all) the features of Spring Zero
 Actuator with some commentary to help you start using them.  We
 recommend you first build a project with the Actuator (e.g. the
 getting started project from the main README), and then try each
 feature in turn there.
 
-TODO: some of these are features of Spring Bootstrap (or
+TODO: some of these are features of Spring Zero (or
 `SpringApplication`) not the Actuator.
 
 TODO: group things together and break them out into separate files.
@@ -33,7 +33,7 @@ The default value comes after the first colon (":").
 
 ## Externalized Configuration
 
-In addition to command line option arguments, Spring Bootstrap will
+In addition to command line option arguments, Spring Zero will
 pick up a file called `application.properties` in the root of your
 classpath (if there is one) and add those properties to the Spring
 `Environment`.  The search path for `application.properties` is
@@ -49,7 +49,7 @@ previously defined values (e.g. from System properties), e.g.
     app.name: MyApp
     app.description: ${app.name} is a Cool New App
 
-Spring Bootstrap also binds the properties to any bean in your
+Spring Zero also binds the properties to any bean in your
 application context whose type is `@ConfigurationProperties`.  The
 Actuator provides some of those beans out of the box, so you can
 easily customize server and management properties (ports etc.),
@@ -63,7 +63,7 @@ configuration and make it only available in certain environments.  Any
 `@Component` that is marked with `@Profile` will only be loaded in the
 profile specified by the latter annotation.
 
-Spring Bootstrap takes it a stage further.  If you include in your
+Spring Zero takes it a stage further.  If you include in your
 `application.properties` a value for a property named
 `spring.active.profiles` then those profiles will be active by
 default.  E.g.
@@ -72,7 +72,7 @@ default.  E.g.
 
 ## Profile-dependent configuration
 
-Spring Bootstrap loads additional properties files if there are active
+Spring Zero loads additional properties files if there are active
 profiles using a naming convention `application-{profile}.properties`.
 Property values from those files override trhe default ones.
 
@@ -98,7 +98,7 @@ to one of your `@Configuration` (or `@Component`) classes.  Then you can
 
 in any of your component classes to grab that configuration and use it.
 
-Spring Bootstrap uses some relaxed rules for binding `Environment`
+Spring Zero uses some relaxed rules for binding `Environment`
 properties to `@ConfigurationProperties` beans, so there doesn't need
 to be an exact match between the `Environment` property name and the
 bean property name.  Common examples where this is useful include
@@ -137,7 +137,7 @@ compiler or IDE.
 
 YAML is a superset of JSON, and as such is a very convenient format
 for specifying hierarchical configuration data, such as that supported
-by Spring Bootstrap Actuator.  If you prefer to use
+by Spring Zero Actuator.  If you prefer to use
 [YAML](http://yaml.org) instead of Properties files you just need to
 include a file called `application.yml` in the root of your classpath
 
@@ -217,7 +217,7 @@ properties in the application properties (see
 * To enable the Tomcat access log valve (very common in production environments)
 
 More fine-grained control of the Tomcat container is available if you
-need it.  Instead of letting Spring Bootstrap create the container for
+need it.  Instead of letting Spring Zero create the container for
 you, just create a bean of type
 `TomcatEmbeddedServletContainerFactory` and override one of its
 methods, or inject some customizations, e.g.
@@ -261,7 +261,7 @@ this.
 
 ## Customizing Logging
 
-Spring Bootstrap uses SLF4J for logging, but leaves the implementation
+Spring Zero uses SLF4J for logging, but leaves the implementation
 open.  The Starter projects and the Actuator use JDK native logging by
 default, purely because it is always available.  A default
 configuration file is provided for JDK logging, and also for log4j and
@@ -290,12 +290,12 @@ from the Spring `Environment` to System properties:
 |PID            |PID       | The current process ID is discovered if possible and not already provided |
 
 All the logging systems supported can consult System properties when
-parsing their configuration files.  See the defailt configurations in
-`spring-bootstrap.jar` for examples.
+parsing their configuration files.  See the default configurations in
+`spring-zero-core.jar` for examples.
 
 ## Application Context Initializers
 
-To add additional application context initializers to the Bootstrap
+To add additional application context initializers to the Zero
 startup process, add a comma-delimited list of class names to the
 `Environment` property `context.initializer.classes` (can be specified
 via `application.properties`).

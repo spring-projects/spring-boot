@@ -1,0 +1,5 @@
+org.springframework.zero.cli.compiler.autoconfigure.SpringZeroCompilerAutoConfiguration
+org.springframework.zero.cli.compiler.autoconfigure.SpringMvcCompilerAutoConfiguration
+org.springframework.zero.cli.compiler.autoconfigure.SpringBatchCompilerAutoConfiguration
+org.springframework.zero.cli.compiler.autoconfigure.SpringIntegrationCompilerAutoConfiguration
+

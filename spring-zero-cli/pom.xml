@@ -11,7 +11,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
-		<start-class>org.springframework.bootstrap.cli.SpringBootstrapCli</start-class>
+		<start-class>org.springframework.zero.cli.SpringZeroCli</start-class>
 	</properties>
 	<dependencies>
 		<!-- Compile -->

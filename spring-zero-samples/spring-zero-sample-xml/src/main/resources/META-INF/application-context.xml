@@ -8,7 +8,7 @@
 	<context:annotation-config/>
 	<context:property-placeholder/>
 
-	<bean id="helloService" class="org.springframework.bootstrap.sample.xml.service.HelloWorldService"/>
-	<bean id="application" class="org.springframework.bootstrap.sample.xml.XmlBootstrapApplication"/>
+	<bean id="helloService" class="org.springframework.zero.sample.xml.service.HelloWorldService"/>
+	<bean id="application" class="org.springframework.zero.sample.xml.SampleSpringXmlApplication"/>
 
 </beans>

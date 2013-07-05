@@ -1,4 +1,4 @@
-# Spring Bootstrap Actuator
+# Spring Zero Actuator
 
 Minimum fuss for getting applications up and running in production,
 and in other environments.  There is a strong emphasis on implementing
@@ -23,8 +23,8 @@ RESTful web services but many features are more generic than that.
 
 For a quick introduction and to get started quickly with a new
 project, carry on reading.  For more in depth coverage of the features
-of Spring Bootstrap Actuator, go to the
-[Feature Guide](https://github.com/SpringSource/spring-bootstrap/tree/master/spring-bootstrap-actuator/docs/Features.md).
+of Spring Zero Actuator, go to the
+[Feature Guide](https://github.com/SpringSource/spring-bootstrap/tree/master/spring-zero-actuator/docs/Features.md).
 
 # Getting Started
 
@@ -47,18 +47,18 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
       <version>1.0.0-SNAPSHOT</version>
       <packaging>jar</packaging>
       <parent>
-        <groupId>org.springframework.bootstrap</groupId>
-        <artifactId>spring-bootstrap-applications</artifactId>
+        <groupId>org.springframework.zero</groupId>
+        <artifactId>spring-zero-starter</artifactId>
         <version>0.0.1-SNAPSHOT</version>
       </parent>
       <dependencies>
         <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-web-application</artifactId>
+          <groupId>org.springframework.zero</groupId>
+          <artifactId>spring-zero-web-starter</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.springframework.bootstrap</groupId>
-          <artifactId>spring-bootstrap-service</artifactId>
+          <groupId>org.springframework.zero</groupId>
+          <artifactId>spring-zero-service</artifactId>
         </dependency>
       </dependencies>
       <build>
@@ -72,7 +72,7 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
     </project>
 
 If you like Gradle, that's fine, and you will know what to do with
-those dependencies.  The first dependency adds Spring Bootstrap auto
+those dependencies.  The first dependency adds Spring Zero auto
 configuration and the Jetty container to your application, and the
 second one adds some more opinionated stuff like the default
 management endpoints.  If you prefer Tomcat you can just add the
@@ -89,7 +89,7 @@ Then in another terminal
     ok
     $ curl localhost:8080/metrics
     {"counter.status.200.health":1.0,"gauge.response.health":10.0,"mem":120768.0,"mem.free":105012.0,"processors":4.0}
-    
+
 `/health` is the default location for the health endpoint - it tells
 you if the application is running and healthy. `/metrics` is the default
 location for the metrics endpoint - it gives you basic counts and
@@ -121,14 +121,14 @@ endpoint.  An endpoint can be implemented as a Spring MVC
       public Map<String, String> helloWorld() {
         return Collections.singletonMap("message", "Hello World");
       }
-      
+
       public static void main(String[] args) throws Exception {
         SpringApplication.run(SampleController.class, args);
       }
 
     }
 
-You can launch that straight away using the Spring Bootstrap CLI
+You can launch that straight away using the Spring Zero CLI
 (without the `@EnableAutoConfiguration` and even without the import
 statements that your IDE will add if you are using one), or you can
 use the main method to launch it from your project jar.  Just add a
@@ -155,7 +155,7 @@ which are more convenient at development time.  Here are a few:
 1. Use the Maven exec plugin, e.g.
 
         $ mvn exec:java
-        
+
 2. Run directly in your IDE, e.g. Eclipse or IDEA let you right click
 on a class and run it.
 
@@ -167,7 +167,7 @@ on a class and run it.
 
 ## Externalizing configuration
 
-Spring Bootstrap likes you to externalize your configuration so you
+Spring Zero likes you to externalize your configuration so you
 can work with the same application code in different environments.  To
 get started with this you create a file in the root of your classpath
 (`src/main/resources` if using Maven) - if you like YAML you can call
@@ -187,7 +187,7 @@ or if you like Java `Properties` files, you can call it
     management.port: 9001
     logging.file: target/log.out
 
-Those examples are properties that Spring Bootstrap itself binds to
+Those examples are properties that Spring Zero itself binds to
 out of the box, so if you make that change and run the app again, you
 will find the home page on port 9000 instead of 8080:
 
@@ -217,7 +217,7 @@ that is to simply refer to it in an `@Value` annotation, e.g.
     @Controller
     @EnableAutoConfiguration
     public class SampleController {
-    
+
       @Value("${service.message:Hello World}")
       private String value = "Goodbye Everypone"
 
@@ -226,7 +226,7 @@ that is to simply refer to it in an `@Value` annotation, e.g.
       public Map<String, String> helloWorld() {
         return Collections.singletonMap("message", message);
       }
-    
+
       ...
     }
 
@@ -251,13 +251,13 @@ automatically in a separate value object.  For instance:
         private int value = 0;
         ... getters and setters
     }
-    
+
     // SampleController.java
     @Controller
     @EnableAutoConfiguration
     @EnableConfigurationProperties(ServiceProperties.class)
     public class SampleController {
-    
+
       @Autowired
       private ServiceProperties properties;
 
@@ -266,10 +266,10 @@ automatically in a separate value object.  For instance:
       public Map<String, String> helloWorld() {
         return Collections.singletonMap("message", properties.getMessage());
       }
-    
+
       ...
     }
-    
+
 When you ask to
 `@EnableConfigurationProperties(ServiceProperties.class)` you are
 saying you want a bean of type `ServiceProperties` and that you want
@@ -341,9 +341,9 @@ Then you will be able to inject a `DataSource` into your controller:
     @EnableAutoConfiguration
     @EnableConfigurationProperties(ServiceProperties.class)
     public class SampleController {
-    
+
       private JdbcTemplate jdbcTemplate;
-    
+
       @Autowired
       public SampleController(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -354,19 +354,19 @@ Then you will be able to inject a `DataSource` into your controller:
       public Map<String, String> helloWorld() {
         return jdbcTemplate.queryForMap("SELECT * FROM MESSAGES WHERE ID=?", 0);
       }
-    
+
       ...
     }
- 
+
  The app will run (going back to the default security configuration):
- 
+
            $ curl user:password@localhost:8080/
            {"error":"Internal Server Error", "status":500, "exception":...}
-           
+
  but there's no data in the database yet and the `MESSAGES` table
  doesn't even exist, so there's an error.  One easy way to fix it is
  to provide a `schema.sql` script in the root of the classpath, e.g.
- 
+
     create table MESSAGES (
       ID BIGINT NOT NULL PRIMARY KEY,
       MESSAGE VARCHAR(255)
@@ -377,6 +377,6 @@ Now when you run the app you get a sensible response:
 
        $ curl user:password@localhost:8080/
        {"ID":0, "MESSAGE":"Hello Phil"}
-       
+
 Obviously, this is only the start, but hopefully you have a good grasp
 of the basics and are ready to try it out yourself.
