@@ -14,21 +14,17 @@ import org.springframework.zero.SpringApplication;
 import org.springframework.zero.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 
 /**
- * <p>
  * A handy opinionated {@link WebApplicationInitializer} for applications that only have
  * one Spring servlet, and no more than a single filter (which itself is only enabled when
  * Spring Security is detected). If your application is more complicated consider using
  * one of the other WebApplicationInitializers.
- * <p>
  * 
- * <p>
+ * <p/>
  * Note that a WebApplicationInitializer is only needed if you are building a war file and
  * deploying it. If you prefer to run an embedded container (we do) then you won't need
  * this at all.
- * </p>
  * 
  * @author Dave Syer
- * 
  */
 public abstract class SpringServletInitializer implements WebApplicationInitializer {
 
