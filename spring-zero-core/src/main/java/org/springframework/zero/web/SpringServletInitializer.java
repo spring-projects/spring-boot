@@ -42,7 +42,8 @@ public abstract class SpringServletInitializer implements WebApplicationInitiali
 					// no-op because the application context is already initialized
 				}
 			});
-		} else {
+		}
+		else {
 			this.logger
 					.debug("No ContextLoaderListener registered, as "
 							+ "createRootApplicationContext() did not return an application context");

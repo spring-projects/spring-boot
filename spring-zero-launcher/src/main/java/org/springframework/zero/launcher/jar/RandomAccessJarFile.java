@@ -127,7 +127,8 @@ public class RandomAccessJarFile extends JarFile {
 					((Entry) containedEntry).configure(this.manifest);
 				}
 			}
-		} finally {
+		}
+		finally {
 			inputStream.close();
 		}
 	}
@@ -220,7 +221,8 @@ public class RandomAccessJarFile extends JarFile {
 			return new RandomAccessJarFile(this.rootJarFile, getName() + "!/"
 					+ directoryName.substring(0, directoryName.length() - 1), this.data,
 					filtersToUse);
-		} else {
+		}
+		else {
 			if (ze.getMethod() != ZipEntry.STORED) {
 				throw new IllegalStateException("Unable to open nested compressed entry "
 						+ ze.getName());
@@ -411,7 +413,8 @@ public class RandomAccessJarFile extends JarFile {
 				connect();
 				return (int) (this.jarEntry == null ? this.jarFile.size() : this.jarEntry
 						.getSize());
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				return -1;
 			}
 		}
@@ -453,7 +456,8 @@ public class RandomAccessJarFile extends JarFile {
 		protected void fill() throws IOException {
 			try {
 				super.fill();
-			} catch (EOFException ex) {
+			}
+			catch (EOFException ex) {
 				if (this.extraBytesWritten) {
 					throw ex;
 				}

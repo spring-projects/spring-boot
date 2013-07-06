@@ -132,7 +132,8 @@ public class JettyEmbeddedServletContainerFactory extends
 		if (root != null) {
 			try {
 				handler.setBaseResource(Resource.newResource(root));
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				throw new IllegalStateException(ex);
 			}
 		}
@@ -270,11 +271,13 @@ public class JettyEmbeddedServletContainerFactory extends
 				if (errorPage.isGlobal()) {
 					handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE,
 							errorPage.getPath());
-				} else {
+				}
+				else {
 					if (errorPage.getExceptionName() != null) {
 						handler.addErrorPage(errorPage.getExceptionName(),
 								errorPage.getPath());
-					} else {
+					}
+					else {
 						handler.addErrorPage(errorPage.getStatusCode(),
 								errorPage.getPath());
 					}

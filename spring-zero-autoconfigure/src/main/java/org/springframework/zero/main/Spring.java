@@ -70,11 +70,14 @@ public class Spring {
 		for (String arg : args) {
 			if (ClassUtils.isPresent(arg, null)) {
 				sources.add(ClassUtils.forName(arg, null));
-			} else if (arg.endsWith(".xml")) {
+			}
+			else if (arg.endsWith(".xml")) {
 				sources.add(arg);
-			} else if (!scanner.findCandidateComponents(arg).isEmpty()) {
+			}
+			else if (!scanner.findCandidateComponents(arg).isEmpty()) {
 				sources.add(arg);
-			} else {
+			}
+			else {
 				strings.add(arg);
 			}
 		}

@@ -157,7 +157,8 @@ public class RelaxedDataBinder extends DataBinder {
 					Map<String, Object> existing = (Map<String, Object>) target
 							.getPropertyValue(base);
 					nested = existing;
-				} else {
+				}
+				else {
 					target.setPropertyValue(base, nested);
 				}
 				modifyPopertiesForMap(nested, propertyValues, index, base);
@@ -196,7 +197,8 @@ public class RelaxedDataBinder extends DataBinder {
 					if (target.getPropertyType(prefix + candidate) != null) {
 						return candidate;
 					}
-				} catch (InvalidPropertyException ex) {
+				}
+				catch (InvalidPropertyException ex) {
 				}
 			}
 		}

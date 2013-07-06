@@ -54,7 +54,8 @@ public class DefaultCounterService implements CounterService {
 	private String wrap(String metricName) {
 		if (metricName.startsWith("counter")) {
 			return metricName;
-		} else {
+		}
+		else {
 			return "counter." + metricName;
 		}
 	}

@@ -140,7 +140,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			ServerProperties serverProperties;
 			try {
 				serverProperties = beanFactory.getBean(ServerProperties.class);
-			} catch (NoSuchBeanDefinitionException ex) {
+			}
+			catch (NoSuchBeanDefinitionException ex) {
 				serverProperties = new ServerProperties();
 			}
 
@@ -148,7 +149,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			try {
 				managementServerProperties = beanFactory
 						.getBean(ManagementServerProperties.class);
-			} catch (NoSuchBeanDefinitionException ex) {
+			}
+			catch (NoSuchBeanDefinitionException ex) {
 				managementServerProperties = new ManagementServerProperties();
 			}
 

@@ -46,7 +46,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	private synchronized void start() {
 		try {
 			this.server.start();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Jetty servlet container", ex);
 		}
@@ -56,10 +57,12 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	public synchronized void stop() {
 		try {
 			this.server.stop();
-		} catch (InterruptedException ex) {
+		}
+		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
 			// No drama
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to stop embedded Jetty servlet container", ex);
 		}

@@ -29,7 +29,7 @@ import org.springframework.zero.cli.Command;
 /**
  * {@link Command} to 'clean' up grapes, removing cached dependencies and forcing a
  * download on the next attempt to resolve.
- *
+ * 
  * @author Dave Syer
  */
 public class CleanCommand extends OptionParsingCommand {
@@ -102,7 +102,8 @@ public class CleanCommand extends OptionParsingCommand {
 							|| group.equals("org.springframework.zero")) {
 						System.out.println("Deleting: " + file);
 						FileUtil.forceDelete(file);
-					} else {
+					}
+					else {
 						for (Object obj : FileUtil.listAll(file, Collections.emptyList())) {
 							File candidate = (File) obj;
 							if (candidate.getName().contains("SNAPSHOT")) {
@@ -119,7 +120,8 @@ public class CleanCommand extends OptionParsingCommand {
 			File parent = root;
 			if (layout == Layout.IVY) {
 				parent = new File(parent, group);
-			} else {
+			}
+			else {
 				for (String path : group.split("\\.")) {
 					parent = new File(parent, path);
 				}
@@ -140,7 +142,8 @@ public class CleanCommand extends OptionParsingCommand {
 			if (dir == null || !new File(dir).exists()) {
 				dir = userdir;
 				home = new File(dir, ".groovy");
-			} else {
+			}
+			else {
 				home = new File(dir);
 			}
 			if (dir == null || !new File(dir).exists()) {

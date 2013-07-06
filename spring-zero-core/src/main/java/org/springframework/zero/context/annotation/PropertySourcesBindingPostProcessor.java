@@ -113,9 +113,11 @@ public class PropertySourcesBindingPostProcessor implements BeanPostProcessor,
 			factory.setTargetName(targetName);
 			try {
 				target = factory.getObject(); // throwaway
-			} catch (BeansException e) {
+			}
+			catch (BeansException e) {
 				throw e;
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				throw new BeanCreationException(beanName, "Could not bind", e);
 			}
 		}

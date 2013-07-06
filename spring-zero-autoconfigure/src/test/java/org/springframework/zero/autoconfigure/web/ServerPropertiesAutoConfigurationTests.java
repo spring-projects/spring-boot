@@ -56,8 +56,8 @@ public class ServerPropertiesAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		containerFactory =
-				Mockito.mock(ConfigurableEmbeddedServletContainerFactory.class);
+		containerFactory = Mockito
+				.mock(ConfigurableEmbeddedServletContainerFactory.class);
 	}
 
 	@After
@@ -70,8 +70,8 @@ public class ServerPropertiesAutoConfigurationTests {
 	@Test
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context
-				.register(Config.class, ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
@@ -84,8 +84,8 @@ public class ServerPropertiesAutoConfigurationTests {
 	public void tomcatProperties() throws Exception {
 		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context
-				.register(Config.class, ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
@@ -97,8 +97,9 @@ public class ServerPropertiesAutoConfigurationTests {
 	@Test
 	public void testAccidentalMultipleServerPropertiesBeans() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context
-				.register(Config.class, MutiServerPropertiesBeanConfig.class, ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(Config.class, MutiServerPropertiesBeanConfig.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.thrown.expectCause(Matchers
 				.<Throwable> instanceOf(NoUniqueBeanDefinitionException.class));
 		this.context.refresh();
@@ -113,8 +114,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		}
 
 		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor
-				embeddedServletContainerCustomizerBeanPostProcessor() {
+		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
 		}
 

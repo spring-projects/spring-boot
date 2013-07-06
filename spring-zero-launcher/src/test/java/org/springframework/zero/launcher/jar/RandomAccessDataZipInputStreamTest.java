@@ -54,7 +54,8 @@ public class RandomAccessDataZipInputStreamTest {
 		try {
 			writeDataEntry(zipOutputStream, "a", new byte[10]);
 			writeDataEntry(zipOutputStream, "b", new byte[20]);
-		} finally {
+		}
+		finally {
 			zipOutputStream.close();
 		}
 	}
@@ -85,7 +86,8 @@ public class RandomAccessDataZipInputStreamTest {
 			assertThat(entry2.getName(), equalTo("b"));
 			assertThat(entry2.getData().getSize(), equalTo(20L));
 			assertThat(z.getNextEntry(), nullValue());
-		} finally {
+		}
+		finally {
 			z.close();
 		}
 	}

@@ -84,7 +84,8 @@ public class ThymeleafAutoConfiguration {
 					try {
 						return DefaultTemplateResolverConfiguration.this.resourceLoader
 								.getResource(resourceName).getInputStream();
-					} catch (IOException e) {
+					}
+					catch (IOException e) {
 						return null;
 					}
 				}

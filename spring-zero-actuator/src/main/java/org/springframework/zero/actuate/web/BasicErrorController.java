@@ -76,7 +76,8 @@ public class BasicErrorController implements ErrorController {
 			if (obj != null) {
 				status = (Integer) obj;
 				map.put("error", HttpStatus.valueOf(status).getReasonPhrase());
-			} else {
+			}
+			else {
 				map.put("error", "None");
 			}
 			map.put("status", status);
@@ -94,12 +95,14 @@ public class BasicErrorController implements ErrorController {
 					map.put("trace", stackTrace.toString());
 				}
 				this.logger.error(error);
-			} else {
+			}
+			else {
 				Object message = request.getAttribute("javax.servlet.error.message");
 				map.put("message", message == null ? "No message available" : message);
 			}
 			return map;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			map.put("error", e.getClass().getName());
 			map.put("message", e.getMessage());
 			this.logger.error(e);

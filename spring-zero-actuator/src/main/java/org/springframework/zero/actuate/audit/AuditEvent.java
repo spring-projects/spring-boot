@@ -93,7 +93,8 @@ public class AuditEvent implements Serializable {
 			if (entry.contains("=")) {
 				int index = entry.indexOf("=");
 				result.put(entry.substring(0, index), entry.substring(index + 1));
-			} else {
+			}
+			else {
 				result.put(entry, null);
 			}
 		}

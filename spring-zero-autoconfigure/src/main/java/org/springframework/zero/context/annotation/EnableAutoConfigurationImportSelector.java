@@ -69,7 +69,8 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 			factories.add(0, ComponentScanDetector.class.getName());
 
 			return factories.toArray(new String[factories.size()]);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}

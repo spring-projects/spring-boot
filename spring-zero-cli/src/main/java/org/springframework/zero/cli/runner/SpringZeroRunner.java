@@ -92,10 +92,12 @@ public class SpringZeroRunner {
 				this.fileWatchThread.start();
 			}
 
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			if (this.fileWatchThread == null) {
 				throw ex;
-			} else {
+			}
+			else {
 				ex.printStackTrace();
 			}
 		}
@@ -132,7 +134,8 @@ public class SpringZeroRunner {
 						String[].class);
 				this.applicationContext = method.invoke(null, this.sources,
 						SpringZeroRunner.this.args);
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
@@ -145,11 +148,14 @@ public class SpringZeroRunner {
 				try {
 					Method method = this.applicationContext.getClass().getMethod("close");
 					method.invoke(this.applicationContext);
-				} catch (NoSuchMethodException ex) {
+				}
+				catch (NoSuchMethodException ex) {
 					// Not an application context that we can close
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					ex.printStackTrace();
-				} finally {
+				}
+				finally {
 					this.applicationContext = null;
 				}
 			}
@@ -186,9 +192,11 @@ public class SpringZeroRunner {
 							compileAndRun();
 						}
 					}
-				} catch (InterruptedException ex) {
+				}
+				catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					// Swallow, will be reported by compileAndRun
 				}
 			}

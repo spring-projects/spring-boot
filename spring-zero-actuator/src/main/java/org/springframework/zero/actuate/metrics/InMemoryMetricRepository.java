@@ -37,7 +37,8 @@ public class InMemoryMetricRepository implements MetricRepository {
 			Metric metric = current.getMetric();
 			this.metrics.replace(metricName, current,
 					new Measurement(timestamp, metric.increment(amount)));
-		} else {
+		}
+		else {
 			this.metrics.putIfAbsent(metricName, new Measurement(timestamp, new Metric(
 					metricName, amount)));
 		}
@@ -50,7 +51,8 @@ public class InMemoryMetricRepository implements MetricRepository {
 			Metric metric = current.getMetric();
 			this.metrics.replace(metricName, current,
 					new Measurement(timestamp, metric.set(value)));
-		} else {
+		}
+		else {
 			this.metrics.putIfAbsent(metricName, new Measurement(timestamp, new Metric(
 					metricName, value)));
 		}

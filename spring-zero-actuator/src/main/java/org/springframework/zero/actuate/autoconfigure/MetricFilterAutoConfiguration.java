@@ -83,7 +83,8 @@ public class MetricFilterAutoConfiguration {
 					&& (response instanceof HttpServletResponse)) {
 				doFilter((HttpServletRequest) request, (HttpServletResponse) response,
 						chain);
-			} else {
+			}
+			else {
 				chain.doFilter(request, response);
 			}
 		}
@@ -96,7 +97,8 @@ public class MetricFilterAutoConfiguration {
 			stopWatch.start();
 			try {
 				chain.doFilter(request, response);
-			} finally {
+			}
+			finally {
 				stopWatch.stop();
 				String gaugeKey = getKey("response" + suffix);
 				MetricFilterAutoConfiguration.this.gaugeService.set(gaugeKey,
@@ -109,7 +111,8 @@ public class MetricFilterAutoConfiguration {
 		private int getStatus(HttpServletResponse response) {
 			try {
 				return response.getStatus();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				return UNDEFINED_HTTP_STATUS;
 			}
 		}

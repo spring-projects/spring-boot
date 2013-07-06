@@ -58,12 +58,12 @@ import org.springframework.zero.context.annotation.EnableConfigurationProperties
  * password=password)</code> but can easily be customized by providing a bean definition
  * of type {@link AuthenticationManager}. Also provides audit logging of authentication
  * events.
- *
+ * 
  * <p>
  * The framework {@link Endpoint}s (used to expose application information to operations)
  * include a {@link Endpoint#isSensitive() sensitive} configuration option which will be
  * used as a security hint by the filter created here.
- *
+ * 
  * <p>
  * Some common simple customizations:
  * <ul>
@@ -75,7 +75,7 @@ import org.springframework.zero.context.annotation.EnableConfigurationProperties
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpSecurity#formLogin()}</li>
  * </ul>
- *
+ * 
  * @author Dave Syer
  */
 @Configuration

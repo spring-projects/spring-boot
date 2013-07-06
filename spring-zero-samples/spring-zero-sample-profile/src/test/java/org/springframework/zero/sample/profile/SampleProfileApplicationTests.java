@@ -34,7 +34,8 @@ public class SampleProfileApplicationTests {
 	public void after() {
 		if (this.profiles != null) {
 			System.setProperty("spring.profiles.active", this.profiles);
-		} else {
+		}
+		else {
 			System.clearProperty("spring.profiles.active");
 		}
 	}

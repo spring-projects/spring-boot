@@ -98,7 +98,8 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 			PropertyValue pvOld = old.getPropertyValue(newPv.getName());
 			if (pvOld == null) {
 				changes.addPropertyValue(newPv);
-			} else if (!pvOld.equals(newPv)) {
+			}
+			else if (!pvOld.equals(newPv)) {
 				// it's changed
 				changes.addPropertyValue(newPv);
 			}

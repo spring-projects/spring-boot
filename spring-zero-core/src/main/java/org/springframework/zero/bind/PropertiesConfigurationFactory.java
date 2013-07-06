@@ -172,7 +172,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		try {
 			if (this.properties != null) {
 				logger.trace("Properties:\n" + this.properties);
-			} else {
+			}
+			else {
 				logger.trace("Property Sources: " + this.propertySources);
 			}
 			this.initialized = true;
@@ -180,7 +181,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			RelaxedDataBinder dataBinder;
 			if (this.targetName != null) {
 				dataBinder = new RelaxedDataBinder(this.configuration, this.targetName);
-			} else {
+			}
+			else {
 				dataBinder = new RelaxedDataBinder(this.configuration);
 			}
 			if (this.validator != null) {
@@ -195,7 +197,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			PropertyValues pvs;
 			if (this.properties != null) {
 				pvs = new MutablePropertyValues(this.properties);
-			} else {
+			}
+			else {
 				pvs = new PropertySourcesPropertyValues(this.propertySources);
 			}
 			dataBinder.bind(pvs);
@@ -219,7 +222,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 					}
 				}
 			}
-		} catch (BindException e) {
+		}
+		catch (BindException e) {
 			if (this.exceptionIfInvalid) {
 				throw e;
 			}

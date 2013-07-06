@@ -158,7 +158,8 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 					}
 				}
 			}
-		} catch (YAMLException e) {
+		}
+		catch (YAMLException e) {
 			if (this.exceptionIfInvalid) {
 				throw e;
 			}

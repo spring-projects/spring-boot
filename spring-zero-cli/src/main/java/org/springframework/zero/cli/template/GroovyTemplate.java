@@ -48,10 +48,12 @@ public class GroovyTemplate {
 		Template template;
 		if (file.exists()) {
 			template = engine.createTemplate(file);
-		} else {
+		}
+		else {
 			if (resource != null) {
 				template = engine.createTemplate(resource);
-			} else {
+			}
+			else {
 				template = engine.createTemplate(name);
 			}
 		}

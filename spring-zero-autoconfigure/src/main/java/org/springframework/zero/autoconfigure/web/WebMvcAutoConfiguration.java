@@ -56,7 +56,7 @@ import org.springframework.zero.context.annotation.EnableAutoConfiguration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
- *
+ * 
  * @author Phillip Webb
  * @author Dave Syer
  */

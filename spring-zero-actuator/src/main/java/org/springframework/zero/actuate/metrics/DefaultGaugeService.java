@@ -43,7 +43,8 @@ public class DefaultGaugeService implements GaugeService {
 	private String wrap(String metricName) {
 		if (metricName.startsWith("gauge")) {
 			return metricName;
-		} else {
+		}
+		else {
 			return "gauge." + metricName;
 		}
 	}

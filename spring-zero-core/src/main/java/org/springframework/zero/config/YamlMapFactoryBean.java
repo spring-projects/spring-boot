@@ -99,7 +99,8 @@ public class YamlMapFactoryBean extends YamlProcessor implements
 						(Map) existing);
 				merge(result, (Map) value);
 				output.put(key, result);
-			} else {
+			}
+			else {
 				output.put(key, value);
 			}
 		}

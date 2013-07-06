@@ -87,7 +87,8 @@ public class MainClassFinderTests {
 		OutputStream outputStream = new FileOutputStream(file);
 		try {
 			IOUtil.copy(inputStream, outputStream);
-		} finally {
+		}
+		finally {
 			outputStream.close();
 		}
 		return file;

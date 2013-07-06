@@ -48,9 +48,11 @@ public class AuthenticationAuditListener implements
 	public void onApplicationEvent(AbstractAuthenticationEvent event) {
 		if (event instanceof AbstractAuthenticationFailureEvent) {
 			onAuthenticationFailureEvent((AbstractAuthenticationFailureEvent) event);
-		} else if (event instanceof AuthenticationSwitchUserEvent) {
+		}
+		else if (event instanceof AuthenticationSwitchUserEvent) {
 			onAuthenticationSwitchUserEvent((AuthenticationSwitchUserEvent) event);
-		} else {
+		}
+		else {
 			onAuthenticationEvent(event);
 		}
 	}

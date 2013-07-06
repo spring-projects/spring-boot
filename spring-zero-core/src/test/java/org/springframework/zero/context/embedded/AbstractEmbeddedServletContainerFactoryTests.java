@@ -79,7 +79,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		if (this.container != null) {
 			try {
 				this.container.stop();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 			}
 		}
 	}
@@ -156,7 +157,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 						try {
 							Thread.sleep(500);
 							date[0] = new Date();
-						} catch (InterruptedException ex) {
+						}
+						catch (InterruptedException ex) {
 							throw new ServletException(ex);
 						}
 					}
@@ -249,7 +251,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ClientHttpResponse response = request.execute();
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
-		} finally {
+		}
+		finally {
 			response.close();
 		}
 	}

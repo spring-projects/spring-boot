@@ -163,10 +163,12 @@ public class RandomAccessDataFile implements RandomAccessData {
 					int rtn = file.read();
 					moveOn(rtn == -1 ? 0 : 1);
 					return rtn;
-				} else {
+				}
+				else {
 					return (int) moveOn(file.read(b, off, (int) cap(len)));
 				}
-			} finally {
+			}
+			finally {
 				RandomAccessDataFile.this.filePool.release(file);
 			}
 		}
@@ -222,7 +224,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 				RandomAccessFile file = this.files.poll();
 				return (file == null ? new RandomAccessFile(
 						RandomAccessDataFile.this.file, "r") : file);
-			} catch (InterruptedException e) {
+			}
+			catch (InterruptedException e) {
 				throw new IOException(e);
 			}
 		}
@@ -241,10 +244,12 @@ public class RandomAccessDataFile implements RandomAccessData {
 						file.close();
 						file = files.poll();
 					}
-				} finally {
+				}
+				finally {
 					this.available.release(size);
 				}
-			} catch (InterruptedException e) {
+			}
+			catch (InterruptedException e) {
 				throw new IOException(e);
 			}
 		}

@@ -100,7 +100,8 @@ public class SpringZeroCompilerAutoConfiguration extends CompilerAutoConfigurati
 				AnnotationNode annotationNode = new AnnotationNode(new ClassNode(
 						annotationClass));
 				classNode.addAnnotation(annotationNode);
-			} catch (ClassNotFoundException e) {
+			}
+			catch (ClassNotFoundException e) {
 				throw new IllegalStateException(e);
 			}
 		}

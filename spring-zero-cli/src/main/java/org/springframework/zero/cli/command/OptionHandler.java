@@ -77,7 +77,8 @@ public class OptionHandler {
 		OutputStream out = new ByteArrayOutputStream();
 		try {
 			getParser().printHelpOn(out);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			return "Help not available";
 		}
 		return out.toString();

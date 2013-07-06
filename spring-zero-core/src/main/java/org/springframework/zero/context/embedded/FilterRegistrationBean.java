@@ -244,7 +244,8 @@ public class FilterRegistrationBean extends RegistrationBean {
 		if (servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
 			registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 					DEFAULT_URL_MAPPINGS);
-		} else {
+		}
+		else {
 			if (servletNames.size() > 0) {
 				registration.addMappingForServletNames(dispatcherTypes, this.matchAfter,
 						servletNames.toArray(new String[servletNames.size()]));

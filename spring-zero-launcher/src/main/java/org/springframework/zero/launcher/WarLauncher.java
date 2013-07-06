@@ -36,7 +36,8 @@ public class WarLauncher extends Launcher {
 	protected boolean isNestedJarFile(JarEntry jarEntry) {
 		if (jarEntry.isDirectory()) {
 			return jarEntry.getName().equals("WEB-INF/classes/");
-		} else {
+		}
+		else {
 			return jarEntry.getName().startsWith("WEB-INF/lib/")
 					|| jarEntry.getName().startsWith("WEB-INF/lib-provided/");
 		}

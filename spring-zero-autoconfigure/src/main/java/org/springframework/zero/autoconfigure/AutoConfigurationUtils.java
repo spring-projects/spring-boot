@@ -40,7 +40,8 @@ public abstract class AutoConfigurationUtils {
 	public static List<String> getBasePackages(BeanFactory beanFactory) {
 		try {
 			return beanFactory.getBean(BASE_PACKAGES_BEAN, List.class);
-		} catch (NoSuchBeanDefinitionException e) {
+		}
+		catch (NoSuchBeanDefinitionException e) {
 			return Collections.emptyList();
 		}
 	}
@@ -50,7 +51,8 @@ public abstract class AutoConfigurationUtils {
 		if (!beanFactory.containsBean(BASE_PACKAGES_BEAN)) {
 			beanFactory.registerSingleton(BASE_PACKAGES_BEAN, new ArrayList<String>(
 					basePackages));
-		} else {
+		}
+		else {
 			List<String> packages = getBasePackages(beanFactory);
 			for (String pkg : basePackages) {
 				if (packages.contains(pkg)) {

@@ -91,13 +91,17 @@ public class ScriptCommand implements Command {
 	private void run(Object main, String[] args) throws Exception {
 		if (main instanceof Command) {
 			((Command) main).run(args);
-		} else if (main instanceof OptionHandler) {
+		}
+		else if (main instanceof OptionHandler) {
 			((OptionHandler) getMain()).run(args);
-		} else if (main instanceof Closure) {
+		}
+		else if (main instanceof Closure) {
 			((Closure<?>) main).call((Object[]) args);
-		} else if (main instanceof Runnable) {
+		}
+		else if (main instanceof Runnable) {
 			((Runnable) main).run();
-		} else if (main instanceof Script) {
+		}
+		else if (main instanceof Script) {
 			Script script = (Script) this.main;
 			script.setProperty("args", args);
 			if (this.main instanceof GroovyObjectSupport) {
@@ -135,13 +139,15 @@ public class ScriptCommand implements Command {
 		if (this.main == null) {
 			try {
 				this.main = getMainClass().newInstance();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				throw new IllegalStateException("Cannot create main class: " + this.name,
 						e);
 			}
 			if (this.main instanceof OptionHandler) {
 				((OptionHandler) this.main).options();
-			} else if (this.main instanceof GroovyObjectSupport) {
+			}
+			else if (this.main instanceof GroovyObjectSupport) {
 				GroovyObjectSupport object = (GroovyObjectSupport) this.main;
 				MetaClass metaClass = object.getMetaClass();
 				MetaMethod options = metaClass.getMetaMethod("options", null);
@@ -160,9 +166,11 @@ public class ScriptCommand implements Command {
 		Class<?>[] classes;
 		try {
 			classes = compiler.compile(source);
-		} catch (CompilationFailedException e) {
+		}
+		catch (CompilationFailedException e) {
 			throw new IllegalStateException("Could not compile script", e);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			throw new IllegalStateException("Could not compile script", e);
 		}
 		this.mainClass = classes[0];
@@ -185,18 +193,21 @@ public class ScriptCommand implements Command {
 		if (url != null) {
 			if (url.toString().startsWith("file:")) {
 				file = new File(url.toString().substring("file:".length()));
-			} else {
+			}
+			else {
 				// probably in JAR file
 				try {
 					file = File.createTempFile(name, ".groovy");
 					file.deleteOnExit();
 					FileUtil.copy(url, file, null);
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					throw new IllegalStateException(
 							"Could not create temp file for source: " + name);
 				}
 			}
-		} else {
+		}
+		else {
 			String home = System.getProperty("SPRING_HOME", System.getenv("SPRING_HOME"));
 			if (home == null) {
 				home = ".";

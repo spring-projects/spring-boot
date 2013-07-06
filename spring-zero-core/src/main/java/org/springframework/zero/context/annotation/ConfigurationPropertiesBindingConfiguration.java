@@ -77,10 +77,12 @@ public class ConfigurationPropertiesBindingConfiguration {
 
 		if (this.configurer != null) {
 			propertySources = extractPropertySources(this.configurer);
-		} else if (this.environment instanceof ConfigurableEnvironment) {
+		}
+		else if (this.environment instanceof ConfigurableEnvironment) {
 			propertySources = flattenPropertySources(((ConfigurableEnvironment) this.environment)
 					.getPropertySources());
-		} else {
+		}
+		else {
 			// empty, so not very useful, but fulfils the contract
 			propertySources = new MutablePropertySources();
 		}
@@ -121,7 +123,8 @@ public class ConfigurationPropertiesBindingConfiguration {
 			for (PropertySource<?> childSource : environment.getPropertySources()) {
 				flattenPropertySources(childSource, result);
 			}
-		} else {
+		}
+		else {
 			result.addLast(propertySource);
 		}
 	}

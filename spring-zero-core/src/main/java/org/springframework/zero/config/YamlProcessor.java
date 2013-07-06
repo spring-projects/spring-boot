@@ -179,14 +179,16 @@ public class YamlProcessor {
 					// No need to load any more resources
 					break;
 				}
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND
 						|| this.resolutionMethod == ResolutionMethod.OVERRIDE_AND_IGNORE) {
 					if (logger.isWarnEnabled()) {
 						logger.warn("Could not load map from " + resource + ": "
 								+ e.getMessage());
 					}
-				} else {
+				}
+				else {
 					throw new IllegalStateException(e);
 				}
 			}
@@ -199,7 +201,8 @@ public class YamlProcessor {
 		if (this.documentMatchers.isEmpty()) {
 			logger.debug("Merging document (no matchers set)" + map);
 			callback.process(properties, map);
-		} else {
+		}
+		else {
 			boolean valueFound = false;
 			MatchStatus result = MatchStatus.ABSTAIN;
 			for (DocumentMatcher matcher : this.documentMatchers) {
@@ -216,7 +219,8 @@ public class YamlProcessor {
 			if (result == MatchStatus.ABSTAIN && this.matchDefault) {
 				logger.debug("Matched document with default matcher: " + map);
 				callback.process(properties, map);
-			} else if (!valueFound) {
+			}
+			else if (!valueFound) {
 				logger.debug("Unmatched document");
 				return false;
 			}
@@ -231,19 +235,22 @@ public class YamlProcessor {
 			if (StringUtils.hasText(path)) {
 				if (key.startsWith("[")) {
 					key = path + key;
-				} else {
+				}
+				else {
 					key = path + "." + key;
 				}
 			}
 			Object value = entry.getValue();
 			if (value instanceof String) {
 				properties.put(key, value);
-			} else if (value instanceof Map) {
+			}
+			else if (value instanceof Map) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Map<String, Object> map = (Map<String, Object>) value;
 				assignProperties(properties, map, key);
-			} else if (value instanceof Collection) {
+			}
+			else if (value instanceof Collection) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Collection<Object> collection = (Collection<Object>) value;
@@ -254,7 +261,8 @@ public class YamlProcessor {
 					assignProperties(properties,
 							Collections.singletonMap("[" + (count++) + "]", object), key);
 				}
-			} else {
+			}
+			else {
 				properties.put(key, value == null ? "" : value);
 			}
 		}

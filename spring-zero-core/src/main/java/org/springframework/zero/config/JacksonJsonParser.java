@@ -34,7 +34,8 @@ public class JacksonJsonParser implements JsonParser {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = new ObjectMapper().readValue(json, Map.class);
 			return map;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new IllegalArgumentException("Cannot parse JSON", e);
 		}
 	}
@@ -45,7 +46,8 @@ public class JacksonJsonParser implements JsonParser {
 			@SuppressWarnings("unchecked")
 			List<Object> list = new ObjectMapper().readValue(json, List.class);
 			return list;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new IllegalArgumentException("Cannot parse JSON", e);
 		}
 	}

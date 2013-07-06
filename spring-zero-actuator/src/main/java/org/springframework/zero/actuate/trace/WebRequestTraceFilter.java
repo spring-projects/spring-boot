@@ -101,7 +101,8 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 							.get("headers");
 					this.logger.trace("Headers: "
 							+ this.objectMapper.writeValueAsString(headers));
-				} catch (JsonProcessingException e) {
+				}
+				catch (JsonProcessingException e) {
 					throw new IllegalStateException("Cannot create JSON", e);
 				}
 			}
@@ -121,7 +122,8 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 			Object value = values;
 			if (values.size() == 1) {
 				value = values.get(0);
-			} else if (values.isEmpty()) {
+			}
+			else if (values.isEmpty()) {
 				value = "";
 			}
 			map.put(name, value);

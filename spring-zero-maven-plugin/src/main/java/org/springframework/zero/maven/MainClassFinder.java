@@ -101,10 +101,12 @@ class MainClassFinder {
 				MainMethodFinder mainMethodFinder = new MainMethodFinder();
 				classReader.accept(mainMethodFinder, ClassReader.SKIP_CODE);
 				return mainMethodFinder.isFound();
-			} finally {
+			}
+			finally {
 				inputStream.close();
 			}
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			return false;
 		}
 	}

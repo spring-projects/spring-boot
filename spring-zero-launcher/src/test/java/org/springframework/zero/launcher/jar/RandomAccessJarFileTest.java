@@ -93,7 +93,8 @@ public class RandomAccessJarFileTest {
 			jarOutputStream.putNextEntry(nestedEntry);
 			jarOutputStream.write(nestedJarData);
 			jarOutputStream.closeEntry();
-		} finally {
+		}
+		finally {
 			jarOutputStream.close();
 		}
 		this.jarFile = new RandomAccessJarFile(this.rootJarFile);

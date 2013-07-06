@@ -138,7 +138,8 @@ class BeanDefinitionLoader {
 		if (source instanceof CharSequence) {
 			try {
 				return load(Class.forName(source.toString()));
-			} catch (ClassNotFoundException e) {
+			}
+			catch (ClassNotFoundException e) {
 			}
 
 			Resource loadedResource = (this.resourceLoader != null ? this.resourceLoader

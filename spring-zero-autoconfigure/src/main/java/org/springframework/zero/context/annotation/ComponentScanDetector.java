@@ -70,7 +70,8 @@ class ComponentScanDetector implements ImportBeanDefinitionRegistrar, BeanFactor
 	private void storeComponentScanBasePackages() {
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			storeComponentScanBasePackages((ConfigurableListableBeanFactory) this.beanFactory);
-		} else {
+		}
+		else {
 			if (this.logger.isWarnEnabled()) {
 				this.logger
 						.warn("Unable to read @ComponentScan annotations for auto-configure");
@@ -109,7 +110,8 @@ class ComponentScanDetector implements ImportBeanDefinitionRegistrar, BeanFactor
 				MetadataReader metadataReader = this.metadataReaderFactory
 						.getMetadataReader(className);
 				return metadataReader.getAnnotationMetadata();
-			} catch (IOException ex) {
+			}
+			catch (IOException ex) {
 				if (this.logger.isDebugEnabled()) {
 					this.logger.debug(
 							"Could not find class file for introspecting @ComponentScan classes: "

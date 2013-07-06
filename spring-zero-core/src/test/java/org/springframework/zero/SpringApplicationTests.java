@@ -361,7 +361,8 @@ public class SpringApplicationTests {
 			this.sources = sources;
 			if (this.useMockLoader) {
 				this.loader = mock(BeanDefinitionLoader.class);
-			} else {
+			}
+			else {
 				this.loader = spy(super.createBeanDefinitionLoader(registry, sources));
 			}
 			return this.loader;

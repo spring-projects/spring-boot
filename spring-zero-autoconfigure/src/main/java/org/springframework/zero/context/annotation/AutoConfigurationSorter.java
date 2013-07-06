@@ -143,7 +143,8 @@ class AutoConfigurationSorter {
 			if (this.after == null) {
 				if (this.afterAnnotation == null) {
 					this.after = Collections.emptyList();
-				} else {
+				}
+				else {
 					this.after = new ArrayList<AutoConfigurationClass>();
 					for (String afterClass : (String[]) this.afterAnnotation.get("value")) {
 						this.after.add(new AutoConfigurationClass(afterClass));

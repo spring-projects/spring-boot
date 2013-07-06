@@ -194,11 +194,13 @@ public class ConfigFileApplicationContextInitializer implements
 							new PropertiesPropertySource(resource.getDescription(),
 									properties));
 
-				} else {
+				}
+				else {
 					propertySources.addFirst(new PropertiesPropertySource(resource
 							.getDescription(), properties));
 				}
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				throw new IllegalStateException("Could not load properties file from "
 						+ resource, e);
 			}
@@ -252,7 +254,8 @@ public class ConfigFileApplicationContextInitializer implements
 						}
 						// matches default profile
 						return MatchStatus.FOUND;
-					} else {
+					}
+					else {
 						return MatchStatus.NOT_FOUND;
 					}
 				}

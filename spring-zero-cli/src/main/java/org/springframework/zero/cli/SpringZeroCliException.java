@@ -70,8 +70,7 @@ public class SpringZeroCliException extends RuntimeException {
 	}
 
 	/**
-	 * Returns options a set of options that are understood by the
-	 * {@link SpringZeroCli}.
+	 * Returns options a set of options that are understood by the {@link SpringZeroCli}.
 	 */
 	public Set<Option> getOptions() {
 		return Collections.unmodifiableSet(this.options);

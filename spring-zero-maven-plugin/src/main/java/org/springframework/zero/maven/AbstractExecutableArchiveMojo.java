@@ -187,7 +187,8 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 		File archiveFile = createArchive();
 		if (this.classifier == null || this.classifier.isEmpty()) {
 			this.project.getArtifact().setFile(archiveFile);
-		} else {
+		}
+		else {
 			this.projectHelper.attachArtifact(this.project, getType(), this.classifier,
 					archiveFile);
 		}
@@ -209,10 +210,12 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 			try {
 				archiver.createArchive(this.session, this.project, this.archive);
 				return archiveFile;
-			} finally {
+			}
+			finally {
 				zipFile.close();
 			}
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			throw new MojoExecutionException("Error assembling archive", ex);
 		}
 	}
@@ -306,7 +309,8 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 				throw new MojoExecutionException("Unable to resolve launcher classes");
 			}
 			return addLauncherClasses(archiver, artifactResult.getArtifact().getFile());
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			if (ex instanceof MojoExecutionException) {
 				throw (MojoExecutionException) ex;
 			}

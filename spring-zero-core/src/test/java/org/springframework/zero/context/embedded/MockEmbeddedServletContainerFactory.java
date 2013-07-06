@@ -132,7 +132,8 @@ public class MockEmbeddedServletContainerFactory extends
 				for (ServletContextInitializer initializer : this.initializers) {
 					initializer.onStartup(this.servletContext);
 				}
-			} catch (ServletException ex) {
+			}
+			catch (ServletException ex) {
 				throw new RuntimeException(ex);
 			}
 		}

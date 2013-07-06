@@ -27,7 +27,7 @@ import org.springframework.zero.context.annotation.EnableConfigurationProperties
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
  * {@link ManagementServerPropertiesAutoConfiguration} bean.
- *
+ * 
  * @author Dave Syer
  */
 @Configuration

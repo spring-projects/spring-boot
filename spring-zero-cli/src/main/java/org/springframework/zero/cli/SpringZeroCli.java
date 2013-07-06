@@ -24,14 +24,14 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
- * Spring Zero Command Line Interface. This is the main entry-point for the Spring
- * Zero command line application. This class will parse input arguments and delegate
- * to a suitable {@link Command} implementation based on the first argument.
- *
+ * Spring Zero Command Line Interface. This is the main entry-point for the Spring Zero
+ * command line application. This class will parse input arguments and delegate to a
+ * suitable {@link Command} implementation based on the first argument.
+ * 
  * <p>
  * The '-d' and '--debug' switches are handled by this class, however, most argument
  * parsing is left to the {@link Command} implementation.
- *
+ * 
  * @author Phillip Webb
  * @see #main(String...)
  * @see SpringZeroCliException
@@ -47,8 +47,7 @@ public class SpringZeroCli {
 	private List<Command> commands;
 
 	/**
-	 * Create a new {@link SpringZeroCli} implementation with the default set of
-	 * commands.
+	 * Create a new {@link SpringZeroCli} implementation with the default set of commands.
 	 */
 	public SpringZeroCli() {
 		setCommands(ServiceLoader.load(CommandFactory.class, getClass().getClassLoader()));
@@ -87,10 +86,12 @@ public class SpringZeroCli {
 		try {
 			run(argsWithoutDebugFlags);
 			return 0;
-		} catch (NoArgumentsException ex) {
+		}
+		catch (NoArgumentsException ex) {
 			showUsage();
 			return 1;
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			Set<SpringZeroCliException.Option> options = NO_EXCEPTION_OPTIONS;
 			if (ex instanceof SpringZeroCliException) {
 				options = ((SpringZeroCliException) ex).getOptions();

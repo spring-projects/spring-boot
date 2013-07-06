@@ -378,7 +378,8 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 				path = path.substring(0, path.indexOf("!/"));
 			}
 			return new File(path);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			return null;
 		}
 	}

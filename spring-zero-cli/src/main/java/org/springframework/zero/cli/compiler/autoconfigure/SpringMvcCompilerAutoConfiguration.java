@@ -24,7 +24,7 @@ import org.springframework.zero.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring MVC.
- *
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -58,8 +58,8 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 		imports.addStarImports("org.springframework.web.bind.annotation",
 				"org.springframework.web.servlet.config.annotation",
 				"org.springframework.http");
-		imports.addStaticImport(
-				"org.springframework.zero.cli.template.GroovyTemplate", "template");
+		imports.addStaticImport("org.springframework.zero.cli.template.GroovyTemplate",
+				"template");
 	}
 
 }

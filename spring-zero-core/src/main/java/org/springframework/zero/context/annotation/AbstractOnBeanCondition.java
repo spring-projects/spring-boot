@@ -78,7 +78,8 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 							}
 						}
 					});
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 				}
 			}
 		}
@@ -116,7 +117,8 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 				if (beans.length != 0) {
 					beanClassesFound.add(beanClass);
 				}
-			} catch (ClassNotFoundException ex) {
+			}
+			catch (ClassNotFoundException ex) {
 			}
 		}
 		for (String beanName : beanNames) {
@@ -142,7 +144,8 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 					+ candidates);
 			if (found.isEmpty()) {
 				this.logger.debug(prefix + "Found no beans");
-			} else {
+			}
+			else {
 				this.logger.debug(prefix + "Found beans with " + type + ": " + found);
 			}
 		}

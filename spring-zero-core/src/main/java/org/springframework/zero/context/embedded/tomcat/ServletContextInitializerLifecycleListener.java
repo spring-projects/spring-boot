@@ -52,7 +52,8 @@ public class ServletContextInitializerLifecycleListener implements LifecycleList
 			for (ServletContextInitializer initializer : this.initializers) {
 				try {
 					initializer.onStartup(standardContext.getServletContext());
-				} catch (ServletException ex) {
+				}
+				catch (ServletException ex) {
 					throw new IllegalStateException(ex);
 				}
 			}

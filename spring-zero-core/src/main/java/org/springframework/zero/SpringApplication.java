@@ -270,7 +270,8 @@ public class SpringApplication {
 				contextClass = Class
 						.forName(this.webEnvironment ? DEFAULT_WEB_CONTEXT_CLASS
 								: DEFAULT_CONTEXT_CLASS);
-			} catch (ClassNotFoundException ex) {
+			}
+			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
 						"Unable create a default ApplicationContext, "
 								+ "please specify an ApplicationContextClass", ex);
@@ -344,14 +345,16 @@ public class SpringApplication {
 		for (String arg : defaults) {
 			if (isOptionArg(arg)) {
 				addOptionArg(options, arg);
-			} else {
+			}
+			else {
 				nonopts.add(arg);
 			}
 		}
 		for (String arg : args) {
 			if (isOptionArg(arg)) {
 				addOptionArg(options, arg);
-			} else if (!nonopts.contains(arg)) {
+			}
+			else if (!nonopts.contains(arg)) {
 				nonopts.add(arg);
 			}
 		}
@@ -376,7 +379,8 @@ public class SpringApplication {
 			optionName = optionText.substring(0, optionText.indexOf("="));
 			optionValue = optionText.substring(optionText.indexOf("=") + 1,
 					optionText.length());
-		} else {
+		}
+		else {
 			optionName = optionText;
 		}
 		if (optionName.isEmpty()) {
@@ -434,7 +438,8 @@ public class SpringApplication {
 		for (CommandLineRunner runner : runners) {
 			try {
 				runner.run(args);
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				throw new IllegalStateException("Failed to execute CommandLineRunner", e);
 			}
 		}
@@ -606,11 +611,13 @@ public class SpringApplication {
 				generators.addAll(context.getBeansOfType(ExitCodeGenerator.class)
 						.values());
 				exitCode = getExitCode(generators);
-			} finally {
+			}
+			finally {
 				close(context);
 			}
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			exitCode = (exitCode == 0 ? 1 : exitCode);
 		}
@@ -625,7 +632,8 @@ public class SpringApplication {
 				if (value > 0 && value > exitCode || value < 0 && value < exitCode) {
 					exitCode = value;
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				exitCode = (exitCode == 0 ? 1 : exitCode);
 				e.printStackTrace();
 			}

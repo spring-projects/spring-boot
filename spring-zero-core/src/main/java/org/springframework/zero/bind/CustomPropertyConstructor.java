@@ -74,7 +74,8 @@ public class CustomPropertyConstructor extends Constructor {
 
 		try {
 			typeMap.put(alias, this.propertyUtils.getProperty(type, name));
-		} catch (IntrospectionException e) {
+		}
+		catch (IntrospectionException e) {
 			throw new RuntimeException(e);
 		}
 	}

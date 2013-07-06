@@ -51,7 +51,8 @@ public class MainMethodRunner implements Runnable {
 						+ " does not have a main method");
 			}
 			mainMethod.invoke(null, new Object[] { args });
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}

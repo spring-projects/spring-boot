@@ -61,7 +61,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void close() {
 		try {
 			this.applicationContext.close();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 		}
 	}
 
@@ -168,10 +169,12 @@ public class EndpointWebMvcAutoConfigurationTests {
 				String actual = StreamUtils.copyToString(response.getBody(),
 						Charset.forName("UTF-8"));
 				assertThat(actual, equalTo(expected));
-			} finally {
+			}
+			finally {
 				response.close();
 			}
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			if (expected == null) {
 				if (SocketException.class.isInstance(ex)
 						|| FileNotFoundException.class.isInstance(ex)) {
