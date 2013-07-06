@@ -177,17 +177,12 @@ to change the default values imperatively in Java, so get more control
 over the process.  You can do this by declaring a bean of the same
 type in your application context, e.g. for the server properties:
 
-    @AssertMissingBean(ServerProperties.class)
     @Bean
     public ServerProperties serverProperties() {
         ServerProperties server = new ServerProperties();
         server.setPort(8888);
         return server;
     }
-
-Note the use of `@AssertMissingBean` to guard against any mistakes
-where the bean is already defined (and therefore might already have
-been bound).
 
 ## Server Configuration
 

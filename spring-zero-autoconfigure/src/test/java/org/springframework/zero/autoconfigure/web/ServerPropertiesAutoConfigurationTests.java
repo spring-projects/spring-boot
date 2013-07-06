@@ -18,15 +18,18 @@ package org.springframework.zero.autoconfigure.web;
 
 import java.io.File;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.zero.TestUtils;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.zero.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.zero.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
@@ -42,16 +45,19 @@ import static org.junit.Assert.assertNotNull;
  * 
  * @author Dave Syer
  */
-public class ServerPropertiesConfigurationTests {
+public class ServerPropertiesAutoConfigurationTests {
 
 	private static ConfigurableEmbeddedServletContainerFactory containerFactory;
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigEmbeddedWebApplicationContext context;
 
 	@Before
 	public void init() {
-		containerFactory = Mockito
-				.mock(ConfigurableEmbeddedServletContainerFactory.class);
+		containerFactory =
+				Mockito.mock(ConfigurableEmbeddedServletContainerFactory.class);
 	}
 
 	@After
@@ -64,8 +70,8 @@ public class ServerPropertiesConfigurationTests {
 	@Test
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context
+				.register(Config.class, ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
@@ -78,8 +84,8 @@ public class ServerPropertiesConfigurationTests {
 	public void tomcatProperties() throws Exception {
 		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context
+				.register(Config.class, ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
@@ -88,17 +94,43 @@ public class ServerPropertiesConfigurationTests {
 		Mockito.verify(containerFactory).setPort(8080);
 	}
 
+	@Test
+	public void testAccidentalMultipleServerPropertiesBeans() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context
+				.register(Config.class, MutiServerPropertiesBeanConfig.class, ServerPropertiesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.thrown.expectCause(Matchers
+				.<Throwable> instanceOf(NoUniqueBeanDefinitionException.class));
+		this.context.refresh();
+	}
+
 	@Configuration
 	protected static class Config {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
-			return ServerPropertiesConfigurationTests.containerFactory;
+			return ServerPropertiesAutoConfigurationTests.containerFactory;
 		}
 
 		@Bean
-		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+		public EmbeddedServletContainerCustomizerBeanPostProcessor
+				embeddedServletContainerCustomizerBeanPostProcessor() {
 			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	@Configuration
+	protected static class MutiServerPropertiesBeanConfig {
+
+		@Bean
+		public ServerProperties serverPropertiesOne() {
+			return new ServerProperties();
+		}
+
+		@Bean
+		public ServerProperties serverPropertiesTwo() {
+			return new ServerProperties();
 		}
 
 	}

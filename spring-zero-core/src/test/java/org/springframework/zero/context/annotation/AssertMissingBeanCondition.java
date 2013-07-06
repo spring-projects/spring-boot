@@ -22,6 +22,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.zero.context.annotation.OnMissingBeanCondition;
 
 /**
  * {@link Condition} that checks that specific beans are missing.

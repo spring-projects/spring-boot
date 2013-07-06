@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
