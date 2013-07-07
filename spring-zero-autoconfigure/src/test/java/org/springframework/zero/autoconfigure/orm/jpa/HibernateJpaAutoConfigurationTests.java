@@ -22,12 +22,12 @@ import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.zero.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.zero.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.zero.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.zero.autoconfigure.orm.jpa.test.City;
-import org.springframework.zero.context.annotation.ComponentScanDetectorConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

@@ -21,7 +21,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.zero.SpringApplication;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 
 @Configuration
 @EnableAutoConfiguration

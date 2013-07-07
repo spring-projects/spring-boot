@@ -24,8 +24,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.zero.actuate.trace.TraceRepository;
 import org.springframework.zero.actuate.trace.WebRequestTraceFilter;
-import org.springframework.zero.context.annotation.AutoConfigureAfter;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.AutoConfigureAfter;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnClass;
 
 /**

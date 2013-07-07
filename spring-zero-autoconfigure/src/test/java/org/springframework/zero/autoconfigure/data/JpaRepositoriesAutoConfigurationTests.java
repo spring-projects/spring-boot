@@ -23,13 +23,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.zero.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.zero.autoconfigure.data.JpaRepositoriesAutoConfiguration;
 import org.springframework.zero.autoconfigure.data.test.City;
 import org.springframework.zero.autoconfigure.data.test.CityRepository;
 import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 import org.springframework.zero.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.zero.context.annotation.ComponentScanDetectorConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.zero.context.annotation;
+package org.springframework.zero.autoconfigure;
 
 import org.springframework.context.annotation.Import;
-import org.springframework.zero.context.annotation.ComponentScanDetector;
+import org.springframework.zero.autoconfigure.ComponentScanDetector;
 
 /**
  * Simple configuration to import {@link ComponentScanDetector} for tests.

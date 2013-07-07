@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnClass;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizer;

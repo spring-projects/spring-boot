@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizer;

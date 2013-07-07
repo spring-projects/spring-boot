@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.zero.actuate.trace.InMemoryTraceRepository;
 import org.springframework.zero.actuate.trace.TraceRepository;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 
 /**

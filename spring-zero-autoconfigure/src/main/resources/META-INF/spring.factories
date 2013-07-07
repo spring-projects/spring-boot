@@ -1,5 +1,5 @@
 # Auto Configure
-org.springframework.zero.context.annotation.EnableAutoConfiguration=\
+org.springframework.zero.autoconfigure.EnableAutoConfiguration=\
 org.springframework.zero.autoconfigure.MessageSourceAutoConfiguration,\
 org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration,\
 org.springframework.zero.autoconfigure.batch.BatchAutoConfiguration,\

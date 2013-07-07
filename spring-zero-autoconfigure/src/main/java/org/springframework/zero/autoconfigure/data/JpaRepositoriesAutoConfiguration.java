@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnClass;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 

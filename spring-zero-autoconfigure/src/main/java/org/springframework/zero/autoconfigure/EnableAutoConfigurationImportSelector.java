@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.zero.context.annotation;
+package org.springframework.zero.autoconfigure;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.zero.SpringApplication;
 import org.springframework.zero.actuate.properties.SecurityProperties;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 
 @EnableAutoConfiguration
 @ComponentScan

@@ -1,4 +1,4 @@
-org.springframework.zero.context.annotation.EnableAutoConfiguration=\
+org.springframework.zero.autoconfigure.EnableAutoConfiguration=\
 org.springframework.zero.actuate.autoconfigure.AuditAutoConfiguration,\
 org.springframework.zero.actuate.autoconfigure.EndpointAutoConfiguration,\
 org.springframework.zero.actuate.autoconfigure.EndpointWebMvcAutoConfiguration,\

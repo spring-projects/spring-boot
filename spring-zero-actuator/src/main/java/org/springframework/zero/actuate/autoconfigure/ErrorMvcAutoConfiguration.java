@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.zero.actuate.web.BasicErrorController;
 import org.springframework.zero.actuate.web.ErrorController;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnClass;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;

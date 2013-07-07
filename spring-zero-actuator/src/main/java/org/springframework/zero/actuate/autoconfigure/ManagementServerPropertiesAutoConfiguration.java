@@ -18,9 +18,9 @@ package org.springframework.zero.actuate.autoconfigure;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.zero.actuate.properties.ManagementServerProperties;
+import org.springframework.zero.autoconfigure.AutoConfigureAfter;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 import org.springframework.zero.autoconfigure.web.ServerPropertiesAutoConfiguration;
-import org.springframework.zero.context.annotation.AutoConfigureAfter;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.properties.EnableConfigurationProperties;
 

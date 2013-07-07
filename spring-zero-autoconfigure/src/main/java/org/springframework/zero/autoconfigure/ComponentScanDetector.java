@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.zero.context.annotation;
+package org.springframework.zero.autoconfigure;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.zero.autoconfigure.AutoConfigurationUtils;
 
 /**
  * Helper to detect a component scan declared in the enclosing context (normally on a

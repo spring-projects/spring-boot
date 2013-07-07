@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.SpringVersion;
 import org.springframework.util.ClassUtils;
 import org.springframework.zero.SpringApplication;
-import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 
 /**
  * Very simple main class that can be used to launch an application from sources (class,
