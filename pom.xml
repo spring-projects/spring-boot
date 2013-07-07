@@ -73,10 +73,6 @@
 					<version>2.9</version>
 				</plugin>
 				<plugin>
-					<artifactId>maven-exec-plugin</artifactId>
-					<version>1.2.1</version>
-				</plugin>
-				<plugin>
 					<artifactId>maven-failsafe-plugin</artifactId>
 					<version>2.13</version>
 				</plugin>
@@ -123,6 +119,16 @@
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>2.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>

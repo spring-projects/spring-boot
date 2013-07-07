@@ -89,6 +89,7 @@
 					<settingsFile>src/it/settings.xml</settingsFile>
 					<projectsDirectory>${project.parent.basedir}/spring-zero-samples/</projectsDirectory>
 					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+					<skipInvocation>${skipTests}</skipInvocation>
 				</configuration>
 				<executions>
 					<execution>
