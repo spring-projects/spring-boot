@@ -40,10 +40,6 @@ import org.springframework.core.Ordered;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.SessionScope;
-import org.springframework.zero.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.zero.context.embedded.FilterRegistrationBean;
-import org.springframework.zero.context.embedded.ServletContextInitializer;
-import org.springframework.zero.context.embedded.ServletRegistrationBean;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -310,7 +306,6 @@ public class EmbeddedWebApplicationContextTests {
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
 		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet, "/foo");
-		initializer.addFilters(filter);
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));

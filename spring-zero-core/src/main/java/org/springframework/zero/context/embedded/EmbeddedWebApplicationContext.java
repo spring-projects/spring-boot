@@ -206,9 +206,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			if (initializer instanceof RegistrationBean) {
 				targets.add(((RegistrationBean) initializer).getRegistrationTarget());
 			}
-			if (initializer instanceof ServletRegistrationBean) {
-				targets.addAll(((ServletRegistrationBean) initializer).getFilters());
-			}
 			initializers.add(initializer);
 		}
 
