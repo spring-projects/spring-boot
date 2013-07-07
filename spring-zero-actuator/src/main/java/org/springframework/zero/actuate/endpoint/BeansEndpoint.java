@@ -22,7 +22,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
-import org.springframework.zero.context.annotation.ConfigurationProperties;
+import org.springframework.zero.context.properties.ConfigurationProperties;
 
 /**
  * Exposes JSON view of Spring beans. If the {@link Environment} contains a key setting

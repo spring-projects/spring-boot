@@ -38,9 +38,9 @@ import org.springframework.web.util.UrlPathHelper;
 import org.springframework.zero.actuate.metrics.CounterService;
 import org.springframework.zero.actuate.metrics.GaugeService;
 import org.springframework.zero.context.annotation.AutoConfigureAfter;
-import org.springframework.zero.context.annotation.ConditionalOnBean;
-import org.springframework.zero.context.annotation.ConditionalOnClass;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.context.condition.ConditionalOnBean;
+import org.springframework.zero.context.condition.ConditionalOnClass;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that records Servlet interactions

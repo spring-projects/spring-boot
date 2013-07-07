@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.zero.SpringApplication;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 @Configuration
 @EnableAutoConfiguration

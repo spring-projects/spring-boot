@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.zero.actuate.endpoint.MetricsEndpoint;
 import org.springframework.zero.actuate.endpoint.PublicMetrics;
 import org.springframework.zero.actuate.metrics.Metric;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -338,6 +338,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
 	}
 
+	// FIXME JavaDoc
+	// FIXME Is this still needed?
 	public TomcatEmbeddedServletContainerFactory getChildContextFactory(final String name) {
 
 		final Server server = this.tomcat.getServer();

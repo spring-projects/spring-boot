@@ -25,9 +25,9 @@ import org.springframework.zero.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.zero.actuate.audit.listener.AuditListener;
 import org.springframework.zero.actuate.security.AuthenticationAuditListener;
 import org.springframework.zero.actuate.security.AuthorizationAuditListener;
-import org.springframework.zero.context.annotation.ConditionalOnClass;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.context.condition.ConditionalOnClass;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link AuditEvent}s.

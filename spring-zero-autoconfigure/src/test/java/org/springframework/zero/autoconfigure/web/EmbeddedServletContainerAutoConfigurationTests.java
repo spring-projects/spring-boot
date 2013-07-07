@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.zero.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.zero.context.annotation.ConditionalOnExpression;
+import org.springframework.zero.context.condition.ConditionalOnExpression;
 import org.springframework.zero.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizer;

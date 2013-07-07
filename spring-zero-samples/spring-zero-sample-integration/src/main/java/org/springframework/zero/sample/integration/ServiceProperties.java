@@ -16,7 +16,7 @@
 
 package org.springframework.zero.sample.integration;
 
-import org.springframework.zero.context.annotation.ConfigurationProperties;
+import org.springframework.zero.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(name = "service", ignoreUnknownFields = false)
 public class ServiceProperties {

@@ -21,7 +21,7 @@ import java.util.List;
 import org.springframework.util.Assert;
 import org.springframework.zero.actuate.trace.Trace;
 import org.springframework.zero.actuate.trace.TraceRepository;
-import org.springframework.zero.context.annotation.ConfigurationProperties;
+import org.springframework.zero.context.properties.ConfigurationProperties;
 
 /**
  * {@link Endpoint} to expose {@link Trace} information.

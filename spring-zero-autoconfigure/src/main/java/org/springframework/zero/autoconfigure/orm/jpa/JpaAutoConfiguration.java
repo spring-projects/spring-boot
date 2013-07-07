@@ -36,9 +36,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.zero.autoconfigure.AutoConfigurationUtils;
 import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
-import org.springframework.zero.context.annotation.ConditionalOnBean;
-import org.springframework.zero.context.annotation.ConditionalOnClass;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.context.condition.ConditionalOnBean;
+import org.springframework.zero.context.condition.ConditionalOnClass;
 
 /**
  * Base {@link EnableAutoConfiguration Auto-configuration} for JPA.

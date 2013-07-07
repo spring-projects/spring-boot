@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.util.Assert;
 import org.springframework.zero.actuate.metrics.Metric;
-import org.springframework.zero.context.annotation.ConfigurationProperties;
+import org.springframework.zero.context.properties.ConfigurationProperties;
 
 /**
  * {@link Endpoint} to expose {@link PublicMetrics}.

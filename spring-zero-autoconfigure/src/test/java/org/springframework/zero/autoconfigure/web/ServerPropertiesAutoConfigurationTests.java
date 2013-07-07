@@ -18,14 +18,13 @@ package org.springframework.zero.autoconfigure.web;
 
 import java.io.File;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.zero.TestUtils;
@@ -34,8 +33,8 @@ import org.springframework.zero.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.zero.context.embedded.ServerProperties;
 import org.springframework.zero.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.zero.properties.ServerProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -100,8 +99,8 @@ public class ServerPropertiesAutoConfigurationTests {
 		this.context.register(Config.class, MutiServerPropertiesBeanConfig.class,
 				ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		this.thrown.expectCause(Matchers
-				.<Throwable> instanceOf(NoUniqueBeanDefinitionException.class));
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("Multiple ServerProperties");
 		this.context.refresh();
 	}
 

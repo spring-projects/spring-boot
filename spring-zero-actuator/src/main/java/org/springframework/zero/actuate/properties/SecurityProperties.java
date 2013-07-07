@@ -17,7 +17,7 @@
 package org.springframework.zero.actuate.properties;
 
 import org.springframework.security.config.annotation.web.configurers.SessionCreationPolicy;
-import org.springframework.zero.context.annotation.ConfigurationProperties;
+import org.springframework.zero.context.properties.ConfigurationProperties;
 
 /**
  * Properties for the security aspects of an application.

@@ -16,22 +16,19 @@
 
 package org.springframework.zero.autoconfigure.web;
 
-import org.apache.catalina.valves.AccessLogValve;
-import org.apache.catalina.valves.RemoteIpValve;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.zero.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
-import org.springframework.zero.properties.ServerProperties;
-import org.springframework.zero.properties.ServerProperties.Tomcat;
+import org.springframework.zero.context.embedded.ServerProperties;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the
@@ -42,8 +39,8 @@ import org.springframework.zero.properties.ServerProperties.Tomcat;
  */
 @Configuration
 @EnableConfigurationProperties
-public class ServerPropertiesAutoConfiguration implements
-		EmbeddedServletContainerCustomizer, ApplicationContextAware {
+public class ServerPropertiesAutoConfiguration implements ApplicationContextAware,
+		EmbeddedServletContainerCustomizer {
 
 	private ApplicationContext applicationContext;
 
@@ -61,46 +58,12 @@ public class ServerPropertiesAutoConfiguration implements
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-
-		// Need to do a look up here to make it lazy
-		ServerProperties server = this.applicationContext.getBean(ServerProperties.class);
-
-		factory.setPort(server.getPort());
-		factory.setAddress(server.getAddress());
-		factory.setContextPath(server.getContextPath());
-
-		if (factory instanceof TomcatEmbeddedServletContainerFactory) {
-			configureTomcat((TomcatEmbeddedServletContainerFactory) factory, server);
-		}
-
-	}
-
-	private void configureTomcat(TomcatEmbeddedServletContainerFactory tomcatFactory,
-			ServerProperties configuration) {
-
-		Tomcat tomcat = configuration.getTomcat();
-		if (tomcat.getBasedir() != null) {
-			tomcatFactory.setBaseDirectory(tomcat.getBasedir());
-		}
-
-		String remoteIpHeader = tomcat.getRemoteIpHeader();
-		String protocolHeader = tomcat.getProtocolHeader();
-
-		if (StringUtils.hasText(remoteIpHeader) || StringUtils.hasText(protocolHeader)) {
-			RemoteIpValve valve = new RemoteIpValve();
-			valve.setRemoteIpHeader(remoteIpHeader);
-			valve.setProtocolHeader(protocolHeader);
-			tomcatFactory.addContextValves(valve);
-		}
-
-		String pattern = tomcat.getAccessLogPattern();
-		if (pattern != null) {
-			AccessLogValve valve = new AccessLogValve();
-			valve.setPattern(pattern);
-			valve.setSuffix(".log");
-			tomcatFactory.addContextValves(valve);
-		}
-
+		String[] serverPropertiesBeans = this.applicationContext
+				.getBeanNamesForType(ServerProperties.class);
+		Assert.state(
+				serverPropertiesBeans.length == 1,
+				"Multiple ServerProperties beans registered "
+						+ StringUtils.arrayToCommaDelimitedString(serverPropertiesBeans));
 	}
 
 }

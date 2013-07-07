@@ -26,9 +26,9 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.zero.context.annotation.ConditionalOnBean;
-import org.springframework.zero.context.annotation.ConditionalOnClass;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
+import org.springframework.zero.context.condition.ConditionalOnBean;
+import org.springframework.zero.context.condition.ConditionalOnClass;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 

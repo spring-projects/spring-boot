@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.zero.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.zero.actuate.properties.ManagementServerProperties;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertFalse;

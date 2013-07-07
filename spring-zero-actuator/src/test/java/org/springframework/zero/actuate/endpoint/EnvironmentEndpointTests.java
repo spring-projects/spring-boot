@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.zero.actuate.endpoint.EnvironmentEndpoint;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;

@@ -45,8 +45,8 @@ import org.springframework.zero.actuate.metrics.MetricRepository;
 import org.springframework.zero.actuate.trace.InMemoryTraceRepository;
 import org.springframework.zero.actuate.trace.TraceRepository;
 import org.springframework.zero.bind.PropertiesConfigurationFactory;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management

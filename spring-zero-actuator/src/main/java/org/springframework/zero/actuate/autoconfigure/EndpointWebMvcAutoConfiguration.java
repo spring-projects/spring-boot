@@ -39,11 +39,11 @@ import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.zero.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.zero.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.zero.context.annotation.AutoConfigureAfter;
-import org.springframework.zero.context.annotation.ConditionalOnClass;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.context.condition.ConditionalOnClass;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.zero.properties.ServerProperties;
+import org.springframework.zero.context.embedded.ServerProperties;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable Spring MVC to handle

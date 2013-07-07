@@ -27,8 +27,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.zero.context.annotation.ConfigurationProperties;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.properties.ConfigurationProperties;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 import static org.junit.Assert.assertEquals;
 

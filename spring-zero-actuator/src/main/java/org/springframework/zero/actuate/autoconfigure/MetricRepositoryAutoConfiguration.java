@@ -24,8 +24,8 @@ import org.springframework.zero.actuate.metrics.DefaultGaugeService;
 import org.springframework.zero.actuate.metrics.GaugeService;
 import org.springframework.zero.actuate.metrics.InMemoryMetricRepository;
 import org.springframework.zero.actuate.metrics.MetricRepository;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for metrics services.

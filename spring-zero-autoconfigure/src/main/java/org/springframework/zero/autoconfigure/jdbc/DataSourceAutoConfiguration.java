@@ -46,10 +46,10 @@ import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.zero.context.annotation.ConditionLogUtils;
-import org.springframework.zero.context.annotation.ConditionalOnClass;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
+import org.springframework.zero.context.condition.ConditionLogUtils;
+import org.springframework.zero.context.condition.ConditionalOnClass;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.

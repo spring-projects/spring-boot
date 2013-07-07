@@ -25,7 +25,7 @@ import org.springframework.zero.actuate.endpoint.TraceEndpoint;
 import org.springframework.zero.actuate.trace.InMemoryTraceRepository;
 import org.springframework.zero.actuate.trace.Trace;
 import org.springframework.zero.actuate.trace.TraceRepository;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

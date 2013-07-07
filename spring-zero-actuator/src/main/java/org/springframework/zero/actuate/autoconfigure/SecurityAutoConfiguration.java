@@ -41,10 +41,10 @@ import org.springframework.zero.actuate.endpoint.Endpoint;
 import org.springframework.zero.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.zero.actuate.properties.SecurityProperties;
 import org.springframework.zero.actuate.web.ErrorController;
-import org.springframework.zero.context.annotation.ConditionalOnClass;
-import org.springframework.zero.context.annotation.ConditionalOnMissingBean;
 import org.springframework.zero.context.annotation.EnableAutoConfiguration;
-import org.springframework.zero.context.annotation.EnableConfigurationProperties;
+import org.springframework.zero.context.condition.ConditionalOnClass;
+import org.springframework.zero.context.condition.ConditionalOnMissingBean;
+import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or

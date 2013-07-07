@@ -20,8 +20,8 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.zero.context.annotation.ConfigurationProperties;
-import org.springframework.zero.properties.ServerProperties;
+import org.springframework.zero.context.embedded.ServerProperties;
+import org.springframework.zero.context.properties.ConfigurationProperties;
 
 /**
  * Properties for the management server (e.g. port and path settings).
