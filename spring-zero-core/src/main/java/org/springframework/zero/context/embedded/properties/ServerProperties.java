@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.zero.context.embedded;
+package org.springframework.zero.context.embedded.properties;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -24,6 +24,10 @@ import javax.validation.constraints.NotNull;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.springframework.util.StringUtils;
+import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
+import org.springframework.zero.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.zero.context.properties.ConfigurationProperties;
 

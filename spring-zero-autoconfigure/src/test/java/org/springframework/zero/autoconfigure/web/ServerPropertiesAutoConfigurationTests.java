@@ -33,7 +33,7 @@ import org.springframework.zero.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.zero.context.embedded.ServerProperties;
+import org.springframework.zero.context.embedded.properties.ServerProperties;
 import org.springframework.zero.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
 import static org.junit.Assert.assertEquals;

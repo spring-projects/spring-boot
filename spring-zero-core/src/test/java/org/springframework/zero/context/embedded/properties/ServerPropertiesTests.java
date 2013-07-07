@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.zero.context.embedded;
+package org.springframework.zero.context.embedded.properties;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.zero.bind.RelaxedDataBinder;
+import org.springframework.zero.context.embedded.properties.ServerProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

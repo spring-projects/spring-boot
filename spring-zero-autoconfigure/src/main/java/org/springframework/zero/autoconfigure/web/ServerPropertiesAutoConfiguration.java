@@ -27,7 +27,7 @@ import org.springframework.zero.context.annotation.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.zero.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.zero.context.embedded.ServerProperties;
+import org.springframework.zero.context.embedded.properties.ServerProperties;
 import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 /**

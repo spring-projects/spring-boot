@@ -59,13 +59,13 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	private PropertySources propertySources;
 
-	private T configuration;
+	private T target;
 
 	private Validator validator;
 
 	private MessageSource messageSource;
 
-	private boolean initialized = false;
+	private boolean hasBeenBound = false;
 
 	private String targetName;
 
@@ -77,7 +77,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	 */
 	public PropertiesConfigurationFactory(T target) {
 		Assert.notNull(target);
-		this.configuration = target;
+		this.target = target;
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	@SuppressWarnings("unchecked")
 	public PropertiesConfigurationFactory(Class<?> type) {
 		Assert.notNull(type);
-		this.configuration = (T) BeanUtils.instantiate(type);
+		this.target = (T) BeanUtils.instantiate(type);
 	}
 
 	/**
@@ -165,86 +165,15 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
-		Assert.state(this.properties != null || this.propertySources != null,
-				"Properties or propertySources should not be null");
-
-		try {
-			if (this.properties != null) {
-				logger.trace("Properties:\n" + this.properties);
-			}
-			else {
-				logger.trace("Property Sources: " + this.propertySources);
-			}
-			this.initialized = true;
-
-			RelaxedDataBinder dataBinder;
-			if (this.targetName != null) {
-				dataBinder = new RelaxedDataBinder(this.configuration, this.targetName);
-			}
-			else {
-				dataBinder = new RelaxedDataBinder(this.configuration);
-			}
-			if (this.validator != null) {
-				dataBinder.setValidator(this.validator);
-			}
-			if (this.conversionService != null) {
-				dataBinder.setConversionService(this.conversionService);
-			}
-			dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
-			dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
-			customizeBinder(dataBinder);
-			PropertyValues pvs;
-			if (this.properties != null) {
-				pvs = new MutablePropertyValues(this.properties);
-			}
-			else {
-				pvs = new PropertySourcesPropertyValues(this.propertySources);
-			}
-			dataBinder.bind(pvs);
-
-			if (this.validator != null) {
-				dataBinder.validate();
-				BindingResult errors = dataBinder.getBindingResult();
-
-				if (errors.hasErrors()) {
-					logger.error("Properties configuration failed validation");
-					for (ObjectError error : errors.getAllErrors()) {
-						logger.error(this.messageSource != null ? this.messageSource
-								.getMessage(error, Locale.getDefault())
-								+ " ("
-								+ error
-								+ ")" : error);
-					}
-					if (this.exceptionIfInvalid) {
-						BindException summary = new BindException(errors);
-						throw summary;
-					}
-				}
-			}
-		}
-		catch (BindException e) {
-			if (this.exceptionIfInvalid) {
-				throw e;
-			}
-			logger.error(
-					"Failed to load Properties validation bean. Your Properties may be invalid.",
-					e);
-		}
-	}
-
-	/**
-	 * @param dataBinder the data binder that will be used to bind and validate
-	 */
-	protected void customizeBinder(DataBinder dataBinder) {
+		bindPropertiesToTarget();
 	}
 
 	@Override
 	public Class<?> getObjectType() {
-		if (this.configuration == null) {
+		if (this.target == null) {
 			return Object.class;
 		}
-		return this.configuration.getClass();
+		return this.target.getClass();
 	}
 
 	@Override
@@ -254,10 +183,80 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	@Override
 	public T getObject() throws Exception {
-		if (!this.initialized) {
-			afterPropertiesSet();
+		if (!this.hasBeenBound) {
+			bindPropertiesToTarget();
 		}
-		return this.configuration;
+		return this.target;
+	}
+
+	public void bindPropertiesToTarget() throws BindException {
+		Assert.state(this.properties != null || this.propertySources != null,
+				"Properties or propertySources should not be null");
+		try {
+			if (logger.isTraceEnabled()) {
+				if (this.properties != null) {
+					logger.trace("Properties:\n" + this.properties);
+				}
+				else {
+					logger.trace("Property Sources: " + this.propertySources);
+				}
+			}
+			this.hasBeenBound = true;
+			doBindPropertiesToTarget();
+		}
+		catch (BindException e) {
+			if (this.exceptionIfInvalid) {
+				throw e;
+			}
+			logger.error("Failed to load Properties validation bean. "
+					+ "Your Properties may be invalid.", e);
+		}
+	}
+
+	private void doBindPropertiesToTarget() throws BindException {
+
+		RelaxedDataBinder dataBinder = (this.targetName != null ? new RelaxedDataBinder(
+				this.target, this.targetName) : new RelaxedDataBinder(this.target));
+		if (this.validator != null) {
+			dataBinder.setValidator(this.validator);
+		}
+		if (this.conversionService != null) {
+			dataBinder.setConversionService(this.conversionService);
+		}
+		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
+		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
+		customizeBinder(dataBinder);
+
+		PropertyValues propertyValues = (this.properties != null ? new MutablePropertyValues(
+				this.properties)
+				: new PropertySourcesPropertyValues(this.propertySources));
+		dataBinder.bind(propertyValues);
+
+		if (this.validator != null) {
+			validate(dataBinder);
+		}
+	}
+
+	private void validate(RelaxedDataBinder dataBinder) throws BindException {
+		dataBinder.validate();
+		BindingResult errors = dataBinder.getBindingResult();
+		if (errors.hasErrors()) {
+			logger.error("Properties configuration failed validation");
+			for (ObjectError error : errors.getAllErrors()) {
+				logger.error(this.messageSource != null ? this.messageSource.getMessage(
+						error, Locale.getDefault()) + " (" + error + ")" : error);
+			}
+			if (this.exceptionIfInvalid) {
+				BindException summary = new BindException(errors);
+				throw summary;
+			}
+		}
+	}
+
+	/**
+	 * @param dataBinder the data binder that will be used to bind and validate
+	 */
+	protected void customizeBinder(DataBinder dataBinder) {
 	}
 
 }

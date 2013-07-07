@@ -19,6 +19,7 @@ package org.springframework.zero.context.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -67,17 +68,7 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			for (Class<?> type : types) {
 				String name = type.getName();
 				if (!registry.containsBeanDefinition(name)) {
-					registry.registerBeanDefinition(name, BeanDefinitionBuilder
-							.genericBeanDefinition(type).getBeanDefinition());
-					ConfigurationProperties properties = AnnotationUtils.findAnnotation(
-							type, ConfigurationProperties.class);
-					if (properties == null) {
-						BeanDefinitionBuilder builder = BeanDefinitionBuilder
-								.genericBeanDefinition(ConfigurationPropertiesHolder.class);
-						builder.addConstructorArgReference(name);
-						registry.registerBeanDefinition(name + ".HOLDER",
-								builder.getBeanDefinition());
-					}
+					registerBeanDefinition(registry, type, name);
 				}
 			}
 		}
@@ -94,18 +85,25 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 			return result;
 		}
 
-	}
+		private void registerBeanDefinition(BeanDefinitionRegistry registry,
+				Class<?> type, String name) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder
+					.genericBeanDefinition(type);
+			AbstractBeanDefinition beanDefinition = builder.getBeanDefinition();
+			registry.registerBeanDefinition(name, beanDefinition);
 
-	public static class ConfigurationPropertiesHolder {
-
-		private Object target;
-
-		public ConfigurationPropertiesHolder(Object target) {
-			this.target = target;
+			ConfigurationProperties properties = AnnotationUtils.findAnnotation(type,
+					ConfigurationProperties.class);
+			if (properties == null) {
+				registerPropertiesHolder(registry, name);
+			}
 		}
 
-		public Object getTarget() {
-			return this.target;
+		private void registerPropertiesHolder(BeanDefinitionRegistry registry, String name) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder
+					.genericBeanDefinition(ConfigurationPropertiesHolder.class);
+			builder.addConstructorArgReference(name);
+			registry.registerBeanDefinition(name + ".HOLDER", builder.getBeanDefinition());
 		}
 
 	}

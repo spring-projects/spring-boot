@@ -43,7 +43,7 @@ import org.springframework.zero.context.annotation.EnableAutoConfiguration;
 import org.springframework.zero.context.condition.ConditionalOnClass;
 import org.springframework.zero.context.condition.ConditionalOnMissingBean;
 import org.springframework.zero.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.zero.context.embedded.ServerProperties;
+import org.springframework.zero.context.embedded.properties.ServerProperties;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable Spring MVC to handle

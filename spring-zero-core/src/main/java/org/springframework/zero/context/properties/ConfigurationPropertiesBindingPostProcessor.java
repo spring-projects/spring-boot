@@ -27,9 +27,9 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.PropertySources;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.zero.bind.PropertiesConfigurationFactory;
-import org.springframework.zero.context.properties.EnableConfigurationPropertiesImportSelector.ConfigurationPropertiesHolder;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
@@ -89,44 +89,41 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			throws BeansException {
 		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
 				bean.getClass(), ConfigurationProperties.class);
-		Object target = bean;
 		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
-			if (bean instanceof ConfigurationPropertiesHolder) {
-				target = ((ConfigurationPropertiesHolder) bean).getTarget();
-			}
-			PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
-					target);
-			factory.setPropertySources(this.propertySources);
-			factory.setValidator(this.validator);
-			// If no explicit conversion service is provided we add one so that (at least)
-			// comma-separated arrays of convertibles can be bound automatically
-			factory.setConversionService(this.conversionService == null ? getDefaultConversionService()
-					: this.conversionService);
-			String targetName = null;
-			if (annotation != null) {
-				factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
-				factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
-				targetName = "".equals(annotation.value()) ? (""
-						.equals(annotation.name()) ? null : annotation.name())
-						: annotation.value();
-			}
-			factory.setTargetName(targetName);
-			try {
-				target = factory.getObject(); // throwaway
-			}
-			catch (BeansException e) {
-				throw e;
-			}
-			catch (Exception e) {
-				throw new BeanCreationException(beanName, "Could not bind", e);
-			}
+			postProcessAfterInitialization(bean, beanName, annotation);
 		}
 		return bean;
 	}
 
-	/**
-	 * @return
-	 */
+	private void postProcessAfterInitialization(Object bean, String beanName,
+			ConfigurationProperties annotation) {
+		Object target = (bean instanceof ConfigurationPropertiesHolder ? ((ConfigurationPropertiesHolder) bean)
+				.getTarget() : bean);
+		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
+				target);
+		factory.setPropertySources(this.propertySources);
+		factory.setValidator(this.validator);
+		// If no explicit conversion service is provided we add one so that (at least)
+		// comma-separated arrays of convertibles can be bound automatically
+		factory.setConversionService(this.conversionService == null ? getDefaultConversionService()
+				: this.conversionService);
+		if (annotation != null) {
+			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
+			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
+			String targetName = (StringUtils.hasLength(annotation.value()) ? annotation
+					.value() : annotation.name());
+			if (StringUtils.hasLength(targetName)) {
+				factory.setTargetName(targetName);
+			}
+		}
+		try {
+			factory.bindPropertiesToTarget();
+		}
+		catch (Exception ex) {
+			throw new BeanCreationException(beanName, "Could not bind properties", ex);
+		}
+	}
+
 	private ConversionService getDefaultConversionService() {
 		if (!this.initialized && this.beanFactory instanceof ListableBeanFactory) {
 			for (Converter<?, ?> converter : ((ListableBeanFactory) this.beanFactory)

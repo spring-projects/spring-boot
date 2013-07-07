@@ -20,7 +20,7 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.zero.context.embedded.ServerProperties;
+import org.springframework.zero.context.embedded.properties.ServerProperties;
 import org.springframework.zero.context.properties.ConfigurationProperties;
 
 /**
