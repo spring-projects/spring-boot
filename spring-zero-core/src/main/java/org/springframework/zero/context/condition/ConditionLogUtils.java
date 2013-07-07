@@ -26,7 +26,7 @@ import org.springframework.core.type.MethodMetadata;
  * 
  * @author Dave Syer
  */
-public class ConditionLogUtils {
+public abstract class ConditionLogUtils {
 
 	public static String getPrefix(Log logger, AnnotatedTypeMetadata metadata) {
 		String prefix = "";

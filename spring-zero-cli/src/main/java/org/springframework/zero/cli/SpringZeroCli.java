@@ -92,21 +92,25 @@ public class SpringZeroCli {
 			return 1;
 		}
 		catch (Exception ex) {
-			Set<SpringZeroCliException.Option> options = NO_EXCEPTION_OPTIONS;
-			if (ex instanceof SpringZeroCliException) {
-				options = ((SpringZeroCliException) ex).getOptions();
-			}
-			if (!(ex instanceof NoHelpCommandArgumentsException)) {
-				errorMessage(ex.getMessage());
-			}
-			if (options.contains(SpringZeroCliException.Option.SHOW_USAGE)) {
-				showUsage();
-			}
-			if (debug || options.contains(SpringZeroCliException.Option.STACK_TRACE)) {
-				printStackTrace(ex);
-			}
-			return 1;
+			return handleError(debug, ex);
 		}
+	}
+
+	private int handleError(boolean debug, Exception ex) {
+		Set<SpringZeroCliException.Option> options = NO_EXCEPTION_OPTIONS;
+		if (ex instanceof SpringZeroCliException) {
+			options = ((SpringZeroCliException) ex).getOptions();
+		}
+		if (!(ex instanceof NoHelpCommandArgumentsException)) {
+			errorMessage(ex.getMessage());
+		}
+		if (options.contains(SpringZeroCliException.Option.SHOW_USAGE)) {
+			showUsage();
+		}
+		if (debug || options.contains(SpringZeroCliException.Option.STACK_TRACE)) {
+			printStackTrace(ex);
+		}
+		return 1;
 	}
 
 	/**
@@ -133,28 +137,28 @@ public class SpringZeroCli {
 	}
 
 	protected void showUsage() {
-		System.out.print("usage: " + CLI_APP + " ");
-		System.out.println("");
-		System.out.println("       <command> [<args>]");
-		System.out.println("");
-		System.out.println("Available commands are:");
+		Log.info("usage: " + CLI_APP + " ");
+		Log.info("");
+		Log.info("       <command> [<args>]");
+		Log.info("");
+		Log.info("Available commands are:");
 		for (Command command : this.commands) {
-			System.out.println(String.format("\n  %1$s %2$-15s\n    %3$s",
-					command.getName(), command.getUsageHelp(), command.getDescription()));
+			Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
+					command.getUsageHelp(), command.getDescription()));
 		}
-		System.out.println("");
-		System.out.println("See '" + CLI_APP
+		Log.info("");
+		Log.info("See '" + CLI_APP
 				+ " help <command>' for more information on a specific command.");
 	}
 
 	protected void errorMessage(String message) {
-		System.err.println(message == null ? "Unexpected error" : message);
+		Log.error(message == null ? "Unexpected error" : message);
 	}
 
 	protected void printStackTrace(Exception ex) {
-		System.err.println("");
-		ex.printStackTrace(System.err);
-		System.err.println("");
+		Log.error("");
+		Log.error(ex);
+		Log.error("");
 	}
 
 	private String[] removeDebugFlags(String[] args) {
@@ -187,16 +191,16 @@ public class SpringZeroCli {
 			String commandName = args[0];
 			for (Command command : SpringZeroCli.this.commands) {
 				if (command.getName().equals(commandName)) {
-					System.out.println(CLI_APP + " " + command.getName() + " - "
+					Log.info(CLI_APP + " " + command.getName() + " - "
 							+ command.getDescription());
-					System.out.println();
+					Log.info("");
 					if (command.getUsageHelp() != null) {
-						System.out.println("usage: " + CLI_APP + " " + command.getName()
-								+ " " + command.getUsageHelp());
-						System.out.println();
+						Log.info("usage: " + CLI_APP + " " + command.getName() + " "
+								+ command.getUsageHelp());
+						Log.info("");
 					}
 					if (command.getHelp() != null) {
-						System.out.println(command.getHelp());
+						Log.info(command.getHelp());
 					}
 					return;
 				}

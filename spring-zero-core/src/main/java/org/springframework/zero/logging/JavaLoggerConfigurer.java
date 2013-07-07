@@ -41,15 +41,12 @@ public abstract class JavaLoggerConfigurer {
 			LogManager.getLogManager().readConfiguration(
 					ResourceUtils.getURL(resolvedLocation).openStream());
 		}
-		catch (FileNotFoundException e) {
-			throw e;
-		}
-		catch (RuntimeException e) {
-			throw e;
-		}
-		catch (Exception e) {
+		catch (Exception ex) {
+			if (ex instanceof FileNotFoundException) {
+				throw (FileNotFoundException) ex;
+			}
 			throw new IllegalArgumentException("Could not initialize logging from "
-					+ location, e);
+					+ location, ex);
 		}
 	}
 

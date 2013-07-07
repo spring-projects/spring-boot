@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.actuate.autoconfigure;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.zero.actuate.TestUtils;
-import org.springframework.zero.actuate.autoconfigure.EndpointAutoConfiguration;
+import org.springframework.zero.TestUtils;
 import org.springframework.zero.actuate.endpoint.BeansEndpoint;
 import org.springframework.zero.actuate.endpoint.DumpEndpoint;
 import org.springframework.zero.actuate.endpoint.EnvironmentEndpoint;

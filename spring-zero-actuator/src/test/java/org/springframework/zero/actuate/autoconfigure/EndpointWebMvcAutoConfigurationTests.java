@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.actuate.autoconfigure;
 
 import java.io.FileNotFoundException;
@@ -32,9 +33,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.zero.actuate.TestUtils;
-import org.springframework.zero.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.zero.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
+import org.springframework.zero.TestUtils;
 import org.springframework.zero.actuate.endpoint.AbstractEndpoint;
 import org.springframework.zero.actuate.endpoint.Endpoint;
 import org.springframework.zero.actuate.properties.ManagementServerProperties;

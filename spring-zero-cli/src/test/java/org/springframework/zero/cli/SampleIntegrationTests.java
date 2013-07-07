@@ -36,6 +36,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Integration tests to exercise the samples.
+ * 
  * @author Dave Syer
  */
 public class SampleIntegrationTests {

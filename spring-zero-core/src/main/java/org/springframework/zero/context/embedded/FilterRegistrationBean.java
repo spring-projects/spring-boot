@@ -84,8 +84,13 @@ public class FilterRegistrationBean extends RegistrationBean {
 	 */
 	public FilterRegistrationBean(Filter filter,
 			ServletRegistrationBean... servletRegistrationBeans) {
-		setFilter(filter);
-		addServletRegistrationBeans(servletRegistrationBeans);
+		Assert.notNull(filter, "Filter must not be null");
+		Assert.notNull(servletRegistrationBeans,
+				"ServletRegistrationBeans must not be null");
+		this.filter = filter;
+		for (ServletRegistrationBean servletRegistrationBean : servletRegistrationBeans) {
+			this.servletRegistrationBeans.add(servletRegistrationBean);
+		}
 	}
 
 	/**

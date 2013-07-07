@@ -112,7 +112,7 @@ public class MetricFilterAutoConfiguration {
 			try {
 				return response.getStatus();
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				return UNDEFINED_HTTP_STATUS;
 			}
 		}

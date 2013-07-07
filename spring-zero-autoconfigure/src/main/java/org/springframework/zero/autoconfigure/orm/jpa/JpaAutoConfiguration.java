@@ -79,7 +79,7 @@ public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 			return EmbeddedDatabaseConfiguration.class.getName().equals(
 					beanDefinition.getFactoryBeanName());
 		}
-		catch (NoSuchBeanDefinitionException e) {
+		catch (NoSuchBeanDefinitionException ex) {
 			return false;
 		}
 	}
@@ -91,7 +91,7 @@ public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 		try {
 			return this.beanFactory.getBean("dataSource", DataSource.class);
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException ex) {
 			return this.beanFactory.getBean(DataSource.class);
 		}
 	}

@@ -37,7 +37,8 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 
 	// FIXME move out of core
 
-	String resource; // Set this in pom configuration with <resource>...</resource>
+	private String resource; // Set this in pom configuration with
+								// <resource>...</resource>
 
 	private Properties data = new Properties();
 
@@ -82,6 +83,14 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 		this.data.store(os, "Merged by PropertiesMergingResourceTransformer");
 		os.flush();
 		this.data.clear();
+	}
+
+	public String getResource() {
+		return this.resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
 	}
 
 }

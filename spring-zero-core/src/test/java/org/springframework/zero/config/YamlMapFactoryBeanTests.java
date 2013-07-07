@@ -25,12 +25,13 @@ import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.zero.config.YamlMapFactoryBean;
 import org.springframework.zero.config.YamlProcessor.ResolutionMethod;
 
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link YamlMapFactoryBean}.
+ * 
  * @author Dave Syer
  */
 public class YamlMapFactoryBeanTests {

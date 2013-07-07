@@ -183,7 +183,7 @@ public class SpringApplication {
 		initialize();
 	}
 
-	protected void initialize() {
+	private void initialize() {
 		this.webEnvironment = deduceWebEnvironment();
 		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
 		@SuppressWarnings("rawtypes")
@@ -376,8 +376,8 @@ public class SpringApplication {
 		String optionName;
 		String optionValue = "";
 		if (optionText.contains("=")) {
-			optionName = optionText.substring(0, optionText.indexOf("="));
-			optionValue = optionText.substring(optionText.indexOf("=") + 1,
+			optionName = optionText.substring(0, optionText.indexOf('='));
+			optionValue = optionText.substring(optionText.indexOf('=') + 1,
 					optionText.length());
 		}
 		else {
@@ -439,8 +439,8 @@ public class SpringApplication {
 			try {
 				runner.run(args);
 			}
-			catch (Exception e) {
-				throw new IllegalStateException("Failed to execute CommandLineRunner", e);
+			catch (Exception ex) {
+				throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
 			}
 		}
 	}
@@ -617,8 +617,8 @@ public class SpringApplication {
 			}
 
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		catch (Exception ex) {
+			ex.printStackTrace();
 			exitCode = (exitCode == 0 ? 1 : exitCode);
 		}
 		return exitCode;
@@ -633,9 +633,9 @@ public class SpringApplication {
 					exitCode = value;
 				}
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				exitCode = (exitCode == 0 ? 1 : exitCode);
-				e.printStackTrace();
+				ex.printStackTrace();
 			}
 		}
 		return exitCode;

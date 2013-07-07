@@ -28,9 +28,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link OnNotWebApplicationCondition}.
+ * 
  * @author Dave Syer
  */
-public class NotWebApplicationConditionTests {
+public class OnNotWebApplicationConditionTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

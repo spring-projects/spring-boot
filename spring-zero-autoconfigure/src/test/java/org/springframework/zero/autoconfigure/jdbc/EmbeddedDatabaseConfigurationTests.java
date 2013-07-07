@@ -20,11 +20,12 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link EmbeddedDatabaseConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class EmbeddedDatabaseConfigurationTests {

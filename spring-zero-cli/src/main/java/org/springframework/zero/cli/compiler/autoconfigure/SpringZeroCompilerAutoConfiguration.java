@@ -84,9 +84,8 @@ public class SpringZeroCompilerAutoConfiguration extends CompilerAutoConfigurati
 	public void applyToMainClass(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
-		if (true) { // FIXME: add switch for auto config
-			addEnableAutoConfigurationAnnotation(source, classNode);
-		}
+		// FIXME: add switch for auto config
+		addEnableAutoConfigurationAnnotation(source, classNode);
 	}
 
 	private void addEnableAutoConfigurationAnnotation(SourceUnit source,
@@ -101,8 +100,8 @@ public class SpringZeroCompilerAutoConfiguration extends CompilerAutoConfigurati
 						annotationClass));
 				classNode.addAnnotation(annotationNode);
 			}
-			catch (ClassNotFoundException e) {
-				throw new IllegalStateException(e);
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException(ex);
 			}
 		}
 	}

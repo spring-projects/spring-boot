@@ -33,10 +33,10 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.zero.config.YamlPropertiesFactoryBean;
 import org.springframework.zero.config.YamlProcessor.ArrayDocumentMatcher;
 import org.springframework.zero.config.YamlProcessor.DocumentMatcher;
 import org.springframework.zero.config.YamlProcessor.MatchStatus;
+import org.springframework.zero.config.YamlPropertiesFactoryBean;
 
 /**
  * {@link ApplicationContextInitializer} that configures the context environment by
@@ -82,7 +82,7 @@ public class ConfigFileApplicationContextInitializer implements
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		List<String> candidates = getCandidateLocations(applicationContext);
+		List<String> candidates = getCandidateLocations();
 
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
@@ -97,8 +97,7 @@ public class ConfigFileApplicationContextInitializer implements
 		}
 	}
 
-	private List<String> getCandidateLocations(
-			ConfigurableApplicationContext applicationContext) {
+	private List<String> getCandidateLocations() {
 		List<String> candidates = new ArrayList<String>();
 		for (String searchLocation : this.searchLocations) {
 			for (Loader loader : LOADERS) {
@@ -150,7 +149,7 @@ public class ConfigFileApplicationContextInitializer implements
 	 * Set the search locations that will be considered.
 	 */
 	public void setSearchLocations(String[] searchLocations) {
-		this.searchLocations = searchLocations;
+		this.searchLocations = (searchLocations == null ? null : searchLocations.clone());
 	}
 
 	/**
@@ -200,9 +199,9 @@ public class ConfigFileApplicationContextInitializer implements
 							.getDescription(), properties));
 				}
 			}
-			catch (IOException e) {
+			catch (IOException ex) {
 				throw new IllegalStateException("Could not load properties file from "
-						+ resource, e);
+						+ resource, ex);
 			}
 		}
 

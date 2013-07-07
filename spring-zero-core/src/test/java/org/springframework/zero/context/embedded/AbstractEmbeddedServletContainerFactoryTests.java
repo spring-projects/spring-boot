@@ -80,7 +80,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 			try {
 				this.container.stop();
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 			}
 		}
 	}

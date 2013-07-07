@@ -73,7 +73,7 @@ public class DependencyCustomizer {
 					try {
 						DependencyCustomizer.this.loader.loadClass(classname);
 					}
-					catch (Exception e) {
+					catch (Exception ex) {
 						return true;
 					}
 				}
@@ -97,7 +97,8 @@ public class DependencyCustomizer {
 						DependencyCustomizer.this.loader.loadClass(classname);
 						return false;
 					}
-					catch (Exception e) {
+					catch (Exception ex) {
+						// swallow exception and continue
 					}
 				}
 				return DependencyCustomizer.this.canAdd();
@@ -122,7 +123,8 @@ public class DependencyCustomizer {
 						}
 						return true;
 					}
-					catch (Exception e) {
+					catch (Exception ex) {
+						// swallow exception and continue
 					}
 				}
 				return DependencyCustomizer.this.canAdd();
@@ -147,7 +149,8 @@ public class DependencyCustomizer {
 						}
 						return false;
 					}
-					catch (Exception e) {
+					catch (Exception ex) {
+						// swallow exception and continue
 					}
 				}
 				return DependencyCustomizer.this.canAdd();

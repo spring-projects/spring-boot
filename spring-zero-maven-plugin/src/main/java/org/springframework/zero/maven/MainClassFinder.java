@@ -39,7 +39,7 @@ import org.objectweb.asm.Type;
  * 
  * @author Phillip Webb
  */
-class MainClassFinder {
+abstract class MainClassFinder {
 
 	private static final String DOT_CLASS = ".class";
 

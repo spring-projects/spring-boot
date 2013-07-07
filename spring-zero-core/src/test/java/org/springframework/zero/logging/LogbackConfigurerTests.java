@@ -29,6 +29,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link LogbackConfigurer}.
+ * 
  * @author Dave Syer
  */
 public class LogbackConfigurerTests {

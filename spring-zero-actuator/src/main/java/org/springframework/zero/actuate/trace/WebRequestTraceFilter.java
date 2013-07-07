@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class WebRequestTraceFilter implements Filter, Ordered {
 
-	final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
+	private final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
 
 	private boolean dumpRequests = false;
 
@@ -102,8 +102,8 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 					this.logger.trace("Headers: "
 							+ this.objectMapper.writeValueAsString(headers));
 				}
-				catch (JsonProcessingException e) {
-					throw new IllegalStateException("Cannot create JSON", e);
+				catch (JsonProcessingException ex) {
+					throw new IllegalStateException("Cannot create JSON", ex);
 				}
 			}
 		}

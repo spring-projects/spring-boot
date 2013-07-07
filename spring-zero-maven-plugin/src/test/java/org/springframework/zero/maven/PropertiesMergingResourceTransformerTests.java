@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.jar.JarOutputStream;
 
 import org.junit.Test;
-import org.springframework.zero.maven.PropertiesMergingResourceTransformer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,6 +28,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link PropertiesMergingResourceTransformer}.
+ * 
  * @author Dave Syer
  */
 public class PropertiesMergingResourceTransformerTests {
@@ -54,7 +55,7 @@ public class PropertiesMergingResourceTransformerTests {
 
 	@Test
 	public void testOutput() throws Exception {
-		this.transformer.resource = "foo";
+		this.transformer.setResource("foo");
 		this.transformer.processResource("foo",
 				new ByteArrayInputStream("foo=bar".getBytes()), null);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

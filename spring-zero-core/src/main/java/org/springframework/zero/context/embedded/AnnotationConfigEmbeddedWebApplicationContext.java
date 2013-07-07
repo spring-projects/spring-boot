@@ -16,6 +16,7 @@
 
 package org.springframework.zero.context.embedded;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
@@ -152,7 +153,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * @see #scan(String...)
 	 * @see #refresh()
 	 */
-	public void register(Class<?>... annotatedClasses) {
+	public final void register(Class<?>... annotatedClasses) {
 		this.annotatedClasses = annotatedClasses;
 		Assert.notEmpty(annotatedClasses,
 				"At least one annotated class must be specified");
@@ -165,7 +166,7 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 	 * @see #register(Class...)
 	 * @see #refresh()
 	 */
-	public void scan(String... basePackages) {
+	public final void scan(String... basePackages) {
 		this.basePackages = basePackages;
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 	}
@@ -185,6 +186,11 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 		if (this.annotatedClasses != null && this.annotatedClasses.length > 0) {
 			this.reader.register(this.annotatedClasses);
 		}
+	}
+
+	@Override
+	public final void refresh() throws BeansException, IllegalStateException {
+		super.refresh();
 	}
 
 }

@@ -56,8 +56,8 @@ public abstract class Launcher {
 		try {
 			launch(args, getClass().getProtectionDomain());
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		catch (Exception ex) {
+			ex.printStackTrace();
 			System.exit(1);
 		}
 	}

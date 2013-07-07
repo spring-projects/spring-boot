@@ -24,7 +24,6 @@ import org.springframework.data.repository.support.DomainClassConverter;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.zero.autoconfigure.data.JpaRepositoriesAutoConfiguration;
 import org.springframework.zero.autoconfigure.data.test.City;
 import org.springframework.zero.autoconfigure.data.test.CityRepository;
 import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
@@ -36,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Dave Syer
  */
 @Ignore
-// until spring data commons 1.6.0, jpa 1.5.0 available
+// FIXME until spring data commons 1.6.0, jpa 1.5.0 available
 public class JpaWebAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;

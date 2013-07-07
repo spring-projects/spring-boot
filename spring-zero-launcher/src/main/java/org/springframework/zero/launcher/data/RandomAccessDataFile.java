@@ -225,8 +225,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 				return (file == null ? new RandomAccessFile(
 						RandomAccessDataFile.this.file, "r") : file);
 			}
-			catch (InterruptedException e) {
-				throw new IOException(e);
+			catch (InterruptedException ex) {
+				throw new IOException(ex);
 			}
 		}
 
@@ -249,8 +249,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 					this.available.release(size);
 				}
 			}
-			catch (InterruptedException e) {
-				throw new IOException(e);
+			catch (InterruptedException ex) {
+				throw new IOException(ex);
 			}
 		}
 	}

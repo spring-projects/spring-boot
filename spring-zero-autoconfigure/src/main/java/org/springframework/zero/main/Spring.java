@@ -39,7 +39,7 @@ import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
-public class Spring {
+public abstract class Spring {
 
 	// FIXME can we delete this? is it used? does it belong here
 

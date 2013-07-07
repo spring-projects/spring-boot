@@ -28,20 +28,20 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * Convenience class for storing base packages during component scan, for reference later
  * (e.g. by JPA entity scanner).
  * 
- * @author Phil Webb
+ * @author Phillip Webb
  * @author Dave Syer
  */
 public abstract class AutoConfigurationUtils {
 
-	private static String BASE_PACKAGES_BEAN = AutoConfigurationUtils.class.getName()
-			+ ".basePackages";
+	private static final String BASE_PACKAGES_BEAN = AutoConfigurationUtils.class
+			.getName() + ".basePackages";
 
 	@SuppressWarnings("unchecked")
 	public static List<String> getBasePackages(BeanFactory beanFactory) {
 		try {
 			return beanFactory.getBean(BASE_PACKAGES_BEAN, List.class);
 		}
-		catch (NoSuchBeanDefinitionException e) {
+		catch (NoSuchBeanDefinitionException ex) {
 			return Collections.emptyList();
 		}
 	}

@@ -30,7 +30,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.zero.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring3.view.ThymeleafView;
@@ -40,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link ThymeleafAutoConfiguration}
  * @author Dave Syer
  */
 public class ThymeleafAutoConfigurationTests {

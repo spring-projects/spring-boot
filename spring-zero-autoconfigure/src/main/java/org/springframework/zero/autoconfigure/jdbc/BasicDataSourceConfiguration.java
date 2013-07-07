@@ -59,9 +59,9 @@ public class BasicDataSourceConfiguration extends AbstractDataSourceConfiguratio
 			try {
 				this.pool.close();
 			}
-			catch (SQLException e) {
+			catch (SQLException ex) {
 				throw new DataAccessResourceFailureException(
-						"Could not close data source", e);
+						"Could not close data source", ex);
 			}
 		}
 	}

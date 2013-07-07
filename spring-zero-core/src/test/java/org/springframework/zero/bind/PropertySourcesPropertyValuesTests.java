@@ -24,11 +24,11 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.validation.DataBinder;
-import org.springframework.zero.bind.PropertySourcesPropertyValues;
 
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link PropertySourcesPropertyValues}.
  * @author Dave Syer
  */
 public class PropertySourcesPropertyValuesTests {

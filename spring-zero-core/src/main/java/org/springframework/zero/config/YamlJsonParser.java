@@ -30,17 +30,15 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlJsonParser implements JsonParser {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> map = new Yaml().loadAs(json, Map.class);
-		return map;
+		return new Yaml().loadAs(json, Map.class);
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
-		@SuppressWarnings("unchecked")
-		List<Object> list = new Yaml().loadAs(json, List.class);
-		return list;
+		return new Yaml().loadAs(json, List.class);
 	}
 
 }

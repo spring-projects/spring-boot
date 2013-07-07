@@ -32,13 +32,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.util.ClassUtils;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.zero.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link DataSourceAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class DataSourceAutoConfigurationTests {

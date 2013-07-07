@@ -25,6 +25,7 @@ import joptsimple.OptionSpec;
 
 import org.apache.ivy.util.FileUtil;
 import org.springframework.zero.cli.Command;
+import org.springframework.zero.cli.Log;
 
 /**
  * {@link Command} to 'clean' up grapes, removing cached dependencies and forcing a
@@ -35,9 +36,8 @@ import org.springframework.zero.cli.Command;
 public class CleanCommand extends OptionParsingCommand {
 
 	public CleanCommand() {
-		super(
-				"clean",
-				"Clean up groovy grapes (useful if snapshots are needed and you need an update)",
+		super("clean", "Clean up groovy grapes "
+				+ "(useful if snapshots are needed and you need an update)",
 				new CleanOptionHandler());
 	}
 
@@ -48,10 +48,6 @@ public class CleanCommand extends OptionParsingCommand {
 
 	private static class CleanOptionHandler extends OptionHandler {
 
-		private static enum Layout {
-			IVY, MAVEN;
-		}
-
 		private OptionSpec<Void> allOption;
 
 		private OptionSpec<Void> ivyOption;
@@ -61,59 +57,66 @@ public class CleanCommand extends OptionParsingCommand {
 		@Override
 		protected void options() {
 			this.allOption = option("all", "Clean all files (not just snapshots)");
-			this.ivyOption = option("ivy",
-					"Clean just ivy (grapes) cache. Default is on unless --maven is used.");
+			this.ivyOption = option("ivy", "Clean just ivy (grapes) cache. "
+					+ "Default is on unless --maven is used.");
 			this.mvnOption = option("maven", "Clean just maven cache. Default is off.");
 		}
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
 			if (!options.has(this.ivyOption)) {
-				clean(options, getGrapesHome(options), Layout.IVY);
+				clean(options, getGrapesHome(), Layout.IVY);
 			}
 			if (options.has(this.mvnOption)) {
 				if (options.has(this.ivyOption)) {
-					clean(options, getGrapesHome(options), Layout.IVY);
+					clean(options, getGrapesHome(), Layout.IVY);
 				}
-				clean(options, getMavenHome(options), Layout.MAVEN);
+				clean(options, getMavenHome(), Layout.MAVEN);
 			}
 		}
 
 		private void clean(OptionSet options, File root, Layout layout) {
-
 			if (root == null || !root.exists()) {
 				return;
 			}
-
 			ArrayList<String> specs = new ArrayList<String>(options.nonOptionArguments());
 			if (!specs.contains("org.springframework.zero") && layout == Layout.IVY) {
 				specs.add(0, "org.springframework.zero");
 			}
 			for (String spec : specs) {
-				String group = spec;
-				String module = null;
-				if (spec.contains(":")) {
-					group = spec.substring(0, spec.indexOf(":"));
-					module = spec.substring(spec.indexOf(":") + 1);
-				}
-				File file = getModulePath(root, group, module, layout);
-				if (file.exists()) {
-					if (options.has(this.allOption)
-							|| group.equals("org.springframework.zero")) {
-						System.out.println("Deleting: " + file);
-						FileUtil.forceDelete(file);
-					}
-					else {
-						for (Object obj : FileUtil.listAll(file, Collections.emptyList())) {
-							File candidate = (File) obj;
-							if (candidate.getName().contains("SNAPSHOT")) {
-								System.out.println("Deleting: " + candidate);
-								FileUtil.forceDelete(candidate);
-							}
-						}
-					}
+				clean(options, root, layout, spec);
+			}
+		}
+
+		private void clean(OptionSet options, File root, Layout layout, String spec) {
+			String group = spec;
+			String module = null;
+			if (spec.contains(":")) {
+				group = spec.substring(0, spec.indexOf(':'));
+				module = spec.substring(spec.indexOf(':') + 1);
+			}
+
+			File file = getModulePath(root, group, module, layout);
+			if (!file.exists()) {
+				return;
+			}
+
+			if (options.has(this.allOption) || group.equals("org.springframework.zero")) {
+				delete(file);
+				return;
+			}
+
+			for (Object obj : FileUtil.listAll(file, Collections.emptyList())) {
+				File candidate = (File) obj;
+				if (candidate.getName().contains("SNAPSHOT")) {
+					delete(candidate);
 				}
 			}
+		}
+
+		private void delete(File file) {
+			Log.info("Deleting: " + file);
+			FileUtil.forceDelete(file);
 		}
 
 		private File getModulePath(File root, String group, String module, Layout layout) {
@@ -133,11 +136,9 @@ public class CleanCommand extends OptionParsingCommand {
 			return new File(parent, module);
 		}
 
-		private File getGrapesHome(OptionSet options) {
-
+		private File getGrapesHome() {
 			String dir = System.getenv("GROOVY_HOME");
 			String userdir = System.getProperty("user.home");
-
 			File home;
 			if (dir == null || !new File(dir).exists()) {
 				dir = userdir;
@@ -149,20 +150,20 @@ public class CleanCommand extends OptionParsingCommand {
 			if (dir == null || !new File(dir).exists()) {
 				return null;
 			}
-
-			File grapes = new File(home, "grapes");
-			return grapes;
+			return new File(home, "grapes");
 		}
 
-		private File getMavenHome(OptionSet options) {
+		private File getMavenHome() {
 			String dir = System.getProperty("user.home");
-
 			if (dir == null || !new File(dir).exists()) {
 				return null;
 			}
 			File home = new File(dir);
-			File grapes = new File(new File(home, ".m2"), "repository");
-			return grapes;
+			return new File(new File(home, ".m2"), "repository");
+		}
+
+		private static enum Layout {
+			IVY, MAVEN;
 		}
 
 	}

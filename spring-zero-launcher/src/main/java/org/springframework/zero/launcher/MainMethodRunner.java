@@ -37,23 +37,23 @@ public class MainMethodRunner implements Runnable {
 	 */
 	public MainMethodRunner(String mainClass, String[] args) {
 		this.mainClassName = mainClass;
-		this.args = args;
+		this.args = (args == null ? null : args.clone());
 	}
 
 	@Override
 	public void run() {
 		try {
 			Class<?> mainClass = Thread.currentThread().getContextClassLoader()
-					.loadClass(mainClassName);
+					.loadClass(this.mainClassName);
 			Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 			if (mainMethod == null) {
-				throw new IllegalStateException(mainClassName
+				throw new IllegalStateException(this.mainClassName
 						+ " does not have a main method");
 			}
-			mainMethod.invoke(null, new Object[] { args });
+			mainMethod.invoke(null, new Object[] { this.args });
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		catch (Exception ex) {
+			ex.printStackTrace();
 			System.exit(1);
 		}
 	}

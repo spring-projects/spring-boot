@@ -56,8 +56,8 @@ public class SpringZeroRunner {
 	public SpringZeroRunner(final SpringZeroRunnerConfiguration configuration,
 			File[] files, String... args) {
 		this.configuration = configuration;
-		this.files = files;
-		this.args = args;
+		this.files = files.clone();
+		this.args = args.clone();
 		this.compiler = new GroovyCompiler(configuration);
 		if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
 			System.setProperty("groovy.grape.report.downloads", "true");

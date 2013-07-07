@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.autoconfigure;
 
 import java.util.Arrays;
@@ -25,8 +26,6 @@ import org.junit.rules.ExpectedException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.zero.autoconfigure.AutoConfigurationSorter;
-import org.springframework.zero.autoconfigure.AutoConfigureAfter;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

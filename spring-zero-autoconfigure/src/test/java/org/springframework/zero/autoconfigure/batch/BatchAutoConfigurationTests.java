@@ -34,13 +34,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.zero.autoconfigure.batch.BatchAutoConfiguration;
-import org.springframework.zero.autoconfigure.batch.JobLauncherCommandLineRunner;
 import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link BatchAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class BatchAutoConfigurationTests {

@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.cli.command;
 
 import groovy.lang.GroovyObjectSupport;
 import groovy.lang.Script;
 
 import org.junit.Test;
-import org.springframework.zero.cli.command.OptionHandler;
-import org.springframework.zero.cli.command.ScriptCommand;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author Dave Syer
+ * Tests for {@link ScriptCommand}.
  * 
+ * @author Dave Syer
  */
 public class ScriptCommandTests {
 

@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.zero.config;
-
+package org.springframework.zero.cli;
 
 /**
- * Tests for {@link JsonParser}.
+ * Simple logger used by the CLI.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
  */
-public class JacksonParserTests extends SimpleJsonParserTests {
+public abstract class Log {
 
-	@Override
-	protected JsonParser getParser() {
-		return new JacksonJsonParser();
+	public static void info(String message) {
+		System.out.println(message);
 	}
+
+	public static void error(String message) {
+		System.err.println(message);
+	}
+
+	public static void error(Exception ex) {
+		ex.printStackTrace(System.err);
+	}
+
 }

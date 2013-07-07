@@ -68,6 +68,13 @@
 		</dependency>
 		<!-- Test -->
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-zero-core</artifactId>
+			<version>${project.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-logging-juli</artifactId>
 			<scope>test</scope>

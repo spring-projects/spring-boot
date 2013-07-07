@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.autoconfigure;
 
 import org.junit.Test;
@@ -24,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.zero.autoconfigure.SpringJUnitTests.TestConfiguration;
 import org.springframework.zero.context.initializer.ConfigFileApplicationContextInitializer;
 
@@ -33,7 +33,6 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Dave Syer
- * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfiguration.class, initializers = ConfigFileApplicationContextInitializer.class)

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.actuate.autoconfigure;
 
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.zero.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.zero.actuate.properties.ManagementServerProperties;
 
 import static org.hamcrest.Matchers.equalTo;

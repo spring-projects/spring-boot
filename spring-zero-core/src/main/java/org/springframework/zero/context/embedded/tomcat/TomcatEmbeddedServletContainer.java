@@ -70,7 +70,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			try {
 				this.tomcat.stop();
 			}
-			catch (LifecycleException e) {
+			catch (LifecycleException ex) {
+				// swallow and continue
 			}
 			this.tomcat.destroy();
 		}

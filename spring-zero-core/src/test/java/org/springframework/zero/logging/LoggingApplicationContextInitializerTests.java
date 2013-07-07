@@ -32,9 +32,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link LoggingApplicationContextInitializer}.
+ * 
  * @author Dave Syer
  */
-public class LoggingInitializerTests {
+public class LoggingApplicationContextInitializerTests {
 
 	private LoggingApplicationContextInitializer initializer = new LoggingApplicationContextInitializer();
 
@@ -65,7 +67,7 @@ public class LoggingInitializerTests {
 	public void testDefaultConfigLocation() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		this.initializer.initialize(context);
-		Log logger = LogFactory.getLog(LoggingInitializerTests.class);
+		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -87,7 +89,7 @@ public class LoggingInitializerTests {
 					}
 				});
 		this.initializer.initialize(context);
-		Log logger = LogFactory.getLog(LoggingInitializerTests.class);
+		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -112,7 +114,7 @@ public class LoggingInitializerTests {
 					}
 				});
 		this.initializer.initialize(context);
-		Log logger = LogFactory.getLog(LoggingInitializerTests.class);
+		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.startsWith("foo.log"));
@@ -135,7 +137,7 @@ public class LoggingInitializerTests {
 					}
 				});
 		this.initializer.initialize(context);
-		Log logger = LogFactory.getLog(LoggingInitializerTests.class);
+		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.startsWith("foo/springzero.log"));

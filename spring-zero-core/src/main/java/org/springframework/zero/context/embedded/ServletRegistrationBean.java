@@ -69,8 +69,10 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * @param urlMappings the URLs being mapped
 	 */
 	public ServletRegistrationBean(Servlet servlet, String... urlMappings) {
-		setServlet(servlet);
-		addUrlMappings(urlMappings);
+		Assert.notNull(servlet, "Servlet must not be null");
+		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		this.servlet = servlet;
+		this.urlMappings.addAll(Arrays.asList(urlMappings));
 	}
 
 	/**

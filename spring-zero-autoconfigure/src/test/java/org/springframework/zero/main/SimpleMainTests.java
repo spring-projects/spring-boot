@@ -21,11 +21,12 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.ClassUtils;
-import org.springframework.zero.main.Spring;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link Spring}.
+ * 
  * @author Dave Syer
  */
 public class SimpleMainTests {

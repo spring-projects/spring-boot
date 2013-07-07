@@ -19,12 +19,12 @@ package org.springframework.zero.autoconfigure.batch;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.zero.autoconfigure.batch.JobExecutionEvent;
-import org.springframework.zero.autoconfigure.batch.JobExecutionExitCodeGenerator;
 
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link JobExecutionExitCodeGenerator}.
+ * 
  * @author Dave Syer
  */
 public class JobExecutionExitCodeGeneratorTests {

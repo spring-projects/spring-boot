@@ -28,12 +28,12 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
-import org.springframework.zero.autoconfigure.jdbc.TomcatDataSourceConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link TomcatDataSourceConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class TomcatDataSourceConfigurationTests {

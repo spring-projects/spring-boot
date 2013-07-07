@@ -47,6 +47,8 @@ import org.springframework.zero.context.embedded.AbstractEmbeddedServletContaine
 @Controller
 public class BasicErrorController implements ErrorController {
 
+	private static final String ERROR_KEY = "error";
+
 	private Log logger = LogFactory.getLog(BasicErrorController.class);
 
 	@Value("${error.path:/error}")
@@ -60,7 +62,7 @@ public class BasicErrorController implements ErrorController {
 	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
 		Map<String, Object> map = error(request);
-		return new ModelAndView("error", map);
+		return new ModelAndView(ERROR_KEY, map);
 	}
 
 	@RequestMapping(value = "${error.path:/error}")
@@ -75,10 +77,10 @@ public class BasicErrorController implements ErrorController {
 			int status = 999;
 			if (obj != null) {
 				status = (Integer) obj;
-				map.put("error", HttpStatus.valueOf(status).getReasonPhrase());
+				map.put(ERROR_KEY, HttpStatus.valueOf(status).getReasonPhrase());
 			}
 			else {
-				map.put("error", "None");
+				map.put(ERROR_KEY, "None");
 			}
 			map.put("status", status);
 			if (error != null) {
@@ -102,10 +104,10 @@ public class BasicErrorController implements ErrorController {
 			}
 			return map;
 		}
-		catch (Exception e) {
-			map.put("error", e.getClass().getName());
-			map.put("message", e.getMessage());
-			this.logger.error(e);
+		catch (Exception ex) {
+			map.put(ERROR_KEY, ex.getClass().getName());
+			map.put("message", ex.getMessage());
+			this.logger.error(ex);
 			return map;
 		}
 	}

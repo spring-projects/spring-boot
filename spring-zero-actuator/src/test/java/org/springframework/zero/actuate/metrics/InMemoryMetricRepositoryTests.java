@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.actuate.metrics;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.zero.actuate.metrics.InMemoryMetricRepository;
 
 import static org.junit.Assert.fail;
 

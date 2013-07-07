@@ -136,9 +136,9 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			try {
 				getSelfInitializer().onStartup(getServletContext());
 			}
-			catch (ServletException e) {
+			catch (ServletException ex) {
 				throw new ApplicationContextException(
-						"Cannot initialize servlet context", e);
+						"Cannot initialize servlet context", ex);
 			}
 		}
 		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),

@@ -16,6 +16,7 @@
 
 package org.springframework.zero.context.embedded;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
@@ -46,7 +47,7 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 	 * {@linkplain #load loaded} and then manually {@link #refresh refreshed}.
 	 */
 	public XmlEmbeddedWebApplicationContext() {
-		reader.setEnvironment(this.getEnvironment());
+		this.reader.setEnvironment(this.getEnvironment());
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 	 * Load bean definitions from the given XML resources.
 	 * @param resources one or more resources to load from
 	 */
-	public void load(Resource... resources) {
+	public final void load(Resource... resources) {
 		this.reader.loadBeanDefinitions(resources);
 	}
 
@@ -113,7 +114,7 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 	 * Load bean definitions from the given XML resources.
 	 * @param resourceLocations one or more resource locations to load from
 	 */
-	public void load(String... resourceLocations) {
+	public final void load(String... resourceLocations) {
 		this.reader.loadBeanDefinitions(resourceLocations);
 	}
 
@@ -123,11 +124,16 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 	 * specified resource name
 	 * @param resourceNames relatively-qualified names of resources to load
 	 */
-	public void load(Class<?> relativeClass, String... resourceNames) {
+	public final void load(Class<?> relativeClass, String... resourceNames) {
 		Resource[] resources = new Resource[resourceNames.length];
 		for (int i = 0; i < resourceNames.length; i++) {
 			resources[i] = new ClassPathResource(resourceNames[i], relativeClass);
 		}
-		this.load(resources);
+		this.reader.loadBeanDefinitions(resources);
+	}
+
+	@Override
+	public final void refresh() throws BeansException, IllegalStateException {
+		super.refresh();
 	}
 }

@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.config;
 
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.zero.config.JsonParser;
-import org.springframework.zero.config.SimpleJsonParser;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Dave Syer
+ * Tests for {@link SimpleJsonParser}.
  * 
+ * @author Dave Syer
  */
 public class SimpleJsonParserTests {
 

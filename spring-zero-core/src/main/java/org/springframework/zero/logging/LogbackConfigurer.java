@@ -48,9 +48,9 @@ public abstract class LogbackConfigurer {
 		try {
 			new ContextInitializer(context).configureByResource(url);
 		}
-		catch (JoranException e) {
+		catch (JoranException ex) {
 			throw new IllegalArgumentException("Could not initialize logging from "
-					+ location, e);
+					+ location, ex);
 		}
 	}
 

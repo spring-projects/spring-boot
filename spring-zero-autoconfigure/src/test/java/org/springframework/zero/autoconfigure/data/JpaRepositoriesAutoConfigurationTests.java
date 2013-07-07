@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.zero.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.zero.autoconfigure.data.JpaRepositoriesAutoConfiguration;
 import org.springframework.zero.autoconfigure.data.test.City;
 import org.springframework.zero.autoconfigure.data.test.CityRepository;
 import org.springframework.zero.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
@@ -34,6 +33,8 @@ import org.springframework.zero.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link JpaRepositoriesAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class JpaRepositoriesAutoConfigurationTests {

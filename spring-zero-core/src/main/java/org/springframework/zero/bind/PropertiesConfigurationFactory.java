@@ -46,8 +46,7 @@ import org.springframework.validation.Validator;
 public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		MessageSourceAware, InitializingBean {
 
-	private static final Log logger = LogFactory
-			.getLog(PropertiesConfigurationFactory.class);
+	private final Log logger = LogFactory.getLog(getClass());
 
 	private boolean ignoreUnknownFields = true;
 
@@ -193,23 +192,23 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		Assert.state(this.properties != null || this.propertySources != null,
 				"Properties or propertySources should not be null");
 		try {
-			if (logger.isTraceEnabled()) {
+			if (this.logger.isTraceEnabled()) {
 				if (this.properties != null) {
-					logger.trace("Properties:\n" + this.properties);
+					this.logger.trace("Properties:\n" + this.properties);
 				}
 				else {
-					logger.trace("Property Sources: " + this.propertySources);
+					this.logger.trace("Property Sources: " + this.propertySources);
 				}
 			}
 			this.hasBeenBound = true;
 			doBindPropertiesToTarget();
 		}
-		catch (BindException e) {
+		catch (BindException ex) {
 			if (this.exceptionIfInvalid) {
-				throw e;
+				throw ex;
 			}
-			logger.error("Failed to load Properties validation bean. "
-					+ "Your Properties may be invalid.", e);
+			this.logger.error("Failed to load Properties validation bean. "
+					+ "Your Properties may be invalid.", ex);
 		}
 	}
 
@@ -241,10 +240,11 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		dataBinder.validate();
 		BindingResult errors = dataBinder.getBindingResult();
 		if (errors.hasErrors()) {
-			logger.error("Properties configuration failed validation");
+			this.logger.error("Properties configuration failed validation");
 			for (ObjectError error : errors.getAllErrors()) {
-				logger.error(this.messageSource != null ? this.messageSource.getMessage(
-						error, Locale.getDefault()) + " (" + error + ")" : error);
+				this.logger.error(this.messageSource != null ? this.messageSource
+						.getMessage(error, Locale.getDefault()) + " (" + error + ")"
+						: error);
 			}
 			if (this.exceptionIfInvalid) {
 				BindException summary = new BindException(errors);

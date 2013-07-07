@@ -199,6 +199,7 @@ public class RelaxedDataBinder extends DataBinder {
 					}
 				}
 				catch (InvalidPropertyException ex) {
+					// swallow and contrinue
 				}
 			}
 		}

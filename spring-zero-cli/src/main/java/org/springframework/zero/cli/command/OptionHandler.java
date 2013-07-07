@@ -78,7 +78,7 @@ public class OptionHandler {
 		try {
 			getParser().printHelpOn(out);
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			return "Help not available";
 		}
 		return out.toString();

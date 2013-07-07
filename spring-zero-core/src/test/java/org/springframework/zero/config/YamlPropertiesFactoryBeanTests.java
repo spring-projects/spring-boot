@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.zero.config.YamlPropertiesFactoryBean;
 import org.springframework.zero.config.YamlProcessor.DocumentMatcher;
 import org.springframework.zero.config.YamlProcessor.MatchStatus;
 import org.springframework.zero.config.YamlProcessor.ResolutionMethod;
@@ -34,6 +33,8 @@ import org.yaml.snakeyaml.Yaml;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link YamlPropertiesFactoryBean}.
+ * 
  * @author Dave Syer
  */
 public class YamlPropertiesFactoryBeanTests {

@@ -23,12 +23,12 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.zero.autoconfigure.MessageSourceAutoConfiguration;
-import org.springframework.zero.autoconfigure.PropertyPlaceholderAutoConfiguration;
 
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link MessageSourceAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class MessageSourceAutoConfigurationTests {

@@ -25,11 +25,12 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.zero.logging.JavaLoggerConfigurer;
 
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link JavaLoggerConfigurer}.
+ * 
  * @author Dave Syer
  */
 public class JavaLoggerConfigurerTests {

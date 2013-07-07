@@ -30,7 +30,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 /**
  * @author Dave Syer
  */
-public class GroovyTemplate {
+public abstract class GroovyTemplate {
 
 	// FIXME is this used?
 

@@ -20,11 +20,12 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.zero.autoconfigure.jdbc.BasicDataSourceConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link BasicDataSourceConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class BasicDataSourceConfigurationTests {

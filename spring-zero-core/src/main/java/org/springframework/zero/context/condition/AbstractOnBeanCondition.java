@@ -43,7 +43,7 @@ import org.springframework.util.ReflectionUtils.MethodCallback;
  */
 abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 
-	protected Log logger = LogFactory.getLog(getClass());
+	private final Log logger = LogFactory.getLog(getClass());
 
 	protected abstract Class<?> annotationClass();
 
@@ -79,7 +79,8 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 						}
 					});
 				}
-				catch (Exception e) {
+				catch (Exception ex) {
+					// swallow exception and continue
 				}
 			}
 		}
@@ -119,6 +120,7 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 				}
 			}
 			catch (ClassNotFoundException ex) {
+				// swallow exception and continue
 			}
 		}
 		for (String beanName : beanNames) {

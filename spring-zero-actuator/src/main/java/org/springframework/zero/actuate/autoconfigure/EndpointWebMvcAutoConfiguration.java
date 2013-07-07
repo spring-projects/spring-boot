@@ -68,9 +68,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	private ApplicationContext applicationContext;
 
 	@Autowired(required = false)
-	private ServerProperties serverProperties = new ServerProperties();
-
-	@Autowired(required = false)
 	private ManagementServerProperties managementServerProperties = new ManagementServerProperties();
 
 	@Bean

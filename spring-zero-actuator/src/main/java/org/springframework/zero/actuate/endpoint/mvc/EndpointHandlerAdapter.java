@@ -50,9 +50,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author Phillip Webb
  * @see EndpointHandlerMapping
  */
-public class EndpointHandlerAdapter implements HandlerAdapter {
+public final class EndpointHandlerAdapter implements HandlerAdapter {
 
-	private static final Log logger = LogFactory.getLog(EndpointHandlerAdapter.class);
+	private final Log logger = LogFactory.getLog(getClass());
 
 	private static final MediaType MEDIA_TYPE_APPLICATION = new MediaType("application");
 
@@ -102,8 +102,8 @@ public class EndpointHandlerAdapter implements HandlerAdapter {
 					if (messageConverter.canWrite(resultClass, selectedMediaType)) {
 						((HttpMessageConverter<Object>) messageConverter).write(result,
 								selectedMediaType, outputMessage);
-						if (logger.isDebugEnabled()) {
-							logger.debug("Written [" + result + "] as \""
+						if (this.logger.isDebugEnabled()) {
+							this.logger.debug("Written [" + result + "] as \""
 									+ selectedMediaType + "\" using [" + messageConverter
 									+ "]");
 						}

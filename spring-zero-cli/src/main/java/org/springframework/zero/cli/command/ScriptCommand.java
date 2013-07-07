@@ -41,7 +41,7 @@ import org.springframework.zero.cli.compiler.GroovyCompilerConfiguration;
  */
 public class ScriptCommand implements Command {
 
-	private static String[] DEFAULT_PATHS = new String[] { "${SPRING_HOME}/ext",
+	private static final String[] DEFAULT_PATHS = new String[] { "${SPRING_HOME}/ext",
 			"${SPRING_HOME}/bin" };
 
 	private String[] paths = DEFAULT_PATHS;
@@ -124,7 +124,7 @@ public class ScriptCommand implements Command {
 	 * @param paths the paths to set
 	 */
 	public void setPaths(String[] paths) {
-		this.paths = paths;
+		this.paths = (paths == null ? null : paths.clone());
 	}
 
 	@Override
@@ -140,9 +140,9 @@ public class ScriptCommand implements Command {
 			try {
 				this.main = getMainClass().newInstance();
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				throw new IllegalStateException("Cannot create main class: " + this.name,
-						e);
+						ex);
 			}
 			if (this.main instanceof OptionHandler) {
 				((OptionHandler) this.main).options();
@@ -167,11 +167,11 @@ public class ScriptCommand implements Command {
 		try {
 			classes = compiler.compile(source);
 		}
-		catch (CompilationFailedException e) {
-			throw new IllegalStateException("Could not compile script", e);
+		catch (CompilationFailedException ex) {
+			throw new IllegalStateException("Could not compile script", ex);
 		}
-		catch (IOException e) {
-			throw new IllegalStateException("Could not compile script", e);
+		catch (IOException ex) {
+			throw new IllegalStateException("Could not compile script", ex);
 		}
 		this.mainClass = classes[0];
 	}
@@ -188,43 +188,44 @@ public class ScriptCommand implements Command {
 		if (!name.endsWith(".groovy")) {
 			resource = "commands/" + name + ".groovy";
 		}
+
 		URL url = getClass().getClassLoader().getResource(resource);
-		File file = null;
 		if (url != null) {
-			if (url.toString().startsWith("file:")) {
-				file = new File(url.toString().substring("file:".length()));
-			}
-			else {
-				// probably in JAR file
-				try {
-					file = File.createTempFile(name, ".groovy");
-					file.deleteOnExit();
-					FileUtil.copy(url, file, null);
-				}
-				catch (IOException e) {
-					throw new IllegalStateException(
-							"Could not create temp file for source: " + name);
-				}
+			return locateSourceFromUrl(name, url);
+		}
+
+		String home = System.getProperty("SPRING_HOME", System.getenv("SPRING_HOME"));
+		if (home == null) {
+			home = ".";
+		}
+
+		for (String path : this.paths) {
+			String subbed = path.replace("${SPRING_HOME}", home);
+			File file = new File(subbed, resource);
+			if (file.exists()) {
+				return file;
 			}
 		}
-		else {
-			String home = System.getProperty("SPRING_HOME", System.getenv("SPRING_HOME"));
-			if (home == null) {
-				home = ".";
-			}
-			for (String path : this.paths) {
-				String subbed = path.replace("${SPRING_HOME}", home);
-				File test = new File(subbed, resource);
-				if (test.exists()) {
-					file = test;
-					break;
-				}
-			}
+
+		throw new IllegalStateException("No script found for : " + name);
+	}
+
+	private File locateSourceFromUrl(String name, URL url) {
+		if (url.toString().startsWith("file:")) {
+			return new File(url.toString().substring("file:".length()));
 		}
-		if (file == null) {
-			throw new IllegalStateException("No script found for : " + name);
+
+		// probably in JAR file
+		try {
+			File file = File.createTempFile(name, ".groovy");
+			file.deleteOnExit();
+			FileUtil.copy(url, file, null);
+			return file;
 		}
-		return file;
+		catch (IOException ex) {
+			throw new IllegalStateException("Could not create temp file for source: "
+					+ name);
+		}
 	}
 
 	private static class ScriptConfiguration implements GroovyCompilerConfiguration {

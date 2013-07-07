@@ -28,12 +28,13 @@ import org.springframework.context.support.StaticMessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import org.springframework.zero.bind.YamlConfigurationFactory;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link YamlConfigurationFactory}
+ * 
  * @author Dave Syer
  */
 public class YamlConfigurationFactoryTests {

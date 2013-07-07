@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.config;
 
-import org.springframework.zero.config.JsonParser;
-import org.springframework.zero.config.YamlJsonParser;
 
 /**
- * @author Dave Syer
+ * Tests for {@link YamlJsonParser}.
  * 
+ * @author Dave Syer
  */
-public class YamlParserTests extends SimpleJsonParserTests {
+public class YamlJsonParserTests extends SimpleJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {

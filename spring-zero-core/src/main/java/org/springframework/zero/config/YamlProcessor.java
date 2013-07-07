@@ -38,35 +38,7 @@ import org.yaml.snakeyaml.Yaml;
  */
 public class YamlProcessor {
 
-	public interface MatchCallback {
-		void process(Properties properties, Map<String, Object> map);
-	}
-
-	public interface DocumentMatcher {
-		MatchStatus matches(Properties properties);
-	}
-
-	private static final Log logger = LogFactory.getLog(YamlProcessor.class);
-
-	public static enum ResolutionMethod {
-		OVERRIDE, OVERRIDE_AND_IGNORE, FIRST_FOUND
-	}
-
-	public static enum MatchStatus {
-
-		/**
-		 * A match was found.
-		 */
-		FOUND,
-		/**
-		 * A match was not found.
-		 */
-		NOT_FOUND,
-		/**
-		 * Not enough information to decide.
-		 */
-		ABSTAIN
-	}
+	private final Log logger = LogFactory.getLog(getClass());
 
 	private ResolutionMethod resolutionMethod = ResolutionMethod.OVERRIDE;
 
@@ -139,7 +111,7 @@ public class YamlProcessor {
 	 * @param resources the resources to set
 	 */
 	public void setResources(Resource[] resources) {
-		this.resources = resources;
+		this.resources = (resources == null ? null : resources.clone());
 	}
 
 	/**
@@ -154,52 +126,56 @@ public class YamlProcessor {
 	 */
 	protected void process(MatchCallback callback) {
 		Yaml yaml = new Yaml();
-		boolean found = false;
 		for (Resource resource : this.resources) {
-			try {
-				logger.info("Loading from YAML: " + resource);
-				int count = 0;
-				for (Object object : yaml.loadAll(resource.getInputStream())) {
-					if (this.resolutionMethod != ResolutionMethod.FIRST_FOUND || !found) {
-						@SuppressWarnings("unchecked")
-						Map<String, Object> map = (Map<String, Object>) object;
-						if (map != null) {
-							found = process(map, callback);
-							if (found) {
-								count++;
-							}
-						}
-					}
-				}
-
-				logger.info("Loaded " + count + " document" + (count > 1 ? "s" : "")
-						+ " from YAML resource: " + resource);
-
-				if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND && found) {
-					// No need to load any more resources
-					break;
-				}
-			}
-			catch (IOException e) {
-				if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND
-						|| this.resolutionMethod == ResolutionMethod.OVERRIDE_AND_IGNORE) {
-					if (logger.isWarnEnabled()) {
-						logger.warn("Could not load map from " + resource + ": "
-								+ e.getMessage());
-					}
-				}
-				else {
-					throw new IllegalStateException(e);
-				}
+			boolean found = process(callback, yaml, resource);
+			if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND && found) {
+				return;
 			}
 		}
+	}
+
+	private boolean process(MatchCallback callback, Yaml yaml, Resource resource) {
+		int count = 0;
+		try {
+			this.logger.info("Loading from YAML: " + resource);
+			for (Object object : yaml.loadAll(resource.getInputStream())) {
+				if (object != null && process(asMap(object), callback)) {
+					count++;
+					if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND) {
+						break;
+					}
+				}
+			}
+			this.logger.info("Loaded " + count + " document" + (count > 1 ? "s" : "")
+					+ " from YAML resource: " + resource);
+		}
+		catch (IOException ex) {
+			handleProcessError(resource, ex);
+		}
+		return count > 0;
+	}
+
+	private void handleProcessError(Resource resource, IOException ex) {
+		if (this.resolutionMethod != ResolutionMethod.FIRST_FOUND
+				&& this.resolutionMethod != ResolutionMethod.OVERRIDE_AND_IGNORE) {
+			throw new IllegalStateException(ex);
+		}
+		if (this.logger.isWarnEnabled()) {
+			this.logger.warn("Could not load map from " + resource + ": "
+					+ ex.getMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> asMap(Object object) {
+		return (Map<String, Object>) object;
 	}
 
 	private boolean process(Map<String, Object> map, MatchCallback callback) {
 		Properties properties = new Properties();
 		assignProperties(properties, map, null);
 		if (this.documentMatchers.isEmpty()) {
-			logger.debug("Merging document (no matchers set)" + map);
+			this.logger.debug("Merging document (no matchers set)" + map);
 			callback.process(properties, map);
 		}
 		else {
@@ -209,7 +185,8 @@ public class YamlProcessor {
 				MatchStatus match = matcher.matches(properties);
 				result = match.ordinal() < result.ordinal() ? match : result;
 				if (match == MatchStatus.FOUND) {
-					logger.debug("Matched document with document matcher: " + properties);
+					this.logger.debug("Matched document with document matcher: "
+							+ properties);
 					callback.process(properties, map);
 					valueFound = true;
 					// No need to check for more matches
@@ -217,11 +194,11 @@ public class YamlProcessor {
 				}
 			}
 			if (result == MatchStatus.ABSTAIN && this.matchDefault) {
-				logger.debug("Matched document with default matcher: " + map);
+				this.logger.debug("Matched document with default matcher: " + map);
 				callback.process(properties, map);
 			}
 			else if (!valueFound) {
-				logger.debug("Unmatched document");
+				this.logger.debug("Unmatched document");
 				return false;
 			}
 		}
@@ -268,13 +245,26 @@ public class YamlProcessor {
 		}
 	}
 
+	public interface MatchCallback {
+		void process(Properties properties, Map<String, Object> map);
+	}
+
+	public interface DocumentMatcher {
+		MatchStatus matches(Properties properties);
+	}
+
+	public static enum ResolutionMethod {
+		OVERRIDE, OVERRIDE_AND_IGNORE, FIRST_FOUND
+	}
+
+	public static enum MatchStatus {
+		FOUND, NOT_FOUND, ABSTAIN
+	}
+
 	/**
 	 * Matches a document containing a given key and where the value of that key is an
 	 * array containing one of the given values, or where one of the values matches one of
 	 * the given values (interpreted as regexes).
-	 * 
-	 * @author Dave Syer
-	 * 
 	 */
 	public static class ArrayDocumentMatcher implements DocumentMatcher {
 

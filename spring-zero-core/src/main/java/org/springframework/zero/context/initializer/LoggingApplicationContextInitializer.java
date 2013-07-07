@@ -171,14 +171,10 @@ public class LoggingApplicationContextInitializer implements
 			try {
 				doInit(applicationContext, configLocation);
 			}
-			catch (RuntimeException ex) {
-				throw ex;
-			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Cannot initialize logging from "
 						+ configLocation, ex);
 			}
-
 		}
 
 		protected abstract void doInit(ApplicationContext applicationContext,

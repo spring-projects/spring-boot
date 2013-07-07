@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.autoconfigure.web;
 
 import org.junit.Ignore;
-import org.springframework.zero.autoconfigure.web.WebMvcAutoConfiguration;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -25,6 +25,7 @@ import org.springframework.zero.autoconfigure.web.WebMvcAutoConfiguration;
  */
 @Ignore
 public class WebMvcAutoConfigurationTests {
+
 	// FIXME
 
 }

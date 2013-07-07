@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.actuate.audit.listener;
 
 import java.util.Collections;
@@ -20,8 +21,6 @@ import java.util.Collections;
 import org.junit.Test;
 import org.springframework.zero.actuate.audit.AuditEvent;
 import org.springframework.zero.actuate.audit.AuditEventRepository;
-import org.springframework.zero.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.zero.actuate.audit.listener.AuditListener;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

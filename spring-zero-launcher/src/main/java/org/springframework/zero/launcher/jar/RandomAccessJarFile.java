@@ -82,7 +82,7 @@ public class RandomAccessJarFile extends JarFile {
 	 * @throws IOException
 	 */
 	public RandomAccessJarFile(File file, JarEntryFilter... filters) throws IOException {
-		this(new RandomAccessDataFile(file));
+		this(new RandomAccessDataFile(file), filters);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class RandomAccessJarFile extends JarFile {
 	 */
 	public RandomAccessJarFile(RandomAccessDataFile file, JarEntryFilter... filters)
 			throws IOException {
-		this(file, file.getFile().getPath(), file);
+		this(file, file.getFile().getPath(), file, filters);
 	}
 
 	/**
@@ -204,32 +204,40 @@ public class RandomAccessJarFile extends JarFile {
 		if (ze == null) {
 			throw new IllegalArgumentException("ZipEntry must not be null");
 		}
+
 		if (ze.isDirectory()) {
-			final String directoryName = ze.getName();
-			JarEntryFilter[] filtersToUse = new JarEntryFilter[filters.length + 1];
-			System.arraycopy(filters, 0, filtersToUse, 1, filters.length);
-			filtersToUse[0] = new JarEntryFilter() {
-				@Override
-				public String apply(String entryName, JarEntry entry) {
-					if (entryName.startsWith(directoryName)
-							&& !entryName.equals(directoryName)) {
-						return entryName.substring(ze.getName().length());
-					}
-					return null;
+			return getNestedJarFileFromDirectoryEntry(ze, filters);
+		}
+
+		return getNestedJarFileFromFileEntry(ze, filters);
+	}
+
+	private RandomAccessJarFile getNestedJarFileFromDirectoryEntry(final ZipEntry entry,
+			JarEntryFilter... filters) throws IOException {
+		final String name = entry.getName();
+		JarEntryFilter[] filtersToUse = new JarEntryFilter[filters.length + 1];
+		System.arraycopy(filters, 0, filtersToUse, 1, filters.length);
+		filtersToUse[0] = new JarEntryFilter() {
+			@Override
+			public String apply(String entryName, JarEntry ze) {
+				if (entryName.startsWith(name) && !entryName.equals(name)) {
+					return entryName.substring(entry.getName().length());
 				}
-			};
-			return new RandomAccessJarFile(this.rootJarFile, getName() + "!/"
-					+ directoryName.substring(0, directoryName.length() - 1), this.data,
-					filtersToUse);
-		}
-		else {
-			if (ze.getMethod() != ZipEntry.STORED) {
-				throw new IllegalStateException("Unable to open nested compressed entry "
-						+ ze.getName());
+				return null;
 			}
-			return new RandomAccessJarFile(this.rootJarFile, getName() + "!/"
-					+ ze.getName(), getData(ze), filters);
+		};
+		return new RandomAccessJarFile(this.rootJarFile, getName() + "!/"
+				+ name.substring(0, name.length() - 1), this.data, filtersToUse);
+	}
+
+	private RandomAccessJarFile getNestedJarFileFromFileEntry(ZipEntry entry,
+			JarEntryFilter... filters) throws IOException {
+		if (entry.getMethod() != ZipEntry.STORED) {
+			throw new IllegalStateException("Unable to open nested compressed entry "
+					+ entry.getName());
 		}
+		return new RandomAccessJarFile(this.rootJarFile, getName() + "!/"
+				+ entry.getName(), getData(entry), filters);
 	}
 
 	/**
@@ -414,7 +422,7 @@ public class RandomAccessJarFile extends JarFile {
 				return (int) (this.jarEntry == null ? this.jarFile.size() : this.jarEntry
 						.getSize());
 			}
-			catch (IOException e) {
+			catch (IOException ex) {
 				return -1;
 			}
 		}

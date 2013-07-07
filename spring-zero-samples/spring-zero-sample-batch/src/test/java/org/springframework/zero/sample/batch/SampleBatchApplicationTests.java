@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.sample.batch;
 
 import java.io.ByteArrayOutputStream;
@@ -22,7 +23,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.zero.SpringApplication;
-import org.springframework.zero.sample.batch.SampleBatchApplication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -26,6 +26,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link OnMissingClassCondition}.
+ * 
  * @author Dave Syer
  */
 public class OnMissingClassConditionTests {

@@ -24,8 +24,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.http.MediaType;
-import org.springframework.zero.actuate.TestUtils;
-import org.springframework.zero.actuate.endpoint.Endpoint;
+import org.springframework.zero.TestUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -43,14 +43,6 @@ import org.springframework.zero.context.condition.ConditionalOnClass;
 @EnableTransactionManagement
 public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 
-	public static enum DDLAUTO {
-		none, validate, update, create, create_drop;
-		@Override
-		public String toString() {
-			return this.name().toLowerCase().replace("_", "-");
-		}
-	}
-
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_DIALECTS;
 	static {
 		EMBEDDED_DATABASE_DIALECTS = new LinkedHashMap<EmbeddedDatabaseType, String>();
@@ -68,7 +60,7 @@ public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 	private boolean showSql;
 
 	@Value("${spring.jpa.ddlAuto:${spring.jpa.ddl_auto:none}}")
-	private DDLAUTO ddlAuto;
+	private String ddlAuto; // e.g. none, validate, update, create, create-drop
 
 	@Bean
 	@Override
@@ -89,10 +81,9 @@ public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
 		// FIXME: detect EhCache
 		properties.put("hibernate.cache.provider_class",
 				"org.hibernate.cache.HashtableCacheProvider");
-		if (this.ddlAuto != DDLAUTO.none) {
-			properties.put("hibernate.hbm2ddl.auto", this.ddlAuto.toString());
+		if (StringUtils.hasLength(this.ddlAuto) && !"none".equals(this.ddlAuto)) {
+			properties.put("hibernate.hbm2ddl.auto", this.ddlAuto);
 		}
-
 	}
 
 }

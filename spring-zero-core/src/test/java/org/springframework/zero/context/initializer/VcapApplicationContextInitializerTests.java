@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.context.initializer;
 
 import org.junit.Test;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.zero.TestUtils;
-import org.springframework.zero.context.initializer.VcapApplicationContextInitializer;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Dave Syer
+ * Tests for {@link VcapApplicationContextInitializer}.
  * 
+ * @author Dave Syer
  */
 public class VcapApplicationContextInitializerTests {
 

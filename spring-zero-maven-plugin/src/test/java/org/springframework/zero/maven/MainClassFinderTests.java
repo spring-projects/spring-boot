@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.zero.maven;
 
 import java.io.File;
@@ -25,7 +26,6 @@ import org.codehaus.plexus.util.IOUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.zero.maven.MainClassFinder;
 import org.springframework.zero.maven.sample.ClassWithMainMethod;
 import org.springframework.zero.maven.sample.ClassWithoutMainMethod;
 
