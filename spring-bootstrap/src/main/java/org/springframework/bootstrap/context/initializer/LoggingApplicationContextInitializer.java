@@ -75,7 +75,7 @@ public class LoggingApplicationContextInitializer implements
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("PID", "PID");
 	}
 
-	private int order = Integer.MIN_VALUE + 1;
+	private int order = Integer.MIN_VALUE + 11;
 
 	/**
 	 * Initialize the logging system according to preferences expressed through the
