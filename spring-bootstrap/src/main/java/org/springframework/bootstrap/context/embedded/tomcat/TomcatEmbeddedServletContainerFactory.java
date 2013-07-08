@@ -118,7 +118,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 			this.connector.setPort(getPort());
 			this.tomcat.getService().addConnector(this.connector);
 			this.tomcat.setConnector(this.connector);
-		} else {
+		}
+		else {
 			Connector connector = new Connector(
 					"org.apache.coyote.http11.Http11NioProtocol");
 			customizeConnector(connector);
@@ -246,7 +247,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 			tempFolder.mkdir();
 			tempFolder.deleteOnExit();
 			return tempFolder;
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to create Tomcat tempdir", ex);
 		}
@@ -336,6 +338,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
 	}
 
+	// FIXME JavaDoc
+	// FIXME Is this still needed?
 	public TomcatEmbeddedServletContainerFactory getChildContextFactory(final String name) {
 
 		final Server server = this.tomcat.getServer();

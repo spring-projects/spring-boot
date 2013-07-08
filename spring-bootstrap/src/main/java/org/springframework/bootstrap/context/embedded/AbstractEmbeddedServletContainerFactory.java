@@ -77,7 +77,8 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * @param port the port number for the embedded servlet container
 	 */
 	public AbstractEmbeddedServletContainerFactory(int port) {
-		setPort(port);
+		checkPort(port);
+		this.port = port;
 	}
 
 	/**
@@ -87,8 +88,10 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * @param port the port number for the embedded servlet container
 	 */
 	public AbstractEmbeddedServletContainerFactory(String contextPath, int port) {
-		setContextPath(contextPath);
-		setPort(port);
+		checkContextPath(contextPath);
+		checkPort(port);
+		this.contextPath = contextPath;
+		this.port = port;
 	}
 
 	/**
@@ -98,7 +101,13 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * @param contextPath the contextPath to set
 	 * @see #getContextPath
 	 */
+	@Override
 	public void setContextPath(String contextPath) {
+		checkContextPath(contextPath);
+		this.contextPath = contextPath;
+	}
+
+	private void checkContextPath(String contextPath) {
 		Assert.notNull(contextPath, "ContextPath must not be null");
 		if (contextPath.length() > 0) {
 			if ("/".equals(contextPath)) {
@@ -110,13 +119,13 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 						"ContextPath must start with '/ and not end with '/'");
 			}
 		}
-		this.contextPath = contextPath;
 	}
 
 	/**
 	 * Returns the context path for the embedded servlet container. The path will start
 	 * with "/" and not end with "/". The root context is represented by an empty string.
 	 */
+	@Override
 	public String getContextPath() {
 		return this.contextPath;
 	}
@@ -127,16 +136,22 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * 
 	 * @param port the port to set
 	 */
+	@Override
 	public void setPort(int port) {
+		checkPort(port);
+		this.port = port;
+	}
+
+	private void checkPort(int port) {
 		if (port < 0 || port > 65535) {
 			throw new IllegalArgumentException("Port must be between 1 and 65535");
 		}
-		this.port = port;
 	}
 
 	/**
 	 * Returns the port that the embedded servlet container should listen on.
 	 */
+	@Override
 	public int getPort() {
 		return this.port;
 	}
@@ -146,6 +161,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * 
 	 * @param address the address to set (defaults to null)
 	 */
+	@Override
 	public void setAddress(InetAddress address) {
 		this.address = address;
 	}
@@ -153,18 +169,20 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	/**
 	 * @return the address the embedded container binds to
 	 */
+	@Override
 	public InetAddress getAddress() {
 		return this.address;
 	}
 
 	/**
 	 * Sets {@link ServletContextInitializer} that should be applied in addition to
-	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters.
-	 * This method will replace any previously set or added initializers.
+	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters. This
+	 * method will replace any previously set or added initializers.
 	 * @param initializers the initializers to set
 	 * @see #addInitializers
 	 * @see #getInitializers
 	 */
+	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = new ArrayList<ServletContextInitializer>(initializers);
@@ -326,31 +344,32 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * warning and returning {@code null} otherwise.
 	 */
 	protected final File getValidDocumentRoot() {
-
-		// User specified
-		if (getDocumentRoot() != null) {
-			return getDocumentRoot();
+		File file = getDocumentRoot();
+		file = file != null ? file : getWarFileDocumentRoot();
+		file = file != null ? file : getCommonDocumentRoot();
+		if (file == null && this.logger.isWarnEnabled()) {
+			this.logger.warn("None of the document roots "
+					+ Arrays.asList(COMMON_DOC_ROOTS)
+					+ " point to a directory and will be ignored.");
 		}
+		return file;
+	}
 
-		// Packaged as a WAR file
+	private File getWarFileDocumentRoot() {
 		File warFile = getCodeSourceArchive();
 		if (warFile.exists() && !warFile.isDirectory()
 				&& warFile.getName().toLowerCase().endsWith(".war")) {
 			return warFile.getAbsoluteFile();
 		}
+		return null;
+	}
 
-		// Common DocRoots
+	private File getCommonDocumentRoot() {
 		for (String commonDocRoot : COMMON_DOC_ROOTS) {
 			File root = new File(commonDocRoot);
 			if (root != null && root.exists() && root.isDirectory()) {
 				return root.getAbsoluteFile();
 			}
-		}
-
-		if (this.logger.isWarnEnabled()) {
-			this.logger.warn("None of the document roots "
-					+ Arrays.asList(COMMON_DOC_ROOTS)
-					+ " point to a directory and will be ignored.");
 		}
 		return null;
 	}
@@ -371,7 +390,8 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 				path = path.substring(0, path.indexOf("!/"));
 			}
 			return new File(path);
-		} catch (IOException e) {
+		}
+		catch (IOException ex) {
 			return null;
 		}
 	}

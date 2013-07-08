@@ -131,12 +131,14 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
 					.getEmbeddedServletContainer(getSelfInitializer());
-		} else if (getServletContext() != null) {
+		}
+		else if (getServletContext() != null) {
 			try {
 				getSelfInitializer().onStartup(getServletContext());
-			} catch (ServletException e) {
+			}
+			catch (ServletException ex) {
 				throw new ApplicationContextException(
-						"Cannot initialize servlet context", e);
+						"Cannot initialize servlet context", ex);
 			}
 		}
 		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
@@ -203,9 +205,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			ServletContextInitializer initializer = initializerBean.getValue();
 			if (initializer instanceof RegistrationBean) {
 				targets.add(((RegistrationBean) initializer).getRegistrationTarget());
-			}
-			if (initializer instanceof ServletRegistrationBean) {
-				targets.addAll(((ServletRegistrationBean) initializer).getFilters());
 			}
 			initializers.add(initializer);
 		}
@@ -280,12 +279,14 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 				logger.info("Root WebApplicationContext: initialization completed in "
 						+ elapsedTime + " ms");
 			}
-		} catch (RuntimeException ex) {
+		}
+		catch (RuntimeException ex) {
 			logger.error("Context initialization failed", ex);
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
 			throw ex;
-		} catch (Error err) {
+		}
+		catch (Error err) {
 			logger.error("Context initialization failed", err);
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, err);
@@ -312,7 +313,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			try {
 				this.embeddedServletContainer.stop();
 				this.embeddedServletContainer = null;
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				throw new IllegalStateException(ex);
 			}
 		}

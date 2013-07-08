@@ -50,7 +50,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourceAware,
 		InitializingBean {
 
-	private static final Log logger = LogFactory.getLog(YamlConfigurationFactory.class);
+	private final Log logger = LogFactory.getLog(getClass());
 
 	private Class<?> type;
 
@@ -128,43 +128,45 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 					Charset.defaultCharset());
 		}
 
-		Assert.state(
-				this.yaml != null,
-				"Yaml document should not be null: either set it directly or set the resource to load it from");
+		Assert.state(this.yaml != null, "Yaml document should not be null: "
+				+ "either set it directly or set the resource to load it from");
 
 		try {
-			logger.trace("Yaml document is\n" + this.yaml);
+			if (this.logger.isTraceEnabled()) {
+				this.logger.trace("Yaml document is\n" + this.yaml);
+			}
 			Constructor constructor = new CustomPropertyConstructor(this.type,
 					this.propertyAliases);
 			this.configuration = (T) (new Yaml(constructor)).load(this.yaml);
-
 			if (this.validator != null) {
-				BindingResult errors = new BeanPropertyBindingResult(this.configuration,
-						"configuration");
-				this.validator.validate(this.configuration, errors);
-
-				if (errors.hasErrors()) {
-					logger.error("YAML configuration failed validation");
-					for (ObjectError error : errors.getAllErrors()) {
-						logger.error(this.messageSource != null ? this.messageSource
-								.getMessage(error, Locale.getDefault())
-								+ " ("
-								+ error
-								+ ")" : error);
-					}
-					if (this.exceptionIfInvalid) {
-						BindException summary = new BindException(errors);
-						throw summary;
-					}
-				}
+				validate();
 			}
-		} catch (YAMLException e) {
+		}
+		catch (YAMLException ex) {
 			if (this.exceptionIfInvalid) {
-				throw e;
+				throw ex;
 			}
-			logger.error(
-					"Failed to load YAML validation bean. Your YAML file may be invalid.",
-					e);
+			this.logger.error("Failed to load YAML validation bean. "
+					+ "Your YAML file may be invalid.", ex);
+		}
+	}
+
+	private void validate() throws BindException {
+		BindingResult errors = new BeanPropertyBindingResult(this.configuration,
+				"configuration");
+		this.validator.validate(this.configuration, errors);
+
+		if (errors.hasErrors()) {
+			this.logger.error("YAML configuration failed validation");
+			for (ObjectError error : errors.getAllErrors()) {
+				this.logger.error(this.messageSource != null ? this.messageSource
+						.getMessage(error, Locale.getDefault()) + " (" + error + ")"
+						: error);
+			}
+			if (this.exceptionIfInvalid) {
+				BindException summary = new BindException(errors);
+				throw summary;
+			}
 		}
 	}
 

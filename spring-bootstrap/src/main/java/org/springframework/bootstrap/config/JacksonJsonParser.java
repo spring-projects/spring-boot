@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.util.List;
@@ -29,24 +30,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JacksonJsonParser implements JsonParser {
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> parseMap(String json) {
 		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> map = new ObjectMapper().readValue(json, Map.class);
-			return map;
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Cannot parse JSON", e);
+			return new ObjectMapper().readValue(json, Map.class);
+		}
+		catch (Exception ex) {
+			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<Object> parseList(String json) {
 		try {
-			@SuppressWarnings("unchecked")
-			List<Object> list = new ObjectMapper().readValue(json, List.class);
-			return list;
-		} catch (Exception e) {
-			throw new IllegalArgumentException("Cannot parse JSON", e);
+			return new ObjectMapper().readValue(json, List.class);
+		}
+		catch (Exception ex) {
+			throw new IllegalArgumentException("Cannot parse JSON", ex);
 		}
 	}
 

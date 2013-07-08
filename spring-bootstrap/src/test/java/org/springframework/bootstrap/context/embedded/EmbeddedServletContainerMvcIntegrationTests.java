@@ -55,7 +55,8 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 	public void closeContext() {
 		try {
 			this.context.close();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 		}
 	}
 
@@ -90,7 +91,8 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 			String actual = StreamUtils.copyToString(response.getBody(),
 					Charset.forName("UTF-8"));
 			assertThat(actual, equalTo("Hello World"));
-		} finally {
+		}
+		finally {
 			response.close();
 		}
 	}

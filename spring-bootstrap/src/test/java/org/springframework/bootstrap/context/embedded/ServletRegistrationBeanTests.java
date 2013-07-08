@@ -18,12 +18,10 @@ package org.springframework.bootstrap.context.embedded;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.Servlet;
@@ -38,9 +36,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.bootstrap.context.embedded.ServletRegistrationBean;
 
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletRegistrationBean}.
@@ -123,38 +122,38 @@ public class ServletRegistrationBeanTests {
 	@Test
 	public void setServletMustNotBeNull() throws Exception {
 		ServletRegistrationBean bean = new ServletRegistrationBean();
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("Servlet must not be null");
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Servlet must not be null");
 		bean.onStartup(this.servletContext);
 	}
 
 	@Test
 	public void createServletMustNotBeNull() throws Exception {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("Servlet must not be null");
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Servlet must not be null");
 		new ServletRegistrationBean(null);
 	}
 
 	@Test
 	public void setMappingMustNotBeNull() throws Exception {
 		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet);
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("UrlMappings must not be null");
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("UrlMappings must not be null");
 		bean.setUrlMappings(null);
 	}
 
 	@Test
 	public void createMappingMustNotBeNull() throws Exception {
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("UrlMappings must not be null");
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("UrlMappings must not be null");
 		new ServletRegistrationBean(this.servlet, (String[]) null);
 	}
 
 	@Test
 	public void addMappingMustNotBeNull() throws Exception {
 		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet);
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage("UrlMappings must not be null");
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("UrlMappings must not be null");
 		bean.addUrlMappings((String[]) null);
 	}
 
@@ -177,31 +176,4 @@ public class ServletRegistrationBeanTests {
 		verify(this.registration).setInitParameters(Collections.singletonMap("a", "c"));
 	}
 
-	@Test
-	public void filters() throws Exception {
-		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet);
-		Filter filter = new MockFilter();
-		bean.addFilters(filter);
-		bean.onStartup(this.servletContext);
-		verify(servletContext).addFilter("mockFilter", filter);
-		verify(filterRegistration).setAsyncSupported(true);
-		verify(filterRegistration).addMappingForServletNames(
-				EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD,
-						DispatcherType.INCLUDE, DispatcherType.ASYNC), false,
-				"mockServlet");
-	}
-
-	@Test
-	public void filtersNoAsync() throws Exception {
-		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet);
-		Filter filter = new MockFilter();
-		bean.addFilters(filter);
-		bean.setAsyncSupported(false);
-		bean.onStartup(this.servletContext);
-		verify(servletContext).addFilter("mockFilter", filter);
-		verify(filterRegistration).setAsyncSupported(false);
-		verify(filterRegistration).addMappingForServletNames(
-				EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD,
-						DispatcherType.INCLUDE), false, "mockServlet");
-	}
 }

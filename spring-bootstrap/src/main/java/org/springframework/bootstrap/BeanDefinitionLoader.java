@@ -118,40 +118,54 @@ class BeanDefinitionLoader {
 	private int load(Object source) {
 		Assert.notNull(source, "Source must not be null");
 		if (source instanceof Class<?>) {
-			Class<?> type = (Class<?>) source;
-			if (isComponent(type)) {
-				this.annotatedReader.register(type);
-				return 1;
-			}
-			return 0;
+			return load((Class<?>) source);
 		}
-
 		if (source instanceof Resource) {
-			return this.xmlReader.loadBeanDefinitions((Resource) source);
+			return load((Resource) source);
 		}
-
 		if (source instanceof Package) {
-			// FIXME register the scanned package for data to pick up
-			return this.scanner.scan(((Package) source).getName());
+			return load((Package) source);
 		}
-
 		if (source instanceof CharSequence) {
-			try {
-				return load(Class.forName(source.toString()));
-			} catch (ClassNotFoundException e) {
-			}
+			return load((CharSequence) source);
+		}
+		throw new IllegalArgumentException("Invalid source type " + source.getClass());
+	}
 
-			Resource loadedResource = (this.resourceLoader != null ? this.resourceLoader
-					: DEFAULT_RESOURCE_LOADER).getResource(source.toString());
-			if (loadedResource != null && loadedResource.exists()) {
-				return load(loadedResource);
-			}
-			Package packageResource = Package.getPackage(source.toString());
-			if (packageResource != null) {
-				return load(packageResource);
-			}
+	private int load(Class<?> source) {
+		if (isComponent(source)) {
+			this.annotatedReader.register(source);
+			return 1;
+		}
+		return 0;
+	}
+
+	private int load(Resource source) {
+		return this.xmlReader.loadBeanDefinitions(source);
+	}
+
+	private int load(Package source) {
+		// FIXME register the scanned package for data to pick up
+		return this.scanner.scan(source.getName());
+	}
+
+	private int load(CharSequence source) {
+		try {
+			return load(Class.forName(source.toString()));
+		}
+		catch (ClassNotFoundException ex) {
+			// swallow exception and continue
 		}
 
+		Resource loadedResource = (this.resourceLoader != null ? this.resourceLoader
+				: DEFAULT_RESOURCE_LOADER).getResource(source.toString());
+		if (loadedResource != null && loadedResource.exists()) {
+			return load(loadedResource);
+		}
+		Package packageResource = Package.getPackage(source.toString());
+		if (packageResource != null) {
+			return load(packageResource);
+		}
 		throw new IllegalArgumentException("Invalid source '" + source + "'");
 	}
 

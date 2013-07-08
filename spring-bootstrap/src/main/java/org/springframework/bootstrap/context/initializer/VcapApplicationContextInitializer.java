@@ -121,7 +121,8 @@ public class VcapApplicationContextInitializer implements
 					CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
 					new PropertiesPropertySource("vcap", properties));
 
-		} else {
+		}
+		else {
 			propertySources.addFirst(new PropertiesPropertySource("vcap", properties));
 		}
 
@@ -168,19 +169,22 @@ public class VcapApplicationContextInitializer implements
 			if (StringUtils.hasText(path)) {
 				if (key.startsWith("[")) {
 					key = path + key;
-				} else {
+				}
+				else {
 					key = path + "." + key;
 				}
 			}
 			Object value = entry.getValue();
 			if (value instanceof String) {
 				properties.put(key, value);
-			} else if (value instanceof Map) {
+			}
+			else if (value instanceof Map) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Map<String, Object> map = (Map<String, Object>) value;
 				flatten(properties, map, key);
-			} else if (value instanceof Collection) {
+			}
+			else if (value instanceof Collection) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Collection<Object> collection = (Collection<Object>) value;
@@ -191,7 +195,8 @@ public class VcapApplicationContextInitializer implements
 					flatten(properties,
 							Collections.singletonMap("[" + (count++) + "]", object), key);
 				}
-			} else {
+			}
+			else {
 				properties.put(key, value == null ? "" : value);
 			}
 		}

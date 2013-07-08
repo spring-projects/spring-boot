@@ -39,7 +39,8 @@ public class SimpleJsonParser implements JsonParser {
 	public Map<String, Object> parseMap(String json) {
 		if (json.startsWith("{")) {
 			return parseMapInternal(json);
-		} else if (json.trim().equals("")) {
+		}
+		else if (json.trim().equals("")) {
 			return new HashMap<String, Object>();
 		}
 		return null;
@@ -49,7 +50,8 @@ public class SimpleJsonParser implements JsonParser {
 	public List<Object> parseList(String json) {
 		if (json.startsWith("[")) {
 			return parseListInternal(json);
-		} else if (json.trim().equals("")) {
+		}
+		else if (json.trim().equals("")) {
 			return new ArrayList<Object>();
 		}
 		return null;
@@ -104,7 +106,8 @@ public class SimpleJsonParser implements JsonParser {
 						trimTrailingCharacter(values[1], '"'), '"');
 				if (string.startsWith("{") && string.endsWith("}")) {
 					value = parseInternal(string);
-				} else {
+				}
+				else {
 					value = string;
 				}
 			}
@@ -129,7 +132,8 @@ public class SimpleJsonParser implements JsonParser {
 			if (current == ',' && inObject == 0) {
 				list.add(build.toString());
 				build.setLength(0);
-			} else {
+			}
+			else {
 				build.append(current);
 			}
 			index++;

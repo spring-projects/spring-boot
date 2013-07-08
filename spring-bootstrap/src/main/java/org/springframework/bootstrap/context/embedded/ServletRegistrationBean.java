@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.servlet.Filter;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -55,8 +54,6 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	private int loadOnStartup = 1;
 
-	private Set<Filter> filters = new LinkedHashSet<Filter>();
-
 	private MultipartConfigElement multipartConfig;
 
 	/**
@@ -72,8 +69,10 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * @param urlMappings the URLs being mapped
 	 */
 	public ServletRegistrationBean(Servlet servlet, String... urlMappings) {
-		setServlet(servlet);
-		addUrlMappings(urlMappings);
+		Assert.notNull(servlet, "Servlet must not be null");
+		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		this.servlet = servlet;
+		this.urlMappings.addAll(Arrays.asList(urlMappings));
 	}
 
 	/**
@@ -122,32 +121,6 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
-	 * Sets any Filters that should be registered to this servlet. Any previously
-	 * specified Filters will be replaced.
-	 * @param filters the Filters to set
-	 */
-	public void setFilters(Collection<? extends Filter> filters) {
-		Assert.notNull(filters, "Filters must not be null");
-		this.filters = new LinkedHashSet<Filter>(filters);
-	}
-
-	/**
-	 * Returns a mutable collection of the Filters being registered with this servlet.
-	 */
-	public Collection<Filter> getFilters() {
-		return this.filters;
-	}
-
-	/**
-	 * Add Filters that will be registered with this servlet.
-	 * @param filters the Filters to add
-	 */
-	public void addFilters(Filter... filters) {
-		Assert.notNull(filters, "Filters must not be null");
-		this.filters.addAll(Arrays.asList(filters));
-	}
-
-	/**
 	 * Set the the {@link MultipartConfigElement multi-part configuration}.
 	 * @param multipartConfig the muti-part configuration to set or {@code null}
 	 */
@@ -179,12 +152,6 @@ public class ServletRegistrationBean extends RegistrationBean {
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.servlet, "Servlet must not be null");
 		configure(servletContext.addServlet(getServletName(), this.servlet));
-		for (Filter filter : this.filters) {
-			FilterRegistrationBean filterRegistration = new FilterRegistrationBean(
-					filter, this);
-			filterRegistration.setAsyncSupported(isAsyncSupported());
-			filterRegistration.onStartup(servletContext);
-		}
 	}
 
 	/**

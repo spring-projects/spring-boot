@@ -33,6 +33,10 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.bootstrap.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.bootstrap.context.embedded.FilterRegistrationBean;
+import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
+import org.springframework.bootstrap.context.embedded.ServletRegistrationBean;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -306,7 +310,6 @@ public class EmbeddedWebApplicationContextTests {
 		Servlet servlet = mock(Servlet.class);
 		Filter filter = mock(Filter.class);
 		ServletRegistrationBean initializer = new ServletRegistrationBean(servlet, "/foo");
-		initializer.addFilters(filter);
 		this.context.registerBeanDefinition("initializerBean",
 				beanDefinition(initializer));
 		this.context.registerBeanDefinition("servletBean", beanDefinition(servlet));

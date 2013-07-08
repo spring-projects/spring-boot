@@ -38,6 +38,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
+import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
+import org.springframework.bootstrap.context.embedded.FilterRegistrationBean;
+import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
+import org.springframework.bootstrap.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -73,7 +79,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		if (this.container != null) {
 			try {
 				this.container.stop();
-			} catch (Exception e) {
+			}
+			catch (Exception ex) {
 			}
 		}
 	}
@@ -150,7 +157,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 						try {
 							Thread.sleep(500);
 							date[0] = new Date();
-						} catch (InterruptedException ex) {
+						}
+						catch (InterruptedException ex) {
 							throw new ServletException(ex);
 						}
 					}
@@ -243,7 +251,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ClientHttpResponse response = request.execute();
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
-		} finally {
+		}
+		finally {
 			response.close();
 		}
 	}

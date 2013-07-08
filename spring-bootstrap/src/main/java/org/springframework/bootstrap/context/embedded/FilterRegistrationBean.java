@@ -84,8 +84,13 @@ public class FilterRegistrationBean extends RegistrationBean {
 	 */
 	public FilterRegistrationBean(Filter filter,
 			ServletRegistrationBean... servletRegistrationBeans) {
-		setFilter(filter);
-		addServletRegistrationBeans(servletRegistrationBeans);
+		Assert.notNull(filter, "Filter must not be null");
+		Assert.notNull(servletRegistrationBeans,
+				"ServletRegistrationBeans must not be null");
+		this.filter = filter;
+		for (ServletRegistrationBean servletRegistrationBean : servletRegistrationBeans) {
+			this.servletRegistrationBeans.add(servletRegistrationBean);
+		}
 	}
 
 	/**
@@ -244,7 +249,8 @@ public class FilterRegistrationBean extends RegistrationBean {
 		if (servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
 			registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 					DEFAULT_URL_MAPPINGS);
-		} else {
+		}
+		else {
 			if (servletNames.size() > 0) {
 				registration.addMappingForServletNames(dispatcherTypes, this.matchAfter,
 						servletNames.toArray(new String[servletNames.size()]));

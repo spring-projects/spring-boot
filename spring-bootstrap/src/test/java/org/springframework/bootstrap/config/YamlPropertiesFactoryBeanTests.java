@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.bootstrap.config.YamlPropertiesFactoryBean;
 import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
 import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
 import org.springframework.bootstrap.config.YamlProcessor.ResolutionMethod;
@@ -33,6 +34,8 @@ import org.yaml.snakeyaml.Yaml;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link YamlPropertiesFactoryBean}.
+ * 
  * @author Dave Syer
  */
 public class YamlPropertiesFactoryBeanTests {

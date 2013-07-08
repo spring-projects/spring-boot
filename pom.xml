@@ -2,16 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.springframework.bootstrap</groupId>
-	<artifactId>spring-bootstrap-parent</artifactId>
+	<groupId>org.springframework.zero</groupId>
+	<artifactId>spring-zero</artifactId>
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<prerequisites>
 		<maven>3.0.0</maven>
 	</prerequisites>
 	<properties>
+		<main.basedir>${basedir}</main.basedir>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.version>3.0.5</maven.version>
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<spring.security.version>3.1.3.RELEASE</spring.security.version>
 		<spring.security.javaconfig.version>1.0.0.CI-SNAPSHOT</spring.security.javaconfig.version>
@@ -21,47 +23,28 @@
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<aspectj.version>1.7.2</aspectj.version>
 	</properties>
-
 	<scm>
 		<url>http://github.com/SpringSource/spring-bootstrap</url>
 		<connection>scm:git:git://github.com/SpringSource/spring-bootstrap.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/SpringSource/spring-bootstrap.git</developerConnection>
 	</scm>
-
 	<developers>
 		<developer>
-			<id>dsyer</id>
-			<name>Dave Syer</name>
-			<email>dsyer@gopivotal.com</email>
-		</developer>
-		<developer>
-			<id>phillweb</id>
-			<name>Phillip Webb</name>
-			<email>pweb@gopivotal.com</email>
+			<id>spring</id>
+			<name>SpringSource</name>
+			<url>http://www.springsource.org</url>
 		</developer>
 	</developers>
-
-	<distributionManagement>
-		<!-- see 'staging' profile for dry-run deployment settings -->
-		<downloadUrl>http://www.springsource.com/download/community
-		</downloadUrl>
-		<site>
-			<id>spring-docs</id>
-			<url>scp://static.springframework.org/var/www/domains/springframework.org/static/htdocs/spring-bootstrap/docs/${project.version}
-			</url>
-		</site>
-		<repository>
-			<id>spring-repo-release</id>
-			<name>Spring Release Repository</name>
-			<url>http://repo.springsource.org/libs-release-local</url>
-		</repository>
-		<snapshotRepository>
-			<id>spring-repo-snapshot</id>
-			<name>Spring Snapshot Repository</name>
-			<url>http://repo.springsource.org/libs-snapshot-local</url>
-		</snapshotRepository>
-	</distributionManagement>
-
+	<modules>
+		<module>spring-bootstrap</module>
+		<module>spring-autoconfigure</module>
+		<module>spring-starters</module>
+		<module>spring-actuator</module>
+		<module>spring-launcher</module>
+		<module>spring-package-maven-plugin</module>
+		<module>spring-cli</module>
+		<module>spring-zero-intergration-tests</module>
+	</modules>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -82,7 +65,6 @@
 					<version>2.7</version>
 				</plugin>
 				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>2.6</version>
 				</plugin>
@@ -107,6 +89,10 @@
 					<version>2.4</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-plugin-plugin</artifactId>
 					<version>3.2</version>
 				</plugin>
@@ -119,10 +105,6 @@
 					<version>2.0</version>
 				</plugin>
 				<plugin>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.13</version>
-				</plugin>
-				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.2</version>
 				</plugin>
@@ -131,16 +113,27 @@
 					<version>2.2.1</version>
 				</plugin>
 				<plugin>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-exec-plugin</artifactId>
-					<version>1.2.1</version>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.13</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>2.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>sonar-maven-plugin</artifactId>
+					<version>2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -160,11 +153,11 @@
 					<additionalConfig>
 						<file>
 							<name>.settings/org.eclipse.jdt.ui.prefs</name>
-							<url>http://static.springsource.org/sts/jdtconfig/org.eclipse.jdt.ui.prefs</url>
+							<location>${main.basedir}/eclipse/org.eclipse.jdt.ui.prefs</location>
 						</file>
 						<file>
 							<name>.settings/org.eclipse.jdt.core.prefs</name>
-							<url>http://static.springsource.org/sts/jdtconfig/org.eclipse.jdt.core.prefs</url>
+							<location>${main.basedir}/eclipse/org.eclipse.jdt.core.prefs</location>
 						</file>
 					</additionalConfig>
 				</configuration>
@@ -174,22 +167,17 @@
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
-						<phase>verify</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<!-- is using JDK 8 <additionalparam>-Xdoclint:none -quiet</additionalparam> -->
-				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
-						<phase>verify</phase>
 						<goals>
 							<goal>jar-no-fork</goal>
 						</goals>
@@ -206,16 +194,11 @@
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
 					</excludes>
-					<junitArtifactName>junit:junit</junitArtifactName>
-					<systemPropertyVariables>
-						<java.security.egd>file:/dev/./urandom</java.security.egd>
-					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.0</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -224,7 +207,7 @@
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>1.0.7</version>
+				<version>1.0.10</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -287,6 +270,46 @@
 				<version>2.3.0</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-archiver</artifactId>
+				<version>2.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-artifact</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-core</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-model</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-plugin-api</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-settings</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.plugin-tools</groupId>
+				<artifactId>maven-plugin-annotations</artifactId>
+				<version>3.2</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-core</artifactId>
 				<version>${tomcat.version}</version>
@@ -327,6 +350,16 @@
 				<version>2.1.3</version>
 			</dependency>
 			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-archiver</artifactId>
+				<version>2.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-utils</artifactId>
+				<version>3.0.10</version>
+			</dependency>
+			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
 				<version>${jetty.version}</version>
@@ -353,14 +386,14 @@
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-				<version>1.3.171</version>
-			</dependency>
-			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-library</artifactId>
 				<version>1.3</version>
+			</dependency>
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>1.3.171</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -388,39 +421,29 @@
 				<version>1.9.5</version>
 			</dependency>
 			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>4.0</version>
+			</dependency>
+			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
-				<version>1.7.2</version>
+				<version>1.7.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.7.2</version>
+				<version>1.7.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.7.2</version>
+				<version>1.7.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-jdk14</artifactId>
-				<version>1.7.2</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-javaconfig</artifactId>
-				<version>${spring.security.javaconfig.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-web</artifactId>
-				<version>${spring.security.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>${spring.security.version}</version>
+				<version>1.7.5</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -430,11 +453,6 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-expression</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
@@ -460,22 +478,17 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
-				<artifactId>spring-web</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jms</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
+				<artifactId>spring-expression</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-jdbc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jms</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
@@ -505,14 +518,19 @@
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.batch</groupId>
 				<artifactId>spring-batch-core</artifactId>
 				<version>${spring.batch.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-core</artifactId>
-				<version>${spring.integration.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
@@ -530,9 +548,49 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.hateoas</groupId>
-				<artifactId>spring-hateoas</artifactId>
-				<version>0.5.0.RELEASE</version>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-core</artifactId>
+				<version>${spring.integration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-file</artifactId>
+				<version>${spring.integration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-http</artifactId>
+				<version>${spring.integration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-ip</artifactId>
+				<version>${spring.integration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.integration</groupId>
+				<artifactId>spring-integration-stream</artifactId>
+				<version>${spring.integration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
+				<version>${spring.security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-javaconfig</artifactId>
+				<version>${spring.security.javaconfig.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${spring.security.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.thymeleaf</groupId>
+				<artifactId>thymeleaf</artifactId>
+				<version>2.0.16</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
@@ -563,92 +621,27 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	<distributionManagement>
+		<downloadUrl>http://www.springsource.com/download/community</downloadUrl>
+		<site>
+			<id>spring-docs</id>
+			<url>scp://static.springframework.org/var/www/domains/springframework.org/static/htdocs/spring-bootstrap/docs/${project.version}</url>
+		</site>
+		<repository>
+			<id>spring-repo-release</id>
+			<name>Spring Release Repository</name>
+			<url>http://repo.springsource.org/libs-release-local</url>
+		</repository>
+		<snapshotRepository>
+			<id>spring-repo-snapshot</id>
+			<name>Spring Snapshot Repository</name>
+			<url>http://repo.springsource.org/libs-snapshot-local</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<profiles>
 		<profile>
-			<id>setup</id>
-			<modules>
-				<module>spring-bootstrap-launcher</module>
-				<module>spring-bootstrap-maven-plugin</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>spring-bootstrap</module>
-				<module>spring-bootstrap-actuator</module>
-				<module>spring-bootstrap-cli</module>
-				<module>spring-bootstrap-launcher</module>
-				<module>spring-bootstrap-maven-plugin</module>
-				<module>spring-bootstrap-samples</module>
-				<module>spring-bootstrap-starters</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>staging</id>
-			<distributionManagement>
-				<site>
-					<id>spring-site-staging</id>
-					<url>file:///${java.io.tmpdir}/spring-bootstrap/docs</url>
-				</site>
-				<repository>
-					<id>spring-milestone-staging</id>
-					<url>file:///${java.io.tmpdir}/spring-bootstrap/milestone</url>
-				</repository>
-				<snapshotRepository>
-					<id>spring-snapshot-staging</id>
-					<url>file:///${java.io.tmpdir}/spring-bootstrap/snapshot</url>
-				</snapshotRepository>
-			</distributionManagement>
-		</profile>
-		<profile>
-			<id>milestone</id>
-			<distributionManagement>
-				<repository>
-					<id>spring-repo-milestone</id>
-					<name>Spring Milestone Repository</name>
-					<url>https://repo.springsource.org/libs-milestone-local</url>
-				</repository>
-			</distributionManagement>
-		</profile>
-		<profile>
-			<id>central</id>
-			<distributionManagement>
-				<snapshotRepository>
-					<id>sonatype-nexus-snapshots</id>
-					<name>Sonatype Nexus Snapshots</name>
-					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-				</snapshotRepository>
-				<repository>
-					<id>sonatype-nexus-staging</id>
-					<name>Nexus Release Repository</name>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-				</repository>
-			</distributionManagement>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>bootstrap</id>
-			<!-- deactivate when released -->
+			<!-- FIXME remove before release -->
+			<id>snapshot-repositories</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -671,6 +664,21 @@
 				</repository>
 			</repositories>
 		</profile>
+		<profile>
+			<id>jdk8</id>
+			<activation>
+				<jdk>1.8</jdk>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<additionalparam>-Xdoclint:none -quiet</additionalparam>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
-
 </project>

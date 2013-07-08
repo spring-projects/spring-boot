@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.context.initializer;
 
 import org.junit.Test;
 import org.springframework.bootstrap.TestUtils;
+import org.springframework.bootstrap.context.initializer.VcapApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Dave Syer
+ * Tests for {@link VcapApplicationContextInitializer}.
  * 
+ * @author Dave Syer
  */
 public class VcapApplicationContextInitializerTests {
 

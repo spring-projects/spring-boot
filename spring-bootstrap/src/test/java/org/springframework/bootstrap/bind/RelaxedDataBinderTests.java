@@ -36,6 +36,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.bootstrap.bind.RelaxedDataBinder;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;

@@ -37,8 +37,9 @@ public class InetAddressEditor extends PropertyEditorSupport implements Property
 	public void setAsText(String text) throws IllegalArgumentException {
 		try {
 			setValue(InetAddress.getByName(text));
-		} catch (UnknownHostException e) {
-			throw new IllegalArgumentException("Cannot locate host", e);
+		}
+		catch (UnknownHostException ex) {
+			throw new IllegalArgumentException("Cannot locate host", ex);
 		}
 	}
 

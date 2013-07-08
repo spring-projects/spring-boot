@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
+import org.springframework.bootstrap.config.JacksonJsonParser;
+import org.springframework.bootstrap.config.JsonParser;
+
+
 /**
- * @author Dave Syer
+ * Tests for {@link JsonParser}.
  * 
+ * @author Dave Syer
  */
 public class JacksonParserTests extends SimpleJsonParserTests {
 

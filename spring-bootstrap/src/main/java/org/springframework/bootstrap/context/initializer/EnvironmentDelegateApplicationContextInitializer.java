@@ -95,7 +95,8 @@ public class EnvironmentDelegateApplicationContextInitializer implements
 							"class [" + className
 									+ "] must implement ApplicationContextInitializer");
 					classes.add((Class<ApplicationContextInitializer<ConfigurableApplicationContext>>) clazz);
-				} catch (ClassNotFoundException ex) {
+				}
+				catch (ClassNotFoundException ex) {
 					throw new ApplicationContextException(
 							"Failed to load context initializer class [" + className
 									+ "]", ex);

@@ -26,6 +26,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.bootstrap.BeanDefinitionLoader;
+import org.springframework.bootstrap.CommandLineRunner;
+import org.springframework.bootstrap.ExitCodeGenerator;
+import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.ApplicationContext;
@@ -357,7 +361,8 @@ public class SpringApplicationTests {
 			this.sources = sources;
 			if (this.useMockLoader) {
 				this.loader = mock(BeanDefinitionLoader.class);
-			} else {
+			}
+			else {
 				this.loader = spy(super.createBeanDefinitionLoader(registry, sources));
 			}
 			return this.loader;

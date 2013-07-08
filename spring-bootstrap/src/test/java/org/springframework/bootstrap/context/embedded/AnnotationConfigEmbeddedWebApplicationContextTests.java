@@ -20,6 +20,8 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
 import org.junit.Test;
+import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.config.ExampleEmbeddedWebApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

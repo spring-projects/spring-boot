@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
 import org.springframework.beans.NotWritablePropertyException;
+import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;

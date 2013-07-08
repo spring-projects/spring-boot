@@ -123,8 +123,8 @@ public class SpringApplication {
 	private static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
 
-	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework.bootstrap."
-			+ "context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
+	public static final String DEFAULT_WEB_CONTEXT_CLASS = "org.springframework."
+			+ "bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
@@ -183,7 +183,7 @@ public class SpringApplication {
 		initialize();
 	}
 
-	protected void initialize() {
+	private void initialize() {
 		this.webEnvironment = deduceWebEnvironment();
 		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
 		@SuppressWarnings("rawtypes")
@@ -270,7 +270,8 @@ public class SpringApplication {
 				contextClass = Class
 						.forName(this.webEnvironment ? DEFAULT_WEB_CONTEXT_CLASS
 								: DEFAULT_CONTEXT_CLASS);
-			} catch (ClassNotFoundException ex) {
+			}
+			catch (ClassNotFoundException ex) {
 				throw new IllegalStateException(
 						"Unable create a default ApplicationContext, "
 								+ "please specify an ApplicationContextClass", ex);
@@ -344,14 +345,16 @@ public class SpringApplication {
 		for (String arg : defaults) {
 			if (isOptionArg(arg)) {
 				addOptionArg(options, arg);
-			} else {
+			}
+			else {
 				nonopts.add(arg);
 			}
 		}
 		for (String arg : args) {
 			if (isOptionArg(arg)) {
 				addOptionArg(options, arg);
-			} else if (!nonopts.contains(arg)) {
+			}
+			else if (!nonopts.contains(arg)) {
 				nonopts.add(arg);
 			}
 		}
@@ -373,10 +376,11 @@ public class SpringApplication {
 		String optionName;
 		String optionValue = "";
 		if (optionText.contains("=")) {
-			optionName = optionText.substring(0, optionText.indexOf("="));
-			optionValue = optionText.substring(optionText.indexOf("=") + 1,
+			optionName = optionText.substring(0, optionText.indexOf('='));
+			optionValue = optionText.substring(optionText.indexOf('=') + 1,
 					optionText.length());
-		} else {
+		}
+		else {
 			optionName = optionText;
 		}
 		if (optionName.isEmpty()) {
@@ -434,8 +438,9 @@ public class SpringApplication {
 		for (CommandLineRunner runner : runners) {
 			try {
 				runner.run(args);
-			} catch (Exception e) {
-				throw new IllegalStateException("Failed to execute CommandLineRunner", e);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Failed to execute CommandLineRunner", ex);
 			}
 		}
 	}
@@ -606,12 +611,14 @@ public class SpringApplication {
 				generators.addAll(context.getBeansOfType(ExitCodeGenerator.class)
 						.values());
 				exitCode = getExitCode(generators);
-			} finally {
+			}
+			finally {
 				close(context);
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
 			exitCode = (exitCode == 0 ? 1 : exitCode);
 		}
 		return exitCode;
@@ -625,9 +632,10 @@ public class SpringApplication {
 				if (value > 0 && value > exitCode || value < 0 && value < exitCode) {
 					exitCode = value;
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception ex) {
 				exitCode = (exitCode == 0 ? 1 : exitCode);
-				e.printStackTrace();
+				ex.printStackTrace();
 			}
 		}
 		return exitCode;

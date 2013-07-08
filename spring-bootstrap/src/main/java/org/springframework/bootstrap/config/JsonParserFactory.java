@@ -26,7 +26,7 @@ import org.springframework.util.ClassUtils;
  * @see YamlJsonParser
  * @see SimpleJsonParser
  */
-public class JsonParserFactory {
+public abstract class JsonParserFactory {
 
 	/**
 	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson

@@ -1,0 +1,14 @@
+# Auto Configure
+org.springframework.autoconfigure.EnableAutoConfiguration=\
+org.springframework.autoconfigure.MessageSourceAutoConfiguration,\
+org.springframework.autoconfigure.PropertyPlaceholderAutoConfiguration,\
+org.springframework.autoconfigure.batch.BatchAutoConfiguration,\
+org.springframework.autoconfigure.data.JpaRepositoriesAutoConfiguration,\
+org.springframework.autoconfigure.jdbc.DataSourceAutoConfiguration,\
+org.springframework.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
+org.springframework.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
+org.springframework.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
+org.springframework.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
+org.springframework.autoconfigure.web.ServerPropertiesAutoConfiguration,\
+org.springframework.autoconfigure.web.MultipartAutoConfiguration,\
+org.springframework.autoconfigure.web.WebMvcAutoConfiguration

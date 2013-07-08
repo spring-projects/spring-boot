@@ -31,6 +31,10 @@ import javax.servlet.ServletRegistration;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
+import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
@@ -128,7 +132,8 @@ public class MockEmbeddedServletContainerFactory extends
 				for (ServletContextInitializer initializer : this.initializers) {
 					initializer.onStartup(this.servletContext);
 				}
-			} catch (ServletException ex) {
+			}
+			catch (ServletException ex) {
 				throw new RuntimeException(ex);
 			}
 		}

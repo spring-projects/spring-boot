@@ -19,19 +19,18 @@ package org.springframework.bootstrap;
 import java.io.PrintStream;
 
 /**
- * Writes the 'Spring Bootstrap' banner.
+ * Writes the 'Spring' banner.
  * 
  * @author Phillip Webb
  */
 abstract class Banner {
 
-	private static final String[] BANNER = {
-			"  .   ____          _             _____             __ _",
-			" /\\\\ / ___'_ __ _ _(_)_ __  __ _ |__   /___ _ __ ___\\ \\ \\",
-			"( ( )\\___ | '_ | '_| | '_ \\/ _` |  /  // _ \\ '__/ _ \\\\ \\ \\",
-			" \\\\/  ___)| |_)| | | | | || (_| | /  /|  __/ | | (/) |} } }",
-			"  '  |____| .__|_| |_|_| |_\\__, |'_____\\___|_|  \\___// / /",
-			" =========|_|==============|___/====================/_/_/" };
+	private static final String[] BANNER = { "  .   ____          _            __ _ _",
+			" /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\",
+			"( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\",
+			" \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )",
+			"  '  |____| .__|_| |_|_| |_\\__, | / / / /",
+			" =========|_|==============|___/=/_/_/_/" };
 
 	/**
 	 * Write the banner to the specified print stream.

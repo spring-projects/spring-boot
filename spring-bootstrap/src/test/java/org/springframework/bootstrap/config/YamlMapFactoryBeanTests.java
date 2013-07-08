@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.bootstrap.config.YamlMapFactoryBean;
 import org.springframework.bootstrap.config.YamlProcessor.ResolutionMethod;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.ByteArrayResource;
@@ -30,6 +31,8 @@ import org.springframework.core.io.Resource;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link YamlMapFactoryBean}.
+ * 
  * @author Dave Syer
  */
 public class YamlMapFactoryBeanTests {

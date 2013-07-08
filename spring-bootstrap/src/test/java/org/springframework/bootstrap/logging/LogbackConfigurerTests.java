@@ -29,6 +29,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link LogbackConfigurer}.
+ * 
  * @author Dave Syer
  */
 public class LogbackConfigurerTests {
@@ -62,7 +64,7 @@ public class LogbackConfigurerTests {
 		logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.startsWith("/tmp/bootstrap.log"));
+		assertTrue("Wrong output:\n" + output, output.startsWith("/tmp/spring.log"));
 	}
 
 	@Test(expected = FileNotFoundException.class)

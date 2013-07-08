@@ -57,7 +57,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			};
 			awaitThread.setDaemon(false);
 			awaitThread.start();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embdedded Tomcat", ex);
 		}
@@ -68,10 +69,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		try {
 			try {
 				this.tomcat.stop();
-			} catch (LifecycleException e) {
+			}
+			catch (LifecycleException ex) {
+				// swallow and continue
 			}
 			this.tomcat.destroy();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to stop embdedded Tomcat", ex);
 		}
