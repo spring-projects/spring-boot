@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-actuator</artifactId>
+			<artifactId>spring-starter-actuator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -43,7 +43,7 @@
 		<plugins>
 			<plugin>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>spring-zero-maven-plugin</artifactId>
+				<artifactId>spring-package-maven-plugin</artifactId>
 				<version>${project.version}</version>
 				<extensions>true</extensions>
 			</plugin>

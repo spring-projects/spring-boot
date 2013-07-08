@@ -16,74 +16,74 @@
 		<!-- Ensure other reactor projects are build before running integration tests -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-actuator</artifactId>
+			<artifactId>spring-actuator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-autoconfigure</artifactId>
+			<artifactId>spring-autoconfigure</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-cli</artifactId>
+			<artifactId>spring-cli</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-core</artifactId>
+			<artifactId>spring-bootstrap</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-launcher</artifactId>
+			<artifactId>spring-launcher</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-maven-plugin</artifactId>
+			<artifactId>spring-package-maven-plugin</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter</artifactId>
+			<artifactId>spring-starter</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-actuator</artifactId>
+			<artifactId>spring-starter-actuator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-batch</artifactId>
+			<artifactId>spring-starter-batch</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-data-jpa</artifactId>
+			<artifactId>spring-starter-data-jpa</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-integration</artifactId>
+			<artifactId>spring-starter-integration</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-security</artifactId>
+			<artifactId>spring-starter-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-web</artifactId>
+			<artifactId>spring-starter-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
-				<!-- Invoke integration tests in the install phase, after the spring-zero-maven-plugin is available -->
+				<!-- Invoke integration tests in the install phase, after the spring-package-maven-plugin is available -->
 				<artifactId>maven-invoker-plugin</artifactId>
 				<configuration>
 					<settingsFile>src/it/settings.xml</settingsFile>

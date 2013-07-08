@@ -4,37 +4,23 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.zero</groupId>
-		<artifactId>spring-zero-samples</artifactId>
+		<artifactId>spring-starters</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-zero-sample-web-ui</artifactId>
-	<packaging>executable-jar</packaging>
+	<artifactId>spring-starter-security</artifactId>
+	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-starter-web</artifactId>
+			<artifactId>spring-starter</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.thymeleaf</groupId>
-			<artifactId>thymeleaf-spring3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>nz.net.ultraq.web.thymeleaf</groupId>
-			<artifactId>thymeleaf-layout-dialect</artifactId>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-javaconfig</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>spring-package-maven-plugin</artifactId>
-				<version>${project.version}</version>
-				<extensions>true</extensions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

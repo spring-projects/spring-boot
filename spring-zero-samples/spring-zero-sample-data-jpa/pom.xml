@@ -15,12 +15,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-data-jpa</artifactId>
+			<artifactId>spring-starter-data-jpa</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-zero-starter-web</artifactId>
+			<artifactId>spring-starter-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -33,7 +33,7 @@
 		<plugins>
 			<plugin>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>spring-zero-maven-plugin</artifactId>
+				<artifactId>spring-package-maven-plugin</artifactId>
 				<version>${project.version}</version>
 				<extensions>true</extensions>
 			</plugin>

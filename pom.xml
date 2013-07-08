@@ -36,14 +36,14 @@
 		</developer>
 	</developers>
 	<modules>
-		<module>spring-zero-actuator</module>
-		<module>spring-zero-autoconfigure</module>
-		<module>spring-zero-cli</module>
-		<module>spring-zero-core</module>
+		<module>spring-bootstrap</module>
+		<module>spring-autoconfigure</module>
+		<module>spring-starters</module>
+		<module>spring-actuator</module>
+		<module>spring-launcher</module>
+		<module>spring-package-maven-plugin</module>
+		<module>spring-cli</module>
 		<module>spring-zero-intergration-tests</module>
-		<module>spring-zero-launcher</module>
-		<module>spring-zero-maven-plugin</module>
-		<module>spring-zero-starters</module>
 	</modules>
 	<build>
 		<pluginManagement>

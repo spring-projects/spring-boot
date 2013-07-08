@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.zero</groupId>
-			<artifactId>spring-zero-starter-integration</artifactId>
+			<artifactId>spring-starter-integration</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
@@ -23,7 +23,7 @@
 		<plugins>
 			<plugin>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>spring-zero-maven-plugin</artifactId>
+				<artifactId>spring-package-maven-plugin</artifactId>
 				<version>${project.version}</version>
 				<extensions>true</extensions>
 			</plugin>
