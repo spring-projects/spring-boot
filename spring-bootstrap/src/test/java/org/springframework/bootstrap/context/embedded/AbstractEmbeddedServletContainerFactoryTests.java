@@ -38,12 +38,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
-import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
-import org.springframework.bootstrap.context.embedded.FilterRegistrationBean;
-import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
-import org.springframework.bootstrap.context.embedded.ServletRegistrationBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -146,7 +140,6 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	@Test
 	public void startBlocksUntilReadyToServe() throws Exception {
-		// FIXME Assume.group(TestGroup.LONG_RUNNING);
 		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		final Date[] date = new Date[1];
 		this.container = factory

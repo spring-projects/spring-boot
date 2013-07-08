@@ -36,8 +36,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "executable-war", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ExecutableWarMojo extends AbstractExecutableArchiveMojo {
 
-	// FIXME classes in the wrong place
-
 	private static final Map<String, String> SCOPE_DESTINATIONS;
 	static {
 		Map<String, String> map = new HashMap<String, String>();
