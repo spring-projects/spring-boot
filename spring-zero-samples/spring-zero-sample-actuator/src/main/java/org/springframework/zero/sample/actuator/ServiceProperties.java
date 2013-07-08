@@ -16,8 +16,8 @@
 
 package org.springframework.zero.sample.actuator;
 
+import org.springframework.bootstrap.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.zero.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(name = "service", ignoreUnknownFields = false)
 @Component

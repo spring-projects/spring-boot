@@ -16,6 +16,7 @@
 
 package org.springframework.zero.sample.batch;
 
+import org.springframework.autoconfigure.EnableAutoConfiguration;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
@@ -26,11 +27,10 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.bootstrap.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.zero.SpringApplication;
-import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 
 @Configuration
 @EnableAutoConfiguration

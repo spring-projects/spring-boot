@@ -16,11 +16,11 @@
 
 package org.springframework.zero.sample.actuator;
 
+import org.springframework.autoconfigure.EnableAutoConfiguration;
+import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.zero.SpringApplication;
-import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
-import org.springframework.zero.context.properties.EnableConfigurationProperties;
 
 @Configuration
 @EnableAutoConfiguration

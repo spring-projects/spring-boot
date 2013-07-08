@@ -16,10 +16,10 @@
 
 package org.springframework.zero.sample.traditional;
 
+import org.springframework.autoconfigure.EnableAutoConfiguration;
+import org.springframework.bootstrap.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.zero.SpringApplication;
-import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 
 @Configuration
 @EnableAutoConfiguration

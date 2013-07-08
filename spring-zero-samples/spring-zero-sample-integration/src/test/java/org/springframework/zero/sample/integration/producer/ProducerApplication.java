@@ -19,9 +19,9 @@ package org.springframework.zero.sample.integration.producer;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.springframework.bootstrap.CommandLineRunner;
+import org.springframework.bootstrap.SpringApplication;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.zero.CommandLineRunner;
-import org.springframework.zero.SpringApplication;
 
 @Configuration
 public class ProducerApplication implements CommandLineRunner {

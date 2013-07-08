@@ -1,5 +1,5 @@
 def run = { msg ->
-	org.springframework.zero.cli.command.ScriptCommandTests.executed = true
+	org.springframework.cli.command.ScriptCommandTests.executed = true
 	println "Hello ${msg}"
 }
 

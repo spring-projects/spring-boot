@@ -24,12 +24,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.bootstrap.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.StreamUtils;
-import org.springframework.zero.SpringApplication;
 import org.springframework.zero.sample.integration.SampleIntegrationApplication;
 import org.springframework.zero.sample.integration.producer.ProducerApplication;
 

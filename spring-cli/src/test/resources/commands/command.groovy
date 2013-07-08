@@ -11,7 +11,7 @@ class TestCommand implements Command {
 	String usageHelp = "Not very useful"
 
 	void run(String... args) {
-		org.springframework.zero.cli.command.ScriptCommandTests.executed = true
+		org.springframework.cli.command.ScriptCommandTests.executed = true
 		println "Hello ${args[0]}"
 	}
 

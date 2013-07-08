@@ -19,13 +19,13 @@ package org.springframework.zero.sample.actuator.ui;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.actuate.properties.SecurityProperties;
+import org.springframework.autoconfigure.EnableAutoConfiguration;
+import org.springframework.bootstrap.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.zero.SpringApplication;
-import org.springframework.zero.actuate.properties.SecurityProperties;
-import org.springframework.zero.autoconfigure.EnableAutoConfiguration;
 
 @EnableAutoConfiguration
 @ComponentScan
