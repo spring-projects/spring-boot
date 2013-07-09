@@ -18,14 +18,15 @@ package org.springframework.bootstrap.logging;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.bootstrap.logging.JavaLoggerConfigurer;
 
 import static org.junit.Assert.assertTrue;
 
@@ -40,10 +41,12 @@ public class JavaLoggerConfigurerTests {
 	private ByteArrayOutputStream output;
 
 	@Before
-	public void init() {
+	public void init() throws SecurityException, IOException {
 		this.savedOutput = System.out;
 		this.output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(this.output));
+		LogManager.getLogManager().readConfiguration(
+				getClass().getResourceAsStream("logging.properties"));
 	}
 
 	@After
@@ -71,11 +74,6 @@ public class JavaLoggerConfigurerTests {
 	@Test(expected = FileNotFoundException.class)
 	public void testNonexistentConfigLocation() throws Exception {
 		JavaLoggerConfigurer.initLogging("classpath:logging-nonexistent.properties");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testBadUrlConfigLocation() throws Exception {
-		JavaLoggerConfigurer.initLogging("http://nosuchhost");
 	}
 
 	@Test(expected = IllegalArgumentException.class)

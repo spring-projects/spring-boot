@@ -17,7 +17,9 @@
 package org.springframework.bootstrap.logging;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,10 +47,12 @@ public class LoggingApplicationContextInitializerTests {
 	private ByteArrayOutputStream output;
 
 	@Before
-	public void init() {
+	public void init() throws SecurityException, IOException {
 		this.savedOutput = System.err;
 		this.output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(this.output));
+		LogManager.getLogManager().readConfiguration(
+				getClass().getResourceAsStream("logging.properties"));
 	}
 
 	@After
