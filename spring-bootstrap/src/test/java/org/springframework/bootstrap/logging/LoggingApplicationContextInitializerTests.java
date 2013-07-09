@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.bootstrap.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
@@ -69,9 +68,7 @@ public class LoggingApplicationContextInitializerTests {
 	}
 
 	@Test
-	@Ignore
 	public void testDefaultConfigLocation() {
-		// FIXME Fails on CI
 		GenericApplicationContext context = new GenericApplicationContext();
 		this.initializer.initialize(context);
 		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);

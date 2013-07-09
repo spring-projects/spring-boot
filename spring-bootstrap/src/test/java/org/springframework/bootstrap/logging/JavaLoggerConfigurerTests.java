@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -63,9 +62,7 @@ public class JavaLoggerConfigurerTests {
 	}
 
 	@Test
-	@Ignore
 	public void testDefaultConfigLocation() throws Exception {
-		// FIXME Fails on CI
 		JavaLoggerConfigurer.initLogging("classpath:logging-nondefault.properties");
 		Log logger = LogFactory.getLog(JavaLoggerConfigurerTests.class);
 		logger.info("Hello world");
