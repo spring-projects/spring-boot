@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-/**
- * System that allows self contained JAR/WAR archives to be launched using
- * {@code java -jar}. Archives can include nested packaged dependency JARs (there is
- * no need to create shade style jars) and are executed without unpacking. The only
- * constraint is that nested JARs must be stored in the archive uncompressed.
- *
- * @see org.springframework.launcher.JarLauncher
- * @see org.springframework.launcher.WarLauncher
- */
-package org.springframework.launcher;
+package org.springframework.launcher.it.jar;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+/**
+ * Simple example Spring MVC Controller.
+ *
+ * @author Phillip Webb
+ */
+@Controller
+public class ExampleController {
+
+	@RequestMapping("/")
+	@ResponseBody
+	public String helloWorld() {
+		return "Hello Embedded Jar World!";
+	}
+
+}

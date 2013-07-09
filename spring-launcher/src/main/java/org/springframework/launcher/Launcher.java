@@ -23,12 +23,9 @@ import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.logging.Logger;
-
-import org.springframework.launcher.jar.RandomAccessJarFile;
 
 /**
  * Base class for launchers that can start an application with a fully configured
@@ -77,11 +74,14 @@ public abstract class Launcher {
 		if (codeSourcePath == null) {
 			throw new IllegalStateException("Unable to determine code source archive");
 		}
-		if (codeSourcePath.endsWith("/")) {
-			throw new IllegalStateException("The specified code source path '"
-					+ codeSourcePath + "' is not an archive");
+		File root = new File(codeSourcePath);
+		if (!root.exists()) {
+			throw new IllegalStateException(
+					"Unable to determine code source archive from " + root);
 		}
-		launch(args, new File(codeSourcePath));
+		Archive archive = (root.isDirectory() ? new ExplodedArchive(root)
+				: new JarFileArchive(root));
+		launch(args, archive);
 	}
 
 	/**
@@ -90,22 +90,19 @@ public abstract class Launcher {
 	 * @param archive the underlying (zip/war/jar) archive
 	 * @throws Exception
 	 */
-	protected void launch(String[] args, File archive) throws Exception {
-		RandomAccessJarFile jarFile = new RandomAccessJarFile(archive);
-
-		List<RandomAccessJarFile> lib = new ArrayList<RandomAccessJarFile>();
-		Enumeration<JarEntry> jarEntries = jarFile.entries();
-		while (jarEntries.hasMoreElements()) {
-			JarEntry jarEntry = jarEntries.nextElement();
-			if (isNestedJarFile(jarEntry)) {
-				this.logger.fine("Adding: " + jarEntry.getName());
-				lib.add(jarFile.getNestedJarFile(jarEntry));
+	protected void launch(String[] args, Archive archive) throws Exception {
+		List<Archive> lib = new ArrayList<Archive>();
+		for (Archive.Entry entry : archive.getEntries()) {
+			if (isNestedArchive(entry)) {
+				this.logger.fine("Adding: " + entry.getName());
+				lib.add(archive.getNestedArchive(entry));
 			}
 		}
+
 		this.logger.fine("Added " + lib.size() + " entries");
-		postProcessLib(jarFile, lib);
+		postProcessLib(archive, lib);
 		ClassLoader classLoader = createClassLoader(lib);
-		launch(args, jarFile, classLoader);
+		launch(args, archive, classLoader);
 	}
 
 	/**
@@ -114,17 +111,16 @@ public abstract class Launcher {
 	 * @param jarEntry the jar entry
 	 * @return {@code true} if the entry is a nested item (jar or folder)
 	 */
-	protected abstract boolean isNestedJarFile(JarEntry jarEntry);
+	protected abstract boolean isNestedArchive(Archive.Entry jarEntry);
 
 	/**
 	 * Called to post-process lib entries before they are used. Implementations can add
 	 * and remove entries.
-	 * @param jarFile the jar file
+	 * @param archive the archive
 	 * @param lib the existing lib
 	 * @throws Exception
 	 */
-	protected void postProcessLib(RandomAccessJarFile jarFile,
-			List<RandomAccessJarFile> lib) throws Exception {
+	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
 	}
 
 	/**
@@ -133,8 +129,7 @@ public abstract class Launcher {
 	 * @return the classloader
 	 * @throws Exception
 	 */
-	protected ClassLoader createClassLoader(List<RandomAccessJarFile> lib)
-			throws Exception {
+	protected ClassLoader createClassLoader(List<Archive> lib) throws Exception {
 		URL[] urls = new URL[lib.size()];
 		for (int i = 0; i < urls.length; i++) {
 			urls[i] = lib.get(i).getUrl();
@@ -155,13 +150,13 @@ public abstract class Launcher {
 	/**
 	 * Launch the application given the archive file and a fully configured classloader.
 	 * @param args the incoming arguments
-	 * @param jarFile the jar file
+	 * @param archive the archive
 	 * @param classLoader the classloader
 	 * @throws Exception
 	 */
-	protected void launch(String[] args, RandomAccessJarFile jarFile,
-			ClassLoader classLoader) throws Exception {
-		String mainClass = getMainClass(jarFile);
+	protected void launch(String[] args, Archive archive, ClassLoader classLoader)
+			throws Exception {
+		String mainClass = getMainClass(archive);
 		Runnable runner = createMainMethodRunner(mainClass, args, classLoader);
 		Thread runnerThread = new Thread(runner);
 		runnerThread.setContextClassLoader(classLoader);
@@ -172,12 +167,12 @@ public abstract class Launcher {
 	/**
 	 * Obtain the main class that should be used to launch the application. By default
 	 * this method uses a {@code Start-Class} manifest entry.
-	 * @param jarFile the jar file
+	 * @param archive the archive
 	 * @return the main class
 	 * @throws Exception
 	 */
-	protected String getMainClass(RandomAccessJarFile jarFile) throws Exception {
-		String mainClass = jarFile.getManifest().getMainAttributes()
+	protected String getMainClass(Archive archive) throws Exception {
+		String mainClass = archive.getManifest().getMainAttributes()
 				.getValue("Start-Class");
 		if (mainClass == null) {
 			throw new IllegalStateException("No 'Start-Class' manifest entry specified");

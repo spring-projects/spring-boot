@@ -353,8 +353,7 @@ public class RandomAccessJarFile extends JarFile {
 	}
 
 	/**
-	 * {@link RandomAccessJarURLConnection} used to support
-	 * {@link RandomAccessJarFile#getUrl()}.
+	 * {@link JarURLConnection} used to support {@link RandomAccessJarFile#getUrl()}.
 	 */
 	private static class RandomAccessJarURLConnection extends JarURLConnection {
 

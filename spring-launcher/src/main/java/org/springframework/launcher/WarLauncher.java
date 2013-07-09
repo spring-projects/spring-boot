@@ -18,10 +18,6 @@ package org.springframework.launcher;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.jar.JarEntry;
-
-import org.springframework.launcher.jar.JarEntryFilter;
-import org.springframework.launcher.jar.RandomAccessJarFile;
 
 /**
  * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.
@@ -33,35 +29,33 @@ import org.springframework.launcher.jar.RandomAccessJarFile;
 public class WarLauncher extends Launcher {
 
 	@Override
-	protected boolean isNestedJarFile(JarEntry jarEntry) {
-		if (jarEntry.isDirectory()) {
-			return jarEntry.getName().equals("WEB-INF/classes/");
+	protected boolean isNestedArchive(Archive.Entry entry) {
+		if (entry.isDirectory()) {
+			return entry.getName().equals("WEB-INF/classes/");
 		}
 		else {
-			return jarEntry.getName().startsWith("WEB-INF/lib/")
-					|| jarEntry.getName().startsWith("WEB-INF/lib-provided/");
+			return entry.getName().startsWith("WEB-INF/lib/")
+					|| entry.getName().startsWith("WEB-INF/lib-provided/");
 		}
 	}
 
 	@Override
-	protected void postProcessLib(RandomAccessJarFile jarFile,
-			List<RandomAccessJarFile> lib) throws Exception {
-		lib.add(0, filterJarFile(jarFile));
+	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
+		lib.add(0, filterArchive(archive));
 	}
 
 	/**
 	 * Filter the specified WAR file to exclude elements that should not appear on the
 	 * classpath.
-	 * @param jarFile the source file
-	 * @return the filtered file
+	 * @param archive the source archive
+	 * @return the filtered archive
 	 * @throws IOException on error
 	 */
-	protected RandomAccessJarFile filterJarFile(RandomAccessJarFile jarFile)
-			throws IOException {
-		return jarFile.getFilteredJarFile(new JarEntryFilter() {
+	protected Archive filterArchive(Archive archive) throws IOException {
+		return archive.getFilteredArchive(new Archive.EntryFilter() {
 
 			@Override
-			public String apply(String entryName, JarEntry entry) {
+			public String apply(String entryName, Archive.Entry entry) {
 				if (entryName.startsWith("META-INF/") || entryName.startsWith("WEB-INF/")) {
 					return null;
 				}

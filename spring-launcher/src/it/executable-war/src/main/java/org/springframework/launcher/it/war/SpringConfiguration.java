@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-/**
- * System that allows self contained JAR/WAR archives to be launched using
- * {@code java -jar}. Archives can include nested packaged dependency JARs (there is
- * no need to create shade style jars) and are executed without unpacking. The only
- * constraint is that nested JARs must be stored in the archive uncompressed.
- *
- * @see org.springframework.launcher.JarLauncher
- * @see org.springframework.launcher.WarLauncher
- */
-package org.springframework.launcher;
+package org.springframework.launcher.it.war;
 
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+/**
+ * Spring configuration.
+ *
+ * @author Phillip Webb
+ */
+@Configuration
+@EnableWebMvc
+@ComponentScan
+public class SpringConfiguration {
+
+}

@@ -48,7 +48,7 @@ import org.springframework.launcher.data.RandomAccessDataFile;
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataFileTest {
+public class RandomAccessDataFileTests {
 
 	private static final byte[] BYTES;
 	static {

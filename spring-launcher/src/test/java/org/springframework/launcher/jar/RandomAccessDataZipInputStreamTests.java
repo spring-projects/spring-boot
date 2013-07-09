@@ -40,7 +40,7 @@ import org.springframework.launcher.jar.RandomAccessDataZipInputStream;
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataZipInputStreamTest {
+public class RandomAccessDataZipInputStreamTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();

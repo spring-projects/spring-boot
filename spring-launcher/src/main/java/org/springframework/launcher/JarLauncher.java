@@ -17,9 +17,6 @@
 package org.springframework.launcher;
 
 import java.util.List;
-import java.util.jar.JarEntry;
-
-import org.springframework.launcher.jar.RandomAccessJarFile;
 
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are
@@ -30,14 +27,13 @@ import org.springframework.launcher.jar.RandomAccessJarFile;
 public class JarLauncher extends Launcher {
 
 	@Override
-	protected boolean isNestedJarFile(JarEntry jarEntry) {
-		return !jarEntry.isDirectory() && jarEntry.getName().startsWith("lib/");
+	protected boolean isNestedArchive(Archive.Entry entry) {
+		return !entry.isDirectory() && entry.getName().startsWith("lib/");
 	}
 
 	@Override
-	protected void postProcessLib(RandomAccessJarFile jarFile,
-			List<RandomAccessJarFile> lib) throws Exception {
-		lib.add(0, jarFile);
+	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
+		lib.add(0, archive);
 	}
 
 	public static void main(String[] args) {
