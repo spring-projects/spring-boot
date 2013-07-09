@@ -22,8 +22,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.LogManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,15 +37,20 @@ import static org.junit.Assert.assertTrue;
 public class JavaLoggerConfigurerTests {
 
 	private PrintStream savedOutput;
+
 	private ByteArrayOutputStream output;
+
+	private Jdk14Logger logger;
 
 	@Before
 	public void init() throws SecurityException, IOException {
-		this.savedOutput = System.out;
-		this.output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(this.output));
 		LogManager.getLogManager().readConfiguration(
-				getClass().getResourceAsStream("logging.properties"));
+				getClass().getResourceAsStream("/logging.properties"));
+		this.logger = new Jdk14Logger(getClass().getName());
+		this.savedOutput = System.err;
+		this.output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(this.output));
+
 	}
 
 	@After
@@ -54,7 +58,7 @@ public class JavaLoggerConfigurerTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
-		System.setOut(this.savedOutput);
+		System.setErr(this.savedOutput);
 	}
 
 	private String getOutput() {
@@ -64,11 +68,10 @@ public class JavaLoggerConfigurerTests {
 	@Test
 	public void testDefaultConfigLocation() throws Exception {
 		JavaLoggerConfigurer.initLogging("classpath:logging-nondefault.properties");
-		Log logger = LogFactory.getLog(JavaLoggerConfigurerTests.class);
-		logger.info("Hello world");
+		this.logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.startsWith("["));
+		assertTrue("Wrong output:\n" + output, output.contains("INFO"));
 	}
 
 	@Test(expected = FileNotFoundException.class)
