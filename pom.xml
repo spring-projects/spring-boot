@@ -663,6 +663,24 @@
 					</snapshots>
 				</repository>
 			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://maven.springframework.org/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
 		</profile>
 		<profile>
 			<id>jdk8</id>
