@@ -43,7 +43,7 @@
 		<module>spring-launcher</module>
 		<module>spring-package-maven-plugin</module>
 		<module>spring-cli</module>
-		<module>spring-zero-intergration-tests</module>
+		<module>spring-zero-integration-tests</module>
 	</modules>
 	<build>
 		<pluginManagement>
@@ -640,8 +640,8 @@
 	</distributionManagement>
 	<profiles>
 		<profile>
-			<!-- FIXME remove before release -->
-			<id>snapshot-repositories</id>
+			<!-- FIXME deactivate before release -->
+			<id>bootstrap</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>

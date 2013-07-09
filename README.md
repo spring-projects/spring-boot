@@ -1,8 +1,8 @@
-# Spring Bootstrap
+# Spring Zero
 
-Spring Bootstrap is "Spring for Snowboarders".  If you are kewl, or
+Spring Zero is "Spring for Snowboarders".  If you are kewl, or
 just impatient, and you want to use Spring, then this is the place to
-be. Spring Bootstrap is a toolkit and runtime platform that will get
+be. Spring Zero is a toolkit and runtime platform that will get
 you up and running with Spring-powered, production-grade applications
 and services with absolute minimum fuss. It takes an opinionated view
 of the Spring family so that new and existing users can quickly get to
@@ -33,7 +33,7 @@ You need to build from source for now, but when it's done instructions will look
 
 2) Get Spring
 
-     $ curl -s try.spring.io | bash
+     $ curl -s spring.cfapps.io | bash
      
    or use the Windows installer
 
@@ -84,9 +84,9 @@ calls `SpringApplication` and add `@EnableAutoConfiguration`:
 
     }
 
-## Spring Bootstrap Themes
+## Spring Zero Themes
 
-There are a number of themes in Bootstrap. Here are the important
+There are a number of themes in Zero. Here are the important
 ones:
 
 ### The Spring CLI
@@ -96,10 +96,10 @@ making it super easy to write the absolute minimum of code to get an
 application running. Spring CLI can also watch files, automatically
 recompiling and restarting when they change.
 
-### Bootstrap Core
+### Spring Bootstrap
 
 The main library providing features that support the other parts of
-Spring Bootstrap.  Features include:
+Spring Zero.  Features include:
 
 * `SpringApplication` - a class with static convenience methods that
   make it really easy to write a standalone Spring Application. Its
@@ -107,6 +107,13 @@ Spring Bootstrap.  Features include:
   `ApplicationContext`.
 * Embedded web applications with a choice of container (Tomcat or
   Jetty for now)
+  
+### Spring Autoconfigure
+
+Spring Zero can configure large parts of common applications based on
+detecting the content of the classpath and any existing application
+context:
+
 * `@EnableAutoConfigure` is an annotation that triggers
   auto-configuration of the Spring context. Auto-configuration
   attempts to guess what beans a user might want based on their
@@ -116,13 +123,13 @@ Spring Bootstrap.  Features include:
   define their own beans.
 * `@Conditional` is an annotation in Spring 4.0 that allows you to
   control which parts of an application are used at runtime. Spring
-  Bootstrap provides some concrete implementations of conditional
+  Zero provides some concrete implementations of conditional
   configuration, e.g. `@ConditionalOnBean`,
   `@ConditionalOnMissingBean` and `@ConditionalOnClass`.
 
-### Spring Bootstrap Actuator
+### Spring Actuator
 
-Spring Bootstrap Actuator uses auto-configuration features to decorate
+Spring Actuator uses auto-configuration features to decorate
 your application with features that make it instantly deployable and
 supportable in production.  For instance if you are writing a JSON web
 service then it will provide a server, security, logging, externalized
@@ -132,16 +139,16 @@ them, it makes that really easy as well.
 
 ### Service Wrappers and Deployability
 
-Spring Bootstrap helps you to take that last step from finishing a
+Spring Zero helps you to take that last step from finishing a
 development iteration to getting the code running in production.
 Without having to think too much about it, other than choosing your
 deployment environment (CentOS, Ubuntu, Windows etc) you should be
 able to stand up an instance, or multiple instances, of your component
 and have them fit seamlessly into the operating system environment.
 
-### Spring Bootstrap Starters
+### Spring Starters
 
-Spring Bootstrap Starters are a set of convenient dependency
+Spring Starters are a set of convenient dependency
 descriptors that you can include in your application.  You get a
 one-stop-shop for all the Spring and related technology that you need
 without having to hunt through sample code and copy paste loads of
@@ -173,10 +180,10 @@ Or if you prefer you can import settings manually from the `/eclipse` folder.
 ## Samples
 The following samples are included. To run use `java -jar target/<archive>.jar`
 
-* spring-bootstrap-simple-sample - A simple command line application
-* spring-bootstrap-jetty-sample - Embedded Jetty
-* spring-bootstrap-tomcat-sample - Embedded Tomcat
-* spring-bootstrap-service-sample - Simple REST service with production features
+* spring-zero-simple-sample - A simple command line application
+* spring-zero-jetty-sample - Embedded Jetty
+* spring-zero-tomcat-sample - Embedded Tomcat
+* spring-zero-service-sample - Simple REST service with production features
 * spring-batch-sample - Define and run a Batch job in a few lines of code
-* spring-bootstrap-data-sample - Spring Data JPA + Hibernate + HSQLDB
+* spring-zero-data-sample - Spring Data JPA + Hibernate + HSQLDB
 
