@@ -73,7 +73,7 @@ public class SampleIntegrationTests {
 						return command;
 					}
 				});
-		this.command = future.get(30, TimeUnit.SECONDS);
+		this.command = future.get(4, TimeUnit.MINUTES);
 	}
 
 	@After
