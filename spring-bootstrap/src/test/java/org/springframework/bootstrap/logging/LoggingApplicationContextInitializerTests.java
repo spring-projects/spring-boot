@@ -105,6 +105,23 @@ public class LoggingApplicationContextInitializerTests {
 	}
 
 	@Test
+	public void testOverrideConfigDoesNotExist() throws Exception {
+		GenericApplicationContext context = new GenericApplicationContext();
+		context.getEnvironment().getPropertySources()
+				.addFirst(new PropertySource<String>("manual") {
+					@Override
+					public Object getProperty(String name) {
+						if ("logging.config".equals(name)) {
+							return "doesnotexist.xml";
+						}
+						return null;
+					}
+				});
+		this.initializer.initialize(context);
+		// Should not throw
+	}
+
+	@Test
 	public void testAddLogFileProperty() {
 		GenericApplicationContext context = new GenericApplicationContext();
 		context.getEnvironment().getPropertySources()

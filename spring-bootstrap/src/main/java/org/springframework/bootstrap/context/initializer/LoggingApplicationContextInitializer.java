@@ -20,6 +20,8 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.bootstrap.logging.JavaLoggerConfigurer;
 import org.springframework.bootstrap.logging.LogbackConfigurer;
 import org.springframework.context.ApplicationContext;
@@ -31,6 +33,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.Log4jConfigurer;
+import org.springframework.util.ResourceUtils;
 
 /**
  * An {@link ApplicationContextInitializer} that configures a logging framework depending
@@ -157,6 +160,9 @@ public class LoggingApplicationContextInitializer implements
 			}
 		};
 
+		private final Log logger = LogFactory
+				.getLog(LoggingApplicationContextInitializer.class);
+
 		private final String className;
 
 		private final String[] paths;
@@ -186,7 +192,16 @@ public class LoggingApplicationContextInitializer implements
 
 			// User specified config
 			if (environment.containsProperty("logging.config")) {
-				return environment.getProperty("logging.config");
+				String value = environment.getProperty("logging.config");
+				try {
+					ResourceUtils.getURL(value).openStream().close();
+					return value;
+				}
+				catch (Exception ex) {
+					// Swallow exception and continue
+				}
+				this.logger.warn("Logging environment value '" + value
+						+ "' cannot be opened and will be ignored");
 			}
 
 			// Common patterns
