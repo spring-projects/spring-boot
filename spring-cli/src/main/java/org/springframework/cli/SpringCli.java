@@ -220,7 +220,7 @@ public class SpringCli {
 
 		@Override
 		public String getUsageHelp() {
-			return null;
+			return "command";
 		}
 
 		@Override
