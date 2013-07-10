@@ -194,6 +194,9 @@
 					<excludes>
 						<exclude>**/Abstract*.java</exclude>
 					</excludes>
+                    <systemPropertyVariables>
+                      <java.security.egd>file:/dev/./urandom</java.security.egd>
+                    </systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>

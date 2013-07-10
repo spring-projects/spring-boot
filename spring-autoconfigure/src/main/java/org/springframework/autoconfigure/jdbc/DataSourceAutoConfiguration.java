@@ -61,8 +61,6 @@ import org.springframework.util.StringUtils;
 @ConditionalOnMissingBean(DataSource.class)
 public class DataSourceAutoConfiguration {
 
-	// FIXME see above
-
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
 	@Autowired(required = false)
@@ -108,7 +106,6 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	// FIXME: DB platform
 	@Value("${spring.database.schema:classpath*:schema-${spring.database.platform:all}.sql}")
 	private String schemaLocations = "";
 
