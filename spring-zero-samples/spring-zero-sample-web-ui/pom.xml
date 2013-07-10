@@ -23,7 +23,7 @@
 			<artifactId>thymeleaf-spring3</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>nz.net.ultraq.web.thymeleaf</groupId>
+			<groupId>nz.net.ultraq.thymeleaf</groupId>
 			<artifactId>thymeleaf-layout-dialect</artifactId>
 		</dependency>
 	</dependencies>
