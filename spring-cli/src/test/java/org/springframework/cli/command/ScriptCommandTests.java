@@ -19,9 +19,8 @@ package org.springframework.cli.command;
 import groovy.lang.GroovyObjectSupport;
 import groovy.lang.Script;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.cli.command.OptionHandler;
-import org.springframework.cli.command.ScriptCommand;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -35,6 +34,11 @@ import static org.junit.Assert.assertTrue;
 public class ScriptCommandTests {
 
 	public static boolean executed = false;
+
+	@BeforeClass
+	public static void cleanGrapes() throws Exception {
+		new CleanCommand().run("--all");
+	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testMissing() throws Exception {
