@@ -39,7 +39,7 @@ import java.util.Set;
  */
 public class SpringCli {
 
-	public static final String CLI_APP = "spring";
+	public static final String CLI_APP = "spr";
 
 	private static final Set<SpringCliException.Option> NO_EXCEPTION_OPTIONS = EnumSet
 			.noneOf(SpringCliException.Option.class);
@@ -60,7 +60,6 @@ public class SpringCli {
 				this.commands.add(command);
 			}
 		}
-		this.commands.add(0, new HelpOptionCommand());
 		this.commands.add(0, new HelpCommand());
 	}
 
@@ -71,7 +70,6 @@ public class SpringCli {
 	 */
 	public void setCommands(List<? extends Command> commands) {
 		this.commands = new ArrayList<Command>(commands);
-		this.commands.add(0, new HelpOptionCommand());
 		this.commands.add(0, new HelpCommand());
 	}
 
@@ -143,8 +141,11 @@ public class SpringCli {
 		Log.info("");
 		Log.info("Available commands are:");
 		for (Command command : this.commands) {
+			String usageHelp = command.getUsageHelp();
+			String description = command.getDescription();
 			Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
-					command.getUsageHelp(), command.getDescription()));
+					(usageHelp == null ? "" : usageHelp), (description == null ? ""
+							: description)));
 		}
 		Log.info("");
 		Log.info("See '" + CLI_APP
@@ -171,15 +172,8 @@ public class SpringCli {
 		return rtn.toArray(new String[rtn.size()]);
 	}
 
-	private class HelpOptionCommand extends HelpCommand {
-		@Override
-		public String getName() {
-			return "--help";
-		}
-	}
-
 	/**
-	 * Internal {@link Command} used for 'help' and '--help' requests.
+	 * Internal {@link Command} used for 'help' requests.
 	 */
 	private class HelpCommand implements Command {
 

@@ -10,9 +10,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.cli.Command;
-import org.springframework.cli.NoSuchCommandException;
-import org.springframework.cli.SpringCli;
 import org.springframework.cli.SpringCli.NoArgumentsException;
 import org.springframework.cli.SpringCli.NoHelpCommandArgumentsException;
 
@@ -136,7 +133,7 @@ public class SpringCliTests {
 	@Test
 	public void exceptionMessages() throws Exception {
 		assertThat(new NoSuchCommandException("name").getMessage(),
-				equalTo("spring: 'name' is not a valid command. See 'spring --help'."));
+				equalTo("spr: 'name' is not a valid command. See 'spr help'."));
 	}
 
 	@Test
@@ -149,12 +146,6 @@ public class SpringCliTests {
 	public void helpNoCommand() throws Exception {
 		this.thrown.expect(NoHelpCommandArgumentsException.class);
 		this.cli.run("help");
-	}
-
-	@Test
-	public void helpLikeOption() throws Exception {
-		this.thrown.expect(NoHelpCommandArgumentsException.class);
-		this.cli.run("--help");
 	}
 
 	@Test

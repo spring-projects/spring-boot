@@ -26,7 +26,7 @@ class NoSuchCommandException extends SpringCliException {
 	private static final long serialVersionUID = 1L;
 
 	public NoSuchCommandException(String name) {
-		super(String.format("%1$s: '%2$s' is not a valid command. See '%1$s --help'.",
+		super(String.format("%1$s: '%2$s' is not a valid command. See '%1$s help'.",
 				SpringCli.CLI_APP, name));
 	}
 
