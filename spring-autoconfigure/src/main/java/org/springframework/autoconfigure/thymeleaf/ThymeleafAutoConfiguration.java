@@ -23,7 +23,7 @@ import java.util.Collections;
 
 import javax.servlet.Servlet;
 
-import nz.net.ultraq.web.thymeleaf.LayoutDialect;
+import nz.net.ultraq.thymeleaf.LayoutDialect;
 
 import org.springframework.autoconfigure.AutoConfigureAfter;
 import org.springframework.autoconfigure.EnableAutoConfiguration;
@@ -105,7 +105,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass("nz.net.ultraq.web.thymeleaf.LayoutDialect")
+	@ConditionalOnMissingClass("nz.net.ultraq.thymeleaf.LayoutDialect")
 	@ConditionalOnMissingBean(SpringTemplateEngine.class)
 	protected static class ThymeleafDefaultConfiguration {
 
@@ -124,7 +124,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(name = "nz.net.ultraq.web.thymeleaf.LayoutDialect")
+	@ConditionalOnClass(name = "nz.net.ultraq.thymeleaf.LayoutDialect")
 	@ConditionalOnMissingBean(SpringTemplateEngine.class)
 	protected static class ThymeleafWebLayoutConfiguration {
 

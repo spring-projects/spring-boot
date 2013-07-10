@@ -260,9 +260,9 @@
 				<version>4.4</version>
 			</dependency>
 			<dependency>
-				<groupId>nz.net.ultraq.web.thymeleaf</groupId>
-				<artifactId>thymeleaf-layout-dialect</artifactId>
-				<version>1.0.6</version>
+                <groupId>nz.net.ultraq.thymeleaf</groupId>
+                <artifactId>thymeleaf-layout-dialect</artifactId>
+				<version>1.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ivy</groupId>
