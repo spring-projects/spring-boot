@@ -37,9 +37,6 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
 		BeanPostProcessor, ApplicationContextAware {
 
-	// FIXME should we register this by default, Javadoc in
-	// EmbeddedServletContainerCustomizer suggests so
-
 	private ApplicationContext applicationContext;
 
 	private List<EmbeddedServletContainerCustomizer> customizers;
