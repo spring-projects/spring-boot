@@ -52,7 +52,7 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 				.add("org.springframework.integration",
 						"spring-integration-dsl-groovy-core", "1.0.0.M1");
 		dependencies.ifAnyMissingClasses("groovy.util.XmlParser").add(
-				"org.codehaus.groovy", "groovy-xml", "2.1.3");
+				"org.codehaus.groovy", "groovy-xml", "2.1.6");
 	}
 
 	@Override

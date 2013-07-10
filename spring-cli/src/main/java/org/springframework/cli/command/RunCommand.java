@@ -90,9 +90,9 @@ public class RunCommand extends OptionParsingCommand {
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
-			List<String> nonOptionArguments = options.nonOptionArguments();
+			List<?> nonOptionArguments = options.nonOptionArguments();
 			File[] files = getFileArguments(nonOptionArguments);
-			List<String> args = nonOptionArguments.subList(files.length,
+			List<?> args = nonOptionArguments.subList(files.length,
 					nonOptionArguments.size());
 
 			if (options.has(this.editOption)) {
@@ -109,18 +109,21 @@ public class RunCommand extends OptionParsingCommand {
 			this.runner.compileAndRun();
 		}
 
-		private File[] getFileArguments(List<String> nonOptionArguments) {
+		private File[] getFileArguments(List<?> nonOptionArguments) {
 			List<File> files = new ArrayList<File>();
-			for (String filename : nonOptionArguments) {
-				if ("--".equals(filename)) {
-					break;
-				}
-				// TODO: add support for strict Java compilation
-				// TODO: add support for recursive search in directory
-				if (filename.endsWith(".groovy") || filename.endsWith(".java")) {
-					File file = new File(filename);
-					if (file.isFile() && file.canRead()) {
-						files.add(file);
+			for (Object option : nonOptionArguments) {
+				if (option instanceof String) {
+					String filename = (String) option;
+					if ("--".equals(filename)) {
+						break;
+					}
+					// TODO: add support for strict Java compilation
+					// TODO: add support for recursive search in directory
+					if (filename.endsWith(".groovy") || filename.endsWith(".java")) {
+						File file = new File(filename);
+						if (file.isFile() && file.canRead()) {
+							files.add(file);
+						}
 					}
 				}
 			}

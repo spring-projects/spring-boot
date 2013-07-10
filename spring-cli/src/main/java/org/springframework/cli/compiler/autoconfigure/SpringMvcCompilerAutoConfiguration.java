@@ -40,7 +40,7 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 				"org.eclipse.jetty.server.Server").add("org.eclipse.jetty",
 				"jetty-webapp", "8.1.10.v20130312");
 
-		dependencies.add("org.codehaus.groovy", "groovy-templates", "2.1.3");
+		dependencies.add("org.codehaus.groovy", "groovy-templates", "2.1.6");
 		// FIXME restore Tomcat when we can get reload to work
 		// dependencies.ifMissingClasses("org.apache.catalina.startup.Tomcat",
 		// "org.eclipse.jetty.server.Server")

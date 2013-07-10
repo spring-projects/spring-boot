@@ -79,12 +79,14 @@ public class CleanCommand extends OptionParsingCommand {
 			if (root == null || !root.exists()) {
 				return;
 			}
-			ArrayList<String> specs = new ArrayList<String>(options.nonOptionArguments());
+			ArrayList<Object> specs = new ArrayList<Object>(options.nonOptionArguments());
 			if (!specs.contains("org.springframework.zero") && layout == Layout.IVY) {
 				specs.add(0, "org.springframework.zero");
 			}
-			for (String spec : specs) {
-				clean(options, root, layout, spec);
+			for (Object spec : specs) {
+				if (spec instanceof String) {
+					clean(options, root, layout, (String) spec);
+				}
 			}
 		}
 
