@@ -78,7 +78,6 @@ public class LoggingApplicationContextInitializerTests {
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue("Wrong output:\n" + output, output.startsWith("["));
 	}
 
 	@Test
