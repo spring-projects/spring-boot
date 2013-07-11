@@ -32,23 +32,32 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.bootstrap.context.condition.ConditionalOnBean;
 import org.springframework.bootstrap.context.condition.ConditionalOnClass;
+import org.springframework.bootstrap.context.condition.ConditionalOnExpression;
+import org.springframework.bootstrap.context.condition.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * Base {@link EnableAutoConfiguration Auto-configuration} for JPA.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
-@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
-		EnableTransactionManagement.class, EntityManager.class })
+@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EnableTransactionManagement.class,
+		EntityManager.class })
 @ConditionalOnBean(DataSource.class)
-public abstract class JpaAutoConfiguration implements BeanFactoryAware {
+public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
 
@@ -67,19 +76,33 @@ public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 		return entityManagerFactoryBean;
 	}
 
+	@Configuration
+	@ConditionalOnWebApplication
+	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class, OpenEntityManagerInViewFilter.class })
+	@ConditionalOnExpression("${spring.jpa.openInView:${spring.jpa.open_in_view:true}}")
+	protected static class JpaWebConfiguration extends WebMvcConfigurerAdapter {
+
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			super.addInterceptors(registry);
+		}
+
+		@Bean
+		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+			return new OpenEntityManagerInViewInterceptor();
+		}
+
+	}
+
 	/**
-	 * Determines if the {@code dataSource} being used by Spring was created from
-	 * {@link EmbeddedDatabaseConfiguration}.
+	 * Determines if the {@code dataSource} being used by Spring was created from {@link EmbeddedDatabaseConfiguration}.
 	 * @return true if the data source was auto-configured.
 	 */
 	protected boolean isAutoConfiguredDataSource() {
 		try {
-			BeanDefinition beanDefinition = this.beanFactory
-					.getBeanDefinition("dataSource");
-			return EmbeddedDatabaseConfiguration.class.getName().equals(
-					beanDefinition.getFactoryBeanName());
-		}
-		catch (NoSuchBeanDefinitionException ex) {
+			BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition("dataSource");
+			return EmbeddedDatabaseConfiguration.class.getName().equals(beanDefinition.getFactoryBeanName());
+		} catch (NoSuchBeanDefinitionException ex) {
 			return false;
 		}
 	}
@@ -90,23 +113,19 @@ public abstract class JpaAutoConfiguration implements BeanFactoryAware {
 	protected DataSource getDataSource() {
 		try {
 			return this.beanFactory.getBean("dataSource", DataSource.class);
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			return this.beanFactory.getBean(DataSource.class);
 		}
 	}
 
 	protected String[] getPackagesToScan() {
-		List<String> basePackages = AutoConfigurationUtils
-				.getBasePackages(this.beanFactory);
-		Assert.notEmpty(basePackages,
-				"Unable to find JPA packages to scan, please define "
-						+ "a @ComponentScan annotation or disable JpaAutoConfiguration");
+		List<String> basePackages = AutoConfigurationUtils.getBasePackages(this.beanFactory);
+		Assert.notEmpty(basePackages, "Unable to find JPA packages to scan, please define "
+				+ "a @ComponentScan annotation or disable JpaAutoConfiguration");
 		return basePackages.toArray(new String[basePackages.size()]);
 	}
 
-	protected void configure(
-			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
+	protected void configure(LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 	}
 
 	@Override

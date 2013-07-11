@@ -16,21 +16,29 @@
 
 package org.springframework.autoconfigure.orm.jpa;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import javax.sql.DataSource;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
-import org.springframework.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.autoconfigure.orm.jpa.test.City;
+import org.springframework.bootstrap.TestUtils;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
@@ -39,11 +47,18 @@ import static org.junit.Assert.assertTrue;
  */
 public class HibernateJpaAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@After
+	public void close() {
+		if (context != null) {
+			context.close();
+		}
+	}
 
 	@Test
 	public void testEntityManagerCreated() throws Exception {
-		this.context.register(ComponentScanDetectorConfiguration.class,
+		((AnnotationConfigApplicationContext) this.context).register(ComponentScanDetectorConfiguration.class,
 				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -53,17 +68,58 @@ public class HibernateJpaAutoConfigurationTests {
 
 	@Test
 	public void testDataSourceTransactionManagerNotCreated() throws Exception {
-		this.context.register(ComponentScanDetectorConfiguration.class,
+		((AnnotationConfigApplicationContext) this.context).register(ComponentScanDetectorConfiguration.class,
 				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
-				DataSourceTransactionManagerAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, TestConfiguration.class);
+				DataSourceTransactionManagerAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				TestConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 		assertTrue(this.context.getBean("transactionManager") instanceof JpaTransactionManager);
 	}
 
+	@Test
+	public void testOpenEntityManagerInViewInterceptorCreated() throws Exception {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.register(ComponentScanDetectorConfiguration.class, EmbeddedDatabaseConfiguration.class,
+				HibernateJpaAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+				TestConfiguration.class);
+		this.context = context;
+		this.context.refresh();
+		assertNotNull(this.context.getBean(OpenEntityManagerInViewInterceptor.class));
+	}
+
+	@Test
+	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenFilterPresent() throws Exception {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.register(TestFilterConfiguration.class, ComponentScanDetectorConfiguration.class, EmbeddedDatabaseConfiguration.class,
+				HibernateJpaAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context = context;
+		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(OpenEntityManagerInViewInterceptor.class).length);
+	}
+
+	@Test
+	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff() throws Exception {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		TestUtils.addEnviroment(context, "spring.jpa.open_in_view:false");
+		context.register(TestConfiguration.class, ComponentScanDetectorConfiguration.class, EmbeddedDatabaseConfiguration.class,
+				HibernateJpaAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context = context;
+		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(OpenEntityManagerInViewInterceptor.class).length);
+	}
+
 	@ComponentScan(basePackageClasses = { City.class })
 	protected static class TestConfiguration {
 
+	}
+
+	@ComponentScan(basePackageClasses = { City.class })
+	@Configuration
+	protected static class TestFilterConfiguration {
+		@Bean
+		public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
+			return new OpenEntityManagerInViewFilter();
+		}
 	}
 }

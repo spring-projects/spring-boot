@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass(HibernateEntityManager.class)
 @EnableTransactionManagement
-public class HibernateJpaAutoConfiguration extends JpaAutoConfiguration {
+public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_DIALECTS;
 	static {
