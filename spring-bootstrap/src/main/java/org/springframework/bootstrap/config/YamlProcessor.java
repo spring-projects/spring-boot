@@ -148,8 +148,7 @@ public class YamlProcessor {
 			}
 			this.logger.info("Loaded " + count + " document" + (count > 1 ? "s" : "")
 					+ " from YAML resource: " + resource);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			handleProcessError(resource, ex);
 		}
 		return count > 0;
@@ -177,8 +176,7 @@ public class YamlProcessor {
 		if (this.documentMatchers.isEmpty()) {
 			this.logger.debug("Merging document (no matchers set)" + map);
 			callback.process(properties, map);
-		}
-		else {
+		} else {
 			boolean valueFound = false;
 			MatchStatus result = MatchStatus.ABSTAIN;
 			for (DocumentMatcher matcher : this.documentMatchers) {
@@ -196,8 +194,7 @@ public class YamlProcessor {
 			if (result == MatchStatus.ABSTAIN && this.matchDefault) {
 				this.logger.debug("Matched document with default matcher: " + map);
 				callback.process(properties, map);
-			}
-			else if (!valueFound) {
+			} else if (!valueFound) {
 				this.logger.debug("Unmatched document");
 				return false;
 			}
@@ -212,34 +209,28 @@ public class YamlProcessor {
 			if (StringUtils.hasText(path)) {
 				if (key.startsWith("[")) {
 					key = path + key;
-				}
-				else {
+				} else {
 					key = path + "." + key;
 				}
 			}
 			Object value = entry.getValue();
 			if (value instanceof String) {
 				properties.put(key, value);
-			}
-			else if (value instanceof Map) {
+			} else if (value instanceof Map) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Map<String, Object> map = (Map<String, Object>) value;
 				assignProperties(properties, map, key);
-			}
-			else if (value instanceof Collection) {
+			} else if (value instanceof Collection) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Collection<Object> collection = (Collection<Object>) value;
-				properties.put(key,
-						StringUtils.collectionToCommaDelimitedString(collection));
 				int count = 0;
 				for (Object object : collection) {
 					assignProperties(properties,
 							Collections.singletonMap("[" + (count++) + "]", object), key);
 				}
-			}
-			else {
+			} else {
 				properties.put(key, value == null ? "" : value);
 			}
 		}

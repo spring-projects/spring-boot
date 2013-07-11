@@ -16,7 +16,9 @@
 
 package org.springframework.bootstrap.context.properties;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -63,6 +65,14 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testCollectionPropertiesBindingFromYamlArray() {
+		this.context.register(TestConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo", "list[0]:1", "list[1]:2");
+		this.context.refresh();
+		assertEquals(2, this.context.getBean(TestProperties.class).getList().size());
+	}
+
+	@Test
 	public void testPropertiesBindingWithoutAnnotation() {
 		this.context.register(MoreConfiguration.class);
 		TestUtils.addEnviroment(this.context, "name:foo");
@@ -100,7 +110,7 @@ public class EnableConfigurationPropertiesTests {
 
 	// Maybe we could relax the condition that causes this exception but Spring makes it
 	// difficult because it is impossible for DefaultConfiguration to override a bean
-	// definition created with a direct regsistration (as opposed to a @Bean)
+	// definition created with a direct registration (as opposed to a @Bean)
 	@Test(expected = BeanCreationException.class)
 	public void testPropertiesBindingWithDefaults() {
 		this.context.register(TestConfiguration.class, DefaultConfiguration.class);
@@ -201,6 +211,7 @@ public class EnableConfigurationPropertiesTests {
 	protected static class TestProperties {
 		private String name;
 		private int[] array;
+		private List<Integer> list = new ArrayList<Integer>();
 
 		public String getName() {
 			return this.name;
@@ -216,6 +227,10 @@ public class EnableConfigurationPropertiesTests {
 
 		public int[] getArray() {
 			return this.array;
+		}
+
+		public List<Integer> getList() {
+			return this.list;
 		}
 	}
 

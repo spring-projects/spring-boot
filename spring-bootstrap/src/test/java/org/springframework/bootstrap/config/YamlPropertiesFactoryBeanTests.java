@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.bootstrap.config.YamlPropertiesFactoryBean;
 import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
 import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
 import org.springframework.bootstrap.config.YamlProcessor.ResolutionMethod;
@@ -185,7 +184,6 @@ public class YamlPropertiesFactoryBeanTests {
 		Properties properties = factory.getObject();
 		assertEquals("bar", properties.get("foo[0]"));
 		assertEquals("baz", properties.get("foo[1]"));
-		assertEquals("bar,baz", properties.get("foo"));
 	}
 
 	@Test
@@ -200,7 +198,6 @@ public class YamlPropertiesFactoryBeanTests {
 		assertEquals("baz", properties.get("foo[1]"));
 		assertEquals("two", properties.get("foo[2].one"));
 		assertEquals("four", properties.get("foo[2].three"));
-		assertEquals("{bar={spam=crap}},baz,{one=two, three=four}", properties.get("foo"));
 	}
 
 	@SuppressWarnings("unchecked")

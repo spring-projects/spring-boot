@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.bootstrap.context.initializer.ConfigFileApplicationContextInitializer;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -54,6 +54,9 @@ public class ConfigFileApplicationContextInitializerTests {
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromyamlfile"));
+		assertThat(this.context.getEnvironment().getProperty("my.array[0]"), equalTo("1"));
+		assertThat(this.context.getEnvironment().getProperty("my.array"),
+				nullValue(String.class));
 	}
 
 	@Test
