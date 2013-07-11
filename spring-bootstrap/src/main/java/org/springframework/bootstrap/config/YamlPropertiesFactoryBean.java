@@ -77,13 +77,12 @@ public class YamlPropertiesFactoryBean extends YamlProcessor implements
 	public Properties getObject() {
 		if (!this.singleton || this.instance == null) {
 			final Properties result = new Properties();
-			MatchCallback callback = new MatchCallback() {
+			process(new MatchCallback() {
 				@Override
 				public void process(Properties properties, Map<String, Object> map) {
 					result.putAll(properties);
 				}
-			};
-			process(callback);
+			});
 			this.instance = result;
 		}
 		return this.instance;

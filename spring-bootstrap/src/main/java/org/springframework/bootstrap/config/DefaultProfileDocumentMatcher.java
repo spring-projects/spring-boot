@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.util.Properties;
@@ -25,7 +26,6 @@ import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
  * explicitly (i.e. matches if "spring.profiles" is not found and not otherwise).
  * 
  * @author Dave Syer
- * 
  */
 public final class DefaultProfileDocumentMatcher implements DocumentMatcher {
 
@@ -33,7 +33,8 @@ public final class DefaultProfileDocumentMatcher implements DocumentMatcher {
 	public MatchStatus matches(Properties properties) {
 		if (!properties.containsKey("spring.profiles")) {
 			return MatchStatus.FOUND;
-		} else {
+		}
+		else {
 			return MatchStatus.NOT_FOUND;
 		}
 	}

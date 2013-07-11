@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import org.springframework.core.env.Environment;
@@ -21,11 +22,14 @@ import org.springframework.core.io.Resource;
 
 /**
  * Strategy interface used to load a {@link PropertySource}.
+ * 
+ * @author Dave Syer
  */
 public interface PropertySourceLoader {
 
 	/**
-	 * @return Is this resource supported?
+	 * Returns {@code true} if the {@link Resource} is supported.
+	 * @return if the resource is supported
 	 */
 	public boolean supports(Resource resource);
 

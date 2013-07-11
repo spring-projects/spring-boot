@@ -27,6 +27,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
@@ -92,17 +93,13 @@ public class YamlProcessor {
 	/**
 	 * Method to use for resolving resources. Each resource will be converted to a Map, so
 	 * this property is used to decide which map entries to keep in the final output from
-	 * this factory. Possible values:
-	 * <ul>
-	 * <li><code>OVERRIDE</code> for replacing values from earlier in the list</li>
-	 * <li><code>FIRST_FOUND</code> if you want to take the first resource in the list
-	 * that exists and use just that.</li>
-	 * </ul>
+	 * this factory.
 	 * 
-	 * 
-	 * @param resolutionMethod the resolution method to set. Defaults to OVERRIDE.
+	 * @param resolutionMethod the resolution method to set (defaults to
+	 * {@link ResolutionMethod#OVERRIDE}).
 	 */
 	public void setResolutionMethod(ResolutionMethod resolutionMethod) {
+		Assert.notNull(resolutionMethod, "ResolutionMethod must not be null");
 		this.resolutionMethod = resolutionMethod;
 	}
 
@@ -147,7 +144,8 @@ public class YamlProcessor {
 			}
 			this.logger.info("Loaded " + count + " document" + (count > 1 ? "s" : "")
 					+ " from YAML resource: " + resource);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			handleProcessError(resource, ex);
 		}
 		return count > 0;
@@ -175,12 +173,13 @@ public class YamlProcessor {
 		if (this.documentMatchers.isEmpty()) {
 			this.logger.debug("Merging document (no matchers set)" + map);
 			callback.process(properties, map);
-		} else {
+		}
+		else {
 			boolean valueFound = false;
 			MatchStatus result = MatchStatus.ABSTAIN;
 			for (DocumentMatcher matcher : this.documentMatchers) {
 				MatchStatus match = matcher.matches(properties);
-				result = match.ordinal() < result.ordinal() ? match : result;
+				result = MatchStatus.getMostSpecific(match, result);
 				if (match == MatchStatus.FOUND) {
 					this.logger.debug("Matched document with document matcher: "
 							+ properties);
@@ -193,7 +192,8 @@ public class YamlProcessor {
 			if (result == MatchStatus.ABSTAIN && this.matchDefault) {
 				this.logger.debug("Matched document with default matcher: " + map);
 				callback.process(properties, map);
-			} else if (!valueFound) {
+			}
+			else if (!valueFound) {
 				this.logger.debug("Unmatched document");
 				return false;
 			}
@@ -208,19 +208,22 @@ public class YamlProcessor {
 			if (StringUtils.hasText(path)) {
 				if (key.startsWith("[")) {
 					key = path + key;
-				} else {
+				}
+				else {
 					key = path + "." + key;
 				}
 			}
 			Object value = entry.getValue();
 			if (value instanceof String) {
 				properties.put(key, value);
-			} else if (value instanceof Map) {
+			}
+			else if (value instanceof Map) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Map<String, Object> map = (Map<String, Object>) value;
 				assignProperties(properties, map, key);
-			} else if (value instanceof Collection) {
+			}
+			else if (value instanceof Collection) {
 				// Need a compound key
 				@SuppressWarnings("unchecked")
 				Collection<Object> collection = (Collection<Object>) value;
@@ -229,26 +232,74 @@ public class YamlProcessor {
 					assignProperties(properties,
 							Collections.singletonMap("[" + (count++) + "]", object), key);
 				}
-			} else {
+			}
+			else {
 				properties.put(key, value == null ? "" : value);
 			}
 		}
 	}
 
+	/**
+	 * Callback interface used to process properties in a resulting map.
+	 */
 	public interface MatchCallback {
+
+		/**
+		 * Process the properties.
+		 * @param properties the properties to process
+		 * @param map a mutable result map
+		 */
 		void process(Properties properties, Map<String, Object> map);
+
 	}
 
+	/**
+	 * Strategy interface used the test if properties match.
+	 */
 	public interface DocumentMatcher {
+
+		/**
+		 * Test if the given properties match.
+		 * @param properties the properties to test
+		 * @return the status of the match.
+		 */
 		MatchStatus matches(Properties properties);
+
 	}
 
-	public static enum ResolutionMethod {
-		OVERRIDE, OVERRIDE_AND_IGNORE, FIRST_FOUND
-	}
-
+	/**
+	 * Status returned from {@link DocumentMatcher#matches(Properties)}
+	 */
 	public static enum MatchStatus {
-		FOUND, NOT_FOUND, ABSTAIN
+		FOUND, NOT_FOUND, ABSTAIN;
+
+		/**
+		 * Compare two {@link MatchStatus} items, returning the most specific status.
+		 */
+		public static MatchStatus getMostSpecific(MatchStatus a, MatchStatus b) {
+			return a.ordinal() < b.ordinal() ? a : b;
+		}
+	}
+
+	/**
+	 * Resolution methods.
+	 */
+	public static enum ResolutionMethod {
+
+		/**
+		 * Replace values from earlier in the list.
+		 */
+		OVERRIDE,
+
+		/**
+		 * Replace values from earlier in the list, ignoring any failures.
+		 */
+		OVERRIDE_AND_IGNORE,
+
+		/**
+		 * Take the first resource in the list that exists and use just that.
+		 */
+		FIRST_FOUND
 	}
 
 }

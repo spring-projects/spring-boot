@@ -76,13 +76,12 @@ public class YamlMapFactoryBean extends YamlProcessor implements
 	public Map<String, Object> getObject() {
 		if (!this.singleton || this.instance == null) {
 			final Map<String, Object> result = new LinkedHashMap<String, Object>();
-			MatchCallback callback = new MatchCallback() {
+			process(new MatchCallback() {
 				@Override
 				public void process(Properties properties, Map<String, Object> map) {
 					merge(result, map);
 				}
-			};
-			process(callback);
+			});
 			this.instance = result;
 		}
 		return this.instance;

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.io.IOException;
@@ -26,8 +27,9 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Dave Syer
+ * Tests for {@link ArrayDocumentMatcher}.
  * 
+ * @author Dave Syer
  */
 public class ArrayDocumentMatcherTests {
 

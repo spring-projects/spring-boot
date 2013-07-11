@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.util.Properties;
@@ -20,19 +21,25 @@ import java.util.Properties;
 import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
 import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
- * @author Dave Syer
+ * {@link DocumentMatcher} backed by {@link Environment#getActiveProfiles()}.
  * 
+ * @author Dave Syer
  */
 public class SpringProfileDocumentMatcher implements DocumentMatcher {
+
+	private static final String[] DEFAULT_PROFILES = new String[] { "default" };
 
 	private final Environment environment;
 
 	/**
-	 * @param environment
+	 * Create a new {@link SpringProfileDocumentMatcher} instance.
+	 * @param environment the environment
 	 */
 	public SpringProfileDocumentMatcher(Environment environment) {
+		Assert.notNull(environment, "Environment must not be null");
 		this.environment = environment;
 	}
 
@@ -40,7 +47,7 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 	public MatchStatus matches(Properties properties) {
 		String[] profiles = this.environment.getActiveProfiles();
 		if (profiles.length == 0) {
-			profiles = new String[] { "default" };
+			profiles = DEFAULT_PROFILES;
 		}
 		return new ArrayDocumentMatcher("spring.profiles", profiles).matches(properties);
 	}

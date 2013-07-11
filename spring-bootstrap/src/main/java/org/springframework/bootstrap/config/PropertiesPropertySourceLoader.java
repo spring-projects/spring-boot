@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
  * Strategy to load '.properties' files into a {@link PropertySource}.
+ * 
+ * @author Dave Syer
  */
 public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 
@@ -39,7 +42,8 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 		try {
 			Properties properties = loadProperties(resource, environment);
 			return new PropertiesPropertySource(resource.getDescription(), properties);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new IllegalStateException("Could not load properties from " + resource,
 					ex);
 		}

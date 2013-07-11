@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.util.Properties;
@@ -26,6 +27,8 @@ import org.springframework.util.StringUtils;
  * Matches a document containing a given key and where the value of that key is an array
  * containing one of the given values, or where one of the values matches one of the given
  * values (interpreted as regexes).
+ * 
+ * @author Dave Syer
  */
 public class ArrayDocumentMatcher implements DocumentMatcher {
 

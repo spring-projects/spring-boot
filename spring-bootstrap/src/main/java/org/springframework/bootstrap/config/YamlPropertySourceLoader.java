@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.bootstrap.config;
 
 import java.io.IOException;
@@ -27,35 +28,16 @@ import org.springframework.core.io.Resource;
 
 /**
  * Strategy to load '.yml' files into a {@link PropertySource}.
+ * 
+ * @author Dave Syer
  */
 public class YamlPropertySourceLoader extends PropertiesPropertySourceLoader {
 
 	private List<DocumentMatcher> matchers;
 
 	/**
-	 * A property source loader that loads all properties and matches all documents.
-	 * 
-	 * @return a property source loader
-	 */
-	public static YamlPropertySourceLoader matchAllLoader() {
-		return new YamlPropertySourceLoader();
-	}
-
-	/**
-	 * A property source loader that matches documents that have no explicit profile or
-	 * which have an explicit "spring.profiles.active" value in the current active
-	 * profiles.
-	 * 
-	 * @return a property source loader
-	 */
-	public static YamlPropertySourceLoader springProfileAwareLoader(
-			Environment environment) {
-		return new YamlPropertySourceLoader(new SpringProfileDocumentMatcher(environment),
-				new DefaultProfileDocumentMatcher());
-	}
-
-	/**
-	 * @param matchers
+	 * Create a {@link YamlPropertySourceLoader} instance with the specified matchers.
+	 * @param matchers the document matchers
 	 */
 	public YamlPropertySourceLoader(DocumentMatcher... matchers) {
 		this.matchers = Arrays.asList(matchers);
@@ -76,6 +58,29 @@ public class YamlPropertySourceLoader extends PropertiesPropertySourceLoader {
 		}
 		factory.setResources(new Resource[] { resource });
 		return factory.getObject();
+	}
+
+	/**
+	 * A property source loader that loads all properties and matches all documents.
+	 * 
+	 * @return a property source loader
+	 */
+	public static YamlPropertySourceLoader matchAllLoader() {
+		return new YamlPropertySourceLoader();
+	}
+
+	/**
+	 * A property source loader that matches documents that have no explicit profile or
+	 * which have an explicit "spring.profiles.active" value in the current active
+	 * profiles.
+	 * 
+	 * @return a property source loader
+	 */
+	public static YamlPropertySourceLoader springProfileAwareLoader(
+			Environment environment) {
+		return new YamlPropertySourceLoader(
+				new SpringProfileDocumentMatcher(environment),
+				new DefaultProfileDocumentMatcher());
 	}
 
 }
