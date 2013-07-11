@@ -38,8 +38,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
 /**
- * Validate some {@link Properties} by binding them to an object of a specified type and
- * then optionally running a {@link Validator} over it.
+ * Validate some {@link Properties} (or optionally {@link PropertySources}) by binding
+ * them to an object of a specified type and then optionally running a {@link Validator}
+ * over it.
  * 
  * @author Dave Syer
  */
@@ -195,15 +196,13 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			if (this.logger.isTraceEnabled()) {
 				if (this.properties != null) {
 					this.logger.trace("Properties:\n" + this.properties);
-				}
-				else {
+				} else {
 					this.logger.trace("Property Sources: " + this.propertySources);
 				}
 			}
 			this.hasBeenBound = true;
 			doBindPropertiesToTarget();
-		}
-		catch (BindException ex) {
+		} catch (BindException ex) {
 			if (this.exceptionIfInvalid) {
 				throw ex;
 			}

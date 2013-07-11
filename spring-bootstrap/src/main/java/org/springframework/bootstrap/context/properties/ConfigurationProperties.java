@@ -70,4 +70,12 @@ public @interface ConfigurationProperties {
 	 */
 	boolean ignoreUnknownFields() default true;
 
+	/**
+	 * Optionally provide an explicit resource path to bind to instead of using the
+	 * default environment.
+	 * 
+	 * @return the path (or paths) of resources to bind to
+	 */
+	String[] path() default {};
+
 }

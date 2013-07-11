@@ -23,11 +23,23 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
+import org.springframework.bootstrap.config.PropertiesPropertySourceLoader;
+import org.springframework.bootstrap.config.PropertySourceLoader;
+import org.springframework.bootstrap.config.YamlPropertySourceLoader;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 
@@ -38,7 +50,7 @@ import org.springframework.validation.Validator;
  * @author Dave Syer
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-		BeanFactoryAware {
+		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware {
 
 	private PropertySources propertySources;
 
@@ -51,6 +63,10 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private BeanFactory beanFactory;
 
 	private boolean initialized = false;
+
+	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+
+	private Environment environment = new StandardEnvironment();
 
 	/**
 	 * @param propertySources
@@ -79,6 +95,16 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
+
+	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
 		return bean;
@@ -101,7 +127,12 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				.getTarget() : bean);
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
-		factory.setPropertySources(this.propertySources);
+		if (annotation != null && annotation.path().length != 0) {
+
+			factory.setPropertySources(loadPropertySources(annotation.path()));
+		} else {
+			factory.setPropertySources(this.propertySources);
+		}
 		factory.setValidator(this.validator);
 		// If no explicit conversion service is provided we add one so that (at least)
 		// comma-separated arrays of convertibles can be bound automatically
@@ -118,10 +149,29 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		}
 		try {
 			factory.bindPropertiesToTarget();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new BeanCreationException(beanName, "Could not bind properties", ex);
 		}
+	}
+
+	private PropertySources loadPropertySources(String[] path) {
+		MutablePropertySources propertySources = new MutablePropertySources();
+		PropertySourceLoader[] loaders = { new PropertiesPropertySourceLoader(),
+				YamlPropertySourceLoader.springProfileAwareLoader(this.environment) };
+		for (String location : path) {
+			location = this.environment.resolvePlaceholders(location);
+			Resource resource = this.resourceLoader.getResource(location);
+			if (resource != null && resource.exists()) {
+				for (PropertySourceLoader loader : loaders) {
+					if (loader.supports(resource)) {
+						PropertySource<?> propertySource = loader.load(resource,
+								this.environment);
+						propertySources.addFirst(propertySource);
+					}
+				}
+			}
+		}
+		return propertySources;
 	}
 
 	private ConversionService getDefaultConversionService() {

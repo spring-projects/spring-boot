@@ -121,6 +121,49 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testBindingDirectlyToFile() {
+		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
+		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class)
+				.getName());
+	}
+
+	@Test
+	public void testBindingDirectlyToFileResolvedFromEnvironment() {
+		TestUtils.addEnviroment(this.context, "binding.location:classpath:other.yml");
+		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
+		assertEquals("other", this.context.getBean(ResourceBindingProperties.class)
+				.getName());
+	}
+
+	@Test
+	public void testBindingDirectlyToFileWithDefaultsWhenProfileNotFound() {
+		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
+		this.context.getEnvironment().addActiveProfile("nonexistent");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
+		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class)
+				.getName());
+	}
+
+	@Test
+	public void testBindingDirectlyToFileWithExplicitSpringProfile() {
+		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
+		this.context.getEnvironment().addActiveProfile("super");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
+		assertEquals("bar", this.context.getBean(ResourceBindingProperties.class)
+				.getName());
+	}
+
+	@Test
 	public void testBindingWithTwoBeans() {
 		this.context.register(MoreConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -246,4 +289,16 @@ public class EnableConfigurationPropertiesTests {
 		}
 	}
 
+	@ConfigurationProperties(path = "${binding.location:classpath:name.yml}")
+	protected static class ResourceBindingProperties {
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
 }

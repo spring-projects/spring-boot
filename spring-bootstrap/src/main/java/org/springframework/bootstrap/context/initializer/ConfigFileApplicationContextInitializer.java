@@ -16,26 +16,21 @@
 
 package org.springframework.bootstrap.context.initializer;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
-import org.springframework.bootstrap.config.YamlPropertiesFactoryBean;
-import org.springframework.bootstrap.config.YamlProcessor.ArrayDocumentMatcher;
-import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
-import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
+import org.springframework.bootstrap.config.SpringProfileDocumentMatcher;
+import org.springframework.bootstrap.config.PropertiesPropertySourceLoader;
+import org.springframework.bootstrap.config.PropertySourceLoader;
+import org.springframework.bootstrap.config.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,8 +64,6 @@ import org.springframework.util.StringUtils;
 public class ConfigFileApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	private static final Loader[] LOADERS = { new PropertiesLoader(), new YamlLoader() };
-
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
 
 	private String[] searchLocations = new String[] { "classpath:", "file:./",
@@ -100,11 +93,9 @@ public class ConfigFileApplicationContextInitializer implements
 	private List<String> getCandidateLocations() {
 		List<String> candidates = new ArrayList<String>();
 		for (String searchLocation : this.searchLocations) {
-			for (Loader loader : LOADERS) {
-				for (String extension : loader.getExtensions()) {
-					String location = searchLocation + this.name + extension;
-					candidates.add(location);
-				}
+			for (String extension : new String[] { ".properties", ".yml" }) {
+				String location = searchLocation + this.name + extension;
+				candidates.add(location);
 			}
 		}
 		candidates.add(LOCATION_VARIABLE);
@@ -113,16 +104,30 @@ public class ConfigFileApplicationContextInitializer implements
 
 	private void load(ConfigurableApplicationContext applicationContext, String location,
 			String profile) {
-		location = applicationContext.getEnvironment().resolvePlaceholders(location);
+
+		ConfigurableEnvironment environment = applicationContext.getEnvironment();
+		location = environment.resolvePlaceholders(location);
 		String suffix = "." + StringUtils.getFilenameExtension(location);
 		if (StringUtils.hasLength(profile)) {
 			location = location.replace(suffix, "-" + profile + suffix);
 		}
-		for (Loader loader : LOADERS) {
-			if (loader.getExtensions().contains(suffix.toLowerCase())) {
-				Resource resource = applicationContext.getResource(location);
-				if (resource != null && resource.exists()) {
-					loader.load(resource, applicationContext);
+		PropertySourceLoader[] loaders = {
+				new PropertiesPropertySourceLoader(),
+				new YamlPropertySourceLoader(new SpringProfileDocumentMatcher(environment),
+						new ProfileSettingDocumentMatcher(environment)) };
+		for (PropertySourceLoader loader : loaders) {
+			Resource resource = applicationContext.getResource(location);
+			if (resource != null && resource.exists() && loader.supports(resource)) {
+				PropertySource<?> propertySource = loader.load(resource, environment);
+				MutablePropertySources propertySources = environment.getPropertySources();
+				if (propertySources
+						.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
+					propertySources.addAfter(
+							CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
+							propertySource);
+
+				} else {
+					propertySources.addFirst(propertySource);
 				}
 				return;
 			}
@@ -150,120 +155,6 @@ public class ConfigFileApplicationContextInitializer implements
 	 */
 	public void setSearchLocations(String[] searchLocations) {
 		this.searchLocations = (searchLocations == null ? null : searchLocations.clone());
-	}
-
-	/**
-	 * Strategy interface used to load a {@link PropertySource}.
-	 */
-	private static interface Loader {
-
-		/**
-		 * @return The supported extensions (including '.' and in lowercase)
-		 */
-		public Set<String> getExtensions();
-
-		/**
-		 * Load the resource into the destination application context.
-		 */
-		void load(Resource resource, ConfigurableApplicationContext applicationContext);
-
-	}
-
-	/**
-	 * Strategy to load '.properties' files.
-	 */
-	private static class PropertiesLoader implements Loader {
-
-		@Override
-		public Set<String> getExtensions() {
-			return Collections.singleton(".properties");
-		}
-
-		@Override
-		public void load(Resource resource,
-				ConfigurableApplicationContext applicationContext) {
-			try {
-				Properties properties = loadProperties(resource, applicationContext);
-				MutablePropertySources propertySources = applicationContext
-						.getEnvironment().getPropertySources();
-				if (propertySources
-						.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-					propertySources.addAfter(
-							CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-							new PropertiesPropertySource(resource.getDescription(),
-									properties));
-
-				}
-				else {
-					propertySources.addFirst(new PropertiesPropertySource(resource
-							.getDescription(), properties));
-				}
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Could not load properties file from "
-						+ resource, ex);
-			}
-		}
-
-		protected Properties loadProperties(Resource resource,
-				ConfigurableApplicationContext applicationContext) throws IOException {
-			return PropertiesLoaderUtils.loadProperties(resource);
-		}
-	}
-
-	/**
-	 * Strategy to load '.yml' files.
-	 */
-	private static class YamlLoader extends PropertiesLoader {
-
-		@Override
-		public Set<String> getExtensions() {
-			return Collections.singleton(".yml");
-		}
-
-		@Override
-		protected Properties loadProperties(final Resource resource,
-				final ConfigurableApplicationContext applicationContext)
-				throws IOException {
-			YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
-			List<DocumentMatcher> matchers = new ArrayList<DocumentMatcher>();
-			matchers.add(new DocumentMatcher() {
-				@Override
-				public MatchStatus matches(Properties properties) {
-					String[] profiles = applicationContext.getEnvironment()
-							.getActiveProfiles();
-					if (profiles.length == 0) {
-						profiles = new String[] { "default" };
-					}
-					return new ArrayDocumentMatcher("spring.profiles", profiles)
-							.matches(properties);
-
-				}
-			});
-			matchers.add(new DocumentMatcher() {
-				@Override
-				public MatchStatus matches(Properties properties) {
-					if (!properties.containsKey("spring.profiles")) {
-						Set<String> profiles = StringUtils
-								.commaDelimitedListToSet(properties.getProperty(
-										"spring.profiles.active", ""));
-						for (String profile : profiles) {
-							// allow document with no profile to set the active one
-							applicationContext.getEnvironment().addActiveProfile(profile);
-						}
-						// matches default profile
-						return MatchStatus.FOUND;
-					}
-					else {
-						return MatchStatus.NOT_FOUND;
-					}
-				}
-			});
-			factory.setMatchDefault(false);
-			factory.setDocumentMatchers(matchers);
-			factory.setResources(new Resource[] { resource });
-			return factory.getObject();
-		}
 	}
 
 }

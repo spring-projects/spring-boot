@@ -1,0 +1,10 @@
+---
+name: foo
+
+---
+spring.profiles: super
+name: bar
+
+---
+spring.profiles: other
+name: spam
