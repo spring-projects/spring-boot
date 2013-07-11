@@ -94,15 +94,13 @@ public class HibernateJpaAutoConfigurationTests {
 	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenFilterPresent()
 			throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(ComponentScanDetectorConfiguration.class,
+		context.register(TestFilterConfiguration.class,
+				ComponentScanDetectorConfiguration.class,
 				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class, TestFilterConfiguration.class);
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context = context;
 		this.context.refresh();
-		assertEquals(
-				0,
-				this.context
-						.getBeanNamesForType(OpenEntityManagerInViewInterceptor.class).length);
+		assertEquals(0, getInterceptorBeans().length);
 	}
 
 	@Test
@@ -116,10 +114,11 @@ public class HibernateJpaAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context = context;
 		this.context.refresh();
-		assertEquals(
-				0,
-				this.context
-						.getBeanNamesForType(OpenEntityManagerInViewInterceptor.class).length);
+		assertEquals(0, getInterceptorBeans().length);
+	}
+
+	private String[] getInterceptorBeans() {
+		return this.context.getBeanNamesForType(OpenEntityManagerInViewInterceptor.class);
 	}
 
 	@ComponentScan(basePackageClasses = { City.class })
