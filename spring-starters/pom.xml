@@ -18,7 +18,7 @@
 		<module>spring-starter-batch</module>
 		<module>spring-starter-integration</module>
 		<module>spring-starter-data-jpa</module>
-		<module>spring-starter-maven-parent</module>
+		<module>spring-starter-parent</module>
 		<module>spring-starter-security</module>
 		<module>spring-starter-web</module>
 	</modules>

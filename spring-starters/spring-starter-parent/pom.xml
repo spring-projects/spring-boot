@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- NOTE: Intentionally does not inherit from root parent -->
 	<groupId>org.springframework.zero</groupId>
-	<artifactId>spring-starter-maven-parent</artifactId>
+	<artifactId>spring-starter-parent</artifactId>
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
@@ -260,6 +260,15 @@
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.15</version>
+				<configuration>
+					<includes>
+						<include>**/*Tests.java</include>
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/Abstract*.java</exclude>
+					</excludes>
+				</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
