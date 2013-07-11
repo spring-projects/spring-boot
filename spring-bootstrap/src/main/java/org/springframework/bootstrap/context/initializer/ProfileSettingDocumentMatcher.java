@@ -25,13 +25,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link DocumentMatcher} that sets the active profile if it finds a document with
- * a key <code>spring.profiles.active</code>.
+ * A {@link DocumentMatcher} that sets the active profile if it finds a document with a
+ * key <code>spring.profiles.active</code>.
  * 
  * @author Dave Syer
  * 
  */
-public final class ProfileSettingDocumentMatcher implements DocumentMatcher {
+public class ProfileSettingDocumentMatcher implements DocumentMatcher {
 
 	private final Environment environment;
 

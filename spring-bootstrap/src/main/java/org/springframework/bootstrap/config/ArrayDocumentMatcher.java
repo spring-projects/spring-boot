@@ -16,33 +16,43 @@
 package org.springframework.bootstrap.config;
 
 import java.util.Properties;
+import java.util.Set;
 
 import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
 import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
-import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
- * @author Dave Syer
- * 
+ * Matches a document containing a given key and where the value of that key is an array
+ * containing one of the given values, or where one of the values matches one of the given
+ * values (interpreted as regexes).
  */
-public class SpringProfileDocumentMatcher implements DocumentMatcher {
+public class ArrayDocumentMatcher implements DocumentMatcher {
 
-	private final Environment environment;
+	private String key;
 
-	/**
-	 * @param environment
-	 */
-	public SpringProfileDocumentMatcher(Environment environment) {
-		this.environment = environment;
+	private String[] patterns;
+
+	public ArrayDocumentMatcher(final String key, final String... patterns) {
+		this.key = key;
+		this.patterns = patterns;
+
 	}
 
 	@Override
 	public MatchStatus matches(Properties properties) {
-		String[] profiles = this.environment.getActiveProfiles();
-		if (profiles.length == 0) {
-			profiles = new String[] { "default" };
+		if (!properties.containsKey(this.key)) {
+			return MatchStatus.ABSTAIN;
 		}
-		return new ArrayDocumentMatcher("spring.profiles", profiles).matches(properties);
+		Set<String> values = StringUtils.commaDelimitedListToSet(properties
+				.getProperty(this.key));
+		for (String pattern : this.patterns) {
+			for (String value : values) {
+				if (value.matches(pattern)) {
+					return MatchStatus.FOUND;
+				}
+			}
+		}
+		return MatchStatus.NOT_FOUND;
 	}
-
 }

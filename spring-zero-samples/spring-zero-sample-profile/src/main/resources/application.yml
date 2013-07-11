@@ -3,5 +3,5 @@ name: Phil
 ---
 
 spring:
-  profiles: [goodbye,dev]
+  profiles: goodbye,dev
 name: Everyone
