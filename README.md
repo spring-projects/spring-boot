@@ -33,7 +33,7 @@ You need to build from source for now, but when it's done instructions will look
 
 2) Get Spring
 
-     $ curl -s spring.cfapps.io | bash
+     $ curl -s spring.cfapps.io/installer | bash
      
    or use the Windows installer
 
@@ -72,13 +72,13 @@ calls `SpringApplication` and add `@EnableAutoConfiguration`:
 	@EnableAutoConfiguration
 	public class SampleController {
 
-			@RequestMapping("/")
-			@ResponseBody
-			String home() {
-				return "Hello World!"
-			}
+		@RequestMapping("/")
+		@ResponseBody
+		String home() {
+			return "Hello World!"
+		}
 
-            public static void main(String[] args) throws Exception {
+		public static void main(String[] args) throws Exception {
 			SpringApplication.run(SampleController.class, args);
 		}
 
