@@ -235,6 +235,7 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ApplicationContext run(String... args) {
+		applySpringApplicationInitializers();
 		if (this.showBanner) {
 			printBanner();
 		}
@@ -251,6 +252,14 @@ public class SpringApplication {
 		refresh(context);
 		runCommandLineRunners(context, args);
 		return context;
+	}
+
+	private void applySpringApplicationInitializers() {
+		for (ApplicationContextInitializer<?> initializer : this.initializers) {
+			if (initializer instanceof SpringApplicationInitializer) {
+				((SpringApplicationInitializer) initializer).initialize(this);
+			}
+		}
 	}
 
 	/**
