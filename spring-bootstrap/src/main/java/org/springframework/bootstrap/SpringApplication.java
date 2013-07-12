@@ -23,6 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
@@ -129,9 +131,15 @@ public class SpringApplication {
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
+	private final Log log = LogFactory.getLog(getClass());
+
 	private Object[] sources;
 
+	private Class<?> mainApplicationClass;
+
 	private boolean showBanner = true;
+
+	private boolean logStartupInfo = true;
 
 	private boolean addCommandLineProperties = true;
 
@@ -193,6 +201,7 @@ public class SpringApplication {
 		for (ApplicationContextInitializer<?> initializer : factories) {
 			this.initializers.add(initializer);
 		}
+		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
 	private boolean deduceWebEnvironment() {
@@ -202,6 +211,21 @@ public class SpringApplication {
 			}
 		}
 		return true;
+	}
+
+	private Class<?> deduceMainApplicationClass() {
+		try {
+			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
+			for (StackTraceElement stackTraceElement : stackTrace) {
+				if ("main".equals(stackTraceElement.getMethodName())) {
+					return Class.forName(stackTraceElement.getClassName());
+				}
+			}
+		}
+		catch (ClassNotFoundException ex) {
+			// Swallow and continue
+		}
+		return null;
 	}
 
 	/**
@@ -219,6 +243,9 @@ public class SpringApplication {
 		addPropertySources(context, args);
 		if (context instanceof ConfigurableApplicationContext) {
 			applyInitializers((ConfigurableApplicationContext) context);
+		}
+		if (this.logStartupInfo) {
+			logStartupInfo();
 		}
 		load(context, this.sources);
 		refresh(context);
@@ -249,6 +276,21 @@ public class SpringApplication {
 			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
 			initializer.initialize(context);
 		}
+	}
+
+	protected void logStartupInfo() {
+		new StartupInfoLogger(this.mainApplicationClass).log(getApplicationLog());
+	}
+
+	/**
+	 * Returns the {@link Log} for the application. By default will be deduced.
+	 * @return the application log
+	 */
+	protected Log getApplicationLog() {
+		if (this.mainApplicationClass == null) {
+			return this.log;
+		}
+		return LogFactory.getLog(this.mainApplicationClass);
 	}
 
 	/**
@@ -455,6 +497,16 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Set a specific main application class that will be used as a log source and to
+	 * obtain version information. By default the main application class will be deduced.
+	 * Can be set to {@code null} if there is no explicit application class.
+	 * @param mainApplicationClass the mainApplicationClass to set or {@code null}
+	 */
+	public void setMainApplicationClass(Class<?> mainApplicationClass) {
+		this.mainApplicationClass = mainApplicationClass;
+	}
+
+	/**
 	 * Sets if this application is running within a web environment. If not specified will
 	 * attempt to deduce the environment based on the classpath.
 	 * @param webEnvironment if the application is running in a web environment
@@ -471,6 +523,15 @@ public class SpringApplication {
 	 */
 	public void setShowBanner(boolean showBanner) {
 		this.showBanner = showBanner;
+	}
+
+	/**
+	 * Sets if the application information should be logged when the application starts.
+	 * Defaults to {@code true}
+	 * @param logStartupInfo if startup info should be logged.
+	 */
+	public void setLogStartupInfo(boolean logStartupInfo) {
+		this.logStartupInfo = logStartupInfo;
 	}
 
 	/**
@@ -588,6 +649,21 @@ public class SpringApplication {
 	 */
 	public static ApplicationContext run(Object[] sources, String[] args) {
 		return new SpringApplication(sources).run(args);
+	}
+
+	/**
+	 * Static helper that can be used to run a {@link SpringApplication} from a script
+	 * using the specified sources with default settings. This method is useful when
+	 * calling this calls from a script environment that will not have a single main
+	 * application class.
+	 * @param sources the sources to load
+	 * @param args the application arguments (usually passed from a Java main method)
+	 * @return the running {@link ApplicationContext}
+	 */
+	public static ApplicationContext runFromScript(Object[] sources, String[] args) {
+		SpringApplication application = new SpringApplication(sources);
+		application.setMainApplicationClass(null);
+		return application.run(args);
 	}
 
 	/**

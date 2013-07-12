@@ -41,7 +41,9 @@ abstract class Banner {
 		for (String line : BANNER) {
 			printStream.println(line);
 		}
-		printStream.println();
+		String version = Banner.class.getPackage().getImplementationVersion();
+		printStream.println("  Spring Bootstrap"
+				+ (version == null ? "" : " (v" + version + ")"));
 		printStream.println();
 	}
 
