@@ -46,13 +46,13 @@ public class SpringCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"logback-classic", "1.0.7");
 		dependencies.ifNotAdded("cg.qos.logback", "logback-classic")
 				.ifAnyResourcesPresent("log4j.properties", "log4j.xml")
-				.add("org.slf4j", "slf4j-log4j12", "1.7.1")
+				.add("org.slf4j", "slf4j-log4j12", "1.7.5")
 				.add("log4j", "log4j", "1.2.16")
-				.add("org.slf4j", "jcl-over-slf4j", "1.7.1");
+				.add("org.slf4j", "jcl-over-slf4j", "1.7.5");
 		dependencies.ifNotAdded("ch.qos.logback", "logback-classic")
 				.ifNotAdded("org.slf4j", "slf4j-log4j12")
-				.add("org.slf4j", "slf4j-jdk14", "1.7.1")
-				.add("org.slf4j", "jcl-over-slf4j", "1.7.1");
+				.add("org.slf4j", "slf4j-jdk14", "1.7.5")
+				.add("org.slf4j", "jcl-over-slf4j", "1.7.5");
 		// FIXME get the version
 	}
 
