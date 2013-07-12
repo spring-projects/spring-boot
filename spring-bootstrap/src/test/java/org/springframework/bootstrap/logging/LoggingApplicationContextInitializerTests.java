@@ -26,7 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.bootstrap.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
@@ -40,6 +42,9 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 public class LoggingApplicationContextInitializerTests {
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	private LoggingApplicationContextInitializer initializer = new LoggingApplicationContextInitializer();
 
@@ -130,7 +135,7 @@ public class LoggingApplicationContextInitializerTests {
 						}
 						if ("logging.file".equals(name)) {
 							return "foo.log";
-						}
+						}						
 						return null;
 					}
 				});

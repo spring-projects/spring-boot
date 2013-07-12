@@ -17,7 +17,6 @@
 package org.springframework.bootstrap.logging;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import org.apache.commons.logging.Log;
@@ -29,13 +28,17 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link LogbackConfigurer}.
+ * Tests for {@link LogbackLoggingSystem}.
  * 
  * @author Dave Syer
  */
-public class LogbackConfigurerTests {
+public class LogbackLoggingSystemTests {
+
+	private LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(getClass()
+			.getClassLoader());
 
 	private PrintStream savedOutput;
+
 	private ByteArrayOutputStream output;
 
 	@Before
@@ -59,22 +62,22 @@ public class LogbackConfigurerTests {
 
 	@Test
 	public void testDefaultConfigLocation() throws Exception {
-		LogbackConfigurer.initLogging("classpath:logback-nondefault.xml");
-		Log logger = LogFactory.getLog(LogbackConfigurerTests.class);
+		this.loggingSystem.initialize("classpath:logback-nondefault.xml");
+		Log logger = LogFactory.getLog(LogbackLoggingSystemTests.class);
 		logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.startsWith("/tmp/spring.log"));
 	}
 
-	@Test(expected = FileNotFoundException.class)
+	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
-		LogbackConfigurer.initLogging("classpath:logback-nonexistent.xml");
+		this.loggingSystem.initialize("classpath:logback-nonexistent.xml");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullConfigLocation() throws Exception {
-		LogbackConfigurer.initLogging(null);
+		this.loggingSystem.initialize(null);
 	}
 
 }
