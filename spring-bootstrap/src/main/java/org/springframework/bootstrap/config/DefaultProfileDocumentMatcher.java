@@ -27,7 +27,7 @@ import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
  * 
  * @author Dave Syer
  */
-public final class DefaultProfileDocumentMatcher implements DocumentMatcher {
+public class DefaultProfileDocumentMatcher implements DocumentMatcher {
 
 	@Override
 	public MatchStatus matches(Properties properties) {

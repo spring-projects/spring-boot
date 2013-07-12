@@ -81,7 +81,7 @@ public class LoggingApplicationContextInitializer implements
 	private int order = Integer.MIN_VALUE + 11;
 
 	@Override
-	public void initialize(SpringApplication springApplication) {
+	public void initialize(SpringApplication springApplication, String[] args) {
 		LoggingSystem.get(springApplication.getClass().getClassLoader())
 				.beforeInitialize();
 	}

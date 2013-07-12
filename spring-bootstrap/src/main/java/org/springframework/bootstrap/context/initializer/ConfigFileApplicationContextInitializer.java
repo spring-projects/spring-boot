@@ -17,20 +17,35 @@
 package org.springframework.bootstrap.context.initializer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.springframework.bootstrap.config.SpringProfileDocumentMatcher;
+import org.springframework.beans.PropertyValues;
+import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.SpringApplicationInitializer;
+import org.springframework.bootstrap.bind.PropertySourcesPropertyValues;
+import org.springframework.bootstrap.bind.RelaxedDataBinder;
 import org.springframework.bootstrap.config.PropertiesPropertySourceLoader;
 import org.springframework.bootstrap.config.PropertySourceLoader;
 import org.springframework.bootstrap.config.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,6 +59,7 @@ import org.springframework.util.StringUtils;
  * <li>classpath:config/</li>
  * <li>file:./config/:</li>
  * </ul>
+ * 
  * <p>
  * Alternative locations and names can be specified using
  * {@link #setSearchLocations(String[])} and {@link #setName(String)}.
@@ -62,7 +78,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 public class ConfigFileApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+		ApplicationContextInitializer<ConfigurableApplicationContext>,
+		SpringApplicationInitializer, Ordered {
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
 
@@ -73,24 +90,76 @@ public class ConfigFileApplicationContextInitializer implements
 
 	private int order = Integer.MIN_VALUE + 10;
 
+	private Map<String, PropertySource<?>> cached = new HashMap<String, PropertySource<?>>();
+
+	private ConversionService conversionService = new DefaultConversionService();
+
+	/**
+	 * Creates a property source from the command line, loads additional external
+	 * configuration, and then binds it to the application. This makes it possible to set
+	 * things dynamically, like the sources ("spring.main.sources" - a CSV list) the flag
+	 * to indicate a web environment ("spring.main.web_environment=true") or the flag to
+	 * switch off the banner ("spring.main.show_banner=false").
+	 */
+	@Override
+	public void initialize(SpringApplication application, String[] args) {
+
+		if (application.isAddCommandLineProperties()) {
+			this.cached.put(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
+					new MapPropertySource(
+							CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
+							extractCommandLineArgs(args)));
+		}
+
+		ConfigurableEnvironment environment = application.getEnvironment();
+		if (environment == null) {
+			environment = new StandardEnvironment();
+		}
+		load(environment, new DefaultResourceLoader());
+
+		// Set bean properties from command line args parameters.
+		PropertyValues pvs = new PropertySourcesPropertyValues(
+				environment.getPropertySources());
+		RelaxedDataBinder binder = new RelaxedDataBinder(application, "spring.main");
+		binder.setConversionService(this.conversionService);
+		binder.bind(pvs);
+
+	}
+
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
+		load(applicationContext.getEnvironment(), applicationContext);
+	}
+
+	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
+
 		List<String> candidates = getCandidateLocations();
+
+		if (this.cached
+				.containsKey(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
+			environment
+					.getPropertySources()
+					.addFirst(
+							this.cached
+									.get(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME));
+		}
 
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
-			load(applicationContext, candidate, null);
+			load(environment, resourceLoader, candidate, null);
 		}
 
 		// Second load for specific profiles
-		for (String profile : applicationContext.getEnvironment().getActiveProfiles()) {
+		for (String profile : environment.getActiveProfiles()) {
 			for (String candidate : candidates) {
-				load(applicationContext, candidate, profile);
+				load(environment, resourceLoader, candidate, profile);
 			}
 		}
+
 	}
 
 	private List<String> getCandidateLocations() {
+
 		List<String> candidates = new ArrayList<String>();
 		for (String searchLocation : this.searchLocations) {
 			for (String extension : new String[] { ".properties", ".yml" }) {
@@ -100,38 +169,118 @@ public class ConfigFileApplicationContextInitializer implements
 		}
 		candidates.add(LOCATION_VARIABLE);
 		return candidates;
+
 	}
 
-	private void load(ConfigurableApplicationContext applicationContext, String location,
-			String profile) {
+	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+			String location, String profile) {
 
-		ConfigurableEnvironment environment = applicationContext.getEnvironment();
 		location = environment.resolvePlaceholders(location);
 		String suffix = "." + StringUtils.getFilenameExtension(location);
+
 		if (StringUtils.hasLength(profile)) {
 			location = location.replace(suffix, "-" + profile + suffix);
 		}
-		PropertySourceLoader[] loaders = {
-				new PropertiesPropertySourceLoader(),
-				new YamlPropertySourceLoader(new SpringProfileDocumentMatcher(environment),
-						new ProfileSettingDocumentMatcher(environment)) };
-		for (PropertySourceLoader loader : loaders) {
-			Resource resource = applicationContext.getResource(location);
-			if (resource != null && resource.exists() && loader.supports(resource)) {
-				PropertySource<?> propertySource = loader.load(resource, environment);
-				MutablePropertySources propertySources = environment.getPropertySources();
-				if (propertySources
-						.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-					propertySources.addAfter(
-							CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-							propertySource);
 
-				} else {
-					propertySources.addFirst(propertySource);
-				}
-				return;
+		List<PropertySourceLoader> loaders = new ArrayList<PropertySourceLoader>();
+		loaders.add(new PropertiesPropertySourceLoader());
+		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
+			loaders.add(YamlPropertySourceLoader.springProfileAwareLoader(environment
+					.getActiveProfiles()));
+		}
+
+		Resource resource = resourceLoader.getResource(location);
+		PropertySource<?> propertySource = getPropertySource(resource, loaders);
+		if (propertySource == null) {
+			return;
+		}
+		if (propertySource.containsProperty("spring.profiles.active")) {
+			Set<String> profiles = StringUtils.commaDelimitedListToSet(propertySource
+					.getProperty("spring.profiles.active").toString());
+			for (String active : profiles) {
+				// allow document with no profile to set the active one
+				environment.addActiveProfile(active);
+			}
+
+		}
+		MutablePropertySources propertySources = environment.getPropertySources();
+		if (propertySources
+				.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
+			propertySources.addAfter(
+					CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
+					propertySource);
+
+		}
+		else {
+			propertySources.addFirst(propertySource);
+		}
+
+	}
+
+	private PropertySource<?> getPropertySource(Resource resource,
+			List<PropertySourceLoader> loaders) {
+		String key = resource.getDescription();
+		if (this.cached.containsKey(key)) {
+			return this.cached.get(key);
+		}
+		for (PropertySourceLoader loader : loaders) {
+			if (resource != null && resource.exists() && loader.supports(resource)) {
+				PropertySource<?> propertySource = loader.load(resource);
+				this.cached.put(key, propertySource);
+				return propertySource;
 			}
 		}
+		return null;
+	}
+
+	/**
+	 * Merge two sets of command lines, the defaults and the ones passed in at run time.
+	 * 
+	 * @param args the ones passed in at runtime
+	 * @return a new command line
+	 */
+	protected Map<String, Object> extractCommandLineArgs(String[] args) {
+
+		List<String> nonopts = new ArrayList<String>();
+		Map<String, Object> options = new LinkedHashMap<String, Object>();
+
+		for (String arg : args) {
+			if (isOptionArg(arg)) {
+				addOptionArg(options, arg);
+			}
+			else if (!nonopts.contains(arg)) {
+				nonopts.add(arg);
+			}
+		}
+
+		for (String key : nonopts) {
+			options.put(key, "");
+		}
+
+		return options;
+
+	}
+
+	private boolean isOptionArg(String arg) {
+		return arg.startsWith("--");
+	}
+
+	private void addOptionArg(Map<String, Object> map, String arg) {
+		String optionText = arg.substring(2, arg.length());
+		String optionName;
+		String optionValue = "";
+		if (optionText.contains("=")) {
+			optionName = optionText.substring(0, optionText.indexOf('='));
+			optionValue = optionText.substring(optionText.indexOf('=') + 1,
+					optionText.length());
+		}
+		else {
+			optionName = optionText;
+		}
+		if (optionName.isEmpty()) {
+			throw new IllegalArgumentException("Invalid argument syntax: " + arg);
+		}
+		map.put(optionName, optionValue);
 	}
 
 	public void setOrder(int order) {

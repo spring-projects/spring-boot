@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
-import org.springframework.core.env.Environment;
+import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 
 /**
  * Strategy to load '.yml' files into a {@link PropertySource}.
@@ -49,8 +51,7 @@ public class YamlPropertySourceLoader extends PropertiesPropertySourceLoader {
 	}
 
 	@Override
-	protected Properties loadProperties(final Resource resource,
-			final Environment environment) throws IOException {
+	protected Properties loadProperties(final Resource resource) throws IOException {
 		YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
 		if (this.matchers != null && !this.matchers.isEmpty()) {
 			factory.setMatchDefault(false);
@@ -74,13 +75,31 @@ public class YamlPropertySourceLoader extends PropertiesPropertySourceLoader {
 	 * which have an explicit "spring.profiles.active" value in the current active
 	 * profiles.
 	 * 
+	 * @param activeProfiles the active profiles to match independent of file contents
+	 * 
 	 * @return a property source loader
 	 */
 	public static YamlPropertySourceLoader springProfileAwareLoader(
-			Environment environment) {
-		return new YamlPropertySourceLoader(
-				new SpringProfileDocumentMatcher(environment),
-				new DefaultProfileDocumentMatcher());
+			String[] activeProfiles) {
+		final SpringProfileDocumentMatcher matcher = new SpringProfileDocumentMatcher();
+		for (String profile : activeProfiles) {
+			matcher.addActiveProfiles(profile);
+		}
+		return new YamlPropertySourceLoader(matcher, new DefaultProfileDocumentMatcher() {
+			@Override
+			public MatchStatus matches(Properties properties) {
+				MatchStatus result = super.matches(properties);
+				if (result == MatchStatus.FOUND) {
+					Set<String> profiles = StringUtils.commaDelimitedListToSet(properties
+							.getProperty("spring.profiles.active", ""));
+					for (String profile : profiles) {
+						// allow document with no profile to set the active one
+						matcher.addActiveProfiles(profile);
+					}
+				}
+				return result;
+			}
+		});
 	}
 
 }

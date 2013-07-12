@@ -19,7 +19,6 @@ package org.springframework.bootstrap.config;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -38,9 +37,9 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(Resource resource, Environment environment) {
+	public PropertySource<?> load(Resource resource) {
 		try {
-			Properties properties = loadProperties(resource, environment);
+			Properties properties = loadProperties(resource);
 			return new PropertiesPropertySource(resource.getDescription(), properties);
 		}
 		catch (IOException ex) {
@@ -49,8 +48,7 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 		}
 	}
 
-	protected Properties loadProperties(Resource resource, Environment environment)
-			throws IOException {
+	protected Properties loadProperties(Resource resource) throws IOException {
 		return PropertiesLoaderUtils.loadProperties(resource);
 	}
 }

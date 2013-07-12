@@ -20,11 +20,15 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.validation.Constraint;
 import javax.validation.ConstraintValidator;
@@ -36,7 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.bootstrap.bind.RelaxedDataBinder;
+import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -119,17 +123,47 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindNestedList() throws Exception {
 		TargetWithNestedList target = new TargetWithNestedList();
-		bind(target, "nested: bar,foo");
-		bind(target, "nested[0]: bar");
-		bind(target, "nested[1]: foo");
+		bind(target, "nested[0]: bar\nnested[1]: foo");
 		assertEquals("[bar, foo]", target.getNested().toString());
 	}
 
 	@Test
-	public void testBindNestedListCommaDelimitedONly() throws Exception {
+	public void testBindNestedListCommaDelimitedOnly() throws Exception {
 		TargetWithNestedList target = new TargetWithNestedList();
 		this.conversionService = new DefaultConversionService();
 		bind(target, "nested: bar,foo");
+		assertEquals("[bar, foo]", target.getNested().toString());
+	}
+
+	@Test
+	public void testBindNestedSetCommaDelimitedOnly() throws Exception {
+		TargetWithNestedSet target = new TargetWithNestedSet();
+		this.conversionService = new DefaultConversionService();
+		bind(target, "nested: bar,foo");
+		assertEquals("[bar, foo]", target.getNested().toString());
+	}
+
+	@Test(expected = NotWritablePropertyException.class)
+	public void testBindNestedReadOnlyListCommaSeparated() throws Exception {
+		TargetWithReadOnlyNestedList target = new TargetWithReadOnlyNestedList();
+		this.conversionService = new DefaultConversionService();
+		bind(target, "nested: bar,foo");
+		assertEquals("[bar, foo]", target.getNested().toString());
+	}
+
+	@Test
+	public void testBindNestedReadOnlyListIndexed() throws Exception {
+		TargetWithReadOnlyNestedList target = new TargetWithReadOnlyNestedList();
+		this.conversionService = new DefaultConversionService();
+		bind(target, "nested[0]: bar\nnested[1]:foo");
+		assertEquals("[bar, foo]", target.getNested().toString());
+	}
+
+	@Test
+	public void testBindNestedReadOnlyCollectionIndexed() throws Exception {
+		TargetWithReadOnlyNestedCollection target = new TargetWithReadOnlyNestedCollection();
+		this.conversionService = new DefaultConversionService();
+		bind(target, "nested[0]: bar\nnested[1]:foo");
 		assertEquals("[bar, foo]", target.getNested().toString());
 	}
 
@@ -302,6 +336,34 @@ public class RelaxedDataBinderTests {
 		}
 
 		public void setNested(List<String> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithReadOnlyNestedList {
+		private List<String> nested = new ArrayList<String>();
+
+		public List<String> getNested() {
+			return this.nested;
+		}
+	}
+
+	public static class TargetWithReadOnlyNestedCollection {
+		private Collection<String> nested = new ArrayList<String>();
+
+		public Collection<String> getNested() {
+			return this.nested;
+		}
+	}
+
+	public static class TargetWithNestedSet {
+		private Set<String> nested = new LinkedHashSet<String>();
+
+		public Set<String> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Set<String> nested) {
 			this.nested = nested;
 		}
 	}

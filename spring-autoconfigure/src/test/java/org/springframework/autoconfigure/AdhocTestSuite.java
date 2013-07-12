@@ -20,7 +20,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.springframework.autoconfigure.main.SimpleMainTests;
+import org.springframework.bootstrap.SimpleMainTests;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactoryTests;
 
 /**
