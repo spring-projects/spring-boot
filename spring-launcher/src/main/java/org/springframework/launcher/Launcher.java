@@ -19,7 +19,6 @@ package org.springframework.launcher;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
@@ -144,7 +143,7 @@ public abstract class Launcher {
 	 * @throws Exception
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		return new URLClassLoader(urls, getClass().getClassLoader().getParent());
+		return new LaunchedURLClassLoader(urls, getClass().getClassLoader().getParent());
 	}
 
 	/**
