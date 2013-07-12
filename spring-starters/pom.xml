@@ -16,8 +16,9 @@
 		<module>spring-starter</module>
 		<module>spring-starter-actuator</module>
 		<module>spring-starter-batch</module>
-		<module>spring-starter-integration</module>
 		<module>spring-starter-data-jpa</module>
+		<module>spring-starter-integration</module>
+		<module>spring-starter-logging</module>
 		<module>spring-starter-parent</module>
 		<module>spring-starter-security</module>
 		<module>spring-starter-web</module>

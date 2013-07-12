@@ -15,6 +15,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-starter-logging</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-bootstrap</artifactId>
 			<version>${project.version}</version>
 		</dependency>

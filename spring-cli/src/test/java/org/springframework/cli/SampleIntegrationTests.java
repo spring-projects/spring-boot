@@ -54,16 +54,21 @@ public class SampleIntegrationTests {
 
 	private ByteArrayOutputStream output;
 
+	private PrintStream savedErr;
+
 	@Before
 	public void init() {
 		this.savedOutput = System.out;
+		this.savedErr = System.err;
 		this.output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(this.output));
+		System.setErr(new PrintStream(this.output));
 	}
 
 	@After
 	public void clear() {
 		System.setOut(this.savedOutput);
+		System.setErr(this.savedErr);
 	}
 
 	private String getOutput() {

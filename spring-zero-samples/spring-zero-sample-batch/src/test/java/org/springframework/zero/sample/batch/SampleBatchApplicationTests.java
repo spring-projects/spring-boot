@@ -30,19 +30,22 @@ import static org.junit.Assert.assertTrue;
 public class SampleBatchApplicationTests {
 
 	private PrintStream savedOutput;
+	private PrintStream savedErr;
 	private ByteArrayOutputStream output;
 
 	@Before
 	public void init() {
-		this.savedOutput = System.err;
+		this.savedOutput = System.out;
+		this.savedErr = System.err;
 		this.output = new ByteArrayOutputStream();
-		// jdk logging goes to syserr by default
+		System.setOut(new PrintStream(this.output));
 		System.setErr(new PrintStream(this.output));
 	}
 
 	@After
 	public void after() {
-		System.setErr(this.savedOutput);
+		System.setOut(this.savedOutput);
+		System.setErr(this.savedErr);
 	}
 
 	private String getOutput() {
