@@ -19,9 +19,9 @@ package org.springframework.bootstrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,20 +36,19 @@ import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
@@ -133,7 +132,7 @@ public class SpringApplication {
 
 	private final Log log = LogFactory.getLog(getClass());
 
-	private Object[] sources;
+	private Set<Object> sources = new LinkedHashSet<Object>();
 
 	private Class<?> mainApplicationClass;
 
@@ -169,8 +168,7 @@ public class SpringApplication {
 	 * @see #SpringApplication(ResourceLoader, Object...)
 	 */
 	public SpringApplication(Object... sources) {
-		Assert.notEmpty(sources, "Sources must not be empty");
-		this.sources = sources;
+		addSources(sources);
 		initialize();
 	}
 
@@ -185,10 +183,18 @@ public class SpringApplication {
 	 * @see #SpringApplication(ResourceLoader, Object...)
 	 */
 	public SpringApplication(ResourceLoader resourceLoader, Object... sources) {
-		Assert.notEmpty(sources, "Sources must not be empty");
 		this.resourceLoader = resourceLoader;
-		this.sources = sources;
+		addSources(sources);
 		initialize();
+	}
+
+	private void addSources(Object[] sources) {
+		if (sources == null) {
+			return;
+		}
+		for (Object source : sources) {
+			this.sources.add(source);
+		}
 	}
 
 	private void initialize() {
@@ -229,35 +235,52 @@ public class SpringApplication {
 	}
 
 	/**
+	 * A basic main that can be used to launch an application.
+	 * 
+	 * @param args command line arguments
+	 * @see SpringApplication#run(Object[], String[])
+	 * @see SpringApplication#run(Object, String...)
+	 */
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(new Object[0], args);
+	}
+
+	@Configuration
+	protected static class EmptyConfiguration {
+
+	}
+
+	/**
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ApplicationContext run(String... args) {
-		applySpringApplicationInitializers();
+		applySpringApplicationInitializers(args);
+		Assert.notEmpty(this.sources, "Sources must not be empty");
 		if (this.showBanner) {
 			printBanner();
 		}
 		ApplicationContext context = createApplicationContext();
 		postProcessApplicationContext(context);
-		addPropertySources(context, args);
 		if (context instanceof ConfigurableApplicationContext) {
 			applyInitializers((ConfigurableApplicationContext) context);
 		}
 		if (this.logStartupInfo) {
 			logStartupInfo();
 		}
-		load(context, this.sources);
+		load(context, this.sources.toArray(new Object[this.sources.size()]));
 		refresh(context);
 		runCommandLineRunners(context, args);
 		return context;
 	}
 
-	private void applySpringApplicationInitializers() {
+	private void applySpringApplicationInitializers(String[] args) {
+		args = StringUtils.mergeStringArrays(this.defaultCommandLineArgs, args);
 		for (ApplicationContextInitializer<?> initializer : this.initializers) {
 			if (initializer instanceof SpringApplicationInitializer) {
-				((SpringApplicationInitializer) initializer).initialize(this);
+				((SpringApplicationInitializer) initializer).initialize(this, args);
 			}
 		}
 	}
@@ -289,6 +312,7 @@ public class SpringApplication {
 
 	protected void logStartupInfo() {
 		new StartupInfoLogger(this.mainApplicationClass).log(getApplicationLog());
+		getApplicationLog().info("Sources: " + this.sources);
 	}
 
 	/**
@@ -356,88 +380,6 @@ public class SpringApplication {
 		if (context instanceof GenericApplicationContext && this.resourceLoader != null) {
 			((GenericApplicationContext) context).setResourceLoader(this.resourceLoader);
 		}
-	}
-
-	/**
-	 * Add any {@link PropertySource}s to the application context environment.
-	 * @param context the application context
-	 * @param args run arguments
-	 */
-	protected void addPropertySources(ApplicationContext context, String[] args) {
-		Environment environment = context.getEnvironment();
-		if (environment instanceof ConfigurableEnvironment) {
-			ConfigurableEnvironment configurable = (ConfigurableEnvironment) environment;
-			if (this.addCommandLineProperties) {
-				// Don't use SimpleCommandLinePropertySource (SPR-10579)
-				PropertySource<?> propertySource = new MapPropertySource(
-						"commandLineArgs", mergeCommandLineArgs(
-								this.defaultCommandLineArgs, args));
-				configurable.getPropertySources().addFirst(propertySource);
-			}
-		}
-	}
-
-	/**
-	 * Merge two sets of command lines, the defaults and the ones passed in at run time.
-	 * 
-	 * @param defaults the default values
-	 * @param args the ones passed in at runtime
-	 * @return a new command line
-	 */
-	protected Map<String, Object> mergeCommandLineArgs(String[] defaults, String[] args) {
-
-		if (defaults == null) {
-			defaults = new String[0];
-		}
-
-		List<String> nonopts = new ArrayList<String>();
-		Map<String, Object> options = new LinkedHashMap<String, Object>();
-
-		for (String arg : defaults) {
-			if (isOptionArg(arg)) {
-				addOptionArg(options, arg);
-			}
-			else {
-				nonopts.add(arg);
-			}
-		}
-		for (String arg : args) {
-			if (isOptionArg(arg)) {
-				addOptionArg(options, arg);
-			}
-			else if (!nonopts.contains(arg)) {
-				nonopts.add(arg);
-			}
-		}
-
-		for (String key : nonopts) {
-			options.put(key, "");
-		}
-
-		return options;
-
-	}
-
-	private boolean isOptionArg(String arg) {
-		return arg.startsWith("--");
-	}
-
-	private void addOptionArg(Map<String, Object> map, String arg) {
-		String optionText = arg.substring(2, arg.length());
-		String optionName;
-		String optionValue = "";
-		if (optionText.contains("=")) {
-			optionName = optionText.substring(0, optionText.indexOf('='));
-			optionValue = optionText.substring(optionText.indexOf('=') + 1,
-					optionText.length());
-		}
-		else {
-			optionName = optionText;
-		}
-		if (optionName.isEmpty()) {
-			throw new IllegalArgumentException("Invalid argument syntax: " + arg);
-		}
-		map.put(optionName, optionValue);
 	}
 
 	/**
@@ -553,6 +495,13 @@ public class SpringApplication {
 	}
 
 	/**
+	 * @return the addCommandLineProperties
+	 */
+	public boolean isAddCommandLineProperties() {
+		return this.addCommandLineProperties;
+	}
+
+	/**
 	 * Set some default command line arguments which can be overridden by those passed
 	 * into the run methods.
 	 * @param defaultCommandLineArgs the default command line args to set
@@ -571,10 +520,43 @@ public class SpringApplication {
 
 	/**
 	 * Sets the underlying environment that should be used when loading.
+	 * 
 	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		this.environment = environment;
+	}
+
+	/**
+	 * The environment that will be used to create the application context (can be null in
+	 * which case a default will be provided).
+	 * 
+	 * @return the environment
+	 */
+	public ConfigurableEnvironment getEnvironment() {
+		return this.environment;
+	}
+
+	/**
+	 * The sources that will be used to create an ApplicationContext if this application
+	 * {@link #run(String...)} is called.
+	 * 
+	 * @return the sources
+	 */
+	public Set<Object> getSources() {
+		return this.sources;
+	}
+
+	/**
+	 * The sources that will be used to create an ApplicationContext. A valid source is
+	 * one of: a class, class name, package, package name, or an XML resource location.
+	 * Can also be set using contructors and static convenience methods (e.g.
+	 * {@link #run(Object[], String[])}).
+	 * 
+	 * @param sources the sources to set
+	 */
+	public void setSources(Set<Object> sources) {
+		this.sources = sources;
 	}
 
 	/**
@@ -658,21 +640,6 @@ public class SpringApplication {
 	 */
 	public static ApplicationContext run(Object[] sources, String[] args) {
 		return new SpringApplication(sources).run(args);
-	}
-
-	/**
-	 * Static helper that can be used to run a {@link SpringApplication} from a script
-	 * using the specified sources with default settings. This method is useful when
-	 * calling this calls from a script environment that will not have a single main
-	 * application class.
-	 * @param sources the sources to load
-	 * @param args the application arguments (usually passed from a Java main method)
-	 * @return the running {@link ApplicationContext}
-	 */
-	public static ApplicationContext runFromScript(Object[] sources, String[] args) {
-		SpringApplication application = new SpringApplication(sources);
-		application.setMainApplicationClass(null);
-		return application.run(args);
 	}
 
 	/**

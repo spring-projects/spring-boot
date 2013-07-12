@@ -157,15 +157,14 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private PropertySources loadPropertySources(String[] path) {
 		MutablePropertySources propertySources = new MutablePropertySources();
 		PropertySourceLoader[] loaders = { new PropertiesPropertySourceLoader(),
-				YamlPropertySourceLoader.springProfileAwareLoader(this.environment) };
+				YamlPropertySourceLoader.springProfileAwareLoader(environment.getActiveProfiles()) };
 		for (String location : path) {
 			location = this.environment.resolvePlaceholders(location);
 			Resource resource = this.resourceLoader.getResource(location);
 			if (resource != null && resource.exists()) {
 				for (PropertySourceLoader loader : loaders) {
 					if (loader.supports(resource)) {
-						PropertySource<?> propertySource = loader.load(resource,
-								this.environment);
+						PropertySource<?> propertySource = loader.load(resource);
 						propertySources.addFirst(propertySource);
 					}
 				}

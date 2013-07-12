@@ -16,7 +16,6 @@
 
 package org.springframework.bootstrap.config;
 
-import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 
@@ -37,6 +36,6 @@ public interface PropertySourceLoader {
 	 * Load the resource into a property source.
 	 * @return a property source
 	 */
-	PropertySource<?> load(Resource resource, Environment environment);
+	PropertySource<?> load(Resource resource);
 
 }

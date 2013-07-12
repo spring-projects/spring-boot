@@ -25,9 +25,10 @@ package org.springframework.bootstrap;
 public interface SpringApplicationInitializer {
 
 	/**
-	 * Initialize the applcation
+	 * Initialize the application
 	 * @param springApplication the spring application.
+	 * @param args the args provided on command line by caller
 	 */
-	void initialize(SpringApplication springApplication);
+	void initialize(SpringApplication springApplication, String[] args);
 
 }

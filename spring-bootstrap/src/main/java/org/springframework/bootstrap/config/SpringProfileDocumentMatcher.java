@@ -16,15 +16,18 @@
 
 package org.springframework.bootstrap.config;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import org.springframework.bootstrap.config.YamlProcessor.DocumentMatcher;
 import org.springframework.bootstrap.config.YamlProcessor.MatchStatus;
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
 
 /**
- * {@link DocumentMatcher} backed by {@link Environment#getActiveProfiles()}.
+ * {@link DocumentMatcher} backed by {@link Environment#getActiveProfiles()}. A YAML
+ * document matches if it contains an element "spring.profiles" (a comma-separated list)
+ * and one of the profiles is in the active list.
  * 
  * @author Dave Syer
  */
@@ -32,20 +35,20 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	private static final String[] DEFAULT_PROFILES = new String[] { "default" };
 
-	private final Environment environment;
+	private String[] activeProfiles = new String[0];
 
-	/**
-	 * Create a new {@link SpringProfileDocumentMatcher} instance.
-	 * @param environment the environment
-	 */
-	public SpringProfileDocumentMatcher(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
-		this.environment = environment;
+	public void addActiveProfiles(String... profiles) {
+		LinkedHashSet<String> set = new LinkedHashSet<String>(
+				Arrays.asList(this.activeProfiles));
+		for (String profile : profiles) {
+			set.add(profile);
+		}
+		this.activeProfiles = set.toArray(new String[set.size()]);
 	}
 
 	@Override
 	public MatchStatus matches(Properties properties) {
-		String[] profiles = this.environment.getActiveProfiles();
+		String[] profiles = this.activeProfiles;
 		if (profiles.length == 0) {
 			profiles = DEFAULT_PROFILES;
 		}

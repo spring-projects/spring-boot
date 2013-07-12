@@ -29,10 +29,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Loads bean definitions from underlying sources, including XML and JavaConfig. Acts as a
@@ -162,11 +166,35 @@ class BeanDefinitionLoader {
 		if (loadedResource != null && loadedResource.exists()) {
 			return load(loadedResource);
 		}
-		Package packageResource = Package.getPackage(source.toString());
+		Package packageResource = findPackage(source);
 		if (packageResource != null) {
 			return load(packageResource);
 		}
 		throw new IllegalArgumentException("Invalid source '" + source + "'");
+	}
+
+	private Package findPackage(CharSequence source) {
+		Package pkg = Package.getPackage(source.toString());
+		if (pkg != null) {
+			return pkg;
+		}
+		try {
+			// Attempt to find a class in this package
+			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
+					getClass().getClassLoader());
+			Resource[] resources = resolver.getResources(ClassUtils
+					.convertClassNameToResourcePath(source.toString()) + "/*.class");
+			for (Resource resource : resources) {
+				String className = StringUtils.stripFilenameExtension(resource
+						.getFilename());
+				load(Class.forName(source.toString() + "." + className));
+				break;
+			}
+		}
+		catch (Exception ex) {
+			// swallow exception and continue
+		}
+		return Package.getPackage(source.toString());
 	}
 
 	private boolean isComponent(Class<?> type) {

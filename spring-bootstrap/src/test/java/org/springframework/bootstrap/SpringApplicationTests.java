@@ -26,10 +26,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
-import org.springframework.bootstrap.BeanDefinitionLoader;
-import org.springframework.bootstrap.CommandLineRunner;
-import org.springframework.bootstrap.ExitCodeGenerator;
-import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.context.ApplicationContext;
@@ -94,14 +90,14 @@ public class SpringApplicationTests {
 	public void sourcesMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Sources must not be empty");
-		new SpringApplication((Object[]) null);
+		new SpringApplication((Object[]) null).run();
 	}
 
 	@Test
 	public void sourcesMustNotBeEmpty() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Sources must not be empty");
-		new SpringApplication();
+		new SpringApplication().run();
 	}
 
 	@Test
@@ -270,7 +266,7 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		application.setUseMockLoader(true);
 		application.run();
-		assertThat(application.getSources(), equalTo(sources));
+		assertThat(application.getSources().toArray(), equalTo(sources));
 	}
 
 	@Test
@@ -341,8 +337,6 @@ public class SpringApplicationTests {
 
 		private boolean useMockLoader;
 
-		private Object[] sources;
-
 		public TestSpringApplication(Object... sources) {
 			super(sources);
 		}
@@ -358,7 +352,6 @@ public class SpringApplicationTests {
 		@Override
 		protected BeanDefinitionLoader createBeanDefinitionLoader(
 				BeanDefinitionRegistry registry, Object[] sources) {
-			this.sources = sources;
 			if (this.useMockLoader) {
 				this.loader = mock(BeanDefinitionLoader.class);
 			}
@@ -372,9 +365,6 @@ public class SpringApplicationTests {
 			return this.loader;
 		}
 
-		public Object[] getSources() {
-			return this.sources;
-		}
 	}
 
 	@Configuration
