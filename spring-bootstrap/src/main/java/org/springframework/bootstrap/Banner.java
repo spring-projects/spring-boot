@@ -18,6 +18,12 @@ package org.springframework.bootstrap;
 
 import java.io.PrintStream;
 
+import org.springframework.bootstrap.ansi.AnsiOutput;
+
+import static org.springframework.bootstrap.ansi.AnsiElement.DEFAULT;
+import static org.springframework.bootstrap.ansi.AnsiElement.FAINT;
+import static org.springframework.bootstrap.ansi.AnsiElement.GREEN;
+
 /**
  * Writes the 'Spring' banner.
  * 
@@ -25,7 +31,8 @@ import java.io.PrintStream;
  */
 abstract class Banner {
 
-	private static final String[] BANNER = { "  .   ____          _            __ _ _",
+	private static final String[] BANNER = { "",
+			"  .   ____          _            __ _ _",
 			" /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\",
 			"( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\",
 			" \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )",
@@ -37,14 +44,12 @@ abstract class Banner {
 	 * @param printStream the output print stream
 	 */
 	public static void write(PrintStream printStream) {
-		printStream.println();
 		for (String line : BANNER) {
 			printStream.println(line);
 		}
 		String version = Banner.class.getPackage().getImplementationVersion();
-		printStream.println("  Spring Bootstrap"
-				+ (version == null ? "" : " (v" + version + ")"));
+		printStream.println(AnsiOutput.toString(GREEN, " Spring Bootstrap", DEFAULT,
+				FAINT, (version == null ? "" : " (v" + version + ")")));
 		printStream.println();
 	}
-
 }
