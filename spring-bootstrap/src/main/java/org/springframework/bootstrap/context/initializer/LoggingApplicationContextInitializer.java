@@ -22,17 +22,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.bootstrap.logging.JavaLoggerConfigurer;
-import org.springframework.bootstrap.logging.LogbackConfigurer;
-import org.springframework.context.ApplicationContext;
+import org.springframework.bootstrap.SpringApplication;
+import org.springframework.bootstrap.SpringApplicationInitializer;
+import org.springframework.bootstrap.logging.LoggingSystem;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -68,7 +65,8 @@ import org.springframework.util.ResourceUtils;
  * @author Phillip Webb
  */
 public class LoggingApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+		ApplicationContextInitializer<ConfigurableApplicationContext>,
+		SpringApplicationInitializer, Ordered {
 
 	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
 	static {
@@ -78,7 +76,15 @@ public class LoggingApplicationContextInitializer implements
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("PID", "PID");
 	}
 
+	private final Log logger = LogFactory.getLog(getClass());
+
 	private int order = Integer.MIN_VALUE + 11;
+
+	@Override
+	public void initialize(SpringApplication springApplication) {
+		LoggingSystem.get(springApplication.getClass().getClassLoader())
+				.beforeInitialize();
+	}
 
 	/**
 	 * Initialize the logging system according to preferences expressed through the
@@ -102,7 +108,23 @@ public class LoggingApplicationContextInitializer implements
 		}
 
 		LoggingSystem system = LoggingSystem.get(applicationContext.getClassLoader());
-		system.init(applicationContext);
+
+		// User specified configuration
+		if (environment.containsProperty("logging.config")) {
+			String value = environment.getProperty("logging.config");
+			try {
+				ResourceUtils.getURL(value).openStream().close();
+				system.initialize(value);
+				return;
+			}
+			catch (Exception ex) {
+				// Swallow exception and continue
+			}
+			this.logger.warn("Logging environment value '" + value
+					+ "' cannot be opened and will be ignored");
+		}
+
+		system.initialize();
 	}
 
 	private String getPid() {
@@ -120,115 +142,6 @@ public class LoggingApplicationContextInitializer implements
 	@Override
 	public int getOrder() {
 		return this.order;
-	}
-
-	private static enum LoggingSystem {
-
-		/**
-		 * Log4J
-		 */
-		LOG4J("org.apache.log4j.PropertyConfigurator", "log4j.xml", "log4j.properties") {
-
-			@Override
-			protected void doInit(ApplicationContext applicationContext,
-					String configLocation) throws Exception {
-				Log4jConfigurer.initLogging(configLocation);
-			}
-		},
-
-		/**
-		 * Logback
-		 */
-		LOGBACK("ch.qos.logback.core.Appender", "logback.xml") {
-
-			@Override
-			protected void doInit(ApplicationContext applicationContext,
-					String configLocation) throws Exception {
-				LogbackConfigurer.initLogging(configLocation);
-			}
-		},
-
-		/**
-		 * Java Util Logging
-		 */
-		JAVA(null, "logging.properties") {
-
-			@Override
-			protected void doInit(ApplicationContext applicationContext,
-					String configLocation) throws Exception {
-				JavaLoggerConfigurer.initLogging(configLocation);
-			}
-		};
-
-		private final Log logger = LogFactory
-				.getLog(LoggingApplicationContextInitializer.class);
-
-		private final String className;
-
-		private final String[] paths;
-
-		private LoggingSystem(String className, String... paths) {
-			this.className = className;
-			this.paths = paths;
-		}
-
-		public void init(ApplicationContext applicationContext) {
-			String configLocation = getConfigLocation(applicationContext);
-			try {
-				doInit(applicationContext, configLocation);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException("Cannot initialize logging from "
-						+ configLocation, ex);
-			}
-		}
-
-		protected abstract void doInit(ApplicationContext applicationContext,
-				String configLocation) throws Exception;
-
-		private String getConfigLocation(ApplicationContext applicationContext) {
-			Environment environment = applicationContext.getEnvironment();
-			ClassLoader classLoader = applicationContext.getClassLoader();
-
-			// User specified config
-			if (environment.containsProperty("logging.config")) {
-				String value = environment.getProperty("logging.config");
-				try {
-					ResourceUtils.getURL(value).openStream().close();
-					return value;
-				}
-				catch (Exception ex) {
-					// Swallow exception and continue
-				}
-				this.logger.warn("Logging environment value '" + value
-						+ "' cannot be opened and will be ignored");
-			}
-
-			// Common patterns
-			for (String path : this.paths) {
-				ClassPathResource resource = new ClassPathResource(path, classLoader);
-				if (resource.exists()) {
-					return "classpath:" + path;
-				}
-			}
-
-			// Fallback to the default
-			String defaultPath = ClassUtils.getPackageName(JavaLoggerConfigurer.class);
-			defaultPath = defaultPath.replace(".", "/");
-			defaultPath = defaultPath + "/" + this.paths[this.paths.length - 1];
-			return "classpath:" + defaultPath;
-		}
-
-		public static LoggingSystem get(ClassLoader classLoader) {
-			for (LoggingSystem loggingSystem : values()) {
-				String className = loggingSystem.className;
-				if (className == null || ClassUtils.isPresent(className, classLoader)) {
-					return loggingSystem;
-				}
-			}
-			return JAVA;
-		}
-
 	}
 
 }

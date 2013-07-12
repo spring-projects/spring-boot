@@ -16,41 +16,43 @@
 
 package org.springframework.bootstrap.logging;
 
-import java.io.FileNotFoundException;
 import java.net.URL;
 
+import org.slf4j.ILoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
+import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Logging initializer for <a href="http://logback.qos.ch">logback</a>.
+ * {@link LoggingSystem} for for <a href="http://logback.qos.ch">logback</a>.
  * 
+ * @author Phillip Webb
  * @author Dave Syer
  */
-public abstract class LogbackConfigurer {
+class LogbackLoggingSystem extends AbstractLoggingSystem {
 
-	/**
-	 * Configure the logback system from the specified location.
-	 * 
-	 * @param location the location to use to configure logback
-	 */
-	public static void initLogging(String location) throws FileNotFoundException {
-		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(location);
-		URL url = ResourceUtils.getURL(resolvedLocation);
-		LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton()
-				.getLoggerFactory();
+	public LogbackLoggingSystem(ClassLoader classLoader) {
+		super(classLoader, "logback.xml");
+	}
+
+	@Override
+	public void initialize(String configLocation) {
+		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
+		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		Assert.isInstanceOf(ILoggerFactory.class, factory);
+		LoggerContext context = (LoggerContext) factory;
 		context.stop();
 		try {
+			URL url = ResourceUtils.getURL(resolvedLocation);
 			new ContextInitializer(context).configureByResource(url);
 		}
-		catch (JoranException ex) {
-			throw new IllegalArgumentException("Could not initialize logging from "
-					+ location, ex);
+		catch (Exception ex) {
+			throw new IllegalStateException("Could not initialize logging from "
+					+ configLocation, ex);
 		}
 	}
 

@@ -16,7 +16,6 @@
 
 package org.springframework.bootstrap.logging;
 
-import java.io.FileNotFoundException;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -24,29 +23,27 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.util.SystemPropertyUtils;
 
 /**
- * Logging initializer for {@link Logger java.util.logging}.
+ * {@link LoggingSystem} for {@link Logger java.util.logging}.
  * 
+ * @author Phillip Webb
  * @author Dave Syer
  */
-public abstract class JavaLoggerConfigurer {
+class JavaLoggingSystem extends AbstractLoggingSystem {
 
-	/**
-	 * Configure the logging system from the specified location (a properties file).
-	 * 
-	 * @param location the location to use to configure logging
-	 */
-	public static void initLogging(String location) throws FileNotFoundException {
-		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(location);
+	public JavaLoggingSystem(ClassLoader classLoader) {
+		super(classLoader, "logging.properties");
+	}
+
+	@Override
+	public void initialize(String configLocation) {
+		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		try {
 			LogManager.getLogManager().readConfiguration(
 					ResourceUtils.getURL(resolvedLocation).openStream());
 		}
 		catch (Exception ex) {
-			if (ex instanceof FileNotFoundException) {
-				throw (FileNotFoundException) ex;
-			}
-			throw new IllegalArgumentException("Could not initialize logging from "
-					+ location, ex);
+			throw new IllegalStateException("Could not initialize logging from "
+					+ configLocation, ex);
 		}
 	}
 

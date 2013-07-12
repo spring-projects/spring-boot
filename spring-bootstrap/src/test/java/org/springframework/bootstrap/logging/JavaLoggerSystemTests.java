@@ -17,7 +17,6 @@
 package org.springframework.bootstrap.logging;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.logging.LogManager;
@@ -30,11 +29,14 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link JavaLoggerConfigurer}.
+ * Tests for {@link JavaLoggingSystem}.
  * 
  * @author Dave Syer
  */
-public class JavaLoggerConfigurerTests {
+public class JavaLoggerSystemTests {
+
+	private JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass()
+			.getClassLoader());
 
 	private PrintStream savedOutput;
 
@@ -67,21 +69,21 @@ public class JavaLoggerConfigurerTests {
 
 	@Test
 	public void testDefaultConfigLocation() throws Exception {
-		JavaLoggerConfigurer.initLogging("classpath:logging-nondefault.properties");
+		this.loggingSystem.initialize("classpath:logging-nondefault.properties");
 		this.logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.contains("INFO"));
 	}
 
-	@Test(expected = FileNotFoundException.class)
+	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
-		JavaLoggerConfigurer.initLogging("classpath:logging-nonexistent.properties");
+		this.loggingSystem.initialize("classpath:logging-nonexistent.properties");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullConfigLocation() throws Exception {
-		JavaLoggerConfigurer.initLogging(null);
+		this.loggingSystem.initialize(null);
 	}
 
 }
