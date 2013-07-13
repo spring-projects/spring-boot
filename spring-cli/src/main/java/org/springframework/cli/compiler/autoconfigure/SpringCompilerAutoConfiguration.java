@@ -40,20 +40,7 @@ public class SpringCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses(
 				"org.springframework.bootstrap.SpringApplication").add(
-				"org.springframework.zero", "spring-autoconfigure",
-				"0.5.0.BUILD-SNAPSHOT");
-		// FIXME currently broken on CI + decide how relates to logging
-		// dependencies.ifAnyResourcesPresent("logback.xml").add("ch.qos.logback",
-		// "logback-classic", "1.0.7");
-		// dependencies.ifNotAdded("cg.qos.logback", "logback-classic")
-		// .ifAnyResourcesPresent("log4j.properties", "log4j.xml")
-		// .add("org.slf4j", "slf4j-log4j12", "1.7.5")
-		// .add("log4j", "log4j", "1.2.16")
-		// .add("org.slf4j", "jcl-over-slf4j", "1.7.5");
-		// dependencies.ifNotAdded("ch.qos.logback", "logback-classic")
-		// .ifNotAdded("org.slf4j", "slf4j-log4j12")
-		// .add("org.slf4j", "slf4j-jdk14", "1.7.5")
-		// .add("org.slf4j", "jcl-over-slf4j", "1.7.5");
+				"org.springframework.zero", "spring-starter", "0.5.0.BUILD-SNAPSHOT");
 		// FIXME get the version
 	}
 
