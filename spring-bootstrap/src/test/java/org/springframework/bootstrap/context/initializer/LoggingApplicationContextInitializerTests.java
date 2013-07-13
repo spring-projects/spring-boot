@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.logging;
+package org.springframework.bootstrap.context.initializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.bootstrap.context.initializer.LoggingApplicationContextInitializer;
+import org.springframework.bootstrap.logging.java.JavaLoggingSystem;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
 
@@ -60,7 +60,7 @@ public class LoggingApplicationContextInitializerTests {
 		this.output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(this.output));
 		LogManager.getLogManager().readConfiguration(
-				getClass().getResourceAsStream("logging.properties"));
+				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
 	}
 
 	@After
@@ -135,7 +135,7 @@ public class LoggingApplicationContextInitializerTests {
 						}
 						if ("logging.file".equals(name)) {
 							return "foo.log";
-						}						
+						}
 						return null;
 					}
 				});

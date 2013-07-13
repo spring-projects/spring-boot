@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.logging;
+package org.springframework.bootstrap.logging.java;
 
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;

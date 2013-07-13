@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.logging;
+package org.springframework.bootstrap.logging.logback;
 
 import java.net.URL;
 
 import org.slf4j.ILoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
+import org.springframework.bootstrap.logging.AbstractLoggingSystem;
+import org.springframework.bootstrap.logging.LoggingSystem;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.SystemPropertyUtils;
 
@@ -33,10 +37,19 @@ import ch.qos.logback.classic.util.ContextInitializer;
  * @author Phillip Webb
  * @author Dave Syer
  */
-class LogbackLoggingSystem extends AbstractLoggingSystem {
+public class LogbackLoggingSystem extends AbstractLoggingSystem {
 
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader, "logback.xml");
+	}
+
+	@Override
+	public void beforeInitialize() {
+		super.beforeInitialize();
+		if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler", getClassLoader())) {
+			SLF4JBridgeHandler.removeHandlersForRootLogger();
+			SLF4JBridgeHandler.install();
+		}
 	}
 
 	@Override
