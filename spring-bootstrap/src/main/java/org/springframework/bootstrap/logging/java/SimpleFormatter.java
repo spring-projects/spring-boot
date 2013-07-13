@@ -29,9 +29,13 @@ import java.util.logging.LogRecord;
  */
 public class SimpleFormatter extends Formatter {
 
-	private static final String FORMAT = "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL - [%7$s] %4$s - %3$s : %5$s%6$s%n";
+	private static final String DEFAULT_FORMAT = "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL] - %8$s %4$s [%7$s] --- %3$s: %5$s%6$s%n";
+
+	private static String FORMAT = setOrUseDefault("LOG_FORMAT", DEFAULT_FORMAT);
 
 	private final Date date = new Date();
+
+	private static String PID = setOrUseDefault("PID", "????");
 
 	@Override
 	public synchronized String format(LogRecord record) {
@@ -41,7 +45,7 @@ public class SimpleFormatter extends Formatter {
 		String throwable = getThrowable(record);
 		String thread = getThreadName();
 		return String.format(FORMAT, this.date, source, record.getLoggerName(), record
-				.getLevel().getLocalizedName(), message, throwable, thread);
+				.getLevel().getLocalizedName(), message, throwable, thread, PID);
 	}
 
 	private String getThrowable(LogRecord record) {
@@ -59,6 +63,20 @@ public class SimpleFormatter extends Formatter {
 	private String getThreadName() {
 		String name = Thread.currentThread().getName();
 		return (name == null ? "" : name);
+	}
+
+	private static String setOrUseDefault(String key, String defaultValue) {
+		String value = null;
+		try {
+			value = System.getenv(key);
+		}
+		catch (Exception e) {
+			// ignore
+		}
+		if (value == null) {
+			value = defaultValue;
+		}
+		return System.getProperty(key, value);
 	}
 
 }
