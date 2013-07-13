@@ -25,7 +25,7 @@ import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.bootstrap.logging.java.JavaLoggingSystem;
+import org.springframework.util.ClassUtils;
 
 import static org.junit.Assert.assertTrue;
 
@@ -53,7 +53,6 @@ public class JavaLoggerSystemTests {
 		this.savedOutput = System.err;
 		this.output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(this.output));
-
 	}
 
 	@After
@@ -62,6 +61,7 @@ public class JavaLoggerSystemTests {
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
 		System.setErr(this.savedOutput);
+		System.err.println(this.output);
 	}
 
 	private String getOutput() {
@@ -69,12 +69,32 @@ public class JavaLoggerSystemTests {
 	}
 
 	@Test
-	public void testDefaultConfigLocation() throws Exception {
-		this.loggingSystem.initialize("classpath:logging-nondefault.properties");
+	public void testCustomFormatter() throws Exception {
 		this.logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("INFO"));
+		assertTrue("Wrong output:\n" + output, output.contains("???? INFO ["));
+	}
+
+	@Test
+	public void testSystemPropertyInitializesFormat() throws Exception {
+		System.setProperty("PID", "1234");
+		this.loggingSystem.initialize("classpath:"
+				+ ClassUtils.addResourcePathToPackagePath(getClass(),
+						"logging.properties"));
+		this.logger.info("Hello world");
+		this.logger.info("Hello world");
+		String output = getOutput().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
+		assertTrue("Wrong output:\n" + output, output.contains("1234 INFO ["));
+	}
+
+	@Test
+	public void testNonDefaultConfigLocation() throws Exception {
+		this.loggingSystem.initialize("classpath:logging-nondefault.properties");
+		this.logger.info("Hello world");
+		String output = getOutput().trim();
+		assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
 	}
 
 	@Test(expected = IllegalStateException.class)
