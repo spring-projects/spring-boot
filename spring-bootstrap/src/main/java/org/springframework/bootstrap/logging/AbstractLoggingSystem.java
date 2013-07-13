@@ -25,7 +25,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-abstract class AbstractLoggingSystem extends LoggingSystem {
+public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	private final ClassLoader classLoader;
 

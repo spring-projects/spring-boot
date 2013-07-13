@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.logging;
+package org.springframework.bootstrap.logging.java;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +25,7 @@ import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.bootstrap.logging.java.JavaLoggingSystem;
 
 import static org.junit.Assert.assertTrue;
 

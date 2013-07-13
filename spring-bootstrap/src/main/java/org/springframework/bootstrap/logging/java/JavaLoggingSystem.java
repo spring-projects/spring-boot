@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.logging;
+package org.springframework.bootstrap.logging.java;
 
-import org.springframework.util.Log4jConfigurer;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import org.springframework.bootstrap.logging.AbstractLoggingSystem;
+import org.springframework.bootstrap.logging.LoggingSystem;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
- * {@link LoggingSystem} for for <a href="http://logging.apache.org/log4j">log4j</a>.
+ * {@link LoggingSystem} for {@link Logger java.util.logging}.
  * 
  * @author Phillip Webb
  * @author Dave Syer
  */
-class Log4JLoggingSystem extends AbstractLoggingSystem {
+public class JavaLoggingSystem extends AbstractLoggingSystem {
 
-	public Log4JLoggingSystem(ClassLoader classLoader) {
-		super(classLoader, "log4j.xml", "log4j.properties");
+	public JavaLoggingSystem(ClassLoader classLoader) {
+		super(classLoader, "logging.properties");
 	}
 
 	@Override
 	public void initialize(String configLocation) {
+		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		try {
-			Log4jConfigurer.initLogging(configLocation);
+			LogManager.getLogManager().readConfiguration(
+					ResourceUtils.getURL(resolvedLocation).openStream());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize logging from "

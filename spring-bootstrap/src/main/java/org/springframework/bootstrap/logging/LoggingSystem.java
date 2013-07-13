@@ -16,6 +16,10 @@
 
 package org.springframework.bootstrap.logging;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.util.ClassUtils;
 
 /**
@@ -25,6 +29,17 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  */
 public abstract class LoggingSystem {
+
+	private static final Map<String, String> SYSTEMS;
+	static {
+		Map<String, String> systems = new LinkedHashMap<String, String>();
+		String pkg = LoggingSystem.class.getPackage().getName();
+		systems.put("ch.qos.logback.core.Appender", pkg + ".logback.LogbackLoggingSystem");
+		systems.put("org.apache.log4j.PropertyConfigurator", pkg
+				+ ".log4j.Log4JLoggingSystem");
+		systems.put("java.util.logging.LogManager", pkg + ".java.JavaLoggingSystem");
+		SYSTEMS = Collections.unmodifiableMap(systems);
+	}
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
@@ -51,13 +66,20 @@ public abstract class LoggingSystem {
 	 * @return The logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
-		if (ClassUtils.isPresent("ch.qos.logback.core.Appender", classLoader)) {
-			return new LogbackLoggingSystem(classLoader);
+		for (Map.Entry<String, String> entry : SYSTEMS.entrySet()) {
+			if (ClassUtils.isPresent(entry.getKey(), classLoader)) {
+				try {
+					Class<?> systemClass = ClassUtils.forName(entry.getValue(),
+							classLoader);
+					return (LoggingSystem) systemClass.getConstructor(ClassLoader.class)
+							.newInstance(classLoader);
+				}
+				catch (Exception ex) {
+					throw new IllegalStateException(ex);
+				}
+			}
 		}
-		if (ClassUtils.isPresent("org.apache.log4j.PropertyConfigurator", classLoader)) {
-			return new Log4JLoggingSystem(classLoader);
-		}
-		return new JavaLoggingSystem(classLoader);
+		throw new IllegalStateException("No suitable logging system located");
 	}
 
 }
