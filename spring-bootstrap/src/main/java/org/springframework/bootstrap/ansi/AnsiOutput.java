@@ -33,11 +33,11 @@ public abstract class AnsiOutput {
 	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name")
 			.toLowerCase();
 
-	private static final Object ENCODE_START = "\033[";
+	private static final String ENCODE_START = "\033[";
 
-	private static final Object ENCODE_END = "m";
+	private static final String ENCODE_END = "m";
 
-	final private static String RESET = "0;" + AnsiElement.DEFAULT;
+	private final static String RESET = "0;" + AnsiElement.DEFAULT;
 
 	/**
 	 * Sets if ANSI output is enabled.

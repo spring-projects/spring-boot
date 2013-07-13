@@ -35,7 +35,7 @@ public interface AnsiElement {
 	public static final AnsiElement YELLOW = new DefaultAnsiElement("33");
 	public static final AnsiElement BLUE = new DefaultAnsiElement("34");
 	public static final AnsiElement MAGENTA = new DefaultAnsiElement("35");
-	public static final AnsiElement CYAN_FG = new DefaultAnsiElement("36");
+	public static final AnsiElement CYAN = new DefaultAnsiElement("36");
 	public static final AnsiElement WHITE = new DefaultAnsiElement("37");
 	public static final AnsiElement DEFAULT = new DefaultAnsiElement("39");
 
