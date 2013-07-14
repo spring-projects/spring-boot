@@ -46,7 +46,12 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		if (lastDot != -1) {
 			String packageName = name.substring(0, lastDot);
 			if (getPackage(packageName) == null) {
-				definePackageForFindClass(name, packageName);
+				try {
+					definePackageForFindClass(name, packageName);
+				}
+				catch (Exception ex) {
+					// Swallow and continue
+				}
 			}
 		}
 		return super.findClass(name);
@@ -72,6 +77,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 								if (jarFile.getManifest() != null
 										&& jarFile.getJarEntry(path) != null) {
 									definePackage(packageName, jarFile.getManifest(), url);
+									return null;
 								}
 							}
 						}
