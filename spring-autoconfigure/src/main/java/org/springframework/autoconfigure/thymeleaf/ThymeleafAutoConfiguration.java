@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.spring3.SpringTemplateEngine;
 import org.thymeleaf.spring3.view.ThymeleafViewResolver;
@@ -155,9 +157,23 @@ public class ThymeleafAutoConfiguration {
 		public ThymeleafViewResolver thymeleafViewResolver() {
 			ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 			resolver.setTemplateEngine(this.templateEngine);
+			resolver.setCharacterEncoding("UTF-8");
 			return resolver;
 		}
 
+	}
+
+	@Configuration
+	@ConditionalOnClass({ SpringSecurityDialect.class })
+	protected static class ThymeleafSecurityDialectConfiguration {
+
+		@Autowired
+		private SpringTemplateEngine templateEngine;
+
+		@PostConstruct
+		public void configureThymeleafSecurity() {
+			this.templateEngine.addDialect(new SpringSecurityDialect());
+		}
 	}
 
 }
