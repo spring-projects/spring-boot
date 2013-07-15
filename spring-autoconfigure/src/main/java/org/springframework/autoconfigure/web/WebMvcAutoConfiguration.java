@@ -41,6 +41,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -152,6 +153,12 @@ public class WebMvcAutoConfiguration {
 				return requestHandler;
 			}
 		}
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
+	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+		return new HiddenHttpMethodFilter();
 	}
 
 }
