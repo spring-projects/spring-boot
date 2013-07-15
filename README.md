@@ -1,45 +1,57 @@
 # Spring Zero
-
-Spring Zero is "Spring for Snowboarders".  If you are kewl, or
-just impatient, and you want to use Spring, then this is the place to
-be. Spring Zero is a toolkit and runtime platform that will get
-you up and running with Spring-powered, production-grade applications
-and services with absolute minimum fuss. It takes an opinionated view
-of the Spring family so that new and existing users can quickly get to
-the bits they need. Assumes no knowledge of the Java development
-ecosystem. Absolutely no code generation and no XML (unless you really
-want it).
+Spring Zero is "Spring for Snowboarders".  If you are kewl, or just impatient, and you 
+want to use Spring, then this is the place to be. Spring Zero is the code-name for a
+group of related technologies, that will get you up and running with 
+Spring-powered,  production-grade applications and services with absolute minimum fuss. 
+It takes an opinionated view of the Spring family so that new and existing users can 
+quickly get to the bits they need. Assumes limited knowledge of the Java development 
+ecosystem. Absolutely no code generation and no XML (unless you really want it).
 
 The goals are:
+* Radically faster and widely accessible getting started experience for Spring
+  development
+* Be opinionated out of the box, but get out of the way quickly as requirements start to 
+  diverge from the defaults
+* Provide a range of non-functional features that are common to large classes of projects
+  (e.g. embedded servers, security, metrics, health checks, externalized configuration)
+* First class support for REST-ful services, modern web applications, batch jobs, and 
+  enterprise integration
+* Applications that adapt their behavior or configuration to their environment
+* Optionally use Groovy features like DSLs and AST transformations to accelerate the 
+  implementation of basic business requirements
 
-* Radically faster and widely accessible getting started experience
-  for Spring development
-* Be opinionated out of the box, but get out of the way quickly as
-  requirements start to diverge from the defaults
-* Provide a range of non-functional features that are common to large
-  classes of projects (e.g. embedded servers, security, metrics,
-  health checks, externalized configuration)
-* First class support for REST-ful services, modern web applications,
-  batch jobs, and enterprise integration
-* Applications that adapt their behaviour or configuration to their
-  environment
-* Optionally use Groovy features like DSLs and AST transformations to
-  accelerate the implementation of basic business requirements
-  
+
 ## Installing
-You need to build from source for now, but when it's done instructions will look like this:
+You need to [build from source](#building-from-source) for now, but when it's done 
+instructions will look like this:
 
-1) Get Java.  Download and install the Java SDK from www.java.com
+1) Get Java.  Download and install the Java SDK from [www.java.com](http://www.java.com)
 
 2) Get Spring
 
-     $ curl -s spring.cfapps.io/installer | bash
-     
-   or use the Windows installer
+	$ curl -s spring.cfapps.io/installer | bash
 
-3) Get to Work!
+   or use the [Windows installer](#installing)
 
-    $ cat > app.groovy
+
+## Building from source
+Spring Zero can be [built with maven](http://maven.apache.org/run-maven/index.html) v3.0 
+or above.
+
+	$ mvn clean install
+
+An `alias` can be used for the Spring Zero command line tool:
+
+	$ alias spr="java -jar ~/.m2/repository/org/springframework/zero/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
+
+_Also see [CONTRIBUTING.md](/CONTRIBUTING.md) if you want to submit pull requests._  
+
+
+## Quick Start Example
+The Spring Zero command line tool uses Groovy underneath so that we can present simple 
+snippets  that can just run, for example:
+
+	$ cat > app.groovy
 	@Controller
 	class ThisWillActuallyRun {
 		@RequestMapping("/")
@@ -48,30 +60,24 @@ You need to build from source for now, but when it's done instructions will look
 			return "Hello World!"
 		}
 	}
-    $ spring run app.groovy
-    $ curl localhost:8080
-    Hello World!
+	<ctrl-d>
+	$ spr run app.groovy
+	$ curl localhost:8080
+	Hello World!
 
 
-## What? It's Groovy then? or like Grails? or Roo?
-
-There is a command line tool that uses Groovy underneath so that we
-can present simple snippets that can just run just like the slimline
-`app.groovy` example above.  Groovy makes this really easy.
-
-If you don't want to use the command line tool, or you would rather
-work using Java and an IDE you can. Just add a `main()` method that
-calls `SpringApplication` and add `@EnableAutoConfiguration`:
-
+If you don't want to use the command line tool, or you would rather work using Java and 
+an IDE you can. Just add a `main()` method that calls `SpringApplication` and 
+add `@EnableAutoConfiguration`:
 
 	import org.springframework.stereotype.*;
 	import org.springframework.web.bind.annotation.*;
 	import org.springframework.bootstrap.context.annotation.*;
-
+	
 	@Controller
 	@EnableAutoConfiguration
 	public class SampleController {
-
+	
 		@RequestMapping("/")
 		@ResponseBody
 		String home() {
@@ -81,109 +87,101 @@ calls `SpringApplication` and add `@EnableAutoConfiguration`:
 		public static void main(String[] args) throws Exception {
 			SpringApplication.run(SampleController.class, args);
 		}
+	
+	}
+	
+_NOTE: the above example assumes your build system has imported the `spring-starter-web`
+maven pom._
 
-    }
 
-## Spring Zero Themes
-
-There are a number of themes in Zero. Here are the important
-ones:
+## Spring Zero Components
+There are a number of components in Zero. Here are the important ones:
 
 ### The Spring CLI
+The 'spring' command line application compiles and runs Groovy source, making it super 
+easy to write the absolute minimum of code to get an application running. Spring CLI 
+can also watch files, automatically recompiling and restarting when they change.
 
-The 'spring' command line application compiles and runs Groovy source,
-making it super easy to write the absolute minimum of code to get an
-application running. Spring CLI can also watch files, automatically
-recompiling and restarting when they change.
+*See [spring-cli/README.md](spring-cli/README.md).*
+
 
 ### Spring Bootstrap
+The main library providing features that support the other parts of Spring Zero. 
+Features include:
 
-The main library providing features that support the other parts of
-Spring Zero.  Features include:
+* `SpringApplication` - a class with static convenience methods that make it really easy 
+  to write a standalone Spring Application. Its sole job is to create and refresh an 
+  appropriate Spring `ApplicationContext`.
+* Embedded web applications with a choice of container (Tomcat or Jetty for now)
+* First class externalized configuration support 
 
-* `SpringApplication` - a class with static convenience methods that
-  make it really easy to write a standalone Spring Application. Its
-  sole job is to create and refresh an appropriate Spring
-  `ApplicationContext`.
-* Embedded web applications with a choice of container (Tomcat or
-  Jetty for now)
+_See [spring-bootstrap/README.md](spring-bootstrap/README.md)._
+
   
 ### Spring Autoconfigure
+Spring Zero can configure large parts of common applications based on detecting the 
+content of the classpath and any existing application context. A single 
+`@EnableAutoConfigure` annotation triggers auto-configuration of the Spring context. 
 
-Spring Zero can configure large parts of common applications based on
-detecting the content of the classpath and any existing application
-context:
+Auto-configuration attempts to guess what beans a user might want  based on their 
+classpath. For example, If a 'HSQLDB' is on the classpath the user probably wants an 
+in-memory database to be defined. Auto-configuration will back away as the user starts 
+to define their own beans.
 
-* `@EnableAutoConfigure` is an annotation that triggers
-  auto-configuration of the Spring context. Auto-configuration
-  attempts to guess what beans a user might want based on their
-  classpath. For example, If a 'HSQLDB' is on the classpath the user
-  probably wants an in-memory database to be
-  defined. Auto-configuration will back away as the user starts to
-  define their own beans.
-* `@Conditional` is an annotation in Spring 4.0 that allows you to
-  control which parts of an application are used at runtime. Spring
-  Zero provides some concrete implementations of conditional
-  configuration, e.g. `@ConditionalOnBean`,
-  `@ConditionalOnMissingBean` and `@ConditionalOnClass`.
+_See [spring-autoconfigure/README.md](spring-autoconfigure/README.md)._
+
 
 ### Spring Actuator
+Spring Actuator uses auto-configuration to decorate your application with features that 
+make it instantly deployable and supportable in production.  For instance if you are 
+writing a JSON web service then it will provide a server, security, logging, externalized
+configuration, management endpoints, an audit abstraction, and more. If you want to 
+switch off the built in features, or extend or replace them, it makes that really easy as well.
 
-Spring Actuator uses auto-configuration features to decorate
-your application with features that make it instantly deployable and
-supportable in production.  For instance if you are writing a JSON web
-service then it will provide a server, security, logging, externalized
-configuration, management endpoints, an audit abstraction, and more.
-If you want to switch off the built in features, or extend or replace
-them, it makes that really easy as well.
+_See [spring-actuator/README.md](spring-actuator/README.md)._
 
-### Service Wrappers and Deployability
-
-Spring Zero helps you to take that last step from finishing a
-development iteration to getting the code running in production.
-Without having to think too much about it, other than choosing your
-deployment environment (CentOS, Ubuntu, Windows etc) you should be
-able to stand up an instance, or multiple instances, of your component
-and have them fit seamlessly into the operating system environment.
 
 ### Spring Starters
+Spring Starters are a set of convenient dependency descriptors that you can include in 
+your application. You get a one-stop-shop for all the Spring and related technology 
+that you need without having to hunt through sample code and copy paste loads of
+dependency descriptors. For example, if you want to get started using Spring and JPA for 
+database access just include one dependency in your project, and you are good to go.
 
-Spring Starters are a set of convenient dependency
-descriptors that you can include in your application.  You get a
-one-stop-shop for all the Spring and related technology that you need
-without having to hunt through sample code and copy paste loads of
-dependency descriptors. For example, if you want to get started using
-Spring and JPA for database access just include one dependency in your
-project, and you are good to go.
+_See [spring-starters/README.md](spring-starters/README.md)._
 
-## Building the code
-Use maven to build the source code.
 
-	$ mvn clean install
+### Packaging
+The [spring-launcher](spring-launcher/) and 
+[spring-maven-packaging-plugin](spring-maven-packaging-plugin) provide a convenient way
+to package you application for release. Applications can be released as a single jar
+file that can simply be launched using `java -jar`.
 
-## Importing into eclipse
-You can use m2e or `maven eclipse:eclipse`.
+_See [spring-launcher/README.md](spring-launcher/README.md) & 
+[spring-package-maven-plugin/README.md](spring-package-maven-plugin/README.md)._
 
-Project specific settings are configured for source formatting. If you
-are using m2e you can follow these steps to install eclipse support
-for formatting:
-
-* Select `Install new software` from the `help` menu
-* Click `Add...` to add a new repository
-* Click the `Archive...` button
-* Select `org.eclipse.m2e.maveneclipse.site-0.0.1-SNAPSHOT-site.zip`
-  from the `eclipse` folder in this checkout
-* Install "Maven Integration for the maven-eclipse-plugin"
-
-Or if you prefer you can import settings manually from the `/eclipse` folder.
 
 ## Samples
-The following samples are included. To run use `java -jar target/<archive>.jar`
+Groovy samples for use with the command line application are available in
+[spring-cli/samples](spring-cli/samples/). To run the CLI samples type 
+`spr run <sample>.groovy` from samples directory.
 
-* spring-zero-simple-sample - A simple command line application
-* spring-zero-jetty-sample - Embedded Jetty
-* spring-zero-tomcat-sample - Embedded Tomcat
-* spring-zero-service-sample - Simple REST service with production features
-* spring-batch-sample - Define and run a Batch job in a few lines of code
-* spring-zero-data-sample - Spring Data JPA + Hibernate + HSQLDB
+Java samples are available in [spring-zero-sample](spring-zero-samples/) and should
+be build with maven and run use `java -jar target/<sample>.jar`. The following java
+samples are provided:
+
+* spring-zero-sample-simple - A simple command line application
+* spring-zero-sample-tomcat - Embedded Tomcat
+* spring-zero-sample-jetty - Embedded Jetty
+* spring-zero-sample-actuator - Simple REST service with production features
+* spring-zero-sample-actuator-ui - A web UI example with production features
+* spring-zero-sample-web-ui - A thymeleaf web application
+* spring-sample-batch - Define and run a Batch job in a few lines of code
+* spring-sample-data-jpa - Spring Data JPA + Hibernate + HSQLDB
+* spring-zero-sample-integration - A spring integration application
+* spring-zero-sample-profile - example showing Spring's `@profile` support
+* spring-zero-sample-traditional - shows Spring Zero with more traditional WAR packaging 
+  (but also executable using `java -jar`)
+* spring-zero-sample-xml - Example show how Spring Zero can be mixed with trditional XML
+  configuration
 
