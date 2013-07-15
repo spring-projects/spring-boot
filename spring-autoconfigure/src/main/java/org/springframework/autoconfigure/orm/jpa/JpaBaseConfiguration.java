@@ -54,8 +54,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Phillip Webb
  * @author Dave Syer
  */
-@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EnableTransactionManagement.class,
-		EntityManager.class })
+@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
+		EnableTransactionManagement.class, EntityManager.class })
 @ConditionalOnBean(DataSource.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
@@ -78,13 +78,14 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	@Configuration
 	@ConditionalOnWebApplication
-	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class, OpenEntityManagerInViewFilter.class })
+	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
+			OpenEntityManagerInViewFilter.class })
 	@ConditionalOnExpression("${spring.jpa.openInView:${spring.jpa.open_in_view:true}}")
 	protected static class JpaWebConfiguration extends WebMvcConfigurerAdapter {
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			super.addInterceptors(registry);
+			registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
 		}
 
 		@Bean
@@ -95,14 +96,18 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	}
 
 	/**
-	 * Determines if the {@code dataSource} being used by Spring was created from {@link EmbeddedDatabaseConfiguration}.
+	 * Determines if the {@code dataSource} being used by Spring was created from
+	 * {@link EmbeddedDatabaseConfiguration}.
 	 * @return true if the data source was auto-configured.
 	 */
 	protected boolean isAutoConfiguredDataSource() {
 		try {
-			BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition("dataSource");
-			return EmbeddedDatabaseConfiguration.class.getName().equals(beanDefinition.getFactoryBeanName());
-		} catch (NoSuchBeanDefinitionException ex) {
+			BeanDefinition beanDefinition = this.beanFactory
+					.getBeanDefinition("dataSource");
+			return EmbeddedDatabaseConfiguration.class.getName().equals(
+					beanDefinition.getFactoryBeanName());
+		}
+		catch (NoSuchBeanDefinitionException ex) {
 			return false;
 		}
 	}
@@ -113,19 +118,23 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	protected DataSource getDataSource() {
 		try {
 			return this.beanFactory.getBean("dataSource", DataSource.class);
-		} catch (RuntimeException ex) {
+		}
+		catch (RuntimeException ex) {
 			return this.beanFactory.getBean(DataSource.class);
 		}
 	}
 
 	protected String[] getPackagesToScan() {
-		List<String> basePackages = AutoConfigurationUtils.getBasePackages(this.beanFactory);
-		Assert.notEmpty(basePackages, "Unable to find JPA packages to scan, please define "
-				+ "a @ComponentScan annotation or disable JpaAutoConfiguration");
+		List<String> basePackages = AutoConfigurationUtils
+				.getBasePackages(this.beanFactory);
+		Assert.notEmpty(basePackages,
+				"Unable to find JPA packages to scan, please define "
+						+ "a @ComponentScan annotation or disable JpaAutoConfiguration");
 		return basePackages.toArray(new String[basePackages.size()]);
 	}
 
-	protected void configure(LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
+	protected void configure(
+			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 	}
 
 	@Override
