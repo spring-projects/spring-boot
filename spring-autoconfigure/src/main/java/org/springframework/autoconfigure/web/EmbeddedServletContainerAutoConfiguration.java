@@ -50,7 +50,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * {@link EmbeddedServletContainerCustomizer}s.
 	 */
 	@Bean
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerCustomizerBeanPostProcessor.class, considerHierarchy = false)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerCustomizerBeanPostProcessor.class, parentContext = false)
 	public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 		return new EmbeddedServletContainerCustomizerBeanPostProcessor();
 	}
@@ -64,7 +64,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(value = { ServletContextInitializer.class,
-				Servlet.class }, considerHierarchy = false)
+				Servlet.class }, parentContext = false)
 		public DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
@@ -75,7 +75,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, considerHierarchy = false)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, parentContext = false)
 	public static class EmbeddedTomcat {
 
 		@Bean
@@ -90,7 +90,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, considerHierarchy = false)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, parentContext = false)
 	public static class EmbeddedJetty {
 
 		@Bean

@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
@@ -98,18 +99,30 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 		String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 
 		Boolean considerHierarchy = (Boolean) metadata.getAnnotationAttributes(
-				annotationClass().getName()).get("considerHierarchy");
+				annotationClass().getName()).get("parentContext");
 		considerHierarchy = (considerHierarchy == null ? false : considerHierarchy);
+
+		Boolean parentOnly = (Boolean) metadata.getAnnotationAttributes(
+				annotationClass().getName()).get("parentOnly");
+		parentOnly = (parentOnly == null ? false : parentOnly);
 
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();
 
+		// eagerInit set to false to prevent early instantiation (some
+		// factory beans will not be able to determine their object type at this
+		// stage, so those are not eligible for matching this condition)
+		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		if (parentOnly) {
+			BeanFactory parent = beanFactory.getParentBeanFactory();
+			if (!(parent instanceof ConfigurableListableBeanFactory)) {
+				throw new IllegalStateException(
+						"Cannot use parentOnly if parent is not ConfigurableListableBeanFactory");
+			}
+			beanFactory = (ConfigurableListableBeanFactory) parent;
+		}
 		for (String beanClass : beanClasses) {
 			try {
-				// eagerInit set to false to prevent early instantiation (some
-				// factory beans will not be able to determine their object type at this
-				// stage, so those are not eligible for matching this condition)
-				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 				Class<?> type = ClassUtils.forName(beanClass, context.getClassLoader());
 				String[] beans = (considerHierarchy ? BeanFactoryUtils
 						.beanNamesForTypeIncludingAncestors(beanFactory, type, false,
@@ -124,8 +137,8 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 			}
 		}
 		for (String beanName : beanNames) {
-			if (considerHierarchy ? context.getBeanFactory().containsBean(beanName)
-					: context.getBeanFactory().containsLocalBean(beanName)) {
+			if (considerHierarchy ? beanFactory.containsBean(beanName) : beanFactory
+					.containsLocalBean(beanName)) {
 				beanNamesFound.add(beanName);
 			}
 		}

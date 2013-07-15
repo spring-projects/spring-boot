@@ -55,6 +55,6 @@ public @interface ConditionalOnMissingBean {
 	/**
 	 * If the application context hierarchy (parent contexts) should be considered.
 	 */
-	boolean considerHierarchy() default true;
+	boolean parentContext() default true;
 
 }
