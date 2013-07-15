@@ -17,8 +17,6 @@
 package org.springframework.bootstrap.context.condition;
 
 import org.junit.Test;
-import org.springframework.bootstrap.context.condition.ConditionalOnMissingBean;
-import org.springframework.bootstrap.context.condition.OnMissingBeanCondition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -113,7 +111,7 @@ public class OnMissingBeanConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnMissingBean(name = "foo", considerHierarchy = false)
+	@ConditionalOnMissingBean(name = "foo", parentContext = false)
 	protected static class HierarchyNotConsidered {
 		@Bean
 		public String bar() {

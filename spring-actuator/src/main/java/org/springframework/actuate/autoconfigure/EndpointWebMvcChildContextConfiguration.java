@@ -81,6 +81,7 @@ public class EndpointWebMvcChildContextConfiguration implements
 
 	@Configuration
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
+	@ConditionalOnBean(name = "springSecurityFilterChain", parentOnly = true)
 	public static class EndpointWebMvcChildContextSecurityConfiguration {
 
 		// FIXME reuse of security filter here is not good. What if totally different
@@ -88,7 +89,6 @@ public class EndpointWebMvcChildContextConfiguration implements
 		// port?
 
 		@Bean
-		@ConditionalOnBean(name = "springSecurityFilterChain")
 		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			return parent.getBean("springSecurityFilterChain", Filter.class);

@@ -55,6 +55,11 @@ public @interface ConditionalOnBean {
 	/**
 	 * If the application context hierarchy (parent contexts) should be considered.
 	 */
-	boolean considerHierarchy() default true;
+	boolean parentContext() default true;
+
+	/**
+	 * If only the application parent contexts should be considered.
+	 */
+	boolean parentOnly() default false;
 
 }
