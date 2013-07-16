@@ -21,6 +21,7 @@ import groovy.lang.Script;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.cli.GrapesCleaner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
@@ -37,7 +38,7 @@ public class ScriptCommandTests {
 
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
-		new CleanCommand().run("--all");
+		GrapesCleaner.cleanIfNecessary();
 	}
 
 	@Test(expected = IllegalStateException.class)
