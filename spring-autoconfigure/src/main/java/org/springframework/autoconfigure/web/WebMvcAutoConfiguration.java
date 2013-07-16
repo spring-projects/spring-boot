@@ -121,16 +121,12 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			// FIXME exposing the root classpath is a security risk
-			// eg http://localhost:8080/org/springframework/bootstrap/Banner.class
-			registry.addResourceHandler("/resources/**").addResourceLocations("/")
-					.addResourceLocations("classpath:/META-INF/resources/")
-					.addResourceLocations("classpath:/resources/")
-					.addResourceLocations("classpath:/");
-			registry.addResourceHandler("/**").addResourceLocations("/")
-					.addResourceLocations("classpath:/META-INF/resources/")
-					.addResourceLocations("classpath:/static/")
-					.addResourceLocations("classpath:/");
+			registry.addResourceHandler("/resources/**").addResourceLocations("/",
+					"classpath:/META-INF/resources/", "classpath:/resources/",
+					"classpath:/public/", "classpath:/static/");
+			registry.addResourceHandler("/**").addResourceLocations("/",
+					"classpath:/META-INF/resources/", "classpath:/resources/",
+					"classpath:/static/", "classpath:/public/");
 		}
 
 		@Configuration
