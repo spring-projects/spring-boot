@@ -17,6 +17,8 @@
 package org.springframework.maven.packaging;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -30,7 +32,10 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.Archiver;
@@ -38,6 +43,7 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
 import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.archiver.zip.ZipResource;
+import org.codehaus.plexus.util.IOUtil;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.repository.RemoteRepository;
@@ -52,11 +58,8 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
  * 
  * @author Phillip Webb
  */
-public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
-
-	private static final String[] DEFAULT_EXCLUDES = new String[] { "**/package.html" };
-
-	private static final String[] DEFAULT_INCLUDES = new String[] { "**/**" };
+@Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+public class ExecutableArchiveMojo extends AbstractMojo {
 
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
@@ -113,25 +116,11 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
-	 * attached. If this is not given,it will merely be written to the output directory
+	 * attached. If this is not given, it will merely be written to the output directory
 	 * according to the finalName.
 	 */
 	@Parameter
 	private String classifier;
-
-	/**
-	 * List of files to include. Specified as fileset patterns which are relative to the
-	 * input directory whose contents is being packaged into the archive.
-	 */
-	@Parameter
-	private String[] includes;
-
-	/**
-	 * List of files to exclude. Specified as fileset patterns which are relative to the
-	 * input directory whose contents is being packaged into the archive.
-	 */
-	@Parameter
-	private String[] excludes;
 
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
@@ -151,7 +140,7 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 	/**
 	 * Whether creating the archive should be forced.
 	 */
-	@Parameter(property = "archive.forceCreation", defaultValue = "false")
+	@Parameter(property = "archive.forceCreation", defaultValue = "true")
 	private boolean forceCreation;
 
 	/**
@@ -160,27 +149,9 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
 	private RepositorySystemSession repositorySystemSession;
 
-	/**
-	 * Returns the type as defined in plexus components.xml
-	 */
-	protected abstract String getType();
+	private ExecutableJarHelper jarHelper = new ExecutableJarHelper();
 
-	/**
-	 * Returns the file extension for the archive (e.g. 'jar').
-	 */
-	protected abstract String getExtension();
-
-	/**
-	 * Returns the destination of an {@link Artifact}.
-	 * @param artifact the artifact
-	 * @return the destination or {@code null} to exclude
-	 */
-	protected abstract String getArtifactDestination(Artifact artifact);
-
-	/**
-	 * Returns the launcher class that will be used.
-	 */
-	protected abstract String getLauncherClass();
+	private ExecutableWarHelper warHelper = new ExecutableWarHelper();
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -189,9 +160,22 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 			this.project.getArtifact().setFile(archiveFile);
 		}
 		else {
+			getLog().info(
+					"Attaching archive: " + archiveFile + ", with classifier: "
+							+ this.classifier);
 			this.projectHelper.attachArtifact(this.project, getType(), this.classifier,
 					archiveFile);
 		}
+	}
+
+	private ArchiveHelper getArchiveHelper() throws MojoExecutionException {
+		if (getType().equals("jar")) {
+			return this.jarHelper;
+		}
+		if (getType().equals("war")) {
+			return this.warHelper;
+		}
+		throw new MojoExecutionException("Unsupported packaging type: " + getType());
 	}
 
 	private File createArchive() throws MojoExecutionException {
@@ -204,7 +188,8 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 		archiver.getArchiver().setRecompressAddedZips(false);
 
 		try {
-			addContent(archiver);
+			getLog().info("Modifying archive: " + archiveFile);
+			copyContent(archiver, this.project.getArtifact().getFile());
 			addLibs(archiver);
 			ZipFile zipFile = addLauncherClasses(archiver);
 			try {
@@ -218,6 +203,37 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException("Error assembling archive", ex);
 		}
+	}
+
+	private String getType() {
+		return this.project.getPackaging();
+	}
+
+	private String getExtension() {
+		return this.project.getPackaging();
+	}
+
+	private void copyContent(MavenArchiver archiver, File file) throws IOException {
+
+		FileInputStream input = new FileInputStream(file);
+		File original = new File(this.outputDirectory, "original.jar");
+		FileOutputStream output = new FileOutputStream(original);
+		IOUtil.copy(input, output, 2048);
+		input.close();
+		output.close();
+
+		ZipFile zipFile = new ZipFile(original);
+		Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
+		while (entries.hasMoreElements()) {
+			ZipEntry entry = entries.nextElement();
+			// TODO: maybe merge manifest instead of skipping it?
+			if (!entry.isDirectory()
+					&& !entry.getName().toUpperCase().equals("/META-INF/MANIFEST.MF")) {
+				ZipResource zipResource = new ZipResource(zipFile, entry);
+				archiver.getArchiver().addResource(zipResource, entry.getName(), -1);
+			}
+		}
+
 	}
 
 	private File getTargetFile() {
@@ -242,40 +258,18 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 			throw new MojoExecutionException("Unable to find a suitable main class, "
 					+ "please add a 'mainClass' property");
 		}
-		this.archive.getManifestEntries().put(MAIN_CLASS_ATTRIBUTE, getLauncherClass());
+		this.archive.getManifestEntries().put(MAIN_CLASS_ATTRIBUTE,
+				getArchiveHelper().getLauncherClass());
 		this.archive.getManifestEntries().put(START_CLASS_ATTRIBUTE, mainClass);
 	}
 
-	protected void addContent(MavenArchiver archiver) {
-		if (this.classesDirectrory.exists()) {
-			archiver.getArchiver().addDirectory(this.classesDirectrory,
-					getClassesDirectoryPrefix(), getIncludes(), getExcludes());
-		}
-	}
-
-	protected String getClassesDirectoryPrefix() {
-		return "";
-	}
-
-	protected final String[] getIncludes() {
-		if (this.includes != null && this.includes.length > 0) {
-			return this.includes;
-		}
-		return DEFAULT_INCLUDES;
-	}
-
-	protected final String[] getExcludes() {
-		if (this.excludes != null && this.excludes.length > 0) {
-			return this.excludes;
-		}
-		return DEFAULT_EXCLUDES;
-	}
-
-	private void addLibs(MavenArchiver archiver) {
+	private void addLibs(MavenArchiver archiver) throws MojoExecutionException {
+		getLog().info("Adding dependencies");
 		for (Artifact artifact : this.project.getArtifacts()) {
 			if (artifact.getFile() != null) {
-				String dir = getArtifactDestination(artifact);
+				String dir = getArchiveHelper().getArtifactDestination(artifact);
 				if (dir != null) {
+					getLog().debug("Adding dependency: " + artifact);
 					archiver.getArchiver().addFile(artifact.getFile(),
 							dir + artifact.getFile().getName());
 				}
@@ -285,6 +279,7 @@ public abstract class AbstractExecutableArchiveMojo extends AbstractMojo {
 
 	private ZipFile addLauncherClasses(MavenArchiver archiver)
 			throws MojoExecutionException {
+		getLog().info("Adding launcher classes");
 		try {
 			List<RemoteRepository> repositories = new ArrayList<RemoteRepository>();
 			repositories.addAll(this.project.getRemotePluginRepositories());

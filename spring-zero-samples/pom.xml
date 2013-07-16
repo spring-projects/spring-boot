@@ -26,4 +26,23 @@
 		<module>spring-zero-sample-web-ui</module>
 		<module>spring-zero-sample-xml</module>
 	</modules>
+    <build>
+      <pluginManagement>
+        <plugins>
+			<plugin>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>spring-package-maven-plugin</artifactId>
+				<version>${project.version}</version>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+        </plugins>
+      </pluginManagement>
+    </build>
 </project>

@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.zero.maven.it</groupId>
-	<artifactId>executable-jar</artifactId>
+	<artifactId>jar</artifactId>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
-	<packaging>executable-jar</packaging>
+	<packaging>jar</packaging>
 	<build>
 		<plugins>
 			<plugin>
@@ -13,6 +13,13 @@
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
 				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
