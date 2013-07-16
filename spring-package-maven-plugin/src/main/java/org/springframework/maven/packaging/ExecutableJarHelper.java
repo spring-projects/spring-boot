@@ -21,33 +21,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Build an executable JAR file.
+ * Help build an executable JAR file.
  * 
  * @author Phillip Webb
  */
-@Mojo(name = "executable-jar", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class ExecutableJarMojo extends AbstractExecutableArchiveMojo {
+public class ExecutableJarHelper implements ArchiveHelper {
 
 	private static final Set<String> LIB_SCOPES = new HashSet<String>(Arrays.asList(
 			"compile", "runtime", "provided"));
 
 	@Override
-	protected String getType() {
-		return "executable-jar";
-	}
-
-	@Override
-	protected String getExtension() {
-		return "jar";
-	}
-
-	@Override
-	protected String getArtifactDestination(Artifact artifact) {
+	public String getArtifactDestination(Artifact artifact) {
 		if (LIB_SCOPES.contains(artifact.getScope())) {
 			return "lib/";
 		}
@@ -55,7 +41,7 @@ public class ExecutableJarMojo extends AbstractExecutableArchiveMojo {
 	}
 
 	@Override
-	protected String getLauncherClass() {
+	public String getLauncherClass() {
 		return "org.springframework.launcher.JarLauncher";
 	}
 }

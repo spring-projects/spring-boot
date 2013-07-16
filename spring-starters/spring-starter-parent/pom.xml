@@ -200,6 +200,20 @@
 					<version>2.0</version>
 				</plugin>
 
+                <plugin>
+                  <groupId>org.springframework.zero</groupId>
+                  <artifactId>spring-package-maven-plugin</artifactId>
+                  <version>${spring.zero.version}</version>
+                  <extensions>true</extensions>
+                  <executions>
+					<execution>
+                      <goals>
+                        <goal>package</goal>
+                      </goals>
+					</execution>
+                  </executions>
+                </plugin>
+
 				<!-- Support shade packaging -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

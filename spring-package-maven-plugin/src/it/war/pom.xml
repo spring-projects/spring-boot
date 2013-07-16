@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.zero.maven.it</groupId>
-	<artifactId>executable-war</artifactId>
+	<artifactId>war</artifactId>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
-	<packaging>executable-war</packaging>
+	<packaging>war</packaging>
 	<build>
 		<plugins>
 			<plugin>
@@ -13,6 +13,21 @@
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
 				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

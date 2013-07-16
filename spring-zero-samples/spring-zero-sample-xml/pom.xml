@@ -8,7 +8,7 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-zero-sample-xml</artifactId>
-	<packaging>executable-jar</packaging>
+	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
@@ -24,8 +24,6 @@
 			<plugin>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>spring-package-maven-plugin</artifactId>
-				<version>${project.version}</version>
-				<extensions>true</extensions>
 			</plugin>
 		</plugins>
 	</build>

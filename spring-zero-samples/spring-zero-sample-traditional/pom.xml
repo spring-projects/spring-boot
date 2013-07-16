@@ -7,7 +7,7 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-zero-sample-traditional</artifactId>
-	<packaging>executable-war</packaging>
+	<packaging>war</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>
@@ -45,8 +45,6 @@
 			<plugin>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>spring-package-maven-plugin</artifactId>
-				<version>${project.version}</version>
-				<extensions>true</extensions>
 			</plugin>
 		</plugins>
 	</build>

@@ -13,3 +13,4 @@ target
 .springBeans
 dependency-reduced-pom.xml
 build.log
+_site/
