@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.cli.command.CleanCommand;
 import org.springframework.cli.command.RunCommand;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +44,7 @@ public class SampleIntegrationTests {
 
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
-		new CleanCommand().run("--all");
+		GrapesCleaner.cleanIfNecessary();
 	}
 
 	private RunCommand command;
