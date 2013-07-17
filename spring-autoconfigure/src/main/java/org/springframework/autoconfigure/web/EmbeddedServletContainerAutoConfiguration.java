@@ -24,6 +24,7 @@ import org.eclipse.jetty.util.Loader;
 import org.springframework.autoconfigure.EnableAutoConfiguration;
 import org.springframework.bootstrap.context.condition.ConditionalOnClass;
 import org.springframework.bootstrap.context.condition.ConditionalOnMissingBean;
+import org.springframework.bootstrap.context.condition.SearchStrategy;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
@@ -50,7 +51,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 * {@link EmbeddedServletContainerCustomizer}s.
 	 */
 	@Bean
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerCustomizerBeanPostProcessor.class, parentContext = false)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerCustomizerBeanPostProcessor.class, search = SearchStrategy.CURRENT)
 	public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 		return new EmbeddedServletContainerCustomizerBeanPostProcessor();
 	}
@@ -64,7 +65,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(value = { ServletContextInitializer.class,
-				Servlet.class }, parentContext = false)
+				Servlet.class }, search = SearchStrategy.CURRENT)
 		public DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
@@ -75,7 +76,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Tomcat.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, parentContext = false)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedTomcat {
 
 		@Bean
@@ -90,7 +91,7 @@ public class EmbeddedServletContainerAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class })
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, parentContext = false)
+	@ConditionalOnMissingBean(value = EmbeddedServletContainerFactory.class, search = SearchStrategy.CURRENT)
 	public static class EmbeddedJetty {
 
 		@Bean

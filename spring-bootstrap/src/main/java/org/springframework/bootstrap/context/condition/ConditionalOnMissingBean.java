@@ -53,8 +53,9 @@ public @interface ConditionalOnMissingBean {
 	String[] name() default {};
 
 	/**
-	 * If the application context hierarchy (parent contexts) should be considered.
+	 * Strategy to decide if the application context hierarchy (parent contexts) should be
+	 * considered.
 	 */
-	boolean parentContext() default true;
+	SearchStrategy search() default SearchStrategy.ALL;
 
 }
