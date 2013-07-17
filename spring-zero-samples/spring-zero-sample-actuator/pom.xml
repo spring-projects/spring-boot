@@ -17,6 +17,12 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-starter-actuator</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.zero</groupId>
+					<artifactId>spring-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -83,7 +89,7 @@
 		<profile>
 			<id>juli</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<dependencies>
 				<dependency>
@@ -111,7 +117,7 @@
 		<profile>
 			<id>logback</id>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<dependencies>
 				<dependency>
