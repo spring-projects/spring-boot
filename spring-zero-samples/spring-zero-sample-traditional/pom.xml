@@ -25,14 +25,9 @@
 		</dependency>
 		<!-- Provided (for embedded war support) -->
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-logging-juli</artifactId>
-			<scope>provided</scope>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-starter-tomcat</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
