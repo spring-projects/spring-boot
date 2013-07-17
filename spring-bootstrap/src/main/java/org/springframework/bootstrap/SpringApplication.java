@@ -32,24 +32,27 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.SimpleCommandLinePropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * Classes that can be used to bootstrap and launch a Spring application from a Java main
@@ -168,8 +171,7 @@ public class SpringApplication {
 	 * @see #SpringApplication(ResourceLoader, Object...)
 	 */
 	public SpringApplication(Object... sources) {
-		addSources(sources);
-		initialize();
+		initialize(sources);
 	}
 
 	/**
@@ -184,29 +186,16 @@ public class SpringApplication {
 	 */
 	public SpringApplication(ResourceLoader resourceLoader, Object... sources) {
 		this.resourceLoader = resourceLoader;
-		addSources(sources);
-		initialize();
+		initialize(sources);
 	}
 
-	private void addSources(Object[] sources) {
-		if (sources == null) {
-			return;
+	private void initialize(Object[] sources) {
+		if (sources != null) {
+			this.sources.addAll(Arrays.asList(sources));
 		}
-		for (Object source : sources) {
-			this.sources.add(source);
-		}
-	}
-
-	private void initialize() {
 		this.webEnvironment = deduceWebEnvironment();
 		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
-		@SuppressWarnings("rawtypes")
-		Collection<ApplicationContextInitializer> factories = SpringFactoriesLoader
-				.loadFactories(ApplicationContextInitializer.class,
-						SpringApplication.class.getClassLoader());
-		for (ApplicationContextInitializer<?> initializer : factories) {
-			this.initializers.add(initializer);
-		}
+		this.initializers.addAll(getSpringFactoriesApplicationContextInitializers());
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -217,6 +206,13 @@ public class SpringApplication {
 			}
 		}
 		return true;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Collection<ApplicationContextInitializer<?>> getSpringFactoriesApplicationContextInitializers() {
+		return (Collection) SpringFactoriesLoader.loadFactories(
+				ApplicationContextInitializer.class,
+				SpringApplication.class.getClassLoader());
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -235,34 +231,31 @@ public class SpringApplication {
 	}
 
 	/**
-	 * A basic main that can be used to launch an application.
-	 * 
-	 * @param args command line arguments
-	 * @see SpringApplication#run(Object[], String[])
-	 * @see SpringApplication#run(Object, String...)
-	 */
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(new Object[0], args);
-	}
-
-	@Configuration
-	protected static class EmptyConfiguration {
-
-	}
-
-	/**
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ApplicationContext run(String... args) {
-		applySpringApplicationInitializers(args);
+		// Call all non environment aware initializers very early
+		callNonEnvironmentAwareSpringApplicationInitializers();
+
+		// Create and configure the environment
+		ConfigurableEnvironment environment = getOrCreateEnvironment();
+		addPropertySources(environment, args);
+
+		// Call all remaining initializers
+		callEnvironmentAwareSpringApplicationInitializers(environment);
 		Assert.notEmpty(this.sources, "Sources must not be empty");
 		if (this.showBanner) {
 			printBanner();
 		}
+
+		// Create, load, refresh and run the ApplicationContext
 		ApplicationContext context = createApplicationContext();
+		if (context instanceof ConfigurableApplicationContext) {
+			((ConfigurableApplicationContext) context).setEnvironment(environment);
+		}
 		postProcessApplicationContext(context);
 		if (context instanceof ConfigurableApplicationContext) {
 			applyInitializers((ConfigurableApplicationContext) context);
@@ -276,11 +269,54 @@ public class SpringApplication {
 		return context;
 	}
 
-	private void applySpringApplicationInitializers(String[] args) {
-		args = StringUtils.mergeStringArrays(this.defaultCommandLineArgs, args);
+	private void callNonEnvironmentAwareSpringApplicationInitializers() {
 		for (ApplicationContextInitializer<?> initializer : this.initializers) {
-			if (initializer instanceof SpringApplicationInitializer) {
-				((SpringApplicationInitializer) initializer).initialize(this, args);
+			if (initializer instanceof SpringApplicationInitializer
+					&& !(initializer instanceof EnvironmentAware)) {
+				((SpringApplicationInitializer) initializer).initialize(this);
+			}
+		}
+	}
+
+	private ConfigurableEnvironment getOrCreateEnvironment() {
+		if (this.environment != null) {
+			return this.environment;
+		}
+		if (this.applicationContext != null
+				&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
+			return (ConfigurableEnvironment) this.applicationContext.getEnvironment();
+		}
+		if (this.webEnvironment) {
+			return new StandardServletEnvironment();
+		}
+		return new StandardEnvironment();
+
+	}
+
+	/**
+	 * Add any {@link PropertySource}s to the environment.
+	 * @param environment the environment
+	 * @param args run arguments
+	 */
+	protected void addPropertySources(ConfigurableEnvironment environment, String[] args) {
+		if (this.addCommandLineProperties) {
+			if (this.defaultCommandLineArgs != null) {
+				environment.getPropertySources().addFirst(
+						new SimpleCommandLinePropertySource("defaultCommandLineArgs",
+								this.defaultCommandLineArgs));
+			}
+			environment.getPropertySources().addFirst(
+					new SimpleCommandLinePropertySource(args));
+		}
+	}
+
+	private void callEnvironmentAwareSpringApplicationInitializers(
+			ConfigurableEnvironment environment) {
+		for (ApplicationContextInitializer<?> initializer : this.initializers) {
+			if (initializer instanceof SpringApplicationInitializer
+					&& initializer instanceof EnvironmentAware) {
+				((EnvironmentAware) initializer).setEnvironment(environment);
+				((SpringApplicationInitializer) initializer).initialize(this);
 			}
 		}
 	}
@@ -371,10 +407,6 @@ public class SpringApplication {
 							this.beanNameGenerator);
 				}
 			}
-		}
-
-		if (context instanceof AbstractApplicationContext && this.environment != null) {
-			((AbstractApplicationContext) context).setEnvironment(this.environment);
 		}
 
 		if (context instanceof GenericApplicationContext && this.resourceLoader != null) {
@@ -495,15 +527,9 @@ public class SpringApplication {
 	}
 
 	/**
-	 * @return the addCommandLineProperties
-	 */
-	public boolean isAddCommandLineProperties() {
-		return this.addCommandLineProperties;
-	}
-
-	/**
-	 * Set some default command line arguments which can be overridden by those passed
-	 * into the run methods.
+	 * Set default command line arguments which will be used in addition to those
+	 * specified to the {@code run} methods. Default arguments can always be overridden by
+	 * user defined arguments..
 	 * @param defaultCommandLineArgs the default command line args to set
 	 */
 	public void setDefaultCommandLineArgs(String... defaultCommandLineArgs) {
@@ -519,8 +545,8 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Sets the underlying environment that should be used when loading.
-	 * 
+	 * Sets the underlying environment that should be used with the created application
+	 * context.
 	 * @param environment the environment
 	 */
 	public void setEnvironment(ConfigurableEnvironment environment) {
@@ -528,20 +554,10 @@ public class SpringApplication {
 	}
 
 	/**
-	 * The environment that will be used to create the application context (can be null in
-	 * which case a default will be provided).
-	 * 
-	 * @return the environment
-	 */
-	public ConfigurableEnvironment getEnvironment() {
-		return this.environment;
-	}
-
-	/**
-	 * The sources that will be used to create an ApplicationContext if this application
-	 * {@link #run(String...)} is called.
-	 * 
-	 * @return the sources
+	 * Returns a mutable set of the sources that will be used to create an
+	 * ApplicationContext when {@link #run(String...)} is called.
+	 * @return the sources the application sources.
+	 * @see #SpringApplication(Object...)
 	 */
 	public Set<Object> getSources() {
 		return this.sources;
@@ -550,13 +566,14 @@ public class SpringApplication {
 	/**
 	 * The sources that will be used to create an ApplicationContext. A valid source is
 	 * one of: a class, class name, package, package name, or an XML resource location.
-	 * Can also be set using contructors and static convenience methods (e.g.
+	 * Can also be set using constructors and static convenience methods (e.g.
 	 * {@link #run(Object[], String[])}).
-	 * 
 	 * @param sources the sources to set
+	 * @see #SpringApplication(Object...)
 	 */
 	public void setSources(Set<Object> sources) {
-		this.sources = sources;
+		Assert.notNull(sources, "Sources must not be null");
+		this.sources = new LinkedHashSet<Object>(sources);
 	}
 
 	/**
@@ -640,6 +657,21 @@ public class SpringApplication {
 	 */
 	public static ApplicationContext run(Object[] sources, String[] args) {
 		return new SpringApplication(sources).run(args);
+	}
+
+	/**
+	 * A basic main that can be used to launch an application. This method is useful when
+	 * application sources are defined via a {@literal --spring.main.sources} command line
+	 * argument.
+	 * <p>
+	 * Most developers will want to define their own main method can call the
+	 * {@link #run(Object, String...) run} method instead.
+	 * @param args command line arguments
+	 * @see SpringApplication#run(Object[], String[])
+	 * @see SpringApplication#run(Object, String...)
+	 */
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(new Object[0], args);
 	}
 
 	/**
