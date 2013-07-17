@@ -122,4 +122,5 @@ public class ConfigFileApplicationContextInitializerTests {
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
 	}
+
 }

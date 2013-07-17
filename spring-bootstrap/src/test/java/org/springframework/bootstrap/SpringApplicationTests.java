@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -50,6 +51,7 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -233,8 +235,8 @@ public class SpringApplicationTests {
 		application.setEnvironment(environment);
 		application.run();
 		assertThat(
-				hasPropertySource(environment, MapPropertySource.class, "commandLineArgs"),
-				equalTo(true));
+				hasPropertySource(environment, CommandLinePropertySource.class,
+						"commandLineArgs"), equalTo(true));
 	}
 
 	@Test
@@ -308,12 +310,20 @@ public class SpringApplicationTests {
 	@Test
 	public void defaultCommandLineArgs() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setDefaultCommandLineArgs("--foo", "--bar=spam", "bucket");
+		application.setDefaultCommandLineArgs("--baz", "--bar=spam", "bucket");
 		application.setWebEnvironment(false);
 		this.context = application.run("--bar=foo", "bucket", "crap");
 		assertThat(this.context, instanceOf(AnnotationConfigApplicationContext.class));
 		assertThat(getEnvironment().getProperty("bar"), equalTo("foo"));
-		assertThat(getEnvironment().getProperty("foo"), equalTo(""));
+		assertThat(getEnvironment().getProperty("baz"), equalTo(""));
+	}
+
+	@Test
+	public void commandLineArgsApplyToSpringApplication() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		application.run("--spring.main.show_banner=false");
+		assertThat(application.getShowBanner(), is(false));
 	}
 
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
@@ -336,6 +346,8 @@ public class SpringApplicationTests {
 		private BeanDefinitionLoader loader;
 
 		private boolean useMockLoader;
+
+		private boolean showBanner;
 
 		public TestSpringApplication(Object... sources) {
 			super(sources);
@@ -363,6 +375,16 @@ public class SpringApplicationTests {
 
 		public BeanDefinitionLoader getLoader() {
 			return this.loader;
+		}
+
+		@Override
+		public void setShowBanner(boolean showBanner) {
+			super.setShowBanner(showBanner);
+			this.showBanner = showBanner;
+		}
+
+		public boolean getShowBanner() {
+			return this.showBanner;
 		}
 
 	}

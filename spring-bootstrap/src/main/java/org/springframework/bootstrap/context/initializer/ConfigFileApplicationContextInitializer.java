@@ -18,7 +18,6 @@ package org.springframework.bootstrap.context.initializer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,15 +32,15 @@ import org.springframework.bootstrap.config.PropertySourceLoader;
 import org.springframework.bootstrap.config.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -79,9 +78,13 @@ import org.springframework.util.StringUtils;
  */
 public class ConfigFileApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		SpringApplicationInitializer, Ordered {
+		SpringApplicationInitializer, Ordered, EnvironmentAware {
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
+
+	private static final String COMMAND_LINE_PROPERTY_SOURCE_NAME = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
+
+	private Environment environment;
 
 	private String[] searchLocations = new String[] { "classpath:", "file:./",
 			"classpath:config/", "file:./config/" };
@@ -95,35 +98,25 @@ public class ConfigFileApplicationContextInitializer implements
 	private ConversionService conversionService = new DefaultConversionService();
 
 	/**
-	 * Creates a property source from the command line, loads additional external
-	 * configuration, and then binds it to the application. This makes it possible to set
-	 * things dynamically, like the sources ("spring.main.sources" - a CSV list) the flag
-	 * to indicate a web environment ("spring.main.web_environment=true") or the flag to
-	 * switch off the banner ("spring.main.show_banner=false").
+	 * Binds the early {@link Environment} to the {@link SpringApplication}. This makes it
+	 * possible to set {@link SpringApplication} properties dynamically, like the sources
+	 * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
+	 * ("spring.main.web_environment=true") or the flag to switch off the banner
+	 * ("spring.main.show_banner=false").
 	 */
 	@Override
-	public void initialize(SpringApplication application, String[] args) {
-
-		if (application.isAddCommandLineProperties()) {
-			this.cached.put(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-					new MapPropertySource(
-							CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-							extractCommandLineArgs(args)));
+	public void initialize(SpringApplication springApplication) {
+		if (this.environment instanceof ConfigurableEnvironment) {
+			ConfigurableEnvironment environment = (ConfigurableEnvironment) this.environment;
+			load(environment, new DefaultResourceLoader());
+			// Set bean properties from the early environment
+			PropertyValues propertyValues = new PropertySourcesPropertyValues(
+					environment.getPropertySources());
+			RelaxedDataBinder binder = new RelaxedDataBinder(springApplication,
+					"spring.main");
+			binder.setConversionService(this.conversionService);
+			binder.bind(propertyValues);
 		}
-
-		ConfigurableEnvironment environment = application.getEnvironment();
-		if (environment == null) {
-			environment = new StandardEnvironment();
-		}
-		load(environment, new DefaultResourceLoader());
-
-		// Set bean properties from command line args parameters.
-		PropertyValues pvs = new PropertySourcesPropertyValues(
-				environment.getPropertySources());
-		RelaxedDataBinder binder = new RelaxedDataBinder(application, "spring.main");
-		binder.setConversionService(this.conversionService);
-		binder.bind(pvs);
-
 	}
 
 	@Override
@@ -134,15 +127,6 @@ public class ConfigFileApplicationContextInitializer implements
 	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 
 		List<String> candidates = getCandidateLocations();
-
-		if (this.cached
-				.containsKey(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-			environment
-					.getPropertySources()
-					.addFirst(
-							this.cached
-									.get(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME));
-		}
 
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
@@ -155,11 +139,9 @@ public class ConfigFileApplicationContextInitializer implements
 				load(environment, resourceLoader, candidate, profile);
 			}
 		}
-
 	}
 
 	private List<String> getCandidateLocations() {
-
 		List<String> candidates = new ArrayList<String>();
 		for (String searchLocation : this.searchLocations) {
 			for (String extension : new String[] { ".properties", ".yml" }) {
@@ -169,12 +151,10 @@ public class ConfigFileApplicationContextInitializer implements
 		}
 		candidates.add(LOCATION_VARIABLE);
 		return candidates;
-
 	}
 
 	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			String location, String profile) {
-
 		location = environment.resolvePlaceholders(location);
 		String suffix = "." + StringUtils.getFilenameExtension(location);
 
@@ -204,12 +184,8 @@ public class ConfigFileApplicationContextInitializer implements
 
 		}
 		MutablePropertySources propertySources = environment.getPropertySources();
-		if (propertySources
-				.contains(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-			propertySources.addAfter(
-					CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-					propertySource);
-
+		if (propertySources.contains(COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
+			propertySources.addAfter(COMMAND_LINE_PROPERTY_SOURCE_NAME, propertySource);
 		}
 		else {
 			propertySources.addFirst(propertySource);
@@ -233,54 +209,9 @@ public class ConfigFileApplicationContextInitializer implements
 		return null;
 	}
 
-	/**
-	 * Merge two sets of command lines, the defaults and the ones passed in at run time.
-	 * 
-	 * @param args the ones passed in at runtime
-	 * @return a new command line
-	 */
-	protected Map<String, Object> extractCommandLineArgs(String[] args) {
-
-		List<String> nonopts = new ArrayList<String>();
-		Map<String, Object> options = new LinkedHashMap<String, Object>();
-
-		for (String arg : args) {
-			if (isOptionArg(arg)) {
-				addOptionArg(options, arg);
-			}
-			else if (!nonopts.contains(arg)) {
-				nonopts.add(arg);
-			}
-		}
-
-		for (String key : nonopts) {
-			options.put(key, "");
-		}
-
-		return options;
-
-	}
-
-	private boolean isOptionArg(String arg) {
-		return arg.startsWith("--");
-	}
-
-	private void addOptionArg(Map<String, Object> map, String arg) {
-		String optionText = arg.substring(2, arg.length());
-		String optionName;
-		String optionValue = "";
-		if (optionText.contains("=")) {
-			optionName = optionText.substring(0, optionText.indexOf('='));
-			optionValue = optionText.substring(optionText.indexOf('=') + 1,
-					optionText.length());
-		}
-		else {
-			optionName = optionText;
-		}
-		if (optionName.isEmpty()) {
-			throw new IllegalArgumentException("Invalid argument syntax: " + arg);
-		}
-		map.put(optionName, optionValue);
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	public void setOrder(int order) {

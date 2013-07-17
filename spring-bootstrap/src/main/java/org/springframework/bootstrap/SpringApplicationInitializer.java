@@ -16,9 +16,14 @@
 
 package org.springframework.bootstrap;
 
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+
 /**
  * Strategy interface that can be used to initialize a {@link SpringApplication} before it
- * is run.
+ * is runs. A {@link SpringApplicationInitializer} can optionally implement
+ * {@link EnvironmentAware} if it needs to access or configure the underling application
+ * {@link Environment}.
  * 
  * @author Phillip Webb
  */
@@ -27,8 +32,7 @@ public interface SpringApplicationInitializer {
 	/**
 	 * Initialize the application
 	 * @param springApplication the spring application.
-	 * @param args the args provided on command line by caller
 	 */
-	void initialize(SpringApplication springApplication, String[] args);
+	void initialize(SpringApplication springApplication);
 
 }
