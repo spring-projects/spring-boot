@@ -98,13 +98,12 @@ abstract class AbstractOnBeanCondition implements ConfigurationCondition {
 
 		String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
 
-		Boolean considerHierarchy = (Boolean) metadata.getAnnotationAttributes(
-				annotationClass().getName()).get("parentContext");
-		considerHierarchy = (considerHierarchy == null ? false : considerHierarchy);
+		SearchStrategy search = (SearchStrategy) metadata.getAnnotationAttributes(
+				annotationClass().getName()).get("search");
+		search = search == null ? SearchStrategy.ALL : search;
 
-		Boolean parentOnly = (Boolean) metadata.getAnnotationAttributes(
-				annotationClass().getName()).get("parentOnly");
-		parentOnly = (parentOnly == null ? false : parentOnly);
+		boolean considerHierarchy = search == SearchStrategy.ALL;
+		boolean parentOnly = search == SearchStrategy.PARENTS;
 
 		List<String> beanClassesFound = new ArrayList<String>();
 		List<String> beanNamesFound = new ArrayList<String>();

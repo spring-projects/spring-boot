@@ -26,6 +26,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.bootstrap.context.condition.ConditionalOnBean;
 import org.springframework.bootstrap.context.condition.ConditionalOnClass;
+import org.springframework.bootstrap.context.condition.SearchStrategy;
 import org.springframework.bootstrap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
@@ -81,7 +82,7 @@ public class EndpointWebMvcChildContextConfiguration implements
 
 	@Configuration
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
-	@ConditionalOnBean(name = "springSecurityFilterChain", parentOnly = true)
+	@ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.PARENTS)
 	public static class EndpointWebMvcChildContextSecurityConfiguration {
 
 		// FIXME reuse of security filter here is not good. What if totally different

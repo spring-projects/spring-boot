@@ -111,7 +111,7 @@ public class OnMissingBeanConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnMissingBean(name = "foo", parentContext = false)
+	@ConditionalOnMissingBean(name = "foo", search = SearchStrategy.CURRENT)
 	protected static class HierarchyNotConsidered {
 		@Bean
 		public String bar() {

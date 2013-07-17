@@ -53,13 +53,9 @@ public @interface ConditionalOnBean {
 	String[] name() default {};
 
 	/**
-	 * If the application context hierarchy (parent contexts) should be considered.
+	 * Strategy to decide if the application context hierarchy (parent contexts) should be
+	 * considered.
 	 */
-	boolean parentContext() default true;
-
-	/**
-	 * If only the application parent contexts should be considered.
-	 */
-	boolean parentOnly() default false;
+	SearchStrategy search() default SearchStrategy.ALL;
 
 }
