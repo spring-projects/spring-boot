@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
@@ -33,12 +32,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.bootstrap.context.condition.ConditionalOnClass;
 import org.springframework.bootstrap.context.condition.ConditionalOnMissingBean;
-import org.springframework.bootstrap.context.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.spring3.SpringTemplateEngine;
@@ -107,18 +106,23 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass("nz.net.ultraq.thymeleaf.LayoutDialect")
 	@ConditionalOnMissingBean(SpringTemplateEngine.class)
 	protected static class ThymeleafDefaultConfiguration {
 
 		@Autowired
 		private Collection<ITemplateResolver> templateResolvers = Collections.emptySet();
 
+		@Autowired(required = false)
+		private Collection<IDialect> dialects = Collections.emptySet();
+
 		@Bean
 		public SpringTemplateEngine templateEngine() {
 			SpringTemplateEngine engine = new SpringTemplateEngine();
 			for (ITemplateResolver templateResolver : this.templateResolvers) {
 				engine.addTemplateResolver(templateResolver);
+			}
+			for (IDialect dialect : this.dialects) {
+				engine.addDialect(dialect);
 			}
 			return engine;
 		}
@@ -127,20 +131,11 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(name = "nz.net.ultraq.thymeleaf.LayoutDialect")
-	@ConditionalOnMissingBean(SpringTemplateEngine.class)
 	protected static class ThymeleafWebLayoutConfiguration {
 
-		@Autowired
-		private Collection<ITemplateResolver> templateResolvers = Collections.emptySet();
-
 		@Bean
-		public SpringTemplateEngine templateEngine() {
-			SpringTemplateEngine engine = new SpringTemplateEngine();
-			for (ITemplateResolver templateResolver : this.templateResolvers) {
-				engine.addTemplateResolver(templateResolver);
-			}
-			engine.addDialect(new LayoutDialect());
-			return engine;
+		public LayoutDialect layoutDialect() {
+			return new LayoutDialect();
 		}
 
 	}
@@ -167,12 +162,9 @@ public class ThymeleafAutoConfiguration {
 	@ConditionalOnClass({ SpringSecurityDialect.class })
 	protected static class ThymeleafSecurityDialectConfiguration {
 
-		@Autowired
-		private SpringTemplateEngine templateEngine;
-
-		@PostConstruct
-		public void configureThymeleafSecurity() {
-			this.templateEngine.addDialect(new SpringSecurityDialect());
+		@Bean
+		public SpringSecurityDialect securityDialect() {
+			return new SpringSecurityDialect();
 		}
 	}
 

@@ -7,29 +7,19 @@
 		<artifactId>spring-starters</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-starter-web</artifactId>
+	<artifactId>spring-starter-tomcat</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-starter</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-starter-tomcat</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-logging-juli</artifactId>
 		</dependency>
 	</dependencies>
 </project>
