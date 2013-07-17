@@ -21,8 +21,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
@@ -54,7 +57,8 @@ import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 /**
- * Abstract base of MOJOs that package executable archives.
+ * MOJO that can can be used to repackage existing JAR and WAR archives so that they can
+ * be executed from the command line using {@literal java -jar}.
  * 
  * @author Phillip Webb
  */
@@ -64,6 +68,14 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
+
+	private static final Map<String, ArchiveHelper> ARCHIVE_HELPERS;
+	static {
+		Map<String, ArchiveHelper> helpers = new HashMap<String, ArchiveHelper>();
+		helpers.put("jar", new ExecutableJarHelper());
+		helpers.put("war", new ExecutableWarHelper());
+		ARCHIVE_HELPERS = Collections.unmodifiableMap(helpers);
+	}
 
 	/**
 	 * Archiver used to create a JAR file.
@@ -149,10 +161,6 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
 	private RepositorySystemSession repositorySystemSession;
 
-	private ExecutableJarHelper jarHelper = new ExecutableJarHelper();
-
-	private ExecutableWarHelper warHelper = new ExecutableWarHelper();
-
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		File archiveFile = createArchive();
@@ -169,13 +177,11 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 	}
 
 	private ArchiveHelper getArchiveHelper() throws MojoExecutionException {
-		if (getType().equals("jar")) {
-			return this.jarHelper;
+		ArchiveHelper helper = ARCHIVE_HELPERS.get(getType());
+		if (helper == null) {
+			throw new MojoExecutionException("Unsupported packaging type: " + getType());
 		}
-		if (getType().equals("war")) {
-			return this.warHelper;
-		}
-		throw new MojoExecutionException("Unsupported packaging type: " + getType());
+		return helper;
 	}
 
 	private File createArchive() throws MojoExecutionException {
