@@ -19,6 +19,8 @@ package org.springframework.maven.packaging;
 import org.apache.maven.artifact.Artifact;
 
 /**
+ * Strategy interface used by {@link ExecutableArchiveMojo} when creating archives.
+ * 
  * @author Dave Syer
  */
 public interface ArchiveHelper {
