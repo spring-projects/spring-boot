@@ -99,7 +99,7 @@
 			<plugin>
 				<artifactId>maven-plugin-plugin</artifactId>
 				<configuration>
-					<goalPrefix>spring</goalPrefix>
+					<goalPrefix>spring-package</goalPrefix>
 				</configuration>
 				<executions>
 					<execution>
