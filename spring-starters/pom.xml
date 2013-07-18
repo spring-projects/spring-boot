@@ -25,4 +25,34 @@
 		<module>spring-starter-tomcat</module>
 		<module>spring-starter-web</module>
 	</modules>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<useDefaultDelimiters>false</useDefaultDelimiters>
+							<delimiters>
+								<delimiter>#{*}</delimiter>
+							</delimiters>
+							<resources>
+								<resource>
+									<directory>src/main/parent</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+							<outputDirectory>${basedir}/spring-starter-parent</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
