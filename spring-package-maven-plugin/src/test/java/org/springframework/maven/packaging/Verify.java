@@ -35,7 +35,11 @@ import static org.junit.Assert.assertTrue;
 public class Verify {
 
 	public static void verifyJar(File file) throws Exception {
-		new JarArchiveVerification(file).verify();
+		new JarArchiveVerification(file, "org.test.SampleApplication").verify();
+	}
+
+	public static void verifyJar(File file, String main) throws Exception {
+		new JarArchiveVerification(file, main).verify();
 	}
 
 	public static void verifyWar(File file) throws Exception {
@@ -90,8 +94,11 @@ public class Verify {
 
 	private static class JarArchiveVerification extends AbstractArchiveVerification {
 
-		public JarArchiveVerification(File file) {
+		private String main;
+
+		public JarArchiveVerification(File file, String main) {
 			super(file);
+			this.main = main;
 		}
 
 		@Override
@@ -111,8 +118,8 @@ public class Verify {
 		protected void verifyManifest(Manifest manifest) throws Exception {
 			assertEquals("org.springframework.launcher.JarLauncher", manifest
 					.getMainAttributes().getValue("Main-Class"));
-			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
-					.getValue("Start-Class"));
+			assertEquals(this.main, manifest.getMainAttributes().getValue("Start-Class"));
+			assertEquals("Foo", manifest.getMainAttributes().getValue("Not-Used"));
 		}
 	}
 
@@ -143,6 +150,7 @@ public class Verify {
 					.getMainAttributes().getValue("Main-Class"));
 			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
 					.getValue("Start-Class"));
+			assertEquals("Foo", manifest.getMainAttributes().getValue("Not-Used"));
 		}
 	}
 

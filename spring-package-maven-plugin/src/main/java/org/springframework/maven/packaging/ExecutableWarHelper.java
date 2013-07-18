@@ -26,6 +26,7 @@ import org.apache.maven.artifact.Artifact;
  * Build an executable WAR file.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class ExecutableWarHelper implements ArchiveHelper {
 

@@ -26,6 +26,11 @@
 				<version>2.3</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<archive>
+						<manifestEntries>
+							<Not-Used>Foo</Not-Used>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>

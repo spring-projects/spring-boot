@@ -26,6 +26,7 @@ import org.apache.maven.artifact.Artifact;
  * Help build an executable JAR file.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class ExecutableJarHelper implements ArchiveHelper {
 
