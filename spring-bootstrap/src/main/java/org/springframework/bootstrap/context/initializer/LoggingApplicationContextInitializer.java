@@ -82,6 +82,9 @@ public class LoggingApplicationContextInitializer implements
 
 	@Override
 	public void initialize(SpringApplication springApplication) {
+		if (System.getProperty("PID") == null) {
+			System.setProperty("PID", getPid());
+		}
 		LoggingSystem.get(springApplication.getClass().getClassLoader())
 				.beforeInitialize();
 	}
@@ -101,10 +104,6 @@ public class LoggingApplicationContextInitializer implements
 				System.setProperty(mapping.getValue(),
 						environment.getProperty(mapping.getKey()));
 			}
-		}
-
-		if (System.getProperty("PID") == null) {
-			System.setProperty("PID", getPid());
 		}
 
 		LoggingSystem system = LoggingSystem.get(applicationContext.getClassLoader());
