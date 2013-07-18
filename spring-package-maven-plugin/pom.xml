@@ -15,6 +15,11 @@
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-launcher</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-archiver</artifactId>
 		</dependency>
@@ -81,13 +86,6 @@
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-annotations</artifactId>
 			<scope>provided</scope>
-		</dependency>
-		<!-- Test -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-launcher</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

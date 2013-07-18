@@ -21,17 +21,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.maven.archiver.MavenArchiveConfiguration;
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -39,7 +34,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
@@ -63,19 +57,9 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
  * @author Phillip Webb
  */
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class ExecutableArchiveMojo extends AbstractMojo {
-
-	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
+public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
 
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
-
-	private static final Map<String, ArchiveHelper> ARCHIVE_HELPERS;
-	static {
-		Map<String, ArchiveHelper> helpers = new HashMap<String, ArchiveHelper>();
-		helpers.put("jar", new ExecutableJarHelper());
-		helpers.put("war", new ExecutableWarHelper());
-		ARCHIVE_HELPERS = Collections.unmodifiableMap(helpers);
-	}
 
 	/**
 	 * Archiver used to create a JAR file.
@@ -96,12 +80,6 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 	private RepositorySystem repositorySystem;
 
 	/**
-	 * The Maven project.
-	 */
-	@Parameter(defaultValue = "${project}", readonly = true, required = true)
-	private MavenProject project;
-
-	/**
 	 * The Maven session.
 	 */
 	@Parameter(defaultValue = "${session}", readonly = true, required = true)
@@ -120,34 +98,12 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 	private String finalName;
 
 	/**
-	 * The name of the main class. If not specified the first compiled class found that
-	 * contains a 'main' method will be used.
-	 */
-	@Parameter
-	private String mainClass;
-
-	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
 	 * attached. If this is not given, it will merely be written to the output directory
 	 * according to the finalName.
 	 */
 	@Parameter
 	private String classifier;
-
-	/**
-	 * Directory containing the classes and resource files that should be packaged into
-	 * the archive.
-	 */
-	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
-	private File classesDirectrory;
-
-	/**
-	 * The archive configuration to use. See <a
-	 * href="http://maven.apache.org/shared/maven-archiver/index.html">Maven Archiver
-	 * Reference</a>.
-	 */
-	@Parameter
-	private MavenArchiveConfiguration archive = new MavenArchiveConfiguration();
 
 	/**
 	 * Whether creating the archive should be forced.
@@ -165,23 +121,15 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		File archiveFile = createArchive();
 		if (this.classifier == null || this.classifier.isEmpty()) {
-			this.project.getArtifact().setFile(archiveFile);
+			getProject().getArtifact().setFile(archiveFile);
 		}
 		else {
 			getLog().info(
 					"Attaching archive: " + archiveFile + ", with classifier: "
 							+ this.classifier);
-			this.projectHelper.attachArtifact(this.project, getType(), this.classifier,
+			this.projectHelper.attachArtifact(getProject(), getType(), this.classifier,
 					archiveFile);
 		}
-	}
-
-	private ArchiveHelper getArchiveHelper() throws MojoExecutionException {
-		ArchiveHelper helper = ARCHIVE_HELPERS.get(getType());
-		if (helper == null) {
-			throw new MojoExecutionException("Unsupported packaging type: " + getType());
-		}
-		return helper;
 	}
 
 	private File createArchive() throws MojoExecutionException {
@@ -195,11 +143,12 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 
 		try {
 			getLog().info("Modifying archive: " + archiveFile);
-			copyContent(archiver, this.project.getArtifact().getFile());
+			copyContent(archiver, getProject().getArtifact().getFile());
 			addLibs(archiver);
 			ZipFile zipFile = addLauncherClasses(archiver);
 			try {
-				archiver.createArchive(this.session, this.project, this.archive);
+				archiver.createArchive(this.session, getProject(),
+						getArchiveConfiguration());
 				return archiveFile;
 			}
 			finally {
@@ -209,14 +158,6 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 		catch (Exception ex) {
 			throw new MojoExecutionException("Error assembling archive", ex);
 		}
-	}
-
-	private String getType() {
-		return this.project.getPackaging();
-	}
-
-	private String getExtension() {
-		return this.project.getPackaging();
 	}
 
 	private void copyContent(MavenArchiver archiver, File file) throws IOException {
@@ -232,7 +173,6 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 		Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
-			// TODO: maybe merge manifest instead of skipping it?
 			if (!entry.isDirectory()
 					&& !entry.getName().toUpperCase().equals("/META-INF/MANIFEST.MF")) {
 				ZipResource zipResource = new ZipResource(zipFile, entry);
@@ -252,28 +192,20 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 	}
 
 	private void customizeArchiveConfiguration() throws MojoExecutionException {
-		this.archive.setForced(this.forceCreation);
-		String mainClass = this.mainClass;
-		if (mainClass == null) {
-			mainClass = this.archive.getManifestEntries().get(MAIN_CLASS_ATTRIBUTE);
-		}
-		if (mainClass == null) {
-			mainClass = MainClassFinder.findMainClass(this.classesDirectrory);
-		}
-		if (mainClass == null) {
-			throw new MojoExecutionException("Unable to find a suitable main class, "
-					+ "please add a 'mainClass' property");
-		}
-		this.archive.getManifestEntries().put(MAIN_CLASS_ATTRIBUTE,
+		getArchiveConfiguration().setForced(this.forceCreation);
+		String startClass = getStartClass();
+		getArchiveConfiguration().getManifestEntries().put(MAIN_CLASS_ATTRIBUTE,
 				getArchiveHelper().getLauncherClass());
-		this.archive.getManifestEntries().put(START_CLASS_ATTRIBUTE, mainClass);
+		getArchiveConfiguration().getManifestEntries().put(START_CLASS_ATTRIBUTE,
+				startClass);
 	}
 
 	private void addLibs(MavenArchiver archiver) throws MojoExecutionException {
 		getLog().info("Adding dependencies");
-		for (Artifact artifact : this.project.getArtifacts()) {
+		ArchiveHelper archiveHelper = getArchiveHelper();
+		for (Artifact artifact : getProject().getArtifacts()) {
 			if (artifact.getFile() != null) {
-				String dir = getArchiveHelper().getArtifactDestination(artifact);
+				String dir = archiveHelper.getArtifactDestination(artifact);
 				if (dir != null) {
 					getLog().debug("Adding dependency: " + artifact);
 					archiver.getArchiver().addFile(artifact.getFile(),
@@ -288,8 +220,8 @@ public class ExecutableArchiveMojo extends AbstractMojo {
 		getLog().info("Adding launcher classes");
 		try {
 			List<RemoteRepository> repositories = new ArrayList<RemoteRepository>();
-			repositories.addAll(this.project.getRemotePluginRepositories());
-			repositories.addAll(this.project.getRemoteProjectRepositories());
+			repositories.addAll(getProject().getRemotePluginRepositories());
+			repositories.addAll(getProject().getRemoteProjectRepositories());
 
 			String version = getClass().getPackage().getImplementationVersion();
 			DefaultArtifact artifact = new DefaultArtifact(
