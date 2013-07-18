@@ -31,6 +31,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.Assert;
 
 /**
@@ -40,12 +42,13 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  */
 public abstract class AbstractEmbeddedServletContainerFactory implements
-		ConfigurableEmbeddedServletContainerFactory {
+		ConfigurableEmbeddedServletContainerFactory,
+		ApplicationListener<ContextRefreshedEvent> {
 
 	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
 			"static" };
 
-	private final Log logger = LogFactory.getLog(getClass());
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	private String contextPath = "";
 
@@ -92,6 +95,14 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		checkPort(port);
 		this.contextPath = contextPath;
 		this.port = port;
+	}
+
+	/**
+	 * Subclasses should use this event to tell the server to start listening for
+	 * connections.
+	 */
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
 	}
 
 	/**

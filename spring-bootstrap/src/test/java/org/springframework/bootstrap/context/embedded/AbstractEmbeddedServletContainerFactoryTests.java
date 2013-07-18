@@ -84,17 +84,18 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
-		assertThat(getResponse("http://localhost:8080/hello"), equalTo("Hello World"));
+		assertThat(getResponse(factory, "http://localhost:8080/hello"),
+				equalTo("Hello World"));
 	}
 
 	@Test
-	public void emptyServer() throws Exception {
+	public void emptyServerWhenPortIsZero() throws Exception {
 		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		factory.setPort(0);
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.thrown.expect(SocketException.class);
-		getResponse("http://localhost:8080/hello");
+		getResponse(factory, "http://localhost:8080/hello");
 	}
 
 	@Test
@@ -102,9 +103,10 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
+		start(factory);
 		this.container.stop();
 		this.thrown.expect(SocketException.class);
-		getResponse("http://localhost:8080/hello");
+		getResponse(null, "http://localhost:8080/hello");
 	}
 
 	@Test
@@ -135,7 +137,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory.getEmbeddedServletContainer(
 				exampleServletRegistration(), new FilterRegistrationBean(
 						new ExampleFilter()));
-		assertThat(getResponse("http://localhost:8080/hello"), equalTo("[Hello World]"));
+		assertThat(getResponse(factory, "http://localhost:8080/hello"),
+				equalTo("[Hello World]"));
 	}
 
 	@Test
@@ -165,7 +168,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.setPort(8081);
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
-		assertThat(getResponse("http://localhost:8081/hello"), equalTo("Hello World"));
+		assertThat(getResponse(factory, "http://localhost:8081/hello"),
+				equalTo("Hello World"));
 	}
 
 	@Test
@@ -174,7 +178,8 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.setContextPath("/say");
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
-		assertThat(getResponse("http://localhost:8080/say/hello"), equalTo("Hello World"));
+		assertThat(getResponse(factory, "http://localhost:8080/say/hello"),
+				equalTo("Hello World"));
 	}
 
 	@Test
@@ -204,6 +209,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
+		start(factory);
 		this.container.stop();
 		this.container.stop();
 	}
@@ -232,12 +238,15 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
 		factory.setDocumentRoot(this.temporaryFolder.getRoot());
 		this.container = factory.getEmbeddedServletContainer();
-		assertThat(getResponse("http://localhost:8080/test.txt"), equalTo("test"));
+		assertThat(getResponse(factory, "http://localhost:8080/test.txt"),
+				equalTo("test"));
 	}
 
 	// FIXME test error page
 
-	protected String getResponse(String url) throws IOException, URISyntaxException {
+	protected String getResponse(EmbeddedServletContainerFactory factory, String url)
+			throws IOException, URISyntaxException {
+		start(factory);
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(url),
 				HttpMethod.GET);
@@ -247,6 +256,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		}
 		finally {
 			response.close();
+		}
+	}
+
+	private void start(EmbeddedServletContainerFactory factory) {
+		if (factory instanceof AbstractEmbeddedServletContainerFactory) {
+			((AbstractEmbeddedServletContainerFactory) factory).onApplicationEvent(null);
 		}
 	}
 
