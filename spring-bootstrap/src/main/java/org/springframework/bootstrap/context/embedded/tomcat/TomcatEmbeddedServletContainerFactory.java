@@ -39,6 +39,7 @@ import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
+import org.springframework.bootstrap.context.embedded.MimeMappings;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
@@ -147,7 +148,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
 		context.setLoader(loader);
-
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
 		}
@@ -216,6 +216,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 			tomcatPage.setExceptionType(errorPage.getExceptionName());
 			tomcatPage.setErrorCode(errorPage.getStatusCode());
 			context.addErrorPage(tomcatPage);
+		}
+		for (MimeMappings.Mapping mapping : getMimeMappings()) {
+			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
 	}
 
