@@ -12,7 +12,6 @@
 				<groupId>@project.groupId@</groupId>
 				<artifactId>@project.artifactId@</artifactId>
 				<version>@project.version@</version>
-				<extensions>true</extensions>
 				<executions>
 					<execution>
 						<goals>
