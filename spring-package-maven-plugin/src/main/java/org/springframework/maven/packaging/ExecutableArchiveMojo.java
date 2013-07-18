@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 
 import org.apache.maven.archiver.MavenArchiver;
 import org.apache.maven.artifact.Artifact;
@@ -37,6 +39,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.archiver.Archiver;
 import org.codehaus.plexus.archiver.jar.JarArchiver;
+import org.codehaus.plexus.archiver.jar.Manifest;
 import org.codehaus.plexus.archiver.zip.ZipEntry;
 import org.codehaus.plexus.archiver.zip.ZipFile;
 import org.codehaus.plexus.archiver.zip.ZipResource;
@@ -55,6 +58,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
  * be executed from the command line using {@literal java -jar}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 @Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
@@ -135,7 +139,6 @@ public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
 	private File createArchive() throws MojoExecutionException {
 		File archiveFile = getTargetFile();
 		MavenArchiver archiver = new MavenArchiver();
-		customizeArchiveConfiguration();
 
 		archiver.setArchiver(this.jarArchiver);
 		archiver.setOutputFile(archiveFile);
@@ -143,7 +146,9 @@ public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
 
 		try {
 			getLog().info("Modifying archive: " + archiveFile);
-			copyContent(archiver, getProject().getArtifact().getFile());
+			Manifest manifest = copyContent(archiver, getProject().getArtifact()
+					.getFile());
+			customizeArchiveConfiguration(manifest);
 			addLibs(archiver);
 			ZipFile zipFile = addLauncherClasses(archiver);
 			try {
@@ -160,7 +165,7 @@ public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
 		}
 	}
 
-	private void copyContent(MavenArchiver archiver, File file) throws IOException {
+	private Manifest copyContent(MavenArchiver archiver, File file) throws IOException {
 
 		FileInputStream input = new FileInputStream(file);
 		File original = new File(this.outputDirectory, "original.jar");
@@ -169,16 +174,25 @@ public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
 		input.close();
 		output.close();
 
+		Manifest manifest = new Manifest();
 		ZipFile zipFile = new ZipFile(original);
 		Enumeration<? extends ZipEntry> entries = zipFile.getEntries();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
-			if (!entry.isDirectory()
-					&& !entry.getName().toUpperCase().equals("/META-INF/MANIFEST.MF")) {
+			if (!entry.isDirectory()) {
 				ZipResource zipResource = new ZipResource(zipFile, entry);
-				archiver.getArchiver().addResource(zipResource, entry.getName(), -1);
+				getLog().debug("Copying resource: " + entry.getName());
+				if (!entry.getName().toUpperCase().equals("META-INF/MANIFEST.MF")) {
+					archiver.getArchiver().addResource(zipResource, entry.getName(), -1);
+				}
+				else {
+					getLog().info("Found existing manifest");
+					manifest = new Manifest(zipResource.getContents());
+				}
 			}
 		}
+
+		return manifest;
 
 	}
 
@@ -191,13 +205,21 @@ public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
 				+ getExtension());
 	}
 
-	private void customizeArchiveConfiguration() throws MojoExecutionException {
+	private void customizeArchiveConfiguration(Manifest manifest)
+			throws MojoExecutionException {
 		getArchiveConfiguration().setForced(this.forceCreation);
+
+		Attributes attributes = manifest.getMainAttributes();
+		for (Object name : attributes.keySet()) {
+			String value = attributes.getValue((Name) name);
+			getLog().debug("Existing manifest entry: " + name + "=" + value);
+			getArchiveConfiguration().addManifestEntry(name.toString(), value);
+		}
+
 		String startClass = getStartClass();
-		getArchiveConfiguration().getManifestEntries().put(MAIN_CLASS_ATTRIBUTE,
+		getArchiveConfiguration().addManifestEntry(MAIN_CLASS_ATTRIBUTE,
 				getArchiveHelper().getLauncherClass());
-		getArchiveConfiguration().getManifestEntries().put(START_CLASS_ATTRIBUTE,
-				startClass);
+		getArchiveConfiguration().addManifestEntry(START_CLASS_ATTRIBUTE, startClass);
 	}
 
 	private void addLibs(MavenArchiver archiver) throws MojoExecutionException {
