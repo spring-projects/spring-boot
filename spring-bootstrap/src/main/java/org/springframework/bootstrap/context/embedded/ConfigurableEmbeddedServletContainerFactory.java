@@ -31,42 +31,93 @@ import java.util.Set;
 public interface ConfigurableEmbeddedServletContainerFactory extends
 		EmbeddedServletContainerFactory {
 
+	/**
+	 * Sets the context path for the embedded servlet container. The context should start
+	 * with a "/" character but not end with a "/" character. The default context path can
+	 * be specified using an empty string.
+	 * @param contextPath the contextPath to set
+	 */
 	void setContextPath(String contextPath);
 
-	String getContextPath();
-
+	/**
+	 * Sets the port that the embedded servlet container should listen on. If not
+	 * specified port '8080' will be used. Use port 0 to switch off the server completely.
+	 * @param port the port to set
+	 */
 	void setPort(int port);
 
-	int getPort();
-
+	/**
+	 * Sets the specific network address that the server should bind to.
+	 * @param address the address to set (defaults to {@code null})
+	 */
 	void setAddress(InetAddress address);
 
-	InetAddress getAddress();
-
-	void setInitializers(List<? extends ServletContextInitializer> initializers);
-
+	/**
+	 * The class name for the jsp servlet if used. If
+	 * {@link #setRegisterJspServlet(boolean) <code>registerJspServlet</code>} is true
+	 * <b>and</b> this class is on the classpath then it will be registered. Since both
+	 * Tomcat and Jetty use Jasper for their JSP implementation the default is
+	 * <code>org.apache.jasper.servlet.JspServlet</code>.
+	 * @param jspServletClassName the class name for the JSP servlet if used
+	 */
 	void setJspServletClassName(String jspServletClassName);
 
-	boolean isRegisterDefaultServlet();
-
+	/**
+	 * Set if the JspServlet should be registered if it is on the classpath. Defaults to
+	 * {@code true} so that files from the {@link #setDocumentRoot(File) document root}
+	 * will be served.
+	 * @param registerJspServlet if the JSP servlet should be registered
+	 */
 	void setRegisterJspServlet(boolean registerJspServlet);
 
-	boolean isRegisterJspServlet();
-
+	/**
+	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
+	 * files from the {@link #setDocumentRoot(File) document root} will be served.
+	 * @param registerDefaultServlet if the default servlet should be registered
+	 */
 	void setRegisterDefaultServlet(boolean registerDefaultServlet);
 
-	Set<ErrorPage> getErrorPages();
-
+	/**
+	 * Adds error pages that will be used when handling exceptions.
+	 * @param errorPages the error pages
+	 */
 	void addErrorPages(ErrorPage... errorPages);
 
+	/**
+	 * Sets the error pages that will be used when handling exceptions.
+	 * @param errorPages the error pages
+	 */
 	void setErrorPages(Set<ErrorPage> errorPages);
 
-	File getDocumentRoot();
+	/**
+	 * Sets the mime-type mappings.
+	 * @param mimeMappings the mime type mappings (defaults to
+	 * {@link MimeMappings#DEFAULT})
+	 */
+	void setMimeMappings(MimeMappings mimeMappings);
 
+	/**
+	 * Sets the document root folder which will be used by the web context to serve static
+	 * files.
+	 * @param documentRoot the document root or {@code null} if not required
+	 */
 	void setDocumentRoot(File documentRoot);
 
-	List<ServletContextInitializer> getInitializers();
+	/**
+	 * Sets {@link ServletContextInitializer} that should be applied in addition to
+	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters. This
+	 * method will replace any previously set or added initializers.
+	 * @param initializers the initializers to set
+	 * @see #addInitializers
+	 */
+	void setInitializers(List<? extends ServletContextInitializer> initializers);
 
+	/**
+	 * Add {@link ServletContextInitializer}s to those that should be applied in addition
+	 * to {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters.
+	 * @param initializers the initializers to add
+	 * @see #setInitializers
+	 */
 	void addInitializers(ServletContextInitializer... initializers);
 
 }

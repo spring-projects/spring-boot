@@ -85,8 +85,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(factory, "http://localhost:8080/hello"),
-				equalTo("Hello World"));
+		assertThat(getResponse("http://localhost:8080/hello"), equalTo("Hello World"));
 	}
 
 	@Test
@@ -97,7 +96,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
 		this.thrown.expect(SocketException.class);
-		getResponse(factory, "http://localhost:8080/hello");
+		getResponse("http://localhost:8080/hello");
 	}
 
 	@Test
@@ -108,7 +107,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 		this.container.stop();
 		this.thrown.expect(SocketException.class);
-		getResponse(null, "http://localhost:8080/hello");
+		getResponse("http://localhost:8080/hello");
 	}
 
 	@Test
@@ -140,8 +139,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				exampleServletRegistration(), new FilterRegistrationBean(
 						new ExampleFilter()));
 		this.container.start();
-		assertThat(getResponse(factory, "http://localhost:8080/hello"),
-				equalTo("[Hello World]"));
+		assertThat(getResponse("http://localhost:8080/hello"), equalTo("[Hello World]"));
 	}
 
 	@Test
@@ -173,8 +171,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(factory, "http://localhost:8081/hello"),
-				equalTo("Hello World"));
+		assertThat(getResponse("http://localhost:8081/hello"), equalTo("Hello World"));
 	}
 
 	@Test
@@ -184,8 +181,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse(factory, "http://localhost:8080/say/hello"),
-				equalTo("Hello World"));
+		assertThat(getResponse("http://localhost:8080/say/hello"), equalTo("Hello World"));
 	}
 
 	@Test
@@ -246,24 +242,44 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.setDocumentRoot(this.temporaryFolder.getRoot());
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
-		assertThat(getResponse(factory, "http://localhost:8080/test.txt"),
-				equalTo("test"));
+		assertThat(getResponse("http://localhost:8080/test.txt"), equalTo("test"));
+	}
+
+	@Test
+	public void mimeType() throws Exception {
+		FileCopyUtils.copy("test",
+				new FileWriter(this.temporaryFolder.newFile("test.xxcss")));
+		AbstractEmbeddedServletContainerFactory factory = getFactory();
+		factory.setDocumentRoot(this.temporaryFolder.getRoot());
+		MimeMappings mimeMappings = new MimeMappings();
+		mimeMappings.add("xxcss", "text/css");
+		factory.setMimeMappings(mimeMappings);
+		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+		ClientHttpResponse response = getClientResponse("http://localhost:8080/test.xxcss");
+		assertThat(response.getHeaders().getContentType().toString(), equalTo("text/css"));
+		response.close();
 	}
 
 	// FIXME test error page
 
-	protected String getResponse(EmbeddedServletContainerFactory factory, String url)
-			throws IOException, URISyntaxException {
-		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(url),
-				HttpMethod.GET);
-		ClientHttpResponse response = request.execute();
+	protected String getResponse(String url) throws IOException, URISyntaxException {
+		ClientHttpResponse response = getClientResponse(url);
 		try {
 			return StreamUtils.copyToString(response.getBody(), Charset.forName("UTF-8"));
 		}
 		finally {
 			response.close();
 		}
+	}
+
+	protected ClientHttpResponse getClientResponse(String url) throws IOException,
+			URISyntaxException {
+		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(url),
+				HttpMethod.GET);
+		ClientHttpResponse response = request.execute();
+		return response;
 	}
 
 	protected abstract AbstractEmbeddedServletContainerFactory getFactory();

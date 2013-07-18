@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
@@ -36,6 +37,7 @@ import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletCon
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
+import org.springframework.bootstrap.context.embedded.MimeMappings;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
@@ -173,12 +175,12 @@ public class JettyEmbeddedServletContainerFactory extends
 				initializers));
 		configurations.addAll(getConfigurations());
 		configurations.add(getErrorPageConfiguration());
+		configurations.add(getMimeTypeConfiguration());
 		return configurations.toArray(new Configuration[configurations.size()]);
 	}
 
 	/**
 	 * Create a configuration object that adds error handlers
-	 * 
 	 * @return a configuration object for adding error pages
 	 */
 	private Configuration getErrorPageConfiguration() {
@@ -187,6 +189,23 @@ public class JettyEmbeddedServletContainerFactory extends
 			public void configure(WebAppContext context) throws Exception {
 				ErrorHandler errorHandler = context.getErrorHandler();
 				addJettyErrorPages(errorHandler, getErrorPages());
+			}
+		};
+	}
+
+	/**
+	 * Create a configuration object that adds mime type mappings
+	 * @return a configuration object for adding mime type mappings
+	 */
+	private Configuration getMimeTypeConfiguration() {
+		return new AbstractConfiguration() {
+			@Override
+			public void configure(WebAppContext context) throws Exception {
+				MimeTypes mimeTypes = context.getMimeTypes();
+				for (MimeMappings.Mapping mapping : getMimeMappings()) {
+					mimeTypes.addMimeMapping(mapping.getExtension(),
+							mapping.getMimeType());
+				}
 			}
 		};
 	}

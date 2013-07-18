@@ -63,6 +63,8 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	private Set<ErrorPage> errorPages = new LinkedHashSet<ErrorPage>();
 
+	private MimeMappings mimeMappings = new MimeMappings(MimeMappings.DEFAULT);
+
 	private InetAddress address;
 
 	/**
@@ -94,13 +96,6 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		this.port = port;
 	}
 
-	/**
-	 * Sets the context path for the embedded servlet container. The context should start
-	 * with a "/" character but not end with a "/" character. The default context path can
-	 * be specified using an empty string.
-	 * @param contextPath the contextPath to set
-	 * @see #getContextPath
-	 */
 	@Override
 	public void setContextPath(String contextPath) {
 		checkContextPath(contextPath);
@@ -125,17 +120,10 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Returns the context path for the embedded servlet container. The path will start
 	 * with "/" and not end with "/". The root context is represented by an empty string.
 	 */
-	@Override
 	public String getContextPath() {
 		return this.contextPath;
 	}
 
-	/**
-	 * Sets the port that the embedded servlet container should listen on. If not
-	 * specified port '8080' will be used. Use port 0 to switch off the server completely.
-	 * 
-	 * @param port the port to set
-	 */
 	@Override
 	public void setPort(int port) {
 		checkPort(port);
@@ -151,16 +139,10 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	/**
 	 * Returns the port that the embedded servlet container should listen on.
 	 */
-	@Override
 	public int getPort() {
 		return this.port;
 	}
 
-	/**
-	 * If you need the server to bind to a specific network address, provide one here.
-	 * 
-	 * @param address the address to set (defaults to null)
-	 */
 	@Override
 	public void setAddress(InetAddress address) {
 		this.address = address;
@@ -169,32 +151,16 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	/**
 	 * @return the address the embedded container binds to
 	 */
-	@Override
 	public InetAddress getAddress() {
 		return this.address;
 	}
 
-	/**
-	 * Sets {@link ServletContextInitializer} that should be applied in addition to
-	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters. This
-	 * method will replace any previously set or added initializers.
-	 * @param initializers the initializers to set
-	 * @see #addInitializers
-	 * @see #getInitializers
-	 */
 	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.initializers = new ArrayList<ServletContextInitializer>(initializers);
 	}
 
-	/**
-	 * Add {@link ServletContextInitializer}s to those that should be applied in addition
-	 * to {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters.
-	 * @param initializers the initializers to add
-	 * @see #setInitializers
-	 * @see #getInitializers
-	 */
 	@Override
 	public void addInitializers(ServletContextInitializer... initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
@@ -207,16 +173,10 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * parameters.
 	 * @return the initializers
 	 */
-	@Override
 	public List<ServletContextInitializer> getInitializers() {
 		return this.initializers;
 	}
 
-	/**
-	 * Sets the document root folder which will be used by the web context to serve static
-	 * files.
-	 * @param documentRoot the document root or {@code null} if not required
-	 */
 	@Override
 	public void setDocumentRoot(File documentRoot) {
 		this.documentRoot = documentRoot;
@@ -226,25 +186,16 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Returns the document root which will be used by the web context to serve static
 	 * files.
 	 */
-	@Override
 	public File getDocumentRoot() {
 		return this.documentRoot;
 	}
 
-	/**
-	 * Sets the error pages that will be used when handling exceptions.
-	 * @param errorPages the error pages
-	 */
 	@Override
 	public void setErrorPages(Set<ErrorPage> errorPages) {
 		Assert.notNull(errorPages, "ErrorPages must not be null");
 		this.errorPages = new LinkedHashSet<ErrorPage>(errorPages);
 	}
 
-	/**
-	 * Adds error pages that will be used when handling exceptions.
-	 * @param errorPages the error pages
-	 */
 	@Override
 	public void addErrorPages(ErrorPage... errorPages) {
 		Assert.notNull(this.initializers, "ErrorPages must not be null");
@@ -255,16 +206,23 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * Returns a mutable set of {@link ErrorPage}s that will be used when handling
 	 * exceptions.
 	 */
-	@Override
 	public Set<ErrorPage> getErrorPages() {
 		return this.errorPages;
 	}
 
+	@Override
+	public void setMimeMappings(MimeMappings mimeMappings) {
+		this.mimeMappings = new MimeMappings(mimeMappings);
+	}
+
 	/**
-	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
-	 * files from the {@link #setDocumentRoot(File) document root} will be served.
-	 * @param registerDefaultServlet if the default servlet should be registered
+	 * Returns the mime-type mappings.
+	 * @return the mimeMappings the mime-type mappings.
 	 */
+	public MimeMappings getMimeMappings() {
+		return this.mimeMappings;
+	}
+
 	@Override
 	public void setRegisterDefaultServlet(boolean registerDefaultServlet) {
 		this.registerDefaultServlet = registerDefaultServlet;
@@ -273,20 +231,12 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	/**
 	 * Flag to indicate that the JSP servlet should be registered if available on the
 	 * classpath.
-	 * 
 	 * @return true if the JSP servlet is to be registered
 	 */
-	@Override
 	public boolean isRegisterJspServlet() {
 		return this.registerJspServlet;
 	}
 
-	/**
-	 * Set if the JspServlet should be registered if it is on the classpath. Defaults to
-	 * {@code true} so that files from the {@link #setDocumentRoot(File) document root}
-	 * will be served.
-	 * @param registerJspServlet if the JSP servlet should be registered
-	 */
 	@Override
 	public void setRegisterJspServlet(boolean registerJspServlet) {
 		this.registerJspServlet = registerJspServlet;
@@ -294,23 +244,12 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	/**
 	 * Flag to indicate that the default servlet should be registered.
-	 * 
 	 * @return true if the default servlet is to be registered
 	 */
-	@Override
 	public boolean isRegisterDefaultServlet() {
 		return this.registerDefaultServlet;
 	}
 
-	/**
-	 * The class name for the jsp servlet if used. If
-	 * {@link #setRegisterJspServlet(boolean) <code>registerJspServlet</code>} is true
-	 * <b>and</b> this class is on the classpath then it will be registered. Since both
-	 * Tomcat and Jetty use Jasper for their JSP implementation the default is
-	 * <code>org.apache.jasper.servlet.JspServlet</code>.
-	 * 
-	 * @param jspServletClassName the class name for the JSP servlet if used
-	 */
 	@Override
 	public void setJspServletClassName(String jspServletClassName) {
 		this.jspServletClassName = jspServletClassName;
