@@ -17,7 +17,10 @@
 package org.springframework.bootstrap.context.embedded.tomcat;
 
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
@@ -29,10 +32,11 @@ import org.springframework.util.Assert;
  * 
  * @author Phillip Webb
  * @author Dave Syer
- * 
  * @see TomcatEmbeddedServletContainerFactory
  */
 public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer {
+
+	private final Log logger = LogFactory.getLog(TomcatEmbeddedServletContainer.class);
 
 	private final Tomcat tomcat;
 
@@ -43,10 +47,10 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	public TomcatEmbeddedServletContainer(Tomcat tomcat) {
 		Assert.notNull(tomcat, "Tomcat Server must not be null");
 		this.tomcat = tomcat;
-		start();
+		initialize();
 	}
 
-	private synchronized void start() throws EmbeddedServletContainerException {
+	private synchronized void initialize() throws EmbeddedServletContainerException {
 		try {
 			this.tomcat.start();
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
@@ -63,6 +67,19 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embdedded Tomcat", ex);
+		}
+	}
+
+	@Override
+	public void start() throws EmbeddedServletContainerException {
+		Connector connector = this.tomcat.getConnector();
+		if (connector != null) {
+			try {
+				connector.getProtocolHandler().resume();
+			}
+			catch (Exception e) {
+				this.logger.error("Cannot start connector: ", e);
+			}
 		}
 	}
 

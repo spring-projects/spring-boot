@@ -26,14 +26,10 @@ import java.util.List;
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleListener;
-import org.apache.catalina.Server;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.core.StandardHost;
-import org.apache.catalina.core.StandardService;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
@@ -45,7 +41,6 @@ import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFa
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -61,13 +56,14 @@ import org.springframework.util.ClassUtils;
  * 
  * @author Phillip Webb
  * @author Dave Syer
- * 
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
  */
 public class TomcatEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+
+	private static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
 	private File baseDirectory;
 
@@ -77,9 +73,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private ResourceLoader resourceLoader;
 
-	private Connector connector;
-
-	private Tomcat tomcat = new Tomcat();
+	private String protocol = DEFAULT_PROTOCOL;
 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
@@ -108,40 +102,22 @@ public class TomcatEmbeddedServletContainerFactory extends
 	}
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		Connector connector = this.connector;
-		if (connector != null) {
-			try {
-				connector.getProtocolHandler().resume();
-			}
-			catch (Exception e) {
-				this.logger.error("Cannot start connector: ", e);
-			}
-		}
-	}
-
-	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
+
+		Connector connector;
+		Tomcat tomcat = new Tomcat();
+
 		if (getPort() == 0) {
 			return EmbeddedServletContainer.NONE;
 		}
 		File baseDir = (this.baseDirectory != null ? this.baseDirectory
 				: createTempDir("tomcat"));
-		this.tomcat.setBaseDir(baseDir.getAbsolutePath());
-		Connector connector = this.connector;
-		if (connector != null) {
-			connector.setPort(getPort());
-			this.tomcat.getService().addConnector(connector);
-			this.tomcat.setConnector(connector);
-		}
-		else {
-			connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-			customizeConnector(connector);
-			this.tomcat.getService().addConnector(connector);
-			this.tomcat.setConnector(connector);
-		}
-		this.connector = connector;
+		tomcat.setBaseDir(baseDir.getAbsolutePath());
+		connector = new Connector(this.protocol);
+		customizeConnector(connector);
+		tomcat.getService().addConnector(connector);
+		tomcat.setConnector(connector);
 		try {
 			// Allow the server to start so the ServletContext is available, but stop the
 			// connector to prevent requests from being handled before the Spring context
@@ -151,11 +127,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 		catch (Exception e) {
 			this.logger.error("Cannot pause connector: ", e);
 		}
-		this.tomcat.getHost().setAutoDeploy(false);
-		this.tomcat.getEngine().setBackgroundProcessorDelay(-1);
+		tomcat.getHost().setAutoDeploy(false);
+		tomcat.getEngine().setBackgroundProcessorDelay(-1);
 
-		prepareContext(this.tomcat.getHost(), initializers);
-		return getTomcatEmbeddedServletContainer(this.tomcat);
+		prepareContext(tomcat.getHost(), initializers);
+		return getTomcatEmbeddedServletContainer(tomcat);
 	}
 
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
@@ -293,12 +269,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * The tomcat connector to use (e.g. if you want to change the protocol handler).
-	 * 
-	 * @param connector the connector to set
+	 * The Tomcat protocol to use when create the {@link Connector}.
+	 * @see Connector#Connector(String)
 	 */
-	public void setConnector(Connector connector) {
-		this.connector = connector;
+	public void setProtocol(String protocol) {
+		Assert.hasLength(protocol, "Protocol must not be empty");
+		this.protocol = protocol;
 	}
 
 	/**
@@ -361,49 +337,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 		Assert.notNull(contextLifecycleListeners,
 				"ContextLifecycleListeners must not be null");
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
-	}
-
-	// FIXME JavaDoc
-	// FIXME Is this still needed?
-	public TomcatEmbeddedServletContainerFactory getChildContextFactory(final String name) {
-
-		final Server server = this.tomcat.getServer();
-
-		return new TomcatEmbeddedServletContainerFactory() {
-
-			@Override
-			public EmbeddedServletContainer getEmbeddedServletContainer(
-					ServletContextInitializer... initializers) {
-
-				if (getPort() == 0) {
-					return EmbeddedServletContainer.NONE;
-				}
-				StandardService service = new StandardService();
-				service.setName(name);
-				Connector connector = new Connector(
-						"org.apache.coyote.http11.Http11NioProtocol");
-				customizeConnector(connector);
-				service.addConnector(connector);
-				StandardEngine engine = new StandardEngine();
-				engine.setName(name);
-				engine.setDefaultHost("localhost");
-				service.setContainer(engine);
-				server.addService(service);
-				StandardHost host = new StandardHost();
-				host.setName("localhost");
-				engine.addChild(host);
-				prepareContext(host, initializers);
-
-				return new EmbeddedServletContainer() {
-					@Override
-					public void stop() throws EmbeddedServletContainerException {
-						// noop
-					}
-				};
-
-			}
-		};
-
 	}
 
 }

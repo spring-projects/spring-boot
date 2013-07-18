@@ -117,7 +117,13 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	protected void onRefresh() {
 		super.onRefresh();
 		registerShutdownHook();
-		createAndStartEmbeddedServletContainer();
+		createEmbeddedServletContainer();
+	}
+
+	@Override
+	protected void finishRefresh() {
+		super.finishRefresh();
+		startEmbeddedServletContainer();
 	}
 
 	@Override
@@ -126,7 +132,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		stopAndReleaseEmbeddedServletContainer();
 	}
 
-	private synchronized void createAndStartEmbeddedServletContainer() {
+	private synchronized void createEmbeddedServletContainer() {
 		if (this.embeddedServletContainer == null && getServletContext() == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
@@ -306,6 +312,12 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		beans.addAll(getBeanFactory().getBeansOfType(type, true, true).entrySet());
 		Collections.sort(beans, comparator);
 		return beans;
+	}
+
+	private void startEmbeddedServletContainer() {
+		if (this.embeddedServletContainer != null) {
+			this.embeddedServletContainer.start();
+		}
 	}
 
 	private synchronized void stopAndReleaseEmbeddedServletContainer() {
