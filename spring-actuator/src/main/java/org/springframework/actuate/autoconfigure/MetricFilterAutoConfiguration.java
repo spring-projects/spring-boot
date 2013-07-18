@@ -74,8 +74,6 @@ public class MetricFilterAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	private final class MetricsFilter extends GenericFilterBean {
 
-		// FIXME parameterize the order (ideally it runs before any other filter)
-
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
 				FilterChain chain) throws IOException, ServletException {
