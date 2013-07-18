@@ -77,7 +77,7 @@ public class SimpleJsonParser implements JsonParser {
 		if (json.startsWith("\"")) {
 			return trimTrailingCharacter(trimLeadingCharacter(json, '"'), '"');
 		}
-		return json; // TODO: numbers maybe?
+		return json;
 	}
 
 	private static String trimTrailingCharacter(String string, char c) {
