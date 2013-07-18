@@ -34,18 +34,21 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies
 				.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
-				.add("org.springframework", "spring-webmvc", "4.0.0.BUILD-SNAPSHOT");
+				.add("org.springframework", "spring-webmvc",
+						dependencies.getProperty("spring.version"));
 
-		dependencies.ifAnyMissingClasses("org.apache.catalina.startup.Tomcat",
-				"org.eclipse.jetty.server.Server").add("org.eclipse.jetty",
-				"jetty-webapp", "8.1.10.v20130312");
+		dependencies.ifAnyMissingClasses("org.eclipse.jetty.server.Server").add(
+				"org.eclipse.jetty", "jetty-webapp",
+				dependencies.getProperty("jetty.version"));
 
-		dependencies.add("org.codehaus.groovy", "groovy-templates", "2.1.6");
+		dependencies.add("org.codehaus.groovy", "groovy-templates",
+				dependencies.getProperty("groovy.version"));
 		// FIXME restore Tomcat when we can get reload to work
-		// dependencies.ifMissingClasses("org.apache.catalina.startup.Tomcat",
-		// "org.eclipse.jetty.server.Server")
-		// .add("org.apache.tomcat.embed", "tomcat-embed-core", "7.0.39")
-		// .add("org.apache.tomcat.embed", "tomcat-embed-logging-juli", "7.0.39");
+		// dependencies.ifMissingClasses("org.apache.catalina.startup.Tomcat")
+		// .add("org.apache.tomcat.embed", "tomcat-embed-core",
+		// dependencies.getProperty("tomcat.version"))
+		// .add("org.apache.tomcat.embed", "tomcat-embed-logging-juli",
+		// dependencies.getProperty("tomcat.version"));
 	}
 
 	@Override

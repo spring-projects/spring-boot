@@ -18,6 +18,7 @@
 		<spring.security.version>3.2.0.M2</spring.security.version>
 		<spring.integration.version>2.2.4.RELEASE</spring.integration.version>
 		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
+        <groovy.version>2.1.6</groovy.version>
 		<tomcat.version>7.0.42</tomcat.version>
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<aspectj.version>1.7.3</aspectj.version>
@@ -352,12 +353,12 @@
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy</artifactId>
-				<version>2.1.6</version>
+				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-templates</artifactId>
-				<version>2.1.6</version>
+				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>

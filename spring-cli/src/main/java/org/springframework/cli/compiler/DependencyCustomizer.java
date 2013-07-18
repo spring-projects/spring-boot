@@ -20,11 +20,14 @@ import groovy.grape.Grape;
 import groovy.lang.Grapes;
 import groovy.lang.GroovyClassLoader;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Customizer that allows dependencies to be added during compilation. Delegates to Groovy
@@ -39,6 +42,8 @@ public class DependencyCustomizer {
 	private final GroovyClassLoader loader;
 
 	private final List<Map<String, Object>> dependencies;
+
+	private Properties properties;
 
 	/**
 	 * Create a new {@link DependencyCustomizer} instance. The {@link #call()} method must
@@ -57,6 +62,26 @@ public class DependencyCustomizer {
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
 		this.dependencies = parent.dependencies;
+	}
+
+	public String getProperty(String key) {
+		return getProperty(key, "");
+	}
+
+	public String getProperty(String key, String defaultValue) {
+		if (this.properties == null) {
+			this.properties = new Properties();
+			try {
+				for (URL url : Collections.list(this.loader
+						.getResources("META-INF/springcli.properties"))) {
+					this.properties.load(url.openStream());
+				}
+			}
+			catch (Exception e) {
+				// swallow and continue
+			}
+		}
+		return this.properties.getProperty(key, defaultValue);
 	}
 
 	/**

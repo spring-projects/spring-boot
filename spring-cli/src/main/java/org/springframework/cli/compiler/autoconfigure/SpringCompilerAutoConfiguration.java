@@ -40,8 +40,8 @@ public class SpringCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses(
 				"org.springframework.bootstrap.SpringApplication").add(
-				"org.springframework.zero", "spring-starter", "0.5.0.BUILD-SNAPSHOT");
-		// FIXME get the version
+				"org.springframework.zero", "spring-starter",
+				dependencies.getProperty("spring.zero.version"));
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class SpringCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	public void applyToMainClass(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
-		// FIXME: add switch for auto config
+		// Could add switch for auto config, but it seems like it wouldn't get used much
 		addEnableAutoConfigurationAnnotation(source, classNode);
 	}
 
