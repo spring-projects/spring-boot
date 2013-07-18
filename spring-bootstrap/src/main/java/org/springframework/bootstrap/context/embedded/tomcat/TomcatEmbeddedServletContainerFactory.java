@@ -45,6 +45,7 @@ import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFa
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 import org.springframework.context.ResourceLoaderAware;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -60,6 +61,7 @@ import org.springframework.util.ClassUtils;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * 
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
@@ -106,6 +108,19 @@ public class TomcatEmbeddedServletContainerFactory extends
 	}
 
 	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		Connector connector = this.connector;
+		if (connector != null) {
+			try {
+				connector.getProtocolHandler().resume();
+			}
+			catch (Exception e) {
+				this.logger.error("Cannot start connector: ", e);
+			}
+		}
+	}
+
+	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		if (getPort() == 0) {
@@ -114,17 +129,27 @@ public class TomcatEmbeddedServletContainerFactory extends
 		File baseDir = (this.baseDirectory != null ? this.baseDirectory
 				: createTempDir("tomcat"));
 		this.tomcat.setBaseDir(baseDir.getAbsolutePath());
-		if (this.connector != null) {
-			this.connector.setPort(getPort());
-			this.tomcat.getService().addConnector(this.connector);
-			this.tomcat.setConnector(this.connector);
+		Connector connector = this.connector;
+		if (connector != null) {
+			connector.setPort(getPort());
+			this.tomcat.getService().addConnector(connector);
+			this.tomcat.setConnector(connector);
 		}
 		else {
-			Connector connector = new Connector(
-					"org.apache.coyote.http11.Http11NioProtocol");
+			connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 			customizeConnector(connector);
 			this.tomcat.getService().addConnector(connector);
 			this.tomcat.setConnector(connector);
+		}
+		this.connector = connector;
+		try {
+			// Allow the server to start so the ServletContext is available, but stop the
+			// connector to prevent requests from being handled before the Spring context
+			// is ready:
+			connector.getProtocolHandler().pause();
+		}
+		catch (Exception e) {
+			this.logger.error("Cannot pause connector: ", e);
 		}
 		this.tomcat.getHost().setAutoDeploy(false);
 		this.tomcat.getEngine().setBackgroundProcessorDelay(-1);

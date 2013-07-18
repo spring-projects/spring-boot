@@ -28,6 +28,8 @@ import org.springframework.util.Assert;
  * {@link TomcatEmbeddedServletContainerFactory} and not directly.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
+ * 
  * @see TomcatEmbeddedServletContainerFactory
  */
 public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer {

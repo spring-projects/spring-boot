@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.context.embedded.jetty;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
@@ -46,6 +47,13 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	private synchronized void start() {
 		try {
 			this.server.start();
+			// Start the server so the ServletContext is available, but stop the
+			// connectors to prevent requests from being handled before the Spring context
+			// is ready:
+			Connector[] connectors = this.server.getConnectors();
+			for (Connector connector : connectors) {
+				connector.stop();
+			}
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
