@@ -41,10 +41,10 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	public JettyEmbeddedServletContainer(Server server) {
 		Assert.notNull(server, "Jetty Server must not be null");
 		this.server = server;
-		start();
+		initialize();
 	}
 
-	private synchronized void start() {
+	private synchronized void initialize() {
 		try {
 			this.server.start();
 			// Start the server so the ServletContext is available, but stop the
@@ -53,6 +53,21 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
 				connector.stop();
+			}
+		}
+		catch (Exception ex) {
+			throw new EmbeddedServletContainerException(
+					"Unable to start embedded Jetty servlet container", ex);
+		}
+	}
+
+	@Override
+	public void start() throws EmbeddedServletContainerException {
+		try {
+			this.server.start();
+			Connector[] connectors = this.server.getConnectors();
+			for (Connector connector : connectors) {
+				connector.start();
 			}
 		}
 		catch (Exception ex) {

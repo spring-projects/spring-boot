@@ -31,10 +31,6 @@ import javax.servlet.ServletRegistration;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
@@ -93,10 +89,10 @@ public class MockEmbeddedServletContainerFactory extends
 				int port) {
 			this.initializers = initializers;
 			this.port = port;
-			start();
+			initialize();
 		}
 
-		private void start() {
+		private void initialize() {
 			try {
 				this.servletContext = mock(ServletContext.class);
 				given(this.servletContext.addServlet(anyString(), (Servlet) anyObject()))
@@ -155,6 +151,10 @@ public class MockEmbeddedServletContainerFactory extends
 			public E nextElement() {
 				throw new NoSuchElementException();
 			}
+		}
+
+		@Override
+		public void start() throws EmbeddedServletContainerException {
 		}
 
 		@Override

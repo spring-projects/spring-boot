@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
@@ -35,13 +34,10 @@ import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainer;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerException;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ErrorPage;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.ResourceLoaderAware;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -63,14 +59,11 @@ import org.springframework.util.StringUtils;
  * @see JettyEmbeddedServletContainer
  */
 public class JettyEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware,
-		ApplicationListener<ContextRefreshedEvent> {
+		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
 	private ResourceLoader resourceLoader;
-
-	private WebAppContext context = new WebAppContext();
 
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainerFactory} instance.
@@ -99,52 +92,36 @@ public class JettyEmbeddedServletContainerFactory extends
 	}
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (this.context != null && this.context.getServer() != null) {
-			try {
-				Connector[] connectors = this.context.getServer().getConnectors();
-				for (Connector connector : connectors) {
-					connector.start();
-				}
-			}
-			catch (Exception ex) {
-				throw new EmbeddedServletContainerException(
-						"Unable to start embedded Jetty servlet container", ex);
-			}
-		}
-	}
-
-	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
+		WebAppContext context = new WebAppContext();
 		if (getPort() == 0) {
 			return EmbeddedServletContainer.NONE;
 		}
 		Server server = new Server(new InetSocketAddress(getAddress(), getPort()));
 
 		if (this.resourceLoader != null) {
-			this.context.setClassLoader(this.resourceLoader.getClassLoader());
+			context.setClassLoader(this.resourceLoader.getClassLoader());
 		}
 		String contextPath = getContextPath();
-		this.context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath
-				: "/");
-		configureDocumentRoot(this.context);
+		context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
+		configureDocumentRoot(context);
 		if (isRegisterDefaultServlet()) {
-			addDefaultServlet(this.context);
+			addDefaultServlet(context);
 		}
 		if (isRegisterJspServlet()
 				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
 						.getClassLoader())) {
-			addJspServlet(this.context);
+			addJspServlet(context);
 		}
 
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		Configuration[] configurations = getWebAppContextConfigurations(this.context,
+		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
-		this.context.setConfigurations(configurations);
-		postProcessWebAppContext(this.context);
+		context.setConfigurations(configurations);
+		postProcessWebAppContext(context);
 
-		server.setHandler(this.context);
+		server.setHandler(context);
 		return getJettyEmbeddedServletContainer(server);
 	}
 

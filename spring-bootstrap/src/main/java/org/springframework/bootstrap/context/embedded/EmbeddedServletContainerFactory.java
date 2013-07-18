@@ -16,6 +16,7 @@
 
 package org.springframework.bootstrap.context.embedded;
 
+import org.apache.catalina.core.ApplicationContext;
 import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
@@ -33,8 +34,10 @@ import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServl
 public interface EmbeddedServletContainerFactory {
 
 	/**
-	 * Gets a new fully configured and started {@link EmbeddedServletContainer}
-	 * instance,blocking until the point that clients can connect.
+	 * Gets a new fully configured but paused {@link EmbeddedServletContainer} instance.
+	 * Clients should not be able to connect to the returned server until
+	 * {@link EmbeddedServletContainer#start()} is called (which happens when the
+	 * {@link ApplicationContext} has been fully refreshed).
 	 * @param initializers {@link ServletContextInitializer}s that should be applied as
 	 * the container starts
 	 * @return a fully configured and started {@link EmbeddedServletContainer}

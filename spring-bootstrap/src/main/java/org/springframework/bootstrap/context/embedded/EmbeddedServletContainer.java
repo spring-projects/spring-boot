@@ -35,11 +35,22 @@ public interface EmbeddedServletContainer {
 	 */
 	public static final EmbeddedServletContainer NONE = new EmbeddedServletContainer() {
 
+		public void start() throws EmbeddedServletContainerException {
+			// Do nothing
+		};
+
 		@Override
 		public void stop() throws EmbeddedServletContainerException {
 			// Do nothing
 		}
 	};
+
+	/**
+	 * Starts the embedded servlet container. Calling this method on an already started
+	 * container has no effect.
+	 * @throws EmbeddedServletContainerException of the container cannot be stopped
+	 */
+	void start() throws EmbeddedServletContainerException;
 
 	/**
 	 * Stops the embedded servlet container. Calling this method on an already stopped
