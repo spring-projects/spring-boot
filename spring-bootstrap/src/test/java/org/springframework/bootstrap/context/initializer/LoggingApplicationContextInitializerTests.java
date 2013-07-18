@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.bootstrap.SpringApplication;
 import org.springframework.bootstrap.logging.java.JavaLoggingSystem;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
@@ -61,6 +62,7 @@ public class LoggingApplicationContextInitializerTests {
 		System.setOut(new PrintStream(this.output));
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
+		this.initializer.initialize(new SpringApplication());
 	}
 
 	@After
