@@ -45,6 +45,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	private InetAddress address;
 
+	private int sessionTimeout = 30;
+
 	@NotNull
 	private String contextPath = "";
 
@@ -78,11 +80,20 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.address = address;
 	}
 
+	public int getSessionTimeout() {
+		return this.sessionTimeout;
+	}
+
+	public void setSessionTimeout(int sessionTimeout) {
+		this.sessionTimeout = sessionTimeout;
+	}
+
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
 		factory.setPort(getPort());
 		factory.setAddress(getAddress());
 		factory.setContextPath(getContextPath());
+		factory.setSessionTimeout(getSessionTimeout());
 		if (factory instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat().customizeTomcat((TomcatEmbeddedServletContainerFactory) factory);
 		}

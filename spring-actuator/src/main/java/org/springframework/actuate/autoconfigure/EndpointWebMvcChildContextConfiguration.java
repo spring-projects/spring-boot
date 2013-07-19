@@ -55,6 +55,7 @@ public class EndpointWebMvcChildContextConfiguration implements
 		factory.setPort(this.managementServerProperties.getPort());
 		factory.setAddress(this.managementServerProperties.getAddress());
 		factory.setContextPath(this.managementServerProperties.getContextPath());
+		// TODO: Disable sessions
 	}
 
 	@Bean

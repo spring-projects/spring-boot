@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
- * {@link ManagementServerPropertiesAutoConfiguration} bean.
+ * {@link ManagementServerProperties} bean.
  * 
  * @author Dave Syer
  */

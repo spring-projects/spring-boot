@@ -220,6 +220,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
+		context.setSessionTimeout(getSessionTimeout());
 	}
 
 	/**
