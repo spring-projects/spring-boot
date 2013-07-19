@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -159,6 +160,11 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	public void setSessionTimeout(int sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
+	}
+
+	public void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit) {
+		Assert.notNull(timeUnit, "TimeUnit must not be null");
+		this.sessionTimeout = (int) timeUnit.toSeconds(sessionTimeout);
 	}
 
 	/**

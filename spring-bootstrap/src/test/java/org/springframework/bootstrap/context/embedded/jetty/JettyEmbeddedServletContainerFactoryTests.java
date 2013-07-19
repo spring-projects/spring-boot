@@ -17,17 +17,20 @@
 package org.springframework.bootstrap.context.embedded.jetty;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
-import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainer;
-import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JettyEmbeddedServletContainerFactory} and
@@ -37,6 +40,11 @@ import static org.mockito.Mockito.*;
  */
 public class JettyEmbeddedServletContainerFactoryTests extends
 		AbstractEmbeddedServletContainerFactoryTests {
+
+	@Override
+	protected JettyEmbeddedServletContainerFactory getFactory() {
+		return new JettyEmbeddedServletContainerFactory();
+	}
 
 	@Test
 	public void jettyConfigurations() throws Exception {
@@ -54,8 +62,29 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		}
 	}
 
-	@Override
-	protected JettyEmbeddedServletContainerFactory getFactory() {
-		return new JettyEmbeddedServletContainerFactory();
+	@Test
+	public void sessionTimeout() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionTimeout(10);
+		assertTimeout(factory, 10);
 	}
+
+	@Test
+	public void sessionTimeoutInMins() throws Exception {
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionTimeout(1, TimeUnit.MINUTES);
+		assertTimeout(factory, 60);
+	}
+
+	private void assertTimeout(JettyEmbeddedServletContainerFactory factory, int expected) {
+		this.container = factory.getEmbeddedServletContainer();
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+		Handler[] handlers = jettyContainer.getServer().getChildHandlersByClass(
+				WebAppContext.class);
+		WebAppContext webAppContext = (WebAppContext) handlers[0];
+		int actual = webAppContext.getSessionHandler().getSessionManager()
+				.getMaxInactiveInterval();
+		assertThat(actual, equalTo(expected));
+	}
+
 }
