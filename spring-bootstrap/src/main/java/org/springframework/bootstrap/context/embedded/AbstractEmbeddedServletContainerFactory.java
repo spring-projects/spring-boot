@@ -157,11 +157,6 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		return this.address;
 	}
 
-	/**
-	 * The session timeout in minutes.
-	 * 
-	 * @param sessionTimeout the session timeout to set (default 30)
-	 */
 	public void setSessionTimeout(int sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
 	}
@@ -173,14 +168,6 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		return this.sessionTimeout;
 	}
 
-	/**
-	 * Sets {@link ServletContextInitializer} that should be applied in addition to
-	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters. This
-	 * method will replace any previously set or added initializers.
-	 * @param initializers the initializers to set
-	 * @see #addInitializers
-	 * @see #getInitializers
-	 */
 	@Override
 	public void setInitializers(List<? extends ServletContextInitializer> initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");

@@ -55,15 +55,9 @@ public interface ConfigurableEmbeddedServletContainerFactory extends
 	/**
 	 * The session timeout in seconds (default 30). If 0 or negative then sessions never
 	 * expire.
-	 * 
 	 * @param sessionTimeout the session timeout
 	 */
 	void setSessionTimeout(int sessionTimeout);
-
-	/**
-	 * @return the session timeout value
-	 */
-	int getSessionTimeout();
 
 	/**
 	 * Sets the specific network address that the server should bind to.
