@@ -121,6 +121,8 @@ public class JettyEmbeddedServletContainerFactory extends
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
 		context.setConfigurations(configurations);
+		context.getSessionHandler().getSessionManager()
+				.setMaxInactiveInterval(getSessionTimeout());
 		postProcessWebAppContext(context);
 
 		server.setHandler(context);
