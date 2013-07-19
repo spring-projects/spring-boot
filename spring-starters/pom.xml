@@ -40,7 +40,7 @@
 						<configuration>
 							<useDefaultDelimiters>false</useDefaultDelimiters>
 							<delimiters>
-								<delimiter>#{*}</delimiter>
+								<delimiter>@{*}</delimiter>
 							</delimiters>
 							<resources>
 								<resource>

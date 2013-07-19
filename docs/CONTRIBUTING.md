@@ -62,9 +62,11 @@ Maven is well supported by most Java IDEs. Refer to you vendor documentation.
 
 
 ### Integration tests
-The sample application are used as integration tests during the build. Due to the
-fact that they make use of the `spring-package-maven-plugin` they cannot be called
-directly, and so instead are launched via the `maven-invoker-plugin`. If you encounter
-build failures running the integration tests, check the `build.log` file in the appropriate
-sample directory.
+
+The sample application are used as integration tests during the build
+(when you `mvn install`). Due to the fact that they make use of the
+`spring-package-maven-plugin` they cannot be called directly, and so
+instead are launched via the `maven-invoker-plugin`. If you encounter
+build failures running the integration tests, check the `build.log`
+file in the appropriate sample directory.
  

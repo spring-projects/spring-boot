@@ -13,7 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
-		<spring.zero.version>#{project.version}</spring.zero.version>
+		<spring.zero.version>@{project.version}</spring.zero.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0</maven>
