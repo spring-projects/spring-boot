@@ -1,8 +1,9 @@
 # Spring Zero Actuator
 
-Minimum fuss for getting applications up and running in production,
-and in other environments.  There is a strong emphasis on implementing
-RESTful web services but many features are more generic than that.
+The aim of this project is minimum fuss for getting applications up
+and running in production, and in other environments.  There is a
+strong emphasis on implementing RESTful web services but many features
+are more generic than that.
 
 |Feature |Implementation |Notes |
 |---|---|---|
@@ -24,7 +25,7 @@ RESTful web services but many features are more generic than that.
 For a quick introduction and to get started quickly with a new
 project, carry on reading.  For more in depth coverage of the features
 of Spring Zero Actuator, go to the
-[Feature Guide](https://github.com/SpringSource/spring-bootstrap/tree/master/spring-zero-actuator/docs/Features.md).
+[Feature Guide](docs/Features.md).
 
 # Getting Started
 
@@ -48,24 +49,24 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
       <packaging>jar</packaging>
       <parent>
         <groupId>org.springframework.zero</groupId>
-        <artifactId>spring-zero-starter</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <artifactId>spring-starter-parent</artifactId>
+        <version>{{project.version}}</version>
       </parent>
       <dependencies>
         <dependency>
           <groupId>org.springframework.zero</groupId>
-          <artifactId>spring-zero-web-starter</artifactId>
+          <artifactId>spring-starter-web</artifactId>
         </dependency>
         <dependency>
           <groupId>org.springframework.zero</groupId>
-          <artifactId>spring-zero-service</artifactId>
+          <artifactId>spring-starter-actuator</artifactId>
         </dependency>
       </dependencies>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
+            <groupId>org.springframework.zero</groupId>
+            <artifactId>spring-package-maven-plugin</artifactId>
          </plugin>
         </plugins>
       </build>
@@ -73,38 +74,11 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
 
 If you like Gradle, that's fine, and you will know what to do with
 those dependencies.  The first dependency adds Spring Zero auto
-configuration and the Jetty container to your application, and the
+configuration and the Tomcat container to your application, and the
 second one adds some more opinionated stuff like the default
-management endpoints.  If you prefer Tomcat you can just add the
-embedded Tomcat jars to your classpath instead of Jetty.
-
-You should be able to run it already:
-
-    $ mvn package
-    $ java -jar target/myproject-1.0.0-SNAPSHOT.jar
-
-Then in another terminal
-
-    $ curl localhost:8080/health
-    ok
-    $ curl localhost:8080/metrics
-    {"counter.status.200.health":1.0,"gauge.response.health":10.0,"mem":120768.0,"mem.free":105012.0,"processors":4.0}
-
-`/health` is the default location for the health endpoint - it tells
-you if the application is running and healthy. `/metrics` is the default
-location for the metrics endpoint - it gives you basic counts and
-response timing data by default but there are plenty of ways to
-customize it.  You can also try `/trace` and `/dump` to get some
-interesting information about how and what your app is doing.
-
-What about the home page?
-
-    $ curl localhost:8080/
-    {"status": 404, "error": "Not Found", "message": "Not Found"}
-
-That's OK, we haven't added any business content yet.  But it shows
-that there are sensible defaults built in for rendering HTTP and
-server-side errors.
+management endpoints.  If you prefer Jetty you can just add the
+embedded Jetty jars to your classpath instead of Tomcat (once you
+exclude the `spring-starter-tomcat` dependency).
 
 ## Adding a business endpoint
 
@@ -139,12 +113,27 @@ the fully qualified name of your `SampleController`, e.g.
          <start-class>com.mycompany.sample.SampleController</start-class>
       </properties>
 
-and re-package:
+and package and run:
 
     $ mvn package
     $ java -jar target/myproject-1.0.0-SNAPSHOT.jar
     $ curl localhost:8080/
     {"message": "Hello World"}
+
+There are also some endpoins that you didn't implement by came free
+with the Actuator:
+
+    $ curl localhost:8080/health
+    ok
+    $ curl localhost:8080/metrics
+    {"counter.status.200.health":1.0,"gauge.response.health":10.0,"mem":120768.0,"mem.free":105012.0,"processors":4.0}
+
+`/health` is the default location for the health endpoint - it tells
+you if the application is running and healthy. `/metrics` is the default
+location for the metrics endpoint - it gives you basic counts and
+response timing data by default but there are plenty of ways to
+customize it.  You can also try `/trace` and `/dump` to get some
+interesting information about how and what your app is doing.
 
 ## Running the application
 

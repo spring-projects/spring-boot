@@ -14,6 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<spring.zero.version>0.5.0.BUILD-SNAPSHOT</spring.zero.version>
+		<start-class>org.springframework.bootstrap.SpringApplication</start-class>
 	</properties>
 	<prerequisites>
 		<maven>3.0</maven>
@@ -188,6 +189,13 @@
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.4</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<mainClass>${start-class}</mainClass>
+							</manifest>
+						</archive>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-javadoc-plugin</artifactId>
@@ -213,7 +221,9 @@
 					<artifactId>exec-maven-plugin</artifactId>
 					<version>1.2.1</version>
 					<configuration>
-						<mainClass>${start-class}</mainClass>
+						<manifest>
+							<mainClass>${start-class}</mainClass>
+						</manifest>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -232,6 +242,13 @@
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>2.3</version>
+					<configuration>
+						<archive>
+							<manifest>
+								<mainClass>${start-class}</mainClass>
+							</manifest>
+						</archive>
+					</configuration>
 				</plugin>
 
 				<!-- Support the generally useful versions command -->
@@ -266,14 +283,6 @@
 					<groupId>org.springframework.zero</groupId>
 					<artifactId>spring-package-maven-plugin</artifactId>
 					<version>${spring.zero.version}</version>
-					<configuration>
-						<archive>
-							<manifest>
-								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-							</manifest>
-						</archive>
-					</configuration>
 					<executions>
 						<execution>
 							<goals>
