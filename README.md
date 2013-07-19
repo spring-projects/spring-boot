@@ -44,7 +44,7 @@ An `alias` can be used for the Spring Zero command line tool:
 
 	$ alias spr="java -jar ~/.m2/repository/org/springframework/zero/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
 
-_Also see [CONTRIBUTING.md](/CONTRIBUTING.md) if you want to submit pull requests._  
+_Also see [docs/CONTRIBUTING](docs/CONTRIBUTING.md) if you want to submit pull requests._  
 
 
 ## Quick Start Example
@@ -102,7 +102,7 @@ The 'spring' command line application compiles and runs Groovy source, making it
 easy to write the absolute minimum of code to get an application running. Spring CLI 
 can also watch files, automatically recompiling and restarting when they change.
 
-*See [spring-cli/README.md](spring-cli/README.md).*
+*See [spring-cli/README](spring-cli/README.md).*
 
 
 ### Spring Bootstrap
@@ -115,7 +115,7 @@ Features include:
 * Embedded web applications with a choice of container (Tomcat or Jetty for now)
 * First class externalized configuration support 
 
-_See [spring-bootstrap/README.md](spring-bootstrap/README.md)._
+_See [spring-bootstrap/README](spring-bootstrap/README.md)._
 
   
 ### Spring Autoconfigure
@@ -128,7 +128,7 @@ classpath. For example, If a 'HSQLDB' is on the classpath the user probably want
 in-memory database to be defined. Auto-configuration will back away as the user starts 
 to define their own beans.
 
-_See [spring-autoconfigure/README.md](spring-autoconfigure/README.md)._
+_See [spring-autoconfigure/README](spring-autoconfigure/README.md)._
 
 
 ### Spring Actuator
@@ -138,7 +138,7 @@ writing a JSON web service then it will provide a server, security, logging, ext
 configuration, management endpoints, an audit abstraction, and more. If you want to 
 switch off the built in features, or extend or replace them, it makes that really easy as well.
 
-_See [spring-actuator/README.md](spring-actuator/README.md)._
+_See [spring-actuator/README](spring-actuator/README.md)._
 
 
 ### Spring Starters
@@ -148,7 +148,7 @@ that you need without having to hunt through sample code and copy paste loads of
 dependency descriptors. For example, if you want to get started using Spring and JPA for 
 database access just include one dependency in your project, and you are good to go.
 
-_See [spring-starters/README.md](spring-starters/README.md)._
+_See [spring-starters/README](spring-starters/README.md)._
 
 
 ### Packaging
@@ -157,16 +157,16 @@ The [spring-launcher](spring-launcher/) and
 to package you application for release. Applications can be released as a single jar
 file that can simply be launched using `java -jar`.
 
-_See [spring-launcher/README.md](spring-launcher/README.md) & 
-[spring-package-maven-plugin/README.md](spring-package-maven-plugin/README.md)._
+_See [spring-launcher/README](spring-launcher/README.md) & 
+[spring-package-maven-plugin/README](spring-package-maven-plugin/README.md)._
 
 
 ## Samples
 Groovy samples for use with the command line application are available in
-[spring-cli/samples](spring-cli/samples/). To run the CLI samples type 
+[spring-cli/samples](spring-cli/samples/#). To run the CLI samples type 
 `spr run <sample>.groovy` from samples directory.
 
-Java samples are available in [spring-zero-sample](spring-zero-samples/) and should
+Java samples are available in [spring-zero-sample](spring-zero-samples/#) and should
 be build with maven and run use `java -jar target/<sample>.jar`. The following java
 samples are provided:
 
