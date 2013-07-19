@@ -32,4 +32,6 @@
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="FILE" />
 	</root>
+	
+	<logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
 </configuration>
