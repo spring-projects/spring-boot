@@ -20,6 +20,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Simple interface that represents customizations to an
@@ -58,6 +59,14 @@ public interface ConfigurableEmbeddedServletContainerFactory extends
 	 * @param sessionTimeout the session timeout
 	 */
 	void setSessionTimeout(int sessionTimeout);
+
+	/**
+	 * The session timeout in the specified {@link TimeUnit} (default 30 seconds). If 0 or
+	 * negative then sessions never expire.
+	 * @param sessionTimeout the session timeout
+	 * @param timeUnit the time unit
+	 */
+	void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit);
 
 	/**
 	 * Sets the specific network address that the server should bind to.

@@ -17,15 +17,18 @@
 package org.springframework.bootstrap.context.embedded.tomcat;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.startup.Tomcat;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.bootstrap.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
-import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainer;
-import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -38,6 +41,11 @@ import static org.mockito.Mockito.mock;
  */
 public class TomcatEmbeddedServletContainerFactoryTests extends
 		AbstractEmbeddedServletContainerFactoryTests {
+
+	@Override
+	protected TomcatEmbeddedServletContainerFactory getFactory() {
+		return new TomcatEmbeddedServletContainerFactory();
+	}
 
 	@Test
 	public void tomcatListeners() throws Exception {
@@ -55,9 +63,25 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		}
 	}
 
-	@Override
-	protected TomcatEmbeddedServletContainerFactory getFactory() {
-		return new TomcatEmbeddedServletContainerFactory();
+	@Test
+	public void sessionTimeout() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionTimeout(10);
+		assertTimeout(factory, 10);
+	}
+
+	@Test
+	public void sessionTimeoutInMins() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSessionTimeout(1, TimeUnit.MINUTES);
+		assertTimeout(factory, 60);
+	}
+
+	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
+		this.container = factory.getEmbeddedServletContainer();
+		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Context context = (Context) tomcat.getHost().findChildren()[0];
+		assertThat(context.getSessionTimeout(), equalTo(expected));
 	}
 
 	// FIXME test valve
