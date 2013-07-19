@@ -313,7 +313,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		file = file != null ? file : getWarFileDocumentRoot();
 		file = file != null ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isWarnEnabled()) {
-			this.logger.warn("None of the document roots "
+			this.logger.debug("None of the document roots "
 					+ Arrays.asList(COMMON_DOC_ROOTS)
 					+ " point to a directory and will be ignored.");
 		}

@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * Logs application information on startup.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 class StartupInfoLogger {
 
