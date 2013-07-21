@@ -8,6 +8,7 @@ quickly get to the bits they need. Assumes limited knowledge of the Java develop
 ecosystem. Absolutely no code generation and no XML (unless you really want it).
 
 The goals are:
+
 * Radically faster and widely accessible getting started experience for Spring
   development
 * Be opinionated out of the box, but get out of the way quickly as requirements start to 
