@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 @Configuration
 public class SimpleMainTests {
 
+	private static final String SPRING_STARTUP = "root of context hierarchy";
 	private PrintStream savedOutput;
 	private ByteArrayOutputStream output;
 
@@ -58,33 +59,33 @@ public class SimpleMainTests {
 	@Test(expected = IllegalArgumentException.class)
 	public void emptyApplicationContext() throws Exception {
 		SpringApplication.main(getArgs());
-		assertTrue(getOutput().contains("Pre-instantiating singletons"));
+		assertTrue(getOutput().contains(SPRING_STARTUP));
 	}
 
 	@Test
 	public void basePackageScan() throws Exception {
 		SpringApplication.main(getArgs(ClassUtils.getPackageName(getClass())
 				+ ".sampleconfig"));
-		assertTrue(getOutput().contains("Pre-instantiating singletons"));
+		assertTrue(getOutput().contains(SPRING_STARTUP));
 	}
 
 	@Test
 	public void configClassContext() throws Exception {
 		SpringApplication.main(getArgs(getClass().getName()));
-		assertTrue(getOutput().contains("Pre-instantiating singletons"));
+		assertTrue(getOutput().contains(SPRING_STARTUP));
 	}
 
 	@Test
 	public void xmlContext() throws Exception {
 		SpringApplication.main(getArgs("org/springframework/bootstrap/sample-beans.xml"));
-		assertTrue(getOutput().contains("Pre-instantiating singletons"));
+		assertTrue(getOutput().contains(SPRING_STARTUP));
 	}
 
 	@Test
 	public void mixedContext() throws Exception {
 		SpringApplication.main(getArgs(getClass().getName(),
 				"org/springframework/bootstrap/sample-beans.xml"));
-		assertTrue(getOutput().contains("Pre-instantiating singletons"));
+		assertTrue(getOutput().contains(SPRING_STARTUP));
 	}
 
 	private String[] getArgs(String... args) {

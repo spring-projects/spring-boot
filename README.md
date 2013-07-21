@@ -30,7 +30,7 @@ instructions will look like this:
 
 2) Get Spring
 
-	$ curl -s spring.cfapps.io/installer | bash
+	$ curl -s initializr.cfapps.io/installer | bash
 
    or use the [Windows installer](#installing)
 
@@ -43,7 +43,7 @@ or above.
 
 An `alias` can be used for the Spring Zero command line tool:
 
-	$ alias spr="java -jar ~/.m2/repository/org/springframework/zero/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
+	$ alias spring="java -jar ~/.m2/repository/org/springframework/zero/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
 
 _Also see [docs/CONTRIBUTING](docs/CONTRIBUTING.md) if you want to submit pull requests._  
 
@@ -62,7 +62,7 @@ snippets  that can just run, for example:
 		}
 	}
 	<ctrl-d>
-	$ spr run app.groovy
+	$ spring run app.groovy
 	$ curl localhost:8080
 	Hello World!
 
@@ -165,7 +165,7 @@ _See [spring-launcher/README](spring-launcher/README.md) &
 ## Samples
 Groovy samples for use with the command line application are available in
 [spring-cli/samples](spring-cli/samples/#). To run the CLI samples type 
-`spr run <sample>.groovy` from samples directory.
+`spring run <sample>.groovy` from samples directory.
 
 Java samples are available in [spring-zero-sample](spring-zero-samples/#) and should
 be build with maven and run use `java -jar target/<sample>.jar`. The following java

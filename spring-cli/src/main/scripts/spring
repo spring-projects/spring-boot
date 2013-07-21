@@ -63,7 +63,7 @@ if [ -f build.gradle ]; then
     TARGETDIR=build/classes/main
 fi
 
-for f in "${TARGETDIR}" "${SPRING_HOME}"/classes "${SPRING_BIN}" "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
+for f in . "${TARGETDIR}" "${SPRING_HOME}"/classes "${SPRING_BIN}" "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
     if [ -f $f -o -d $f ]; then
     	if [ "${CLASSPATH}" == "" ]; then
 			CLASSPATH="${f}"
@@ -77,4 +77,4 @@ if $cygwin; then
     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-${JAVA_HOME}/bin/java ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.bootstrap.cli.SpringBootstrapCli $*
+${JAVA_HOME}/bin/java ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.cli.SpringCli $*
