@@ -71,6 +71,7 @@ public class LoggingApplicationContextInitializerTests {
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
 		System.setOut(this.savedOutput);
+		System.out.println(getOutput());
 	}
 
 	private String getOutput() {

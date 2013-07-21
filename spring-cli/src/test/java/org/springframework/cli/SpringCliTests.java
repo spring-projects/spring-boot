@@ -133,7 +133,8 @@ public class SpringCliTests {
 	@Test
 	public void exceptionMessages() throws Exception {
 		assertThat(new NoSuchCommandException("name").getMessage(),
-				equalTo("spr: 'name' is not a valid command. See 'spr help'."));
+				equalTo(SpringCli.CLI_APP + ": 'name' is not a valid command. See '"
+						+ SpringCli.CLI_APP + " help'."));
 	}
 
 	@Test

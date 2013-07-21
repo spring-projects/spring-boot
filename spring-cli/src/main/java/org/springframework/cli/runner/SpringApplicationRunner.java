@@ -33,6 +33,10 @@ import org.springframework.cli.compiler.GroovyCompiler;
  */
 public class SpringApplicationRunner {
 
+	private static int watcherCounter = 0;
+
+	private static int runnerCounter = 0;
+
 	// FIXME logging
 
 	private SpringApplicationRunnerConfiguration configuration;
@@ -118,6 +122,7 @@ public class SpringApplicationRunner {
 		 * @param sources the sources to launch
 		 */
 		public RunThread(Object... sources) {
+			super("runner-" + (runnerCounter++));
 			this.sources = sources;
 			if (sources.length != 0 && sources[0] instanceof Class) {
 				setContextClassLoader(((Class<?>) sources[0]).getClassLoader());
@@ -171,6 +176,7 @@ public class SpringApplicationRunner {
 		private long previous;
 
 		public FileWatchThread() {
+			super("filewatcher-" + (watcherCounter++));
 			this.previous = 0;
 			for (File file : SpringApplicationRunner.this.files) {
 				long current = file.lastModified();

@@ -39,7 +39,7 @@ import java.util.Set;
  */
 public class SpringCli {
 
-	public static final String CLI_APP = "spr";
+	public static final String CLI_APP = "spring";
 
 	private static final Set<SpringCliException.Option> NO_EXCEPTION_OPTIONS = EnumSet
 			.noneOf(SpringCliException.Option.class);

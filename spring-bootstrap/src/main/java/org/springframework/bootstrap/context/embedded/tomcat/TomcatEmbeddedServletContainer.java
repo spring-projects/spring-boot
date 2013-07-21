@@ -38,6 +38,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private final Log logger = LogFactory.getLog(TomcatEmbeddedServletContainer.class);
 
+	private static int containerCounter = 0;
+
 	private final Tomcat tomcat;
 
 	/**
@@ -55,7 +57,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			this.tomcat.start();
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 			// blocking non-daemon to stop immediate shutdown
-			Thread awaitThread = new Thread() {
+			Thread awaitThread = new Thread("container-" + (containerCounter++)) {
 				@Override
 				public void run() {
 					TomcatEmbeddedServletContainer.this.tomcat.getServer().await();
