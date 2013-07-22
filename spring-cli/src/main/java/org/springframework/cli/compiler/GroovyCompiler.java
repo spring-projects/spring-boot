@@ -72,6 +72,9 @@ public class GroovyCompiler {
 		CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 		this.loader = new ExtendedGroovyClassLoader(getClass().getClassLoader(),
 				compilerConfiguration);
+		if (configuration.getClasspath().length() > 0) {
+			this.loader.addClasspath(configuration.getClasspath());
+		}
 		// FIXME: allow the extra resolvers to be switched on (off by default)
 		addExtraResolvers();
 		compilerConfiguration

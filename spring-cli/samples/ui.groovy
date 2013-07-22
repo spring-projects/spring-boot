@@ -9,3 +9,25 @@ class Example {
 	}
 
 }
+
+@Configuration
+@Log
+class MvcConfiguration extends WebMvcConfigurerAdapter {
+
+  @Override
+  void addInterceptors(def registry) { 
+    log.info("Registering temporary file interceptor")
+    registry.addInterceptor(temporaryFileInterceptor())
+  }
+
+  @Bean
+  HandlerInterceptor temporaryFileInterceptor() {
+    log.info("Creating temporary file interceptor")
+    new HandlerInterceptorAdapter() {
+      @Override
+      postHandle(def request, def response, def handler, ModelAndView mav) { 
+        log.info("Model: " + model)
+      }
+    }
+  }
+}
