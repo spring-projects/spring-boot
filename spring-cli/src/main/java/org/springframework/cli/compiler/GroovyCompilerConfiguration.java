@@ -33,4 +33,9 @@ public interface GroovyCompilerConfiguration {
 	 */
 	boolean isGuessDependencies();
 
+	/**
+	 * @return a path for local resources (colon separated)
+	 */
+	String getClasspath();
+
 }

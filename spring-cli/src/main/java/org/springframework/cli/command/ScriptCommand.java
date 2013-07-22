@@ -240,6 +240,11 @@ public class ScriptCommand implements Command {
 			return true;
 		}
 
+		@Override
+		public String getClasspath() {
+			return "";
+		}
+
 	}
 
 }

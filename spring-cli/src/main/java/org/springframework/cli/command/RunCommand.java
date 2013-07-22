@@ -71,6 +71,8 @@ public class RunCommand extends OptionParsingCommand {
 
 		private OptionSpec<Void> localOption;
 
+		private OptionSpec<String> classpathOption;
+
 		private SpringApplicationRunner runner;
 
 		@Override
@@ -86,6 +88,8 @@ public class RunCommand extends OptionParsingCommand {
 					"Do not attempt to guess dependencies");
 			this.verboseOption = option(asList("verbose", "v"), "Verbose logging");
 			this.quietOption = option(asList("quiet", "q"), "Quiet logging");
+			this.classpathOption = option(asList("classpath", "cp"),
+					"Additional classpath entries").withRequiredArg();
 		}
 
 		@Override
@@ -175,6 +179,14 @@ public class RunCommand extends OptionParsingCommand {
 					return Level.OFF;
 				}
 				return Level.INFO;
+			}
+
+			@Override
+			public String getClasspath() {
+				if (this.options.has(RunOptionHandler.this.classpathOption)) {
+					return this.options.valueOf(RunOptionHandler.this.classpathOption);
+				}
+				return "";
 			}
 
 		}

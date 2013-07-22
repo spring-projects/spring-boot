@@ -28,7 +28,6 @@ import org.apache.ivy.util.FileUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.cli.command.RunCommand;
 
@@ -142,14 +141,11 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	@Ignore
 	public void uiSample() throws Exception {
 
 		// FIXME Failing on OSX
 
-		// To run this one from the command line you need to add target/test-classes to
-		// CLASSPATH
-		start("samples/ui.groovy");
+		start("samples/ui.groovy", "--classpath=.:src/test/resources");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
 				.openStream());
 		assertTrue("Wrong output: " + result, result.contains("Hello World"));
