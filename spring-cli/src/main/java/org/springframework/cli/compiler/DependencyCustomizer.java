@@ -222,14 +222,26 @@ public class DependencyCustomizer {
 	 * @param version the version
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
-	@SuppressWarnings("unchecked")
 	public DependencyCustomizer add(String group, String module, String version) {
+		return this.add(group, module, version, true);
+	}
+
+	/**
+	 * Add a single dependencies.
+	 * @param group the group ID
+	 * @param module the module ID
+	 * @param version the version
+	 * @return this {@link DependencyCustomizer} for continued use
+	 */
+	@SuppressWarnings("unchecked")
+	public DependencyCustomizer add(String group, String module, String version,
+			boolean transitive) {
 		if (canAdd()) {
 			Map<String, Object> dependency = new HashMap<String, Object>();
 			dependency.put("group", group);
 			dependency.put("module", module);
 			dependency.put("version", version);
-			dependency.put("transitive", true);
+			dependency.put("transitive", transitive);
 			return add(dependency);
 		}
 		return this;
