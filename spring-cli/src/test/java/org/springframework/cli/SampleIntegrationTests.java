@@ -44,6 +44,7 @@ public class SampleIntegrationTests {
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
 		GrapesCleaner.cleanIfNecessary();
+		// System.setProperty("ivy.message.logger.level", "3");
 	}
 
 	private RunCommand command;
@@ -91,12 +92,6 @@ public class SampleIntegrationTests {
 		if (this.command != null) {
 			this.command.stop();
 		}
-	}
-
-	@BeforeClass
-	public static void clean() {
-		// SpringCli.main("clean");
-		// System.setProperty("ivy.message.logger.level", "3");
 	}
 
 	@Test

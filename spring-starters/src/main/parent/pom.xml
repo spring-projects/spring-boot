@@ -243,6 +243,7 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>2.3</version>
 					<configuration>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
 						<archive>
 							<manifest>
 								<mainClass>${start-class}</mainClass>
