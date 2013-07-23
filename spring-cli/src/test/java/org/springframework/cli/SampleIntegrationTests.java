@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.ivy.util.FileUtil;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -140,8 +139,8 @@ public class SampleIntegrationTests {
 	@Test
 	public void uiSample() throws Exception {
 
-		Assume.assumeTrue("Not running in CI",
-				System.getProperty("bamboo.buildPlanName") == null);
+		// Assume.assumeTrue("Not running in CI",
+		// System.getProperty("bamboo.buildPlanName") == null);
 
 		start("samples/ui.groovy", "--classpath=.:src/test/resources");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
