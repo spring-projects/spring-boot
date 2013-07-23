@@ -88,6 +88,10 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.sessionTimeout = sessionTimeout;
 	}
 
+	public void setLoader(String value) {
+		// no op to support Tomcat running as a traditional container (not embedded)
+	}
+
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
 		factory.setPort(getPort());
