@@ -42,15 +42,23 @@ public class ConfigFileApplicationContextInitializerTests {
 
 	@Test
 	public void loadPropertiesFile() throws Exception {
-		this.initializer.setName("testproperties");
+		this.initializer.setNames("testproperties");
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
 	}
 
 	@Test
+	public void loadTwoPropertiesFiles() throws Exception {
+		this.initializer.setNames("testproperties,moreproperties");
+		this.initializer.initialize(this.context);
+		String property = this.context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("frommorepropertiesfile"));
+	}
+
+	@Test
 	public void loadYamlFile() throws Exception {
-		this.initializer.setName("testyaml");
+		this.initializer.setNames("testyaml");
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromyamlfile"));
@@ -67,7 +75,7 @@ public class ConfigFileApplicationContextInitializerTests {
 				.addFirst(
 						new SimpleCommandLinePropertySource(
 								"--my.property=fromcommandline"));
-		this.initializer.setName("testproperties");
+		this.initializer.setNames("testproperties");
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromcommandline"));
@@ -75,7 +83,7 @@ public class ConfigFileApplicationContextInitializerTests {
 
 	@Test
 	public void loadPropertiesThenProfileProperties() throws Exception {
-		this.initializer.setName("enableprofile");
+		this.initializer.setNames("enableprofile");
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromprofilepropertiesfile"));
@@ -83,7 +91,7 @@ public class ConfigFileApplicationContextInitializerTests {
 
 	@Test
 	public void yamlProfiles() throws Exception {
-		this.initializer.setName("testprofiles");
+		this.initializer.setNames("testprofiles");
 		this.context.getEnvironment().setActiveProfiles("dev");
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
@@ -94,7 +102,7 @@ public class ConfigFileApplicationContextInitializerTests {
 
 	@Test
 	public void yamlSetsProfiles() throws Exception {
-		this.initializer.setName("testsetprofiles");
+		this.initializer.setNames("testsetprofiles");
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromdevprofile"));

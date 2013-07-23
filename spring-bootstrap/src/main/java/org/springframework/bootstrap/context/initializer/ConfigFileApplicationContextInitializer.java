@@ -61,7 +61,7 @@ import org.springframework.util.StringUtils;
  * 
  * <p>
  * Alternative locations and names can be specified using
- * {@link #setSearchLocations(String[])} and {@link #setName(String)}.
+ * {@link #setSearchLocations(String[])} and {@link #setNames(String)}.
  * 
  * <p>
  * Additional files will also be loaded based on active profiles. For example if a 'web'
@@ -89,7 +89,7 @@ public class ConfigFileApplicationContextInitializer implements
 	private String[] searchLocations = new String[] { "classpath:", "file:./",
 			"classpath:config/", "file:./config/" };
 
-	private String name = "${spring.config.name:application}";
+	private String names = "${spring.config.name:application}";
 
 	private int order = Integer.MIN_VALUE + 10;
 
@@ -145,8 +145,11 @@ public class ConfigFileApplicationContextInitializer implements
 		List<String> candidates = new ArrayList<String>();
 		for (String searchLocation : this.searchLocations) {
 			for (String extension : new String[] { ".properties", ".yml" }) {
-				String location = searchLocation + this.name + extension;
-				candidates.add(location);
+				for (String name : StringUtils
+						.commaDelimitedListToStringArray(this.names)) {
+					String location = searchLocation + name + extension;
+					candidates.add(location);
+				}
 			}
 		}
 		candidates.add(LOCATION_VARIABLE);
@@ -224,10 +227,11 @@ public class ConfigFileApplicationContextInitializer implements
 	}
 
 	/**
-	 * Sets the name of the file that should be loaded (excluding any file extension).
+	 * Sets the names of the files that should be loaded (excluding file extension) as a
+	 * comma separated list. Defaults to "application".
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setNames(String names) {
+		this.names = names;
 	}
 
 	/**
