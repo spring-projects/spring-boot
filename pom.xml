@@ -205,6 +205,7 @@
                     <systemPropertyVariables>
                       <java.security.egd>file:/dev/./urandom</java.security.egd>
                     </systemPropertyVariables>
+					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
 				</configuration>
 			</plugin>
 			<plugin>

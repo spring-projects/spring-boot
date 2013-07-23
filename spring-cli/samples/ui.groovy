@@ -11,30 +11,25 @@ class Example {
 		model.putAll([title: "My Page", date: new Date(), message: "Hello World"])
 		return "home";
 	}
-
 }
-
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Configuration
 @Log
 class MvcConfiguration extends WebMvcConfigurerAdapter {
 
-  @Override
-  void addInterceptors(InterceptorRegistry registry) { 
-    log.info("Registering interceptor")
-    registry.addInterceptor(interceptor())
-  }
+	@Override
+	void addInterceptors(InterceptorRegistry registry) {
+		log.info "Registering interceptor"
+		registry.addInterceptor(interceptor())
+	}
 
-  @Bean
-  HandlerInterceptor interceptor() {
-    log.info("Creating interceptor")
-    new HandlerInterceptorAdapter() {
-      @Override
-      void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mav) { 
-        log.info("Model: " + mav.model)
-      }
-    }
-  }
+	@Bean
+	HandlerInterceptor interceptor() {
+		log.info "Creating interceptor"
+		[
+			postHandle: { request, response, handler, mav ->
+				log.info "Intercepted: model=" + mav.model
+			}
+		] as HandlerInterceptorAdapter
+	}
 }
