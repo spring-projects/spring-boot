@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.ivy.util.FileUtil;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -68,6 +69,7 @@ public class SampleIntegrationTests {
 	public void clear() {
 		System.setOut(this.savedOutput);
 		System.setErr(this.savedErr);
+		System.out.println(getOutput());
 	}
 
 	private String getOutput() {
@@ -138,7 +140,8 @@ public class SampleIntegrationTests {
 	@Test
 	public void uiSample() throws Exception {
 
-		// FIXME Failing on OSX
+		Assume.assumeTrue("Not running in CI",
+				System.getProperty("bamboo.buildPlanName") == null);
 
 		start("samples/ui.groovy", "--classpath=.:src/test/resources");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
