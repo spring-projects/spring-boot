@@ -138,10 +138,6 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void uiSample() throws Exception {
-
-		// Assume.assumeTrue("Not running in CI",
-		// System.getProperty("bamboo.buildPlanName") == null);
-
 		start("samples/ui.groovy", "--classpath=.:src/test/resources");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
 				.openStream());
