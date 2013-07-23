@@ -1,5 +1,7 @@
 package app
 
+import groovy.util.logging.Log
+
 @Grab("org.thymeleaf:thymeleaf-spring3:2.0.16")
 @Controller
 class Example {
@@ -12,23 +14,26 @@ class Example {
 
 }
 
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+
 @Configuration
 @Log
 class MvcConfiguration extends WebMvcConfigurerAdapter {
 
   @Override
-  void addInterceptors(def registry) { 
-    log.info("Registering temporary file interceptor")
-    registry.addInterceptor(temporaryFileInterceptor())
+  void addInterceptors(InterceptorRegistry registry) { 
+    log.info("Registering interceptor")
+    registry.addInterceptor(interceptor())
   }
 
   @Bean
-  HandlerInterceptor temporaryFileInterceptor() {
-    log.info("Creating temporary file interceptor")
+  HandlerInterceptor interceptor() {
+    log.info("Creating interceptor")
     new HandlerInterceptorAdapter() {
       @Override
-      postHandle(def request, def response, def handler, ModelAndView mav) { 
-        log.info("Model: " + model)
+      void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mav) { 
+        log.info("Model: " + mav.model)
       }
     }
   }
