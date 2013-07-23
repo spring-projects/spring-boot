@@ -1,3 +1,5 @@
+package app
+
 @Grab("org.thymeleaf:thymeleaf-spring3:2.0.16")
 @Controller
 class Example {
