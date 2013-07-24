@@ -17,21 +17,30 @@
 package org.springframework.bootstrap.context.properties;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.bootstrap.bind.PropertiesConfigurationFactory;
 import org.springframework.bootstrap.config.PropertiesPropertySourceLoader;
 import org.springframework.bootstrap.config.PropertySourceLoader;
 import org.springframework.bootstrap.config.YamlPropertySourceLoader;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -40,21 +49,31 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
  * {@link BeanPostProcessor} to bind {@link PropertySources} to beans annotated with
  * {@link ConfigurationProperties}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware {
+		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, BeanClassLoaderAware,
+		ApplicationContextAware, InitializingBean, DisposableBean {
+
+	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
+
+	private static final String VALIDATOR_CLASS = "javax.validation.Validator";
 
 	private PropertySources propertySources;
 
 	private Validator validator;
+
+	private boolean ownedValidator = false;
 
 	private ConversionService conversionService;
 
@@ -67,6 +86,10 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	private Environment environment = new StandardEnvironment();
+
+	private ClassLoader beanClassLoader;
+
+	private ApplicationContext applicationContext;
 
 	/**
 	 * @param propertySources
@@ -105,6 +128,126 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.beanClassLoader = classLoader;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+		if (this.propertySources == null) {
+			this.propertySources = deducePropertySources();
+		}
+
+		if (this.validator == null) {
+			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
+			if (this.validator == null
+					&& ClassUtils.isPresent(VALIDATOR_CLASS, this.beanClassLoader)) {
+				LocalValidatorFactoryBean validatorToUse = new LocalValidatorFactoryBean();
+				validatorToUse.setApplicationContext(this.applicationContext);
+				validatorToUse.afterPropertiesSet();
+				this.validator = validatorToUse;
+				this.ownedValidator = true;
+			}
+		}
+
+		if (this.conversionService == null) {
+			this.conversionService = getOptionalBean(
+					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
+					ConversionService.class);
+		}
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		if (this.ownedValidator) {
+			((DisposableBean) this.validator).destroy();
+		}
+	}
+
+	private PropertySources deducePropertySources() {
+		try {
+			PropertySourcesPlaceholderConfigurer configurer = this.beanFactory
+					.getBean(PropertySourcesPlaceholderConfigurer.class);
+			return extractPropertySources(configurer);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Continue if no PropertySourcesPlaceholderConfigurer bean
+		}
+
+		if (this.environment instanceof ConfigurableEnvironment) {
+			return flattenPropertySources(((ConfigurableEnvironment) this.environment)
+					.getPropertySources());
+		}
+
+		// empty, so not very useful, but fulfils the contract
+		return new MutablePropertySources();
+	}
+
+	private <T> T getOptionalBean(String name, Class<T> type) {
+		try {
+			return this.beanFactory.getBean(name, type);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return null;
+		}
+	}
+
+	/**
+	 * Convenience method to extract PropertySources from an existing (and already
+	 * initialized) PropertySourcesPlaceholderConfigurer. As long as this method is
+	 * executed late enough in the context lifecycle it will come back with data. We can
+	 * rely on the fact that PropertySourcesPlaceholderConfigurer is a
+	 * BeanFactoryPostProcessor and is therefore initialized early.
+	 * @param configurer a PropertySourcesPlaceholderConfigurer
+	 * @return some PropertySources
+	 */
+	private PropertySources extractPropertySources(
+			PropertySourcesPlaceholderConfigurer configurer) {
+		PropertySources propertySources = configurer.getAppliedPropertySources();
+		// Flatten the sources into a single list so they can be iterated
+		return flattenPropertySources(propertySources);
+	}
+
+	/**
+	 * Flatten out a tree of property sources.
+	 * @param propertySources some PropertySources, possibly containing environment
+	 * properties
+	 * @return another PropertySources containing the same properties
+	 */
+	private PropertySources flattenPropertySources(PropertySources propertySources) {
+		MutablePropertySources result = new MutablePropertySources();
+		for (PropertySource<?> propertySource : propertySources) {
+			flattenPropertySources(propertySource, result);
+		}
+		return result;
+	}
+
+	/**
+	 * Convenience method to allow recursive flattening of property sources.
+	 * @param propertySource a property source to flatten
+	 * @param result the cumulative result
+	 */
+	private void flattenPropertySources(PropertySource<?> propertySource,
+			MutablePropertySources result) {
+		Object source = propertySource.getSource();
+		if (source instanceof ConfigurableEnvironment) {
+			ConfigurableEnvironment environment = (ConfigurableEnvironment) source;
+			for (PropertySource<?> childSource : environment.getPropertySources()) {
+				flattenPropertySources(childSource, result);
+			}
+		}
+		else {
+			result.addLast(propertySource);
+		}
+	}
+
+	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
 		return bean;
@@ -130,7 +273,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		if (annotation != null && annotation.path().length != 0) {
 
 			factory.setPropertySources(loadPropertySources(annotation.path()));
-		} else {
+		}
+		else {
 			factory.setPropertySources(this.propertySources);
 		}
 		factory.setValidator(this.validator);
@@ -149,15 +293,18 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		}
 		try {
 			factory.bindPropertiesToTarget();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			throw new BeanCreationException(beanName, "Could not bind properties", ex);
 		}
 	}
 
 	private PropertySources loadPropertySources(String[] path) {
 		MutablePropertySources propertySources = new MutablePropertySources();
-		PropertySourceLoader[] loaders = { new PropertiesPropertySourceLoader(),
-				YamlPropertySourceLoader.springProfileAwareLoader(environment.getActiveProfiles()) };
+		PropertySourceLoader[] loaders = {
+				new PropertiesPropertySourceLoader(),
+				YamlPropertySourceLoader.springProfileAwareLoader(this.environment
+						.getActiveProfiles()) };
 		for (String location : path) {
 			location = this.environment.resolvePlaceholders(location);
 			Resource resource = this.resourceLoader.getResource(location);
