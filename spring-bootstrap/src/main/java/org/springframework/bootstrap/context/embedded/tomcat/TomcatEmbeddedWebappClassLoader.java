@@ -1,3 +1,5 @@
+package org.springframework.bootstrap.context.embedded.tomcat;
+
 /*
  * Copyright 2012-2013 the original author or authors.
  *
@@ -14,11 +16,6 @@
  * limitations under the License.
  */
 
-package org.springframework.bootstrap.context.embedded.tomcat;
-
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import org.apache.catalina.loader.WebappClassLoader;
 
 /**
@@ -33,27 +30,86 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 
 	public TomcatEmbeddedWebappClassLoader() {
 		super();
-		this.system = new EmbeddedSystemClassLoader();
 	}
 
 	public TomcatEmbeddedWebappClassLoader(ClassLoader parent) {
 		super(parent);
-		this.system = new EmbeddedSystemClassLoader();
 	}
 
-	private static class EmbeddedSystemClassLoader extends URLClassLoader {
+	@Override
+	public synchronized Class<?> loadClass(String name, boolean resolve)
+			throws ClassNotFoundException {
 
-		public EmbeddedSystemClassLoader() {
-			super(new URL[] {});
+		Class<?> resultClass = null;
+
+		// Check local class caches
+		resultClass = (resultClass == null ? findLoadedClass0(name) : resultClass);
+		resultClass = (resultClass == null ? findLoadedClass(name) : resultClass);
+		if (resultClass != null) {
+			return resolveIfNecessary(resultClass, resolve);
 		}
 
-		@Override
-		public Class<?> loadClass(String name) throws ClassNotFoundException {
-			throw new ClassNotFoundException(
-					"System ClassLoader disabled for embedded context, unable to load "
-							+ name);
+		// Check security
+		checkPackageAccess(name);
+
+		// Perform the actual load
+		boolean delegateLoad = (this.delegate || filter(name));
+
+		if (delegateLoad) {
+			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);
+		}
+		resultClass = (resultClass == null ? findClassIgnoringNotFound(name)
+				: resultClass);
+		if (!delegateLoad) {
+			resultClass = (resultClass == null ? loadFromParent(name) : resultClass);
 		}
 
+		if (resultClass == null) {
+			throw new ClassNotFoundException(name);
+		}
+
+		return resolveIfNecessary(resultClass, resolve);
+	}
+
+	private Class<?> resolveIfNecessary(Class<?> resultClass, boolean resolve) {
+		if (resolve) {
+			resolveClass(resultClass);
+		}
+		return (resultClass);
+	}
+
+	private Class<?> loadFromParent(String name) {
+		if (this.parent == null) {
+			return null;
+		}
+		try {
+			return Class.forName(name, false, this.parent);
+		}
+		catch (ClassNotFoundException e) {
+			return null;
+		}
+	}
+
+	private Class<?> findClassIgnoringNotFound(String name) {
+		try {
+			return findClass(name);
+		}
+		catch (ClassNotFoundException e) {
+			return null;
+		}
+	}
+
+	private void checkPackageAccess(String name) throws ClassNotFoundException {
+		if (this.securityManager != null && name.lastIndexOf('.') >= 0) {
+			try {
+				this.securityManager.checkPackageAccess(name.substring(0,
+						name.lastIndexOf('.')));
+			}
+			catch (SecurityException se) {
+				throw new ClassNotFoundException("Security Violation, attempt to use "
+						+ "Restricted Class: " + name, se);
+			}
+		}
 	}
 
 }
