@@ -22,6 +22,7 @@
 		<tomcat.version>7.0.42</tomcat.version>
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<aspectj.version>1.7.3</aspectj.version>
+        <reactor.version>1.0.0.M1</reactor.version>
 	</properties>
 	<scm>
 		<url>http://github.com/SpringSource/spring-bootstrap</url>
@@ -432,6 +433,11 @@
 				<artifactId>hsqldb</artifactId>
 				<version>2.2.9</version>
 			</dependency>
+            <dependency>
+              <groupId>org.projectreactor</groupId>
+              <artifactId>reactor-spring</artifactId>
+              <version>${reactor.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
