@@ -110,6 +110,11 @@
 			<artifactId>thymeleaf-extras-springsecurity3</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.projectreactor</groupId>
+			<artifactId>reactor-spring</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>

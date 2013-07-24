@@ -118,6 +118,18 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void reactorSample() throws Exception {
+		start("samples/reactor.groovy", "Phil");
+		String output = getOutput();
+		int count = 0;
+		while (!output.contains("Hello Phil") && count++ < 5) {
+			Thread.sleep(200);
+			output = getOutput();
+		}
+		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
+	}
+
+	@Test
 	public void jobWebSample() throws Exception {
 		start("samples/job.groovy", "samples/web.groovy", "foo=bar");
 		String output = getOutput();
