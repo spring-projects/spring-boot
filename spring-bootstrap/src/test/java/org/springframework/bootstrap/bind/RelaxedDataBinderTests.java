@@ -36,6 +36,7 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 import javax.validation.constraints.NotNull;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -196,6 +197,40 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapOfListOfString() throws Exception {
+		TargetWithNestedMapOfListOfString target = new TargetWithNestedMapOfListOfString();
+		bind(target, "nested.foo[0]: bar\n" + "nested.bar[0]: bucket\n"
+				+ "nested.bar[1]: 123\nnested.bar[2]: crap");
+		assertEquals(2, target.getNested().size());
+		assertEquals(3, target.getNested().get("bar").size());
+		assertEquals("123", target.getNested().get("bar").get(1));
+		assertEquals("[bar]", target.getNested().get("foo").toString());
+	}
+
+	@Test
+	@Ignore("Should be possible but currently not supported")
+	// FIXME: bind to map containing beans
+	public void testBindNestedMapOfBean() throws Exception {
+		TargetWithNestedMapOfBean target = new TargetWithNestedMapOfBean();
+		bind(target, "nested.foo.foo: bar\n" + "nested.bar.foo: bucket");
+		assertEquals(2, target.getNested().size());
+		assertEquals("bucket", target.getNested().get("bar").getFoo());
+	}
+
+	@Test
+	@Ignore("Should be possible but currently not supported")
+	// FIXME: bind to map containing beans
+	public void testBindNestedMapOfListOfBean() throws Exception {
+		TargetWithNestedMapOfListOfBean target = new TargetWithNestedMapOfListOfBean();
+		bind(target, "nested.foo[0].foo: bar\n" + "nested.bar[0].foo: bucket\n"
+				+ "nested.bar[1].value: 123\nnested.bar[2].foo: crap");
+		assertEquals(2, target.getNested().size());
+		assertEquals(3, target.getNested().get("bar").size());
+		assertEquals(123, target.getNested().get("bar").get(1).getValue());
+		assertEquals("bar", target.getNested().get("foo").get(0).getFoo());
+	}
+
+	@Test
 	public void testBindErrorTypeMismatch() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		BindingResult result = bind(target, "foo: bar\n" + "value: foo");
@@ -324,6 +359,42 @@ public class RelaxedDataBinderTests {
 		}
 
 		public void setNested(Map<String, Object> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithNestedMapOfListOfString {
+		private Map<String, List<String>> nested;
+
+		public Map<String, List<String>> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Map<String, List<String>> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithNestedMapOfListOfBean {
+		private Map<String, List<VanillaTarget>> nested;
+
+		public Map<String, List<VanillaTarget>> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Map<String, List<VanillaTarget>> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithNestedMapOfBean {
+		private Map<String, VanillaTarget> nested;
+
+		public Map<String, VanillaTarget> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Map<String, VanillaTarget> nested) {
 			this.nested = nested;
 		}
 	}
