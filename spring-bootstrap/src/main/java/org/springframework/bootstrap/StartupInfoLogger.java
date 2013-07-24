@@ -46,6 +46,15 @@ class StartupInfoLogger {
 
 	public void log(Log log) {
 		Assert.notNull(log, "Log must not be null");
+		if (log.isInfoEnabled()) {
+			log.info(getStartupMessage());
+		}
+		if (log.isDebugEnabled()) {
+			log.debug(getRunningMessage());
+		}
+	}
+
+	private String getStartupMessage() {
 		StringBuilder message = new StringBuilder();
 		message.append("Starting ");
 		message.append(getApplicationName());
@@ -53,13 +62,16 @@ class StartupInfoLogger {
 		message.append(getOn());
 		message.append(getPid());
 		message.append(getContext());
-		log.info(message);
-		message.setLength(0);
+		return message.toString();
+	}
+
+	private StringBuilder getRunningMessage() {
+		StringBuilder message = new StringBuilder();
 		message.append("Running with Spring Bootstrap");
 		message.append(getVersion(SpringApplication.class));
 		message.append(", Spring");
 		message.append(getVersion(ApplicationContext.class));
-		log.info(message);
+		return message;
 	}
 
 	private String getApplicationName() {

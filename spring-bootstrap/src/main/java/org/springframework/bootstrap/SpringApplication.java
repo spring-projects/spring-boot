@@ -347,8 +347,11 @@ public class SpringApplication {
 	}
 
 	protected void logStartupInfo() {
-		new StartupInfoLogger(this.mainApplicationClass).log(getApplicationLog());
-		getApplicationLog().info("Sources: " + this.sources);
+		Log applicationLog = getApplicationLog();
+		new StartupInfoLogger(this.mainApplicationClass).log(applicationLog);
+		if (applicationLog.isDebugEnabled()) {
+			applicationLog.debug("Sources: " + this.sources);
+		}
 	}
 
 	/**

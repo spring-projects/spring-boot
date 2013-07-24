@@ -32,6 +32,8 @@
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="FILE" />
 	</root>
-	
+
 	<logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
+	<logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
+	<logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
 </configuration>
