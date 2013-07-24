@@ -1,2 +1,2 @@
-gh-pages-common
-===============
+common
+======
