@@ -22,10 +22,17 @@ import org.apache.catalina.startup.Tomcat;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
 import org.springframework.autoconfigure.EnableAutoConfiguration;
+import org.springframework.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.bootstrap.context.condition.ConditionalOnClass;
 import org.springframework.bootstrap.context.condition.ConditionalOnMissingBean;
 import org.springframework.bootstrap.context.condition.SearchStrategy;
-import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.bootstrap.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.bootstrap.context.embedded.ServletContextInitializer;
@@ -33,8 +40,11 @@ import org.springframework.bootstrap.context.embedded.jetty.JettyEmbeddedServlet
 import org.springframework.bootstrap.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -44,17 +54,9 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Dave Syer
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@Configuration
+@Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
 public class EmbeddedServletContainerAutoConfiguration {
-
-	/**
-	 * Support {@link EmbeddedServletContainerCustomizerBeanPostProcessor} to apply
-	 * {@link EmbeddedServletContainerCustomizer}s.
-	 */
-	@Bean
-	@ConditionalOnMissingBean(value = EmbeddedServletContainerCustomizerBeanPostProcessor.class, search = SearchStrategy.CURRENT)
-	public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
-		return new EmbeddedServletContainerCustomizerBeanPostProcessor();
-	}
 
 	/**
 	 * Add the {@link DispatcherServlet} unless the user has defined their own
@@ -101,4 +103,35 @@ public class EmbeddedServletContainerAutoConfiguration {
 
 	}
 
+	/**
+	 * Registers a {@link EmbeddedServletContainerCustomizerBeanPostProcessor}. Registered
+	 * via {@link ImportBeanDefinitionRegistrar} for early registration.
+	 */
+	public static class EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar
+			implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+
+		private ConfigurableListableBeanFactory beanFactory;
+
+		@Override
+		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+			if (beanFactory instanceof ConfigurableListableBeanFactory) {
+				this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+			}
+		}
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+				BeanDefinitionRegistry registry) {
+			if (this.beanFactory != null
+					&& this.beanFactory.getBeansOfType(
+							EmbeddedServletContainerCustomizerBeanPostProcessor.class)
+							.size() == 0) {
+				BeanDefinition beanDefinition = new RootBeanDefinition(
+						EmbeddedServletContainerCustomizerBeanPostProcessor.class);
+				registry.registerBeanDefinition(
+						"embeddedServletContainerCustomizerBeanPostProcessor",
+						beanDefinition);
+			}
+		}
+	}
 }

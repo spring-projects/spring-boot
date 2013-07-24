@@ -48,11 +48,11 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 				EnableConfigurationProperties.class.getName(), false);
 		Object[] type = (Object[]) attributes.getFirst("value");
 		if (type == null || type.length == 0) {
-			return new String[] { ConfigurationPropertiesBindingConfiguration.class
+			return new String[] { ConfigurationPropertiesBindingPostProcessorRegistrar.class
 					.getName() };
 		}
 		return new String[] { ConfigurationPropertiesBeanRegistrar.class.getName(),
-				ConfigurationPropertiesBindingConfiguration.class.getName() };
+				ConfigurationPropertiesBindingPostProcessorRegistrar.class.getName() };
 	}
 
 	public static class ConfigurationPropertiesBeanRegistrar implements
