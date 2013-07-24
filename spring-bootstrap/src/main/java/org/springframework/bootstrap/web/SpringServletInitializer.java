@@ -44,7 +44,7 @@ import org.springframework.web.context.WebApplicationContext;
  */
 public abstract class SpringServletInitializer implements WebApplicationInitializer {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	protected final Log logger = LogFactory.getLog(getClass());
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
