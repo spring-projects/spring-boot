@@ -22,16 +22,18 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link StartupInfoLogger}.
+ * 
  * @author Dave Syer
  */
-public class StartUpLoggerInfoTests {
+public class StartUpLoggerTests {
 
 	private StringBuffer output = new StringBuffer();
 
 	private SimpleLog log = new SimpleLog("test") {
 		@Override
 		protected void write(StringBuffer buffer) {
-			StartUpLoggerInfoTests.this.output.append(buffer).append("\n");
+			StartUpLoggerTests.this.output.append(buffer).append("\n");
 		};
 	};
 
@@ -40,14 +42,6 @@ public class StartUpLoggerInfoTests {
 		new StartupInfoLogger(getClass()).log(this.log);
 		assertTrue("Wrong output: " + this.output,
 				this.output.toString().contains("Starting " + getClass().getSimpleName()));
-		// System.err.println(this.output);
-	}
-
-	@Test
-	public void bootstrapVersionIncluded() {
-		new StartupInfoLogger(getClass()).log(this.log);
-		assertTrue("Wrong output: " + this.output,
-				this.output.toString().contains("Spring Bootstrap v"));
 	}
 
 }
