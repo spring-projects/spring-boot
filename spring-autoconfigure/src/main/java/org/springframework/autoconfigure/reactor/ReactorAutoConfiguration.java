@@ -33,7 +33,7 @@ import reactor.spring.context.ConsumerBeanPostProcessor;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass(Reactor.class)
+@ConditionalOnClass(ConsumerBeanPostProcessor.class)
 @ConditionalOnMissingBean(Reactor.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ReactorAutoConfiguration {
