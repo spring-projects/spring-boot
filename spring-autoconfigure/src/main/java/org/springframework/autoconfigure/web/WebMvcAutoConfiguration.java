@@ -44,7 +44,6 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -64,7 +63,7 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
 		WebMvcConfigurerAdapter.class })
-@ConditionalOnMissingBean({ HandlerAdapter.class, HandlerMapping.class })
+@ConditionalOnMissingBean({ HandlerAdapter.class })
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 public class WebMvcAutoConfiguration {
