@@ -36,7 +36,6 @@ import javax.validation.ConstraintValidatorContext;
 import javax.validation.Payload;
 import javax.validation.constraints.NotNull;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -76,10 +75,17 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	public void testBindUnderscore() throws Exception {
+	public void testBindUnderscoreInActualPropertyName() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "foo-bar: bar");
 		assertEquals("bar", target.getFoo_bar());
+	}
+
+	@Test
+	public void testBindHyphen() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "foo-baz: bar");
+		assertEquals("bar", target.getFooBaz());
 	}
 
 	@Test
@@ -208,7 +214,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	@Ignore("Should be possible but currently not supported")
+	// @Ignore("Should be possible but currently not supported")
 	// FIXME: bind to map containing beans
 	public void testBindNestedMapOfBean() throws Exception {
 		TargetWithNestedMapOfBean target = new TargetWithNestedMapOfBean();
@@ -218,7 +224,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	@Ignore("Should be possible but currently not supported")
+	// @Ignore("Should be possible but currently not supported")
 	// FIXME: bind to map containing beans
 	public void testBindNestedMapOfListOfBean() throws Exception {
 		TargetWithNestedMapOfListOfBean target = new TargetWithNestedMapOfListOfBean();
@@ -265,7 +271,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	public void testBindMapNestedInMap() throws Exception {
+	public void testBindMapNestedMap() throws Exception {
 		Map<String, Object> target = new LinkedHashMap<String, Object>();
 		BindingResult result = bind(target, "spam: bar\n" + "vanilla.foo.value: 123",
 				"vanilla");

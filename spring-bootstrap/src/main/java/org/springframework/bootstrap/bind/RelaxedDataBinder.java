@@ -17,6 +17,7 @@
 package org.springframework.bootstrap.bind;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DataBinder;
 
@@ -129,66 +131,228 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private void modifyProperty(MutablePropertyValues propertyValues, BeanWrapper target,
 			PropertyValue propertyValue, int index) {
-
-		String name = propertyValue.getName();
-		StringBuilder builder = new StringBuilder();
-		Class<?> type = target.getWrappedClass();
-
-		for (String key : StringUtils.delimitedListToStringArray(name, ".")) {
-			if (builder.length() != 0) {
-				builder.append(".");
-			}
-			String oldKey = key;
-			key = getActualPropertyName(target, builder.toString(), oldKey);
-			builder.append(key);
-			String base = builder.toString();
-			if (!oldKey.equals(key)) {
-				propertyValues.setPropertyValueAt(
-						new PropertyValue(base, propertyValue.getValue()), index);
-			}
-			type = target.getPropertyType(base);
-
-			// Any nested properties that are maps, are assumed to be simple nested
-			// maps of maps...
-			if (type != null && Map.class.isAssignableFrom(type)) {
-				Map<String, Object> nested = new LinkedHashMap<String, Object>();
-				if (target.getPropertyValue(base) != null) {
-					@SuppressWarnings("unchecked")
-					Map<String, Object> existing = (Map<String, Object>) target
-							.getPropertyValue(base);
-					nested = existing;
-				}
-				else {
-					target.setPropertyValue(base, nested);
-				}
-				modifyPopertiesForMap(nested, propertyValues, index, base);
-				break;
-			}
+		String oldName = propertyValue.getName();
+		String name = normalizePath(target, oldName);
+		if (!name.equals(oldName)) {
+			propertyValues.setPropertyValueAt(
+					new PropertyValue(name, propertyValue.getValue()), index);
 		}
 	}
 
-	private void modifyPopertiesForMap(Map<String, Object> target,
-			MutablePropertyValues propertyValues, int index, String base) {
-		PropertyValue propertyValue = propertyValues.getPropertyValueList().get(index);
-		String name = propertyValue.getName();
-		String suffix = name.substring(base.length());
-		Map<String, Object> value = new LinkedHashMap<String, Object>();
-		String[] tree = StringUtils.delimitedListToStringArray(
-				suffix.startsWith(".") ? suffix.substring(1) : suffix, ".");
-		for (int j = 0; j < tree.length - 1; j++) {
-			if (!target.containsKey(tree[j])) {
-				target.put(tree[j], value);
-			}
-			target = value;
-			value = new LinkedHashMap<String, Object>();
-		}
-		String refName = base + suffix.replaceAll("\\.([a-zA-Z0-9]*)", "[$1]");
-		propertyValues.setPropertyValueAt(
-				new PropertyValue(refName, propertyValue.getValue()), index);
+	protected String normalizePath(BeanWrapper wrapper, String path) {
+		return initializePath(wrapper, new BeanPath(path), 0);
+	}
 
+	private static class BeanPath {
+
+		private List<PathNode> nodes;
+
+		public BeanPath(String path) {
+			this.nodes = splitPath(path);
+		}
+
+		public void mapIndex(int index) {
+			PathNode node = this.nodes.get(index);
+			if (node instanceof PropertyNode) {
+				node = ((PropertyNode) node).mapIndex();
+			}
+			this.nodes.set(index, node);
+		}
+
+		public String prefix(int index) {
+			return range(0, index);
+		}
+
+		public void rename(int index, String name) {
+			this.nodes.get(index).name = name;
+		}
+
+		public String name(int index) {
+			if (index < this.nodes.size()) {
+				return this.nodes.get(index).name;
+			}
+			return null;
+		}
+
+		public int length() {
+			return this.nodes.size();
+		}
+
+		private String range(int start, int end) {
+			StringBuilder builder = new StringBuilder();
+			for (int i = start; i < end; i++) {
+				PathNode node = this.nodes.get(i);
+				builder.append(node);
+			}
+			if (builder.toString().startsWith(("."))) {
+				builder.replace(0, 1, "");
+			}
+			return builder.toString();
+		}
+
+		public boolean isArrayIndex(int index) {
+			return this.nodes.get(index) instanceof ArrayIndexNode;
+		}
+
+		public boolean isProperty(int index) {
+			return this.nodes.get(index) instanceof PropertyNode;
+		}
+
+		@Override
+		public String toString() {
+			return prefix(this.nodes.size());
+		}
+
+		private static class PathNode {
+
+			protected String name;
+
+			public PathNode(String name) {
+				this.name = name;
+			}
+
+		}
+
+		private static class ArrayIndexNode extends PathNode {
+
+			public ArrayIndexNode(String name) {
+				super(name);
+			}
+
+			@Override
+			public String toString() {
+				return "[" + this.name + "]";
+			}
+
+		}
+
+		private static class MapIndexNode extends PathNode {
+
+			public MapIndexNode(String name) {
+				super(name);
+			}
+
+			@Override
+			public String toString() {
+				return "[" + this.name + "]";
+			}
+		}
+
+		private static class PropertyNode extends PathNode {
+
+			public PropertyNode(String name) {
+				super(name);
+			}
+
+			public MapIndexNode mapIndex() {
+				return new MapIndexNode(this.name);
+			}
+
+			@Override
+			public String toString() {
+				return "." + this.name;
+			}
+		}
+
+		private List<PathNode> splitPath(String path) {
+			List<PathNode> nodes = new ArrayList<PathNode>();
+			for (String name : StringUtils.delimitedListToStringArray(path, ".")) {
+				for (String sub : StringUtils.delimitedListToStringArray(name, "[")) {
+					if (StringUtils.hasText(sub)) {
+						if (sub.endsWith("]")) {
+							sub = sub.substring(0, sub.length() - 1);
+							if (sub.matches("[0-9]+")) {
+								nodes.add(new ArrayIndexNode(sub));
+							}
+							else {
+								nodes.add(new MapIndexNode(sub));
+							}
+						}
+						else {
+							nodes.add(new PropertyNode(sub));
+						}
+					}
+				}
+			}
+			return nodes;
+		}
+
+	}
+
+	private String initializePath(BeanWrapper wrapper, BeanPath path, int index) {
+		String prefix = path.prefix(index);
+		String key = path.name(index);
+		if (key == null) {
+			return path.toString();
+		}
+		if (path.isProperty(index)) {
+			key = getActualPropertyName(wrapper, prefix, key);
+			path.rename(index, key);
+		}
+		if (index >= path.length() - 1) {
+			return path.toString();
+		}
+		String name = path.prefix(++index);
+		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
+		if (descriptor == null || descriptor.isMap()) {
+			if (descriptor != null) {
+				wrapper.getPropertyValue(name + "[foo]");
+			}
+			path.mapIndex(index);
+			extendMapIfNecessary(wrapper, path, index);
+		}
+		else if (descriptor.isCollection()) {
+			// TODO: test collection extension
+			extendCollectionIfNecessary(wrapper, path, index);
+		}
+		else if (descriptor.getType().equals(Object.class)) {
+			path.mapIndex(index);
+			name = path.prefix(index + 1);
+			if (wrapper.getPropertyValue(name) == null) {
+				wrapper.setPropertyValue(name, new LinkedHashMap<String, Object>());
+			}
+		}
+		if (index < path.length()) {
+			return initializePath(wrapper, path, index);
+		}
+		return path.toString();
+	}
+
+	private void extendCollectionIfNecessary(BeanWrapper wrapper, BeanPath path, int index) {
+		String name = path.prefix(index);
+		TypeDescriptor elementDescriptor = wrapper.getPropertyTypeDescriptor(name)
+				.getElementTypeDescriptor();
+		if (!elementDescriptor.isMap() && !elementDescriptor.isCollection()
+				&& !elementDescriptor.getType().equals(Object.class)) {
+			return;
+		}
+		Object extend = new LinkedHashMap<String, Object>();
+		if (!elementDescriptor.isMap() && path.isArrayIndex(index + 1)) {
+			extend = new ArrayList<Object>();
+		}
+		wrapper.setPropertyValue(path.prefix(index + 1), extend);
+	}
+
+	private void extendMapIfNecessary(BeanWrapper wrapper, BeanPath path, int index) {
+		String name = path.prefix(index);
+		TypeDescriptor parent = wrapper.getPropertyTypeDescriptor(name);
+		if (parent == null) {
+			return;
+		}
+		TypeDescriptor descriptor = parent.getMapValueTypeDescriptor();
+		if (!descriptor.isMap() && !descriptor.isCollection()
+				&& !descriptor.getType().equals(Object.class)) {
+			return;
+		}
+		Object extend = new LinkedHashMap<String, Object>();
+		if (descriptor.isCollection()) {
+			extend = new ArrayList<Object>();
+		}
+		wrapper.setPropertyValue(path.prefix(index + 1), extend);
 	}
 
 	private String getActualPropertyName(BeanWrapper target, String prefix, String name) {
+		prefix = StringUtils.hasText(prefix) ? prefix + "." : "";
 		for (Variation variation : Variation.values()) {
 			for (Manipulation manipulation : Manipulation.values()) {
 				// Apply all manipulations before attempting variations
@@ -199,7 +363,7 @@ public class RelaxedDataBinder extends DataBinder {
 					}
 				}
 				catch (InvalidPropertyException ex) {
-					// swallow and contrinue
+					// swallow and continue
 				}
 			}
 		}
