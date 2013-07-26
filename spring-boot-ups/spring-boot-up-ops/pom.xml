@@ -4,9 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-up-parent</artifactId>
+		<artifactId>spring-boot-ups</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
-        <relativePath>../spring-boot-up-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-up-ops</artifactId>
 	<packaging>jar</packaging>

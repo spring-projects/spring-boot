@@ -4,9 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-up-parent</artifactId>
+		<artifactId>spring-boot-ups</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
-        <relativePath>../spring-boot-up-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-up</artifactId>
 	<packaging>jar</packaging>
@@ -16,7 +15,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-config</artifactId>
+			<artifactId>spring-boot</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

@@ -56,7 +56,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 /**
  * MOJO that can can be used to repackage existing JAR and WAR archives so that they can
  * be executed from the command line using {@literal java -jar}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -247,7 +247,7 @@ public class ExecutableArchiveMojo extends AbstractExecutableArchiveMojo {
 
 			String version = getClass().getPackage().getImplementationVersion();
 			DefaultArtifact artifact = new DefaultArtifact(
-					"org.springframework.boot:spring-boot-load:" + version);
+					"org.springframework.boot:spring-boot-loader:" + version);
 			ArtifactDescriptorRequest descriptorRequest = new ArtifactDescriptorRequest(
 					artifact, repositories, "plugin");
 			ArtifactDescriptorResult descriptorResult = this.repositorySystem

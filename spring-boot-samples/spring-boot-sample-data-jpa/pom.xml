@@ -34,7 +34,6 @@
 			<plugin>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<extensions>true</extensions>
 			</plugin>
 		</plugins>
 	</build>

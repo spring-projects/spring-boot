@@ -26,9 +26,9 @@
 				<version>2.4</version>
 				<configuration>
 					<archive>
-                        <manifest>
-                          <mainClass>some.random.Main</mainClass>
-                        </manifest>
+						<manifest>
+							<mainClass>some.random.Main</mainClass>
+						</manifest>
 						<manifestEntries>
 							<Not-Used>Foo</Not-Used>
 						</manifestEntries>

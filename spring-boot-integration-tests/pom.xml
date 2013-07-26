@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot</artifactId>
+		<artifactId>spring-boot-parent</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-integration-tests</artifactId>
@@ -16,12 +16,12 @@
 		<!-- Ensure other reactor projects are build before running integration tests -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-ops</artifactId>
+			<artifactId>spring-boot</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-config</artifactId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -31,12 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-strap</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-load</artifactId>
+			<artifactId>spring-boot-loader</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -46,12 +41,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up</artifactId>
+			<artifactId>spring-boot-ops</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-ops</artifactId>
+			<artifactId>spring-boot-up</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -71,7 +66,33 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-up-jetty</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-up-logging</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-up-ops</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-up-parent</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot-up-security</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-up-tomcat</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
