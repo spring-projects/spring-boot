@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.springframework.zero</groupId>
-	<artifactId>spring-zero</artifactId>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot</artifactId>
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<prerequisites>
@@ -25,9 +25,9 @@
         <reactor.version>1.0.0.M1</reactor.version>
 	</properties>
 	<scm>
-		<url>http://github.com/SpringSource/spring-bootstrap</url>
-		<connection>scm:git:git://github.com/SpringSource/spring-bootstrap.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/SpringSource/spring-bootstrap.git</developerConnection>
+		<url>http://github.com/SpringSource/spring-boot</url>
+		<connection>scm:git:git://github.com/SpringSource/spring-boot.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/SpringSource/spring-boot.git</developerConnection>
 	</scm>
 	<developers>
 		<developer>
@@ -37,14 +37,14 @@
 		</developer>
 	</developers>
 	<modules>
-		<module>spring-bootstrap</module>
-		<module>spring-autoconfigure</module>
-		<module>spring-starters</module>
-		<module>spring-actuator</module>
-		<module>spring-launcher</module>
-		<module>spring-package-maven-plugin</module>
-		<module>spring-cli</module>
-		<module>spring-zero-integration-tests</module>
+		<module>spring-boot-strap</module>
+		<module>spring-boot-config</module>
+		<module>spring-boot-ops</module>
+		<module>spring-boot-load</module>
+		<module>spring-boot-maven-plugin</module>
+		<module>spring-boot-ups</module>
+		<module>spring-boot-cli</module>
+		<module>spring-boot-integration-tests</module>
 	</modules>
 	<build>
 		<pluginManagement>
@@ -663,7 +663,7 @@
 		<downloadUrl>http://www.springsource.com/download/community</downloadUrl>
 		<site>
 			<id>spring-docs</id>
-			<url>scp://static.springframework.org/var/www/domains/springframework.org/static/htdocs/spring-bootstrap/docs/${project.version}</url>
+			<url>scp://static.springframework.org/var/www/domains/springframework.org/static/htdocs/spring-boot/docs/${project.version}</url>
 		</site>
 		<repository>
 			<id>spring-repo-release</id>

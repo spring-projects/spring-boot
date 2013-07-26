@@ -45,7 +45,7 @@ changes just won't be automatically formatted._
 
 With the requisite eclipse plugins installed you can select 
 `import existing maven projects` from the `file` menu to import the code. You will
-need to import the root `spring-zero` pom and the `spring-zero-samples` pom separately. 
+need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately. 
 
 
 ### Importing into eclipse without m2eclipse

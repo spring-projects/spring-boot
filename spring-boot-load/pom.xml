@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot</artifactId>
+		<version>0.5.0.BUILD-SNAPSHOT</version>
+	</parent>
+	<artifactId>spring-boot-load</artifactId>
+	<packaging>jar</packaging>
+	<properties>
+		<main.basedir>${basedir}/..</main.basedir>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<configuration>
+					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+					<settingsFile>src/it/settings.xml</settingsFile>
+					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+					<postBuildHookScript>verify</postBuildHookScript>
+					<addTestClassPath>true</addTestClassPath>
+					<skipInvocation>${skipTests}</skipInvocation>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>install</goal>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

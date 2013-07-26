@@ -43,7 +43,7 @@ or above.
 
 An `alias` can be used for the Spring Zero command line tool:
 
-	$ alias spring="java -jar ~/.m2/repository/org/springframework/zero/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
+	$ alias spring="java -jar ~/.m2/repository/org/springframework/boot/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
 
 _Also see [docs/CONTRIBUTING](docs/CONTRIBUTING.md) if you want to submit pull requests._  
 
@@ -167,22 +167,22 @@ Groovy samples for use with the command line application are available in
 [spring-cli/samples](spring-cli/samples/#). To run the CLI samples type 
 `spring run <sample>.groovy` from samples directory.
 
-Java samples are available in [spring-zero-sample](spring-zero-samples/#) and should
+Java samples are available in [spring-boot-sample](spring-boot-samples/#) and should
 be build with maven and run use `java -jar target/<sample>.jar`. The following java
 samples are provided:
 
-* spring-zero-sample-simple - A simple command line application
-* spring-zero-sample-tomcat - Embedded Tomcat
-* spring-zero-sample-jetty - Embedded Jetty
-* spring-zero-sample-actuator - Simple REST service with production features
-* spring-zero-sample-actuator-ui - A web UI example with production features
-* spring-zero-sample-web-ui - A thymeleaf web application
+* spring-boot-sample-simple - A simple command line application
+* spring-boot-sample-tomcat - Embedded Tomcat
+* spring-boot-sample-jetty - Embedded Jetty
+* spring-boot-sample-actuator - Simple REST service with production features
+* spring-boot-sample-actuator-ui - A web UI example with production features
+* spring-boot-sample-web-ui - A thymeleaf web application
 * spring-sample-batch - Define and run a Batch job in a few lines of code
 * spring-sample-data-jpa - Spring Data JPA + Hibernate + HSQLDB
-* spring-zero-sample-integration - A spring integration application
-* spring-zero-sample-profile - example showing Spring's `@profile` support
-* spring-zero-sample-traditional - shows Spring Zero with more traditional WAR packaging 
+* spring-boot-sample-integration - A spring integration application
+* spring-boot-sample-profile - example showing Spring's `@profile` support
+* spring-boot-sample-traditional - shows Spring Zero with more traditional WAR packaging 
   (but also executable using `java -jar`)
-* spring-zero-sample-xml - Example show how Spring Zero can be mixed with trditional XML
+* spring-boot-sample-xml - Example show how Spring Zero can be mixed with trditional XML
   configuration
 
