@@ -139,160 +139,35 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 	}
 
+	/**
+	 * Normalize a bean property path to a format understood by a BeanWrapper. This is
+	 * used so that
+	 * <ul>
+	 * <li>Fuzzy matching can be employed for bean property names</li>
+	 * <li>Period separators can be used instead of indexing ([...]) for map keys</li>
+	 * </ul>
+	 * 
+	 * @param wrapper a bean wrapper for the object to bind
+	 * @param path the bean path to bind
+	 * @return a transformed path with correct bean wrapper syntax
+	 */
 	protected String normalizePath(BeanWrapper wrapper, String path) {
 		return initializePath(wrapper, new BeanPath(path), 0);
 	}
 
-	private static class BeanPath {
-
-		private List<PathNode> nodes;
-
-		public BeanPath(String path) {
-			this.nodes = splitPath(path);
-		}
-
-		public void mapIndex(int index) {
-			PathNode node = this.nodes.get(index);
-			if (node instanceof PropertyNode) {
-				node = ((PropertyNode) node).mapIndex();
-			}
-			this.nodes.set(index, node);
-		}
-
-		public String prefix(int index) {
-			return range(0, index);
-		}
-
-		public void rename(int index, String name) {
-			this.nodes.get(index).name = name;
-		}
-
-		public String name(int index) {
-			if (index < this.nodes.size()) {
-				return this.nodes.get(index).name;
-			}
-			return null;
-		}
-
-		public int length() {
-			return this.nodes.size();
-		}
-
-		private String range(int start, int end) {
-			StringBuilder builder = new StringBuilder();
-			for (int i = start; i < end; i++) {
-				PathNode node = this.nodes.get(i);
-				builder.append(node);
-			}
-			if (builder.toString().startsWith(("."))) {
-				builder.replace(0, 1, "");
-			}
-			return builder.toString();
-		}
-
-		public boolean isArrayIndex(int index) {
-			return this.nodes.get(index) instanceof ArrayIndexNode;
-		}
-
-		public boolean isProperty(int index) {
-			return this.nodes.get(index) instanceof PropertyNode;
-		}
-
-		@Override
-		public String toString() {
-			return prefix(this.nodes.size());
-		}
-
-		private static class PathNode {
-
-			protected String name;
-
-			public PathNode(String name) {
-				this.name = name;
-			}
-
-		}
-
-		private static class ArrayIndexNode extends PathNode {
-
-			public ArrayIndexNode(String name) {
-				super(name);
-			}
-
-			@Override
-			public String toString() {
-				return "[" + this.name + "]";
-			}
-
-		}
-
-		private static class MapIndexNode extends PathNode {
-
-			public MapIndexNode(String name) {
-				super(name);
-			}
-
-			@Override
-			public String toString() {
-				return "[" + this.name + "]";
-			}
-		}
-
-		private static class PropertyNode extends PathNode {
-
-			public PropertyNode(String name) {
-				super(name);
-			}
-
-			public MapIndexNode mapIndex() {
-				return new MapIndexNode(this.name);
-			}
-
-			@Override
-			public String toString() {
-				return "." + this.name;
-			}
-		}
-
-		private List<PathNode> splitPath(String path) {
-			List<PathNode> nodes = new ArrayList<PathNode>();
-			for (String name : StringUtils.delimitedListToStringArray(path, ".")) {
-				for (String sub : StringUtils.delimitedListToStringArray(name, "[")) {
-					if (StringUtils.hasText(sub)) {
-						if (sub.endsWith("]")) {
-							sub = sub.substring(0, sub.length() - 1);
-							if (sub.matches("[0-9]+")) {
-								nodes.add(new ArrayIndexNode(sub));
-							}
-							else {
-								nodes.add(new MapIndexNode(sub));
-							}
-						}
-						else {
-							nodes.add(new PropertyNode(sub));
-						}
-					}
-				}
-			}
-			return nodes;
-		}
-
-	}
-
 	private String initializePath(BeanWrapper wrapper, BeanPath path, int index) {
+
 		String prefix = path.prefix(index);
 		String key = path.name(index);
-		if (key == null) {
-			return path.toString();
-		}
 		if (path.isProperty(index)) {
 			key = getActualPropertyName(wrapper, prefix, key);
 			path.rename(index, key);
 		}
-		if (index >= path.length() - 1) {
+		if (path.name(++index) == null) {
 			return path.toString();
 		}
-		String name = path.prefix(++index);
+
+		String name = path.prefix(index);
 		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
 		if (descriptor == null || descriptor.isMap()) {
 			if (descriptor != null) {
@@ -302,20 +177,18 @@ public class RelaxedDataBinder extends DataBinder {
 			extendMapIfNecessary(wrapper, path, index);
 		}
 		else if (descriptor.isCollection()) {
-			// TODO: test collection extension
 			extendCollectionIfNecessary(wrapper, path, index);
 		}
 		else if (descriptor.getType().equals(Object.class)) {
 			path.mapIndex(index);
-			name = path.prefix(index + 1);
-			if (wrapper.getPropertyValue(name) == null) {
-				wrapper.setPropertyValue(name, new LinkedHashMap<String, Object>());
+			String next = path.prefix(index + 1);
+			if (wrapper.getPropertyValue(next) == null) {
+				wrapper.setPropertyValue(next, new LinkedHashMap<String, Object>());
 			}
 		}
-		if (index < path.length()) {
-			return initializePath(wrapper, path, index);
-		}
-		return path.toString();
+
+		return initializePath(wrapper, path, index);
+
 	}
 
 	private void extendCollectionIfNecessary(BeanWrapper wrapper, BeanPath path, int index) {
@@ -437,6 +310,138 @@ public class RelaxedDataBinder extends DataBinder {
 		public Map<String, Object> getMap() {
 			return this.map;
 		}
+	}
+
+	private static class BeanPath {
+
+		private List<PathNode> nodes;
+
+		public BeanPath(String path) {
+			this.nodes = splitPath(path);
+		}
+
+		public void mapIndex(int index) {
+			PathNode node = this.nodes.get(index);
+			if (node instanceof PropertyNode) {
+				node = ((PropertyNode) node).mapIndex();
+			}
+			this.nodes.set(index, node);
+		}
+
+		public String prefix(int index) {
+			return range(0, index);
+		}
+
+		public void rename(int index, String name) {
+			this.nodes.get(index).name = name;
+		}
+
+		public String name(int index) {
+			if (index < this.nodes.size()) {
+				return this.nodes.get(index).name;
+			}
+			return null;
+		}
+
+		private String range(int start, int end) {
+			StringBuilder builder = new StringBuilder();
+			for (int i = start; i < end; i++) {
+				PathNode node = this.nodes.get(i);
+				builder.append(node);
+			}
+			if (builder.toString().startsWith(("."))) {
+				builder.replace(0, 1, "");
+			}
+			return builder.toString();
+		}
+
+		public boolean isArrayIndex(int index) {
+			return this.nodes.get(index) instanceof ArrayIndexNode;
+		}
+
+		public boolean isProperty(int index) {
+			return this.nodes.get(index) instanceof PropertyNode;
+		}
+
+		@Override
+		public String toString() {
+			return prefix(this.nodes.size());
+		}
+
+		private static class PathNode {
+
+			protected String name;
+
+			public PathNode(String name) {
+				this.name = name;
+			}
+
+		}
+
+		private static class ArrayIndexNode extends PathNode {
+
+			public ArrayIndexNode(String name) {
+				super(name);
+			}
+
+			@Override
+			public String toString() {
+				return "[" + this.name + "]";
+			}
+
+		}
+
+		private static class MapIndexNode extends PathNode {
+
+			public MapIndexNode(String name) {
+				super(name);
+			}
+
+			@Override
+			public String toString() {
+				return "[" + this.name + "]";
+			}
+		}
+
+		private static class PropertyNode extends PathNode {
+
+			public PropertyNode(String name) {
+				super(name);
+			}
+
+			public MapIndexNode mapIndex() {
+				return new MapIndexNode(this.name);
+			}
+
+			@Override
+			public String toString() {
+				return "." + this.name;
+			}
+		}
+
+		private List<PathNode> splitPath(String path) {
+			List<PathNode> nodes = new ArrayList<PathNode>();
+			for (String name : StringUtils.delimitedListToStringArray(path, ".")) {
+				for (String sub : StringUtils.delimitedListToStringArray(name, "[")) {
+					if (StringUtils.hasText(sub)) {
+						if (sub.endsWith("]")) {
+							sub = sub.substring(0, sub.length() - 1);
+							if (sub.matches("[0-9]+")) {
+								nodes.add(new ArrayIndexNode(sub));
+							}
+							else {
+								nodes.add(new MapIndexNode(sub));
+							}
+						}
+						else {
+							nodes.add(new PropertyNode(sub));
+						}
+					}
+				}
+			}
+			return nodes;
+		}
+
 	}
 
 }

@@ -133,6 +133,28 @@ public class BindingPreparationTests {
 	}
 
 	@Test
+	public void testAutoGrowListOfMaps() throws Exception {
+		TargetWithNestedListOfMaps target = new TargetWithNestedListOfMaps();
+		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
+		wrapper.setAutoGrowNestedPaths(true);
+		RelaxedDataBinder binder = new RelaxedDataBinder(target);
+		binder.normalizePath(wrapper, "nested[0][foo]");
+		assertNotNull(wrapper.getPropertyValue("nested"));
+		assertNotNull(wrapper.getPropertyValue("nested[0]"));
+	}
+
+	@Test
+	public void testAutoGrowListOfLists() throws Exception {
+		TargetWithNestedListOfLists target = new TargetWithNestedListOfLists();
+		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
+		wrapper.setAutoGrowNestedPaths(true);
+		RelaxedDataBinder binder = new RelaxedDataBinder(target);
+		binder.normalizePath(wrapper, "nested[0][1]");
+		assertNotNull(wrapper.getPropertyValue("nested"));
+		assertNotNull(wrapper.getPropertyValue("nested[0][1]"));
+	}
+
+	@Test
 	public void testBeanWrapperCreatesNewNestedMaps() throws Exception {
 		TargetWithNestedMap target = new TargetWithNestedMap();
 		BeanWrapperImpl wrapper = new BeanWrapperImpl(target);
@@ -209,6 +231,30 @@ public class BindingPreparationTests {
 		}
 
 		public void setNested(Map<String, List<String>> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithNestedListOfMaps {
+		private List<Map<String, String>> nested;
+
+		public List<Map<String, String>> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<Map<String, String>> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithNestedListOfLists {
+		private List<List<String>> nested;
+
+		public List<List<String>> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(List<List<String>> nested) {
 			this.nested = nested;
 		}
 	}
