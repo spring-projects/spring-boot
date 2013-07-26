@@ -20,8 +20,8 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.boot.strap.context.embedded.properties.ServerProperties;
-import org.springframework.boot.strap.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.embedded.properties.ServerProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Properties for the management server (e.g. port and path settings).

@@ -18,9 +18,9 @@ package org.springframework.boot.ops.endpoint;
 
 import java.util.List;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.ops.trace.Trace;
 import org.springframework.boot.ops.trace.TraceRepository;
-import org.springframework.boot.strap.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**

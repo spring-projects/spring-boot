@@ -17,10 +17,10 @@
 package org.springframework.boot.sample.profile;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.config.EnableAutoConfiguration;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.sample.profile.service.MessageService;
-import org.springframework.boot.strap.CommandLineRunner;
-import org.springframework.boot.strap.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 

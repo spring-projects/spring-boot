@@ -17,7 +17,7 @@
 package org.springframework.boot.ops.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.boot.config.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.ops.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.ops.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;

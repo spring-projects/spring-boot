@@ -20,10 +20,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ops.endpoint.MetricsEndpoint;
 import org.springframework.boot.ops.endpoint.PublicMetrics;
 import org.springframework.boot.ops.metrics.Metric;
-import org.springframework.boot.strap.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -17,9 +17,9 @@
 package org.springframework.boot.sample.xml;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.sample.xml.service.HelloWorldService;
-import org.springframework.boot.strap.CommandLineRunner;
-import org.springframework.boot.strap.SpringApplication;
 
 public class SampleSpringXmlApplication implements CommandLineRunner {
 

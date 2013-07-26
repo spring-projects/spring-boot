@@ -251,7 +251,7 @@ from the Spring `Environment` to System properties:
 
 All the logging systems supported can consult System properties when
 parsing their configuration files.  See the default configurations in
-`spring-bootstrap.jar` for examples.
+`spring-boot.jar` for examples.
 
 ## Application Context Initializers
 

@@ -21,11 +21,11 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.config.AutoConfigureAfter;
-import org.springframework.boot.config.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.condition.ConditionalOnClass;
 import org.springframework.boot.ops.trace.TraceRepository;
 import org.springframework.boot.ops.trace.WebRequestTraceFilter;
-import org.springframework.boot.strap.context.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 

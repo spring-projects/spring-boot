@@ -16,14 +16,14 @@
 
 package org.springframework.boot.ops.autoconfigure;
 
-import org.springframework.boot.config.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.condition.ConditionalOnMissingBean;
 import org.springframework.boot.ops.metrics.CounterService;
 import org.springframework.boot.ops.metrics.DefaultCounterService;
 import org.springframework.boot.ops.metrics.DefaultGaugeService;
 import org.springframework.boot.ops.metrics.GaugeService;
 import org.springframework.boot.ops.metrics.InMemoryMetricRepository;
 import org.springframework.boot.ops.metrics.MetricRepository;
-import org.springframework.boot.strap.context.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -22,8 +22,8 @@ import java.io.PrintStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.sample.batch.SampleBatchApplication;
-import org.springframework.boot.strap.SpringApplication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

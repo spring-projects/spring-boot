@@ -19,11 +19,11 @@ package org.springframework.boot.ops.endpoint;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ops.endpoint.TraceEndpoint;
 import org.springframework.boot.ops.trace.InMemoryTraceRepository;
 import org.springframework.boot.ops.trace.Trace;
 import org.springframework.boot.ops.trace.TraceRepository;
-import org.springframework.boot.strap.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

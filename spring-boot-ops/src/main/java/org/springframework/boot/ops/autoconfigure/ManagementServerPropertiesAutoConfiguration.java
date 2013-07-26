@@ -16,12 +16,12 @@
 
 package org.springframework.boot.ops.autoconfigure;
 
-import org.springframework.boot.config.AutoConfigureAfter;
-import org.springframework.boot.config.EnableAutoConfiguration;
-import org.springframework.boot.config.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
+import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ops.properties.ManagementServerProperties;
-import org.springframework.boot.strap.context.condition.ConditionalOnMissingBean;
-import org.springframework.boot.strap.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

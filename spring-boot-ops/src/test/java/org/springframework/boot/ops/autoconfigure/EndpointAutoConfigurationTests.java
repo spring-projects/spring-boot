@@ -18,6 +18,7 @@ package org.springframework.boot.ops.autoconfigure;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.ops.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.ops.endpoint.BeansEndpoint;
 import org.springframework.boot.ops.endpoint.DumpEndpoint;
@@ -27,7 +28,6 @@ import org.springframework.boot.ops.endpoint.InfoEndpoint;
 import org.springframework.boot.ops.endpoint.MetricsEndpoint;
 import org.springframework.boot.ops.endpoint.ShutdownEndpoint;
 import org.springframework.boot.ops.endpoint.TraceEndpoint;
-import org.springframework.boot.strap.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;

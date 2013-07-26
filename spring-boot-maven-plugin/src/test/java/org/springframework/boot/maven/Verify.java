@@ -109,14 +109,14 @@ public class Verify {
 			assertHasEntryNameStartingWith(entries, "lib/spring-core");
 			assertHasEntryNameStartingWith(entries, "lib/javax.servlet-api-3.0.1.jar");
 			assertTrue("Unpacked launcher classes", entries.containsKey("org/"
-					+ "springframework/boot/load/JarLauncher.class"));
+					+ "springframework/boot/loader/JarLauncher.class"));
 			assertTrue("Own classes", entries.containsKey("org/"
 					+ "test/SampleApplication.class"));
 		}
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
-			assertEquals("org.springframework.boot.load.JarLauncher", manifest
+			assertEquals("org.springframework.boot.loader.JarLauncher", manifest
 					.getMainAttributes().getValue("Main-Class"));
 			assertEquals(this.main, manifest.getMainAttributes().getValue("Start-Class"));
 			assertEquals("Foo", manifest.getMainAttributes().getValue("Not-Used"));
@@ -138,7 +138,7 @@ public class Verify {
 			assertHasEntryNameStartingWith(entries,
 					"WEB-INF/lib-provided/javax.servlet-api-3.0.1.jar");
 			assertTrue("Unpacked launcher classes", entries.containsKey("org/"
-					+ "springframework/boot/load/JarLauncher.class"));
+					+ "springframework/boot/loader/JarLauncher.class"));
 			assertTrue("Own classes", entries.containsKey("WEB-INF/classes/org/"
 					+ "test/SampleApplication.class"));
 			assertTrue("Web content", entries.containsKey("index.html"));
@@ -146,7 +146,7 @@ public class Verify {
 
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
-			assertEquals("org.springframework.boot.load.WarLauncher", manifest
+			assertEquals("org.springframework.boot.loader.WarLauncher", manifest
 					.getMainAttributes().getValue("Main-Class"));
 			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
 					.getValue("Start-Class"));

@@ -19,8 +19,8 @@ package org.springframework.boot.ops.endpoint;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.ops.metrics.Metric;
-import org.springframework.boot.strap.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**

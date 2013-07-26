@@ -16,8 +16,8 @@
 
 package org.springframework.boot.ops.endpoint;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.ops.health.HealthIndicator;
-import org.springframework.boot.strap.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
 /**

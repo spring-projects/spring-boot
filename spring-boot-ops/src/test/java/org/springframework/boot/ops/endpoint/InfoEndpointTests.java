@@ -19,8 +19,8 @@ package org.springframework.boot.ops.endpoint;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ops.endpoint.InfoEndpoint;
-import org.springframework.boot.strap.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

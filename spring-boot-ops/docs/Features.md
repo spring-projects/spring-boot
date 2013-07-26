@@ -7,7 +7,7 @@ getting started project from the main README), and then try each
 feature in turn there.
 
 Many useful features of
-[Spring Bootstrap](../../spring-bootstrap/README.md) are all available
+[Spring Boot](../../spring-boot/README.md) are all available
 in an Actuator application.
 
 TODO: group things together and break them out into separate files.

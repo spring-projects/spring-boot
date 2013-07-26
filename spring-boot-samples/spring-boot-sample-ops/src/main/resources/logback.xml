@@ -2,7 +2,7 @@
 <configuration>
 	<property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%t] --- %-40.40logger{39} : %m%n%wex"/>
 
-	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.strap.logging.logback.WhitespaceThrowableProxyConverter" />
+	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
@@ -13,7 +13,7 @@
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />
 	</root>
-	
+
 	<!-- logger name="org.springframework" level="DEBUG"/ -->
-	
+
 </configuration>

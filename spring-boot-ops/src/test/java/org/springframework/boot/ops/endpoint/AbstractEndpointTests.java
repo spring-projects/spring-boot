@@ -20,8 +20,8 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.ops.endpoint.Endpoint;
-import org.springframework.boot.strap.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;

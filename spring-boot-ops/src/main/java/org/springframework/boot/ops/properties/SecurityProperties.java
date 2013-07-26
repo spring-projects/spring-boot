@@ -16,7 +16,7 @@
 
 package org.springframework.boot.ops.properties;
 
-import org.springframework.boot.strap.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.annotation.web.configurers.SessionCreationPolicy;
 
 /**

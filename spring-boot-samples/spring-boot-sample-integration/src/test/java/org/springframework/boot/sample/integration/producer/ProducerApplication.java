@@ -19,8 +19,8 @@ package org.springframework.boot.sample.integration.producer;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import org.springframework.boot.strap.CommandLineRunner;
-import org.springframework.boot.strap.SpringApplication;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
