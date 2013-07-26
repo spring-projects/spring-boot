@@ -46,6 +46,6 @@ public class ExecutableWarHelper implements ArchiveHelper {
 
 	@Override
 	public String getLauncherClass() {
-		return "org.springframework.boot.load.WarLauncher";
+		return "org.springframework.boot.loader.WarLauncher";
 	}
 }

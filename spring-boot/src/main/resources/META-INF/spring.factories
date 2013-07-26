@@ -1,7 +1,7 @@
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\
-org.springframework.boot.strap.context.initializer.ConfigFileApplicationContextInitializer,\
-org.springframework.boot.strap.context.initializer.ContextIdApplicationContextInitializer,\
-org.springframework.boot.strap.context.initializer.EnvironmentDelegateApplicationContextInitializer,\
-org.springframework.boot.strap.context.initializer.LoggingApplicationContextInitializer,\
-org.springframework.boot.strap.context.initializer.VcapApplicationContextInitializer
+org.springframework.boot.context.initializer.ConfigFileApplicationContextInitializer,\
+org.springframework.boot.context.initializer.ContextIdApplicationContextInitializer,\
+org.springframework.boot.context.initializer.EnvironmentDelegateApplicationContextInitializer,\
+org.springframework.boot.context.initializer.LoggingApplicationContextInitializer,\
+org.springframework.boot.context.initializer.VcapApplicationContextInitializer

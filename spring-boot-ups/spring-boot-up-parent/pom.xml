@@ -29,7 +29,6 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<spring.boot.version>0.5.0.BUILD-SNAPSHOT</spring.boot.version>
-		<start-class>org.springframework.boot.strap.SpringApplication</start-class>
 	</properties>
 
 	<prerequisites>

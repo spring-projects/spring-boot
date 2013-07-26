@@ -43,6 +43,6 @@ public class ExecutableJarHelper implements ArchiveHelper {
 
 	@Override
 	public String getLauncherClass() {
-		return "org.springframework.boot.load.JarLauncher";
+		return "org.springframework.boot.loader.JarLauncher";
 	}
 }

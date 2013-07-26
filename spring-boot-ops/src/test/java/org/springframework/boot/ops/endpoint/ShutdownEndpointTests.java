@@ -17,9 +17,9 @@
 package org.springframework.boot.ops.endpoint;
 
 import org.junit.Test;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ops.endpoint.ShutdownEndpoint;
 import org.springframework.boot.ops.properties.ManagementServerProperties;
-import org.springframework.boot.strap.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

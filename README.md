@@ -73,7 +73,7 @@ add `@EnableAutoConfiguration`:
 
 	import org.springframework.stereotype.*;
 	import org.springframework.web.bind.annotation.*;
-	import org.springframework.bootstrap.context.annotation.*;
+	import org.springframework.boot.context.annotation.*;
 	
 	@Controller
 	@EnableAutoConfiguration
@@ -116,7 +116,7 @@ Features include:
 * Embedded web applications with a choice of container (Tomcat or Jetty for now)
 * First class externalized configuration support 
 
-_See [spring-bootstrap/README](spring-bootstrap/README.md)._
+_See [spring-boot/README](spring-boot/README.md)._
 
   
 ### Spring Autoconfigure

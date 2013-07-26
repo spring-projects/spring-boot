@@ -28,12 +28,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.config.AutoConfigureAfter;
-import org.springframework.boot.config.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.condition.ConditionalOnBean;
+import org.springframework.boot.context.condition.ConditionalOnClass;
 import org.springframework.boot.ops.metrics.CounterService;
 import org.springframework.boot.ops.metrics.GaugeService;
-import org.springframework.boot.strap.context.condition.ConditionalOnBean;
-import org.springframework.boot.strap.context.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;

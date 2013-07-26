@@ -16,9 +16,9 @@
 
 package org.springframework.boot.sample.ops;
 
-import org.springframework.boot.config.EnableAutoConfiguration;
-import org.springframework.boot.strap.SpringApplication;
-import org.springframework.boot.strap.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 

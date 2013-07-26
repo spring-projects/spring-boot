@@ -17,15 +17,15 @@
 package org.springframework.boot.ops.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.config.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.condition.ConditionalOnClass;
+import org.springframework.boot.context.condition.ConditionalOnMissingBean;
 import org.springframework.boot.ops.audit.AuditEvent;
 import org.springframework.boot.ops.audit.AuditEventRepository;
 import org.springframework.boot.ops.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.ops.audit.listener.AuditListener;
 import org.springframework.boot.ops.security.AuthenticationAuditListener;
 import org.springframework.boot.ops.security.AuthorizationAuditListener;
-import org.springframework.boot.strap.context.condition.ConditionalOnClass;
-import org.springframework.boot.strap.context.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

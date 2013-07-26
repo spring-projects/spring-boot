@@ -1,4 +1,4 @@
-org.springframework.boot.config.EnableAutoConfiguration=\
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.ops.autoconfigure.AuditAutoConfiguration,\
 org.springframework.boot.ops.autoconfigure.EndpointAutoConfiguration,\
 org.springframework.boot.ops.autoconfigure.EndpointWebMvcAutoConfiguration,\

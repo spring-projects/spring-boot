@@ -21,14 +21,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.config.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.condition.ConditionalOnClass;
+import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ops.endpoint.Endpoint;
 import org.springframework.boot.ops.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.ops.properties.SecurityProperties;
 import org.springframework.boot.ops.web.ErrorController;
-import org.springframework.boot.strap.context.condition.ConditionalOnClass;
-import org.springframework.boot.strap.context.condition.ConditionalOnMissingBean;
-import org.springframework.boot.strap.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;

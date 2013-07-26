@@ -19,14 +19,14 @@ package org.springframework.boot.ops.autoconfigure;
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.config.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.condition.ConditionalOnClass;
+import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.ops.web.BasicErrorController;
 import org.springframework.boot.ops.web.ErrorController;
-import org.springframework.boot.strap.context.condition.ConditionalOnClass;
-import org.springframework.boot.strap.context.condition.ConditionalOnMissingBean;
-import org.springframework.boot.strap.context.embedded.ConfigurableEmbeddedServletContainerFactory;
-import org.springframework.boot.strap.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.strap.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 

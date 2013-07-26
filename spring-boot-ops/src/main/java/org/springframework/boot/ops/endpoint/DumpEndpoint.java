@@ -21,7 +21,7 @@ import java.lang.management.ThreadInfo;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.boot.strap.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link Endpoint} to expose thread info.

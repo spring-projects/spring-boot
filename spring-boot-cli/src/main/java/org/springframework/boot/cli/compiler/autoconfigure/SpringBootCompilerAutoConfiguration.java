@@ -38,10 +38,9 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses(
-				"org.springframework.boot.strap.SpringApplication").add(
-				"org.springframework.boot", "spring-boot-up",
-				dependencies.getProperty("spring.boot.version"));
+		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
+				.add("org.springframework.boot", "spring-boot-up",
+						dependencies.getProperty("spring.boot.version"));
 	}
 
 	@Override
@@ -64,8 +63,8 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 				"org.springframework.context.MessageSource",
 				"org.springframework.core.annotation.Order",
 				"org.springframework.core.io.ResourceLoader",
-				"org.springframework.boot.strap.CommandLineRunner",
-				"org.springframework.boot.config.EnableAutoConfiguration");
+				"org.springframework.boot.CommandLineRunner",
+				"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
 		imports.addStarImports("org.springframework.stereotype");
 	}
 
@@ -82,7 +81,7 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 		if (!hasEnableAutoConfigureAnnotation(classNode)) {
 			try {
 				Class<?> annotationClass = source.getClassLoader().loadClass(
-						"org.springframework.boot.config.EnableAutoConfiguration");
+						"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
 				AnnotationNode annotationNode = new AnnotationNode(new ClassNode(
 						annotationClass));
 				classNode.addAnnotation(annotationNode);

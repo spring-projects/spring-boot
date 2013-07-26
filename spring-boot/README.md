@@ -75,7 +75,7 @@ Now write a simple main class
 ```
 package com.mycompany;
 
-import org.springframework.boot.strap.SpringApplication;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -127,7 +127,7 @@ public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
-    
+
  	public String getMessage() {
 		return message;
 	}

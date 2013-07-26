@@ -17,7 +17,7 @@
 package org.springframework.boot.ops.endpoint;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.strap.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;

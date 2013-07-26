@@ -135,7 +135,7 @@ public class SpringApplicationRunner {
 			try {
 				// User reflection to load and call Spring
 				Class<?> application = getContextClassLoader().loadClass(
-						"org.springframework.boot.strap.SpringApplication");
+						"org.springframework.boot.SpringApplication");
 				Method method = application.getMethod("run", Object[].class,
 						String[].class);
 				this.applicationContext = method.invoke(null, this.sources,
