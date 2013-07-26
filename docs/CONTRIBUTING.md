@@ -1,19 +1,19 @@
-# Contributing to Spring Zero
-Spring Zero is released under the non-restrictive Apache 2.0 license. If you would like
+# Contributing to Spring Boot
+Spring Boot is released under the non-restrictive Apache 2.0 license. If you would like
 to contribute something, or simply want to hack on the code this document should help
 you get started.
 
 
 ## Working with the code
-If you don't have an IDE preference we would recommend that you use 
-[Spring Tools Suite](http://www.springsource.com/developer/sts) or 
-[Eclipse](http://eclipse.org) when working with the code. We use the 
+If you don't have an IDE preference we would recommend that you use
+[Spring Tools Suite](http://www.springsource.com/developer/sts) or
+[Eclipse](http://eclipse.org) when working with the code. We use the
 [m2eclipe](http://eclipse.org/m2e/) eclipse plugin for maven support. Other IDEs
 and tools should also work without issue.
 
 
 ### Building from source
-To build the source you will need to install 
+To build the source you will need to install
 [Apache Maven](http://maven.apache.org/run-maven/index.html) v3.0 or above. The project
 can be build using the standard maven command:
 
@@ -30,7 +30,7 @@ We recommend the [m2eclipe](http://eclipse.org/m2e/) eclipse plugin when working
 eclipse. If you don't already have m2eclipse installed it is available from the "eclipse
 marketplace".
 
-Spring Zero includes project specific source formatting settings, in order to have these
+Spring Boot includes project specific source formatting settings, in order to have these
 work with m2eclipse, we provide an additional eclipse plugin that you can install:
 
 * Select `Install new software` from the `help` menu
@@ -40,12 +40,12 @@ work with m2eclipse, we provide an additional eclipse plugin that you can instal
   from the `eclipse` folder in this checkout
 * Install "Maven Integration for the maven-eclipse-plugin"
 
-_NOTE: This plugin is optional. Projects can be imported without the plugin, your code 
-changes just won't be automatically formatted._ 
+_NOTE: This plugin is optional. Projects can be imported without the plugin, your code
+changes just won't be automatically formatted._
 
-With the requisite eclipse plugins installed you can select 
+With the requisite eclipse plugins installed you can select
 `import existing maven projects` from the `file` menu to import the code. You will
-need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately. 
+need to import the root `spring-boot` pom and the `spring-boot-samples` pom separately.
 
 
 ### Importing into eclipse without m2eclipse
@@ -69,4 +69,4 @@ The sample application are used as integration tests during the build
 instead are launched via the `maven-invoker-plugin`. If you encounter
 build failures running the integration tests, check the `build.log`
 file in the appropriate sample directory.
- 
+
