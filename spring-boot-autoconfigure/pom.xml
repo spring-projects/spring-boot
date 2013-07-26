@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot</artifactId>
+		<artifactId>spring-boot-parent</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-config</artifactId>
+	<artifactId>spring-boot-autoconfigure</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
@@ -16,7 +16,7 @@
 		<!-- Compile -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-strap</artifactId>
+			<artifactId>spring-boot</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- Optional -->

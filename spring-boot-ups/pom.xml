@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot</artifactId>
+		<artifactId>spring-boot-parent</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-ups</artifactId>
@@ -13,7 +13,6 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
-		<module>spring-boot-up-parent</module>
 		<module>spring-boot-up</module>
 		<module>spring-boot-up-batch</module>
 		<module>spring-boot-up-data-jpa</module>
@@ -21,6 +20,7 @@
 		<module>spring-boot-up-jetty</module>
 		<module>spring-boot-up-logging</module>
 		<module>spring-boot-up-ops</module>
+		<module>spring-boot-up-parent</module>
 		<module>spring-boot-up-security</module>
 		<module>spring-boot-up-tomcat</module>
 		<module>spring-boot-up-web</module>
