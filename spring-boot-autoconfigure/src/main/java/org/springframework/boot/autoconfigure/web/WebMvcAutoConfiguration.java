@@ -70,6 +70,31 @@ import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 public class WebMvcAutoConfiguration {
 
+	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };
+
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+			"classpath:/META-INF/resources/", "classpath:/resources/",
+			"classpath:/static/", "classpath:/public/" };
+
+	private static final String[] RESOURCE_LOCATIONS;
+	static {
+		RESOURCE_LOCATIONS = new String[CLASSPATH_RESOURCE_LOCATIONS.length
+				+ SERVLET_RESOURCE_LOCATIONS.length];
+		System.arraycopy(SERVLET_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS, 0,
+				SERVLET_RESOURCE_LOCATIONS.length);
+		System.arraycopy(CLASSPATH_RESOURCE_LOCATIONS, 0, RESOURCE_LOCATIONS,
+				SERVLET_RESOURCE_LOCATIONS.length, CLASSPATH_RESOURCE_LOCATIONS.length);
+	}
+
+	private static final String[] STATIC_INDEX_HTML_RESOURCES;
+	static {
+		STATIC_INDEX_HTML_RESOURCES = new String[CLASSPATH_RESOURCE_LOCATIONS.length];
+		for (int i = 0; i < STATIC_INDEX_HTML_RESOURCES.length; i++) {
+			STATIC_INDEX_HTML_RESOURCES[i] = CLASSPATH_RESOURCE_LOCATIONS[i]
+					+ "index.html";
+		}
+	}
+
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not
 	// on the classpath
 	@EnableWebMvc
@@ -125,27 +150,22 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/resources/**").addResourceLocations("/",
-					"classpath:/META-INF/resources/", "classpath:/resources/",
-					"classpath:/public/", "classpath:/static/");
-			registry.addResourceHandler("/**").addResourceLocations("/",
-					"classpath:/META-INF/resources/", "classpath:/resources/",
-					"classpath:/static/", "classpath:/public/");
+			registry.addResourceHandler("/resources/**").addResourceLocations(
+					RESOURCE_LOCATIONS);
+			registry.addResourceHandler("/**").addResourceLocations(RESOURCE_LOCATIONS);
 		}
 
-		// Special case for static home page
 		@Override
 		public void addViewControllers(ViewControllerRegistry registry) {
-			if (this.resourceLoader.getResource("classpath:/static/index.html").exists()) {
-				registry.addViewController("/").setViewName("/index.html");
-			}
-			else if (this.resourceLoader.getResource("classpath:/public/index.html")
-					.exists()) {
-				registry.addViewController("/").setViewName("/index.html");
-			}
-			else if (this.resourceLoader.getResource("classpath:/resources/index.html")
-					.exists()) {
-				registry.addViewController("/").setViewName("/index.html");
+			addStaticIndexHtmlViewControllers(registry);
+		}
+
+		private void addStaticIndexHtmlViewControllers(ViewControllerRegistry registry) {
+			for (String resource : STATIC_INDEX_HTML_RESOURCES) {
+				if (this.resourceLoader.getResource(resource).exists()) {
+					registry.addViewController("/").setViewName("/index.html");
+					return;
+				}
 			}
 		}
 
