@@ -40,6 +40,7 @@
 		<module>spring-boot</module>
 		<module>spring-boot-autoconfigure</module>
 		<module>spring-boot-loader</module>
+		<module>spring-boot-loader-tools</module>
 		<module>spring-boot-maven-plugin</module>
 		<module>spring-boot-ops</module>
 		<module>spring-boot-ups</module>
@@ -128,6 +129,11 @@
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>2.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.8</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -639,6 +645,11 @@
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>1.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zeroturnaround</groupId>
+				<artifactId>zt-zip</artifactId>
+				<version>1.6</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
