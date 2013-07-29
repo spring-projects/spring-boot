@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: spring-boot-sample-tomcat
+Implementation-Version: 0.5.0.BUILD-SNAPSHOT
+Implementation-Vendor-Id: org.springframework.boot
+Built-By: pwebb
+Build-Jdk: 1.7.0_17
+Specification-Title: spring-boot-sample-tomcat
+Created-By: Apache Maven 3.0.5
+Specification-Version: 0.5.0.BUILD-SNAPSHOT
+Archiver-Version: Plexus Archiver
+

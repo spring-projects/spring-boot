@@ -14,35 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.maven;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.maven.artifact.Artifact;
+package org.springframework.boot.launcher.tools.sample;
 
 /**
- * Help build an executable JAR file.
+ * Sample class with a main method.
  * 
  * @author Phillip Webb
- * @author Dave Syer
  */
-public class ExecutableJarHelper implements ArchiveHelper {
+public class ClassWithMainMethod {
 
-	private static final Set<String> LIB_SCOPES = new HashSet<String>(Arrays.asList(
-			"compile", "runtime", "provided"));
-
-	@Override
-	public String getArtifactDestination(Artifact artifact) {
-		if (LIB_SCOPES.contains(artifact.getScope())) {
-			return "lib/";
-		}
-		return null;
+	public static void main(String[] args) {
 	}
 
-	@Override
-	public String getLauncherClass() {
-		return "org.springframework.boot.loader.JarLauncher";
-	}
 }

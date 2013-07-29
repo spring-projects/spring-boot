@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.maven;
+package org.springframework.boot.launcher.tools;
 
-import org.apache.maven.artifact.Artifact;
+import java.io.File;
+import java.io.IOException;
 
 /**
- * Strategy interface used by {@link ExecutableArchiveMojo} when creating archives.
+ * Callback interface used to iterate {@link Libraries}.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
  */
-public interface ArchiveHelper {
+public interface LibraryCallback {
 
 	/**
-	 * Returns the destination of an {@link Artifact}.
-	 * @param artifact the artifact
-	 * @return the destination or {@code null} to exclude
+	 * Callback to for a single library backed by a {@link File}.
+	 * @param file the library file
+	 * @param scope the scope of the library
+	 * @throws IOException
 	 */
-	String getArtifactDestination(Artifact artifact);
-
-	/**
-	 * Returns the launcher class that will be used.
-	 */
-	String getLauncherClass();
+	void library(File file, LibraryScope scope) throws IOException;
 
 }

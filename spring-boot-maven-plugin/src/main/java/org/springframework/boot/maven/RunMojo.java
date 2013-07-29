@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,12 +27,15 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
+import org.springframework.boot.launcher.tools.MainClassFinder;
 
 /**
  * MOJO that can be used to run a executable archive application directly from Maven.
@@ -39,7 +43,13 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
  * @author Phillip Webb
  */
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
-public class RunMojo extends AbstractExecutableArchiveMojo {
+public class RunMojo extends AbstractMojo {
+
+	/**
+	 * The Maven project.
+	 */
+	@Parameter(defaultValue = "${project}", readonly = true, required = true)
+	private MavenProject project;
 
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing or
@@ -58,10 +68,24 @@ public class RunMojo extends AbstractExecutableArchiveMojo {
 	private String[] arguments;
 
 	/**
+	 * The name of the main class. If not specified the first compiled class found that
+	 * contains a 'main' method will be used.
+	 */
+	@Parameter
+	private String mainClass;
+
+	/**
 	 * Folders that should be added to the classpath.
 	 */
 	@Parameter
 	private String[] folders;
+
+	/**
+	 * Directory containing the classes and resource files that should be packaged into
+	 * the archive.
+	 */
+	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
+	private File classesDirectrory;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -75,19 +99,35 @@ public class RunMojo extends AbstractExecutableArchiveMojo {
 		threadGroup.rethrowUncaughtException();
 	}
 
+	private final String getStartClass() throws MojoExecutionException {
+		String mainClass = this.mainClass;
+		if (mainClass == null) {
+			try {
+				mainClass = MainClassFinder.findMainClass(this.classesDirectrory);
+			}
+			catch (IOException ex) {
+				throw new MojoExecutionException(ex.getMessage(), ex);
+			}
+		}
+		if (mainClass == null) {
+			throw new MojoExecutionException("Unable to find a suitable main class, "
+					+ "please add a 'mainClass' property");
+		}
+		return mainClass;
+	}
+
 	private ClassLoader getClassLoader() throws MojoExecutionException {
 		URL[] urls = getClassPathUrls();
 		return new URLClassLoader(urls);
 	}
 
 	private URL[] getClassPathUrls() throws MojoExecutionException {
-		ArchiveHelper archiveHelper = getArchiveHelper();
 		try {
 			List<URL> urls = new ArrayList<URL>();
 			addUserDefinedFolders(urls);
 			addResources(urls);
 			addProjectClasses(urls);
-			addDependencies(archiveHelper, urls);
+			addDependencies(urls);
 			return urls.toArray(new URL[urls.size()]);
 		}
 		catch (MalformedURLException ex) {
@@ -105,21 +145,20 @@ public class RunMojo extends AbstractExecutableArchiveMojo {
 
 	private void addResources(List<URL> urls) throws MalformedURLException {
 		if (this.addResources) {
-			for (Resource resource : getProject().getResources()) {
+			for (Resource resource : this.project.getResources()) {
 				urls.add(new File(resource.getDirectory()).toURI().toURL());
 			}
 		}
 	}
 
 	private void addProjectClasses(List<URL> urls) throws MalformedURLException {
-		urls.add(getClassesDirectory().toURI().toURL());
+		urls.add(this.classesDirectrory.toURI().toURL());
 	}
 
-	private void addDependencies(ArchiveHelper archiveHelper, List<URL> urls)
-			throws MalformedURLException {
-		for (Artifact artifact : getProject().getArtifacts()) {
+	private void addDependencies(List<URL> urls) throws MalformedURLException {
+		for (Artifact artifact : this.project.getArtifacts()) {
 			if (artifact.getFile() != null) {
-				if (archiveHelper.getArtifactDestination(artifact) != null) {
+				if (!Artifact.SCOPE_TEST.equals(artifact.getScope())) {
 					urls.add(artifact.getFile().toURI().toURL());
 				}
 			}
