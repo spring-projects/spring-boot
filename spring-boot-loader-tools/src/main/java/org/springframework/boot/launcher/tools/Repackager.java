@@ -146,7 +146,12 @@ public class Repackager {
 			writer.writeLoaderClasses();
 		}
 		finally {
-			writer.close();
+			try {
+				writer.close();
+			}
+			catch (Exception ex) {
+				// Ignore
+			}
 		}
 	}
 
