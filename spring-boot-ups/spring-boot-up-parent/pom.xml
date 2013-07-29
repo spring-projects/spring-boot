@@ -283,7 +283,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 					<executions>
 						<execution>
 							<goals>
-								<goal>package</goal>
+								<goal>repackage</goal>
 							</goals>
 						</execution>
 					</executions>
@@ -300,7 +300,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 					<dependencies>
 						<dependency>
 							<groupId>org.springframework.boot</groupId>
-							<artifactId>spring-package-maven-plugin</artifactId>
+							<artifactId>spring-boot-maven-plugin</artifactId>
 							<version>${spring.boot.version}</version>
 						</dependency>
 					</dependencies>
