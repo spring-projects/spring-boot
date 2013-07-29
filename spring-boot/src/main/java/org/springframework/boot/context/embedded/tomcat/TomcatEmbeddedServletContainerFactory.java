@@ -139,6 +139,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		File docBase = getValidDocumentRoot();
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
 		Context context = new StandardContext();
+		context.addWelcomeFile("index.html");
 		context.setName(getContextPath());
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());

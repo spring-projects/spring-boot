@@ -23,6 +23,7 @@
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-traditional</module>
+		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-xml</module>
 	</modules>
@@ -41,6 +42,13 @@
 							</goals>
 						</execution>
 					</executions>
+				</plugin>
+				<plugin>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.3</version>
+					<configuration>
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>
