@@ -88,10 +88,9 @@ public class WebMvcAutoConfiguration {
 
 	private static final String[] STATIC_INDEX_HTML_RESOURCES;
 	static {
-		STATIC_INDEX_HTML_RESOURCES = new String[CLASSPATH_RESOURCE_LOCATIONS.length];
+		STATIC_INDEX_HTML_RESOURCES = new String[RESOURCE_LOCATIONS.length];
 		for (int i = 0; i < STATIC_INDEX_HTML_RESOURCES.length; i++) {
-			STATIC_INDEX_HTML_RESOURCES[i] = CLASSPATH_RESOURCE_LOCATIONS[i]
-					+ "index.html";
+			STATIC_INDEX_HTML_RESOURCES[i] = RESOURCE_LOCATIONS[i] + "index.html";
 		}
 	}
 
