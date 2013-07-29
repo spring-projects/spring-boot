@@ -39,8 +39,8 @@ import org.springframework.boot.launcher.tools.Repackager;
  * @author Phillip Webb
  * @author Dave Syer
  */
-@Mojo(name = "package", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class PackageMojo extends AbstractMojo {
+@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+public class RepackageMojo extends AbstractMojo {
 
 	/**
 	 * The Maven project.
