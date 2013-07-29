@@ -38,6 +38,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -48,6 +49,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
@@ -75,6 +77,9 @@ public class WebMvcAutoConfiguration {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
+
+		@Autowired
+		private ResourceLoader resourceLoader;
 
 		@ConditionalOnBean(View.class)
 		@Bean
@@ -126,6 +131,22 @@ public class WebMvcAutoConfiguration {
 			registry.addResourceHandler("/**").addResourceLocations("/",
 					"classpath:/META-INF/resources/", "classpath:/resources/",
 					"classpath:/static/", "classpath:/public/");
+		}
+
+		// Special case for static home page
+		@Override
+		public void addViewControllers(ViewControllerRegistry registry) {
+			if (this.resourceLoader.getResource("classpath:/static/index.html").exists()) {
+				registry.addViewController("/").setViewName("/index.html");
+			}
+			else if (this.resourceLoader.getResource("classpath:/public/index.html")
+					.exists()) {
+				registry.addViewController("/").setViewName("/index.html");
+			}
+			else if (this.resourceLoader.getResource("classpath:/resources/index.html")
+					.exists()) {
+				registry.addViewController("/").setViewName("/index.html");
+			}
 		}
 
 		@Configuration

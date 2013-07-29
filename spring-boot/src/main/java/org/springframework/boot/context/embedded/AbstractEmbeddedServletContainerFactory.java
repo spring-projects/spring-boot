@@ -310,16 +310,26 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 					+ Arrays.asList(COMMON_DOC_ROOTS)
 					+ " point to a directory and will be ignored.");
 		}
+		else if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Document root: " + file);
+		}
 		return file;
 	}
 
-	private File getWarFileDocumentRoot() {
-		File warFile = getCodeSourceArchive();
-		if (warFile.exists() && !warFile.isDirectory()
-				&& warFile.getName().toLowerCase().endsWith(".war")) {
-			return warFile.getAbsoluteFile();
+	private File getArchiveFileDocumentRoot(String extension) {
+		File file = getCodeSourceArchive();
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Code archive: " + file);
+		}
+		if (file.exists() && !file.isDirectory()
+				&& file.getName().toLowerCase().endsWith(extension)) {
+			return file.getAbsoluteFile();
 		}
 		return null;
+	}
+
+	private File getWarFileDocumentRoot() {
+		return getArchiveFileDocumentRoot(".war");
 	}
 
 	private File getCommonDocumentRoot() {

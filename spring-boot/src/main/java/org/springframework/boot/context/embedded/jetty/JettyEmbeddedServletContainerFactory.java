@@ -120,6 +120,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		Configuration[] configurations = getWebAppContextConfigurations(context,
 				initializersToUse);
+		context.setWelcomeFiles(new String[] { "index.html" });
 		context.setConfigurations(configurations);
 		context.getSessionHandler().getSessionManager()
 				.setMaxInactiveInterval(getSessionTimeout());
