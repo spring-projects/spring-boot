@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,6 +27,8 @@ import static org.junit.Assert.assertTrue;
  * 
  * @author Dave Syer
  */
+@Ignore
+// FIXME See #54228642
 public class SampleWebStaticApplicationTests {
 
 	private static ConfigurableApplicationContext context;
