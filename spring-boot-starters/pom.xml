@@ -25,6 +25,7 @@
 		<module>spring-boot-starter-security</module>
 		<module>spring-boot-starter-tomcat</module>
 		<module>spring-boot-starter-web</module>
+		<module>spring-boot-starter-websocket</module>
 	</modules>
 	<build>
 		<plugins>
