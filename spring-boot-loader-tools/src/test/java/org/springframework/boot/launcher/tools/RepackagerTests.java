@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +83,7 @@ public class RepackagerTests {
 
 	@Test
 	public void specificMainClass() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		repackager.setMainClass("a.b.C");
@@ -97,7 +98,7 @@ public class RepackagerTests {
 
 	@Test
 	public void mainClassFromManifest() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Manifest manifest = new Manifest();
 		manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
@@ -116,7 +117,7 @@ public class RepackagerTests {
 
 	@Test
 	public void mainClassFound() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(NO_LIBRARIES);
@@ -130,7 +131,7 @@ public class RepackagerTests {
 
 	@Test
 	public void noMainClass() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		this.thrown.expect(IllegalStateException.class);
 		this.thrown.expectMessage("Unable to find main class");
 		new Repackager(this.testJarFile.getFile()).repackage(NO_LIBRARIES);
@@ -138,7 +139,7 @@ public class RepackagerTests {
 
 	@Test
 	public void sameSourceAndDestinationWithBackup() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(NO_LIBRARIES);
@@ -149,7 +150,7 @@ public class RepackagerTests {
 
 	@Test
 	public void sameSourceAndDestinationWithoutBackup() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		repackager.setBackupSource(false);
@@ -161,7 +162,7 @@ public class RepackagerTests {
 
 	@Test
 	public void differentDestination() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
 		File dest = this.temporaryFolder.newFile("different.jar");
 		Repackager repackager = new Repackager(source);
@@ -175,7 +176,7 @@ public class RepackagerTests {
 
 	@Test
 	public void nullDestination() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Invalid destination");
@@ -184,7 +185,7 @@ public class RepackagerTests {
 
 	@Test
 	public void destinationIsDirectory() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Invalid destination");
@@ -193,7 +194,7 @@ public class RepackagerTests {
 
 	@Test
 	public void overwriteDestination() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		File dest = this.temporaryFolder.newFile("dest.jar");
 		dest.createNewFile();
@@ -203,7 +204,7 @@ public class RepackagerTests {
 
 	@Test
 	public void nullLibraries() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		this.thrown.expect(IllegalArgumentException.class);
@@ -214,9 +215,9 @@ public class RepackagerTests {
 	@Test
 	public void libraries() throws Exception {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
-		libJar.addClass("a.b.C.class", ClassWithoutMainMethod.class);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File libJarFile = libJar.getFile();
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		repackager.repackage(new Libraries() {
@@ -231,9 +232,9 @@ public class RepackagerTests {
 	@Test
 	public void customLayout() throws Exception {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
-		libJar.addClass("a.b.C.class", ClassWithoutMainMethod.class);
+		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File libJarFile = libJar.getFile();
-		this.testJarFile.addClass("a.b.C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
 		Layout layout = mock(Layout.class);
@@ -254,11 +255,40 @@ public class RepackagerTests {
 
 	@Test
 	public void nullCustomLayout() throws Exception {
-		this.testJarFile.addClass("a.b.C.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Repackager repackager = new Repackager(this.testJarFile.getFile());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Layout must not be null");
 		repackager.setLayout(null);
+	}
+
+	@Test
+	public void dontRecompressZips() throws Exception {
+		TestJarFile nested = new TestJarFile(this.temporaryFolder);
+		nested.addClass("a/b/C.class", ClassWithoutMainMethod.class);
+		final File nestedFile = nested.getFile();
+		this.testJarFile.addFile("test/nested.jar", nestedFile);
+		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		repackager.repackage(new Libraries() {
+			@Override
+			public void doWithLibraries(LibraryCallback callback) throws IOException {
+				callback.library(nestedFile, LibraryScope.COMPILE);
+			}
+		});
+
+		JarFile jarFile = new JarFile(file);
+		try {
+			assertThat(jarFile.getEntry("lib/" + nestedFile.getName()).getMethod(),
+					equalTo(ZipEntry.STORED));
+			assertThat(jarFile.getEntry("test/nested.jar").getMethod(),
+					equalTo(ZipEntry.STORED));
+		}
+		finally {
+			jarFile.close();
+		}
+
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {

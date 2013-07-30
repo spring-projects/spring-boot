@@ -17,6 +17,8 @@
 package org.springframework.boot.launcher.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,20 +46,22 @@ public class TestJarFile {
 	}
 
 	public void addClass(String filename, Class<?> classToCopy) throws IOException {
-		String[] paths = filename.split("\\/");
-		File file = this.jarSource;
-		for (String path : paths) {
-			file = new File(file, path);
-		}
+		File file = getFilePath(filename);
 		file.getParentFile().mkdirs();
 		InputStream inputStream = getClass().getResourceAsStream(
 				"/" + classToCopy.getName().replace(".", "/") + ".class");
-		OutputStream outputStream = new FileOutputStream(file);
+		copyToFile(inputStream, file);
+	}
+
+	public void addFile(String filename, File fileToCopy) throws IOException {
+		File file = getFilePath(filename);
+		file.getParentFile().mkdirs();
+		InputStream inputStream = new FileInputStream(fileToCopy);
 		try {
-			copy(inputStream, outputStream);
+			copyToFile(inputStream, file);
 		}
 		finally {
-			outputStream.close();
+			inputStream.close();
 		}
 	}
 
@@ -67,6 +71,26 @@ public class TestJarFile {
 		OutputStream outputStream = new FileOutputStream(manifestFile);
 		try {
 			manifest.write(outputStream);
+		}
+		finally {
+			outputStream.close();
+		}
+	}
+
+	private File getFilePath(String filename) {
+		String[] paths = filename.split("\\/");
+		File file = this.jarSource;
+		for (String path : paths) {
+			file = new File(file, path);
+		}
+		return file;
+	}
+
+	private void copyToFile(InputStream inputStream, File file)
+			throws FileNotFoundException, IOException {
+		OutputStream outputStream = new FileOutputStream(file);
+		try {
+			copy(inputStream, outputStream);
 		}
 		finally {
 			outputStream.close();
