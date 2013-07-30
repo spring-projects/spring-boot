@@ -51,7 +51,7 @@ public class Repackager {
 
 	/**
 	 * Sets the main class that should be run. If not specified the value from the
-	 * MANIFEST will be used, or if no manifest entry is found a class the archive will be
+	 * MANIFEST will be used, or if no manifest entry is found the archive will be
 	 * searched for a suitable class.
 	 * @param mainClass the main class name
 	 */
