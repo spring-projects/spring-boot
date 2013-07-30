@@ -27,7 +27,7 @@ import static org.springframework.boot.ansi.AnsiElement.GREEN;
 
 /**
  * Writes the 'Spring' banner.
- * 
+ *
  * @author Phillip Webb
  */
 abstract class Banner {
@@ -49,7 +49,7 @@ abstract class Banner {
 			printStream.println(line);
 		}
 		String version = Banner.class.getPackage().getImplementationVersion();
-		printStream.println(AnsiOutput.toString(GREEN, " Spring Bootstrap", DEFAULT,
+		printStream.println(AnsiOutput.toString(GREEN, " Spring Boot", DEFAULT,
 				FAINT, (version == null ? "" : " (v" + version + ")")));
 		printStream.println();
 	}
