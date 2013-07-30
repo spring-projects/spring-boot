@@ -19,6 +19,7 @@
 		<spring.integration.version>2.2.4.RELEASE</spring.integration.version>
 		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
 		<groovy.version>2.1.6</groovy.version>
+		<gradle.version>1.6</gradle.version>
 		<tomcat.version>7.0.42</tomcat.version>
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<aspectj.version>1.7.3</aspectj.version>
@@ -42,11 +43,34 @@
 		<module>spring-boot-loader</module>
 		<module>spring-boot-loader-tools</module>
 		<module>spring-boot-maven-plugin</module>
+		<module>spring-boot-gradle-plugin</module>
 		<module>spring-boot-ops</module>
 		<module>spring-boot-ups</module>
 		<module>spring-boot-cli</module>
 		<module>spring-boot-integration-tests</module>
 	</modules>
+	<repositories>
+		<repository>
+			<id>spring-ext</id>
+			<url>http://repo.springsource.org/ext-release-local/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>gradle</id>
+			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -370,6 +394,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-all</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-templates</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
@@ -408,6 +437,26 @@
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-annotations</artifactId>
 				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-core</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-base-services</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-base-services-groovy</artifactId>
+				<version>${gradle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.gradle</groupId>
+				<artifactId>gradle-plugins</artifactId>
+				<version>${gradle.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
