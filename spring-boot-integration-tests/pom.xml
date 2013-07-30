@@ -13,7 +13,7 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<dependencies>
-		<!-- Ensure other reactor projects are build before running integration tests -->
+		<!-- Ensure other reactor projects are built before running integration tests -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot</artifactId>
@@ -104,7 +104,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- Invoke integration tests in the install phase, after the spring-package-maven-plugin is available -->
+				<!-- Invoke integration tests in the install phase, after the maven-plugin is available -->
 				<artifactId>maven-invoker-plugin</artifactId>
 				<configuration>
 					<settingsFile>src/it/settings.xml</settingsFile>

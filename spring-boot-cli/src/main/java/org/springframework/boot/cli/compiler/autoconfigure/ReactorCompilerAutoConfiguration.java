@@ -53,9 +53,12 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
 		imports.addImports("reactor.core.Reactor", "reactor.event.Event",
+				"reactor.function.Consumer", "reactor.function.Functions",
+				"reactor.event.selector.Selectors",
 				"reactor.spring.context.annotation.On",
 				"reactor.spring.context.annotation.Reply",
-				EnableReactor.class.getCanonicalName());
+				EnableReactor.class.getCanonicalName()).addStarImports(
+				"reactor.event.Selectors");
 	}
 
 	@Target(ElementType.TYPE)
