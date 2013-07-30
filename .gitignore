@@ -14,3 +14,4 @@ target
 dependency-reduced-pom.xml
 build.log
 _site/
+.*.md.html
