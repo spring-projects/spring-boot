@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.tools;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +26,7 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -45,7 +47,7 @@ import java.util.zip.ZipEntry;
  */
 class JarWriter {
 
-	private static final String NESTED_LOADER_JAR = "/META-INF/loader/spring-boot-loader.jar";
+	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
 	private static final int BUFFER_SIZE = 4096;
 
@@ -122,8 +124,9 @@ class JarWriter {
 	 * @throws IOException
 	 */
 	public void writeLoaderClasses() throws IOException {
-		JarInputStream inputStream = new JarInputStream(getClass().getResourceAsStream(
-				NESTED_LOADER_JAR));
+		URL loaderJar = getClass().getClassLoader().getResource(NESTED_LOADER_JAR);
+		JarInputStream inputStream = new JarInputStream(new BufferedInputStream(
+				loaderJar.openStream()));
 		JarEntry entry;
 		while ((entry = inputStream.getNextJarEntry()) != null) {
 			if (entry.getName().endsWith(".class")) {
