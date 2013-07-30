@@ -85,7 +85,7 @@ class StartupInfoLogger {
 			public Object call() throws Exception {
 				return source.getPackage().getImplementationVersion();
 			}
-		}, " v[N/A]");
+		}, "");
 	}
 
 	private String getOn() {
