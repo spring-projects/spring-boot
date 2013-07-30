@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-batch</artifactId>
+			<artifactId>spring-boot-starter-batch</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

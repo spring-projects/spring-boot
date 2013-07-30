@@ -7,23 +7,23 @@
 		<artifactId>spring-boot-parent</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-ups</artifactId>
+	<artifactId>spring-boot-starters</artifactId>
 	<packaging>pom</packaging>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
-		<module>spring-boot-up</module>
-		<module>spring-boot-up-batch</module>
-		<module>spring-boot-up-data-jpa</module>
-		<module>spring-boot-up-integration</module>
-		<module>spring-boot-up-jetty</module>
-		<module>spring-boot-up-logging</module>
-		<module>spring-boot-up-ops</module>
-		<module>spring-boot-up-parent</module>
-		<module>spring-boot-up-security</module>
-		<module>spring-boot-up-tomcat</module>
-		<module>spring-boot-up-web</module>
+		<module>spring-boot-starter</module>
+		<module>spring-boot-starter-batch</module>
+		<module>spring-boot-starter-data-jpa</module>
+		<module>spring-boot-starter-integration</module>
+		<module>spring-boot-starter-jetty</module>
+		<module>spring-boot-starter-logging</module>
+		<module>spring-boot-starter-ops</module>
+		<module>spring-boot-starter-parent</module>
+		<module>spring-boot-starter-security</module>
+		<module>spring-boot-starter-tomcat</module>
+		<module>spring-boot-starter-web</module>
 	</modules>
 	<build>
 		<plugins>
@@ -48,7 +48,7 @@
 									<filtering>true</filtering>
 								</resource>
 							</resources>
-							<outputDirectory>${basedir}/spring-boot-up-parent</outputDirectory>
+							<outputDirectory>${basedir}/spring-boot-starter-parent</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>

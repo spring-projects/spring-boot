@@ -15,12 +15,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-web</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-tomcat</artifactId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>

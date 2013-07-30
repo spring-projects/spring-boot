@@ -4,22 +4,24 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-ups</artifactId>
+		<artifactId>spring-boot-starters</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-up-jetty</artifactId>
+	<artifactId>spring-boot-starter-ops</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jsp</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-ops</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

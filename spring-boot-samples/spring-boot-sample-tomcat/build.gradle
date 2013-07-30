@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-	compile("org.springframework.boot:spring-boot-up-web:0.5.0.BUILD-SNAPSHOT")
+	compile("org.springframework.boot:spring-boot-starter-web:0.5.0.BUILD-SNAPSHOT")
 	testCompile("junit:junit:4.11")
 }
 
