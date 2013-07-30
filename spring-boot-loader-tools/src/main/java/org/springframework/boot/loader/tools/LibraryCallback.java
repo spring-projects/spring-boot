@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launcher.tools.sample;
+package org.springframework.boot.loader.tools;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
- * Sample class without a main method.
+ * Callback interface used to iterate {@link Libraries}.
  * 
  * @author Phillip Webb
  */
-public class ClassWithoutMainMethod {
+public interface LibraryCallback {
+
+	/**
+	 * Callback to for a single library backed by a {@link File}.
+	 * @param file the library file
+	 * @param scope the scope of the library
+	 * @throws IOException
+	 */
+	void library(File file, LibraryScope scope) throws IOException;
 
 }

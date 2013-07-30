@@ -29,8 +29,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.springframework.boot.launcher.tools.Libraries;
-import org.springframework.boot.launcher.tools.Repackager;
+import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.Repackager;
 
 /**
  * MOJO that can can be used to repackage existing JAR and WAR archives so that they can

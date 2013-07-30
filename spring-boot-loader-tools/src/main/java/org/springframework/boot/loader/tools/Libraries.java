@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launcher.tools.sample;
+package org.springframework.boot.loader.tools;
+
+import java.io.IOException;
 
 /**
- * Sample class with a main method.
+ * Encapsulates information about libraries that may be packed into the archive.
  * 
  * @author Phillip Webb
  */
-public class ClassWithMainMethod {
+public interface Libraries {
 
-	public static void main(String[] args) {
-	}
+	/**
+	 * Iterate all relevant libraries.
+	 * @param callback a callback for each relevant library.
+	 * @throws IOException
+	 */
+	void doWithLibraries(LibraryCallback callback) throws IOException;
 
 }
