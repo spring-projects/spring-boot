@@ -46,58 +46,58 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-batch</artifactId>
+			<artifactId>spring-boot-starter-batch</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-data-jpa</artifactId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-integration</artifactId>
+			<artifactId>spring-boot-starter-integration</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-jetty</artifactId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-logging</artifactId>
+			<artifactId>spring-boot-starter-logging</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-ops</artifactId>
+			<artifactId>spring-boot-starter-ops</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-parent</artifactId>
+			<artifactId>spring-boot-starter-parent</artifactId>
 			<version>${project.version}</version>
 			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-security</artifactId>
+			<artifactId>spring-boot-starter-security</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-tomcat</artifactId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-up-web</artifactId>
+			<artifactId>spring-boot-starter-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

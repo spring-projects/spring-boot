@@ -6,7 +6,7 @@ This POM file that can be used as a parent for your own builds. It provides gene
 useful dependencies and plugins.
 
 NOTE: If you are editing a local checkout of this file, be sure to modify
-'spring-boot-ups/src/main/parent/pom.xml'.
+'spring-boot-starters/src/main/parent/pom.xml'.
 
 -->
 
@@ -18,7 +18,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 
 	<!-- Intentionally do not inherit from boot-parent -->
 	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-up-parent</artifactId>
+	<artifactId>spring-boot-starter-parent</artifactId>
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
@@ -28,7 +28,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
-		<spring.boot.version>0.5.0.BUILD-SNAPSHOT</spring.boot.version>
+		<spring.boot.version>@{project.version}</spring.boot.version>
 	</properties>
 
 	<prerequisites>
@@ -56,47 +56,47 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up</artifactId>
+				<artifactId>spring-boot-starter</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-ops</artifactId>
+				<artifactId>spring-boot-starter-ops</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-web</artifactId>
+				<artifactId>spring-boot-starter-web</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-tomcat</artifactId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-jetty</artifactId>
+				<artifactId>spring-boot-starter-jetty</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-data-jpa</artifactId>
+				<artifactId>spring-boot-starter-data-jpa</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-batch</artifactId>
+				<artifactId>spring-boot-starter-batch</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-integration</artifactId>
+				<artifactId>spring-boot-starter-integration</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-up-security</artifactId>
+				<artifactId>spring-boot-starter-security</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 		</dependencies>

@@ -17,9 +17,9 @@ repositories {
 }
 
 dependencies {
-	compile("org.springframework.boot:spring-boot-up:0.5.0.BUILD-SNAPSHOT")
+	compile("org.springframework.boot:spring-boot-starter:0.5.0.BUILD-SNAPSHOT")
 	compile("org.springframework:spring-webmvc:4.0.0.BUILD-SNAPSHOT")
-	providedRuntime("org.springframework.boot:spring-boot-up-tomcat:0.5.0.BUILD-SNAPSHOT")
+	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:0.5.0.BUILD-SNAPSHOT")
 	providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper:7.0.42")
 	testCompile("junit:junit:4.11")
 }
