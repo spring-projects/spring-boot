@@ -16,13 +16,16 @@
 
 package org.springframework.boot.launcher.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -84,9 +87,21 @@ class JarWriter {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
-			EntryWriter entryWriter = new InputStreamEntryWriter(
-					jarFile.getInputStream(entry), true);
-			writeEntry(entry, entryWriter);
+			ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(
+					jarFile.getInputStream(entry));
+			try {
+				if (inputStream.hasZipHeader() && entry.getMethod() != ZipEntry.STORED) {
+					new CrcAndSize(inputStream).setupStoredEntry(entry);
+					inputStream.close();
+					inputStream = new ZipHeaderPeekInputStream(
+							jarFile.getInputStream(entry));
+				}
+				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream, true);
+				writeEntry(entry, entryWriter);
+			}
+			finally {
+				inputStream.close();
+			}
 		}
 	}
 
@@ -98,27 +113,8 @@ class JarWriter {
 	 */
 	public void writeNestedLibrary(String destination, File file) throws IOException {
 		JarEntry entry = new JarEntry(destination + file.getName());
-		entry.setSize(file.length());
-		entry.setCompressedSize(file.length());
-		entry.setCrc(getCrc(file));
-		entry.setMethod(ZipEntry.STORED);
+		new CrcAndSize(file).setupStoredEntry(entry);
 		writeEntry(entry, new InputStreamEntryWriter(new FileInputStream(file), true));
-	}
-
-	private long getCrc(File file) throws IOException {
-		FileInputStream inputStream = new FileInputStream(file);
-		try {
-			byte[] buffer = new byte[BUFFER_SIZE];
-			CRC32 crc = new CRC32();
-			int bytesRead = -1;
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				crc.update(buffer, 0, bytesRead);
-			}
-			return crc.getValue();
-		}
-		finally {
-			inputStream.close();
-		}
 	}
 
 	/**
@@ -213,6 +209,95 @@ class JarWriter {
 			}
 		}
 
+	}
+
+	/**
+	 * {@link InputStream} that can peek ahead at zip header bytes.
+	 */
+	private static class ZipHeaderPeekInputStream extends FilterInputStream {
+
+		private static final byte[] ZIP_HEADER = new byte[] { 0x50, 0x4b, 0x03, 0x04 };
+
+		private byte[] header;
+
+		private ByteArrayInputStream headerStream;
+
+		protected ZipHeaderPeekInputStream(InputStream in) throws IOException {
+			super(in);
+			this.header = new byte[4];
+			int len = in.read(this.header);
+			this.headerStream = new ByteArrayInputStream(this.header, 0, len);
+		}
+
+		@Override
+		public int read() throws IOException {
+			int read = (this.headerStream == null ? -1 : this.headerStream.read());
+			if (read != -1) {
+				this.headerStream = null;
+				return read;
+			}
+			return super.read();
+		}
+
+		@Override
+		public int read(byte[] b) throws IOException {
+			return read(b, 0, b.length);
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			int read = (this.headerStream == null ? -1 : this.headerStream.read(b, off,
+					len));
+			if (read != -1) {
+				this.headerStream = null;
+				return read;
+			}
+			return super.read(b, off, len);
+		}
+
+		public boolean hasZipHeader() {
+			return Arrays.equals(this.header, ZIP_HEADER);
+		}
+	}
+
+	/**
+	 * Data holder for CRC and Size
+	 */
+	private static class CrcAndSize {
+
+		private final CRC32 crc = new CRC32();
+
+		private long size;
+
+		public CrcAndSize(File file) throws IOException {
+			FileInputStream inputStream = new FileInputStream(file);
+			try {
+				load(inputStream);
+			}
+			finally {
+				inputStream.close();
+			}
+		}
+
+		public CrcAndSize(InputStream inputStream) throws IOException {
+			load(inputStream);
+		}
+
+		private void load(InputStream inputStream) throws IOException {
+			byte[] buffer = new byte[BUFFER_SIZE];
+			int bytesRead = -1;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				this.crc.update(buffer, 0, bytesRead);
+				this.size += bytesRead;
+			}
+		}
+
+		public void setupStoredEntry(JarEntry entry) {
+			entry.setSize(this.size);
+			entry.setCompressedSize(this.size);
+			entry.setCrc(this.crc.getValue());
+			entry.setMethod(ZipEntry.STORED);
+		}
 	}
 
 }

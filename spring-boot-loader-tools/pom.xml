@@ -18,6 +18,13 @@
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
 		</dependency>
+		<!-- Provided -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-loader</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.zeroturnaround</groupId>
