@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launcher.tools;
+package org.springframework.boot.loader.tools;
 
 /**
  * Strategy interface used to determine the layout for a particular type of archive.

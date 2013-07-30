@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launcher.tools;
+package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +27,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.launcher.tools.sample.ClassWithMainMethod;
-import org.springframework.boot.launcher.tools.sample.ClassWithoutMainMethod;
+import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryScope;
+import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
+import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launcher.tools;
+package org.springframework.boot.loader.tools;
 
 /**
  * The scope of a library. The common {@link #COMPILE}, {@link #RUNTIME} and

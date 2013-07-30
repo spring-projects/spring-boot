@@ -35,7 +35,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.springframework.boot.launcher.tools.MainClassFinder;
+import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
  * MOJO that can be used to run a executable archive application directly from Maven.

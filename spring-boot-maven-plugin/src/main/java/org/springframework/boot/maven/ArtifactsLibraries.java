@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.springframework.boot.launcher.tools.Libraries;
-import org.springframework.boot.launcher.tools.LibraryCallback;
-import org.springframework.boot.launcher.tools.LibraryScope;
+import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
  * {@link Libraries} backed by Maven {@link Artifact}s

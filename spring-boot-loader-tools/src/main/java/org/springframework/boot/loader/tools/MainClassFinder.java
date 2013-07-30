@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.launcher.tools;
+package org.springframework.boot.loader.tools;
 
 import java.io.BufferedInputStream;
 import java.io.File;
