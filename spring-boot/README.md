@@ -1,156 +1,104 @@
-# Spring Boot.Strap
+# Spring Boot
+Spring Boot provides the central features for the other modules in the project. It is 
+relatively unopinionated and it has minimal dependencies which makes it usable as a
+stand-alone library for anyone whose tastes diverge from ours.
 
-Spring Boot.Strap provides features for the other parts of Spring
-Boot. It is relatively unopinionated and therefore usable as a
-standalone library for anyone whose tastes diverge from ours.
+## SpringApplication
+The `SpringApplication` class provides a convenient way to bootstrap a Spring application
+that will be started from a `main()` method. In many situations you can just delegate
+to the static `SpringApplication.run` method:
 
-|Feature |Implementation |Notes |
-|---|---|---|
-|Launch Spring from Java main |SpringApplication | Plenty of convenience methods and customization opportunities |
-|Server   |Tomcat or Jetty  | |
-|Logging  |Logback, Log4j or JDK | Sensible defaults configurations. |
-|Externalized configuration | Properties or YAML | Support for Spring profiles. Bind automatically to @Bean. |
-
-For a quick introduction and to get started quickly with a new
-project, carry on reading.  For more in depth coverage of the features
-of Spring Boot.Strap, go to the [Feature Guide](docs/Features.md).
-
-# Getting Started
-
-You will need Java (6 at least) and a build tool (Maven is what we use
-below, but you are more than welcome to use gradle).  These can be
-downloaded or installed easily in most operating systems.  For Ubuntu:
-
-    $ sudo apt-get install openjdk-6-jdk maven
-
-<!--FIXME: short instructions for Mac.-->
-
-## A basic project
-
-If you are using Maven create a really simple `pom.xml` with 2 dependencies:
-
-`pom.xml`
-
-```
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mycompany</groupId>
-  <artifactId>myproject</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
-  <properties>
-      <start-class>com.mycompany.Application</start-class>
-  </properties>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-starter-parent</artifactId>
-    <version>{{project.version}}</version>
-  </parent>
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-starter</artifactId>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-package-maven-plugin</artifactId>
-     </plugin>
-    </plugins>
-  </build>
-</project>
-```
-
-If you like Gradle, that's fine, and you will know what to do with
-those dependencies.  The one dependency adds Spring Boot.Config auto
-configuration and the Tomcat container to your application.  If you
-prefer Jetty you can just add the embedded Jetty jars to your
-classpath instead of Tomcat.
-
-Now write a simple main class
-
-`Application.java`
-```
-package com.mycompany;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class Application {
-
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
-
+```java
+public static void main(String[] args) {
+	SpringApplication.run(SpringConfiguration.class, args);
 }
 ```
 
-You should be able to run it already:
+When you application starts you should see something similar to the following:
 
-    $ mvn package
-    $ java -jar target/myproject-1.0.0-SNAPSHOT.jar
-
-      .   ____          _            __ _ _
-     /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-    ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-     \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-      '  |____| .__|_| |_|_| |_\__, | / / / /
-     =========|_|==============|___/=/_/_/_/
-     Spring Bootstrap
-
-    2013-07-19 17:13:51.673  INFO 18937 --- [           main] com.mycompany.Application ...
-    ... <logs showing application starting up>
-
-It doesn't do anything yet, but that's because all we did is start a
-Spring `ApplicationContext` and let it close when the JVM stopped.
-
-To make it do something a little bit more interesting you could bind
-some command line arguments to the application:
-
-`Application.java`
 ```
-@Configuration
-@ConfigurationProperties
-@EnableConfigurationProperties
-public class Application {
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ Spring Boot (v0.5.0.BUILD-SNAPSHOT)
 
-    private String message;
+2013-07-31 00:08:16.117  INFO 56603 --- [           main] o.s.b.s.app.SampleApplication   : Starting SampleApplication v0.1.0 on mycomputer with PID 56603 (/apps/myapp.jar started by pwebb)
+2013-07-31 00:08:16.166  INFO 56603 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@6e5a8246: startup date [Wed Jul 31 00:08:16 PDT 2013]; root of context hierarchy
+```
 
-    @Override
-    public void run(String... args) throws Exception {
-    	System.err.println(message);
-    }
+By default `INFO` logging messages will shown, including some relevant startup information
+such as the user that started the application.
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+### Customizing SpringApplication
+If the SpringApplication defaults aren't to your taste you can instead create a local
+instance and customize it. For example, to turn off the banner you would write:
 
- 	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
+```java
+public static void main(String[] args) {
+	SpringApplication app = new SpringApplication(SpringConfiguration.class);
+	app.setShowBanner(false);
+	app.run(args);
 }
 ```
 
-The `@ConfigurationProperties` annotation binds the Spring
-`Environment` (including command line arguments) to the `Application`
-instance, and `CommandLineRunner` is a marker interface for anything
-you want to be executed after the content is started. So run it
-again and you will see the message:
+See the `SpringApplication` Javadoc for a complete list of the configuration options  
 
-```
-    $ mvn package
-    $ java -jar target/myproject-1.0.0-SNAPSHOT.jar --message="Hello World"
-    ...
-    Hello World
+### Accessing command line properties
+By default `SpringApplication` will expose any command line arguments as Spring 
+Properties. This allows you to easily access arguments using by injecting them
+as `@Values`
+
+```java
+import org.springframework.stereotype.*
+import org.springframework.beans.factory.annotation.*
+
+@Component
+public class MyBean {
+	
+	@Value("${name}")
+	private String name; 
+	// Running 'java -jar myapp.jar --name=Spring' will set this to "Spring"
+
+	// ...	
+}
 ```
 
-To add more features, add some `@Bean` definitions to your
-`Application` class, and read more in the
-[Feature Guide](docs/Features.md).
+### CommandLineRunner beans
+If you wan't access to the raw command line argument, or you need to run some specific
+code once the `SpringApplication` has started you can implement the `CommandLineRunner`
+interface. The `run(String... args)` method will be called on all spring beans 
+implementing the interface.
+
+```java
+import org.springframework.boot.*
+import org.springframework.stereotype.*
+
+@Component
+public class MyBean implements CommandLineRunner {
+
+	public void run(String... args) {
+		// Do something...
+	}
+	
+}
+```
+
+You can additionally implement the `org.springframework.core.Ordered` interface or use
+the `org.springframework.core.annotation.Order` annotation if serveral `CommandLineRunner`
+beans are defined that must be called in a specific order.
+
+### Application Exit
+
+
+
+## Embedded Servlet Container Support
+
+## External Configuration
+
+## Conditionals
+
+## ApplicationContextInitializers
+
