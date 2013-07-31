@@ -24,10 +24,9 @@ import static org.springframework.boot.ansi.AnsiElement.DEFAULT;
 import static org.springframework.boot.ansi.AnsiElement.FAINT;
 import static org.springframework.boot.ansi.AnsiElement.GREEN;
 
-
 /**
  * Writes the 'Spring' banner.
- *
+ * 
  * @author Phillip Webb
  */
 abstract class Banner {
@@ -40,6 +39,10 @@ abstract class Banner {
 			"  '  |____| .__|_| |_|_| |_\\__, | / / / /",
 			" =========|_|==============|___/=/_/_/_/" };
 
+	private static final String SPRING_BOOT = " :: Spring Boot :: ";
+
+	private static final int STRAP_LINE_SIZE = 42;
+
 	/**
 	 * Write the banner to the specified print stream.
 	 * @param printStream the output print stream
@@ -49,8 +52,16 @@ abstract class Banner {
 			printStream.println(line);
 		}
 		String version = Banner.class.getPackage().getImplementationVersion();
-		printStream.println(AnsiOutput.toString(GREEN, " Spring Boot", DEFAULT,
-				FAINT, (version == null ? "" : " (v" + version + ")")));
+		version = (version == null ? "" : " (v" + version + ")");
+		version = " v0.5.0.BUILD.SNAPSHOT";
+		String padding = "";
+		while (padding.length() < STRAP_LINE_SIZE
+				- (version.length() + SPRING_BOOT.length())) {
+			padding += " ";
+		}
+
+		printStream.println(AnsiOutput.toString(GREEN, SPRING_BOOT, DEFAULT, padding,
+				FAINT, version));
 		printStream.println();
 	}
 }
