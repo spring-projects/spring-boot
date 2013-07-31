@@ -254,6 +254,7 @@ public class SpringApplication {
 		// Create, load, refresh and run the ApplicationContext
 		ApplicationContext context = createApplicationContext();
 		if (context instanceof ConfigurableApplicationContext) {
+			((ConfigurableApplicationContext) context).registerShutdownHook();
 			((ConfigurableApplicationContext) context).setEnvironment(environment);
 		}
 		postProcessApplicationContext(context);
