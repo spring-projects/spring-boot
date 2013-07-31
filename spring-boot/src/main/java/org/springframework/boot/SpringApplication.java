@@ -161,6 +161,8 @@ public class SpringApplication {
 
 	private String[] defaultCommandLineArgs;
 
+	private boolean sourcesInitialized = false;
+
 	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
@@ -190,7 +192,8 @@ public class SpringApplication {
 	}
 
 	private void initialize(Object[] sources) {
-		if (sources != null) {
+		if (sources != null && sources.length > 0) {
+			this.sourcesInitialized = true;
 			this.sources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
@@ -576,6 +579,9 @@ public class SpringApplication {
 	 * @see #SpringApplication(Object...)
 	 */
 	public void setSources(Set<Object> sources) {
+		if (this.sourcesInitialized) {
+			return;
+		}
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = new LinkedHashSet<Object>(sources);
 	}
