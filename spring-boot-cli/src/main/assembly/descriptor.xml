@@ -23,7 +23,7 @@
     <dependencySets>
         <dependencySet>
           <includes>
-            <include>org.springframework.boot:spring-cli:jar:*</include>
+            <include>org.springframework.boot:spring-boot-cli:jar:*</include>
           </includes>
           <outputDirectory>lib</outputDirectory>
         </dependencySet>
