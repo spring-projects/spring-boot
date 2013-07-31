@@ -155,7 +155,8 @@ class BeanDefinitionLoader {
 
 	private int load(CharSequence source) {
 		try {
-			return load(Class.forName(source.toString()));
+			// Use class utils so that period separated nested class names work
+			return load(ClassUtils.forName(source.toString(), null));
 		}
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
