@@ -326,6 +326,15 @@ public class SpringApplicationTests {
 		assertThat(application.getShowBanner(), is(false));
 	}
 
+	@Test
+	public void registerShutdownHook() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
+		application.setApplicationContext(applicationContext);
+		application.run();
+		verify(applicationContext).registerShutdownHook();
+	}
+
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
 			Class<?> propertySourceClass, String name) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
