@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
-import java.util.List;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Condition} that checks that specific beans are missing.
+ * {@link Conditional} that only matches when the application context is a web application
+ * context.
  * 
- * @author Phillip Webb
- * @see ConditionalOnMissingBean
+ * @author Dave Syer
  */
-class OnMissingBeanCondition extends AbstractOnBeanCondition {
-
-	@Override
-	protected Class<?> annotationClass() {
-		return ConditionalOnMissingBean.class;
-	}
-
-	@Override
-	protected boolean evaluate(List<String> beanClassesFound, List<String> beanNamesFound) {
-		return !super.evaluate(beanClassesFound, beanNamesFound);
-	}
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Conditional(OnWebApplicationCondition.class)
+public @interface ConditionalOnWebApplication {
 }

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,20 +24,18 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the specified resources are on the
- * classpath.
+ * Configuration annotation for a conditional element that depends on the value of a SpEL
+ * expression.
  * 
  * @author Dave Syer
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Conditional(OnExpressionCondition.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Conditional(OnResourceCondition.class)
-public @interface ConditionalOnResource {
+@Target({ ElementType.TYPE, ElementType.METHOD })
+public @interface ConditionalOnExpression {
 
 	/**
-	 * The resources that must be present.
-	 * @return the resource paths that must be present.
+	 * The SpEL expression.
 	 */
-	public String[] resources() default {};
+	String value() default "true";
 }

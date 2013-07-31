@@ -17,7 +17,7 @@
 package org.springframework.boot.ops.autoconfigure;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.ops.metrics.CounterService;
 import org.springframework.boot.ops.metrics.DefaultCounterService;
 import org.springframework.boot.ops.metrics.DefaultGaugeService;

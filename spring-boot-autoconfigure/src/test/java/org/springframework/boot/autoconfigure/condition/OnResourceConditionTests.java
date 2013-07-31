@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.boot.context.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.context.condition.ConditionalOnWebApplication;
-import org.springframework.boot.context.condition.OnNotWebApplicationCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.autoconfigure.condition.OnResourceCondition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,16 +28,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnNotWebApplicationCondition}.
+ * Tests for {@link OnResourceCondition}.
  * 
  * @author Dave Syer
  */
-public class OnNotWebApplicationConditionTests {
+public class OnResourceConditionTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testWebApplication() {
+	public void testResourceExists() {
 		this.context.register(BasicConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("foo"));
@@ -46,14 +45,14 @@ public class OnNotWebApplicationConditionTests {
 	}
 
 	@Test
-	public void testNotWebApplication() {
+	public void testResourceNotExists() {
 		this.context.register(MissingConfiguration.class);
 		this.context.refresh();
 		assertFalse(this.context.containsBean("foo"));
 	}
 
 	@Configuration
-	@ConditionalOnWebApplication
+	@ConditionalOnResource(resources = "foo")
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {
@@ -62,7 +61,7 @@ public class OnNotWebApplicationConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnNotWebApplication
+	@ConditionalOnResource(resources = "logback-test.xml")
 	protected static class BasicConfiguration {
 		@Bean
 		public String foo() {

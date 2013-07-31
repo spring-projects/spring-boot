@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.boot.context.condition.ConditionalOnResource;
-import org.springframework.boot.context.condition.OnResourceCondition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,31 +26,41 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnResourceCondition}.
+ * Tests for {@link OnMissingClassCondition}.
  * 
  * @author Dave Syer
  */
-public class OnResourceConditionTests {
+public class OnMissingClassConditionTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testResourceExists() {
-		this.context.register(BasicConfiguration.class);
+	public void testVanillaOnClassCondition() {
+		this.context.register(BasicConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertTrue(this.context.containsBean("foo"));
+		assertFalse(this.context.containsBean("bar"));
 		assertEquals("foo", this.context.getBean("foo"));
 	}
 
 	@Test
-	public void testResourceNotExists() {
-		this.context.register(MissingConfiguration.class);
+	public void testMissingOnClassCondition() {
+		this.context.register(MissingConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
-		assertFalse(this.context.containsBean("foo"));
+		assertTrue(this.context.containsBean("bar"));
+		assertEquals("foo", this.context.getBean("foo"));
 	}
 
 	@Configuration
-	@ConditionalOnResource(resources = "foo")
+	@ConditionalOnMissingClass("org.springframework.boot.autoconfigure.condition.OnMissingClassConditionTests")
+	protected static class BasicConfiguration {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnMissingClass("FOO")
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {
@@ -61,11 +69,11 @@ public class OnResourceConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnResource(resources = "logback-test.xml")
-	protected static class BasicConfiguration {
+	protected static class FooConfiguration {
 		@Bean
 		public String foo() {
 			return "foo";
 		}
 	}
+
 }

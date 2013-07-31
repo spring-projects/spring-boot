@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -25,14 +25,19 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the application context is a web application
- * context.
+ * {@link Conditional} that only matches when the specified classes are on the classpath.
  * 
  * @author Dave Syer
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(OnWebApplicationCondition.class)
-public @interface ConditionalOnWebApplication {
+@Conditional(OnMissingClassCondition.class)
+public @interface ConditionalOnMissingClass {
+
+	/**
+	 * The classes names that must be absent.
+	 * @return the class names that must be absent.
+	 */
+	public String[] value() default {};
 }

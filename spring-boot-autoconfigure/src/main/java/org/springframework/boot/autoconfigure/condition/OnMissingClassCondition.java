@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +31,12 @@ import org.springframework.util.MultiValueMap;
 /**
  * {@link Condition} that checks for the specific classes.
  * 
- * @author Phillip Webb
- * @see ConditionalOnClass
+ * @author Dave Syer
+ * @see ConditionalOnMissingClass
  */
-class OnClassCondition implements Condition {
+class OnMissingClassCondition implements Condition {
 
-	private static Log logger = LogFactory.getLog(OnClassCondition.class);
+	private static Log logger = LogFactory.getLog(OnMissingClassCondition.class);
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -44,20 +44,19 @@ class OnClassCondition implements Condition {
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
-				ConditionalOnClass.class.getName(), true);
+				ConditionalOnMissingClass.class.getName(), true);
 		if (attributes != null) {
 			List<String> classNames = new ArrayList<String>();
 			collectClassNames(classNames, attributes.get("value"));
-			collectClassNames(classNames, attributes.get("name"));
 			Assert.isTrue(classNames.size() > 0,
-					"@ConditionalOnClass annotations must specify at least one class value");
+					"@ConditionalOnMissingClass annotations must specify at least one class value");
 			for (String className : classNames) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(checking + "Looking for class: " + className);
 				}
-				if (!ClassUtils.isPresent(className, context.getClassLoader())) {
+				if (ClassUtils.isPresent(className, context.getClassLoader())) {
 					if (logger.isDebugEnabled()) {
-						logger.debug(checking + "Class not found: " + className
+						logger.debug(checking + "Found class: " + className
 								+ " (search terminated with matches=false)");
 					}
 					return false;
@@ -79,4 +78,5 @@ class OnClassCondition implements Condition {
 		}
 	}
 
+	// FIXME merge with OnClassCondition
 }

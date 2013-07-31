@@ -17,7 +17,7 @@
 package org.springframework.boot.ops.autoconfigure;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.ops.trace.InMemoryTraceRepository;
 import org.springframework.boot.ops.trace.TraceRepository;
 import org.springframework.context.annotation.Bean;
