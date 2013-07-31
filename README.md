@@ -143,15 +143,15 @@ can also watch files, automatically recompiling and restarting when they change.
 *See [spring-boot-cli/README.md](spring-boot-cli/README.md).*
 
 
-### spring-boot-ops
-Ops uses auto-configuration to decorate your application with features that
+### spring-boot-actuator
+The Actuator uses auto-configuration to decorate your application with features that
 make it instantly deployable and supportable in production.  For instance if you are
 writing a JSON web service then it will provide a server, security, logging, externalized
 configuration, management endpoints, an audit abstraction, and more. If you want to
 switch off the built in features, or extend or replace them, it makes that really easy as 
 well.
 
-_See [spring-boot-ops/README.md](spring-boot-ops/README.md)._
+_See [spring-boot-actuator/README.md](spring-boot-actuator/README.md)._
 
 
 ### spring-boot-loader
@@ -176,8 +176,8 @@ samples are provided:
 * [spring-boot-sample-simple](spring-boot-sample-simple) - A simple command line application
 * [spring-boot-sample-tomcat](spring-boot-sample-tomcat) - Embedded Tomcat
 * [spring-boot-sample-jetty](spring-boot-sample-jetty) - Embedded Jetty
-* [spring-boot-sample-ops](spring-boot-sample-ops) - Simple REST service with production features
-* [spring-boot-sample-ops-ui](spring-boot-sample-ops-ui) - A web UI example with production features
+* [spring-boot-sample-actuator](spring-boot-sample-actuator) - Simple REST service with production features
+* [spring-boot-sample-actuator-ui](spring-boot-sample-actuator-ui) - A web UI example with production features
 * [spring-boot-sample-web-ui](spring-boot-sample-web-ui) - A thymeleaf web application
 * [spring-boot-sample-web-static](spring-boot-sample-web-static) - A web application service static files
 * [spring-sample-batch](spring-sample-batch) - Define and run a Batch job in a few lines of code
