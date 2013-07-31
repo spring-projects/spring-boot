@@ -51,7 +51,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-ops</artifactId>
+				<artifactId>spring-boot-actuator</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
@@ -61,7 +61,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-ops</artifactId>
+				<artifactId>spring-boot-starter-actuator</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>

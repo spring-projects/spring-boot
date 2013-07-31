@@ -1,4 +1,4 @@
-# Spring Boot Ops
+# Spring Boot Actuator
 
 The aim of this project is minimum fuss for getting applications up
 and running in production, and in other environments.  There is a
@@ -24,7 +24,7 @@ are more generic than that.
 
 For a quick introduction and to get started quickly with a new
 project, carry on reading.  For more in depth coverage of the features
-of Spring Boot Ops, go to the
+of Spring Boot Actuator, go to the
 [Feature Guide](docs/Features.md).
 
 # Getting Started

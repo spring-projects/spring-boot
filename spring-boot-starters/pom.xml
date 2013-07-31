@@ -19,7 +19,7 @@
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jetty</module>
 		<module>spring-boot-starter-logging</module>
-		<module>spring-boot-starter-ops</module>
+		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-security</module>
 		<module>spring-boot-starter-tomcat</module>
