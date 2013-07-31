@@ -15,7 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-starter-ops</artifactId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

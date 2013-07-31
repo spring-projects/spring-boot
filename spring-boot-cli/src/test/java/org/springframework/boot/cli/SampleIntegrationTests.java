@@ -160,8 +160,8 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	public void opsSample() throws Exception {
-		start("samples/ops.groovy");
+	public void actuatorSample() throws Exception {
+		start("samples/actuator.groovy");
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
 				.openStream());
 		assertEquals("{\"message\":\"Hello World!\"}", result);

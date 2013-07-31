@@ -20,7 +20,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-ops</artifactId>
+			<artifactId>spring-boot-actuator</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
