@@ -303,7 +303,11 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 */
 	protected final File getValidDocumentRoot() {
 		File file = getDocumentRoot();
+		// If document root not explicitly set see if we are running from a war archive
 		file = file != null ? file : getWarFileDocumentRoot();
+		// If not a war archive maybe it is an exploded war
+		file = file != null ? file : getExplodedWarFileDocumentRoot();
+		// Or maybe there is a document root in a well-known location
 		file = file != null ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isWarnEnabled()) {
 			this.logger.debug("None of the document roots "
@@ -316,12 +320,25 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		return file;
 	}
 
+	private File getExplodedWarFileDocumentRoot() {
+		File file = getCodeSourceArchive();
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Code archive: " + file);
+		}
+		if (file != null && file.exists() && file.getAbsolutePath().contains("/WEB-INF/")) {
+			String path = file.getAbsolutePath();
+			path = path.substring(0, path.indexOf("/WEB-INF/"));
+			return new File(path);
+		}
+		return null;
+	}
+
 	private File getArchiveFileDocumentRoot(String extension) {
 		File file = getCodeSourceArchive();
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + file);
 		}
-		if (file.exists() && !file.isDirectory()
+		if (file != null && file.exists() && !file.isDirectory()
 				&& file.getName().toLowerCase().endsWith(extension)) {
 			return file.getAbsoluteFile();
 		}
