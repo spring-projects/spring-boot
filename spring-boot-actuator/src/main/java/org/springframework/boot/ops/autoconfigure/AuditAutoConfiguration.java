@@ -18,8 +18,8 @@ package org.springframework.boot.ops.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.condition.ConditionalOnClass;
-import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.ops.audit.AuditEvent;
 import org.springframework.boot.ops.audit.AuditEventRepository;
 import org.springframework.boot.ops.audit.InMemoryAuditEventRepository;

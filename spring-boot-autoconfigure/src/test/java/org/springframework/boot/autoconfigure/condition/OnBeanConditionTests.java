@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
+import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,44 +26,50 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnClassCondition}.
- * 
  * @author Dave Syer
  */
-public class OnClassConditionTests {
+@Ignore
+public class OnBeanConditionTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testVanillaOnClassCondition() {
-		this.context.register(BasicConfiguration.class, FooConfiguration.class);
+	public void testNameOnBeanCondition() {
+		this.context.register(FooConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
 		assertEquals("bar", this.context.getBean("bar"));
 	}
 
 	@Test
-	public void testMissingOnClassCondition() {
-		this.context.register(MissingConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
-	}
-
-	@Test
-	public void testOnClassConditionWithXml() {
-		this.context.register(BasicConfiguration.class, XmlConfiguration.class);
+	public void testNameOnBeanConditionReverseOrder() {
+		this.context.register(OnBeanNameConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
 		assertEquals("bar", this.context.getBean("bar"));
 	}
 
 	@Test
-	public void testOnClassConditionWithCombinedXml() {
+	public void testClassOnBeanCondition() {
+		this.context.register(OnBeanClassConfiguration.class, FooConfiguration.class);
+		this.context.refresh();
+		assertTrue(this.context.containsBean("bar"));
+		assertEquals("bar", this.context.getBean("bar"));
+	}
+
+	@Test
+	public void testOnBeanConditionWithXml() {
+		this.context.register(OnBeanNameConfiguration.class, XmlConfiguration.class);
+		this.context.refresh();
+		assertTrue(this.context.containsBean("bar"));
+		assertEquals("bar", this.context.getBean("bar"));
+	}
+
+	@Test
+	public void testOnBeanConditionWithCombinedXml() {
 		this.context.register(CombinedXmlConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
@@ -69,8 +77,8 @@ public class OnClassConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnClass(OnClassConditionTests.class)
-	protected static class BasicConfiguration {
+	@ConditionalOnBean(name = "foo")
+	protected static class OnBeanNameConfiguration {
 		@Bean
 		public String bar() {
 			return "bar";
@@ -78,8 +86,8 @@ public class OnClassConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnClass(name = "FOO")
-	protected static class MissingConfiguration {
+	@ConditionalOnBean(String.class)
+	protected static class OnBeanClassConfiguration {
 		@Bean
 		public String bar() {
 			return "bar";
@@ -95,13 +103,13 @@ public class OnClassConditionTests {
 	}
 
 	@Configuration
-	@ImportResource("org/springframework/boot/context/foo.xml")
+	@ImportResource("org/springframework/boot/strap/context/annotation/foo.xml")
 	protected static class XmlConfiguration {
 	}
 
 	@Configuration
-	@Import(BasicConfiguration.class)
-	@ImportResource("org/springframework/boot/context/foo.xml")
+	@Import(OnBeanNameConfiguration.class)
+	@ImportResource("org/springframework/boot/strap/context/annotation/foo.xml")
 	protected static class CombinedXmlConfiguration {
 	}
 }

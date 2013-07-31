@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Conditional;
 
 /**
- * Some named search strategies for beans in the bean factory hierarchy.
+ * {@link Conditional} that only matches when the application context is a not a web
+ * application context.
  * 
  * @author Dave Syer
  */
-public enum SearchStrategy {
-
-	/**
-	 * Search only the current context
-	 */
-	CURRENT,
-	/**
-	 * Search all parents and ancestors, but not the current context
-	 */
-	PARENTS,
-	/**
-	 * Search the entire hierarchy
-	 * 
-	 */
-	ALL;
-
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Conditional(OnNotWebApplicationCondition.class)
+public @interface ConditionalOnNotWebApplication {
 }

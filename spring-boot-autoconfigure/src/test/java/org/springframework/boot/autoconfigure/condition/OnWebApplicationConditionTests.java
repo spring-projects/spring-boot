@@ -14,53 +14,49 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnMissingClassCondition}.
+ * Tests for {@link OnWebApplicationCondition}.
  * 
  * @author Dave Syer
  */
-public class OnMissingClassConditionTests {
+public class OnWebApplicationConditionTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@Test
-	public void testVanillaOnClassCondition() {
-		this.context.register(BasicConfiguration.class, FooConfiguration.class);
+	public void testWebApplication() {
+		this.context.register(BasicConfiguration.class);
+		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		assertFalse(this.context.containsBean("bar"));
+		assertTrue(this.context.containsBean("foo"));
 		assertEquals("foo", this.context.getBean("foo"));
 	}
 
 	@Test
-	public void testMissingOnClassCondition() {
-		this.context.register(MissingConfiguration.class, FooConfiguration.class);
+	public void testNotWebApplication() {
+		this.context.register(MissingConfiguration.class);
+		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("foo", this.context.getBean("foo"));
+		assertFalse(this.context.containsBean("foo"));
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass("org.springframework.boot.context.condition.OnMissingClassConditionTests")
-	protected static class BasicConfiguration {
-		@Bean
-		public String bar() {
-			return "bar";
-		}
-	}
-
-	@Configuration
-	@ConditionalOnMissingClass("FOO")
+	@ConditionalOnNotWebApplication
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {
@@ -69,11 +65,11 @@ public class OnMissingClassConditionTests {
 	}
 
 	@Configuration
-	protected static class FooConfiguration {
+	@ConditionalOnWebApplication
+	protected static class BasicConfiguration {
 		@Bean
 		public String foo() {
 			return "foo";
 		}
 	}
-
 }

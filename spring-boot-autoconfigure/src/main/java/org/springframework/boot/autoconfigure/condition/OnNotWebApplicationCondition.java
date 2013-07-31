@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,17 +23,17 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
- * {@link Condition} that checks for a web application context.
+ * {@link Condition} that checks for a web application context and returns false if one is
+ * found.
  * 
  * @author Dave Syer
- * @see ConditionalOnWebApplication
+ * @see ConditionalOnNotWebApplication
  */
-class OnWebApplicationCondition implements Condition {
+class OnNotWebApplicationCondition implements Condition {
 
-	private static Log logger = LogFactory.getLog(OnWebApplicationCondition.class);
+	private static Log logger = LogFactory.getLog(OnNotWebApplicationCondition.class);
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -46,16 +46,16 @@ class OnWebApplicationCondition implements Condition {
 			if (logger.isDebugEnabled()) {
 				logger.debug(checking + "Web application classes not found");
 			}
-			return false;
+			return true;
 		}
-		boolean result = StringUtils.arrayToCommaDelimitedString(
-				context.getBeanFactory().getRegisteredScopeNames()).contains("session")
-				|| context.getEnvironment() instanceof StandardServletEnvironment;
+		boolean result = !StringUtils.arrayToCommaDelimitedString(
+				context.getBeanFactory().getRegisteredScopeNames()).contains("session");
 		if (logger.isDebugEnabled()) {
-			logger.debug(checking + "Web application context found: " + result);
+			logger.debug(checking + "Web application context found: " + !result);
 		}
+
 		return result;
+
 	}
 
-	// FIXME merge with OnNotWeb...
 }

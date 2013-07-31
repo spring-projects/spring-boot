@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -28,26 +28,26 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
- * not already contained in the {@link BeanFactory}.
+ * already contained in the {@link BeanFactory}.
  * 
  * @author Phillip Webb
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(OnMissingBeanCondition.class)
-public @interface ConditionalOnMissingBean {
+@Conditional(OnBeanCondition.class)
+public @interface ConditionalOnBean {
 
 	/**
-	 * The class type of bean that should be checked. The condition matches when each
-	 * class specified is missing in the {@link ApplicationContext}.
+	 * The class type of bean that should be checked. The condition matches when any of
+	 * the classes specified is contained in the {@link ApplicationContext}.
 	 * @return the class types of beans to check
 	 */
 	Class<?>[] value() default {};
 
 	/**
-	 * The names of beans to check. The condition matches when each bean name specified is
-	 * missing in the {@link ApplicationContext}.
+	 * The names of beans to check. The condition matches when any of the bean names
+	 * specified is contained in the {@link ApplicationContext}.
 	 * @return the name of beans to check
 	 */
 	String[] name() default {};

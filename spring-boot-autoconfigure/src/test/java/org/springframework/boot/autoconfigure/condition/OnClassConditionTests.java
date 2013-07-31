@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.boot.context.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.OnClassCondition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,50 +26,44 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link OnClassCondition}.
+ * 
  * @author Dave Syer
  */
-@Ignore
-public class OnBeanConditionTests {
+public class OnClassConditionTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
-	public void testNameOnBeanCondition() {
-		this.context.register(FooConfiguration.class, OnBeanNameConfiguration.class);
+	public void testVanillaOnClassCondition() {
+		this.context.register(BasicConfiguration.class, FooConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
 		assertEquals("bar", this.context.getBean("bar"));
 	}
 
 	@Test
-	public void testNameOnBeanConditionReverseOrder() {
-		this.context.register(OnBeanNameConfiguration.class, FooConfiguration.class);
+	public void testMissingOnClassCondition() {
+		this.context.register(MissingConfiguration.class, FooConfiguration.class);
+		this.context.refresh();
+		assertFalse(this.context.containsBean("bar"));
+		assertEquals("foo", this.context.getBean("foo"));
+	}
+
+	@Test
+	public void testOnClassConditionWithXml() {
+		this.context.register(BasicConfiguration.class, XmlConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
 		assertEquals("bar", this.context.getBean("bar"));
 	}
 
 	@Test
-	public void testClassOnBeanCondition() {
-		this.context.register(OnBeanClassConfiguration.class, FooConfiguration.class);
-		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
-	}
-
-	@Test
-	public void testOnBeanConditionWithXml() {
-		this.context.register(OnBeanNameConfiguration.class, XmlConfiguration.class);
-		this.context.refresh();
-		assertTrue(this.context.containsBean("bar"));
-		assertEquals("bar", this.context.getBean("bar"));
-	}
-
-	@Test
-	public void testOnBeanConditionWithCombinedXml() {
+	public void testOnClassConditionWithCombinedXml() {
 		this.context.register(CombinedXmlConfiguration.class);
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
@@ -77,8 +71,8 @@ public class OnBeanConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnBean(name = "foo")
-	protected static class OnBeanNameConfiguration {
+	@ConditionalOnClass(OnClassConditionTests.class)
+	protected static class BasicConfiguration {
 		@Bean
 		public String bar() {
 			return "bar";
@@ -86,8 +80,8 @@ public class OnBeanConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnBean(String.class)
-	protected static class OnBeanClassConfiguration {
+	@ConditionalOnClass(name = "FOO")
+	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {
 			return "bar";
@@ -103,13 +97,13 @@ public class OnBeanConditionTests {
 	}
 
 	@Configuration
-	@ImportResource("org/springframework/boot/strap/context/annotation/foo.xml")
+	@ImportResource("org/springframework/boot/context/foo.xml")
 	protected static class XmlConfiguration {
 	}
 
 	@Configuration
-	@Import(OnBeanNameConfiguration.class)
-	@ImportResource("org/springframework/boot/strap/context/annotation/foo.xml")
+	@Import(BasicConfiguration.class)
+	@ImportResource("org/springframework/boot/context/foo.xml")
 	protected static class CombinedXmlConfiguration {
 	}
 }

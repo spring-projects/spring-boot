@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.springframework.context.annotation.Condition;
 

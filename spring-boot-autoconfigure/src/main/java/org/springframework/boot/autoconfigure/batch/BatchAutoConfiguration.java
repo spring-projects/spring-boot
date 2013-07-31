@@ -20,9 +20,9 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.condition.ConditionalOnBean;
-import org.springframework.boot.context.condition.ConditionalOnClass;
-import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

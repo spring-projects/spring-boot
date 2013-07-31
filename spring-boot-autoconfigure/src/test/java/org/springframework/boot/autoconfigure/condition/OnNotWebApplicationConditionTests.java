@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.boot.context.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.context.condition.ConditionalOnWebApplication;
-import org.springframework.boot.context.condition.OnWebApplicationCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.OnNotWebApplicationCondition;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mock.web.MockServletContext;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnWebApplicationCondition}.
+ * Tests for {@link OnNotWebApplicationCondition}.
  * 
  * @author Dave Syer
  */
-public class OnWebApplicationConditionTests {
+public class OnNotWebApplicationConditionTests {
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void testWebApplication() {
 		this.context.register(BasicConfiguration.class);
-		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		assertTrue(this.context.containsBean("foo"));
 		assertEquals("foo", this.context.getBean("foo"));
@@ -50,13 +48,12 @@ public class OnWebApplicationConditionTests {
 	@Test
 	public void testNotWebApplication() {
 		this.context.register(MissingConfiguration.class);
-		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		assertFalse(this.context.containsBean("foo"));
 	}
 
 	@Configuration
-	@ConditionalOnNotWebApplication
+	@ConditionalOnWebApplication
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {
@@ -65,7 +62,7 @@ public class OnWebApplicationConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnWebApplication
+	@ConditionalOnNotWebApplication
 	protected static class BasicConfiguration {
 		@Bean
 		public String foo() {

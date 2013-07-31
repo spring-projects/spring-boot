@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.condition;
+package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.springframework.core.type.AnnotatedTypeMetadata;

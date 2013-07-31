@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.properties.ServerProperties;
