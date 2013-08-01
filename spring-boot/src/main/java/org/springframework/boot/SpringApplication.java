@@ -51,6 +51,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -135,9 +136,9 @@ public class SpringApplication {
 
 	private final Log log = LogFactory.getLog(getClass());
 
-	private Set<Object> defaultSources = new LinkedHashSet<Object>();
+	private Set<Object> sources = new LinkedHashSet<Object>();
 
-	private Set<Object> additionalSources = new LinkedHashSet<Object>();
+	private Set<Object> initialSources = new LinkedHashSet<Object>();
 
 	private Class<?> mainApplicationClass;
 
@@ -193,7 +194,7 @@ public class SpringApplication {
 
 	private void initialize(Object[] sources) {
 		if (sources != null && sources.length > 0) {
-			this.additionalSources.addAll(Arrays.asList(sources));
+			this.initialSources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
 		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
@@ -275,8 +276,8 @@ public class SpringApplication {
 
 	private Set<Object> assembleSources() {
 		LinkedHashSet<Object> sources = new LinkedHashSet<Object>();
-		sources.addAll(this.defaultSources);
-		sources.addAll(this.additionalSources);
+		sources.addAll(this.sources);
+		sources.addAll(this.initialSources);
 		return sources;
 	}
 
@@ -360,9 +361,6 @@ public class SpringApplication {
 	protected void logStartupInfo() {
 		Log applicationLog = getApplicationLog();
 		new StartupInfoLogger(this.mainApplicationClass).log(applicationLog);
-		if (applicationLog.isDebugEnabled()) {
-			applicationLog.debug("Sources: " + this.defaultSources);
-		}
 	}
 
 	/**
@@ -434,6 +432,10 @@ public class SpringApplication {
 	 * @param sources the sources to load
 	 */
 	protected void load(ApplicationContext context, Object[] sources) {
+		if (this.log.isDebugEnabled()) {
+			this.log.debug("Loading source "
+					+ StringUtils.arrayToCommaDelimitedString(sources));
+		}
 		BeanDefinitionLoader loader = createBeanDefinitionLoader(
 				getBeanDefinitionRegistry(context), sources);
 		if (this.beanNameGenerator != null) {
@@ -574,7 +576,7 @@ public class SpringApplication {
 	 * @see #SpringApplication(Object...)
 	 */
 	public Set<Object> getSources() {
-		return this.defaultSources;
+		return this.sources;
 	}
 
 	/**
@@ -582,12 +584,15 @@ public class SpringApplication {
 	 * one of: a class, class name, package, package name, or an XML resource location.
 	 * Can also be set using constructors and static convenience methods (e.g.
 	 * {@link #run(Object[], String[])}).
+	 * <p>
+	 * NOTE: sources defined here will be used in addition to any sources specified on
+	 * construction.
 	 * @param sources the sources to set
 	 * @see #SpringApplication(Object...)
 	 */
 	public void setSources(Set<Object> sources) {
 		Assert.notNull(sources, "Sources must not be null");
-		this.defaultSources = new LinkedHashSet<Object>(sources);
+		this.sources = new LinkedHashSet<Object>(sources);
 	}
 
 	/**
