@@ -271,9 +271,9 @@ public class SpringApplicationTests {
 		application.setUseMockLoader(true);
 		application.run();
 		@SuppressWarnings("unchecked")
-		Set<Object> additionalSources = (Set<Object>) ReflectionTestUtils.getField(
-				application, "additionalSources");
-		assertThat(additionalSources.toArray(), equalTo(sources));
+		Set<Object> initialSources = (Set<Object>) ReflectionTestUtils.getField(
+				application, "initialSources");
+		assertThat(initialSources.toArray(), equalTo(sources));
 	}
 
 	@Test
