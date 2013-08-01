@@ -190,9 +190,9 @@ public class EmbeddedWebApplicationContextTests {
 		ordered.verify(servletContext).addServlet("servletBean1", servlet1);
 		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping(
-				"/servletBean1/*");
+				"/servletBean1/");
 		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
-				"/servletBean2/*");
+				"/servletBean2/");
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class EmbeddedWebApplicationContextTests {
 		ordered.verify(servletContext).addServlet("servletBean2", servlet2);
 		verify(escf.getRegisteredServlet(0).getRegistration()).addMapping("/");
 		verify(escf.getRegisteredServlet(1).getRegistration()).addMapping(
-				"/servletBean2/*");
+				"/servletBean2/");
 	}
 
 	@Test

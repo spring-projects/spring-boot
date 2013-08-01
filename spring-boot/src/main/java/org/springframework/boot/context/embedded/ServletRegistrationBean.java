@@ -76,6 +76,13 @@ public class ServletRegistrationBean extends RegistrationBean {
 	}
 
 	/**
+	 * Returns the servlet being registered.
+	 */
+	protected Servlet getServlet() {
+		return this.servlet;
+	}
+
+	/**
 	 * Sets the servlet to be registered.
 	 */
 	public void setServlet(Servlet servlet) {
@@ -140,12 +147,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	 * Returns the servlet name that will be registered.
 	 */
 	public String getServletName() {
-		return getName();
-	}
-
-	@Override
-	public Object getRegistrationTarget() {
-		return this.servlet;
+		return getOrDeduceName(this.servlet);
 	}
 
 	@Override

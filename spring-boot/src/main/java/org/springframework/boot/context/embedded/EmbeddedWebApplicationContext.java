@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -64,9 +63,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * <p>
  * In addition, any {@link Servlet} or {@link Filter} beans defined in the context will be
  * automatically registered with the embedded Servlet container. In the case of a single
- * Servlet bean, the '/*' mapping will be used. If multiple Servlet beans are found then
- * the lowercase bean name will be used as a mapping prefix. Filter beans will be mapped
- * to all URLs ('/*').
+ * Servlet bean, the '/' mapping will be used. If multiple Servlet beans are found then
+ * the lowercase bean name will be used as a mapping prefix. Any Servlet named
+ * 'dispatcherServlet' will always be mapped to '/'. Filter beans will be mapped to all
+ * URLs ('/*').
  * 
  * <p>
  * For more advanced configuration, the context can instead define beans that implement
@@ -205,43 +205,47 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	protected Collection<ServletContextInitializer> getServletContextInitializerBeans() {
 
 		Set<ServletContextInitializer> initializers = new LinkedHashSet<ServletContextInitializer>();
-		Set<Object> targets = new HashSet<Object>();
+		Set<Servlet> servletRegistrations = new LinkedHashSet<Servlet>();
+		Set<Filter> filterRegistrations = new LinkedHashSet<Filter>();
 
 		for (Entry<String, ServletContextInitializer> initializerBean : getOrderedBeansOfType(ServletContextInitializer.class)) {
 			ServletContextInitializer initializer = initializerBean.getValue();
-			if (initializer instanceof RegistrationBean) {
-				targets.add(((RegistrationBean) initializer).getRegistrationTarget());
-			}
 			initializers.add(initializer);
+			if (initializer instanceof ServletRegistrationBean) {
+				servletRegistrations.add(((ServletRegistrationBean) initializer)
+						.getServlet());
+			}
+			if (initializer instanceof FilterRegistrationBean) {
+				filterRegistrations.add(((FilterRegistrationBean) initializer)
+						.getFilter());
+			}
 		}
 
 		List<Entry<String, Servlet>> servletBeans = getOrderedBeansOfType(Servlet.class);
 		for (Entry<String, Servlet> servletBean : servletBeans) {
 			final String name = servletBean.getKey();
 			Servlet servlet = servletBean.getValue();
-			if (targets.contains(servlet)) {
-				continue;
+			if (!servletRegistrations.contains(servlet)) {
+				String url = (servletBeans.size() == 1 ? "/" : "/" + name + "/");
+				if (name.equals(DISPATCHER_SERVLET_NAME)) {
+					url = "/"; // always map the main dispatcherServlet to "/"
+				}
+				ServletRegistrationBean registration = new ServletRegistrationBean(
+						servlet, url);
+				registration.setName(name);
+				registration.setMultipartConfig(getMultipartConfig());
+				initializers.add(registration);
 			}
-			String url = (servletBeans.size() == 1 ? "/" : "/" + name + "/*");
-			if (name.equals(DISPATCHER_SERVLET_NAME)) {
-				url = "/"; // always map the main dispatcherServlet to "/"
-			}
-			ServletRegistrationBean registration = new ServletRegistrationBean(servlet,
-					url);
-			registration.setName(name);
-			registration.setMultipartConfig(getMultipartConfig());
-			initializers.add(registration);
 		}
 
 		for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {
 			String name = filterBean.getKey();
 			Filter filter = filterBean.getValue();
-			if (targets.contains(filter)) {
-				continue;
+			if (!servletRegistrations.contains(filter)) {
+				FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+				registration.setName(name);
+				initializers.add(registration);
 			}
-			FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-			registration.setName(name);
-			initializers.add(registration);
 		}
 
 		return initializers;
