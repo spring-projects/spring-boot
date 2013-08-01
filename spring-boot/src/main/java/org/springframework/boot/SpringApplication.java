@@ -135,7 +135,9 @@ public class SpringApplication {
 
 	private final Log log = LogFactory.getLog(getClass());
 
-	private Set<Object> sources = new LinkedHashSet<Object>();
+	private Set<Object> defaultSources = new LinkedHashSet<Object>();
+
+	private Set<Object> additionalSources = new LinkedHashSet<Object>();
 
 	private Class<?> mainApplicationClass;
 
@@ -160,8 +162,6 @@ public class SpringApplication {
 	private List<ApplicationContextInitializer<?>> initializers;
 
 	private String[] defaultCommandLineArgs;
-
-	private boolean sourcesInitialized = false;
 
 	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
@@ -193,8 +193,7 @@ public class SpringApplication {
 
 	private void initialize(Object[] sources) {
 		if (sources != null && sources.length > 0) {
-			this.sourcesInitialized = true;
-			this.sources.addAll(Arrays.asList(sources));
+			this.additionalSources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
 		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
@@ -249,7 +248,8 @@ public class SpringApplication {
 
 		// Call all remaining initializers
 		callEnvironmentAwareSpringApplicationInitializers(environment);
-		Assert.notEmpty(this.sources, "Sources must not be empty");
+		Set<Object> sources = assembleSources();
+		Assert.notEmpty(sources, "Sources must not be empty");
 		if (this.showBanner) {
 			printBanner();
 		}
@@ -267,10 +267,17 @@ public class SpringApplication {
 		if (this.logStartupInfo) {
 			logStartupInfo();
 		}
-		load(context, this.sources.toArray(new Object[this.sources.size()]));
+		load(context, sources.toArray(new Object[sources.size()]));
 		refresh(context);
 		runCommandLineRunners(context, args);
 		return context;
+	}
+
+	private Set<Object> assembleSources() {
+		LinkedHashSet<Object> sources = new LinkedHashSet<Object>();
+		sources.addAll(this.defaultSources);
+		sources.addAll(this.additionalSources);
+		return sources;
 	}
 
 	private void callNonEnvironmentAwareSpringApplicationInitializers() {
@@ -354,7 +361,7 @@ public class SpringApplication {
 		Log applicationLog = getApplicationLog();
 		new StartupInfoLogger(this.mainApplicationClass).log(applicationLog);
 		if (applicationLog.isDebugEnabled()) {
-			applicationLog.debug("Sources: " + this.sources);
+			applicationLog.debug("Sources: " + this.defaultSources);
 		}
 	}
 
@@ -561,13 +568,13 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns a mutable set of the sources that will be used to create an
-	 * ApplicationContext when {@link #run(String...)} is called.
+	 * Returns a mutable set of the sources that will be added to an ApplicationContext
+	 * when {@link #run(String...)} is called.
 	 * @return the sources the application sources.
 	 * @see #SpringApplication(Object...)
 	 */
 	public Set<Object> getSources() {
-		return this.sources;
+		return this.defaultSources;
 	}
 
 	/**
@@ -579,11 +586,8 @@ public class SpringApplication {
 	 * @see #SpringApplication(Object...)
 	 */
 	public void setSources(Set<Object> sources) {
-		if (this.sourcesInitialized) {
-			return;
-		}
 		Assert.notNull(sources, "Sources must not be null");
-		this.sources = new LinkedHashSet<Object>(sources);
+		this.defaultSources = new LinkedHashSet<Object>(sources);
 	}
 
 	/**

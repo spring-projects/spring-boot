@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
@@ -47,6 +48,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -268,7 +270,10 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		application.setUseMockLoader(true);
 		application.run();
-		assertThat(application.getSources().toArray(), equalTo(sources));
+		@SuppressWarnings("unchecked")
+		Set<Object> additionalSources = (Set<Object>) ReflectionTestUtils.getField(
+				application, "additionalSources");
+		assertThat(additionalSources.toArray(), equalTo(sources));
 	}
 
 	@Test
