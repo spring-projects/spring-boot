@@ -21,7 +21,6 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
 import org.springframework.beans.NotWritablePropertyException;
-import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -41,8 +40,6 @@ public class PropertiesConfigurationFactoryTests {
 	private PropertiesConfigurationFactory<Foo> factory;
 
 	private Validator validator;
-
-	private boolean exceptionIfInvalid = true;
 
 	private boolean ignoreUnknownFields = true;
 
@@ -99,7 +96,6 @@ public class PropertiesConfigurationFactoryTests {
 		this.factory = new PropertiesConfigurationFactory<Foo>(Foo.class);
 		this.factory.setProperties(PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes())));
-		this.factory.setExceptionIfInvalid(this.exceptionIfInvalid);
 		this.factory.setValidator(this.validator);
 		this.factory.setTargetName(this.targetName);
 		this.factory.setIgnoreUnknownFields(this.ignoreUnknownFields);

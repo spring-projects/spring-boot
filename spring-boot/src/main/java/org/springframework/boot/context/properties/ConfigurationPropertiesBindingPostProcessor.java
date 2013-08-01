@@ -271,7 +271,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
 		if (annotation != null && annotation.path().length != 0) {
-
 			factory.setPropertySources(loadPropertySources(annotation.path()));
 		}
 		else {
