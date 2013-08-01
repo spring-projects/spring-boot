@@ -51,9 +51,9 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	private boolean ignoreUnknownFields = true;
 
-	private boolean ignoreInvalidFields = false;
+	private boolean ignoreInvalidFields;
 
-	private boolean exceptionIfInvalid;
+	private boolean exceptionIfInvalid = true;
 
 	private Properties properties;
 
@@ -196,13 +196,15 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 			if (this.logger.isTraceEnabled()) {
 				if (this.properties != null) {
 					this.logger.trace("Properties:\n" + this.properties);
-				} else {
+				}
+				else {
 					this.logger.trace("Property Sources: " + this.propertySources);
 				}
 			}
 			this.hasBeenBound = true;
 			doBindPropertiesToTarget();
-		} catch (BindException ex) {
+		}
+		catch (BindException ex) {
 			if (this.exceptionIfInvalid) {
 				throw ex;
 			}
@@ -246,8 +248,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 						: error);
 			}
 			if (this.exceptionIfInvalid) {
-				BindException summary = new BindException(errors);
-				throw summary;
+				throw new BindException(errors);
 			}
 		}
 	}
