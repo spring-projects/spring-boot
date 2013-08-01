@@ -94,6 +94,13 @@ public class FilterRegistrationBean extends RegistrationBean {
 	}
 
 	/**
+	 * Returns the filter being registered.
+	 */
+	protected Filter getFilter() {
+		return this.filter;
+	}
+
+	/**
 	 * Set the filter to be registered.
 	 */
 	public void setFilter(Filter filter) {
@@ -220,12 +227,7 @@ public class FilterRegistrationBean extends RegistrationBean {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.filter, "Filter must not be null");
-		configure(servletContext.addFilter(getName(), this.filter));
-	}
-
-	@Override
-	public Object getRegistrationTarget() {
-		return this.filter;
+		configure(servletContext.addFilter(getOrDeduceName(this.filter), this.filter));
 	}
 
 	/**

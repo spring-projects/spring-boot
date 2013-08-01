@@ -217,7 +217,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	@Override
 	public void addErrorPages(ErrorPage... errorPages) {
-		Assert.notNull(this.initializers, "ErrorPages must not be null");
+		Assert.notNull(errorPages, "ErrorPages must not be null");
 		this.errorPages.addAll(Arrays.asList(errorPages));
 	}
 
