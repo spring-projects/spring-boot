@@ -91,7 +91,7 @@ You can use an `alias` for the Spring Boot command line tool:
 
 	$ alias spring="java -jar ~/.m2/repository/org/springframework/boot/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
 
-_Also see [CONTRIBUTING.md] if you wish to submit pull requests._
+_Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests._
 
 ## Spring Boot Modules
 There are a number of modules in Spring Boot. Here are the important ones:
@@ -144,20 +144,20 @@ can also watch files, automatically recompiling and restarting when they change.
 
 
 ### spring-boot-actuator
-The Actuator uses auto-configuration to decorate your application with features that
-make it instantly deployable and supportable in production.  For instance if you are
-writing a JSON web service then it will provide a server, security, logging, externalized
-configuration, management endpoints, an audit abstraction, and more. If you want to
-switch off the built in features, or extend or replace them, it makes that really easy as 
-well.
+Spring Boot Actuator provides additional auto-configuration to decorate your application 
+with features that make it instantly deployable and supportable in production.  For 
+instance if you are writing a JSON web service then it will provide a server, security, 
+logging, externalized configuration, management endpoints, an audit abstraction, and 
+more. If you want to switch off the built in features, or extend or replace them, it
+makes that really easy as well.
 
 _See [spring-boot-actuator/README.md](spring-boot-actuator/README.md)._
 
 
 ### spring-boot-loader
-Loader provides the secret sauce that allows you to build a single jar file that can be
-launched using `java -jar`. Generally you will not need to use `spring-boot-loader` 
-directly but instead work with the 
+Spring Boot Loader provides the secret sauce that allows you to build a single jar file 
+that can be launched using `java -jar`. Generally you will not need to use 
+`spring-boot-loader`  directly but instead work with the 
 [Gradle](spring-boot-gradle-plugin/README.md) or 
 [Maven](spring-boot-maven-plugin/README.md) plugin.
 

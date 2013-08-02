@@ -1,4 +1,4 @@
-# Spring Package Maven Plugin
+# Spring Boot - Maven Plugin
 
 A maven plugin for building executable JAR and WAR files. To use it,
 configure your project to build a JAR or WAR (as appropriate) in the

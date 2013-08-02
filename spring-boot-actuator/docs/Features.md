@@ -37,12 +37,6 @@ have picked a container implementation (by including either Tomcat or
 Jetty on the classpath), but then the API is the same.  TODO: finish
 this.
 
-## Logging
-
-Spring Actuator uses SLF4J for logging, but leaves the implementation
-open.  The Starter projects and the Actuator use logback logging by
-default because it has the richest feature set.
-
 ## Info Endpoint
 
 By default the Actuator adds an `/info` endpoint to the main server.
