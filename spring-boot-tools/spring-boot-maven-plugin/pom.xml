@@ -10,7 +10,7 @@
 	<artifactId>spring-boot-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 	<properties>
-		<main.basedir>${basedir}/..</main.basedir>
+		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
 	<dependencies>
 		<!-- Compile -->
