@@ -84,6 +84,6 @@ public class SampleIntegrationApplicationTests {
 						return builder.toString();
 					}
 				});
-		return future.get(10, TimeUnit.SECONDS);
+		return future.get(30, TimeUnit.SECONDS);
 	}
 }

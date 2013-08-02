@@ -383,5 +383,18 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 				</snapshotRepository>
 			</distributionManagement>
 		</profile>
+        <profile>
+			<id>milestone</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+            <distributionManagement>
+              <repository>
+                <id>spring-repo-milestone</id>
+                <name>Spring Milestone Repository</name>
+                <url>http://repo.springsource.org/libs-milestone-local</url>
+              </repository>
+            </distributionManagement>
+        </profile>
 	</profiles>
 </project>

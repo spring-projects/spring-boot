@@ -734,11 +734,23 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<profiles>
+        <profile>
+			<id>milestone</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+            <distributionManagement>
+              <repository>
+                <id>spring-repo-milestone</id>
+                <name>Spring Milestone Repository</name>
+                <url>http://repo.springsource.org/libs-milestone-local</url>
+              </repository>
+            </distributionManagement>
+        </profile>
 		<profile>
-			<!-- FIXME deactivate before release -->
 			<id>development</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<repositories>
 				<repository>
