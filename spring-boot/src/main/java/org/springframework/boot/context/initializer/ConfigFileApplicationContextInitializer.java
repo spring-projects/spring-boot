@@ -89,7 +89,7 @@ public class ConfigFileApplicationContextInitializer implements
 	private String[] searchLocations = new String[] { "classpath:", "file:./",
 			"classpath:config/", "file:./config/" };
 
-	private String names = "${spring.config.name:application}";
+	private String names = "${spring.config.name},application";
 
 	private int order = Integer.MIN_VALUE + 10;
 
