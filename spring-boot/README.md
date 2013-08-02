@@ -269,7 +269,7 @@ environments.prod.name=My Cool App
  
 Would be transformed into these properties:
 
-``` 
+```text
 servers=dev.bar.com,foo.bar.com
 servers[0]=dev.bar.com
 servers[1]=foo.bar.com
@@ -283,7 +283,7 @@ syntax to access YAML properties.
 You can also specify multiple profile-specific YAML document in a single file by
 by using a `spring.profiles` key to indicate when the document applies. For example:
 
-```
+```yaml
 server:
 	address: 192.168.1.100
 ---
