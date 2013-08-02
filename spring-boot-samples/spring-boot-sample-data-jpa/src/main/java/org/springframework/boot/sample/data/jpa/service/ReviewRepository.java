@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.data.jpa.domain.repository;
+package org.springframework.boot.sample.data.jpa.service;
 
 import org.springframework.boot.sample.data.jpa.domain.Hotel;
 import org.springframework.boot.sample.data.jpa.domain.Review;
@@ -22,7 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 
-public interface ReviewRepository extends Repository<Review, Long> {
+interface ReviewRepository extends Repository<Review, Long> {
 
 	Page<Review> findByHotel(Hotel hotel, Pageable pageable);
 
