@@ -78,18 +78,18 @@ should check your current Java installation before you begin:
 
 	$ java -version
 	
-Complete installation instructions TBD. For now you can 
-[build from source](#building-from-source).
+Spring Boot CLI can be downloaded from our Maven repository, and then you can use a shell `alias` for the Spring Boot command line tool:
+
+    $ wget http://repo.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1.jar
+    $ alias spring="java -jar `pwd`/spring-cli-0.5.0.M1.jar"
+
+Complete installation including a downloadable `.zip` with a shell script TBD.
 
 ## Building from source
 Spring Boot can be [built with maven](http://maven.apache.org/run-maven/index.html) v3.0
 or above.
 
 	$ mvn clean install
-
-You can use an `alias` for the Spring Boot command line tool:
-
-	$ alias spring="java -jar ~/.m2/repository/org/springframework/boot/spring-cli/0.5.0.BUILD-SNAPSHOT/spring-cli-0.5.0.BUILD-SNAPSHOT.jar"
 
 _Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests._
 
