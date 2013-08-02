@@ -753,9 +753,10 @@
             </distributionManagement>
         </profile>
 		<profile>
+            <!-- FIXME disable this before release -->
 			<id>development</id>
 			<activation>
-				<activeByDefault>false</activeByDefault>
+				<activeByDefault>true</activeByDefault>
 			</activation>
 			<repositories>
 				<repository>
