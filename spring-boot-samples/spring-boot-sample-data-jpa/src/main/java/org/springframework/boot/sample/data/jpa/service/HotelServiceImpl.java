@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.data.jpa.service.impl;
+package org.springframework.boot.sample.data.jpa.service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,11 +27,6 @@ import org.springframework.boot.sample.data.jpa.domain.Rating;
 import org.springframework.boot.sample.data.jpa.domain.RatingCount;
 import org.springframework.boot.sample.data.jpa.domain.Review;
 import org.springframework.boot.sample.data.jpa.domain.ReviewDetails;
-import org.springframework.boot.sample.data.jpa.domain.repository.HotelRepository;
-import org.springframework.boot.sample.data.jpa.domain.repository.HotelSummaryRepository;
-import org.springframework.boot.sample.data.jpa.domain.repository.ReviewRepository;
-import org.springframework.boot.sample.data.jpa.service.HotelService;
-import org.springframework.boot.sample.data.jpa.service.ReviewsSummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -40,15 +35,20 @@ import org.springframework.util.Assert;
 
 @Component("hotelService")
 @Transactional
-public class HotelServiceImpl implements HotelService {
+class HotelServiceImpl implements HotelService {
 
 	// FIXME deal with null repository return values
 
-	private HotelRepository hotelRepository;
+	private final HotelRepository hotelRepository;
 
-	private HotelSummaryRepository hotelSummaryRepository;
+	private final ReviewRepository reviewRepository;
 
-	private ReviewRepository reviewRepository;
+	@Autowired
+	public HotelServiceImpl(HotelRepository hotelRepository,
+			ReviewRepository reviewRepository) {
+		this.hotelRepository = hotelRepository;
+		this.reviewRepository = reviewRepository;
+	}
 
 	@Override
 	public Hotel getHotel(City city, String name) {
@@ -78,24 +78,8 @@ public class HotelServiceImpl implements HotelService {
 
 	@Override
 	public ReviewsSummary getReviewSummary(Hotel hotel) {
-		List<RatingCount> ratingCounts = this.hotelSummaryRepository
-				.findRatingCounts(hotel);
+		List<RatingCount> ratingCounts = this.hotelRepository.findRatingCounts(hotel);
 		return new ReviewsSummaryImpl(ratingCounts);
-	}
-
-	@Autowired
-	public void setHotelRepository(HotelRepository hotelRepository) {
-		this.hotelRepository = hotelRepository;
-	}
-
-	@Autowired
-	public void setHotelSummaryRepository(HotelSummaryRepository hotelSummaryRepository) {
-		this.hotelSummaryRepository = hotelSummaryRepository;
-	}
-
-	@Autowired
-	public void setReviewRepository(ReviewRepository reviewRepository) {
-		this.reviewRepository = reviewRepository;
 	}
 
 	private static class ReviewsSummaryImpl implements ReviewsSummary {
