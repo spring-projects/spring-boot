@@ -18,7 +18,7 @@ Our primary goals are:
 * Absolutely no code generation and no requirement for XML configuration
 
 ## Quick Start Script Example
-The Spring Zero command line tool uses [Groovy](http://groovy.codehaus.org/) underneath 
+The Spring Boot command line tool uses [Groovy](http://groovy.codehaus.org/) underneath 
 so that we can present simple Spring snippets that can 'just run', for example:
 
 ```groovy

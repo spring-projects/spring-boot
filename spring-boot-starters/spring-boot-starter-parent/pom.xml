@@ -19,7 +19,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 	<!-- Intentionally do not inherit from boot-parent -->
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>0.5.0.M1</version>
+	<version>0.5.0.BUILD-SNAPSHOT</version>
 
 	<packaging>pom</packaging>
 
@@ -37,7 +37,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<aspectj.version>1.7.3</aspectj.version>
 		<reactor.version>1.0.0.M1</reactor.version>
-		<spring.boot.version>0.5.0.M1</spring.boot.version>
+		<spring.boot.version>0.5.0.BUILD-SNAPSHOT</spring.boot.version>
 	</properties>
 
 	<prerequisites>
