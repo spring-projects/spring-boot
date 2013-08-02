@@ -40,10 +40,7 @@
 	<modules>
 		<module>spring-boot</module>
 		<module>spring-boot-autoconfigure</module>
-		<module>spring-boot-loader</module>
-		<module>spring-boot-loader-tools</module>
-		<module>spring-boot-maven-plugin</module>
-		<module>spring-boot-gradle-plugin</module>
+		<module>spring-boot-tools</module>
 		<module>spring-boot-actuator</module>
 		<module>spring-boot-starters</module>
 		<module>spring-boot-cli</module>
