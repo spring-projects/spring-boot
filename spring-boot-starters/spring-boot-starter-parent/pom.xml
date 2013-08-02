@@ -19,7 +19,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 	<!-- Intentionally do not inherit from boot-parent -->
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>0.5.0.BUILD-SNAPSHOT</version>
+	<version>0.5.0.M1</version>
 
 	<packaging>pom</packaging>
 
@@ -27,8 +27,17 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
-		<spring.boot.version>0.5.0.BUILD-SNAPSHOT</spring.boot.version>
+		<spring.version>4.0.0.M2</spring.version>
+		<spring.security.version>3.2.0.M2</spring.security.version>
+		<spring.integration.version>2.2.4.RELEASE</spring.integration.version>
+		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
+		<groovy.version>2.1.6</groovy.version>
+		<gradle.version>1.6</gradle.version>
+		<tomcat.version>7.0.42</tomcat.version>
+		<jetty.version>8.1.9.v20130131</jetty.version>
+		<aspectj.version>1.7.3</aspectj.version>
+		<reactor.version>1.0.0.M1</reactor.version>
+		<spring.boot.version>0.5.0.M1</spring.boot.version>
 	</properties>
 
 	<prerequisites>
