@@ -81,7 +81,7 @@ should check your current Java installation before you begin:
 Spring Boot CLI can be downloaded from our Maven repository, and then you can use a shell `alias` for the Spring Boot command line tool:
 
     $ wget http://maven.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1.jar
-    $ alias spring="java -jar `pwd`/spring-cli-0.5.0.M1.jar"
+    $ alias spring="java -jar `pwd`/spring-boot-cli-0.5.0.M1.jar"
 
 Complete installation including a downloadable `.zip` with a shell script TBD.
 
