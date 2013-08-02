@@ -1,1 +1,1 @@
-# Spring CLI
+# Spring Boot - CLI

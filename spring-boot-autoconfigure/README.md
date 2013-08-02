@@ -1,1 +1,1 @@
-# Spring AutoConfigure
+# Spring Boot - AutoConfigure
