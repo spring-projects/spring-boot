@@ -83,7 +83,6 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
-			// No drama
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(

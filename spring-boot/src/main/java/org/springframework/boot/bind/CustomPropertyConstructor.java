@@ -85,18 +85,10 @@ public class CustomPropertyConstructor extends Constructor {
 		@Override
 		protected Property getProperty(Class<?> type, String name)
 				throws IntrospectionException {
-			Property p = lookupProperty(type, name);
-
-			return p != null ? p : super.getProperty(type, name);
-		}
-
-		private Property lookupProperty(Class<?> type, String name) {
-			Map<String, Property> m = CustomPropertyConstructor.this.properties.get(type);
-
-			if (m != null) {
-				return m.get(name);
-			}
-			return null;
+			Map<String, Property> forType = CustomPropertyConstructor.this.properties
+					.get(type);
+			Property property = (forType == null ? null : forType.get(name));
+			return (property == null ? super.getProperty(type, name) : property);
 		}
 	}
 }

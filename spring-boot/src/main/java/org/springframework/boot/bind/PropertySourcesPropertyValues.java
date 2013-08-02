@@ -44,12 +44,10 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
-	 * 
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
 		this.propertySources = propertySources;
-		// TODO: maybe lazy initialization?
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
 		for (PropertySource<?> source : propertySources) {
@@ -93,15 +91,11 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	public PropertyValues changesSince(PropertyValues old) {
 		MutablePropertyValues changes = new MutablePropertyValues();
 		// for each property value in the new set
-		for (PropertyValue newPv : getPropertyValues()) {
+		for (PropertyValue newValue : getPropertyValues()) {
 			// if there wasn't an old one, add it
-			PropertyValue pvOld = old.getPropertyValue(newPv.getName());
-			if (pvOld == null) {
-				changes.addPropertyValue(newPv);
-			}
-			else if (!pvOld.equals(newPv)) {
-				// it's changed
-				changes.addPropertyValue(newPv);
+			PropertyValue oldValue = old.getPropertyValue(newValue.getName());
+			if (oldValue == null || !oldValue.equals(newValue)) {
+				changes.addPropertyValue(newValue);
 			}
 		}
 		return changes;

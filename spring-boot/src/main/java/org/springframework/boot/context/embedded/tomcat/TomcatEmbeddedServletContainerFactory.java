@@ -332,8 +332,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Add {@link LifecycleListener}s that should be applied to the Tomcat {@link Context}
-	 * .
+	 * Add {@link LifecycleListener}s that should be added to the Tomcat {@link Context}.
 	 * @param contextLifecycleListeners the listeners to add
 	 */
 	public void addContextLifecycleListeners(
