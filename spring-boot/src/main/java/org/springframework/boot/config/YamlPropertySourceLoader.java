@@ -63,7 +63,6 @@ public class YamlPropertySourceLoader extends PropertiesPropertySourceLoader {
 
 	/**
 	 * A property source loader that loads all properties and matches all documents.
-	 * 
 	 * @return a property source loader
 	 */
 	public static YamlPropertySourceLoader matchAllLoader() {

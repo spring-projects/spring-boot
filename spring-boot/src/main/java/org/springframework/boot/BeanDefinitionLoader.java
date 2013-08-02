@@ -149,7 +149,6 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(Package source) {
-		// FIXME register the scanned package for data to pick up
 		return this.scanner.scan(source.getName());
 	}
 

@@ -72,7 +72,6 @@ public class YamlProcessor {
 	 * name=My Cool App
 	 * url=http://dev.bar.com
 	 * </pre>
-	 * 
 	 * @param matchers a map of keys to value patterns (regular expressions)
 	 */
 	public void setDocumentMatchers(List<? extends DocumentMatcher> matchers) {
@@ -83,7 +82,6 @@ public class YamlProcessor {
 	 * Flag indicating that a document for which all the
 	 * {@link #setDocumentMatchers(List) document matchers} abstain will nevertheless
 	 * match.
-	 * 
 	 * @param matchDefault the flag to set (default true)
 	 */
 	public void setMatchDefault(boolean matchDefault) {
@@ -94,7 +92,6 @@ public class YamlProcessor {
 	 * Method to use for resolving resources. Each resource will be converted to a Map, so
 	 * this property is used to decide which map entries to keep in the final output from
 	 * this factory.
-	 * 
 	 * @param resolutionMethod the resolution method to set (defaults to
 	 * {@link ResolutionMethod#OVERRIDE}).
 	 */
@@ -117,7 +114,6 @@ public class YamlProcessor {
 	 * into the callback, along with its representation as Properties. Depending on the
 	 * {@link #setResolutionMethod(ResolutionMethod)} not all of the documents will be
 	 * parsed.
-	 * 
 	 * @param callback a callback to delegate to once matching documents are found
 	 */
 	protected void process(MatchCallback callback) {

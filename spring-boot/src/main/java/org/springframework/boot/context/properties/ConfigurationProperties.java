@@ -26,9 +26,8 @@ import java.lang.annotation.Target;
  * Annotation for externalized configuration. Add this to a class definition if you want
  * to bind and validate some external Properties (e.g. from a .properties file).
  * 
- * @see ConfigurationPropertiesBindingPostProcessor
- * 
  * @author Dave Syer
+ * @see ConfigurationPropertiesBindingPostProcessor
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -39,7 +38,6 @@ public @interface ConfigurationProperties {
 	 * The (optional) name of the object to be bound. Properties to bind can have a name
 	 * prefix to select the properties that are valid to this object. Synonym for
 	 * {@link #name()}.
-	 * 
 	 * @return the name prefix of the properties to bind
 	 */
 	String value() default "";
@@ -48,7 +46,6 @@ public @interface ConfigurationProperties {
 	 * The (optional) name of the object to be bound. Properties to bind can have a name
 	 * prefix to select the properties that are valid to this object. Synonym for
 	 * {@link #value()}.
-	 * 
 	 * @return the name prefix of the properties to bind
 	 */
 	String name() default "";
@@ -57,7 +54,6 @@ public @interface ConfigurationProperties {
 	 * Flag to indicate that when binding to this object invalid fields should be ignored.
 	 * Invalid means invalid according to the binder that is used, and usually this means
 	 * fields of the wrong type (or that cannot be coerced into the correct type).
-	 * 
 	 * @return the flag value (default false)
 	 */
 	boolean ignoreInvalidFields() default false;
@@ -65,7 +61,6 @@ public @interface ConfigurationProperties {
 	/**
 	 * Flag to indicate that when binding to this object unknown fields should be ignored.
 	 * An unknown field could be a sign of a mistake in the Properties.
-	 * 
 	 * @return the flag value (default true)
 	 */
 	boolean ignoreUnknownFields() default true;
@@ -73,7 +68,6 @@ public @interface ConfigurationProperties {
 	/**
 	 * Optionally provide an explicit resource path to bind to instead of using the
 	 * default environment.
-	 * 
 	 * @return the path (or paths) of resources to bind to
 	 */
 	String[] path() default {};

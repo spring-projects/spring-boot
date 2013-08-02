@@ -82,7 +82,6 @@ public class RelaxedDataBinder extends DataBinder {
 	 * map keys. Also creates new maps for properties of map type that are null (assuming
 	 * all maps are potentially nested). The standard bracket <code>[...]</code>
 	 * dereferencing is also accepted.
-	 * 
 	 * @param propertyValues the property values
 	 * @param target the target object
 	 */
@@ -146,7 +145,6 @@ public class RelaxedDataBinder extends DataBinder {
 	 * <li>Fuzzy matching can be employed for bean property names</li>
 	 * <li>Period separators can be used instead of indexing ([...]) for map keys</li>
 	 * </ul>
-	 * 
 	 * @param wrapper a bean wrapper for the object to bind
 	 * @param path the bean path to bind
 	 * @return a transformed path with correct bean wrapper syntax

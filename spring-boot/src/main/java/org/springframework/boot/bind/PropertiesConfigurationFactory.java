@@ -82,7 +82,6 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	/**
 	 * Create a new factory for an object of the given type.
-	 * 
 	 * @see #PropertiesConfigurationFactory(Class)
 	 */
 	@SuppressWarnings("unchecked")

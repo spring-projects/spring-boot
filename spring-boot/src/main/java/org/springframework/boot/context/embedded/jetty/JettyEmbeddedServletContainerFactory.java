@@ -274,7 +274,6 @@ public class JettyEmbeddedServletContainerFactory extends
 	/**
 	 * Add {@link Configuration}s that will be applied to the {@link WebAppContext} before
 	 * the server is started.
-	 * 
 	 * @param configurations the configurations to add
 	 */
 	public void addConfigurations(Configuration... configurations) {

@@ -76,15 +76,13 @@ public class ContextIdApplicationContextInitializer implements
 				index);
 		index = environment.getProperty("spring.application.index", Integer.class, index);
 		if (index >= 0) {
-			name = name + ":" + index;
+			return name + ":" + index;
 		}
-		else {
-			// FIXME do we want this
-			String profiles = StringUtils.arrayToCommaDelimitedString(environment
-					.getActiveProfiles());
-			if (StringUtils.hasText(profiles)) {
-				name = name + ":" + profiles;
-			}
+
+		String profiles = StringUtils.arrayToCommaDelimitedString(environment
+				.getActiveProfiles());
+		if (StringUtils.hasText(profiles)) {
+			name = name + ":" + profiles;
 		}
 		return name;
 	}

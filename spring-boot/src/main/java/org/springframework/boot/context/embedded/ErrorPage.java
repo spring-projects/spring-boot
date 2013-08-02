@@ -54,7 +54,6 @@ public class ErrorPage {
 	 * The path to render (usually implemented as a forward), starting with "/". A custom
 	 * controller or servlet path can be used, or if the container supports it, a template
 	 * path (e.g. "/error.jsp").
-	 * 
 	 * @return the path that will be rendered for this error
 	 */
 	public String getPath() {
@@ -70,7 +69,6 @@ public class ErrorPage {
 
 	/**
 	 * The HTTP status value that this error page matches.
-	 * 
 	 * @return the status
 	 */
 	public HttpStatus getStatus() {
@@ -79,7 +77,6 @@ public class ErrorPage {
 
 	/**
 	 * The HTTP status value that this error page matches.
-	 * 
 	 * @return the status value (or 0 for a page that matches any status)
 	 */
 	public int getStatusCode() {
@@ -88,8 +85,7 @@ public class ErrorPage {
 
 	/**
 	 * The exception type name.
-	 * 
-	 * @return the exception type name (or null if there is none)
+	 * @return the exception type name (or {@code null} if there is none)
 	 */
 	public String getExceptionName() {
 		return this.exception == null ? null : this.exception.getName();

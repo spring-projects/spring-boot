@@ -30,8 +30,7 @@ public abstract class JsonParserFactory {
 
 	/**
 	 * Static factory for the "best" JSON parser available on the classpath. Tries Jackson
-	 * (2), then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
-	 * 
+	 * 2, then Snake YAML, and then falls back to the {@link SimpleJsonParser}.
 	 * @return a {@link JsonParser}
 	 */
 	public static JsonParser getJsonParser() {
