@@ -74,9 +74,7 @@ public class YamlPropertySourceLoader extends PropertiesPropertySourceLoader {
 	 * A property source loader that matches documents that have no explicit profile or
 	 * which have an explicit "spring.profiles.active" value in the current active
 	 * profiles.
-	 * 
 	 * @param activeProfiles the active profiles to match independent of file contents
-	 * 
 	 * @return a property source loader
 	 */
 	public static YamlPropertySourceLoader springProfileAwareLoader(
