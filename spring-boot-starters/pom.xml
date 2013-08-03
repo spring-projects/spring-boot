@@ -6,6 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
+		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-starters</artifactId>
 	<packaging>pom</packaging>
@@ -32,7 +33,7 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>process-resources</phase>
+						<phase>validate</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
