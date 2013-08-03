@@ -1,58 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-
-This POM file that can be used as a parent for your own builds. It provides generally
-useful dependencies and plugins.
-
-NOTE: If you are editing a local checkout of this file, be sure to modify
-'spring-boot-starters/src/main/parent/pom.xml'.
-
--->
+<!-- This POM file that can be used as a parent for your own builds. It provides
+	generally useful dependencies and plugins. NOTE: If you are editing a local
+	checkout of this file, be sure to modify 'spring-boot-starters/src/main/parent/pom.xml'. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-
 	<modelVersion>4.0.0</modelVersion>
-
-	<!-- Intentionally do not inherit from boot-parent -->
-	<groupId>org.springframework.boot</groupId>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-dependencies</artifactId>
+		<version>0.5.0.BUILD-SNAPSHOT</version>
+		<relativePath>../../spring-boot-dependencies</relativePath>
+	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>0.5.0.BUILD-SNAPSHOT</version>
-
 	<packaging>pom</packaging>
-
 	<properties>
-		<java.version>1.6</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring.version>4.0.0.M2</spring.version>
-		<spring.security.version>3.2.0.M2</spring.security.version>
-		<spring.integration.version>2.2.4.RELEASE</spring.integration.version>
-		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
-		<groovy.version>2.1.6</groovy.version>
-		<gradle.version>1.6</gradle.version>
-		<tomcat.version>7.0.42</tomcat.version>
-		<jetty.version>8.1.9.v20130131</jetty.version>
-		<aspectj.version>1.7.3</aspectj.version>
-		<reactor.version>1.0.0.M1</reactor.version>
 		<spring.boot.version>0.5.0.BUILD-SNAPSHOT</spring.boot.version>
 	</properties>
-
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
-
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-parent</artifactId>
-				<version>${spring.boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-strap</artifactId>
@@ -110,32 +77,8 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<dependencies>
-		<!-- Generally useful test dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-
 	<build>
+		<!-- Turn on filtering by default for application properties -->
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -155,15 +98,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 		</resources>
 		<pluginManagement>
 			<plugins>
-				<!-- Use specific maven plugin versions -->
-				<plugin>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.4</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>2.5</version>
-				</plugin>
+				<!-- Apply more sensible defaults for user projects -->
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.1</version>
@@ -173,67 +108,13 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 					</configuration>
 				</plugin>
 				<plugin>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>2.7</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.8</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<version>2.9</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.13</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-install-plugin</artifactId>
-					<version>2.4</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-invoker-plugin</artifactId>
-					<version>1.8</version>
-				</plugin>
-				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.4</version>
 					<configuration>
 						<archive>
 							<manifest>
 								<mainClass>${start-class}</mainClass>
 							</manifest>
 						</archive>
-					</configuration>
-				</plugin>
-				<plugin>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-plugin-plugin</artifactId>
-					<version>3.2</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.6</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.2</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>2.2.1</version>
-				</plugin>
-				<plugin>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.2.1</version>
-					<configuration>
-						<manifest>
-							<mainClass>${start-class}</mainClass>
-						</manifest>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -251,7 +132,6 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 				</plugin>
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.3</version>
 					<configuration>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 						<archive>
@@ -261,15 +141,15 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 						</archive>
 					</configuration>
 				</plugin>
-
-				<!-- Support the generally useful versions command -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>versions-maven-plugin</artifactId>
-					<version>2.0</version>
+					<artifactId>exec-maven-plugin</artifactId>
+					<configuration>
+						<manifest>
+							<mainClass>${start-class}</mainClass>
+						</manifest>
+					</configuration>
 				</plugin>
-
-				<!-- Support the generally useful git info plugin -->
 				<plugin>
 					<groupId>pl.project13.maven</groupId>
 					<artifactId>git-commit-id-plugin</artifactId>
@@ -288,8 +168,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 						<generateGitPropertiesFilename>src/main/resources/git.properties</generateGitPropertiesFilename>
 					</configuration>
 				</plugin>
-
-				<!-- Support our own packaging plugin -->
+				<!-- Support our own plugin -->
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
@@ -305,8 +184,7 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 						<mainClass>${start-class}</mainClass>
 					</configuration>
 				</plugin>
-
-				<!-- Support shade packaging -->
+				<!-- Support shade packaging (if the user does not want to use our plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
@@ -366,40 +244,45 @@ NOTE: If you are editing a local checkout of this file, be sure to modify
 			</plugins>
 		</pluginManagement>
 	</build>
-
 	<profiles>
 		<profile>
-			<id>spring-deploy</id>
-			<distributionManagement>
-				<downloadUrl>http://www.springsource.com/download/community</downloadUrl>
-				<site>
-					<id>spring-docs</id>
-					<url>scp://static.springframework.org/var/www/domains/springframework.org/static/htdocs/spring-boot/docs/${project.version}</url>
-				</site>
+			<id>spring-snapshot-build</id>
+			<repositories>
 				<repository>
-					<id>spring-repo-release</id>
-					<name>Spring Release Repository</name>
-					<url>http://repo.springsource.org/libs-release-local</url>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
 				</repository>
-				<snapshotRepository>
-					<id>spring-repo-snapshot</id>
-					<name>Spring Snapshot Repository</name>
-					<url>http://repo.springsource.org/libs-snapshot-local</url>
-				</snapshotRepository>
-			</distributionManagement>
+				<repository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://maven.springframework.org/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>http://maven.springframework.org/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>http://maven.springframework.org/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
 		</profile>
-        <profile>
-			<id>milestone</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-            <distributionManagement>
-              <repository>
-                <id>spring-repo-milestone</id>
-                <name>Spring Milestone Repository</name>
-                <url>http://repo.springsource.org/libs-milestone-local</url>
-              </repository>
-            </distributionManagement>
-        </profile>
 	</profiles>
 </project>
