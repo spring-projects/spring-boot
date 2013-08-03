@@ -20,6 +20,6 @@ import org.springframework.boot.sample.data.jpa.domain.Rating;
 
 public interface ReviewsSummary {
 
-	public long getNumberOfReviewsWithRating(Rating rating);
+	long getNumberOfReviewsWithRating(Rating rating);
 
 }
