@@ -47,7 +47,8 @@ if [ ! -f "${JAVA_HOME}/bin/java" ]; then
 fi
 
 if [ "$SPRING_HOME" == "" ]; then
-    SPRING_HOME=`cd "$(dirname $0)"/.. && pwd`
+    script=`readlink $0`
+    SPRING_HOME=`cd "$(dirname $script)"/.. && pwd`
 else
     if [ ! -d "${SPRING_HOME}" ]; then
         echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
