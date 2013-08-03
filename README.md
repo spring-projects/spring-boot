@@ -173,18 +173,31 @@ Java samples are available in [spring-boot-samples](spring-boot-samples/#) and s
 be build with maven and run use `java -jar target/<sample>.jar`. The following java 
 samples are provided:
 
-* [spring-boot-sample-simple](spring-boot-sample-simple) - A simple command line application
-* [spring-boot-sample-tomcat](spring-boot-sample-tomcat) - Embedded Tomcat
-* [spring-boot-sample-jetty](spring-boot-sample-jetty) - Embedded Jetty
-* [spring-boot-sample-actuator](spring-boot-sample-actuator) - Simple REST service with production features
-* [spring-boot-sample-actuator-ui](spring-boot-sample-actuator-ui) - A web UI example with production features
-* [spring-boot-sample-web-ui](spring-boot-sample-web-ui) - A thymeleaf web application
-* [spring-boot-sample-web-static](spring-boot-sample-web-static) - A web application service static files
-* [spring-sample-batch](spring-sample-batch) - Define and run a Batch job in a few lines of code
-* [spring-sample-data-jpa](spring-sample-data-jpa) - Spring Data JPA + Hibernate + HSQLDB
-* [spring-boot-sample-integration](spring-boot-sample-integration) - A spring integration application
-* [spring-boot-sample-profile](spring-boot-sample-profile) - example showing Spring's `@profile` support
-* [spring-boot-sample-traditional](spring-boot-sample-traditional) - shows more traditional WAR packaging
+* [spring-boot-sample-simple](spring-boot-samples/spring-boot-sample-simple) -
+  A simple command line application
+* [spring-boot-sample-tomcat](spring-boot-samples/spring-boot-sample-tomcat) -
+  Embedded Tomcat
+* [spring-boot-sample-jetty](spring-boot-samples/spring-boot-sample-jetty) -
+  Embedded Jetty
+* [spring-boot-sample-actuator](spring-boot-samples/spring-boot-sample-actuator) -
+  Simple REST service with production features
+* [spring-boot-sample-actuator-ui](spring-boot-samples/spring-boot-sample-actuator-ui) -
+  A web UI example with production features
+* [spring-boot-sample-web-ui](spring-boot-samples/spring-boot-sample-web-ui) -
+  A thymeleaf web application
+* [spring-boot-sample-web-static](spring-boot-samples/spring-boot-sample-web-static) -
+  A web application service static files
+* [spring-sample-batch](spring-boot-samples/spring-sample-batch) -
+  Define and run a Batch job in a few lines of code
+* [spring-sample-data-jpa](spring-boot-samples/spring-sample-data-jpa) -
+  Spring Data JPA + Hibernate + HSQLDB
+* [spring-boot-sample-integration](spring-boot-samples/spring-boot-sample-integration) -
+  A spring integration application
+* [spring-boot-sample-profile](spring-boot-samples/spring-boot-sample-profile) -
+  example showing Spring's `@profile` support
+* [spring-boot-sample-traditional](spring-boot-samples/spring-boot-sample-traditional) -
+  shows more traditional WAR packaging
   (but also executable using `java -jar`)
-* [spring-boot-sample-xml](spring-boot-sample-xml) - Example show how Spring Boot can be mixed with traditional 
-  XML configuration (we generally recommend using Java `@Configuration` whenever possible)
+* [spring-boot-sample-xml](spring-boot-samples/spring-boot-sample-xml) -
+  Example show how Spring Boot can be mixed with traditional XML configuration (we
+  generally recommend using Java `@Configuration` whenever possible)
