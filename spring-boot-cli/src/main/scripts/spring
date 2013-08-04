@@ -4,39 +4,38 @@
 cygwin=false;
 darwin=false;
 case "`uname`" in
-    CYGWIN*)
-        cygwin=true
-        ;;
+	CYGWIN*)
+		cygwin=true
+		;;
 
-    Darwin*)
-        darwin=true
-        ;;
+	Darwin*)
+		darwin=true
+		;;
 esac
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched.
 if $cygwin ; then
-    [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+	[ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
 fi
-
 
 # Attempt to find JAVA_HOME if not already set
 if [ -z "${JAVA_HOME}" ]; then
-    if $darwin ; then
-        [ -z "$JAVA_HOME" -a -f "/usr/libexec/java_home" ] && export JAVA_HOME=`/usr/libexec/java_home`
-        [ -z "$JAVA_HOME" -a -d "/Library/Java/Home" ] && export JAVA_HOME="/Library/Java/Home"
-        [ -z "$JAVA_HOME" -a -d "/System/Library/Frameworks/JavaVM.framework/Home" ] && export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
-    else
-        javaExecutable="`which javac`"
-        [ -z "$javaExecutable" -o "`expr \"$javaExecutable\" : '\([^ ]*\)'`" = "no" ] && die "JAVA_HOME not set and cannot find javac to deduce location, please set JAVA_HOME."
-        # readlink(1) is not available as standard on Solaris 10.
-        readLink=`which readlink`
-        [ `expr "$readLink" : '\([^ ]*\)'` = "no" ] && die "JAVA_HOME not set and readlink not available, please set JAVA_HOME."
-        javaExecutable="`readlink -f \"$javaExecutable\"`"
-        javaHome="`dirname \"$javaExecutable\"`"
-        javaHome=`expr "$javaHome" : '\(.*\)/bin'`
-        JAVA_HOME="$javaHome"
-        export JAVA_HOME
-    fi
+	if $darwin ; then
+		[ -z "$JAVA_HOME" -a -f "/usr/libexec/java_home" ] && export JAVA_HOME=`/usr/libexec/java_home`
+		[ -z "$JAVA_HOME" -a -d "/Library/Java/Home" ] && export JAVA_HOME="/Library/Java/Home"
+		[ -z "$JAVA_HOME" -a -d "/System/Library/Frameworks/JavaVM.framework/Home" ] && export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
+	else
+		javaExecutable="`which javac`"
+		[ -z "$javaExecutable" -o "`expr \"$javaExecutable\" : '\([^ ]*\)'`" = "no" ] && die "JAVA_HOME not set and cannot find javac to deduce location, please set JAVA_HOME."
+		# readlink(1) is not available as standard on Solaris 10.
+		readLink=`which readlink`
+		[ `expr "$readLink" : '\([^ ]*\)'` = "no" ] && die "JAVA_HOME not set and readlink not available, please set JAVA_HOME."
+		javaExecutable="`readlink -f \"$javaExecutable\"`"
+		javaHome="`dirname \"$javaExecutable\"`"
+		javaHome=`expr "$javaHome" : '\(.*\)/bin'`
+		JAVA_HOME="$javaHome"
+		export JAVA_HOME
+	fi
 fi
 
 # Sanity check that we have java
@@ -59,13 +58,13 @@ fi
 PRG="$0"
 # Need this for relative symlinks.
 while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '.*-> \(.*\)$'`
-    if expr "$link" : '/.*' > /dev/null; then
-        PRG="$link"
-    else
-        PRG=`dirname "$PRG"`"/$link"
-    fi
+	ls=`ls -ld "$PRG"`
+	link=`expr "$ls" : '.*-> \(.*\)$'`
+	if expr "$link" : '/.*' > /dev/null; then
+		PRG="$link"
+	else
+		PRG=`dirname "$PRG"`"/$link"
+	fi
 done
 SAVED="`pwd`"
 cd "`dirname \"$PRG\"`/../" >&-
@@ -73,24 +72,16 @@ SPRING_HOME="`pwd -P`"
 cd "$SAVED" >&-
 
 if [ ! -d "${SPRING_HOME}" ]; then
-    echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
-    echo "Please rectify and restart."
-    exit 2
+	echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
+	echo "Please rectify and restart."
+	exit 2
 fi
 
-for f in "${SPRING_HOME}"/classes "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
-    if [ -f $f -o -d $f ]; then
-    	if [ "${CLASSPATH}" == "" ]; then
-			CLASSPATH="${f}"
-		else
-   			CLASSPATH="${CLASSPATH}":"${f}"
-		fi
-	fi
-done
+CLASSPATH="${SPRING_HOME}/lib/*"
 
 if $cygwin; then
-    SPRING_HOME=`cygpath --path --mixed "$SPRING_HOME"`
-    CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
+	SPRING_HOME=`cygpath --path --mixed "$SPRING_HOME"`
+	CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-"${JAVA_HOME}/bin/java ${JAVA_OPTS}" -cp "$CLASSPATH" org.springframework.boot.cli.SpringCli $*
+"${JAVA_HOME}/bin/java" ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.boot.cli.SpringCli $*
