@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # OS specific support (must be 'true' or 'false').
 cygwin=false;
@@ -7,14 +7,21 @@ case "`uname`" in
     CYGWIN*)
         cygwin=true
         ;;
-        
+
     Darwin*)
         darwin=true
         ;;
 esac
 
+# For Cygwin, ensure paths are in UNIX format before anything is touched.
+if $cygwin ; then
+    [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+fi
+
+
+# Attempt to find JAVA_HOME if not already set
 if [ -z "${JAVA_HOME}" ]; then
-    if $darwin ; then 
+    if $darwin ; then
         [ -z "$JAVA_HOME" -a -f "/usr/libexec/java_home" ] && export JAVA_HOME=`/usr/libexec/java_home`
         [ -z "$JAVA_HOME" -a -d "/Library/Java/Home" ] && export JAVA_HOME="/Library/Java/Home"
         [ -z "$JAVA_HOME" -a -d "/System/Library/Frameworks/JavaVM.framework/Home" ] && export JAVA_HOME="/System/Library/Frameworks/JavaVM.framework/Home"
@@ -32,6 +39,7 @@ if [ -z "${JAVA_HOME}" ]; then
     fi
 fi
 
+# Sanity check that we have java
 if [ ! -f "${JAVA_HOME}/bin/java" ]; then
 	echo ""
 	echo "======================================================================================================"
@@ -46,25 +54,31 @@ if [ ! -f "${JAVA_HOME}/bin/java" ]; then
 	exit 1
 fi
 
-if [ "$SPRING_HOME" == "" ]; then
-    script=`readlink $0`
-    SPRING_HOME=`cd "$(dirname $script)"/.. && pwd`
-else
-    if [ ! -d "${SPRING_HOME}" ]; then
-        echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
-	    echo "Please rectify and restart."
-        exit 2
+# Attempt to find SPRING_HOME if not already set
+# Resolve links: $0 may be a link
+PRG="$0"
+# Need this for relative symlinks.
+while [ -h "$PRG" ] ; do
+    ls=`ls -ld "$PRG"`
+    link=`expr "$ls" : '.*-> \(.*\)$'`
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=`dirname "$PRG"`"/$link"
     fi
-    SPRING_HOME=`cd "${SPRING_HOME}" && pwd`
-fi
-SPRING_BIN=$(dirname $0)
+done
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/../" >&-
+SPRING_HOME="`pwd -P`"
+cd "$SAVED" >&-
 
-TARGETDIR=target/classes
-if [ -f build.gradle ]; then
-    TARGETDIR=build/classes/main
+if [ ! -d "${SPRING_HOME}" ]; then
+    echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
+    echo "Please rectify and restart."
+    exit 2
 fi
 
-for f in . "${TARGETDIR}" "${SPRING_HOME}"/classes "${SPRING_BIN}" "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
+for f in "${SPRING_HOME}"/classes "${SPRING_HOME}"/*.jar "${SPRING_HOME}"/lib/*.jar; do
     if [ -f $f -o -d $f ]; then
     	if [ "${CLASSPATH}" == "" ]; then
 			CLASSPATH="${f}"
@@ -75,7 +89,8 @@ for f in . "${TARGETDIR}" "${SPRING_HOME}"/classes "${SPRING_BIN}" "${SPRING_HOM
 done
 
 if $cygwin; then
+    SPRING_HOME=`cygpath --path --mixed "$SPRING_HOME"`
     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
 fi
 
-${JAVA_HOME}/bin/java ${JAVA_OPTS} -cp "$CLASSPATH" org.springframework.boot.cli.SpringCli $*
+"${JAVA_HOME}/bin/java ${JAVA_OPTS}" -cp "$CLASSPATH" org.springframework.boot.cli.SpringCli $*
