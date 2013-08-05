@@ -18,19 +18,22 @@ package org.springframework.boot.sample.data.jpa;
 import org.junit.runner.RunWith;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.initializer.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
- * Base class for integration tests. Mimics the behavior of
+ * Base class for integration tests. Mimics the behaviour of
  * {@link SpringApplication#run(String...)}.
  * 
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = SampleDataJpaApplication.class, initializers = ConfigFileApplicationContextInitializer.class)
+@ContextConfiguration(classes = SampleDataJpaApplication.class, initializers = {
+		ConfigFileApplicationContextInitializer.class,
+		LoggingApplicationContextInitializer.class })
 public abstract class AbstractIntegrationTests {
 
 }
