@@ -1,8 +1,9 @@
 <assembly>
-	<id>dist</id>
+	<id>bin</id>
 	<formats>
 		<format>zip</format>
 		<format>dir</format>
+		<format>tar.gz</format>
 	</formats>
 	<baseDirectory>spring-${project.version}</baseDirectory>
 	<includeBaseDirectory>true</includeBaseDirectory>
