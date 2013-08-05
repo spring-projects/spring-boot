@@ -31,13 +31,22 @@ begin:
 
 	$ java -version
 	
-Spring Boot CLI can be downloaded from our Maven repository, and then you can use a shell `alias`:
+If you are on a Mac and using [homebrew](http://brew.sh/), all you must do to install the Spring Boot CLI is:
+
+    $ brew install spring-boot-cli
+    
+It will install `/usr/local/bin/spring`. Now you can jump right to a [quick start example](#quick-start-groovy-example).
+
+> **Note:** If you don't see the formula, you're installation of brew might be out-of-date. Just execute `brew update` and try again
+	
+An alternative way to install Spring Boot CLI is to downloaded it from our Maven repository, and then you can use a shell `alias`:
 
     $ wget http://maven.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1.jar
     $ alias spring="java -jar `pwd`/spring-boot-cli-0.5.0.M1.jar"
 
 Complete installation including a downloadable `.zip` with a shell script TBD.
 
+<a name="quick-start-groovy-example"></a>
 ## Quick Start Script Example
 Here's a really simple web application. Create a file called `app.groovy`:
 
