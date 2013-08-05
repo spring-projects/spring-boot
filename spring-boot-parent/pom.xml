@@ -15,6 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.0.5</maven.version>
+		<spring-snapshot-build-profile-active>false</spring-snapshot-build-profile-active>
 	</properties>
 	<developers>
 		<developer>
@@ -33,7 +34,7 @@
 	</scm>
 	<dependencyManagement>
 		<dependencies>
-			<!-- Additional Dependencies the consumers of spring-boot-dependencies 
+			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
@@ -293,13 +294,16 @@
 	</build>
 	<profiles>
 		<profile>
-			<!-- Allow snapshots and milestones when building locally, this profile 
+			<!-- Allow snapshots and milestones when building locally, this profile
 				should not be enabled during release. -->
 			<id>spring-snapshot-build</id>
 			<activation>
 				<!-- FIXME disable this during release -->
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<properties>
+				<spring-snapshot-build-profile-active>true</spring-snapshot-build-profile-active>
+			</properties>
 			<repositories>
 				<repository>
 					<id>spring-milestones</id>

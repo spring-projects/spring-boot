@@ -277,6 +277,9 @@
 	<profiles>
 		<profile>
 			<id>spring-snapshot-build</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<repositories>
 				<repository>
 					<id>spring-milestones</id>
