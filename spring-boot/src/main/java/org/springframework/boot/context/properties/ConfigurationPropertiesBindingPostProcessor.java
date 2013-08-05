@@ -148,7 +148,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
 			if (this.validator == null
 					&& ClassUtils.isPresent(VALIDATOR_CLASS, this.beanClassLoader)) {
-				LocalValidatorFactoryBean validatorToUse = new LocalValidatorFactoryBean();
+				LocalValidatorFactoryBean validatorToUse = (LocalValidatorFactoryBean) ClassUtils
+						.forName(LocalValidatorFactoryBean.class.getName(),
+								this.beanClassLoader).newInstance();
 				validatorToUse.setApplicationContext(this.applicationContext);
 				validatorToUse.afterPropertiesSet();
 				this.validator = validatorToUse;
