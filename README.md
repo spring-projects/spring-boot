@@ -158,18 +158,18 @@ _See [spring-boot-actuator/README.md](spring-boot-actuator/README.md)._
 Spring Boot Loader provides the secret sauce that allows you to build a single jar file 
 that can be launched using `java -jar`. Generally you will not need to use 
 `spring-boot-loader`  directly but instead work with the 
-[Gradle](spring-boot-gradle-plugin/README.md) or 
-[Maven](spring-boot-maven-plugin/README.md) plugin.
+[Gradle](spring-boot-tools/spring-boot-gradle-plugin/README.md) or 
+[Maven](spring-boot-tools/spring-boot-maven-plugin/README.md) plugin.
 
-_See [spring-boot-loader/README.md](spring-boot-loader/README.md)._
+_See [spring-boot-loader/README.md](spring-boot-tools/spring-boot-loader/README.md)._
 
 
 ## Samples
 Groovy samples for use with the command line application are available in
-[spring-boot-cli/samples](spring-boot-cli/samples/#). To run the CLI samples type
+[spring-boot-cli/samples](spring-boot-cli/samples). To run the CLI samples type
 `spring run <sample>.groovy` from samples directory.
 
-Java samples are available in [spring-boot-samples](spring-boot-samples/#) and should
+Java samples are available in [spring-boot-samples](spring-boot-samples) and should
 be build with maven and run use `java -jar target/<sample>.jar`. The following java 
 samples are provided:
 
