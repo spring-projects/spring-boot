@@ -27,6 +27,10 @@ public abstract class Log {
 		System.out.println(message);
 	}
 
+	public static void infoPrint(String message) {
+		System.out.print(message);
+	}
+
 	public static void error(String message) {
 		System.err.println(message);
 	}
