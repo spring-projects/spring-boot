@@ -17,12 +17,13 @@
 	<packaging>pom</packaging>
 	<properties>
 		<spring.boot.version>@{project.version}</spring.boot.version>
+        <java.version>1.6</java.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-strap</artifactId>
+				<artifactId>spring-boot</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 			<dependency>
@@ -77,6 +78,29 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<!-- Generally Useful Test Dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<!-- Turn on filtering by default for application properties -->
 		<resources>
