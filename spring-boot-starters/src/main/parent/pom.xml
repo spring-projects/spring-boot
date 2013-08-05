@@ -17,7 +17,7 @@
 	<packaging>pom</packaging>
 	<properties>
 		<spring.boot.version>@{project.version}</spring.boot.version>
-        <java.version>1.6</java.version>
+		<java.version>1.6</java.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -99,6 +99,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	<build>
