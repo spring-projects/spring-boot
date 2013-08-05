@@ -18,15 +18,34 @@ package org.springframework.boot.cli;
 
 import java.io.File;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.springframework.boot.cli.command.CleanCommand;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * @author Dave Syer
  */
 public class GrapesCleaner {
 
-	// FIXME get the version
-	private static final String VERSION = "0.5.0.BUILD-SNAPSHOT";
+	private static final String VERSION;
+	static {
+		try {
+			File pom = new File("pom.xml");
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(pom);
+			Element parent = (Element) document.getDocumentElement()
+					.getElementsByTagName("parent").item(0);
+			VERSION = parent.getElementsByTagName("version").item(0).getFirstChild()
+					.getTextContent();
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
 
 	public static void cleanIfNecessary() throws Exception {
 		File installedJar = new File(getMavenRepository(), String.format(
