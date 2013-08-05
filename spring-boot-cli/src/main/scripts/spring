@@ -54,22 +54,24 @@ if [ ! -f "${JAVA_HOME}/bin/java" ]; then
 fi
 
 # Attempt to find SPRING_HOME if not already set
-# Resolve links: $0 may be a link
-PRG="$0"
-# Need this for relative symlinks.
-while [ -h "$PRG" ] ; do
-	ls=`ls -ld "$PRG"`
-	link=`expr "$ls" : '.*-> \(.*\)$'`
-	if expr "$link" : '/.*' > /dev/null; then
-		PRG="$link"
-	else
-		PRG=`dirname "$PRG"`"/$link"
-	fi
-done
-SAVED="`pwd`"
-cd "`dirname \"$PRG\"`/../" >&-
-SPRING_HOME="`pwd -P`"
-cd "$SAVED" >&-
+if [ -z "${SPRING_HOME}" ]; then
+    # Resolve links: $0 may be a link
+    PRG="$0"
+    # Need this for relative symlinks.
+    while [ -h "$PRG" ] ; do
+	    ls=`ls -ld "$PRG"`
+	    link=`expr "$ls" : '.*-> \(.*\)$'`
+	    if expr "$link" : '/.*' > /dev/null; then
+		    PRG="$link"
+	    else
+		    PRG=`dirname "$PRG"`"/$link"
+	    fi
+    done
+    SAVED="`pwd`"
+    cd "`dirname \"$PRG\"`/../" >&-
+    SPRING_HOME="`pwd -P`"
+    cd "$SAVED" >&-
+fi
 
 if [ ! -d "${SPRING_HOME}" ]; then
 	echo "Not a directory: SPRING_HOME=${SPRING_HOME}"
