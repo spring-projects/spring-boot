@@ -16,48 +16,24 @@
 
 package org.springframework.boot.sample.batch;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.sample.batch.SampleBatchApplication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SampleBatchApplicationTests {
 
-	private PrintStream savedOutput;
-	private PrintStream savedErr;
-	private ByteArrayOutputStream output;
-
-	@Before
-	public void init() {
-		this.savedOutput = System.out;
-		this.savedErr = System.err;
-		this.output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(this.output));
-		System.setErr(new PrintStream(this.output));
-	}
-
-	@After
-	public void after() {
-		System.setOut(this.savedOutput);
-		System.setErr(this.savedErr);
-	}
-
-	private String getOutput() {
-		return this.output.toString();
-	}
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
 
 	@Test
 	public void testDefaultSettings() throws Exception {
 		assertEquals(0, SpringApplication.exit(SpringApplication
 				.run(SampleBatchApplication.class)));
-		String output = getOutput();
+		String output = this.outputCapture.toString();
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
 	}

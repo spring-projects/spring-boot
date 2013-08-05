@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -26,9 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.ivy.util.FileUtil;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.RunCommand;
 
 import static org.junit.Assert.assertEquals;
@@ -43,37 +42,14 @@ public class SampleIntegrationTests {
 
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
-		GrapesCleaner.cleanIfNecessary();
+		// GrapesCleaner.cleanIfNecessary();
 		// System.setProperty("ivy.message.logger.level", "3");
 	}
 
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
+
 	private RunCommand command;
-
-	private PrintStream savedOutput;
-
-	private ByteArrayOutputStream output;
-
-	private PrintStream savedErr;
-
-	@Before
-	public void init() {
-		this.savedOutput = System.out;
-		this.savedErr = System.err;
-		this.output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(this.output));
-		System.setErr(new PrintStream(this.output));
-	}
-
-	@After
-	public void clear() {
-		System.setOut(this.savedOutput);
-		System.setErr(this.savedErr);
-		System.out.println(getOutput());
-	}
-
-	private String getOutput() {
-		return this.output.toString();
-	}
 
 	private void start(final String... sample) throws Exception {
 		Future<RunCommand> future = Executors.newSingleThreadExecutor().submit(
@@ -98,21 +74,22 @@ public class SampleIntegrationTests {
 	@Test
 	public void appSample() throws Exception {
 		start("samples/app.groovy");
-		String output = getOutput();
+		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Hello World"));
 	}
 
 	@Test
 	public void templateSample() throws Exception {
 		start("samples/template.groovy");
-		String output = getOutput();
+		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Hello World!"));
 	}
 
 	@Test
 	public void jobSample() throws Exception {
 		start("samples/job.groovy", "foo=bar");
-		String output = getOutput();
+		String output = this.outputCapture.getOutputAndRelease();
+		System.out.println(output);
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
 	}
@@ -120,11 +97,11 @@ public class SampleIntegrationTests {
 	@Test
 	public void reactorSample() throws Exception {
 		start("samples/reactor.groovy", "Phil");
-		String output = getOutput();
+		String output = this.outputCapture.getOutputAndRelease();
 		int count = 0;
 		while (!output.contains("Hello Phil") && count++ < 5) {
 			Thread.sleep(200);
-			output = getOutput();
+			output = this.outputCapture.getOutputAndRelease();
 		}
 		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
 	}
@@ -132,7 +109,7 @@ public class SampleIntegrationTests {
 	@Test
 	public void jobWebSample() throws Exception {
 		start("samples/job.groovy", "samples/web.groovy", "foo=bar");
-		String output = getOutput();
+		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
 		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
@@ -170,14 +147,14 @@ public class SampleIntegrationTests {
 	@Test
 	public void integrationSample() throws Exception {
 		start("samples/integration.groovy");
-		String output = getOutput();
+		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Hello, World"));
 	}
 
 	@Test
 	public void xmlSample() throws Exception {
 		start("samples/app.xml", "samples/runner.groovy");
-		String output = getOutput();
+		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Hello World"));
 	}
 

@@ -16,14 +16,11 @@
 
 package org.springframework.boot;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
@@ -39,22 +36,10 @@ import static org.junit.Assert.assertTrue;
 @Configuration
 public class SimpleMainTests {
 
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
+
 	private static final String SPRING_STARTUP = "root of context hierarchy";
-	private PrintStream savedOutput;
-	private ByteArrayOutputStream output;
-
-	@Before
-	public void open() {
-		this.savedOutput = System.out;
-		this.output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(this.output));
-	}
-
-	@After
-	public void after() {
-		System.setOut(this.savedOutput);
-		System.out.println(getOutput());
-	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void emptyApplicationContext() throws Exception {
@@ -99,7 +84,7 @@ public class SimpleMainTests {
 	}
 
 	private String getOutput() {
-		return this.output.toString();
+		return this.outputCapture.toString();
 	}
 
 }

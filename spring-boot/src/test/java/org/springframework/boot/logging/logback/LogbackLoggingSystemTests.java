@@ -16,15 +16,12 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.logging.logback.LogbackLoggingSystem;
+import org.springframework.boot.OutputCapture;
 
 import static org.junit.Assert.assertTrue;
 
@@ -35,30 +32,17 @@ import static org.junit.Assert.assertTrue;
  */
 public class LogbackLoggingSystemTests {
 
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
+
 	private LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(getClass()
 			.getClassLoader());
-
-	private PrintStream savedOutput;
-
-	private ByteArrayOutputStream output;
-
-	@Before
-	public void init() {
-		this.savedOutput = System.out;
-		this.output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(this.output));
-	}
 
 	@After
 	public void clear() {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
-		System.setOut(this.savedOutput);
-	}
-
-	private String getOutput() {
-		return this.output.toString();
 	}
 
 	@Test
@@ -66,7 +50,7 @@ public class LogbackLoggingSystemTests {
 		this.loggingSystem.initialize("classpath:logback-nondefault.xml");
 		Log logger = LogFactory.getLog(LogbackLoggingSystemTests.class);
 		logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.startsWith("/tmp/spring.log"));
 	}

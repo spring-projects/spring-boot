@@ -16,30 +16,20 @@
 
 package org.springframework.boot.sample.profile;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.sample.profile.SampleProfileApplication;
+import org.springframework.boot.OutputCapture;
 
 import static org.junit.Assert.assertTrue;
 
 public class SampleProfileApplicationTests {
 
-	private static PrintStream savedOutput;
-	private static ByteArrayOutputStream output;
-	private String profiles;
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
 
-	@BeforeClass
-	public static void init() {
-		savedOutput = System.out;
-		output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(output));
-	}
+	private String profiles;
 
 	@Before
 	public void before() {
@@ -56,19 +46,10 @@ public class SampleProfileApplicationTests {
 		}
 	}
 
-	@AfterClass
-	public static void clear() {
-		System.setOut(savedOutput);
-	}
-
-	private static String getOutput() {
-		return output.toString();
-	}
-
 	@Test
 	public void testDefaultProfile() throws Exception {
 		SampleProfileApplication.main(new String[0]);
-		String output = getOutput();
+		String output = this.outputCapture.toString();
 		assertTrue("Wrong output: " + output, output.contains("Hello Phil"));
 	}
 
@@ -76,7 +57,7 @@ public class SampleProfileApplicationTests {
 	public void testGoodbyeProfile() throws Exception {
 		System.setProperty("spring.profiles.active", "goodbye");
 		SampleProfileApplication.main(new String[0]);
-		String output = getOutput();
+		String output = this.outputCapture.toString();
 		assertTrue("Wrong output: " + output, output.contains("Goodbye Everyone"));
 	}
 
@@ -84,7 +65,7 @@ public class SampleProfileApplicationTests {
 	public void testGoodbyeProfileFromCommandline() throws Exception {
 		SampleProfileApplication
 				.main(new String[] { "--spring.profiles.active=goodbye" });
-		String output = getOutput();
+		String output = this.outputCapture.toString();
 		assertTrue("Wrong output: " + output, output.contains("Goodbye Everyone"));
 	}
 
