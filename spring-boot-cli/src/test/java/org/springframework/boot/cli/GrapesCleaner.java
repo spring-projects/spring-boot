@@ -30,13 +30,10 @@ public class GrapesCleaner {
 
 	public static void cleanIfNecessary() throws Exception {
 		File installedJar = new File(getMavenRepository(), String.format(
-				"org/springframework/boot/spring-boot-strap/%s/spring-boot-strap-%s.jar",
-				VERSION, VERSION));
-		File grapesJar = new File(
-				getGrapesCache(),
-				String.format(
-						"org.springframework.boot/spring-boot-strap/jars/spring-boot-strap-%s.jar",
-						VERSION));
+				"org/springframework/boot/spring-boot/%s/spring-boot-%s.jar", VERSION,
+				VERSION));
+		File grapesJar = new File(getGrapesCache(), String.format(
+				"org.springframework.boot/spring-boot/jars/spring-boot-%s.jar", VERSION));
 		if (!VERSION.contains("SNAPSHOT") || installedJar.exists() && grapesJar.exists()
 				&& installedJar.lastModified() <= grapesJar.lastModified()) {
 			return;
