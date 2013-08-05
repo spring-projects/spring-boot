@@ -19,6 +19,11 @@ package org.springframework.boot.cli.compiler;
 import groovy.grape.GrapeEngine;
 import groovy.grape.GrapeIvy;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.ivy.Ivy;
@@ -27,7 +32,6 @@ import org.apache.ivy.core.event.IvyEvent;
 import org.apache.ivy.core.event.IvyListener;
 import org.apache.ivy.core.event.resolve.EndResolveEvent;
 import org.apache.ivy.core.module.descriptor.Artifact;
-import org.apache.ivy.core.module.id.ArtifactId;
 import org.apache.ivy.core.module.id.ModuleId;
 import org.apache.ivy.core.settings.IvySettings;
 import org.apache.ivy.plugins.resolver.ChainResolver;
@@ -51,41 +55,16 @@ class GrapeEngineCustomizer {
 		this.engine = (GrapeIvy) engine;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void customize() {
 		Ivy ivy = this.engine.getIvyInstance();
 		IvySettings settings = this.engine.getSettings();
+		addDownloadingLogSupport(ivy);
+		setupResolver(settings);
+	}
 
+	private void addDownloadingLogSupport(Ivy ivy) {
 		final DownloadingLog downloadingLog = new DownloadingLog();
-
 		ivy.getLoggerEngine().pushLogger(downloadingLog);
-		ChainResolver resolver = (ChainResolver) settings.getResolver("downloadGrapes");
-
-		// Add an early resolver for spring snapshots that doesn't try to locate
-		// anything non-spring
-		ChainResolver earlySpringResolver = new ChainResolver() {
-			@Override
-			public ArtifactOrigin locate(Artifact artifact) {
-				try {
-					ArtifactId artifactId = artifact.getId().getArtifactId();
-					ModuleId moduleId = artifactId.getModuleId();
-					if (moduleId.getOrganisation().startsWith("org.springframework")) {
-						return super.locate(artifact);
-					}
-				}
-				catch (Exception ex) {
-					return null;
-				}
-				return null;
-			}
-		};
-		earlySpringResolver.setSettings(settings);
-		earlySpringResolver.setReturnFirst(true);
-		addSpringResolvers(earlySpringResolver);
-		resolver.getResolvers().add(0, earlySpringResolver);
-
-		// Add spring resolvers again, but this time without any filtering
-		addSpringResolvers(resolver);
 		ivy.getEventManager().addIvyListener(new IvyListener() {
 			@Override
 			public void progress(IvyEvent event) {
@@ -96,10 +75,23 @@ class GrapeEngineCustomizer {
 		});
 	}
 
-	private void addSpringResolvers(ChainResolver chain) {
-		chain.add(newResolver("spring-snapshot", "http://repo.springsource.org/snapshot"));
-		chain.add(newResolver("spring-milestone",
+	@SuppressWarnings("unchecked")
+	private void setupResolver(IvySettings settings) {
+		ChainResolver grapesResolver = (ChainResolver) settings
+				.getResolver("downloadGrapes");
+
+		SpringBootResolver springBootResolver = new SpringBootResolver(
+				grapesResolver.getResolvers());
+		springBootResolver.setSettings(settings);
+		springBootResolver.setName("springBoot");
+
+		springBootResolver.addSpringSnapshotResolver(newResolver("spring-snapshot",
+				"http://repo.springsource.org/snapshot"));
+		springBootResolver.addSpringSnapshotResolver(newResolver("spring-milestone",
 				"http://repo.springsource.org/milestone"));
+
+		grapesResolver.getResolvers().clear();
+		grapesResolver.getResolvers().add(springBootResolver);
 	}
 
 	private DependencyResolver newResolver(String name, String root) {
@@ -109,6 +101,95 @@ class GrapeEngineCustomizer {
 		resolver.setM2compatible(true);
 		resolver.setSettings(this.engine.getSettings());
 		return resolver;
+	}
+
+	/**
+	 * {@link DependencyResolver} that is optimized for Spring Boot.
+	 */
+	private static class SpringBootResolver extends ChainResolver {
+
+		private static final Object SPRING_BOOT_GROUP_ID = "org.springframework.boot";
+
+		private static final String STARTER_PREFIX = "spring-boot-starter";
+
+		private static final Object SOURCE_TYPE = "source";
+
+		private static final Object JAVADOC_TYPE = "javadoc";
+
+		private static final Set<String> POM_ONLY_DEPENDENCIES;
+		static {
+			Set<String> dependencies = new HashSet<String>();
+			dependencies.add("spring-boot-dependencies");
+			dependencies.add("spring-boot-parent");
+			dependencies.add("spring-boot-starters");
+			POM_ONLY_DEPENDENCIES = Collections.unmodifiableSet(dependencies);
+		}
+
+		private final List<DependencyResolver> springSnapshotResolvers = new ArrayList<DependencyResolver>();
+
+		public SpringBootResolver(List<DependencyResolver> resolvers) {
+			for (DependencyResolver resolver : resolvers) {
+				add(resolver);
+			}
+		}
+
+		public void addSpringSnapshotResolver(DependencyResolver resolver) {
+			add(resolver);
+			this.springSnapshotResolvers.add(resolver);
+		}
+
+		@Override
+		public ArtifactOrigin locate(Artifact artifact) {
+			if (isUnresolvable(artifact)) {
+				return null;
+			}
+			if (isSpringSnapshot(artifact)) {
+				for (DependencyResolver resolver : this.springSnapshotResolvers) {
+					ArtifactOrigin origin = resolver.locate(artifact);
+					if (origin != null) {
+						return origin;
+					}
+				}
+			}
+			return super.locate(artifact);
+		}
+
+		private boolean isUnresolvable(Artifact artifact) {
+			try {
+				ModuleId moduleId = artifact.getId().getArtifactId().getModuleId();
+				if (SPRING_BOOT_GROUP_ID.equals(moduleId.getOrganisation())) {
+					// Skip any POM only deps if they are not pom ext
+					if (POM_ONLY_DEPENDENCIES.contains(moduleId.getName())
+							&& !("pom".equalsIgnoreCase(artifact.getId().getExt()))) {
+						return true;
+					}
+
+					// Skip starter javadoc and source
+					if (moduleId.getName().startsWith(STARTER_PREFIX)
+							&& (SOURCE_TYPE.equals(artifact.getType()) || JAVADOC_TYPE
+									.equals(artifact.getType()))) {
+						return true;
+					}
+				}
+				return false;
+			}
+			catch (Exception ex) {
+				return false;
+			}
+		}
+
+		private boolean isSpringSnapshot(Artifact artifact) {
+			try {
+				ModuleId moduleId = artifact.getId().getArtifactId().getModuleId();
+				String revision = artifact.getModuleRevisionId().getRevision();
+				return (SPRING_BOOT_GROUP_ID.equals(moduleId.getOrganisation()) && (revision
+						.endsWith("SNAPSHOT") || revision.contains("M")));
+			}
+			catch (Exception ex) {
+				return false;
+			}
+		}
+
 	}
 
 	/**
@@ -147,7 +228,8 @@ class GrapeEngineCustomizer {
 		}
 
 		private void logDownloadingMessage() {
-			if (!this.finished && System.currentTimeMillis() - this.startTime > INITIAL_DELAY) {
+			if (!this.finished
+					&& System.currentTimeMillis() - this.startTime > INITIAL_DELAY) {
 				if (!this.started) {
 					this.started = true;
 					Log.infoPrint("Downloading dependencies..");
