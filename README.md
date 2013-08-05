@@ -17,9 +17,29 @@ Our primary goals are:
   (e.g. embedded servers, security, metrics, health checks, externalized configuration)
 * Absolutely no code generation and no requirement for XML configuration
 
+## Installing the CLI
+
+The Spring Boot command line tool uses
+[Groovy](http://groovy.codehaus.org/) underneath so that we can
+present simple Spring snippets that can 'just run'.  You don't need
+the CLI to get started (see the
+[Java example](#quick-start-java-example) below), but it's the
+quickest way to get a Spring application off the ground.  You need
+[Java SDK v1.6](http://www.java.com) or higher to run the command line
+tool. You should check your current Java installation before you
+begin:
+
+	$ java -version
+	
+Spring Boot CLI can be downloaded from our Maven repository, and then you can use a shell `alias`:
+
+    $ wget http://maven.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1.jar
+    $ alias spring="java -jar `pwd`/spring-boot-cli-0.5.0.M1.jar"
+
+Complete installation including a downloadable `.zip` with a shell script TBD.
+
 ## Quick Start Script Example
-The Spring Boot command line tool uses [Groovy](http://groovy.codehaus.org/) underneath 
-so that we can present simple Spring snippets that can 'just run', for example:
+Here's a really simple web application. Create a file called `app.groovy`:
 
 ```groovy
 @Controller
@@ -34,18 +54,65 @@ class ThisWillActuallyRun {
 }
 ```
 
+Then run it from a shell:
+
 ```
 $ spring run app.groovy
 $ curl localhost:8080
 Hello World!
 ```
 
-_See [below](#installing-the-cli) for command line tool installation instructions._
-
+<span id="quick-start-java-example"/>
 ## Quick Start Java Example
 If you don't want to use the command line tool, or you would rather work using Java and
-an IDE you can. Just add a `main()` method that calls `SpringApplication` and
-add `@EnableAutoConfiguration`:
+an IDE you can. Create a `pom.xml` (or the equivalent with your favourite build system):
+
+`pom.xml`
+
+```xml
+<pom>
+    <artifactId>myproject</myproject>
+    <version>0.0.1-SNAPSHOT</version>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>0.5.0.M1</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    <!-- TODO: remove once Spring Boot is in Maven Central -->
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <url>http://repo.springsource.org/snapshot</url>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>http://repo.springsource.org/snapshot</url>
+            <snapshots><enabled>true</enabled></snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</pom>
+```
+
+Then just add a class in `src/main/java` with a `main()` method that
+calls `SpringApplication` and add `@EnableAutoConfiguration`, e.g:
 
 ```java
 import org.springframework.boot.*;
@@ -70,28 +137,20 @@ public class SampleController {
 }
 ```
 
-_NOTE: the above example assumes your build system has imported the `spring-starter-web` maven pom._
+You can run this application by building a `jar` and executing it:
 
-## Installing the CLI
-You need [Java SDK v1.6](http://www.java.com) or higher to run the command line tool. You
-should check your current Java installation before you begin:
+```
+$ mvn package
+$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+... Spring starting up ...
+```
 
-	$ java -version
-	
-Spring Boot CLI can be downloaded from our Maven repository, and then you can use a shell `alias` for the Spring Boot command line tool:
+and in anonther terminal:
 
-    $ wget http://maven.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1.jar
-    $ alias spring="java -jar `pwd`/spring-boot-cli-0.5.0.M1.jar"
-
-Complete installation including a downloadable `.zip` with a shell script TBD.
-
-## Building from source
-Spring Boot can be [built with maven](http://maven.apache.org/run-maven/index.html) v3.0
-or above.
-
-	$ mvn clean install
-
-_Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests._
+```
+$ curl localhost:8080
+Hello World!
+```
 
 ## Spring Boot Modules
 There are a number of modules in Spring Boot. Here are the important ones:
@@ -201,3 +260,14 @@ samples are provided:
 * [spring-boot-sample-xml](spring-boot-samples/spring-boot-sample-xml) -
   Example show how Spring Boot can be mixed with traditional XML configuration (we
   generally recommend using Java `@Configuration` whenever possible)
+
+## Building Spring Boot from source You don't need to build from
+source to use Spring Boot (it's in the Maven repositories), but if you
+want to try out the latest and greatest, Spring Boot can be
+[built with maven](http://maven.apache.org/run-maven/index.html) v3.0
+or above.
+
+	$ mvn clean install
+
+_Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests._
+
