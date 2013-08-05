@@ -16,9 +16,7 @@
 
 package org.springframework.boot.context.initializer;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.logging.LogManager;
 
 import org.apache.commons.logging.Log;
@@ -29,8 +27,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
@@ -48,19 +46,15 @@ public class LoggingApplicationContextInitializerTests {
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+	@Rule
+	public OutputCapture outputCapture = new OutputCapture();
+
 	private LoggingApplicationContextInitializer initializer = new LoggingApplicationContextInitializer();
 
 	private Log logger = new SLF4JLogFactory().getInstance(getClass());
 
-	private PrintStream savedOutput;
-
-	private ByteArrayOutputStream output;
-
 	@Before
 	public void init() throws SecurityException, IOException {
-		this.savedOutput = System.err;
-		this.output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(this.output));
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
 		this.initializer.initialize(new SpringApplication());
@@ -71,12 +65,6 @@ public class LoggingApplicationContextInitializerTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
-		System.setOut(this.savedOutput);
-		System.out.println(getOutput());
-	}
-
-	private String getOutput() {
-		return this.output.toString();
 	}
 
 	@Test
@@ -84,7 +72,7 @@ public class LoggingApplicationContextInitializerTests {
 		GenericApplicationContext context = new GenericApplicationContext();
 		this.initializer.initialize(context);
 		this.logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
 	}
@@ -104,7 +92,7 @@ public class LoggingApplicationContextInitializerTests {
 				});
 		this.initializer.initialize(context);
 		this.logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
 		assertTrue("Wrong output:\n" + output, output.startsWith("/tmp/spring.log"));
@@ -146,7 +134,7 @@ public class LoggingApplicationContextInitializerTests {
 		this.initializer.initialize(context);
 		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.startsWith("foo.log"));
 	}
 
@@ -169,7 +157,7 @@ public class LoggingApplicationContextInitializerTests {
 		this.initializer.initialize(context);
 		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.startsWith("foo/spring.log"));
 	}
 
