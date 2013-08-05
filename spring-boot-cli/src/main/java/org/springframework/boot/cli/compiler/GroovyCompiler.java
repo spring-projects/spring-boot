@@ -24,9 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 
 import org.codehaus.groovy.ast.ClassNode;
@@ -75,8 +73,7 @@ public class GroovyCompiler {
 		if (configuration.getClasspath().length() > 0) {
 			this.loader.addClasspath(configuration.getClasspath());
 		}
-		// FIXME: allow the extra resolvers to be switched on (off by default)
-		addExtraResolvers();
+		new GrapeEngineCustomizer(Grape.getInstance()).customize();
 		compilerConfiguration
 				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
 	}
@@ -201,16 +198,6 @@ public class GroovyCompiler {
 			importCustomizer.call(source, context, classNode);
 		}
 
-	}
-
-	private void addExtraResolvers() {
-		Map<String, Object> resolver = new HashMap<String, Object>();
-		resolver.put("name", "spring-milestone");
-		resolver.put("root", "http://repo.springsource.org/milestone");
-		Grape.addResolver(resolver);
-		resolver.put("name", "spring-snapshot");
-		resolver.put("root", "http://repo.springsource.org/snapshot");
-		Grape.addResolver(resolver);
 	}
 
 }
