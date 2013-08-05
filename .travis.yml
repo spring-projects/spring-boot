@@ -2,5 +2,5 @@ language: java
 
 install: mvn -U install --quiet -DskipTests=true
 before_script: mvn -version
-script: mvn clean test
+script: mvn install
 
