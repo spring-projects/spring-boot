@@ -40,6 +40,7 @@ import org.codehaus.groovy.control.SourceUnit;
 class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	private Map<String, byte[]> classResources = new HashMap<String, byte[]>();
+
 	private CompilerConfiguration configuration;
 
 	public ExtendedGroovyClassLoader(ClassLoader loader, CompilerConfiguration config) {
