@@ -53,7 +53,6 @@ abstract class Banner {
 		}
 		String version = Banner.class.getPackage().getImplementationVersion();
 		version = (version == null ? "" : " (v" + version + ")");
-		version = " v0.5.0.BUILD.SNAPSHOT";
 		String padding = "";
 		while (padding.length() < STRAP_LINE_SIZE
 				- (version.length() + SPRING_BOOT.length())) {
