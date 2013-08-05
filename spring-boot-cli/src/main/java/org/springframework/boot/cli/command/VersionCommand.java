@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command;
 
 import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.Log;
 
 /**
  * {@link Command} to display the 'version' number.
@@ -31,8 +32,7 @@ public class VersionCommand extends AbstractCommand {
 
 	@Override
 	public void run(String... args) {
-		// FIXME: add version introspection
-		throw new IllegalStateException("Not implemented");
+		Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
 	}
 
 }
