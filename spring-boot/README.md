@@ -184,7 +184,7 @@ server that sets its port from an injected `@Value`.
 public class MyConfiguration {
 	
 	@Value("${tomcatport:8080}")
-	private String port; 
+	private int port; 
 
 	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
@@ -208,7 +208,7 @@ public EmbeddedServletContainerFactory servletContainer() {
 	TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
 	factory.setPort(9000);
 	factory.setSessionTimeout(10, TimeUnit.MINUTES);
-	factory.addaddErrorPages(new ErrorPage(HttpStatus.404, "/notfound.html");
+	factory.addErrorPages(new ErrorPage(HttpStatus.404, "/notfound.html");
 	return factory;
 }
 ``` 
