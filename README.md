@@ -25,9 +25,10 @@ which means that you have a familiar Java-like syntax, without so much boilerpla
 You don't need to use the CLI to work with Spring Boot but it's definitely the quickest
 way to get a Spring application off the ground.
 
-### Installing the CLI
 > **Note:** If you don't want to use the CLI,
 > [jump ahead to the Java example](#quick-start-java-example).
+
+### Installing the CLI
 
 You need [Java SDK v1.6](http://www.java.com) or higher to run the command line tool
 (there are even some issues with the `1.7.0_25` build of openjdk, so stick to earlier 
@@ -45,8 +46,12 @@ You can download the Spring CLI distribution from the Spring software repository
 Cutting edge [snapshot distributions](http://repo.springsource.org/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
 
-Once downloaded, follow the [INSTALL](spring-boot-cli/src/main/content/INSTALL.txt) 
-instructions from the unpacked archive.
+Once downloaded, follow the
+[INSTALL](spring-boot-cli/src/main/content/INSTALL.txt) instructions
+from the unpacked archive. In summary: there is a `spring` script
+(`spring.bat` for Windows) in a `bin/` directory in the `.zip` file,
+or alternatively you can use `java -jar` with the `.jar` file (the
+script helps you to be sure that the classpath is set correctly).
 
 ### OSX Homebrew installation
 If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to install
