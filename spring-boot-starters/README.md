@@ -1,4 +1,4 @@
 # Spring Boot - Starters
 
-Aggregated dependencies for starter projects with an opinionated
-choice of Spring and related useful technologies.
+> We are currently still working on documentation for Spring Boot. Please check back
+> in the future.
