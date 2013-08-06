@@ -241,7 +241,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		for (Entry<String, Filter> filterBean : getOrderedBeansOfType(Filter.class)) {
 			String name = filterBean.getKey();
 			Filter filter = filterBean.getValue();
-			if (!servletRegistrations.contains(filter)) {
+			if (!filterRegistrations.contains(filter)) {
 				FilterRegistrationBean registration = new FilterRegistrationBean(filter);
 				registration.setName(name);
 				initializers.add(registration);
