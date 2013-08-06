@@ -110,6 +110,7 @@
 									<mainClass>${start-class}</mainClass>
 								</transformer>
 							</transformers>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
 						</configuration>
 					</execution>
 				</executions>
