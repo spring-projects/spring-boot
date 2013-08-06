@@ -6,6 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
+		<relativePath>../../spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-sample-data-jpa</artifactId>
 	<packaging>jar</packaging>
