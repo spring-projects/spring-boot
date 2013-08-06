@@ -9,8 +9,15 @@
 	<includeBaseDirectory>true</includeBaseDirectory>
 	<fileSets>
 		<fileSet>
-			<directory>src/main/scripts</directory>
-			<outputDirectory>bin</outputDirectory>
+			<directory>src/main/content</directory>
+			<outputDirectory>/</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/executablecontent</directory>
+			<outputDirectory>/</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<fileMode>755</fileMode>
 			<directoryMode>755</directoryMode>
