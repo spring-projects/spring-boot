@@ -79,8 +79,11 @@ an IDE you can. Create a `pom.xml` (or the equivalent with your favourite build 
 `pom.xml`
 
 ```xml
-<pom>
-    <artifactId>myproject</myproject>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>myproject</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -105,27 +108,27 @@ an IDE you can. Create a `pom.xml` (or the equivalent with your favourite build 
     <!-- TODO: remove once Spring Boot is in Maven Central -->
     <repositories>
         <repository>
-            <id>spring-snapshots</id>
-            <url>http://repo.springsource.org/snapshot</url>
-            <snapshots><enabled>true</enabled></snapshots>
+            <id>spring-milestone</id>
+            <url>http://repo.springsource.org/milestone</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
-            <id>spring-snapshots</id>
-            <url>http://repo.springsource.org/snapshot</url>
-            <snapshots><enabled>true</enabled></snapshots>
+            <id>spring-milestone</id>
+            <url>http://repo.springsource.org/milestone</url>
         </pluginRepository>
     </pluginRepositories>
-</pom>
+</project>
 ```
 
 Then just add a class in `src/main/java` with a `main()` method that
 calls `SpringApplication` and add `@EnableAutoConfiguration`, e.g:
 
+`src/main/java/SampleController.java`
+
 ```java
 import org.springframework.boot.*;
-import org.springframework.boot.autoconfiguration.*;
+import org.springframework.boot.autoconfigure.*;
 import org.springframework.stereotype.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -136,7 +139,7 @@ public class SampleController {
 	@RequestMapping("/")
 	@ResponseBody
 	String home() {
-		return "Hello World!"
+		return "Hello World!";
 	}
 
 	public static void main(String[] args) throws Exception {
