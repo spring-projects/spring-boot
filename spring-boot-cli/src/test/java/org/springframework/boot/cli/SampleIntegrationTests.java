@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.ivy.util.FileUtil;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,6 +63,16 @@ public class SampleIntegrationTests {
 					}
 				});
 		this.command = future.get(4, TimeUnit.MINUTES);
+	}
+
+	@Before
+	public void setup() {
+		System.setProperty("disableSpringSnapshotRepos", "true");
+	}
+
+	@After
+	public void teardown() {
+		System.clearProperty("disableSpringSnapshotRepos");
 	}
 
 	@After

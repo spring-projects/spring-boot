@@ -85,10 +85,12 @@ class GrapeEngineCustomizer {
 		springBootResolver.setSettings(settings);
 		springBootResolver.setName("springBoot");
 
-		springBootResolver.addSpringSnapshotResolver(newResolver("spring-snapshot",
-				"http://repo.springsource.org/snapshot"));
-		springBootResolver.addSpringSnapshotResolver(newResolver("spring-milestone",
-				"http://repo.springsource.org/milestone"));
+		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
+			springBootResolver.addSpringSnapshotResolver(newResolver("spring-snapshot",
+					"http://repo.springsource.org/snapshot"));
+			springBootResolver.addSpringSnapshotResolver(newResolver("spring-milestone",
+					"http://repo.springsource.org/milestone"));
+		}
 
 		grapesResolver.getResolvers().clear();
 		grapesResolver.getResolvers().add(springBootResolver);
