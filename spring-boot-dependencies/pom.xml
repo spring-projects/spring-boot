@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-dependencies</artifactId>
-	<version>0.5.0.BUILD-SNAPSHOT</version>
+	<version>0.5.0.M1</version>
 	<packaging>pom</packaging>
 	<properties>
 		<spring.version>4.0.0.M2</spring.version>
