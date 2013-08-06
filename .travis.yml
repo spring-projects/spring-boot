@@ -12,6 +12,6 @@ after_failure:
 env:
  global:
    - "ARTIFACTS_AWS_REGION=us-east-1"
-   - "ARTIFACTS_S3_BUCKET=drogus-artifacts"
+   - "ARTIFACTS_S3_BUCKET=temp.springsource.com/spring-boot"
    - secure: "JCQ1uz/rfrtMiUAvxeMznVB2wTX/f7lrCBa6oOsskDPt1dMzxD4aEuOfq3QlROLPDhYyu3dnWh1+ABla3Dx4+dCVA9ASgFCq5ivO5Vkxr4c6g8tb7hp14EitGEnWfEpdn64K6mZ7e7a/yjaXU3Ry4AisvPSk7wCcbHisBbj1LzE="
    - secure: "Dcya9JSXSa9qXDBXUihYxfCBL8VKCoIj5SQARMshYGLrs1zN2C4EcO4lcMkePTHWrGjpSqNdgnChUeg9YphWqODCcy2XhaMlSxwBYBDTye3hLGwKNdMKnrl/4yE+GoBg6Zaj9bB46Ua/GwLgZpOgM/b/VuCqnp6JC+hYOZKBhdg="
