@@ -104,10 +104,12 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 	 * Configure registration base settings.
 	 */
 	protected void configure(Registration.Dynamic registration) {
+		Assert.state(registration != null,
+				"Registration is null. Was something already registered for name=["
+						+ this.name + "]?");
 		registration.setAsyncSupported(this.asyncSupported);
 		if (this.initParameters.size() > 0) {
 			registration.setInitParameters(this.initParameters);
 		}
 	}
-
 }
