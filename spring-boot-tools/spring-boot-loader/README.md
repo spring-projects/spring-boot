@@ -1,5 +1,4 @@
 # Spring Boot - Loader
  
-A very thin Java main for executable JAR and WAR
-archives. `JarLauncher` and `WarLauncher` know how to access classpath
-resources and dependencies in nested jar files.
+> We are currently still working on documentation for Spring Boot. Please check back
+> in the future.
