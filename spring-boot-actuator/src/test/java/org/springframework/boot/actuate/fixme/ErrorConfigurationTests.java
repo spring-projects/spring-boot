@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.fixme;
+package org.springframework.boot.actuate.fixme;
 
 /**
  * @author Dave Syer

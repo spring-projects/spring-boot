@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint.mvc;
+package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.ops.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;

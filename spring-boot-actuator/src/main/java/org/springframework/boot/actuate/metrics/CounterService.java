@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.metrics;
+package org.springframework.boot.actuate.metrics;
 
 /**
  * A service that can be used to increment, decrement and reset a {@link Metric}.

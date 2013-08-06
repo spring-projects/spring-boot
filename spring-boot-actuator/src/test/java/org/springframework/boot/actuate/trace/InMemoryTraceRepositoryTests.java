@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.trace;
+package org.springframework.boot.actuate.trace;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.boot.ops.trace.InMemoryTraceRepository;
-import org.springframework.boot.ops.trace.Trace;
+import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
+import org.springframework.boot.actuate.trace.Trace;
 
 import static org.junit.Assert.assertEquals;
 

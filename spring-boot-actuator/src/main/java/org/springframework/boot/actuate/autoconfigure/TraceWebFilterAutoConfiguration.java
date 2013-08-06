@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.ops.trace.TraceRepository;
-import org.springframework.boot.ops.trace.WebRequestTraceFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 

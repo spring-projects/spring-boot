@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.ops.endpoint.ShutdownEndpoint;
-import org.springframework.boot.ops.properties.ManagementServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.audit;
+package org.springframework.boot.actuate.audit;
 
 import java.util.Date;
 
 import org.junit.Test;
-import org.springframework.boot.ops.audit.AuditEvent;
-import org.springframework.boot.ops.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 
 import static org.junit.Assert.assertEquals;
 

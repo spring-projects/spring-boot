@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.web.BasicErrorController;
+import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
-import org.springframework.boot.ops.web.BasicErrorController;
-import org.springframework.boot.ops.web.ErrorController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.metrics;
+package org.springframework.boot.actuate.metrics;
 
 import java.util.Collection;
 import java.util.Date;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.properties;
+package org.springframework.boot.actuate.properties;
 
 import java.net.InetAddress;
 

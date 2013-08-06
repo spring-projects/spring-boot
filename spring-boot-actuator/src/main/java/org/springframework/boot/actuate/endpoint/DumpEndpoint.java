@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;

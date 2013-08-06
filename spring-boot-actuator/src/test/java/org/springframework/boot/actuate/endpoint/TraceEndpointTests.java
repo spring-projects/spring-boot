@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
+import org.springframework.boot.actuate.trace.Trace;
+import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.ops.endpoint.TraceEndpoint;
-import org.springframework.boot.ops.trace.InMemoryTraceRepository;
-import org.springframework.boot.ops.trace.Trace;
-import org.springframework.boot.ops.trace.TraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

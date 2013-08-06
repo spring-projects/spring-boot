@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.audit.listener;
+package org.springframework.boot.actuate.audit.listener;
 
 import java.util.Collections;
 
 import org.junit.Test;
-import org.springframework.boot.ops.audit.AuditEvent;
-import org.springframework.boot.ops.audit.AuditEventRepository;
-import org.springframework.boot.ops.audit.listener.AuditApplicationEvent;
-import org.springframework.boot.ops.audit.listener.AuditListener;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
+import org.springframework.boot.actuate.audit.listener.AuditListener;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

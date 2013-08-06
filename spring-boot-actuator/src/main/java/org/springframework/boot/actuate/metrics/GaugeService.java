@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.metrics;
+package org.springframework.boot.actuate.metrics;
 
 /**
  * A service that can be used to manage a {@link Metric} as a gauge.

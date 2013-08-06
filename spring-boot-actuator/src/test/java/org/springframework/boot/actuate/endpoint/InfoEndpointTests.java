@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collections;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.ops.endpoint.InfoEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

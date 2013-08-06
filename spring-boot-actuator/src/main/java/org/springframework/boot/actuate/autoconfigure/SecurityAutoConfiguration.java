@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.properties.SecurityProperties;
+import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.ops.endpoint.Endpoint;
-import org.springframework.boot.ops.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.ops.properties.SecurityProperties;
-import org.springframework.boot.ops.web.ErrorController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;

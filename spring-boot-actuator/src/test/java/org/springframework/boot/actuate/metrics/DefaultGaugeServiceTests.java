@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.metrics;
+package org.springframework.boot.actuate.metrics;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.boot.ops.metrics.DefaultGaugeService;
+import org.springframework.boot.actuate.metrics.DefaultGaugeService;
 
 import static org.junit.Assert.fail;
 

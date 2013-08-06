@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
 
@@ -22,6 +22,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -31,10 +35,6 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.properties.ServerProperties;
-import org.springframework.boot.ops.endpoint.Endpoint;
-import org.springframework.boot.ops.endpoint.mvc.EndpointHandlerAdapter;
-import org.springframework.boot.ops.endpoint.mvc.EndpointHandlerMapping;
-import org.springframework.boot.ops.properties.ManagementServerProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;

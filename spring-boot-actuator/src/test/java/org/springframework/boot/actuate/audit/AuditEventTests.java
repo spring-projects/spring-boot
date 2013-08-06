@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.audit;
+package org.springframework.boot.actuate.audit;
 
 import java.util.Collections;
 
 import org.junit.Test;
-import org.springframework.boot.ops.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEvent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

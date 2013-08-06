@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.web;
+package org.springframework.boot.actuate.web;
 
 import org.springframework.stereotype.Controller;
 

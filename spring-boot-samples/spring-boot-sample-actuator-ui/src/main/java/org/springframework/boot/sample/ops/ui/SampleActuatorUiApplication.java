@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.properties.SecurityProperties;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.ops.properties.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Controller;
