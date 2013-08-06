@@ -38,6 +38,7 @@ import static org.mockito.Mockito.mock;
  * {@link TomcatEmbeddedServletContainer}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class TomcatEmbeddedServletContainerFactoryTests extends
 		AbstractEmbeddedServletContainerFactoryTests {
