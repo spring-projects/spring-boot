@@ -46,7 +46,7 @@
 							</delimiters>
 							<resources>
 								<resource>
-									<directory>src/main/parent</directory>
+									<directory>${basedir}/spring-boot-starter-parent/src/main/maven</directory>
 									<filtering>true</filtering>
 								</resource>
 							</resources>
