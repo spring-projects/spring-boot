@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.boot.ops.autoconfigure.MetricRepositoryAutoConfiguration;
-import org.springframework.boot.ops.metrics.CounterService;
-import org.springframework.boot.ops.metrics.DefaultCounterService;
-import org.springframework.boot.ops.metrics.DefaultGaugeService;
-import org.springframework.boot.ops.metrics.GaugeService;
+import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
+import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.DefaultCounterService;
+import org.springframework.boot.actuate.metrics.DefaultGaugeService;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

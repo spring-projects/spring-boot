@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.security;
+package org.springframework.boot.actuate.security;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.ops.audit.AuditEvent;
-import org.springframework.boot.ops.audit.listener.AuditApplicationEvent;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.boot.ops.audit.AuditEventRepository;
-import org.springframework.boot.ops.audit.InMemoryAuditEventRepository;
-import org.springframework.boot.ops.autoconfigure.AuditAutoConfiguration;
-import org.springframework.boot.ops.security.AuthenticationAuditListener;
-import org.springframework.boot.ops.security.AuthorizationAuditListener;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration;
+import org.springframework.boot.actuate.security.AuthenticationAuditListener;
+import org.springframework.boot.actuate.security.AuthorizationAuditListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

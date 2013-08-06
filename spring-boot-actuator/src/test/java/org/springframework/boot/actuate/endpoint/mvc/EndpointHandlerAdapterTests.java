@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint.mvc;
+package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.junit.Test;
-import org.springframework.boot.ops.endpoint.Endpoint;
-import org.springframework.boot.ops.endpoint.mvc.EndpointHandlerAdapter;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

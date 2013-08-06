@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint.mvc;
+package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.ops.endpoint.ActionEndpoint;
-import org.springframework.boot.ops.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.ActionEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.audit.listener;
+package org.springframework.boot.actuate.audit.listener;
 
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.boot.ops.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.util.Assert;
 

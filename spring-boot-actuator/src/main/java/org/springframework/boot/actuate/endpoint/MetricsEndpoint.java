@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.ops.metrics.Metric;
 import org.springframework.util.Assert;
 
 /**

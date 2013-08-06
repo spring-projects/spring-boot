@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.health;
+package org.springframework.boot.actuate.health;
 
 /**
  * Strategy interface used to provide an indication of application health.

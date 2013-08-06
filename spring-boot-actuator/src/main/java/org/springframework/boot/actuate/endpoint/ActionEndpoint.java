@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 /**
  * Tagging interface used to indicate that {@link Endpoint} that performs some action.

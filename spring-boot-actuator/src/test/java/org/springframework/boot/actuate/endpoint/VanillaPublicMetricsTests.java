@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.ops.endpoint.VanillaPublicMetrics;
-import org.springframework.boot.ops.metrics.InMemoryMetricRepository;
-import org.springframework.boot.ops.metrics.Metric;
+import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.Metric;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

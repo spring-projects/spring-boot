@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
-import org.springframework.boot.ops.autoconfigure.EndpointAutoConfiguration;
-import org.springframework.boot.ops.endpoint.BeansEndpoint;
-import org.springframework.boot.ops.endpoint.DumpEndpoint;
-import org.springframework.boot.ops.endpoint.EnvironmentEndpoint;
-import org.springframework.boot.ops.endpoint.HealthEndpoint;
-import org.springframework.boot.ops.endpoint.InfoEndpoint;
-import org.springframework.boot.ops.endpoint.MetricsEndpoint;
-import org.springframework.boot.ops.endpoint.ShutdownEndpoint;
-import org.springframework.boot.ops.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.BeansEndpoint;
+import org.springframework.boot.actuate.endpoint.DumpEndpoint;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;

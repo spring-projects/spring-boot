@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.audit;
+package org.springframework.boot.actuate.audit;
 
 import java.util.Date;
 import java.util.List;

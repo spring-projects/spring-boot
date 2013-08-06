@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,26 +22,26 @@ import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.endpoint.BeansEndpoint;
+import org.springframework.boot.actuate.endpoint.DumpEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.PublicMetrics;
+import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.VanillaHealthIndicator;
+import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.MetricRepository;
+import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
+import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
-import org.springframework.boot.ops.endpoint.BeansEndpoint;
-import org.springframework.boot.ops.endpoint.DumpEndpoint;
-import org.springframework.boot.ops.endpoint.Endpoint;
-import org.springframework.boot.ops.endpoint.EnvironmentEndpoint;
-import org.springframework.boot.ops.endpoint.HealthEndpoint;
-import org.springframework.boot.ops.endpoint.InfoEndpoint;
-import org.springframework.boot.ops.endpoint.MetricsEndpoint;
-import org.springframework.boot.ops.endpoint.PublicMetrics;
-import org.springframework.boot.ops.endpoint.ShutdownEndpoint;
-import org.springframework.boot.ops.endpoint.TraceEndpoint;
-import org.springframework.boot.ops.endpoint.VanillaPublicMetrics;
-import org.springframework.boot.ops.health.HealthIndicator;
-import org.springframework.boot.ops.health.VanillaHealthIndicator;
-import org.springframework.boot.ops.metrics.InMemoryMetricRepository;
-import org.springframework.boot.ops.metrics.MetricRepository;
-import org.springframework.boot.ops.trace.InMemoryTraceRepository;
-import org.springframework.boot.ops.trace.TraceRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;

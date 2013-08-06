@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.audit.listener;
+package org.springframework.boot.actuate.audit.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.ops.audit.AuditEvent;
-import org.springframework.boot.ops.audit.AuditEventRepository;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.context.ApplicationListener;
 
 /**

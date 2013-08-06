@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint.mvc;
+package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.springframework.boot.ops.endpoint.AbstractEndpoint;
-import org.springframework.boot.ops.endpoint.ActionEndpoint;
-import org.springframework.boot.ops.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.ActionEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.hamcrest.Matchers.equalTo;

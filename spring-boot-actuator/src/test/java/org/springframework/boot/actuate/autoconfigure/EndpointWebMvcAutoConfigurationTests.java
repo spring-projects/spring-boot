@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.autoconfigure;
+package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.FileNotFoundException;
 import java.net.SocketException;
@@ -24,16 +24,16 @@ import java.nio.charset.Charset;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
+import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.ops.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.ops.autoconfigure.ManagementServerPropertiesAutoConfiguration;
-import org.springframework.boot.ops.endpoint.AbstractEndpoint;
-import org.springframework.boot.ops.endpoint.Endpoint;
-import org.springframework.boot.ops.properties.ManagementServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

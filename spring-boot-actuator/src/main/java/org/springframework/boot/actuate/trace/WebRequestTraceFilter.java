@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.trace;
+package org.springframework.boot.actuate.trace;
 
 import java.io.IOException;
 import java.util.Collections;

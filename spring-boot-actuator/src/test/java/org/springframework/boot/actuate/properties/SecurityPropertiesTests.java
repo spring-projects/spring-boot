@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.properties;
+package org.springframework.boot.actuate.properties;
 
 import java.util.Collections;
 
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.boot.actuate.properties.SecurityProperties;
 import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.boot.ops.properties.SecurityProperties;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import static org.junit.Assert.assertEquals;

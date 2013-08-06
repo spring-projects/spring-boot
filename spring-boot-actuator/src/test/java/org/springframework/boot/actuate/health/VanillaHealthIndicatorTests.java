@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.health;
+package org.springframework.boot.actuate.health;
 
 import org.junit.Test;
-import org.springframework.boot.ops.health.VanillaHealthIndicator;
+import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

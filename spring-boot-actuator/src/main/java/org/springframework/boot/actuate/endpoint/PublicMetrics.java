@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import java.util.Collection;
 
-import org.springframework.boot.ops.metrics.Metric;
+import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.

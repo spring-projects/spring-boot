@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.ops.health.HealthIndicator;
 import org.springframework.util.Assert;
 
 /**

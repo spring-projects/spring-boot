@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.ops.security;
+package org.springframework.boot.actuate.security;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.boot.ops.security.AuthenticationAuditListener;
+import org.springframework.boot.actuate.security.AuthenticationAuditListener;
 
 import static org.junit.Assert.fail;
 
