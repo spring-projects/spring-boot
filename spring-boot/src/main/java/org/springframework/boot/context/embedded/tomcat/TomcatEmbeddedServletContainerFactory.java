@@ -72,6 +72,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<LifecycleListener>();
 
+	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<TomcatContextCustomizer>();
+
 	private ResourceLoader resourceLoader;
 
 	private String protocol = DEFAULT_PROTOCOL;
@@ -221,6 +223,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
 		}
 		context.setSessionTimeout(getSessionTimeout());
+		for (TomcatContextCustomizer customizer : this.tomcatContextCustomizers) {
+			customizer.customize(context);
+		}
 	}
 
 	/**
@@ -340,6 +345,39 @@ public class TomcatEmbeddedServletContainerFactory extends
 		Assert.notNull(contextLifecycleListeners,
 				"ContextLifecycleListeners must not be null");
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
+	}
+
+	/**
+	 * Set {@link TomcatContextCustomizer}s that should be applied to the Tomcat
+	 * {@link Context} . Calling this method will replace any existing customizers.
+	 * @param tomcatContextCustomizers the customizers to set
+	 */
+	public void setTomcatContextCustomizers(
+			Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
+		Assert.notNull(this.contextLifecycleListeners,
+				"TomcatContextCustomizers must not be null");
+		this.tomcatContextCustomizers = new ArrayList<TomcatContextCustomizer>(
+				tomcatContextCustomizers);
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link TomcatContextCustomizer}s that will be
+	 * applied to the Tomcat {@link Context} .
+	 * @return the tomcatContextCustomizers the listeners that will be applied
+	 */
+	public Collection<TomcatContextCustomizer> getTomcatContextCustomizers() {
+		return this.tomcatContextCustomizers;
+	}
+
+	/**
+	 * Add {@link TomcatContextCustomizer}s that should be added to the Tomcat
+	 * {@link Context}.
+	 * @param tomcatContextCustomizers the customizers to add
+	 */
+	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
+		Assert.notNull(this.tomcatContextCustomizers,
+				"TomcatContextCustomizer must not be null");
+		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
 	}
 
 }
