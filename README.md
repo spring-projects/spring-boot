@@ -312,9 +312,9 @@ A web UI example with production features
 A thymeleaf web application
 * [spring-boot-sample-web-static](spring-boot-samples/spring-boot-sample-web-static) -
 A web application service static files
-* [spring-sample-batch](spring-boot-samples/spring-sample-batch) -
+* [spring-boot-sample-batch](spring-boot-samples/spring-boot-sample-batch) -
 Define and run a Batch job in a few lines of code
-* [spring-sample-data-jpa](spring-boot-samples/spring-sample-data-jpa) -
+* [spring-boot-sample-data-jpa](spring-boot-samples/spring-boot-sample-data-jpa) -
 Spring Data JPA + Hibernate + HSQLDB
 * [spring-boot-sample-integration](spring-boot-samples/spring-boot-sample-integration) -
 A spring integration application
