@@ -57,7 +57,7 @@ script helps you to be sure that the classpath is set correctly).
 If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to install
 the Spring Boot CLI is:
 
-	$ brew install spring-boot-cli
+	$ brew install http://repo.springsource.org/install/spring-boot-cli.rb
 
 Homebrew will install `spring` to `/usr/local/bin`. Now you can jump right to a
 [quick start example](#quick-start-script-example).
