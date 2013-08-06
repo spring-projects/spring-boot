@@ -21,12 +21,14 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.catalina.Context;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -107,11 +109,31 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private String accessLogPattern;
 
+		private boolean accessLogEnabled = false;
+
 		private String protocolHeader = "x-forwarded-proto";
 
 		private String remoteIpHeader = "x-forwarded-for";
 
 		private File basedir;
+
+		private int backgroundProcessorDelay = 30; // seconds
+
+		public boolean getAccessLogEnabled() {
+			return this.accessLogEnabled;
+		}
+
+		public void setAccessLogEnabled(boolean accessLogEnabled) {
+			this.accessLogEnabled = accessLogEnabled;
+		}
+
+		public int getBackgroundProcessorDelay() {
+			return this.backgroundProcessorDelay;
+		}
+
+		public void setBackgroundProcessorDelay(int backgroundProcessorDelay) {
+			this.backgroundProcessorDelay = backgroundProcessorDelay;
+		}
 
 		public File getBasedir() {
 			return this.basedir;
@@ -150,6 +172,13 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				factory.setBaseDirectory(getBasedir());
 			}
 
+			factory.addContextCustomizers(new TomcatContextCustomizer() {
+				@Override
+				public void customize(Context context) {
+					context.setBackgroundProcessorDelay(Tomcat.this.backgroundProcessorDelay);
+				}
+			});
+
 			String remoteIpHeader = getRemoteIpHeader();
 			String protocolHeader = getProtocolHeader();
 			if (StringUtils.hasText(remoteIpHeader)
@@ -160,10 +189,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				factory.addContextValves(valve);
 			}
 
-			String accessLogPattern = getAccessLogPattern();
-			if (accessLogPattern != null) {
+			if (this.accessLogEnabled) {
 				AccessLogValve valve = new AccessLogValve();
-				valve.setPattern(accessLogPattern);
+				String accessLogPattern = getAccessLogPattern();
+				if (accessLogPattern != null) {
+					valve.setPattern(accessLogPattern);
+				}
+				else {
+					valve.setPattern("common");
+				}
 				valve.setSuffix(".log");
 				factory.addContextValves(valve);
 			}
