@@ -26,25 +26,35 @@ the CLI to get started (see the
 [Java example](#quick-start-java-example) below), but it's the
 quickest way to get a Spring application off the ground.  You need
 [Java SDK v1.6](http://www.java.com) or higher to run the command line
-tool. You should check your current Java installation before you
-begin:
+tool (there are even some issues with the `1.7.0_25` build of openjdk,
+so stick to earlier builds or use `1.6` for preference). You should
+check your current Java installation before you begin:
 
 	$ java -version
-	
-If you are on a Mac and using [homebrew](http://brew.sh/), all you must do to install the Spring Boot CLI is:
+
+### MacOS with Brew
+
+If you are on a Mac and using [homebrew](http://brew.sh/), all you need do to install the Spring Boot CLI is:
 
     $ brew install spring-boot-cli
     
 It will install `/usr/local/bin/spring`. Now you can jump right to a [quick start example](#quick-start-groovy-example).
 
 > **Note:** If you don't see the formula, you're installation of brew might be out-of-date. Just execute `brew update` and try again
-	
+
+### Cross Platform `java - jar`
 An alternative way to install Spring Boot CLI is to downloaded it from our Maven repository, and then you can use a shell `alias`:
 
     $ wget http://maven.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1.jar
     $ alias spring="java -jar `pwd`/spring-boot-cli-0.5.0.M1.jar"
 
-Complete installation including a downloadable `.zip` with a shell script TBD.
+If you don't have `wget` installed on your system you might have
+`curl` (with `-o` for setting the output filename). Windows users
+will need [cygwin](http://www.cygwin.org) to use the `alias` command,
+but they can run `java -jar` directly and that will work.
+
+Complete installation including a downloadable `.zip` with a shell
+script TBD.
 
 <a name="quick-start-groovy-example"></a>
 ## Quick Start Script Example
@@ -66,10 +76,16 @@ class ThisWillActuallyRun {
 Then run it from a shell:
 
 ```
-$ spring run app.groovy
+$ spring run app.groovy --verbose
 $ curl localhost:8080
 Hello World!
 ```
+
+It might take a few minutes the first time you do this while some
+dependencies are downloaded (which is why we added the `--verbose`
+option - you can remove that if you prefer). If you are a maven user
+and have a fully loaded local cache with all the required dependencies
+you will find it is much faster.
 
 <span id="quick-start-java-example"/>
 ## Quick Start Java Example
@@ -94,7 +110,6 @@ an IDE you can. Create a `pom.xml` (or the equivalent with your favourite build 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring.boot.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -135,7 +150,8 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @EnableAutoConfiguration
 public class SampleController {
-	@RequestMapping("/")
+
+    @RequestMapping("/")
 	@ResponseBody
 	String home() {
 		return "Hello World!";
