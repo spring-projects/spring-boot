@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,7 @@ class AutoConfigurationSorter {
 
 	public List<String> getInPriorityOrder(Collection<String> classNames)
 			throws IOException {
+
 		List<AutoConfigurationClass> autoConfigurationClasses = new ArrayList<AutoConfigurationClass>();
 		for (String className : classNames) {
 			autoConfigurationClasses.add(new AutoConfigurationClass(className));
@@ -65,30 +67,52 @@ class AutoConfigurationSorter {
 
 		List<String> orderedClassNames = new ArrayList<String>();
 		for (AutoConfigurationClass autoConfigurationClass : autoConfigurationClasses) {
-			orderedClassNames.add(autoConfigurationClass.toString());
+			orderedClassNames.add(autoConfigurationClass.getClassName());
 		}
 		return orderedClassNames;
+
 	}
 
 	private List<AutoConfigurationClass> sortByAfterAnnotation(
 			Collection<AutoConfigurationClass> autoConfigurationClasses)
 			throws IOException {
-		List<AutoConfigurationClass> tosort = new ArrayList<AutoConfigurationClass>(
-				autoConfigurationClasses);
+
+		// Create a look up table of actual autoconfigs
+		Map<AutoConfigurationClass, AutoConfigurationClass> tosort = new LinkedHashMap<AutoConfigurationClass, AutoConfigurationClass>();
+		for (AutoConfigurationClass current : autoConfigurationClasses) {
+			tosort.put(current, current);
+		}
+		addAftersFromBefores(tosort);
+
 		Set<AutoConfigurationClass> sorted = new LinkedHashSet<AutoConfigurationClass>();
 		Set<AutoConfigurationClass> processing = new LinkedHashSet<AutoConfigurationClass>();
 		while (!tosort.isEmpty()) {
 			doSortByAfterAnnotation(tosort, sorted, processing, null);
 		}
+
 		return new ArrayList<AutoConfigurationClass>(sorted);
+
 	}
 
-	private void doSortByAfterAnnotation(List<AutoConfigurationClass> tosort,
+	private void addAftersFromBefores(
+			Map<AutoConfigurationClass, AutoConfigurationClass> map) throws IOException {
+		// Pick up any befores and add them to the corresponding after
+		for (AutoConfigurationClass current : map.keySet()) {
+			for (AutoConfigurationClass before : current.getBefore()) {
+				if (map.containsKey(before)) {
+					map.get(before).getAfter().add(current);
+				}
+			}
+		}
+	}
+
+	private void doSortByAfterAnnotation(
+			Map<AutoConfigurationClass, AutoConfigurationClass> tosort,
 			Set<AutoConfigurationClass> sorted, Set<AutoConfigurationClass> processing,
 			AutoConfigurationClass current) throws IOException {
 
 		if (current == null) {
-			current = tosort.remove(0);
+			current = tosort.remove(tosort.keySet().iterator().next());
 		}
 
 		processing.add(current);
@@ -97,8 +121,8 @@ class AutoConfigurationSorter {
 			Assert.state(!processing.contains(after),
 					"Cycle @AutoConfigureAfter detected between " + current + " and "
 							+ after);
-			if (!sorted.contains(after) && tosort.contains(after)) {
-				doSortByAfterAnnotation(tosort, sorted, processing, after);
+			if (!sorted.contains(after) && tosort.containsKey(after)) {
+				doSortByAfterAnnotation(tosort, sorted, processing, tosort.get(after));
 			}
 		}
 
@@ -110,11 +134,15 @@ class AutoConfigurationSorter {
 
 		private final String className;
 
-		private final int order;
+		private int order;
 
 		private List<AutoConfigurationClass> after;
 
+		private List<AutoConfigurationClass> before;
+
 		private Map<String, Object> afterAnnotation;
+
+		private Map<String, Object> beforeAnnotation;
 
 		public AutoConfigurationClass(String className) throws IOException {
 
@@ -127,12 +155,15 @@ class AutoConfigurationSorter {
 			// Read @Order annotation
 			Map<String, Object> orderedAnnotation = metadata
 					.getAnnotationAttributes(Order.class.getName());
-			this.order = (orderedAnnotation == null ? Ordered.LOWEST_PRECEDENCE
-					: (Integer) orderedAnnotation.get("value"));
+			this.order = (orderedAnnotation == null ? 0 : (Integer) orderedAnnotation
+					.get("value"));
 
 			// Read @AutoConfigureAfter annotation
 			this.afterAnnotation = metadata.getAnnotationAttributes(
 					AutoConfigureAfter.class.getName(), true);
+			// Read @AutoConfigureBefore annotation
+			this.beforeAnnotation = metadata.getAnnotationAttributes(
+					AutoConfigureBefore.class.getName(), true);
 		}
 
 		@Override
@@ -140,10 +171,14 @@ class AutoConfigurationSorter {
 			return this.order;
 		}
 
+		public String getClassName() {
+			return this.className;
+		}
+
 		public List<AutoConfigurationClass> getAfter() throws IOException {
 			if (this.after == null) {
 				if (this.afterAnnotation == null) {
-					this.after = Collections.emptyList();
+					this.after = new ArrayList<AutoConfigurationClass>();
 				}
 				else {
 					this.after = new ArrayList<AutoConfigurationClass>();
@@ -153,6 +188,22 @@ class AutoConfigurationSorter {
 				}
 			}
 			return this.after;
+		}
+
+		public List<AutoConfigurationClass> getBefore() throws IOException {
+			if (this.before == null) {
+				if (this.beforeAnnotation == null) {
+					this.before = Collections.emptyList();
+				}
+				else {
+					this.before = new ArrayList<AutoConfigurationClass>();
+					for (String beforeClass : (String[]) this.beforeAnnotation
+							.get("value")) {
+						this.before.add(new AutoConfigurationClass(beforeClass));
+					}
+				}
+			}
+			return this.before;
 		}
 
 		@Override
@@ -169,6 +220,7 @@ class AutoConfigurationSorter {
 		public boolean equals(Object obj) {
 			return this.className.equals(((AutoConfigurationClass) obj).className);
 		}
+
 	}
 
 }
