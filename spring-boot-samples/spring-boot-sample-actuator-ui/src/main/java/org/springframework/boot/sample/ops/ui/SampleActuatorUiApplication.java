@@ -40,6 +40,11 @@ public class SampleActuatorUiApplication {
 		return "home";
 	}
 
+	@RequestMapping("/foo")
+	public String foo() {
+		throw new RuntimeException("Expected exception in controller");
+	}
+
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleActuatorUiApplication.class, args);
 	}
