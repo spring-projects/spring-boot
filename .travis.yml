@@ -7,7 +7,7 @@ before_script:
 script: mvn install
 
 after_failure:
-  - "travis-artifacts upload --path ."
+  - "for f in `find . -name build.log`; do travis-artifacts upload --path $f; done"
 
 env:
  global:
