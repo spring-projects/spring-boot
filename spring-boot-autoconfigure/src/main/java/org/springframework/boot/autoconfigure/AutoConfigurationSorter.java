@@ -18,21 +18,24 @@ package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -54,75 +57,54 @@ class AutoConfigurationSorter {
 	public List<String> getInPriorityOrder(Collection<String> classNames)
 			throws IOException {
 
-		List<AutoConfigurationClass> autoConfigurationClasses = new ArrayList<AutoConfigurationClass>();
-		for (String className : classNames) {
-			autoConfigurationClasses.add(new AutoConfigurationClass(className));
-		}
+		final AutoConfigurationClasses classes = new AutoConfigurationClasses(
+				this.metadataReaderFactory, classNames);
+
+		List<String> orderedClassNames = new ArrayList<String>(classNames);
 
 		// Sort initially by order
-		Collections.sort(autoConfigurationClasses, OrderComparator.INSTANCE);
+		Collections.sort(orderedClassNames, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				int i1 = classes.get(o1).getOrder();
+				int i2 = classes.get(o2).getOrder();
+				return (i1 < i2) ? -1 : (i1 > i2) ? 1 : 0;
+			}
+		});
 
-		// Then respect @AutoConfigureAfter
-		autoConfigurationClasses = sortByAfterAnnotation(autoConfigurationClasses);
+		// Then respect @AutoConfigureBefore @AutoConfigureAfter
+		orderedClassNames = sortByAnnotation(classes, orderedClassNames);
 
-		List<String> orderedClassNames = new ArrayList<String>();
-		for (AutoConfigurationClass autoConfigurationClass : autoConfigurationClasses) {
-			orderedClassNames.add(autoConfigurationClass.getClassName());
-		}
 		return orderedClassNames;
 
 	}
 
-	private List<AutoConfigurationClass> sortByAfterAnnotation(
-			Collection<AutoConfigurationClass> autoConfigurationClasses)
-			throws IOException {
-
-		// Create a look up table of actual autoconfigs
-		Map<AutoConfigurationClass, AutoConfigurationClass> tosort = new LinkedHashMap<AutoConfigurationClass, AutoConfigurationClass>();
-		for (AutoConfigurationClass current : autoConfigurationClasses) {
-			tosort.put(current, current);
-		}
-		addAftersFromBefores(tosort);
-
-		Set<AutoConfigurationClass> sorted = new LinkedHashSet<AutoConfigurationClass>();
-		Set<AutoConfigurationClass> processing = new LinkedHashSet<AutoConfigurationClass>();
+	private List<String> sortByAnnotation(AutoConfigurationClasses classes,
+			List<String> classNames) {
+		List<String> tosort = new ArrayList<String>(classNames);
+		Set<String> sorted = new LinkedHashSet<String>();
+		Set<String> processing = new LinkedHashSet<String>();
 		while (!tosort.isEmpty()) {
-			doSortByAfterAnnotation(tosort, sorted, processing, null);
+			doSortByAfterAnnotation(classes, tosort, sorted, processing, null);
 		}
-
-		return new ArrayList<AutoConfigurationClass>(sorted);
-
+		return new ArrayList<String>(sorted);
 	}
 
-	private void addAftersFromBefores(
-			Map<AutoConfigurationClass, AutoConfigurationClass> map) throws IOException {
-		// Pick up any befores and add them to the corresponding after
-		for (AutoConfigurationClass current : map.keySet()) {
-			for (AutoConfigurationClass before : current.getBefore()) {
-				if (map.containsKey(before)) {
-					map.get(before).getAfter().add(current);
-				}
-			}
-		}
-	}
-
-	private void doSortByAfterAnnotation(
-			Map<AutoConfigurationClass, AutoConfigurationClass> tosort,
-			Set<AutoConfigurationClass> sorted, Set<AutoConfigurationClass> processing,
-			AutoConfigurationClass current) throws IOException {
+	private void doSortByAfterAnnotation(AutoConfigurationClasses classes,
+			List<String> tosort, Set<String> sorted, Set<String> processing,
+			String current) {
 
 		if (current == null) {
-			current = tosort.remove(tosort.keySet().iterator().next());
+			current = tosort.remove(0);
 		}
 
 		processing.add(current);
 
-		for (AutoConfigurationClass after : current.getAfter()) {
+		for (String after : classes.getClassesRequestedAfter(current)) {
 			Assert.state(!processing.contains(after),
-					"Cycle @AutoConfigureAfter detected between " + current + " and "
-							+ after);
-			if (!sorted.contains(after) && tosort.containsKey(after)) {
-				doSortByAfterAnnotation(tosort, sorted, processing, tosort.get(after));
+					"AutoConfigure cycle detected between " + current + " and " + after);
+			if (!sorted.contains(after) && tosort.contains(after)) {
+				doSortByAfterAnnotation(classes, tosort, sorted, processing, after);
 			}
 		}
 
@@ -130,95 +112,66 @@ class AutoConfigurationSorter {
 		sorted.add(current);
 	}
 
-	private class AutoConfigurationClass implements Ordered {
+	private static class AutoConfigurationClasses {
 
-		private final String className;
+		private final Map<String, AutoConfigurationClass> classes = new HashMap<String, AutoConfigurationClass>();
 
-		private int order;
-
-		private List<AutoConfigurationClass> after;
-
-		private List<AutoConfigurationClass> before;
-
-		private Map<String, Object> afterAnnotation;
-
-		private Map<String, Object> beforeAnnotation;
-
-		public AutoConfigurationClass(String className) throws IOException {
-
-			this.className = className;
-
-			MetadataReader metadataReader = AutoConfigurationSorter.this.metadataReaderFactory
-					.getMetadataReader(className);
-			AnnotationMetadata metadata = metadataReader.getAnnotationMetadata();
-
-			// Read @Order annotation
-			Map<String, Object> orderedAnnotation = metadata
-					.getAnnotationAttributes(Order.class.getName());
-			this.order = (orderedAnnotation == null ? 0 : (Integer) orderedAnnotation
-					.get("value"));
-
-			// Read @AutoConfigureAfter annotation
-			this.afterAnnotation = metadata.getAnnotationAttributes(
-					AutoConfigureAfter.class.getName(), true);
-			// Read @AutoConfigureBefore annotation
-			this.beforeAnnotation = metadata.getAnnotationAttributes(
-					AutoConfigureBefore.class.getName(), true);
+		public AutoConfigurationClasses(MetadataReaderFactory metadataReaderFactory,
+				Collection<String> classNames) throws IOException {
+			for (String className : classNames) {
+				MetadataReader metadataReader = metadataReaderFactory
+						.getMetadataReader(className);
+				this.classes.put(className, new AutoConfigurationClass(metadataReader));
+			}
 		}
 
-		@Override
+		public AutoConfigurationClass get(String className) {
+			return this.classes.get(className);
+		}
+
+		public Set<String> getClassesRequestedAfter(String className) {
+			Set<String> rtn = new HashSet<String>();
+			rtn.addAll(get(className).getAfter());
+			for (Map.Entry<String, AutoConfigurationClass> entry : this.classes
+					.entrySet()) {
+				if (entry.getValue().getBefore().contains(className)) {
+					rtn.add(entry.getKey());
+				}
+			}
+			return rtn;
+		}
+	}
+
+	private static class AutoConfigurationClass {
+
+		private final AnnotationMetadata metadata;
+
+		public AutoConfigurationClass(MetadataReader metadataReader) {
+			this.metadata = metadataReader.getAnnotationMetadata();
+		}
+
 		public int getOrder() {
-			return this.order;
+			Map<String, Object> orderedAnnotation = this.metadata
+					.getAnnotationAttributes(Order.class.getName());
+			return (orderedAnnotation == null ? Ordered.LOWEST_PRECEDENCE
+					: (Integer) orderedAnnotation.get("value"));
 		}
 
-		public String getClassName() {
-			return this.className;
+		public Set<String> getBefore() {
+			return getAnnotationValue(AutoConfigureBefore.class);
 		}
 
-		public List<AutoConfigurationClass> getAfter() throws IOException {
-			if (this.after == null) {
-				if (this.afterAnnotation == null) {
-					this.after = new ArrayList<AutoConfigurationClass>();
-				}
-				else {
-					this.after = new ArrayList<AutoConfigurationClass>();
-					for (String afterClass : (String[]) this.afterAnnotation.get("value")) {
-						this.after.add(new AutoConfigurationClass(afterClass));
-					}
-				}
+		public Set<String> getAfter() {
+			return getAnnotationValue(AutoConfigureAfter.class);
+		}
+
+		private Set<String> getAnnotationValue(Class<?> annotation) {
+			Map<String, Object> attributes = this.metadata.getAnnotationAttributes(
+					annotation.getName(), true);
+			if (attributes == null) {
+				return Collections.emptySet();
 			}
-			return this.after;
-		}
-
-		public List<AutoConfigurationClass> getBefore() throws IOException {
-			if (this.before == null) {
-				if (this.beforeAnnotation == null) {
-					this.before = Collections.emptyList();
-				}
-				else {
-					this.before = new ArrayList<AutoConfigurationClass>();
-					for (String beforeClass : (String[]) this.beforeAnnotation
-							.get("value")) {
-						this.before.add(new AutoConfigurationClass(beforeClass));
-					}
-				}
-			}
-			return this.before;
-		}
-
-		@Override
-		public String toString() {
-			return this.className;
-		}
-
-		@Override
-		public int hashCode() {
-			return this.className.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return this.className.equals(((AutoConfigurationClass) obj).className);
+			return new HashSet<String>(Arrays.asList((String[]) attributes.get("value")));
 		}
 
 	}
