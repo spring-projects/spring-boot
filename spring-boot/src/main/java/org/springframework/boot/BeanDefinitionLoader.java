@@ -16,9 +16,11 @@
 
 package org.springframework.boot;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -26,7 +28,6 @@ import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -49,7 +50,7 @@ import org.springframework.util.StringUtils;
  */
 class BeanDefinitionLoader {
 
-	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new DefaultResourceLoader();
+	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new PathMatchingResourcePatternResolver();
 
 	private Object[] sources;
 
@@ -153,22 +154,50 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
+		String sourceString = xmlReader.getEnvironment().resolvePlaceholders(source.toString());
 		try {
 			// Use class utils so that period separated nested class names work
-			return load(ClassUtils.forName(source.toString(), null));
+			return load(ClassUtils.forName(sourceString, null));
 		}
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
 
-		Resource loadedResource = (this.resourceLoader != null ? this.resourceLoader
-				: DEFAULT_RESOURCE_LOADER).getResource(source.toString());
-		if (loadedResource != null && loadedResource.exists()) {
-			return load(loadedResource);
+		ResourceLoader loader = this.resourceLoader != null ? 
+			this.resourceLoader : DEFAULT_RESOURCE_LOADER;
+		
+		int loadCount = 0;
+		if( loader instanceof ResourcePatternResolver ) {
+	    	// Resource pattern matching available.
+			try {
+				Resource[] resources = ((ResourcePatternResolver) loader).getResources(sourceString);
+				for(Resource resource : resources) {
+					if( resource.exists() ) {
+						loadCount += load(resource);
+					}
+				}
+			}
+			catch (IOException ex) {
+				throw new BeanDefinitionStoreException(
+						"Could not resolve bean definition resource pattern [" + sourceString + "]", ex);
+			}
 		}
-		Package packageResource = findPackage(source);
-		if (packageResource != null) {
-			return load(packageResource);
+		if( !(loader instanceof ResourcePatternResolver) ) {
+		    	// Can only load single resources by absolute URL.
+        		Resource loadedResource = loader.getResource(sourceString);
+        		if (loadedResource != null && loadedResource.exists()) {
+        			return load(loadedResource);
+        		}
+		}
+		if( loadCount > 0 ) {
+			return loadCount;
+		}
+		else {
+			// Attempt to treat the source as a package name, common to all PatternResolver types
+			Package packageResource = findPackage(source);
+			if (packageResource != null) {
+				return load(packageResource);
+			}
 		}
 		throw new IllegalArgumentException("Invalid source '" + source + "'");
 	}
