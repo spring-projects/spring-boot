@@ -275,6 +275,14 @@ public class SpringApplicationTests {
 				application, "initialSources");
 		assertThat(initialSources.toArray(), equalTo(sources));
 	}
+	
+	@Test
+	public void wildcardSources() {
+		Object[] sources = { "classpath:org/springframework/boot/sample-${sample.app.test.prop}.xml" };
+		TestSpringApplication application = new TestSpringApplication(sources);
+		application.setWebEnvironment(false);
+		application.run();
+	}
 
 	@Test
 	public void run() throws Exception {
