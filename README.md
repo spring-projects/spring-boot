@@ -40,8 +40,8 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin.zip](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.zip)
-* [spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin.tar.gz](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.tar.gz)
+* [spring-boot-cli-0.5.0.M1-bin.zip](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.zip)
+* [spring-boot-cli-0.5.0.M1-bin.tar.gz](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.tar.gz)
 
 Cutting edge [snapshot distributions](http://repo.springsource.org/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
