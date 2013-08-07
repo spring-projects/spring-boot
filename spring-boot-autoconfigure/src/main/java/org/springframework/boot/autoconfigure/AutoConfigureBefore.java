@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * Hint for that an {@link EnableAutoConfiguration auto-configuration} should be applied
- * after the specified auto-configuration classes.
+ * before other specified auto-configuration classes.
  * 
  * @author Phillip Webb
  */
