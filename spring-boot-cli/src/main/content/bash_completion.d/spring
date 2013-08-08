@@ -1,5 +1,5 @@
 # bash completion for spring
-# Installation: source this file locally in a terminal or from 
+# Installation: source this file locally in a terminal or from
 # ~/.bashrc or put it in /etc/bash_completions.d (debian)
 
 _spring()
@@ -28,7 +28,7 @@ _spring()
                 done
                 return 0
             fi
-        done        
+        done
     fi
 
     _filedir
