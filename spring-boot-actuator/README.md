@@ -52,24 +52,24 @@ If you are using Maven create a really simple `pom.xml` with 2 dependencies:
       <packaging>jar</packaging>
       <parent>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-starter-parent</artifactId>
+        <artifactId>spring-boot-starter-parent</artifactId>
         <version>{{project.version}}</version>
       </parent>
       <dependencies>
         <dependency>
           <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-starter-web</artifactId>
+          <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
           <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-starter-actuator</artifactId>
+          <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
       </dependencies>
       <build>
         <plugins>
           <plugin>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-package-maven-plugin</artifactId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
          </plugin>
         </plugins>
       </build>
