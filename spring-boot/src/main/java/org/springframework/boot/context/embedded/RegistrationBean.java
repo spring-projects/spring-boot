@@ -25,12 +25,12 @@ import org.springframework.core.Conventions;
 import org.springframework.util.Assert;
 
 /**
- * Base class for {@link ServletRegistrationBean servlet} and
- * {@link FilterRegistrationBean filter} registration beans.
+ * Base class for Servlet 3.0+ based registration beans.
  * 
  * @author Phillip Webb
  * @see ServletRegistrationBean
  * @see FilterRegistrationBean
+ * @see ServletListenerRegistrationBean
  */
 public abstract class RegistrationBean implements ServletContextInitializer {
 

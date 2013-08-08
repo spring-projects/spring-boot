@@ -258,7 +258,8 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		for (Entry<String, EventListener> listenerBean : getOrderedBeansOfType(EventListener.class)) {
 			String name = listenerBean.getKey();
 			EventListener listener = listenerBean.getValue();
-			if (!filterRegistrations.contains(listener)) {
+			if (ServletListenerRegistrationBean.isSupportedType(listener)
+					&& !filterRegistrations.contains(listener)) {
 				ServletListenerRegistrationBean<EventListener> registration = new ServletListenerRegistrationBean<EventListener>(
 						listener);
 				registration.setName(name);
