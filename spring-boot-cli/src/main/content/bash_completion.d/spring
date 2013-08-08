@@ -1,0 +1,36 @@
+# bash completion for spring
+# Installation: source this file locally in a terminal or from 
+# ~/.bashrc or put it in /etc/bash_completions.d (debian)
+
+_spring()
+{
+    local cur prev help helps words cword command commands i
+
+    COMPREPLY=()
+    _get_comp_words_by_ref cur prev words cword
+
+    commands=( `_parse_help spring | sed -e 's/--//'` )
+    if [[ "$prev" == spring ]]; then
+        for command in "${commands[@]}"; do
+            if [[ "${cur}${command#$cur*}" == "$command" ]]; then
+                COMPREPLY+=("$command")
+            fi
+        done
+        return 0
+    else
+        for command in "${commands[@]}"; do
+            if [[ "$prev" == "$command" && "$cur" == -* ]]; then
+                helps=( `_parse_help 'spring help' $prev` )
+                for help in "${helps[@]:2}"; do
+                    if [[ "${cur}${help#$cur*}" == "$help" ]]; then
+                        COMPREPLY+=("$help")
+                    fi
+                done
+                return 0
+            fi
+        done        
+    fi
+
+    _filedir
+
+} && complete -F _spring spring

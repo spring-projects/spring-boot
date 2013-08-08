@@ -126,6 +126,9 @@ public class SpringCli {
 	}
 
 	private Command find(String name) {
+		if (name.startsWith("--")) {
+			name = name.substring("--".length());
+		}
 		for (Command candidate : this.commands) {
 			if (candidate.getName().equals(name)) {
 				return candidate;
@@ -143,10 +146,17 @@ public class SpringCli {
 		for (Command command : this.commands) {
 			String usageHelp = command.getUsageHelp();
 			String description = command.getDescription();
-			Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
+			String name = command.getName();
+			if (!name.startsWith("--")) {
+				name = "--" + name + ", " + name;
+			}
+			Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", name,
 					(usageHelp == null ? "" : usageHelp), (description == null ? ""
 							: description)));
 		}
+		Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", "-d, --debug",
+				"Verbose mode",
+				"Print additional status information for the command you are running"));
 		Log.info("");
 		Log.info("See '" + CLI_APP
 				+ " help <command>' for more information on a specific command.");
