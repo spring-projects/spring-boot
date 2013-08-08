@@ -277,15 +277,9 @@ will enable HTTP basic authentication by default on all the endpoints.
 In the `pom.xml` it would look like this:
 
         <dependency>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-javaconfig</artifactId>
-          <version>1.0.0.BUILD-SNAPSHOT</version>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
-(Spring Security java config is still work in progress so we have used
-a snapshot.  Beware of sudden changes.)
-
-<!--FIXME: update Spring Security to full release -->
 
 Try it out:
 
