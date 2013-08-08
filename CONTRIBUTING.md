@@ -3,6 +3,28 @@ Spring Boot is released under the non-restrictive Apache 2.0 license. If you wou
 to contribute something, or simply want to hack on the code this document should help
 you get started.
 
+Before we accept a non-trivial patch or pull request we will need you to sign the
+[contributor's agreement](https://support.springsource.com/spring_committer_signup).
+Signing the contributor's agreement does not grant anyone commit rights to the main repository, but it does mean that we
+can accept your contributions, and you will get an author credit if we do.  Active contributors might be asked to join
+the core team, and given the ability to merge pull requests.
+
+## Code Conventions and Housekeeping
+
+None of these is essential for a pull request, but they will all help.  They can also be added after the original pull
+request but before a merge.
+
+* Use the Spring Framework code format conventions. Import `eclipse-code-formatter.xml` from the root of the project
+  if you are using Eclipse. If using IntelliJ, copy `spring-intellij-code-style.xml` to `~/.IntelliJIdea*/config/codestyles`
+  and select spring-intellij-code-style from Settings -> Code Styles.
+* Make sure all new .java files to have a simple Javadoc class comment with at least an @author tag identifying you, and
+  preferably at least a paragraph on what the class is for.
+* Add the ASF license header comment to all new .java files (copy from existing files in the project)
+* Add yourself as an @author to the .java files that you modify substantially (moew than cosmetic changes).
+* Add some Javadocs and, if you change the namespace, some XSD doc elements.
+* A few unit tests would help a lot as well - someone has to do it.
+* If no-one else is using your branch, please rebase it against the current master (or other target branch in the main project).
+
 ## Working with the code
 If you don't have an IDE preference we would recommend that you use
 [Spring Tools Suite](http://www.springsource.com/developer/sts) or
