@@ -16,23 +16,23 @@
 
 package org.springframework.boot.cli.command;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.Log;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 /**
- * {@link Command} to display the 'version' number.
- * 
- * @author Phillip Webb
+ * @author Dave Syer
  */
-public class VersionCommand extends AbstractCommand {
+public class OptionParsingCommandTests {
 
-	public VersionCommand() {
-		super("version", "Show the version");
-	}
-
-	@Override
-	public void run(String... args) {
-		Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
+	@Test
+	public void optionHelp() {
+		OptionHandler handler = new OptionHandler();
+		handler.option("bar", "Bar");
+		OptionParsingCommand command = new OptionParsingCommand("foo", "Foo", handler) {
+		};
+		assertThat(command.getHelp(), containsString("--bar"));
 	}
 
 }
