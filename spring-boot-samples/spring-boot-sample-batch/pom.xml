@@ -19,6 +19,15 @@
 			<artifactId>spring-boot-starter-batch</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- This dependency is just for our integration testing, your app would
+			not need it -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot</artifactId>
+			<version>${project.version}</version>
+			<classifier>tests</classifier>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
