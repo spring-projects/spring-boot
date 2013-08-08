@@ -118,7 +118,7 @@
 				<artifactId>maven-invoker-plugin</artifactId>
 				<configuration>
 					<settingsFile>src/it/settings.xml</settingsFile>
-					<projectsDirectory>${project.parent.basedir}/spring-boot-samples/</projectsDirectory>
+					<projectsDirectory>${main.basedir}/spring-boot-samples/</projectsDirectory>
 					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
 					<skipInvocation>${skipTests}</skipInvocation>
 				</configuration>
