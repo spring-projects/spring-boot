@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.context.initializer.ConfigFileApplicationContextInitializer;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
@@ -130,6 +129,11 @@ public class ConfigFileApplicationContextInitializerTests {
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
+	}
+
+	@Test
+	public void defaultApplicationProperties() throws Exception {
+
 	}
 
 }
