@@ -105,16 +105,14 @@ endpoint.  An endpoint can be implemented as a Spring MVC
 
     }
 
-You can launch that straight away using the Spring Boot CLI
-(without the `@EnableAutoConfiguration` and even without the import
-statements that your IDE will add if you are using one), or you can
-use the main method to launch it from your project jar.  Just add a
-`start-class` in the properties section of the `pom` above pointing to
-the fully qualified name of your `SampleController`, e.g.
+You can use the main method to launch it from your project jar.  You
+can also launch that straight using the Spring Boot CLI (without
+the `@EnableAutoConfiguration` and even without the import statements
+that your IDE will add if you are using one), if you just add
 
-      <properties>
-         <start-class>com.mycompany.sample.SampleController</start-class>
-      </properties>
+```
+@Grab("org.springframework.boot:spring-boot-starter-actuator:{{project.version}}")
+```
 
 and package and run:
 
