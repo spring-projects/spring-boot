@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EventListener;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -207,6 +208,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		Set<ServletContextInitializer> initializers = new LinkedHashSet<ServletContextInitializer>();
 		Set<Servlet> servletRegistrations = new LinkedHashSet<Servlet>();
 		Set<Filter> filterRegistrations = new LinkedHashSet<Filter>();
+		Set<EventListener> listenerRegistrations = new LinkedHashSet<EventListener>();
 
 		for (Entry<String, ServletContextInitializer> initializerBean : getOrderedBeansOfType(ServletContextInitializer.class)) {
 			ServletContextInitializer initializer = initializerBean.getValue();
@@ -218,6 +220,11 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			if (initializer instanceof FilterRegistrationBean) {
 				filterRegistrations.add(((FilterRegistrationBean) initializer)
 						.getFilter());
+			}
+			if (initializer instanceof ServletListenerRegistrationBean) {
+				listenerRegistrations
+						.add(((ServletListenerRegistrationBean<?>) initializer)
+								.getListener());
 			}
 		}
 
@@ -243,6 +250,17 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			Filter filter = filterBean.getValue();
 			if (!filterRegistrations.contains(filter)) {
 				FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+				registration.setName(name);
+				initializers.add(registration);
+			}
+		}
+
+		for (Entry<String, EventListener> listenerBean : getOrderedBeansOfType(EventListener.class)) {
+			String name = listenerBean.getKey();
+			EventListener listener = listenerBean.getValue();
+			if (!filterRegistrations.contains(listener)) {
+				ServletListenerRegistrationBean<EventListener> registration = new ServletListenerRegistrationBean<EventListener>(
+						listener);
 				registration.setName(name);
 				initializers.add(registration);
 			}
