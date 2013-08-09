@@ -28,6 +28,7 @@ public class DefaultGaugeService implements GaugeService {
 	private MetricRepository metricRepository;
 
 	/**
+	 * Create a new {@link DefaultGaugeService} instance.
 	 * @param counterRepository
 	 */
 	public DefaultGaugeService(MetricRepository counterRepository) {

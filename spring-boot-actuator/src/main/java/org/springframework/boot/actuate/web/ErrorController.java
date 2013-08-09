@@ -26,6 +26,9 @@ import org.springframework.stereotype.Controller;
  */
 public interface ErrorController {
 
+	/**
+	 * Returns the path of the error page.
+	 */
 	public String getErrorPath();
 
 }

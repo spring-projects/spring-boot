@@ -20,7 +20,6 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -30,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues}.
+ * 
  * @author Dave Syer
  */
 public class PropertySourcesPropertyValuesTests {

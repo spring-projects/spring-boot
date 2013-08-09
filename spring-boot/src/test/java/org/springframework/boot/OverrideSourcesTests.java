@@ -26,6 +26,9 @@ import org.springframework.context.annotation.Primary;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link SpringApplication} {@link SpringApplication#setSources(java.util.Set)
+ * source overrides}.
+ * 
  * @author Dave Syer
  */
 public class OverrideSourcesTests {

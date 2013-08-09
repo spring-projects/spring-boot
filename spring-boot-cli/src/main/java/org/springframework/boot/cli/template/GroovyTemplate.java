@@ -32,8 +32,6 @@ import org.codehaus.groovy.control.CompilationFailedException;
  */
 public abstract class GroovyTemplate {
 
-	// FIXME is this used?
-
 	public static String template(String name) throws IOException,
 			CompilationFailedException, ClassNotFoundException {
 		return template(name, Collections.<String, Object> emptyMap());

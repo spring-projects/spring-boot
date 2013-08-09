@@ -152,7 +152,6 @@ public class SecurityAutoConfiguration {
 					list.add(path);
 				}
 			}
-			// FIXME makes more sense to secure endpoints with a different role
 			list.addAll(Arrays.asList(getEndpointPaths(true)));
 			return list.toArray(new String[list.size()]);
 		}
@@ -177,9 +176,6 @@ public class SecurityAutoConfiguration {
 			if (this.endpointHandlerMapping == null) {
 				return NO_PATHS;
 			}
-
-			// FIXME this will still open up paths on the server when a management port is
-			// being used.
 
 			List<Endpoint<?>> endpoints = this.endpointHandlerMapping.getEndpoints();
 			List<String> paths = new ArrayList<String>(endpoints.size());

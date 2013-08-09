@@ -30,5 +30,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface AutoConfigureBefore {
+
+	/**
+	 * The auto-configure classes that should have not yet been applied.
+	 */
 	Class<?>[] value();
+
 }

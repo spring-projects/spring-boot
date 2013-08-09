@@ -43,12 +43,6 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 
 		dependencies.add("org.codehaus.groovy", "groovy-templates",
 				dependencies.getProperty("groovy.version"));
-		// FIXME restore Tomcat when we can get reload to work
-		// dependencies.ifMissingClasses("org.apache.catalina.startup.Tomcat")
-		// .add("org.apache.tomcat.embed", "tomcat-embed-core",
-		// dependencies.getProperty("tomcat.version"))
-		// .add("org.apache.tomcat.embed", "tomcat-embed-logging-juli",
-		// dependencies.getProperty("tomcat.version"));
 	}
 
 	@Override

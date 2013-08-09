@@ -88,8 +88,8 @@ public class Repackager {
 	}
 
 	/**
-	 * Repackage to the given destination so that it can be run using '{@literal java -jar}
-	 * '
+	 * Repackage to the given destination so that it can be launched using '
+	 * {@literal java -jar}'
 	 * @param destination the destination file (may be the same as the source)
 	 * @param libraries the libraries required to run the archive
 	 * @throws IOException

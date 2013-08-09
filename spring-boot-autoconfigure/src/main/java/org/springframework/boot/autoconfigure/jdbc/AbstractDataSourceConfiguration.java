@@ -28,8 +28,6 @@ import org.springframework.util.StringUtils;
  */
 public class AbstractDataSourceConfiguration {
 
-	// TODO: add pool parameters
-
 	@Value("${spring.database.driverClassName:}")
 	private String driverClassName;
 

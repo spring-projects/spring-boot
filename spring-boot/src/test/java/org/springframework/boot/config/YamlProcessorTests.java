@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
-import org.springframework.boot.config.YamlProcessor;
 import org.springframework.boot.config.YamlProcessor.MatchCallback;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -27,8 +26,9 @@ import org.springframework.core.io.Resource;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Dave Syer
+ * Tests for {@link YamlProcessor}.
  * 
+ * @author Dave Syer
  */
 public class YamlProcessorTests {
 

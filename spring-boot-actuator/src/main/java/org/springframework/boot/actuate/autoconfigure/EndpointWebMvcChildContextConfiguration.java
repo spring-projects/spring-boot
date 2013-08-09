@@ -55,7 +55,6 @@ public class EndpointWebMvcChildContextConfiguration implements
 		factory.setPort(this.managementServerProperties.getPort());
 		factory.setAddress(this.managementServerProperties.getAddress());
 		factory.setContextPath(this.managementServerProperties.getContextPath());
-		// TODO: Disable sessions
 	}
 
 	@Bean
@@ -85,10 +84,6 @@ public class EndpointWebMvcChildContextConfiguration implements
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
 	@ConditionalOnBean(name = "springSecurityFilterChain", search = SearchStrategy.PARENTS)
 	public static class EndpointWebMvcChildContextSecurityConfiguration {
-
-		// FIXME reuse of security filter here is not good. What if totally different
-		// security config is required. Perhaps we can just drop it on the management
-		// port?
 
 		@Bean
 		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
