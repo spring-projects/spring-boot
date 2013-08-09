@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -24,15 +25,16 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
- * {@link Condition} that checks for the specific classes.
+ * {@link Condition} that checks for the presence or absence of specific classes.
  * 
  * @author Phillip Webb
  * @see ConditionalOnClass
+ * @see ConditionalOnMissingClass
  */
 class OnClassCondition implements Condition {
 
@@ -43,40 +45,90 @@ class OnClassCondition implements Condition {
 
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 
-		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
-				ConditionalOnClass.class.getName(), true);
-		if (attributes != null) {
-			List<String> classNames = new ArrayList<String>();
-			collectClassNames(classNames, attributes.get("value"));
-			collectClassNames(classNames, attributes.get("name"));
-			Assert.isTrue(classNames.size() > 0,
-					"@ConditionalOnClass annotations must specify at least one class value");
-			for (String className : classNames) {
+		MultiValueMap<String, Object> onClasses = getAttributes(metadata,
+				ConditionalOnClass.class);
+		if (onClasses != null) {
+			List<String> missing = getMatchingClasses(onClasses, MatchType.MISSING,
+					context);
+			if (!missing.isEmpty()) {
 				if (logger.isDebugEnabled()) {
-					logger.debug(checking + "Looking for class: " + className);
+					logger.debug(checking
+							+ "Required @ConditionalOnClass classes not found: "
+							+ StringUtils.collectionToCommaDelimitedString(missing)
+							+ " (search terminated with matches=false)");
 				}
-				if (!ClassUtils.isPresent(className, context.getClassLoader())) {
-					if (logger.isDebugEnabled()) {
-						logger.debug(checking + "Class not found: " + className
-								+ " (search terminated with matches=false)");
-					}
-					return false;
-				}
+				return false;
 			}
 		}
+
+		MultiValueMap<String, Object> onMissingClasses = getAttributes(metadata,
+				ConditionalOnMissingClass.class);
+		if (onMissingClasses != null) {
+			List<String> present = getMatchingClasses(onMissingClasses,
+					MatchType.PRESENT, context);
+			if (!present.isEmpty()) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(checking
+							+ "Required @ConditionalOnMissing classes found: "
+							+ StringUtils.collectionToCommaDelimitedString(present)
+							+ " (search terminated with matches=false)");
+				}
+				return false;
+			}
+		}
+
 		if (logger.isDebugEnabled()) {
 			logger.debug(checking + "Match result is: true");
 		}
 		return true;
 	}
 
-	private void collectClassNames(List<String> classNames, List<Object> values) {
-		for (Object value : values) {
-			for (Object valueItem : (Object[]) value) {
-				classNames.add(valueItem instanceof Class<?> ? ((Class<?>) valueItem)
-						.getName() : valueItem.toString());
+	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,
+			Class<?> annotationType) {
+		return metadata.getAllAnnotationAttributes(annotationType.getName(), true);
+	}
+
+	private List<String> getMatchingClasses(MultiValueMap<String, Object> attributes,
+			MatchType matchType, ConditionContext context) {
+		List<String> matches = new LinkedList<String>();
+		addAll(matches, attributes.get("value"));
+		addAll(matches, attributes.get("name"));
+		Iterator<String> iterator = matches.iterator();
+		while (iterator.hasNext()) {
+			if (!matchType.matches(iterator.next(), context)) {
+				iterator.remove();
+			}
+		}
+		return matches;
+	}
+
+	private void addAll(List<String> list, List<Object> itemsToAdd) {
+		if (itemsToAdd != null) {
+			for (Object item : itemsToAdd) {
+				for (String arrayItem : (String[]) item) {
+					list.add(arrayItem.toString());
+				}
 			}
 		}
 	}
 
+	private static enum MatchType {
+
+		PRESENT {
+			@Override
+			public boolean matches(String className, ConditionContext context) {
+				return ClassUtils.isPresent(className, context.getClassLoader());
+			}
+		},
+
+		MISSING {
+			@Override
+			public boolean matches(String className, ConditionContext context) {
+				return !ClassUtils.isPresent(className, context.getClassLoader());
+			}
+		};
+
+		public abstract boolean matches(String className, ConditionContext context);
+
+	};
 }
