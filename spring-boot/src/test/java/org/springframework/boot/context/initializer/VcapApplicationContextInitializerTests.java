@@ -18,7 +18,6 @@ package org.springframework.boot.context.initializer;
 
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
-import org.springframework.boot.context.initializer.VcapApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -43,6 +42,25 @@ public class VcapApplicationContextInitializerTests {
 		this.initializer.initialize(context);
 		assertEquals("bb7935245adf3e650dfb7c58a06e9ece", context.getEnvironment()
 				.getProperty("vcap.application.instance_id"));
+	}
+
+	@Test
+	public void testUnparseableApplicationProperties() {
+		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+		TestUtils.addEnviroment(context, "VCAP_APPLICATION:");
+		this.initializer.initialize(context);
+		assertEquals(null, context.getEnvironment().getProperty("vcap"));
+	}
+
+	@Test
+	public void testNullApplicationProperties() {
+		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+		TestUtils
+				.addEnviroment(
+						context,
+						"VCAP_APPLICATION:{\"application_users\":null,\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],\"started_at\":\"2013-05-29 02:37:59 +0000\",\"started_at_timestamp\":1369795079,\"host\":\"0.0.0.0\",\"port\":61034,\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
+		this.initializer.initialize(context);
+		assertEquals(null, context.getEnvironment().getProperty("vcap"));
 	}
 
 	@Test

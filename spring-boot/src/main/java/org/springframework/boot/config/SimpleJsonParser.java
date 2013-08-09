@@ -37,22 +37,28 @@ public class SimpleJsonParser implements JsonParser {
 
 	@Override
 	public Map<String, Object> parseMap(String json) {
-		if (json.startsWith("{")) {
-			return parseMapInternal(json);
-		}
-		else if (json.trim().equals("")) {
-			return new HashMap<String, Object>();
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("{")) {
+				return parseMapInternal(json);
+			}
+			else if (json.equals("")) {
+				return new HashMap<String, Object>();
+			}
 		}
 		return null;
 	}
 
 	@Override
 	public List<Object> parseList(String json) {
-		if (json.startsWith("[")) {
-			return parseListInternal(json);
-		}
-		else if (json.trim().equals("")) {
-			return new ArrayList<Object>();
+		if (json != null) {
+			json = json.trim();
+			if (json.startsWith("[")) {
+				return parseListInternal(json);
+			}
+			else if (json.trim().equals("")) {
+				return new ArrayList<Object>();
+			}
 		}
 		return null;
 	}

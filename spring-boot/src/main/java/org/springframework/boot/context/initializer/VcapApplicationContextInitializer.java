@@ -18,11 +18,14 @@ package org.springframework.boot.context.initializer;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.config.JsonParser;
 import org.springframework.boot.config.JsonParserFactory;
 import org.springframework.context.ApplicationContextInitializer;
@@ -83,6 +86,9 @@ import org.springframework.util.StringUtils;
 public class VcapApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
+	private static final Log logger = LogFactory
+			.getLog(VcapApplicationContextInitializer.class);
+
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
@@ -136,29 +142,53 @@ public class VcapApplicationContextInitializer implements
 	}
 
 	private Properties getPropertiesFromApplication(Environment environment) {
-		Map<String, Object> map = this.parser.parseMap(environment.getProperty(
-				VCAP_APPLICATION, "{}"));
 		Properties properties = new Properties();
-		properties.putAll(map);
+		try {
+			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
+					VCAP_APPLICATION, "{}"));
+			if (map != null) {
+				map = new LinkedHashMap<String, Object>(map);
+				for (String key : map.keySet()) {
+					Object value = map.get(key);
+					if (!(value instanceof String)) {
+						if (value == null) {
+							value = "";
+						}
+						map.put(key, value.toString());
+					}
+				}
+				properties.putAll(map);
+			}
+		}
+		catch (IllegalArgumentException e) {
+			logger.error("Could not parse VCAP_APPLICATION", e);
+		}
 		return properties;
 	}
 
 	private Properties getPropertiesFromServices(Environment environment) {
-		Map<String, Object> map = this.parser.parseMap(environment.getProperty(
-				VCAP_SERVICES, "{}"));
 		Properties properties = new Properties();
-		for (Object services : map.values()) {
-			@SuppressWarnings("unchecked")
-			List<Object> list = (List<Object>) services;
-			for (Object object : list) {
-				@SuppressWarnings("unchecked")
-				Map<String, Object> service = (Map<String, Object>) object;
-				String key = (String) service.get("name");
-				if (key == null) {
-					key = (String) service.get("label");
+		try {
+			Map<String, Object> map = this.parser.parseMap(environment.getProperty(
+					VCAP_SERVICES, "{}"));
+			if (map != null) {
+				for (Object services : map.values()) {
+					@SuppressWarnings("unchecked")
+					List<Object> list = (List<Object>) services;
+					for (Object object : list) {
+						@SuppressWarnings("unchecked")
+						Map<String, Object> service = (Map<String, Object>) object;
+						String key = (String) service.get("name");
+						if (key == null) {
+							key = (String) service.get("label");
+						}
+						flatten(properties, service, key);
+					}
 				}
-				flatten(properties, service, key);
 			}
+		}
+		catch (IllegalArgumentException e) {
+			logger.error("Could not parse VCAP_APPLICATION", e);
 		}
 		return properties;
 	}
