@@ -26,6 +26,15 @@ import java.io.IOException;
 public interface Libraries {
 
 	/**
+	 * Represents no libraries.
+	 */
+	public static Libraries NONE = new Libraries() {
+		@Override
+		public void doWithLibraries(LibraryCallback callback) throws IOException {
+		}
+	};
+
+	/**
 	 * Iterate all relevant libraries.
 	 * @param callback a callback for each relevant library.
 	 * @throws IOException
