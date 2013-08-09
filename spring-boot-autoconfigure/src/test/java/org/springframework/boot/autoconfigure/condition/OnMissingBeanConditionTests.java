@@ -17,9 +17,6 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.OnMissingBeanCondition;
-import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +28,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnMissingBeanCondition}.
+ * Tests for {@link ConditionalOnMissingBean}.
  * 
  * @author Dave Syer
  * @author Phillip Webb
