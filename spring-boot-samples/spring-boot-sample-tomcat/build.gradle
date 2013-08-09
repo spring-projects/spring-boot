@@ -11,8 +11,7 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 
 repositories {
-	mavenCentral()
-	maven { url "http://repo.springsource.org/libs-snapshot-local" }
+	mavenLocal()
 }
 
 dependencies {

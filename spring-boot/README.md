@@ -138,8 +138,8 @@ refer to an explicit location using the `spring.config.location` environment pro
     $ java -jar myproject.jar --spring.config.name=myproject
 
 
-_NOTE: You can also use '.yaml' files as an alternative to '.properties' (see 
-[below](#using-yaml-instead-of-properties))_
+> **Note:** You can also use '.yaml' files as an alternative to '.properties' (see 
+> [below](#using-yaml-instead-of-properties))_
 
 ### Setting the Default Spring Profile
 Spring Profiles are a way to segregate parts of the application configuration and make it 
