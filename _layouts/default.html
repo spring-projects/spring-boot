@@ -1,20 +1,24 @@
+---
+spring_site_url: http://sagan.cfapps.io
+---
+
 <!DOCTYPE html>
 <html>
 <head>
   <title>{{ page.title }}</title>
-  <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/bootstrap/css/bootstrap.min.css" />
   <!-- <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-responsive.min.css" /> -->
   <link href='http://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" type="text/css" href="/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/font-awesome/css/font-awesome.min.css" />
 
-  <link rel="stylesheet" type="text/css" href="/css/main.css.css" />
-  <link rel="stylesheet" type="text/css" href="/css/typography.css.css" />
-  <link rel="stylesheet" type="text/css" href="/css/icons.css.css" />
-  <link rel="stylesheet" type="text/css" href="/css/projects.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/css/main.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/css/typography.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/css/icons.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/css/projects.css.css" />
 
-  <script type="text/javascript" src="/js/jquery.js"></script>
-  <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/js/application.js"></script>
+  <script type="text/javascript" src="{{ site.baseurl }}/js/jquery.js"></script>
+  <script type="text/javascript" src="{{ site.baseurl }}/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{ site.baseurl }}/js/application.js"></script>
   <meta name="google-site-verification" content="7qGntFPD9lWAVCtUu5U77v4l68PsTHf6xpzgjQv2j2M" />
 </head>
 <body>
@@ -23,20 +27,20 @@
       <div class="container-fluid">
         <div class="spring-logo--container">
           <div class="logo-bg"></div>
-          <a class="spring-logo" href="{{site.spring_site_url}}"></a>
+          <a class="spring-logo" href="{{page.spring_site_url}}"></a>
         </div>
         <ul class="nav pull-right">
           <li class="navbar-link">
-            <a href="{{site.spring_site_url}}/documentation">Documentation</a>
+            <a href="{{page.spring_site_url}}/documentation">Documentation</a>
           </li>
           <li class="navbar-link">
-            <a href="{{site.spring_site_url}}/guides">Guides</a>
+            <a href="{{page.spring_site_url}}/guides">Guides</a>
           </li>
           <li class="navbar-link active">
             <a href="/">Projects</a>
           </li>
           <li class="navbar-link">
-            <a href="{{site.spring_site_url}}/blog">Blog</a>
+            <a href="{{page.spring_site_url}}/blog">Blog</a>
           </li>
           <li class="navbar-link">
             <a href="http://forum.springframework.org">Forum</a>
@@ -51,7 +55,7 @@
     <div class="search-dropdown--container js-search-dropdown">
       <div class="container-fluid">
         <div class="search-form--container">
-          <form class="form-inline form-search" action="{{site.spring_site_url}}/search" method="get">
+          <form class="form-inline form-search" action="{{page.spring_site_url}}/search" method="get">
             <input type="text" class="search-query search-form--form js-search-input" placeholder="Search for documention, guides, and posts..." name="q" />
             <button type="submit" class="search-form--submit"><i class="icon-search"></i></button>
           </form>
@@ -71,11 +75,11 @@
           <div class="navbar">
             <div class="container">
               <ul class="nav">
-                <li><a href="{{site.spring_site_url}}/tools.html">Tools</a></li>
-                <li><a href="{{site.spring_site_url}}/services.html">Services</a></li>
-                <li><a href="{{site.spring_site_url}}/case-study.html">Case Studies</a></li>
-                <li><a href="{{site.spring_site_url}}/about.html">About Us</a></li>
-                <li><a href="{{site.spring_site_url}}/jobs.html">Work With Us</a></li>
+                <li><a href="{{page.spring_site_url}}/tools.html">Tools</a></li>
+                <li><a href="{{page.spring_site_url}}/services.html">Services</a></li>
+                <li><a href="{{page.spring_site_url}}/case-study.html">Case Studies</a></li>
+                <li><a href="{{page.spring_site_url}}/about.html">About Us</a></li>
+                <li><a href="{{page.spring_site_url}}/jobs.html">Work With Us</a></li>
               </ul>
             </div>
           </div>
@@ -83,7 +87,7 @@
                 document.write(d.getFullYear());</script> GoPivotal, Inc. All Rights Reserved.
           <a href="http://www.vmware.com/help/legal.html">Terms of Use</a>,
           <a href="http://www.gopivotal.com/privacy-policy">Privacy</a>, and
-          <a href="{{site.spring_site_url}}//trademark.html">Trademark Standards</a>
+          <a href="{{page.spring_site_url}}//trademark.html">Trademark Standards</a>
         </div>
         <div class="span4 footer-newsletter--wrapper pull-right">
           <div class="footer-newsletter--container">
