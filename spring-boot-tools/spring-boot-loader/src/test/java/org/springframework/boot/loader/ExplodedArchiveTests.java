@@ -123,6 +123,7 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	public void getFilteredArchive() throws Exception {
 		Archive filteredArchive = this.archive
 				.getFilteredArchive(new Archive.EntryFilter() {
@@ -140,7 +141,6 @@ public class ExplodedArchiveTests {
 				new URL[] { filteredArchive.getUrl() });
 		assertThat(classLoader.getResourceAsStream("1.dat").read(), equalTo(1));
 		assertThat(classLoader.getResourceAsStream("2.dat"), nullValue());
-		classLoader.close();
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
