@@ -7,6 +7,11 @@ Projects GH Pages Common Content
 	git checkout --orphan gh-pages
 	git pull gh-pages-common master
 
+Add a _config.yml file and add your project info:
+
+	name: Spring Data JPA
+	baseurl: /spring-data-jpa
+
 ## To create a new page:
 
 Create a file (e.g. index.html) with this at the top:
