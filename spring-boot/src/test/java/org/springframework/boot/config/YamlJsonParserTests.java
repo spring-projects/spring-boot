@@ -16,10 +16,6 @@
 
 package org.springframework.boot.config;
 
-import org.springframework.boot.config.JsonParser;
-import org.springframework.boot.config.YamlJsonParser;
-
-
 /**
  * Tests for {@link YamlJsonParser}.
  * 

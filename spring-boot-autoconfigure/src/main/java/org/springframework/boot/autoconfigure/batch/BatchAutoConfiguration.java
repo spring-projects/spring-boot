@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Configuration;
 public class BatchAutoConfiguration {
 
 	@Bean
-	// Harmless to always include this, but maybe could make it conditional as well
 	public BatchDatabaseInitializer batchDatabaseInitializer() {
 		return new BatchDatabaseInitializer();
 	}

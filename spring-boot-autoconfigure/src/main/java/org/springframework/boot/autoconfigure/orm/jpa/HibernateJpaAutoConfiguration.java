@@ -78,7 +78,6 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	protected void configure(
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
-		// FIXME: detect EhCache
 		properties.put("hibernate.cache.provider_class",
 				"org.hibernate.cache.HashtableCacheProvider");
 		if (StringUtils.hasLength(this.ddlAuto) && !"none".equals(this.ddlAuto)) {

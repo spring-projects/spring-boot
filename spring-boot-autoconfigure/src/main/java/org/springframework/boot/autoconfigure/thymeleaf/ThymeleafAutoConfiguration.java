@@ -46,7 +46,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf templating.
+ * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
  * 
  * @author Dave Syer
  */

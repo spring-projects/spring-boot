@@ -60,7 +60,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	/**
 	 * Define a package before a {@code findClass} call is made. This is necessary to
 	 * ensure that the appropriate manifest for nested JARs associated with the package.
-	 * 
 	 * @param name the class name being found
 	 * @param packageName the pacakge
 	 */

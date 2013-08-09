@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.util.EventListener;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextListener;
 
@@ -55,6 +57,14 @@ public class ServletListenerRegistrationBeanTests {
 				this.listener);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addListener(this.listener);
+	}
+
+	@Test
+	public void cannotRegisterUnsupportedType() throws Exception {
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Listener is not of a supported type");
+		new ServletListenerRegistrationBean<EventListener>(new EventListener() {
+		});
 	}
 
 }

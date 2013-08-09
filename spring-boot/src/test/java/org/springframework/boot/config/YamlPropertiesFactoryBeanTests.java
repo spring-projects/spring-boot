@@ -22,7 +22,6 @@ import java.util.Properties;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.boot.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.config.YamlProcessor.DocumentMatcher;
 import org.springframework.boot.config.YamlProcessor.MatchStatus;
 import org.springframework.boot.config.YamlProcessor.ResolutionMethod;
@@ -194,7 +193,6 @@ public class YamlPropertiesFactoryBeanTests {
 				"foo:\n- bar:\n    spam: crap\n- baz\n- one: two\n  three: four"
 						.getBytes()) });
 		Properties properties = factory.getObject();
-		// System.err.println(properties);
 		assertEquals("crap", properties.get("foo[0].bar.spam"));
 		assertEquals("baz", properties.get("foo[1]"));
 		assertEquals("two", properties.get("foo[2].one"));

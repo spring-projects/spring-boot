@@ -34,8 +34,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
-import org.springframework.boot.loader.jar.JarEntryFilter;
-import org.springframework.boot.loader.jar.RandomAccessJarFile;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -75,6 +73,7 @@ public class RandomAccessJarFileTests {
 	public void createFromFile() throws Exception {
 		RandomAccessJarFile jarFile = new RandomAccessJarFile(this.rootJarFile);
 		assertThat(jarFile.getName(), notNullValue(String.class));
+		jarFile.close();
 	}
 
 	@Test
@@ -83,6 +82,7 @@ public class RandomAccessJarFileTests {
 				this.rootJarFile, 1);
 		RandomAccessJarFile jarFile = new RandomAccessJarFile(randomAccessDataFile);
 		assertThat(jarFile.getName(), notNullValue(String.class));
+		jarFile.close();
 	}
 
 	@Test

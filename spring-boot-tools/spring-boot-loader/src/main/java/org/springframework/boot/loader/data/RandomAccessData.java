@@ -29,7 +29,6 @@ public interface RandomAccessData {
 	/**
 	 * Returns an {@link InputStream} that can be used to read the underling data. The
 	 * caller is responsible close the underlying stream.
-	 * 
 	 * @return a new input stream that can be used to read the underlying data.
 	 */
 	InputStream getInputStream();

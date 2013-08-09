@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.reactor;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -30,6 +31,8 @@ import reactor.core.Reactor;
 import reactor.spring.context.ConsumerBeanPostProcessor;
 
 /**
+ * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
+ * 
  * @author Dave Syer
  */
 @Configuration
@@ -40,7 +43,7 @@ public class ReactorAutoConfiguration {
 
 	@Bean
 	public Environment reactorEnvironment() {
-		return new Environment(); // TODO: use Spring Environment to configure?
+		return new Environment();
 	}
 
 	@Bean

@@ -26,12 +26,6 @@ import java.util.Date;
  */
 public interface MetricRepository {
 
-	// FIXME perhaps revisit this, there is no way to get timestamps
-	// could also simply, leaving increment to counter service
-
-	// Perhaps findAll, findOne should return Measurements
-	// put(String name, Callback -> process(Metric)
-
 	void increment(String metricName, int amount, Date timestamp);
 
 	void set(String metricName, double value, Date timestamp);

@@ -28,7 +28,6 @@ public interface AuditEventRepository {
 
 	/**
 	 * Find audit events relating to the specified principal since the time provided.
-	 * 
 	 * @param principal the principal name to search for
 	 * @param after timestamp of earliest result required
 	 * @return audit events relating to the principal
@@ -37,7 +36,6 @@ public interface AuditEventRepository {
 
 	/**
 	 * Log an event.
-	 * 
 	 * @param event the audit event to log
 	 */
 	void add(AuditEvent event);

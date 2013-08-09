@@ -121,8 +121,6 @@ public class RunCommand extends OptionParsingCommand {
 					if ("--".equals(filename)) {
 						break;
 					}
-					// TODO: add support for strict Java compilation
-					// TODO: add support for recursive search in directory
 					if (filename.endsWith(".groovy") || filename.endsWith(".java")) {
 						File file = new File(filename);
 						if (file.isFile() && file.canRead()) {

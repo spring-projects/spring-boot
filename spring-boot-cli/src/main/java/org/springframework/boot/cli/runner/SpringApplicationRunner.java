@@ -37,8 +37,6 @@ public class SpringApplicationRunner {
 
 	private static int runnerCounter = 0;
 
-	// FIXME logging
-
 	private SpringApplicationRunnerConfiguration configuration;
 
 	private final File[] files;

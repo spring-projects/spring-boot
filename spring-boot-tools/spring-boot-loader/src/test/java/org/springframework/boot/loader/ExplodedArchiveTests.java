@@ -33,8 +33,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.loader.Archive;
-import org.springframework.boot.loader.ExplodedArchive;
 import org.springframework.boot.loader.Archive.Entry;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -76,6 +74,7 @@ public class ExplodedArchiveTests {
 			}
 		}
 		this.archive = new ExplodedArchive(this.rootFolder);
+		jarFile.close();
 	}
 
 	private void copy(InputStream in, OutputStream out) throws IOException {
@@ -141,6 +140,7 @@ public class ExplodedArchiveTests {
 				new URL[] { filteredArchive.getUrl() });
 		assertThat(classLoader.getResourceAsStream("1.dat").read(), equalTo(1));
 		assertThat(classLoader.getResourceAsStream("2.dat"), nullValue());
+		classLoader.close();
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
