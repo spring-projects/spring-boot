@@ -33,6 +33,6 @@ import org.springframework.context.annotation.Conditional;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(OnNotWebApplicationCondition.class)
+@Conditional(OnWebApplicationCondition.class)
 public @interface ConditionalOnNotWebApplication {
 }

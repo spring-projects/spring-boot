@@ -22,40 +22,63 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
- * {@link Condition} that checks for a web application context.
+ * {@link Condition} that checks for a the presence or absence of
+ * {@link WebApplicationContext}.
  * 
  * @author Dave Syer
  * @see ConditionalOnWebApplication
+ * @see ConditionalOnNotWebApplication
  */
 class OnWebApplicationCondition implements Condition {
+
+	private static final String WEB_CONTEXT_CLASS = "org.springframework.web.context.support.GenericWebApplicationContext";
 
 	private static Log logger = LogFactory.getLog(OnWebApplicationCondition.class);
 
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		boolean webContextRequired = metadata
+				.isAnnotated(ConditionalOnWebApplication.class.getName());
+		boolean webApplication = isWebApplication(context, metadata);
+		return (webContextRequired ? webApplication : !webApplication);
+	}
 
+	private boolean isWebApplication(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 
-		if (!ClassUtils.isPresent(
-				"org.springframework.web.context.support.GenericWebApplicationContext",
-				null)) {
+		if (!ClassUtils.isPresent(WEB_CONTEXT_CLASS, context.getClassLoader())) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(checking + "Web application classes not found");
+				logger.debug(checking + "web application classes not found");
 			}
 			return false;
 		}
-		boolean result = StringUtils.arrayToCommaDelimitedString(
-				context.getBeanFactory().getRegisteredScopeNames()).contains("session")
-				|| context.getEnvironment() instanceof StandardServletEnvironment;
-		if (logger.isDebugEnabled()) {
-			logger.debug(checking + "Web application context found: " + result);
-		}
-		return result;
-	}
 
-	// FIXME merge with OnNotWeb...
+		if (context.getBeanFactory() != null) {
+			String[] scopes = context.getBeanFactory().getRegisteredScopeNames();
+			if (ObjectUtils.containsElement(scopes, "session")) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(checking + "found web application scope");
+				}
+				return true;
+			}
+		}
+
+		if (context.getEnvironment() instanceof StandardServletEnvironment) {
+			if (logger.isDebugEnabled()) {
+				logger.debug(checking + "found web application environment");
+			}
+			return true;
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug(checking + "is not a web application");
+		}
+		return false;
+	}
 }
