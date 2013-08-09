@@ -35,7 +35,7 @@ import org.springframework.context.annotation.Conditional;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(OnMissingBeanCondition.class)
+@Conditional(OnBeanCondition.class)
 public @interface ConditionalOnMissingBean {
 
 	/**

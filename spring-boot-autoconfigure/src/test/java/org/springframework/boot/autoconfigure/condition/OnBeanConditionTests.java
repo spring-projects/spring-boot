@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +28,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link ConditionalOnBean}.
+ * 
  * @author Dave Syer
  */
 @Ignore
