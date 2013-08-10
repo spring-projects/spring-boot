@@ -1,13 +1,13 @@
 ---
 layout: default
-title: {{ site.project_name }}
+title: Your Project Name Here
 ---
 
 <div class="billboard--wrapper project-header--wrapper">
   <div class="billboard--container">
     <div class="container-fluid">
       <div  class="content--title">
-        <a href="/">Projects</a>
+        <a href="{{ page.main_site_url }}/projects">Projects</a>
       </div>
       <div class="row-fluid">
         <div class="span8">
@@ -19,7 +19,7 @@ title: {{ site.project_name }}
               <div class="icon icon-forum"></div>
             </a>
           </div>
-          <div class="project--title">{{ site.project_name }}</div>
+          <div class="project--title">{{ page.title }}</div>
 
           <div class="project--description">
             YOUR CONTENT HERE
