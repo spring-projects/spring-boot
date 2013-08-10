@@ -10,7 +10,7 @@ share common content like headers and footers, CSS, etc.
 
 If you're reading this file 
 
-## How to start a new 'gh-pages' Project page
+## How to start a new `gh-pages` project page
 From within your Spring project's git checkout directory:
 
     git remote add gh-pages-upstream https://github.com/springframework/gh-pages.git
@@ -18,13 +18,15 @@ From within your Spring project's git checkout directory:
     git pull gh-pages-upstream gh-pages
 
 
-## Create _config.yml file and add update your project info
+## Create `_config.yml` file and add update your project info
 For example:
 
+    ---
     name: Spring Data JPA
     baseurl: /spring-data-jpa
+    ---
 
-## Create index.html</h2>
+## Create index.html
 1. Copy common-index.html to index.html
 2. Add your content
 
