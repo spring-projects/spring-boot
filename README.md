@@ -25,9 +25,10 @@ which means that you have a familiar Java-like syntax, without so much boilerpla
 You don't need to use the CLI to work with Spring Boot but it's definitely the quickest
 way to get a Spring application off the ground.
 
-### Installing the CLI
 > **Note:** If you don't want to use the CLI,
 > [jump ahead to the Java example](#quick-start-java-example).
+
+### Installing the CLI
 
 You need [Java SDK v1.6](http://www.java.com) or higher to run the command line tool
 (there are even some issues with the `1.7.0_25` build of openjdk, so stick to earlier
@@ -39,20 +40,26 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin.zip](http://repo.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.zip)
-* [spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin.tar.gz](http://repo.springframework.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.tar.gz)
+* [spring-boot-cli-0.5.0.M1-bin.zip](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.zip)
+* [spring-boot-cli-0.5.0.M1-bin.tar.gz](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.tar.gz)
 
-Cutting edge [snapshot distributions](http://repo.springframework.org/snapshot/org/springframework/boot/spring-boot-cli/)
+Cutting edge [snapshot distributions](http://repo.springsource.org/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
 
-Once downloaded, follow the [INSTALL](spring-boot-cli/src/main/content/INSTALL.txt)
-instructions from the unpacked archive.
+Once downloaded, follow the 
+[INSTALL](spring-boot-cli/src/main/content/INSTALL.txt) instructions
+from the unpacked archive. In summary: there is a `spring` script
+(`spring.bat` for Windows) in a `bin/` directory in the `.zip` file,
+or alternatively you can use `java -jar` with the `.jar` file (the
+script helps you to be sure that the classpath is set correctly).
 
 ### OSX Homebrew installation
 If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to install
 the Spring Boot CLI is:
 
-	$ brew install spring-boot-cli
+```
+$ brew install http://repo.springsource.org/install/spring-boot-cli.rb
+```
 
 Homebrew will install `spring` to `/usr/local/bin`. Now you can jump right to a
 [quick start example](#quick-start-script-example).
@@ -307,9 +314,9 @@ A web UI example with production features
 A thymeleaf web application
 * [spring-boot-sample-web-static](spring-boot-samples/spring-boot-sample-web-static) -
 A web application service static files
-* [spring-sample-batch](spring-boot-samples/spring-sample-batch) -
+* [spring-boot-sample-batch](spring-boot-samples/spring-boot-sample-batch) -
 Define and run a Batch job in a few lines of code
-* [spring-sample-data-jpa](spring-boot-samples/spring-sample-data-jpa) -
+* [spring-boot-sample-data-jpa](spring-boot-samples/spring-boot-sample-data-jpa) -
 Spring Data JPA + Hibernate + HSQLDB
 * [spring-boot-sample-integration](spring-boot-samples/spring-boot-sample-integration) -
 A spring integration application
