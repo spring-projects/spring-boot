@@ -1,6 +1,3 @@
----
----
-
 # Introduction
 
 This README lives at https://github.com/springframework/gh-pages#readme.
@@ -18,17 +15,9 @@ From within your Spring project's git checkout directory:
     git pull gh-pages-upstream gh-pages
 
 
-## Create `_config.yml` file and add update your project info
-For example:
-
-    ---
-    name: Spring Data JPA
-    baseurl: /spring-data-jpa
-    ---
-
 ## Create index.html
 1. Copy common-index.html to index.html
-2. Add your content
+2. Update 
 
 ## Commit your changes
     git push origin gh-pages
