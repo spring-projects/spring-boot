@@ -684,14 +684,14 @@ input.floating-input:focus {
   font-size: 14px;
   line-height: 19px;
 }
-.item--dropdown .item--body .item--body--version .documentation-link {
+.item--dropdown .item--body .item--body--version .docs-link {
   display: inline-block;
   color: #6db33f;
 }
-.item--dropdown .item--body .item--body--version .documentation-link:hover {
+.item--dropdown .item--body .item--body--version .docs-link:hover {
   color: #7ac04c;
 }
-.item--dropdown .item--body .item--body--version .documentation-link.reference-link {
+.item--dropdown .item--body .item--body--version .docs-link.reference-link {
   border-right: 1px solid #4a4540;
   padding-right: 10px;
   margin-right: 5px;
