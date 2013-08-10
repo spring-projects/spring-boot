@@ -1,0 +1,4 @@
+# Change this value to your project name, e.g. "Spring XYZ"
+project_name: Common GH Pages Content
+# Change this to the base path for your project, e.g. /spring-xyz
+baseurl:
