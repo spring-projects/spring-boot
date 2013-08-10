@@ -1,3 +1,6 @@
+---
+---
+
 Projects GH Pages Common Content
 ================================
 
