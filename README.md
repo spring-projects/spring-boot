@@ -53,6 +53,17 @@ from the unpacked archive. In summary: there is a `spring` script
 or alternatively you can use `java -jar` with the `.jar` file (the
 script helps you to be sure that the classpath is set correctly).
 
+### Installation with GVM
+
+GVM (the Groovy Environment Manager) can be used for managing multiple
+versions of verious Groovy and Java binary packages, including Groovy
+itself and the Spring Boot CLI. Get `gvm` from
+[the gvm home page](http://gvmtool.net) and install Spring Boot with
+
+    $ gvm install springboot
+    $ spring --version
+    Spring Boot v0.5.0.M1
+
 ### OSX Homebrew installation
 If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to install
 the Spring Boot CLI is:
@@ -142,7 +153,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	</build>
 
 	<!-- Allow access to Spring milestones and snapshots -->
-	<!-- (you don't need this if you are using the GA release) -->
+	<!-- (you don't need this if you are using anything after 0.5.0.M1) -->
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
