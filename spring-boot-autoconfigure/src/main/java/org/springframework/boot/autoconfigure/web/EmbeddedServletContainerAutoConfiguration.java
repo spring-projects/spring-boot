@@ -21,6 +21,8 @@ import java.util.Arrays;
 import javax.servlet.Servlet;
 
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
 import org.springframework.beans.BeansException;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionLogUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
@@ -148,18 +151,38 @@ public class EmbeddedServletContainerAutoConfiguration {
 
 	private static class DefaultServletCondition implements Condition {
 
+		private static Log logger = LogFactory.getLog(DefaultServletCondition.class);
+
 		@Override
 		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+
+			String checking = ConditionLogUtils.getPrefix(logger, metadata);
+
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 			String[] beans = beanFactory.getBeanNamesForType(DispatcherServlet.class,
 					false, false);
 			if (beans.length == 0) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(checking
+							+ "No DispatcherServlet found (search terminated with matches=true)");
+				}
 				// No dispatcher servlet so no need to ask further questions
 				return true;
 			}
 			if (Arrays.asList(beans).contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+				if (logger.isDebugEnabled()) {
+					logger.debug(checking + "DispatcherServlet found and named "
+							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME
+							+ " (search terminated with matches=false)");
+				}
 				// An existing bean with the default name
 				return false;
+			}
+			if (logger.isDebugEnabled()) {
+				logger.debug(checking
+						+ "Multiple DispatcherServlets found and none is named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME
+						+ " (search terminated with matches=true)");
 			}
 			return true;
 		}
