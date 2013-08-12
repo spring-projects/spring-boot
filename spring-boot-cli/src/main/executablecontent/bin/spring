@@ -79,7 +79,13 @@ if [ ! -d "${SPRING_HOME}" ]; then
 	exit 2
 fi
 
-CLASSPATH="${SPRING_HOME}/lib/*"
+CLASSPATH=.:${SPRING_HOME}/bin
+if [ -d ${SPRING_HOME}/ext ]; then
+	CLASSPATH=$CLASSPATH:${SPRING_HOME}/ext
+fi
+for f in ${SPRING_HOME}/lib/*; do
+	CLASSPATH=$CLASSPATH:$f
+done
 
 if $cygwin; then
 	SPRING_HOME=`cygpath --path --mixed "$SPRING_HOME"`

@@ -16,6 +16,12 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
@@ -47,7 +53,8 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller", "EnableWebMvc");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller", "EnableWebMvc",
+				"WebConfiguration");
 	}
 
 	@Override
@@ -58,6 +65,13 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 				"org.springframework.web.servlet.handler", "org.springframework.http");
 		imports.addStaticImport("org.springframework.boot.cli.template.GroovyTemplate",
 				"template");
+		imports.addImports(WebConfiguration.class.getCanonicalName());
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.SOURCE)
+	@Documented
+	public static @interface WebConfiguration {
 	}
 
 }
