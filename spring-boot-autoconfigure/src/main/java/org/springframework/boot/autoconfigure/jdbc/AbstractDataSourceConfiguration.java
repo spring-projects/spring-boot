@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.StringUtils;
 
@@ -26,19 +26,28 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-public class AbstractDataSourceConfiguration {
+@ConfigurationProperties(path = "spring.data")
+public abstract class AbstractDataSourceConfiguration {
 
-	@Value("${spring.database.driverClassName:}")
 	private String driverClassName;
 
-	@Value("${spring.database.url:}")
 	private String url;
 
-	@Value("${spring.database.username:sa}")
-	private String username;
+	private String username = "sa";
 
-	@Value("${spring.database.password:}")
-	private String password;
+	private String password = "";
+
+	private int maxActive = 8;
+
+	private int maxIdle = 8;
+
+	private int minIdle = 8;
+
+	private String validationQuery;
+
+	private boolean testOnBorrow = false;
+
+	private boolean testOnReturn = false;
 
 	protected String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
@@ -74,6 +83,46 @@ public class AbstractDataSourceConfiguration {
 		return this.url;
 	}
 
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setMaxActive(int maxActive) {
+		this.maxActive = maxActive;
+	}
+
+	public void setMaxIdle(int maxIdle) {
+		this.maxIdle = maxIdle;
+	}
+
+	public void setMinIdle(int minIdle) {
+		this.minIdle = minIdle;
+	}
+
+	public void setValidationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
+	}
+
+	public void setTestOnBorrow(boolean testOnBorrow) {
+		this.testOnBorrow = testOnBorrow;
+	}
+
+	public void setTestOnReturn(boolean testOnReturn) {
+		this.testOnReturn = testOnReturn;
+	}
+
 	protected String getUsername() {
 		return this.username;
 	}
@@ -81,4 +130,29 @@ public class AbstractDataSourceConfiguration {
 	protected String getPassword() {
 		return this.password;
 	}
+
+	protected int getMaxActive() {
+		return this.maxActive;
+	}
+
+	protected int getMaxIdle() {
+		return this.maxIdle;
+	}
+
+	protected int getMinIdle() {
+		return this.minIdle;
+	}
+
+	protected String getValidationQuery() {
+		return this.validationQuery;
+	}
+
+	protected boolean isTestOnBorrow() {
+		return this.testOnBorrow;
+	}
+
+	protected boolean isTestOnReturn() {
+		return this.testOnReturn;
+	}
+
 }
