@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import javax.servlet.Servlet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +102,8 @@ public class WebMvcAutoConfiguration {
 	@EnableWebMvc
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
+		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
+
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
@@ -162,6 +167,12 @@ public class WebMvcAutoConfiguration {
 		private void addStaticIndexHtmlViewControllers(ViewControllerRegistry registry) {
 			for (String resource : STATIC_INDEX_HTML_RESOURCES) {
 				if (this.resourceLoader.getResource(resource).exists()) {
+					try {
+						logger.info("Adding welcome page: "
+								+ this.resourceLoader.getResource(resource).getURL());
+					}
+					catch (IOException e) {
+					}
 					registry.addViewController("/").setViewName("/index.html");
 					return;
 				}
