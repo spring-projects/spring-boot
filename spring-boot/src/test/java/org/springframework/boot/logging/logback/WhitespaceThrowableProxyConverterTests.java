@@ -17,10 +17,10 @@
 package org.springframework.boot.logging.logback;
 
 import org.junit.Test;
-import org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
+
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
@@ -30,8 +30,11 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link WhitespaceThrowableProxyConverter}.
  * 
  * @author Phillip Webb
+ * @author Chanwit Kaewkasi
  */
 public class WhitespaceThrowableProxyConverterTests {
+
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	private WhitespaceThrowableProxyConverter converter = new WhitespaceThrowableProxyConverter();
 
@@ -47,8 +50,8 @@ public class WhitespaceThrowableProxyConverterTests {
 	public void withStackTrace() throws Exception {
 		this.event.setThrowableProxy(new ThrowableProxy(new RuntimeException()));
 		String s = this.converter.convert(this.event);
-		assertThat(s, startsWith("\n"));
-		assertThat(s, endsWith("\n"));
+		assertThat(s, startsWith(LINE_SEPARATOR));
+		assertThat(s, endsWith(LINE_SEPARATOR));
 	}
 
 }
