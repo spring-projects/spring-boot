@@ -31,7 +31,7 @@ Follow the instructions at http://jekyllrb.com, which are really just as simple 
     gem install jekyll
     jekyll new spring-xyz
     cd spring-xyz
-    jekyll serve
+    jekyll serve --watch
 
 ## Commit your changes
 
