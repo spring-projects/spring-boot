@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -31,6 +30,7 @@ import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFac
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -54,6 +54,24 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	}
 
 	@Test
+	public void contextAlreadyHasDispatcherServletWithDefaultName() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				DispatcherServletConfiguration.class,
+				EmbeddedContainerConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class);
+		verifyContext();
+	}
+
+	@Test
+	public void contextAlreadyHasDispatcherServlet() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				SpringServletConfiguration.class, EmbeddedContainerConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class);
+		verifyContext();
+		assertEquals(2, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+	}
+
+	@Test
 	public void containerHasNoServletContext() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				EmbeddedContainerConfiguration.class,
@@ -74,7 +92,10 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 
 	private void verifyContext() {
 		MockEmbeddedServletContainerFactory containerFactory = getContainerFactory();
-		Servlet servlet = this.context.getBean(Servlet.class);
+		Servlet servlet = this.context
+				.getBean(
+						EmbeddedServletContainerAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
+						Servlet.class);
 		verify(containerFactory.getServletContext()).addServlet("dispatcherServlet",
 				servlet);
 	}
@@ -90,6 +111,26 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
 			return new MockEmbeddedServletContainerFactory();
+		}
+
+	}
+
+	@Configuration
+	public static class DispatcherServletConfiguration {
+
+		@Bean
+		public DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
+
+	}
+
+	@Configuration
+	public static class SpringServletConfiguration {
+
+		@Bean
+		public DispatcherServlet springServlet() {
+			return new DispatcherServlet();
 		}
 
 	}

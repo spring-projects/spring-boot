@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.util.Arrays;
+
 import javax.servlet.Servlet;
 
 import org.apache.catalina.startup.Tomcat;
@@ -39,11 +41,15 @@ import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -58,6 +64,11 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
 public class EmbeddedServletContainerAutoConfiguration {
 
+	/*
+	 * The bean name for a DispatcherServlet that will be mapped to the root URL "/"
+	 */
+	public static final String DEFAULT_DISPATCHER_SERVLET_BEAN_NAME = "dispatcherServlet";
+
 	/**
 	 * Add the {@link DispatcherServlet} unless the user has defined their own
 	 * {@link ServletContextInitializer}s.
@@ -65,12 +76,12 @@ public class EmbeddedServletContainerAutoConfiguration {
 	@ConditionalOnClass(DispatcherServlet.class)
 	public static class DispatcherServletConfiguration {
 
-		@Bean
-		@ConditionalOnMissingBean(value = { ServletContextInitializer.class,
-				Servlet.class }, search = SearchStrategy.CURRENT)
+		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+		@Conditional(DefaultServletCondition.class)
 		public DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
+
 	}
 
 	/**
@@ -134,4 +145,24 @@ public class EmbeddedServletContainerAutoConfiguration {
 			}
 		}
 	}
+
+	private static class DefaultServletCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			String[] beans = beanFactory.getBeanNamesForType(DispatcherServlet.class,
+					false, false);
+			if (beans.length == 0) {
+				// No dispatcher servlet so no need to ask further questions
+				return true;
+			}
+			if (Arrays.asList(beans).contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+				// An existing bean with the default name
+				return false;
+			}
+			return true;
+		}
+	}
+
 }
