@@ -50,6 +50,12 @@ public class BasicDataSourceConfiguration extends AbstractDataSourceConfiguratio
 		this.pool.setUrl(getUrl());
 		this.pool.setUsername(getUsername());
 		this.pool.setPassword(getPassword());
+		this.pool.setMaxActive(getMaxActive());
+		this.pool.setMaxIdle(getMaxIdle());
+		this.pool.setMinIdle(getMinIdle());
+		this.pool.setTestOnBorrow(isTestOnBorrow());
+		this.pool.setTestOnReturn(isTestOnBorrow());
+		this.pool.setValidationQuery(getValidationQuery());
 		return this.pool;
 	}
 

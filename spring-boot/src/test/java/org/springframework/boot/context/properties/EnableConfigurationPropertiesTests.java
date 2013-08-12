@@ -49,7 +49,16 @@ public class EnableConfigurationPropertiesTests {
 		TestUtils.addEnviroment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
-		assertEquals("foo", this.context.getBean(TestProperties.class).getName());
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
+	public void testBasicPropertiesBindingWithAnnotationOnBaseClass() {
+		this.context.register(DerivedConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo");
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(DerivedProperties.class).length);
+		assertEquals("foo", this.context.getBean(BaseProperties.class).name);
 	}
 
 	@Test
@@ -75,7 +84,7 @@ public class EnableConfigurationPropertiesTests {
 		TestUtils.addEnviroment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(MoreProperties.class).length);
-		assertEquals("foo", this.context.getBean(MoreProperties.class).getName());
+		assertEquals("foo", this.context.getBean(MoreProperties.class).name);
 	}
 
 	@Test
@@ -84,7 +93,7 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
 		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
-		assertEquals("bar", this.context.getBean(TestProperties.class).getName());
+		assertEquals("bar", this.context.getBean(TestProperties.class).name);
 	}
 
 	@Test
@@ -93,7 +102,7 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		String[] beanNames = this.context.getBeanNamesForType(TestProperties.class);
 		assertEquals("Wrong beans: " + Arrays.asList(beanNames), 1, beanNames.length);
-		assertEquals("bar", this.context.getBean(TestProperties.class).getName());
+		assertEquals("bar", this.context.getBean(TestProperties.class).name);
 	}
 
 	@Test
@@ -102,8 +111,7 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class)
-				.getName());
+		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class).name);
 	}
 
 	@Test
@@ -113,8 +121,7 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("other", this.context.getBean(ResourceBindingProperties.class)
-				.getName());
+		assertEquals("other", this.context.getBean(ResourceBindingProperties.class).name);
 	}
 
 	@Test
@@ -124,8 +131,7 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class)
-				.getName());
+		assertEquals("foo", this.context.getBean(ResourceBindingProperties.class).name);
 	}
 
 	@Test
@@ -135,8 +141,7 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
-		assertEquals("bar", this.context.getBean(ResourceBindingProperties.class)
-				.getName());
+		assertEquals("bar", this.context.getBean(ResourceBindingProperties.class).name);
 	}
 
 	@Test
@@ -181,6 +186,11 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(DerivedProperties.class)
+	protected static class DerivedConfiguration {
+	}
+
+	@Configuration
 	protected static class DefaultConfiguration {
 		@Bean
 		public TestProperties testProperties() {
@@ -206,7 +216,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		public String getName() {
-			return this.properties.getName();
+			return this.properties.name;
 		}
 	}
 
@@ -216,14 +226,24 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@ConfigurationProperties
+	protected static class BaseProperties {
+		private String name;
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
+	protected static class DerivedProperties extends BaseProperties {
+	}
+
+	@ConfigurationProperties
 	protected static class TestProperties {
 		private String name;
 		private int[] array;
 		private List<Integer> list = new ArrayList<Integer>();
 
-		public String getName() {
-			return this.name;
-		}
+		// No getter - you should be able to bind to a write-only bean
 
 		public void setName(String name) {
 			this.name = name;
@@ -245,25 +265,21 @@ public class EnableConfigurationPropertiesTests {
 	protected static class MoreProperties {
 		private String name;
 
-		public String getName() {
-			return this.name;
-		}
-
 		public void setName(String name) {
 			this.name = name;
 		}
+
+		// No getter - you should be able to bind to a write-only bean
 	}
 
 	@ConfigurationProperties(path = "${binding.location:classpath:name.yml}")
 	protected static class ResourceBindingProperties {
 		private String name;
 
-		public String getName() {
-			return this.name;
-		}
-
 		public void setName(String name) {
 			this.name = name;
 		}
+
+		// No getter - you should be able to bind to a write-only bean
 	}
 }
