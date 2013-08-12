@@ -28,8 +28,9 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link WhitespaceThrowableProxyConverter}.
- * 
+ *
  * @author Phillip Webb
+ * @author Chanwit Kaewkasi
  */
 public class WhitespaceThrowableProxyConverterTests {
 
@@ -47,8 +48,9 @@ public class WhitespaceThrowableProxyConverterTests {
 	public void withStackTrace() throws Exception {
 		this.event.setThrowableProxy(new ThrowableProxy(new RuntimeException()));
 		String s = this.converter.convert(this.event);
-		assertThat(s, startsWith("\n"));
-		assertThat(s, endsWith("\n"));
+		final String lineSeparator = System.getProperty("line.separator");
+		assertThat(s, startsWith(lineSeparator));
+		assertThat(s, endsWith(lineSeparator));
 	}
 
 }
