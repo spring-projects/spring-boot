@@ -25,7 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the specified classes are on the classpath.
+ * {@link Conditional} that only matches when the specified classes are not on the
+ * classpath.
  * 
  * @author Dave Syer
  */
@@ -36,8 +37,17 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnMissingClass {
 
 	/**
-	 * The classes names that must be absent.
-	 * @return the class names that must be absent.
+	 * The classes that must not be present. Since this annotation parsed by loading class
+	 * bytecode it is safe to specify classes here that may ultimately not be on the
+	 * classpath.
+	 * @return the classes that must be present
 	 */
-	public String[] value() default {};
+	public Class<?>[] value() default {};
+
+	/**
+	 * The classes names that must not be present.
+	 * @return the class names that must be present.
+	 */
+	public String[] name() default {};
+
 }

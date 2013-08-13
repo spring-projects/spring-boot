@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * 
  * @author Dave Syer
  */
-public class OnMissingClassConditionTests {
+public class ConditionalOnMissingClassTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -51,7 +51,7 @@ public class OnMissingClassConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass("org.springframework.boot.autoconfigure.condition.OnMissingClassConditionTests")
+	@ConditionalOnMissingClass(ConditionalOnMissingClassTests.class)
 	protected static class BasicConfiguration {
 		@Bean
 		public String bar() {
@@ -60,7 +60,7 @@ public class OnMissingClassConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnMissingClass("FOO")
+	@ConditionalOnMissingClass(name = "FOO")
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {

@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * 
  * @author Dave Syer
  */
-public class OnNotWebApplicationConditionTests {
+public class ConditionalOnNotWebApplicationTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

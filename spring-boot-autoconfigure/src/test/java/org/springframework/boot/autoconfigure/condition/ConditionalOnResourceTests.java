@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.OnExpressionCondition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,11 +26,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnExpressionCondition}.
+ * Tests for {@link ConditionalOnResource}.
  * 
  * @author Dave Syer
  */
-public class OnExpressionConditionTests {
+public class ConditionalOnResourceTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -52,7 +50,7 @@ public class OnExpressionConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnExpression("false")
+	@ConditionalOnResource(resources = "foo")
 	protected static class MissingConfiguration {
 		@Bean
 		public String bar() {
@@ -61,7 +59,7 @@ public class OnExpressionConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnExpression("true")
+	@ConditionalOnResource(resources = "logback-test.xml")
 	protected static class BasicConfiguration {
 		@Bean
 		public String foo() {
