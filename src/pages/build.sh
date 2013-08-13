@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+echo $* | grep -q "\-x" && set -x
+
 if [ -e "$HOME/.rvm/scripts/rvm" ]; then
     source "$HOME/.rvm/scripts/rvm"
     rvm 1.9.3
@@ -44,13 +46,13 @@ function fail {
     echo is missing ruby or gem dependencies.
     echo Please ensure that you have installed ruby 1.9.3
     echo and execute
-    echo "    $" (cd $PAGES_HOME; bundle)
+    echo "    $ (cd $PAGES_HOME; bundle)"
     echo before trying again
 }
 
 trap fail EXIT
 
-if ! [ -z $PAGES_HOME/Gemfile.lock ]; then
+if ! [ -e $PAGES_HOME/Gemfile.lock ]; then
     exit 1
 fi
 

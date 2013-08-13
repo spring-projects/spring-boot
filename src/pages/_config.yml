@@ -3,5 +3,7 @@ lsi: false
 pygments: true
 github: https://github.com/SpringSource/spring-boot
 markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
 project:
   version: 0.5.0.BUILD-SNAPSHOT
