@@ -1,0 +1,13 @@
+<script type="text/html" id="project-documentation-widget-template">
+    <%= name %>
+    <ul>
+        <% _.each(releases, function(release) { %>
+        <li>
+            <%= release.fullName %>
+            <i class="<%= release.statusIconClass %>"></i>
+            <a href='<%= release.refDocUrl %>'>Reference</a>
+            <a href='<%= release.apiDocUrl %>'>API</a>
+        </li>
+        <% }); %>
+    </ul>
+</script>

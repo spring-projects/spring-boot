@@ -2,15 +2,29 @@ window.Spring = window.Spring || {};
 
 Spring.ProjectDocumentationWidget = function() {
   var projectId = $('[data-documentation-widget]').data('documentation-widget');
-  var project = new Spring.Project({id: projectId });
+  var project = new Spring.Project({id: projectId});
 
   var promise = project.fetch();
   promise.success(function() {
     new Spring.ProjectDocumentationWidgetView({
-      el: '[data-documentation-widget]', model: project
+      el: '[data-documentation-widget]',
+      model: project,
+      template: $("#project-documentation-widget-template").text()
     }).render();
   });
 };
+
+Spring.Release = {
+  statusIconClass: function() {
+    if (this.preRelease) {
+      return "icon-projects-pre";
+    } else if (this.current) {
+      return "icon-projects-current";
+    } else {
+      return "icon-projects-supported";
+    }
+  }
+}
 
 Spring.Project = Backbone.Model.extend({
   urlRoot: "http://localhost:8080/projects",
@@ -24,46 +38,31 @@ Spring.Project = Backbone.Model.extend({
     }, options);
 
     return $.ajax(params);
+  },
+
+  releases: function() {
+    return _.map(this.get('projectReleases'), function(r) {
+
+      return _.extend(r, Spring.Release);
+    });
+  },
+
+  data: function() {
+    return _.extend(this.attributes, {releases: this.releases()})
   }
 });
 
 Spring.ProjectDocumentationWidgetView = Backbone.View.extend({
-  template: _.template(
-    "<%= name %>" +
-    "<ul>" +
-      "<% _.each(releases, function(release) { %>" +
-        "<li>" +
-          "<%= release.version %>" +
-          "<%= statusIcon(release.status) %>" +
-          "<a href='<%= release.referenceUrl %>'>Reference</a>" +
-          "<a href='<%= release.apiUrl %>'>API</a>" +
-        "</li>" +
-      "<% }); %>" +
-    "</ul>"
-  ),
-
   initialize: function() {
+    this.template = _.template(this.options.template);
     _.bindAll(this, "render");
   },
 
   render: function() {
-    var data = _.extend(this.model.attributes, {statusIcon: this._statusIcon});
-
     this.$el.html(
-      this.template(data)
+      this.template(this.model.data())
     );
-
     return this;
-  },
-
-  _statusIcon: function(status) {
-    switch(status) {
-      case "pre" :
-        return "<i class='icon-projects-pre'></i>";
-      case "current" :
-        return "<i class='icon-projects-current'></i>";
-      default :
-        return "";
-    }
   }
+
 });
