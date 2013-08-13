@@ -23,3 +23,22 @@
         </tbody>
     </table>
 </script>
+
+<script type="text/html" id="project-quickstart-selector-template">
+    <select class='selector'>
+        <% _.each(releases, function(release, index) { %>
+            <option value="<%= index %>"><%= release.fullName %> (<%= release.statusIconClass() %>)</option>
+        <% }); %>
+    </select>
+</script>
+
+<script type="text/html" id="project-quickstart-maven-widget-template">
+    <pre>
+&lt;dependency&gt;
+    &lt;groupId&gt;<%= groupId %>&lt;/groupId&gt;
+    &lt;artifactId&gt;<%= artifactId %>&lt;/artifactId&gt;
+    &lt;version&gt;<%= fullName %>&lt;/version&gt;
+&lt;/dependency&gt;
+    </pre>
+
+</script>

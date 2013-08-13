@@ -5,6 +5,7 @@ describe("Project", function () {
 
     beforeEach(function () {
       project = new Spring.Project({
+        id: "spring-data-jpa",
         name: "Spring Data JPA",
         projectReleases: [
           {fullName: "1.4.0.RC1", refDocUrl: "http://localhost/1.4.0/ref", apiDocUrl: "http://localhost/1.4.0/api", preRelease: true, current: false, supported: false},
