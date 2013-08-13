@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.logback;
+package org.springframework.boot.logging.log4j;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.impl.SLF4JLogFactory;
+import org.apache.commons.logging.impl.Log4JLogger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,23 +30,23 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link LogbackLoggingSystem}.
+ * Tests for {@link Log4JLoggingSystem}.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
  */
-public class LogbackLoggingSystemTests {
+public class Log4JLoggingSystemTests {
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(getClass()
+	private Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(getClass()
 			.getClassLoader());
 
-	private Log logger;
+	private Log4JLogger logger;
 
 	@Before
 	public void setup() {
-		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
+		this.logger = new Log4JLogger(getClass().getName());
 	}
 
 	@After
@@ -59,7 +58,7 @@ public class LogbackLoggingSystemTests {
 
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
-		this.loggingSystem.initialize("classpath:logback-nondefault.xml");
+		this.loggingSystem.initialize("classpath:log4j-nondefault.properties");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -68,7 +67,7 @@ public class LogbackLoggingSystemTests {
 
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
-		this.loggingSystem.initialize("classpath:logback-nonexistent.xml");
+		this.loggingSystem.initialize("classpath:log4j-nonexistent.xml");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
