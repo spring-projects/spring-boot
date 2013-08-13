@@ -1,6 +1,7 @@
 ---
 main_site_url: http://springframework.io
 forum_url: http://forum.springframework.io
+api_base_url: http://localhost:8080
 ---
 
 <!DOCTYPE html>
@@ -24,6 +25,9 @@ forum_url: http://forum.springframework.io
   <script type="text/javascript" src="js/backbone.js"></script>
   <script type="text/javascript" src="js/projectDocumentationWidget.js"></script>
   <script type="text/javascript" src="js/application.js"></script>
+  <script type="text/javascript">
+    var apiBaseUrl = "{{ page.api_base_url }}";
+  </script>
   <meta name="google-site-verification" content="7qGntFPD9lWAVCtUu5U77v4l68PsTHf6xpzgjQv2j2M" />
 </head>
 <body>

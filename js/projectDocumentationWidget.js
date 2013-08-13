@@ -2,10 +2,10 @@ window.Spring = window.Spring || {};
 
 Spring.ProjectDocumentationWidget = function() {
   var projectId = $('[data-documentation-widget]').data('documentation-widget');
-  var project = new Spring.Project({id: projectId});
+  var projectUrl = apiBaseUrl + "/projects/" + projectId;
+  var promise = Spring.loadProject(projectUrl);
 
-  var promise = project.fetch();
-  promise.success(function() {
+  promise.then(function(project) {
     new Spring.ProjectDocumentationWidgetView({
       el: '[data-documentation-widget]',
       model: project,
@@ -13,6 +13,15 @@ Spring.ProjectDocumentationWidget = function() {
     }).render();
   });
 };
+
+Spring.loadProject = function(url) {
+  return $.ajax(url, {
+    dataType:     'jsonp',
+    processData:  false
+  }).then(function(value) {
+    return new Spring.Project(value);
+  });
+}
 
 Spring.Release = {
   statusIconClass: function() {
@@ -26,31 +35,14 @@ Spring.Release = {
   }
 }
 
-Spring.Project = Backbone.Model.extend({
-  urlRoot: "http://localhost:8080/projects",
+Spring.Project = function(data) {
+  _.extend(this, data);
+  this.releases = _.map(this.projectReleases, function(r) {
+    return _.extend(r, Spring.Release);
+  });
 
-  sync: function(method, model, options) {
-    var params = _.extend({
-      type:         'GET',
-      dataType:     'jsonp',
-      url:			model.url()+"?callback=?",
-      processData:  false
-    }, options);
-
-    return $.ajax(params);
-  },
-
-  releases: function() {
-    return _.map(this.get('projectReleases'), function(r) {
-
-      return _.extend(r, Spring.Release);
-    });
-  },
-
-  data: function() {
-    return _.extend(this.attributes, {releases: this.releases()})
-  }
-});
+  return this;
+};
 
 Spring.ProjectDocumentationWidgetView = Backbone.View.extend({
   initialize: function() {
@@ -60,7 +52,7 @@ Spring.ProjectDocumentationWidgetView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(
-      this.template(this.model.data())
+      this.template(this.model)
     );
     return this;
   }

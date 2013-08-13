@@ -1,13 +1,25 @@
 <script type="text/html" id="project-documentation-widget-template">
-    <%= name %>
-    <ul>
-        <% _.each(releases, function(release) { %>
-        <li>
-            <%= release.fullName %>
-            <i class="<%= release.statusIconClass %>"></i>
-            <a href='<%= release.refDocUrl %>'>Reference</a>
-            <a href='<%= release.apiDocUrl %>'>API</a>
-        </li>
-        <% }); %>
-    </ul>
+    <h3><%= name %></h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Release</th>
+                <th>Documentation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% _.each(releases, function(release) { %>
+            <tr>
+                <td>
+                    <%= release.fullName %>
+                    <i class="<%= release.statusIconClass() %>"></i>
+                </td>
+                <td>
+                    <a href='<%= release.refDocUrl %>'>Reference</a>
+                    <a href='<%= release.apiDocUrl %>'>API</a>
+                </td>
+            </tr>
+            <% }); %>
+        </tbody>
+    </table>
 </script>

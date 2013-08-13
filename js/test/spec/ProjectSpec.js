@@ -17,7 +17,7 @@ describe("Project", function () {
     describe("releases", function() {
       var releases;
       beforeEach(function() {
-        releases = project.releases();
+        releases = project.releases;
       });
 
       it("has a release for each project release", function() {
