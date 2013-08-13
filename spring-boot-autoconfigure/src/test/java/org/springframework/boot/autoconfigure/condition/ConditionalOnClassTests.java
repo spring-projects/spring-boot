@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.OnClassCondition;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,11 +28,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnClassCondition}.
+ * Tests for {@link ConditionalOnClass}.
  * 
  * @author Dave Syer
  */
-public class OnClassConditionTests {
+public class ConditionalOnClassTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -71,7 +69,7 @@ public class OnClassConditionTests {
 	}
 
 	@Configuration
-	@ConditionalOnClass(OnClassConditionTests.class)
+	@ConditionalOnClass(ConditionalOnClassTests.class)
 	protected static class BasicConfiguration {
 		@Bean
 		public String bar() {

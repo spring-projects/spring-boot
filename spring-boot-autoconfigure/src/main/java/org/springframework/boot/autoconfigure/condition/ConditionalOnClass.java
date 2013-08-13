@@ -44,8 +44,7 @@ public @interface ConditionalOnClass {
 	public Class<?>[] value() default {};
 
 	/**
-	 * The classes names that must be present. When possible {@link #value()} should be
-	 * used in preference to this property.
+	 * The classes names that must be present.
 	 * @return the class names that must be present.
 	 */
 	public String[] name() default {};

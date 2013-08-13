@@ -17,9 +17,6 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
@@ -30,11 +27,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link OnWebApplicationCondition}.
+ * Tests for {@link ConditionalOnWebApplication}.
  * 
  * @author Dave Syer
  */
-public class OnWebApplicationConditionTests {
+public class ConditionalOnWebApplicationTests {
 
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 

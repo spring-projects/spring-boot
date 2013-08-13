@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @Ignore
-public class OnBeanConditionTests {
+public class ConditionalOnBeanTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
