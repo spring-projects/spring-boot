@@ -13,6 +13,6 @@ target
 .springBeans
 dependency-reduced-pom.xml
 build.log
-_site/
 .*.md.html
 manifest.yml
+Gemfile.lock

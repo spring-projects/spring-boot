@@ -1,0 +1,7 @@
+safe: true
+lsi: false
+pygments: true
+github: https://github.com/SpringSource/spring-boot
+markdown: redcarpet
+project:
+  version: 0.5.0.BUILD-SNAPSHOT
