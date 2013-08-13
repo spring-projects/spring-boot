@@ -53,6 +53,16 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testNestedPropertiesBinding() {
+		this.context.register(NestedConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo", "nested.name:bar");
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
+		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
+		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+	}
+
+	@Test
 	public void testBasicPropertiesBindingWithAnnotationOnBaseClass() {
 		this.context.register(DerivedConfiguration.class);
 		TestUtils.addEnviroment(this.context, "name:foo");
@@ -191,6 +201,11 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(NestedProperties.class)
+	protected static class NestedConfiguration {
+	}
+
+	@Configuration
 	protected static class DefaultConfiguration {
 		@Bean
 		public TestProperties testProperties() {
@@ -223,6 +238,29 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@EnableConfigurationProperties(MoreProperties.class)
 	protected static class MoreConfiguration {
+	}
+
+	@ConfigurationProperties
+	protected static class NestedProperties {
+		private String name;
+		private Nested nested = new Nested();
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public Nested getNested() {
+			return this.nested;
+		}
+
+		protected static class Nested {
+			private String name;
+
+			public void setName(String name) {
+				this.name = name;
+			}
+
+		}
 	}
 
 	@ConfigurationProperties
