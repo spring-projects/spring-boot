@@ -93,7 +93,7 @@ public class DataSourceAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(JdbcOperations.class)
-		public JdbcOperations jdbcTemplate() {
+		public JdbcTemplate jdbcTemplate() {
 			return new JdbcTemplate(this.dataSource);
 		}
 
