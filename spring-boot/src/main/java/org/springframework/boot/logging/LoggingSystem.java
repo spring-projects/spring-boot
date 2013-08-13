@@ -62,6 +62,13 @@ public abstract class LoggingSystem {
 	public abstract void initialize(String configLocation);
 
 	/**
+	 * Sets the logging level for a given logger.
+	 * @param loggerName the name of the logger to set
+	 * @param level the log level
+	 */
+	public abstract void setLogLevel(String loggerName, LogLevel level);
+
+	/**
 	 * Detect and return the logging system in use.
 	 * @return The logging system
 	 */

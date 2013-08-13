@@ -19,15 +19,17 @@ package org.springframework.boot.logging.java;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.logging.LogManager;
 
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.logging.java.JavaLoggingSystem;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -48,8 +50,6 @@ public class JavaLoggerSystemTests {
 
 	@Before
 	public void init() throws SecurityException, IOException {
-		LogManager.getLogManager().readConfiguration(
-				getClass().getResourceAsStream("/logging.properties"));
 		this.logger = new Jdk14Logger(getClass().getName());
 		this.savedOutput = System.err;
 		this.output = new ByteArrayOutputStream();
@@ -71,6 +71,7 @@ public class JavaLoggerSystemTests {
 
 	@Test
 	public void testCustomFormatter() throws Exception {
+		this.loggingSystem.initialize();
 		this.logger.info("Hello world");
 		String output = getOutput().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -106,6 +107,16 @@ public class JavaLoggerSystemTests {
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullConfigLocation() throws Exception {
 		this.loggingSystem.initialize(null);
+	}
+
+	@Test
+	public void setLevel() throws Exception {
+		this.loggingSystem.initialize();
+		this.logger.debug("Hello");
+		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
+		this.logger.debug("Hello");
+		assertThat(StringUtils.countOccurrencesOf(this.output.toString(), "Hello"),
+				equalTo(1));
 	}
 
 }

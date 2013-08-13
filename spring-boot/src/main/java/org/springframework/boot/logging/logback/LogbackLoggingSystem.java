@@ -17,17 +17,24 @@
 package org.springframework.boot.logging.logback;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.AbstractLoggingSystem;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 
@@ -38,6 +45,18 @@ import ch.qos.logback.classic.util.ContextInitializer;
  * @author Dave Syer
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem {
+
+	private static final Map<LogLevel, Level> LEVELS;
+	static {
+		Map<LogLevel, Level> levels = new HashMap<LogLevel, Level>();
+		levels.put(LogLevel.TRACE, Level.TRACE);
+		levels.put(LogLevel.DEBUG, Level.DEBUG);
+		levels.put(LogLevel.INFO, Level.INFO);
+		levels.put(LogLevel.WARN, Level.WARN);
+		levels.put(LogLevel.ERROR, Level.ERROR);
+		levels.put(LogLevel.FATAL, Level.ERROR);
+		LEVELS = Collections.unmodifiableMap(levels);
+	}
 
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader, "logback.xml");
@@ -54,6 +73,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void initialize(String configLocation) {
+		Assert.notNull(configLocation, "ConfigLocation must not be null");
 		String resolvedLocation = SystemPropertyUtils.resolvePlaceholders(configLocation);
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		Assert.isInstanceOf(ILoggerFactory.class, factory);
@@ -67,6 +87,15 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 			throw new IllegalStateException("Could not initialize logging from "
 					+ configLocation, ex);
 		}
+	}
+
+	@Override
+	public void setLogLevel(String loggerName, LogLevel level) {
+		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		Logger logger = factory
+				.getLogger(StringUtils.isEmpty(loggerName) ? Logger.ROOT_LOGGER_NAME
+						: loggerName);
+		((ch.qos.logback.classic.Logger) logger).setLevel(LEVELS.get(level));
 	}
 
 }
