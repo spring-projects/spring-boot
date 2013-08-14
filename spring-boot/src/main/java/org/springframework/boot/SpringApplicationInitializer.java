@@ -32,7 +32,8 @@ public interface SpringApplicationInitializer {
 	/**
 	 * Initialize the application
 	 * @param springApplication the spring application.
+	 * @param args the run arguments
 	 */
-	void initialize(SpringApplication springApplication);
+	void initialize(SpringApplication springApplication, String[] args);
 
 }
