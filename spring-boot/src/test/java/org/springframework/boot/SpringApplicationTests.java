@@ -315,7 +315,7 @@ public class SpringApplicationTests {
 	@Test
 	public void defaultCommandLineArgs() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setDefaultCommandLineArgs("--baz", "--bar=spam", "bucket");
+		application.setDefaultArgs("--baz", "--bar=spam", "bucket");
 		application.setWebEnvironment(false);
 		this.context = application.run("--bar=foo", "bucket", "crap");
 		assertThat(this.context, instanceOf(AnnotationConfigApplicationContext.class));

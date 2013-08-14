@@ -162,7 +162,7 @@ public class SpringApplication {
 
 	private List<ApplicationContextInitializer<?>> initializers;
 
-	private String[] defaultCommandLineArgs;
+	private String[] defaultArgs;
 
 	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
@@ -312,10 +312,10 @@ public class SpringApplication {
 	 */
 	protected void addPropertySources(ConfigurableEnvironment environment, String[] args) {
 		if (this.addCommandLineProperties) {
-			if (this.defaultCommandLineArgs != null) {
+			if (this.defaultArgs != null) {
 				environment.getPropertySources().addFirst(
 						new SimpleCommandLinePropertySource("defaultCommandLineArgs",
-								this.defaultCommandLineArgs));
+								this.defaultArgs));
 			}
 			environment.getPropertySources().addFirst(
 					new SimpleCommandLinePropertySource(args));
@@ -543,13 +543,13 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Set default command line arguments which will be used in addition to those
-	 * specified to the {@code run} methods. Default arguments can always be overridden by
-	 * user defined arguments..
-	 * @param defaultCommandLineArgs the default command line args to set
+	 * Set default arguments which will be used in addition to those specified to the
+	 * {@code run} methods. Default arguments can always be overridden by user defined
+	 * arguments..
+	 * @param defaultArgs the default args to set
 	 */
-	public void setDefaultCommandLineArgs(String... defaultCommandLineArgs) {
-		this.defaultCommandLineArgs = defaultCommandLineArgs;
+	public void setDefaultArgs(String... defaultArgs) {
+		this.defaultArgs = defaultArgs;
 	}
 
 	/**
