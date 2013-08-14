@@ -46,11 +46,11 @@ Spring.Release = function(data) {
 Spring.Release.prototype = {
   statusIconClass: function() {
     if (this.preRelease) {
-      return "icon-projects-pre";
+      return "icon-pre-release";
     } else if (this.current) {
-      return "icon-projects-current";
+      return "icon-current-version";
     } else {
-      return "icon-projects-supported";
+      return "icon-supported-version";
     }
   }
 }
@@ -95,6 +95,7 @@ Spring.QuickStartSelectorView = Backbone.View.extend({
     this.$el.html(
       this.template(this.model)
     );
+    this.$('.selectpicker').selectpicker();
     return this;
   },
 

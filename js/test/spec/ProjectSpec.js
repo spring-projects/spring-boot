@@ -35,9 +35,9 @@ describe("Project", function () {
       });
 
       it("has a statusIconClass", function() {
-        expect(releases[0].statusIconClass()).toEqual("icon-projects-pre");
-        expect(releases[1].statusIconClass()).toEqual("icon-projects-current");
-        expect(releases[2].statusIconClass()).toEqual("icon-projects-supported");
+        expect(releases[0].statusIconClass()).toEqual("icon-pre-release");
+        expect(releases[1].statusIconClass()).toEqual("icon-current-version");
+        expect(releases[2].statusIconClass()).toEqual("icon-supported-version");
       });
     });
   });

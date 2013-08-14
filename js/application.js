@@ -12,24 +12,10 @@ $(function(){
     return this;
   };
 
-
-  //OPENS ITEM DROPDOWN WIDGET
-  $(".js-item--open-dropdown").click(function () {
-    var dropdownItem = $(this).parents(".js-item-dropdown--wrapper");
-    var documentHeight = $(document).height();
-    var headerHeight = $("header").outerHeight();
-    var footerHeight = $("footer").outerHeight();
-    var scrimHeight = documentHeight - headerHeight - footerHeight;
-
-    dropdownItem.toggleClass("js-open");
-    dropdownItem.siblings().removeClass("js-open");
-    $(this).parents(".js-item-dropdown-widget--wrapper").siblings().find(".js-item-dropdown--wrapper").removeClass("js-open");
-
-    $("#scrim").addClass("js-show").css("height", scrimHeight).css("top", headerHeight);
-    $("#scrim").click(function() {
-      $(".js-item-dropdown--wrapper").removeClass("js-open");
-      $(this).removeClass("js-show");
-    });
+  $("#scrim").click(function() {
+    $(".js-item-dropdown--wrapper").removeClass("js-open");
+    $(".js-item--open-dropdown").removeClass("js-show");
+    $("#scrim").removeClass("js-show");
   });
 
   //OPENS SEARCH DROPDOWN
@@ -48,7 +34,6 @@ $(function(){
     $(".body--container, .js-search-input-close").click(function() {
       inputContainer.removeClass("js-show");
       $(".nav-search").removeClass("js-highlight");
-      $("#scrim").removeClass("js-show");
     });
   });
 
@@ -110,8 +95,6 @@ $(function(){
 
   new Spring.ProjectDocumentationWidget();
 });
-
-
 
 
 var detectOs = function() {

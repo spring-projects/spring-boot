@@ -27,9 +27,9 @@
 </script>
 
 <script type="text/html" id="project-quickstart-selector-template">
-    <select class='selector'>
+    <select class='selector selectpicker'>
         <% _.each(releases, function(release, index) { %>
-            <option value="<%= index %>"><%= release.fullName %> (<%= release.statusIconClass() %>)</option>
+            <option value="<%= index %>" data-content="<span><%= release.fullName %></span><div class='icon <%= release.statusIconClass() %>'/>"> ()</option>
         <% }); %>
     </select>
 </script>

@@ -1,3 +1,7 @@
+.js-quickstart-selector {
+    display: inline;
+}
+
 .container-fluid {
   width: 1024px !important;
 }
