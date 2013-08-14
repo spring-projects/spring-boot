@@ -46,11 +46,11 @@ Spring.Release = function(data) {
 Spring.Release.prototype = {
   statusIconClass: function() {
     if (this.preRelease) {
-      return "icon-pre-release";
+      return "spring-icon-pre-release";
     } else if (this.current) {
-      return "icon-current-version";
+      return "spring-icon-current-version";
     } else {
-      return "icon-supported-version";
+      return "spring-icon-supported-version";
     }
   }
 }

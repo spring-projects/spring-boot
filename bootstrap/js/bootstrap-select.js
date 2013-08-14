@@ -81,9 +81,9 @@
         createDropdown: function() {
             var drop =
                 "<div class='btn-group bootstrap-select'>" +
-                    "<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown'>" +
+                    "<button type='button' class='dropdown-toggle' data-toggle='dropdown'>" +
+                        "<div class='item-dropdown--icon icon-reorder pull-right'></div>" +
                         "<div class='filter-option pull-left'></div>&nbsp;" +
-                        "<div class='caret'></div>" +
                     "</button>" +
                     "<div class='dropdown-menu open'>" +
                         "<ul class='dropdown-menu inner' role='menu'>" +

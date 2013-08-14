@@ -12,7 +12,7 @@
                     <div class="item--body--version">
                         <div class="item--left-column">
                             <p><%= release.fullName %></p>
-                            <div class="icon <%= release.statusIconClass() %>"></div>
+                            <div class="spring-icon <%= release.statusIconClass() %>"></div>
                         </div>
                         <div class="item--right-column">
                             <a href='<%= release.refDocUrl %>' class="docs-link reference-link">Reference</a>
@@ -29,7 +29,7 @@
 <script type="text/html" id="project-quickstart-selector-template">
     <select class='selector selectpicker'>
         <% _.each(releases, function(release, index) { %>
-            <option value="<%= index %>" data-content="<span><%= release.fullName %></span><div class='icon <%= release.statusIconClass() %>'/>"> ()</option>
+            <option value="<%= index %>" data-content="<span><%= release.shortName %></span><div class='spring-icon <%= release.statusIconClass() %>'/>"> ()</option>
         <% }); %>
     </select>
 </script>

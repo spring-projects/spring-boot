@@ -16,9 +16,11 @@ body {
 
 #scrim {
   display: none;
+  background-color: rgba(0,127,0,0.5);
 }
 #scrim.js-show {
   display: block;
+  background-color: rgba(127,0,0,0.5);
   position: absolute;
   top: 0;
   bottom: 0;
@@ -598,7 +600,7 @@ input.floating-input:focus {
   color: #5fa134;
 }
 .item-dropdown-widget .item--dropdown {
-  display: none;
+  display: block;
 }
 .item-dropdown-widget.js-open {
   z-index: 801;

@@ -1,88 +1,104 @@
-.icon {
+.spring-icon {
   background-image: url("../img/iconsprite.png");
   background-repeat: no-repeat;
   display: inline-block !important;
 }
-.icon.project--logo.logo-spring-framework {
+
+.spring-icon.project--logo.logo-spring-framework {
   width: 135px;
   height: 133px;
   background-position: -483px 0;
   margin-top: 2px;
 }
-.icon.project--logo.logo-spring-security {
+
+.spring-icon.project--logo.logo-spring-security {
   width: 99px;
   height: 137px;
   background-position: -483px -161px;
 }
-.icon.project--logo.logo-spring-data {
+
+.spring-icon.project--logo.logo-spring-data {
   width: 111px;
   height: 111px;
   background-position: -483px -325px;
   margin-top: 13px;
 }
-.icon.project--logo.logo-spring-batch {
+
+.spring-icon.project--logo.logo-spring-batch {
   width: 104px;
   height: 108px;
   background-position: -641px 0;
   margin-top: 14px;
 }
-.icon.project--logo.logo-spring-integration {
+
+.spring-icon.project--logo.logo-spring-integration {
   width: 145px;
   height: 104px;
   background-position: -641px -161px;
   margin-top: 16px;
 }
-.icon.project--logo.logo-spring-amqp {
+
+.spring-icon.project--logo.logo-spring-amqp {
   width: 109px;
   height: 98px;
   background-position: -641px -325px;
   margin: 19px;
 }
-.icon.project--logo.logo-spring-default {
+
+.spring-icon.project--logo.logo-spring-default {
   width: 100px;
   height: 100px;
   background-position: -805px 0;
   margin-top: 18px;
 }
-.icon.project--logo.logo-spring-mobile {
+
+.spring-icon.project--logo.logo-spring-mobile {
   width: 104px;
   height: 137px;
   background-position: -805px -161px;
 }
-.icon.project--logo.logo-spring-android {
+
+.spring-icon.project--logo.logo-spring-android {
   width: 104px;
   height: 126px;
   background-position: -805px -325px;
   margin-top: 10px;
 }
-.icon.project--logo.logo-spring-social {
+
+.spring-icon.project--logo.logo-spring-social {
   width: 130px;
   height: 100px;
   background-position: -483px -481px;
   margin-top: 18px;
 }
-.icon.icon-projects {
+
+.spring-icon.spring-icon-projects {
   width: 28px;
   height: 28px;
   background-position: -641px -481px;
 }
-.icon.icon-projects:hover {
+
+.spring-icon.spring-icon-projects:hover {
   background-position: -641px -521px;
 }
-.icon.icon-forum {
+
+.spring-icon.spring-icon-forum {
   width: 32px;
   height: 32px;
   background-position: -409px -450px;
 }
-.icon.icon-forum:hover {
+
+.spring-icon.spring-icon-forum:hover {
   background-position: -449px -450px;
 }
-.icon.icon-current-version {
+
+.spring-icon.spring-icon-current-version {
   height: 13px;
   width: 42px;
   background-position: -284px -520px;
 }
-.icon.icon-pre-release {
+
+.spring-icon.spring-icon-pre-release {
   height: 13px;
   width: 23px;
   background-position: -344px -520px;
