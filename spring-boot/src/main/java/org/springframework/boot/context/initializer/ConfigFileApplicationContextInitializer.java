@@ -105,7 +105,7 @@ public class ConfigFileApplicationContextInitializer implements
 	 * ("spring.main.show_banner=false").
 	 */
 	@Override
-	public void initialize(SpringApplication springApplication) {
+	public void initialize(SpringApplication springApplication, String[] args) {
 		if (this.environment instanceof ConfigurableEnvironment) {
 			ConfigurableEnvironment environment = (ConfigurableEnvironment) this.environment;
 			load(environment, new DefaultResourceLoader());

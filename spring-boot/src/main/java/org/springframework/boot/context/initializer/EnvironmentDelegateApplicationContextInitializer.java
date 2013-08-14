@@ -45,6 +45,7 @@ public class EnvironmentDelegateApplicationContextInitializer implements
 	// NOTE: Similar to org.springframework.web.context.ContextLoader
 
 	private static final String PROPERTY_NAME = "context.initializer.classes";
+
 	private int order = 0;
 
 	@Override
