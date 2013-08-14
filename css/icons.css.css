@@ -1,5 +1,5 @@
 .icon {
-  background-image: url("/img/iconsprite.png");
+  background-image: url("../img/iconsprite.png");
   background-repeat: no-repeat;
   display: inline-block !important;
 }
@@ -49,7 +49,7 @@
   height: 137px;
   background-position: -805px -161px;
 }
-.icon.project--logo.logo-spring-andriod {
+.icon.project--logo.logo-spring-android {
   width: 104px;
   height: 126px;
   background-position: -805px -325px;
@@ -68,4 +68,22 @@
 }
 .icon.icon-projects:hover {
   background-position: -641px -521px;
+}
+.icon.icon-forum {
+  width: 32px;
+  height: 32px;
+  background-position: -409px -450px;
+}
+.icon.icon-forum:hover {
+  background-position: -449px -450px;
+}
+.icon.icon-current-version {
+  height: 13px;
+  width: 42px;
+  background-position: -284px -520px;
+}
+.icon.icon-pre-release {
+  height: 13px;
+  width: 23px;
+  background-position: -344px -520px;
 }

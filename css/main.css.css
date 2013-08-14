@@ -40,7 +40,7 @@ body {
 
 .code-snippet {
   border-radius: 2px;
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   background-color: #F9F9F9;
   padding: 12px 18px;
   margin: 15px 0;
@@ -150,7 +150,7 @@ body {
   margin-top: -90px;
   background-color: white;
   width: 100%;
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid #ddd;
   transition: margin 0.25s;
   -webkit-transition: margin 0.25s;
   -moz-transition: margin 0.25s;
@@ -205,7 +205,7 @@ body {
 }
 
 .right-pane-widget--container {
-  border: 1px solid #cccccc;
+  border: 1px solid #ccc;
   box-shadow: 0 -4px 0 #34302d;
   margin: 4px 0 40px 0;
 }
@@ -233,6 +233,9 @@ body {
 .right-pane-widget--container.secondary-nav li.active a {
   font-weight: bold;
   color: #34302d;
+}
+.right-pane-widget--container.no-top-border {
+  box-shadow: none;
 }
 
 .header--content {
@@ -417,7 +420,7 @@ input.floating-input:focus {
 
 .gh-project-url--container {
   background-color: #FFF;
-  border: 1px solid #cccccc;
+  border: 1px solid #CCC;
   height: 20px;
   padding: 4px 6px;
   border-radius: 4px;
@@ -708,12 +711,68 @@ input.floating-input:focus {
 }
 .item--dropdown.no-item--header .tool-download-link .file-size {
   color: #6c635d;
-  font-size: 12px;
+  font-size: 10px;
+  line-height: 23px;
   float: right;
 }
 
+.item-slider-widget {
+  display: inline-block;
+  margin-left: 9px;
+}
+.item-slider-widget .item--slider {
+  height: 32px;
+  position: absolute;
+  width: 62px;
+  border-radius: 2px;
+  margin-top: -4px;
+  z-index: 800;
+  background: #68605a;
+  background: -moz-linear-gradient(top, #68605a 0%, #34302d 100%, #020202 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #68605a), color-stop(100%, #34302d), color-stop(100%, #020202));
+  background: -webkit-linear-gradient(top, #68605a 0%, #34302d 100%, #020202 100%);
+  background: -o-linear-gradient(top, #68605a 0%, #34302d 100%, #020202 100%);
+  background: -ms-linear-gradient(top, #68605a 0%, #34302d 100%, #020202 100%);
+  background: linear-gradient(to bottom, #68605a 0%, #34302d 100%, #020202 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#68605a', endColorstr='#020202',GradientType=0 );
+  cursor: pointer;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  -moz-webkit-transition: all 0.25s;
+  -ms--webkit-transition: all 0.25s;
+  -o-webkit-transition: all 0.25s;
+}
+.item-slider-widget .item-slider--container {
+  background-color: white;
+  border: 1px solid #999;
+  padding: 0 3px;
+}
+.item-slider-widget .item-slider--container .item {
+  display: inline-block;
+  color: #c3c3c3;
+  font-family: "Montserrat", sans-serif;
+  font-size: 12px;
+  line-height: 12px;
+  text-transform: uppercase;
+  padding: 7px 6px 5px;
+  cursor: pointer;
+  transition: color 0.25s;
+  -webkit-transition: color 0.25s;
+  -moz-webkit-transition: color 0.25s;
+  -ms--webkit-transition: color 0.25s;
+  -o-webkit-transition: color 0.25s;
+}
+.item-slider-widget .item-slider--container .item:hover {
+  color: black;
+}
+.item-slider-widget .item-slider--container .item.js-active {
+  z-index: 801;
+  position: relative;
+  color: #f1f1f1;
+}
+
 .content-container--wrapper {
-  border: 1px solid #34302d;
+  border: 1px solid #34302D;
   margin-top: -1px;
 }
 .content-container--wrapper:first-child {
@@ -754,6 +813,7 @@ input.floating-input:focus {
 
 .billboard-body--wrapper {
   margin-top: 326px;
+  padding: 100px 0;
 }
 
 .search-facets > ul {
