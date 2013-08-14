@@ -29,19 +29,26 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.PropertySource;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LoggingApplicationContextInitializer}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class LoggingApplicationContextInitializerTests {
+
+	private static final String[] NO_ARGS = {};
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -53,11 +60,15 @@ public class LoggingApplicationContextInitializerTests {
 
 	private Log logger = new SLF4JLogFactory().getInstance(getClass());
 
+	private SpringApplication springApplication = new SpringApplication();
+
+	private GenericApplicationContext context = new GenericApplicationContext();
+
 	@Before
 	public void init() throws SecurityException, IOException {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		this.initializer.initialize(new SpringApplication());
+		this.initializer.initialize(new SpringApplication(), NO_ARGS);
 	}
 
 	@After
@@ -79,8 +90,7 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void testOverrideConfigLocation() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new PropertySource<String>("manual") {
 					@Override
 					public Object getProperty(String name) {
@@ -90,7 +100,7 @@ public class LoggingApplicationContextInitializerTests {
 						return null;
 					}
 				});
-		this.initializer.initialize(context);
+		this.initializer.initialize(this.context);
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
@@ -100,8 +110,7 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void testOverrideConfigDoesNotExist() throws Exception {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new PropertySource<String>("manual") {
 					@Override
 					public Object getProperty(String name) {
@@ -111,14 +120,13 @@ public class LoggingApplicationContextInitializerTests {
 						return null;
 					}
 				});
-		this.initializer.initialize(context);
+		this.initializer.initialize(this.context);
 		// Should not throw
 	}
 
 	@Test
 	public void testAddLogFileProperty() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new PropertySource<String>("manual") {
 					@Override
 					public Object getProperty(String name) {
@@ -131,7 +139,7 @@ public class LoggingApplicationContextInitializerTests {
 						return null;
 					}
 				});
-		this.initializer.initialize(context);
+		this.initializer.initialize(this.context);
 		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
@@ -140,8 +148,7 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void testAddLogPathProperty() {
-		GenericApplicationContext context = new GenericApplicationContext();
-		context.getEnvironment().getPropertySources()
+		this.context.getEnvironment().getPropertySources()
 				.addFirst(new PropertySource<String>("manual") {
 					@Override
 					public Object getProperty(String name) {
@@ -154,11 +161,50 @@ public class LoggingApplicationContextInitializerTests {
 						return null;
 					}
 				});
-		this.initializer.initialize(context);
+		this.initializer.initialize(this.context);
 		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.startsWith("foo/spring.log"));
 	}
 
+	@Test
+	public void parseDebugArg() throws Exception {
+		this.initializer.initialize(this.springApplication, new String[] { "--debug" });
+		this.initializer.initialize(this.context);
+		this.logger.debug("testatdebug");
+		this.logger.trace("testattrace");
+		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
+		assertThat(this.outputCapture.toString(), not(containsString("testattrace")));
+	}
+
+	@Test
+	public void parseTraceArg() throws Exception {
+		this.context = new GenericApplicationContext();
+		this.initializer.initialize(this.springApplication, new String[] { "--trace" });
+		this.initializer.initialize(this.context);
+		this.logger.debug("testatdebug");
+		this.logger.trace("testattrace");
+		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
+		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+	}
+
+	@Test
+	public void parseArgsDisabled() throws Exception {
+		this.initializer.setParseArgs(false);
+		this.initializer.initialize(this.springApplication, new String[] { "--debug" });
+		this.initializer.initialize(this.context);
+		this.logger.debug("testatdebug");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+	}
+
+	@Test
+	public void parseArgsDoesntReplace() throws Exception {
+		this.initializer.setSpringBootLogging(LogLevel.ERROR);
+		this.initializer.setParseArgs(false);
+		this.initializer.initialize(this.springApplication, new String[] { "--debug" });
+		this.initializer.initialize(this.context);
+		this.logger.debug("testatdebug");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+	}
 }
