@@ -4,7 +4,7 @@ Spring.ProjectDocumentationWidget = function() {
   var quickStartEl = $('.js-quickstart-selector');
   var documentationEl = $('.js-documentation-widget');
 
-  var projectUrl = apiBaseUrl + "/projects/" + projectId;
+  var projectUrl = apiBaseUrl + "/project_metadata/" + projectId;
   var promise = Spring.loadProject(projectUrl);
 
   promise.then(function(project) {
