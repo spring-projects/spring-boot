@@ -1,27 +1,29 @@
 <script type="text/html" id="project-documentation-widget-template">
-    <h3><%= name %></h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Release</th>
-                <th>Documentation</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% _.each(releases, function(release) { %>
-            <tr>
-                <td>
-                    <%= release.fullName %>
-                    <i class="<%= release.statusIconClass() %>"></i>
-                </td>
-                <td>
-                    <a href='<%= release.refDocUrl %>'>Reference</a>
-                    <a href='<%= release.apiDocUrl %>'>API</a>
-                </td>
-            </tr>
-            <% }); %>
-        </tbody>
-    </table>
+    <div class="right-pane-widget--container no-top-border project-documentation--container">
+        <div class="item-dropdown-widget">
+            <div class="item-dropdown--title"><%= name %></div>
+            <div class="item--dropdown">
+                <div class="item--body">
+                    <div class="item--body-title">
+                        <div class="item--left-column">Release</div>
+                        <div class="item--right-column">Documentation</div>
+                    </div>
+                    <% _.each(releases, function(release) { %>
+                    <div class="item--body--version">
+                        <div class="item--left-column">
+                            <p><%= release.fullName %></p>
+                            <div class="icon <%= release.statusIconClass() %>"></div>
+                        </div>
+                        <div class="item--right-column">
+                            <a href='<%= release.refDocUrl %>' class="docs-link reference-link">Reference</a>
+                            <a href='<%= release.apiDocUrl %>' class="docs-link api-link">API</a>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="project-quickstart-selector-template">
