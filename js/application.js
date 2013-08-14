@@ -85,6 +85,8 @@ $(function(){
 
   var moveItemSlider = function () {
     var activeItem = $(".js-item-slider--wrapper .js-item.js-active");
+    if (activeItem.empty()) return;
+
     var activeItemPosition = activeItem.position();
     var activeItemOffset = activeItemPosition.left;
     var activeItemWidth = activeItem.outerWidth();
@@ -105,6 +107,8 @@ $(function(){
     $(this).siblings().removeClass("js-active");
     moveItemSlider();
   });
+
+  new Spring.ProjectDocumentationWidget();
 });
 
 
