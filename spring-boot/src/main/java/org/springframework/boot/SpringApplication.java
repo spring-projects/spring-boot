@@ -211,8 +211,13 @@ public class SpringApplication {
 		return true;
 	}
 
+	/**
+	 * Returns {@link ApplicationContextInitializer} loaded via the
+	 * {@link SpringFactoriesLoader}. Subclasses can override this method to modify
+	 * default initializers if necessary.
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Collection<ApplicationContextInitializer<?>> getSpringFactoriesApplicationContextInitializers() {
+	protected Collection<ApplicationContextInitializer<?>> getSpringFactoriesApplicationContextInitializers() {
 		return (Collection) SpringFactoriesLoader.loadFactories(
 				ApplicationContextInitializer.class,
 				SpringApplication.class.getClassLoader());
@@ -241,14 +246,14 @@ public class SpringApplication {
 	 */
 	public ApplicationContext run(String... args) {
 		// Call all non environment aware initializers very early
-		callNonEnvironmentAwareSpringApplicationInitializers();
+		callNonEnvironmentAwareSpringApplicationInitializers(args);
 
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		addPropertySources(environment, args);
 
 		// Call all remaining initializers
-		callEnvironmentAwareSpringApplicationInitializers(environment);
+		callEnvironmentAwareSpringApplicationInitializers(args, environment);
 		Set<Object> sources = assembleSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
 		if (this.showBanner) {
@@ -281,11 +286,11 @@ public class SpringApplication {
 		return sources;
 	}
 
-	private void callNonEnvironmentAwareSpringApplicationInitializers() {
+	private void callNonEnvironmentAwareSpringApplicationInitializers(String[] args) {
 		for (ApplicationContextInitializer<?> initializer : this.initializers) {
 			if (initializer instanceof SpringApplicationInitializer
 					&& !(initializer instanceof EnvironmentAware)) {
-				((SpringApplicationInitializer) initializer).initialize(this);
+				((SpringApplicationInitializer) initializer).initialize(this, args);
 			}
 		}
 	}
@@ -322,13 +327,13 @@ public class SpringApplication {
 		}
 	}
 
-	private void callEnvironmentAwareSpringApplicationInitializers(
+	private void callEnvironmentAwareSpringApplicationInitializers(String[] args,
 			ConfigurableEnvironment environment) {
 		for (ApplicationContextInitializer<?> initializer : this.initializers) {
 			if (initializer instanceof SpringApplicationInitializer
 					&& initializer instanceof EnvironmentAware) {
 				((EnvironmentAware) initializer).setEnvironment(environment);
-				((SpringApplicationInitializer) initializer).initialize(this);
+				((SpringApplicationInitializer) initializer).initialize(this, args);
 			}
 		}
 	}
