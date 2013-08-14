@@ -70,19 +70,22 @@ $(function(){
 
   var moveItemSlider = function () {
     var activeItem = $(".js-item-slider--wrapper .js-item.js-active");
-    if (activeItem.empty()) return;
+    if (activeItem.length == 0 ) {
+      return;
+    } else {
+      var activeItemPosition = activeItem.position();
+      var activeItemOffset = activeItemPosition.left;
+      var activeItemWidth = activeItem.outerWidth();
 
-    var activeItemPosition = activeItem.position();
-    var activeItemOffset = activeItemPosition.left;
-    var activeItemWidth = activeItem.outerWidth();
-    
-    var slider = $(".js-item--slider");
-    var sliderPosition = slider.position();
-    var sliderOffset = sliderPosition.left;
-    var sliderTarget = activeItemOffset - sliderOffset;
+      var slider = $(".js-item--slider");
+      var sliderPosition = slider.position();
+      var sliderOffset = sliderPosition.left;
+      var sliderTarget = activeItemOffset - sliderOffset;
 
-    slider.width(activeItemWidth);
-    slider.css("margin-left", sliderTarget);
+      slider.width(activeItemWidth);
+      slider.css("margin-left", sliderTarget);
+      
+    };
   }
 
   moveItemSlider();
