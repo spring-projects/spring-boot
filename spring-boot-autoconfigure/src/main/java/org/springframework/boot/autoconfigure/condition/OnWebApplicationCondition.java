@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -34,51 +32,46 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @see ConditionalOnWebApplication
  * @see ConditionalOnNotWebApplication
  */
-class OnWebApplicationCondition implements Condition {
+class OnWebApplicationCondition extends SpringBootCondition {
 
 	private static final String WEB_CONTEXT_CLASS = "org.springframework.web.context.support.GenericWebApplicationContext";
 
-	private static Log logger = LogFactory.getLog(OnWebApplicationCondition.class);
-
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		boolean webContextRequired = metadata
+	public Outcome getMatchOutcome(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
+		boolean webApplicationRequired = metadata
 				.isAnnotated(ConditionalOnWebApplication.class.getName());
-		boolean webApplication = isWebApplication(context, metadata);
-		return (webContextRequired ? webApplication : !webApplication);
+		Outcome webApplication = isWebApplication(context, metadata);
+
+		if (webApplicationRequired && !webApplication.isMatch()) {
+			return Outcome.noMatch(webApplication.getMessage());
+		}
+
+		if (!webApplicationRequired && webApplication.isMatch()) {
+			return Outcome.noMatch(webApplication.getMessage());
+		}
+
+		return Outcome.match(webApplication.getMessage());
 	}
 
-	private boolean isWebApplication(ConditionContext context,
+	private Outcome isWebApplication(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-		String checking = ConditionLogUtils.getPrefix(logger, metadata);
 
 		if (!ClassUtils.isPresent(WEB_CONTEXT_CLASS, context.getClassLoader())) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(checking + "web application classes not found");
-			}
-			return false;
+			return Outcome.noMatch("web application classes not found");
 		}
 
 		if (context.getBeanFactory() != null) {
 			String[] scopes = context.getBeanFactory().getRegisteredScopeNames();
 			if (ObjectUtils.containsElement(scopes, "session")) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(checking + "found web application scope");
-				}
-				return true;
+				return Outcome.match("found web application 'session' scope");
 			}
 		}
 
 		if (context.getEnvironment() instanceof StandardServletEnvironment) {
-			if (logger.isDebugEnabled()) {
-				logger.debug(checking + "found web application environment");
-			}
-			return true;
+			return Outcome.match("found web application StandardServletEnvironment");
 		}
 
-		if (logger.isDebugEnabled()) {
-			logger.debug(checking + "is not a web application");
-		}
-		return false;
+		return Outcome.noMatch("not a web application");
 	}
 }

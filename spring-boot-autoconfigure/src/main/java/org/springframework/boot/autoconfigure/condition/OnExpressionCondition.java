@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanExpressionContext;
 import org.springframework.beans.factory.config.BeanExpressionResolver;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.expression.StandardBeanExpressionResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -33,32 +30,21 @@ import org.springframework.core.type.ClassMetadata;
  * @author Dave Syer
  * @see ConditionalOnExpression
  */
-public class OnExpressionCondition implements Condition {
-
-	private static Log logger = LogFactory.getLog(OnExpressionCondition.class);
+public class OnExpressionCondition extends SpringBootCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+	public Outcome getMatchOutcome(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 
-		String checking = ConditionLogUtils.getPrefix(logger, metadata);
-
-		String value = (String) metadata.getAnnotationAttributes(
+		String expression = (String) metadata.getAnnotationAttributes(
 				ConditionalOnExpression.class.getName()).get("value");
-		if (!value.startsWith("#{")) {
+		if (!expression.startsWith("#{")) {
 			// For convenience allow user to provide bare expression with no #{} wrapper
-			value = "#{" + value + "}";
+			expression = "#{" + expression + "}";
 		}
-		if (logger.isDebugEnabled()) {
-			StringBuilder builder = new StringBuilder(checking)
-					.append("Evaluating expression");
-			if (metadata instanceof ClassMetadata) {
-				builder.append(" on " + ((ClassMetadata) metadata).getClassName());
-			}
-			builder.append(": " + value);
-			logger.debug(builder.toString());
-		}
+
 		// Explicitly allow environment placeholders inside the expression
-		value = context.getEnvironment().resolvePlaceholders(value);
+		expression = context.getEnvironment().resolvePlaceholders(expression);
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		BeanExpressionContext expressionContext = (beanFactory != null) ? new BeanExpressionContext(
@@ -66,11 +52,14 @@ public class OnExpressionCondition implements Condition {
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();
 		}
-		boolean result = (Boolean) resolver.evaluate(value, expressionContext);
-		if (logger.isDebugEnabled()) {
-			logger.debug(checking + "Finished matching and result is matches=" + result);
+		boolean result = (Boolean) resolver.evaluate(expression, expressionContext);
+
+		StringBuilder message = new StringBuilder("SpEL expression");
+		if (metadata instanceof ClassMetadata) {
+			message.append(" on " + ((ClassMetadata) metadata).getClassName());
 		}
-		return result;
+		message.append(": " + expression);
+		return new Outcome(result, message.toString());
 	}
 
 }

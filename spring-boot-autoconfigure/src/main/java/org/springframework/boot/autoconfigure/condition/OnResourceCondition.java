@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -35,43 +33,29 @@ import org.springframework.util.MultiValueMap;
  * @author Dave Syer
  * @see ConditionalOnResource
  */
-class OnResourceCondition implements Condition {
-
-	private static Log logger = LogFactory.getLog(OnResourceCondition.class);
+class OnResourceCondition extends SpringBootCondition {
 
 	private ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-
-		String checking = ConditionLogUtils.getPrefix(logger, metadata);
-
+	public Outcome getMatchOutcome(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				ConditionalOnResource.class.getName(), true);
-		ResourceLoader loader = context.getResourceLoader() == null ? this.defaultResourceLoader
-				: context.getResourceLoader();
 		if (attributes != null) {
+			ResourceLoader loader = context.getResourceLoader() == null ? this.defaultResourceLoader
+					: context.getResourceLoader();
 			List<String> locations = new ArrayList<String>();
 			collectValues(locations, attributes.get("resources"));
 			Assert.isTrue(locations.size() > 0,
 					"@ConditionalOnResource annotations must specify at least one resource location");
 			for (String location : locations) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(checking + "Checking for resource: " + location);
-				}
 				if (!loader.getResource(location).exists()) {
-					if (logger.isDebugEnabled()) {
-						logger.debug(checking + "Resource not found: " + location
-								+ " (search terminated with matches=false)");
-					}
-					return false;
+					return Outcome.noMatch("resource not found: " + location);
 				}
 			}
 		}
-		if (logger.isDebugEnabled()) {
-			logger.debug(checking + "Match result is: true");
-		}
-		return true;
+		return Outcome.match();
 	}
 
 	private void collectValues(List<String> names, List<Object> values) {
