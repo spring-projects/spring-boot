@@ -29,9 +29,9 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionLogUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -39,6 +39,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class /* Spring JDBC */)
@@ -85,7 +87,7 @@ public class DataSourceAutoConfiguration {
 	}
 
 	@Configuration
-	@Conditional(DataSourceAutoConfiguration.SomeDatabaseCondition.class)
+	@Conditional(DataSourceAutoConfiguration.DatabaseCondition.class)
 	protected static class JdbcTemplateConfiguration {
 
 		@Autowired(required = false)
@@ -134,119 +136,39 @@ public class DataSourceAutoConfiguration {
 		}
 	}
 
-	static class SomeDatabaseCondition implements Condition {
+	static abstract class NonEmbeddedDatabaseCondition extends SpringBootCondition {
 
-		private Log logger = LogFactory.getLog(getClass());
-
-		private Condition tomcatCondition = new TomcatDatabaseCondition();
-
-		private Condition dbcpCondition = new BasicDatabaseCondition();
-
-		private Condition embeddedCondition = new EmbeddedDatabaseCondition();
+		protected abstract String getDataSourceClassName();
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		public Outcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
 
-			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
+			if (!ClassUtils.isPresent(getDataSourceClassName(), context.getClassLoader())) {
+				return Outcome.noMatch(getDataSourceClassName()
+						+ " DataSource class not found");
+			}
 
-			if (this.tomcatCondition.matches(context, metadata)
-					|| this.dbcpCondition.matches(context, metadata)
-					|| this.embeddedCondition.matches(context, metadata)) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(checking + "Existing auto database "
-							+ "detected: match result true");
-				}
-				return true;
+			String driverClassName = getDriverClassName(context.getEnvironment());
+			if (driverClassName == null) {
+				return Outcome.noMatch("no database driver");
 			}
-			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-					context.getBeanFactory(), DataSource.class, true, false).length > 0) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(checking + "Existing bean configured database "
-							+ "detected: match result true");
-				}
-				return true;
+
+			String url = getUrl(context.getEnvironment());
+			if (url == null) {
+				return Outcome.noMatch("no database URL");
 			}
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(checking + "Existing bean configured database not "
-						+ "detected: match result false");
+
+			if (ClassUtils.isPresent(driverClassName, context.getClassLoader())) {
+				return Outcome.match("found database driver " + driverClassName);
 			}
-			return false;
+
+			return Outcome.match("missing database driver " + driverClassName);
 		}
 
-	}
-
-	static class TomcatDatabaseCondition extends NonEmbeddedDatabaseCondition {
-
-		@Override
-		protected String getDataSourecClassName() {
-			return "org.apache.tomcat.jdbc.pool.DataSource";
-		}
-
-	}
-
-	static class BasicDatabaseCondition extends NonEmbeddedDatabaseCondition {
-
-		private Condition condition = new TomcatDatabaseCondition();
-
-		@Override
-		protected String getDataSourecClassName() {
-			return "org.apache.commons.dbcp.BasicDataSource";
-		}
-
-		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			if (this.condition.matches(context, metadata)) {
-				return false; // prefer Tomcat pool
-			}
-			return super.matches(context, metadata);
-		}
-	}
-
-	static abstract class NonEmbeddedDatabaseCondition implements Condition {
-
-		private Log logger = LogFactory.getLog(getClass());
-
-		protected abstract String getDataSourecClassName();
-
-		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-
-			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
-
-			if (!ClassUtils.isPresent(getDataSourecClassName(), null)) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(checking + "Tomcat DataSource pool not found");
-				}
-				return false;
-			}
-
-			String driverClassName = getDriverClassName(context, checking);
-			String url = getUrl(context);
-
-			if (driverClassName != null && url != null
-					&& ClassUtils.isPresent(driverClassName, null)) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(checking + "Driver class " + driverClassName
-							+ " found");
-				}
-				return true;
-			}
-
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(checking + "Driver class " + driverClassName
-						+ " not found");
-			}
-			return false;
-		}
-
-		private String getDriverClassName(ConditionContext context, String checking) {
-			String driverClassName = context.getEnvironment().getProperty(
-					"spring.database.driverClassName");
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(checking
-						+ "Spring JDBC detected (embedded database type is "
-						+ EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType() + ").");
-			}
+		private String getDriverClassName(Environment environment) {
+			String driverClassName = environment == null ? null : environment
+					.getProperty("spring.database.driverClassName");
 			if (driverClassName == null) {
 				driverClassName = EmbeddedDatabaseConfiguration
 						.getEmbeddedDatabaseDriverClass(EmbeddedDatabaseConfiguration
@@ -255,8 +177,9 @@ public class DataSourceAutoConfiguration {
 			return driverClassName;
 		}
 
-		private String getUrl(ConditionContext context) {
-			String url = context.getEnvironment().getProperty("spring.database.url");
+		private String getUrl(Environment environment) {
+			String url = (environment == null ? null : environment
+					.getProperty("spring.database.url"));
 			if (url == null) {
 				url = EmbeddedDatabaseConfiguration
 						.getEmbeddedDatabaseUrl(EmbeddedDatabaseConfiguration
@@ -266,34 +189,78 @@ public class DataSourceAutoConfiguration {
 		}
 	}
 
-	static class EmbeddedDatabaseCondition implements Condition {
-
-		private Log logger = LogFactory.getLog(getClass());
+	static class BasicDatabaseCondition extends NonEmbeddedDatabaseCondition {
 
 		private Condition tomcatCondition = new TomcatDatabaseCondition();
 
-		private Condition dbcpCondition = new BasicDatabaseCondition();
+		@Override
+		protected String getDataSourceClassName() {
+			return "org.apache.commons.dbcp.BasicDataSource";
+		}
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-
-			String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
-
-			if (this.tomcatCondition.matches(context, metadata)
-					|| this.dbcpCondition.matches(context, metadata)) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(checking + "Existing non-embedded "
-							+ "database detected: match result false");
-				}
-				return false;
+		public Outcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			if (matches(context, metadata, this.tomcatCondition)) {
+				return Outcome.noMatch("tomcat DataSource");
 			}
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(checking
-						+ "Spring JDBC detected (embedded database type is "
-						+ EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType() + ").");
-			}
-			return EmbeddedDatabaseConfiguration.getEmbeddedDatabaseType() != null;
+			return super.getMatchOutcome(context, metadata);
 		}
 	}
 
+	static class TomcatDatabaseCondition extends NonEmbeddedDatabaseCondition {
+
+		@Override
+		protected String getDataSourceClassName() {
+			return "org.apache.tomcat.jdbc.pool.DataSource";
+		}
+
+	}
+
+	static class EmbeddedDatabaseCondition extends SpringBootCondition {
+
+		private SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();
+
+		private SpringBootCondition dbcpCondition = new BasicDatabaseCondition();
+
+		@Override
+		public Outcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			if (anyMatches(context, metadata, this.tomcatCondition, this.dbcpCondition)) {
+				return Outcome.noMatch("existing non-embedded database detected");
+			}
+			EmbeddedDatabaseType type = EmbeddedDatabaseConfiguration
+					.getEmbeddedDatabaseType();
+			if (type == null) {
+				return Outcome.noMatch("no embedded database detected");
+			}
+			return Outcome.match("embedded database " + type + " detected");
+		}
+	}
+
+	static class DatabaseCondition extends SpringBootCondition {
+
+		private SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();
+
+		private SpringBootCondition dbcpCondition = new BasicDatabaseCondition();
+
+		private SpringBootCondition embeddedCondition = new EmbeddedDatabaseCondition();
+
+		@Override
+		public Outcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+
+			if (anyMatches(context, metadata, this.tomcatCondition, this.dbcpCondition,
+					this.embeddedCondition)) {
+				return Outcome.match("existing auto database detected");
+			}
+
+			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
+					context.getBeanFactory(), DataSource.class, true, false).length > 0) {
+				return Outcome.match("Existing bean configured database detected");
+			}
+
+			return Outcome.noMatch("no existing bean configured database");
+		}
+	}
 }

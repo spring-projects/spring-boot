@@ -21,8 +21,6 @@ import java.util.Arrays;
 import javax.servlet.Servlet;
 
 import org.apache.catalina.startup.Tomcat;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
 import org.springframework.beans.BeansException;
@@ -33,10 +31,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionLogUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -44,7 +42,6 @@ import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -149,42 +146,24 @@ public class EmbeddedServletContainerAutoConfiguration {
 		}
 	}
 
-	private static class DefaultServletCondition implements Condition {
-
-		private static Log logger = LogFactory.getLog(DefaultServletCondition.class);
+	private static class DefaultServletCondition extends SpringBootCondition {
 
 		@Override
-		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-
-			String checking = ConditionLogUtils.getPrefix(logger, metadata);
+		public Outcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
 
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 			String[] beans = beanFactory.getBeanNamesForType(DispatcherServlet.class,
 					false, false);
 			if (beans.length == 0) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(checking
-							+ "No DispatcherServlet found (search terminated with matches=true)");
-				}
-				// No dispatcher servlet so no need to ask further questions
-				return true;
+				return Outcome.match("no DispatcherServlet found");
 			}
 			if (Arrays.asList(beans).contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(checking + "DispatcherServlet found and named "
-							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME
-							+ " (search terminated with matches=false)");
-				}
-				// An existing bean with the default name
-				return false;
+				return Outcome.noMatch("found DispatcherServlet named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			}
-			if (logger.isDebugEnabled()) {
-				logger.debug(checking
-						+ "Multiple DispatcherServlets found and none is named "
-						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME
-						+ " (search terminated with matches=true)");
-			}
-			return true;
+			return Outcome.match("multiple DispatcherServlets found and none is named "
+					+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 		}
 	}
 

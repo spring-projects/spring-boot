@@ -20,8 +20,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -36,14 +34,11 @@ import org.springframework.util.StringUtils;
  * @see ConditionalOnClass
  * @see ConditionalOnMissingClass
  */
-class OnClassCondition implements Condition {
-
-	private static Log logger = LogFactory.getLog(OnClassCondition.class);
+class OnClassCondition extends SpringBootCondition {
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-
-		String checking = ConditionLogUtils.getPrefix(logger, metadata);
+	public Outcome getMatchOutcome(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 
 		MultiValueMap<String, Object> onClasses = getAttributes(metadata,
 				ConditionalOnClass.class);
@@ -51,13 +46,8 @@ class OnClassCondition implements Condition {
 			List<String> missing = getMatchingClasses(onClasses, MatchType.MISSING,
 					context);
 			if (!missing.isEmpty()) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(checking
-							+ "Required @ConditionalOnClass classes not found: "
-							+ StringUtils.collectionToCommaDelimitedString(missing)
-							+ " (search terminated with matches=false)");
-				}
-				return false;
+				return Outcome.noMatch("required @ConditionalOnClass classes not found: "
+						+ StringUtils.collectionToCommaDelimitedString(missing));
 			}
 		}
 
@@ -67,20 +57,12 @@ class OnClassCondition implements Condition {
 			List<String> present = getMatchingClasses(onMissingClasses,
 					MatchType.PRESENT, context);
 			if (!present.isEmpty()) {
-				if (logger.isDebugEnabled()) {
-					logger.debug(checking
-							+ "Required @ConditionalOnMissing classes found: "
-							+ StringUtils.collectionToCommaDelimitedString(present)
-							+ " (search terminated with matches=false)");
-				}
-				return false;
+				return Outcome.noMatch("required @ConditionalOnMissing classes found: "
+						+ StringUtils.collectionToCommaDelimitedString(present));
 			}
 		}
 
-		if (logger.isDebugEnabled()) {
-			logger.debug(checking + "Match result is: true");
-		}
-		return true;
+		return Outcome.match();
 	}
 
 	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,
