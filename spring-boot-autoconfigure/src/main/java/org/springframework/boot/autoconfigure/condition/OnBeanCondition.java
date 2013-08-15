@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -45,11 +43,9 @@ import org.springframework.util.ReflectionUtils.MethodCallback;
  * @author Phillip Webb
  * @author Dave Syer
  */
-class OnBeanCondition implements ConfigurationCondition {
+class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
 
 	private static final String[] NO_BEANS = {};
-
-	private final Log logger = LogFactory.getLog(getClass());
 
 	@Override
 	public ConfigurationPhase getConfigurationPhase() {
@@ -57,20 +53,15 @@ class OnBeanCondition implements ConfigurationCondition {
 	}
 
 	@Override
-	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-
-		String checking = ConditionLogUtils.getPrefix(this.logger, metadata);
+	public Outcome getMatchOutcome(ConditionContext context,
+			AnnotatedTypeMetadata metadata) {
 
 		if (metadata.isAnnotated(ConditionalOnBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
 					ConditionalOnBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(checking + " @ConditionalOnBean " + spec
-							+ " found no beans (search terminated with matches=false)");
-				}
-				return false;
+				return Outcome.noMatch("@ConditionalOnBean " + spec + " found no beans");
 			}
 		}
 
@@ -79,16 +70,12 @@ class OnBeanCondition implements ConfigurationCondition {
 					ConditionalOnMissingBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (!matching.isEmpty()) {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(checking + " @ConditionalOnMissingBean " + spec
-							+ " found the following " + matching
-							+ " (search terminated with matches=false)");
-				}
-				return false;
+				return Outcome.noMatch("@ConditionalOnMissingBean " + spec
+						+ " found the following " + matching);
 			}
 		}
 
-		return true;
+		return Outcome.match();
 	}
 
 	private List<String> getMatchingBeans(ConditionContext context, BeanSearchSpec beans) {
