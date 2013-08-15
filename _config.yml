@@ -1,4 +1,4 @@
-# Global gh-pages pre-amble
+### Global gh-pages pre-amble
 safe: true
 lsi: false
 pygments: true
@@ -6,14 +6,25 @@ markdown: redcarpet
 redcarpet:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
 
-# Spring specific
+### Spring specific
 main_site_url: http://springframework.io
 
-# For testing only
+### For testing only
 test: true
 
-# Below this line might vary between projects
+### Below this line might vary between projects
+
+# Context path in the remote website (usually /<project>), will be prepended to absolute URLs for statuc resources
+baseurl: /spring-framework
+
+# Name of the project for display in places like page titles
 name: Spring Framework
+
+# ID of the project in the metadata API at springframework.io
 project: spring-framework
+
+# Project github URL
 github: https://github.com/SpringSource/spring-framework
+
+# A forum link for the navbar
 forum: http://forum.springsource.org

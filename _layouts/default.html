@@ -4,29 +4,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{{ page.title }}</title>
-  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
-  <!-- <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap-responsive.min.css" /> -->
+  <title>{{ site.name }} - {{ page.title }}</title>
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/bootstrap/css/bootstrap.min.css" />
   <link href='http://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
-  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-select.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/bootstrap/css/bootstrap-select.css" />
 
-    <link rel="stylesheet" type="text/css" href="css/main.css.css" />
-    <link rel="stylesheet" type="text/css" href="css/typography.css.css" />
-    <link rel="stylesheet" type="text/css" href="css/icons.css.css" />
-    <link rel="stylesheet" type="text/css" href="css/projects.css.css" />
-    <link rel="stylesheet" type="text/css" href="css/buttons.css.css" />
-    <link rel="stylesheet" type="text/css" href="css/guide.css.css" />
+    <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/main.css.css" />
+    <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/typography.css.css" />
+    <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/icons.css.css" />
+    <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/projects.css.css" />
+    <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/buttons.css.css" />
+    <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/guide.css.css" />
 
-  <script type="text/javascript" src="js/jquery.js"></script>
-  <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="bootstrap/js/bootstrap-select.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/jquery.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/bootstrap/js/bootstrap-select.js"></script>
 
-  <script type="text/javascript" src="js/underscore.js"></script>
-  <script type="text/javascript" src="js/backbone.js"></script>
-  <script type="text/javascript" src="js/projectDocumentationWidget.js"></script>
-  <script type="text/javascript" src="js/application.js"></script>
-  <script type="text/javascript" src="js/guide.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/underscore.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/backbone.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/projectDocumentationWidget.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/application.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/guide.js"></script>
   <script type="text/javascript">
     var apiBaseUrl = "{{ site.main_site_url }}";
     var projectId = "{{ site.project }}";
