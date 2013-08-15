@@ -4,7 +4,7 @@ title: Docs
 ---
 
 {% capture links %}
-[Project]({{ page.main_site_url }}/projects/spring-framework) : [Another]({{ page.main_site_url }}/projects/spring-framework)
+[Project]({{ page.main_site_url }}/projects/spring-framework) | [Another]({{ page.main_site_url }}/projects/spring-framework)
 {% endcapture %}
 
 {% capture description %}

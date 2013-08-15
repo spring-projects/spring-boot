@@ -4,7 +4,9 @@
       <div  class="content--title">
       <!-- TODO: when in <p/> style of this text is wrong (font too large) -->
       <!-- TODO: why do we have to markdownify? -->
-      {{ include.links | markdownify }} 
+{% if include.links %}
+{{ include.links | markdownify }}
+{% endif %}
       </div>
       <div class="row-fluid">
         <div class="span8">
