@@ -1,3 +1,8 @@
+---
+layout: empty
+title: Your Project Name Here
+---
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -16,10 +21,14 @@
     <!-- include source files here... -->
     <script type="text/javascript" src="../underscore.js"></script>
     <script type="text/javascript" src="../backbone.js"></script>
+    <script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../bootstrap/js/bootstrap-select.js"></script>
     <script type="text/javascript" src="../projectDocumentationWidget.js"></script>
 
     <!-- include spec files here... -->
-    <script type="text/javascript" src="spec/ProjectSpec.js"></script>
+    <script type="text/javascript" src="spec/QuickStartWidgetSpec.js"></script>
+
+    {% include widget_template.html %}
 
     <script type="text/javascript">
         (function () {

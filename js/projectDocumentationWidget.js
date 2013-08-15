@@ -2,33 +2,42 @@ window.Spring = window.Spring || {};
 
 Spring.ProjectDocumentationWidget = function() {
   var quickStartEl = $('.js-quickstart-selector');
+  var mavenWidgetEl = $('.js-quickstart-maven-widget');
   var documentationEl = $('.js-documentation-widget');
 
   var projectUrl = apiBaseUrl + "/project_metadata/" + projectId;
   var promise = Spring.loadProject(projectUrl);
 
   promise.then(function(project) {
-    new Spring.WidgetView({
-      el: documentationEl,
-      model: project,
-      template: $("#project-documentation-widget-template").text()
-    }).render();
-
-    var mavenWidget = new Spring.WidgetView({
-      el: $('.js-quickstart-maven-widget'),
-      model: project.releases[0],
-      template: $("#project-quickstart-maven-widget-template").text()
-    }).render();
-
-    new Spring.QuickStartSelectorView({
-      el: quickStartEl,
-      model: project,
-      template: $("#project-quickstart-selector-template").text(),
-      mavenWidget: mavenWidget
-    }).render();
-
+    Spring.buildDocumentationWidget(documentationEl, project);
+    Spring.buildQuickStartWidget(quickStartEl, mavenWidgetEl, project);
   });
 };
+
+Spring.buildDocumentationWidget = function(documentationEl, project) {
+  new Spring.DocumentationWidgetView({
+    el: documentationEl,
+    model: project,
+    template: $("#project-documentation-widget-template").text()
+  }).render();
+
+}
+Spring.buildQuickStartWidget = function(quickStartEl, mavenWidgetEl, project) {
+  var mavenWidget = new Spring.MavenSnippetView({
+    el: mavenWidgetEl,
+    model: project.releases[0],
+    dependencyTemplate: $("#project-quickstart-maven-widget-dependency-template").text(),
+    repositoryTemplate: $("#project-quickstart-maven-widget-repository-template").text()
+  }).render();
+
+  new Spring.QuickStartSelectorView({
+    el: quickStartEl,
+    model: project,
+    template: $("#project-quickstart-selector-template").text(),
+    mavenWidget: mavenWidget
+  }).render();
+
+}
 
 Spring.loadProject = function(url) {
   return $.ajax(url, {
@@ -65,7 +74,7 @@ Spring.Project = function(data) {
   return this;
 };
 
-Spring.WidgetView = Backbone.View.extend({
+Spring.DocumentationWidgetView = Backbone.View.extend({
   initialize: function() {
     this.template = _.template(this.options.template);
     _.bindAll(this, "render");
@@ -77,7 +86,24 @@ Spring.WidgetView = Backbone.View.extend({
     );
     return this;
   }
+});
 
+Spring.MavenSnippetView = Backbone.View.extend({
+  initialize: function() {
+    this.dependencyTemplate = _.template(this.options.dependencyTemplate);
+    this.repositoryTemplate = _.template(this.options.repositoryTemplate);
+    _.bindAll(this, "render");
+  },
+
+  render: function() {
+    var html = $("<pre></pre>");
+    html.append(this.dependencyTemplate(this.model));
+    if (this.model.repository != null) {
+      html.append(this.repositoryTemplate(this.model.repository));
+    }
+    this.$el.html(html);
+    return this;
+  }
 });
 
 Spring.QuickStartSelectorView = Backbone.View.extend({
