@@ -96,6 +96,12 @@ Spring.SnippetView = Backbone.View.extend({
     }
     this.$el.html(html);
     return this;
+  },
+
+  remove: function() {
+    this.undelegateEvents();
+    this.$el.empty();
+    this.unbind();
   }
 });
 
@@ -121,8 +127,7 @@ Spring.QuickStartSelectorView = Backbone.View.extend({
   },
 
   renderActiveWidget: function() {
-    //TODO: make remove work better
-//    if(this.activeWidget != null) this.activeWidget.remove();
+    if(this.activeWidget != null) this.activeWidget.remove();
 
     this.activeWidget = new Spring.SnippetView({
       el: this.snippetWidgetEl,
