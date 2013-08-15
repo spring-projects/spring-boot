@@ -4,7 +4,7 @@
       <div  class="content--title">
 {% if include.breadcrumbs %}
 {% capture bread %}
-[Projects]({{ site.projects_site_url }}): {% assign items = include.breadcrumbs | append:"," | split:"," %}{% for link in items %}{{ link | append:": " }}{% endfor %}[Here]({{ site.projects_site_url }}{{ site.basedir }})
+[Projects]({{ site.projects_site_url }}) : {{ include.breadcrumbs }}
 {% endcapture %}
 {{ bread | markdownify }}
 {% endif %}

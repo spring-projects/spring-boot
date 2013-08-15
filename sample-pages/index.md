@@ -1,10 +1,9 @@
 ---
 layout: default
-title: Docs
 ---
 
 <!-- optional comma-separated list of markdown to render as breadcrumbs (any links between current page and main projects page) -->
-{% assign breadcrumbs = '[Middle]({{ site.projects_site_url }}#middle-spring-framework),[End]({{ site.projects_site_url }}#end-spring-framework)' %}
+{% assign breadcrumbs = '[Parent]({{ site.projects_site_url }}#spring-project-parent)' %}
 
 {% capture description %}
 
