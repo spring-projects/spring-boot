@@ -44,22 +44,7 @@
             <div class="quickstart--title">
               Quick Start
             </div>
-            <div class="js-quickstart-selector"></div>
-
-            <div class="item-slider-widget js-item-slider--wrapper">
-              <div class="item-slider--container">
-                <div class="item--slider js-item--slider"></div>
-                <div class="item js-active js-item">
-                  Maven
-                </div>
-                <div class="item js-item">
-                  Gradle
-                </div>
-                <div class="item js-item">
-                  Zip
-                </div>
-              </div>
-            </div>
+            <div data-quickstart-controls style="display: inline-block"></div>
           </div>
           <div class="quickstart--body">
             {{ include.quickstart | markdownify }}

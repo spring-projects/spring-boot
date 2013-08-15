@@ -26,12 +26,30 @@
     </div>
 </script>
 
-<script type="text/html" id="project-quickstart-selector-template">
-    <select class='selector selectpicker'>
-        <% _.each(releases, function(release, index) { %>
+<script type="text/html" id="project-quickstart-controls-template">
+    <div class="js-quickstart-selector">
+        <select class='selector selectpicker'>
+            <% _.each(releases, function(release, index) { %>
             <option value="<%= index %>" data-content="<span><%= release.shortName %></span><div class='spring-icon <%= release.statusIconClass() %>'/>"> ()</option>
-        <% }); %>
-    </select>
+            <% }); %>
+        </select>
+    </div>
+
+    <div class="item-slider-widget js-item-slider--wrapper">
+        <div class="item-slider--container">
+            <div class="item--slider js-item--slider"></div>
+            <div class="item js-active js-item" data-snippet-type='maven'>
+                Maven
+            </div>
+            <div class="item js-item" data-snippet-type='gradle'>
+                Gradle
+            </div>
+            <div class="item js-item" data-snippet-type='zip'>
+                Zip
+            </div>
+        </div>
+    </div>
+
 </script>
 
 <script type="text/html" id="project-quickstart-maven-widget-dependency-template">&lt;dependency&gt;
@@ -49,4 +67,17 @@
         &lt;enabled&gt;<%= snapshotsEnabled %>&lt;/enabled&gt;
     &lt;/snapshots&gt;
 &lt;/repository&gt;
+</script>
+<script type="text/html" id="project-quickstart-gradle-widget-dependency-template">dependencies {
+    compile '<%= groupId %>:<%= artifactId %>:<%= fullName %>'
+}
+</script>
+<script type="text/html" id="project-quickstart-gradle-widget-repository-template">repositories {
+    maven {
+        url '<%= url %>'
+    }
+}
+</script>
+<script type="text/html" id="project-quickstart-zip-widget-dependency-template">
+This is a zip url
 </script>

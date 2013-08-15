@@ -68,33 +68,6 @@ $(function(){
   $('.download-links').showPreferredLink();
 
 
-  var moveItemSlider = function () {
-    var activeItem = $(".js-item-slider--wrapper .js-item.js-active");
-    if (activeItem.length == 0 ) {
-      return;
-    } else {
-      var activeItemPosition = activeItem.position();
-      var activeItemOffset = activeItemPosition.left;
-      var activeItemWidth = activeItem.outerWidth();
-
-      var slider = $(".js-item--slider");
-      var sliderPosition = slider.position();
-      var sliderOffset = sliderPosition.left;
-      var sliderTarget = activeItemOffset - sliderOffset;
-
-      slider.width(activeItemWidth);
-      slider.css("margin-left", sliderTarget);
-      
-    };
-  }
-
-  moveItemSlider();
-
-  $(".js-item").click(function () {
-    $(this).addClass("js-active");
-    $(this).siblings().removeClass("js-active");
-    moveItemSlider();
-  });
 
   new Spring.ProjectDocumentationWidget();
 });

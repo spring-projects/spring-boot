@@ -41,47 +41,63 @@ describe("QuickStartWidget", function () {
         ]
       });
 
-
       $('#jasmine_content').append("<div id='quick_select_widget'></div> ");
       $('#jasmine_content').append("<div id='maven_widget'></div> ");
       Spring.buildQuickStartWidget("#quick_select_widget", "#maven_widget", project);
     });
-
 
     it("lists out each release's version", function () {
       expect($('#quick_select_widget')).toContainText("1.4.0.RC1");
       expect($('#quick_select_widget')).toContainText("1.3.4");
     });
 
-    it("shows the dependency based on the default release", function() {
-      expect($('#maven_widget')).toContainText("org.springframework.data");
-      expect($('#maven_widget')).toContainText("spring-data-jpa");
-      expect($('#maven_widget')).toContainText("1.4.0.RC1");
+    describe("maven view", function() {
+      it("shows the dependency based on the default release", function() {
+        expect($('#maven_widget')).toContainText("org.springframework.data");
+        expect($('#maven_widget')).toContainText("spring-data-jpa");
+        expect($('#maven_widget')).toContainText("1.4.0.RC1");
+      });
+
+      it("shows the right dependency when users select a different release", function() {
+        $('#jasmine_content select').val(1).change();
+
+        expect($('#maven_widget')).toContainText("org.springframework.data");
+        expect($('#maven_widget')).toContainText("spring-data-jpa");
+        expect($('#maven_widget')).toContainText("1.3.4.RELEASE");
+      });
+
+      it("shows the repository information if it's present", function() {
+        expect($('#maven_widget')).toContainText("spring-milestones");
+        expect($('#maven_widget')).toContainText("Spring Milestones");
+        expect($('#maven_widget')).toContainText("http://repo.springsource.org/milestone");
+        expect($('#maven_widget')).toContainText("false");
+      });
+
+      it("removes the repository if the user selects a relase without a repository", function (){
+        $('#jasmine_content select').val(1).change();
+
+        expect($('#maven_widget')).not.toContainText("repository");
+        expect($('#maven_widget')).not.toContainText("spring-milestones");
+        expect($('#maven_widget')).not.toContainText("Spring Milestones");
+        expect($('#maven_widget')).not.toContainText("http://repo.springsource.org/milestone");
+        expect($('#maven_widget')).not.toContainText("false");
+      });
     });
 
-    it("shows the right dependency when users select a different release", function() {
-      $('#jasmine_content select').val(1).change();
+    describe("gradle view", function() {
+      beforeEach(function() {
+        $("#quick_select_widget [data-snippet-type=gradle]").click();
+      });
 
-      expect($('#maven_widget')).toContainText("org.springframework.data");
-      expect($('#maven_widget')).toContainText("spring-data-jpa");
-      expect($('#maven_widget')).toContainText("1.3.4.RELEASE");
-    });
+      it("shows the dependency based on the default release", function() {
+        expect($('#maven_widget')).toContainText("dependencies");
+        expect($('#maven_widget')).toContainText("org.springframework.data:spring-data-jpa:1.4.0.RC1");
+      });
 
-    it("shows the repository information if it's present", function() {
-      expect($('#maven_widget')).toContainText("spring-milestones");
-      expect($('#maven_widget')).toContainText("Spring Milestones");
-      expect($('#maven_widget')).toContainText("http://repo.springsource.org/milestone");
-      expect($('#maven_widget')).toContainText("false");
-    });
-
-    it("removes the repository if the user selects a relase without a repository", function (){
-      $('#jasmine_content select').val(1).change();
-
-      expect($('#maven_widget')).not.toContainText("repository");
-      expect($('#maven_widget')).not.toContainText("spring-milestones");
-      expect($('#maven_widget')).not.toContainText("Spring Milestones");
-      expect($('#maven_widget')).not.toContainText("http://repo.springsource.org/milestone");
-      expect($('#maven_widget')).not.toContainText("false");
+      it("shows the repository if the data has one", function() {
+        expect($('#maven_widget')).toContainText("repositories");
+        expect($('#maven_widget')).toContainText("http://repo.springsource.org/milestone");
+      });
     });
   });
 });
