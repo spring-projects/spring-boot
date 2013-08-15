@@ -34,13 +34,19 @@
     </select>
 </script>
 
-<script type="text/html" id="project-quickstart-maven-widget-template">
-    <pre>
-&lt;dependency&gt;
+<script type="text/html" id="project-quickstart-maven-widget-dependency-template">&lt;dependency&gt;
     &lt;groupId&gt;<%= groupId %>&lt;/groupId&gt;
     &lt;artifactId&gt;<%= artifactId %>&lt;/artifactId&gt;
     &lt;version&gt;<%= fullName %>&lt;/version&gt;
 &lt;/dependency&gt;
-    </pre>
-
+</script>
+<script type="text/html" id="project-quickstart-maven-widget-repository-template">
+&lt;repository&gt;
+    &lt;id&gt;<%= id %>&lt;/id&gt;
+    &lt;name&gt;<%= name %>&lt;/name&gt;
+    &lt;url&gt;<%= url %>&lt;/url&gt;
+    &lt;snapshots&gt;
+        &lt;enabled&gt;<%= snapshotsEnabled %>&lt;/enabled&gt;
+    &lt;/snapshots&gt;
+&lt;/repository&gt;
 </script>
