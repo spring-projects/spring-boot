@@ -1,4 +1,4 @@
-{% include badge.md link="[ci](#ci-icon)" %}
-{% include badge.md link="[fork](#forkme-icon)" %}
-{% include badge.md link="[etc](#)" %}
-{% include badge.md link="[etc](#)" %}
+{% include badge.html link="[ci](#ci-icon)" %}
+{% include badge.html link="[fork](#forkme-icon)" %}
+{% include badge.html link="[etc](#)" %}
+{% include badge.html link="[etc](#)" %}
