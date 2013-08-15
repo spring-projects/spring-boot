@@ -1,1 +1,15 @@
+# Global gh-pages pre-amble
+safe: true
+lsi: false
+pygments: true
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
+
+# Spring specific
+main_site_url: http://springframework.io
+
+# Below this line might vary between projects
 projectId: spring-framework
+github: https://github.com/SpringSource/spring-framework
+forum: http://forum.springsource.org

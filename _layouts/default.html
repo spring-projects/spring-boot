@@ -1,5 +1,4 @@
 ---
-main_site_url: http://springframework.io
 forum_url: http://forum.springframework.io
 ---
 
@@ -30,7 +29,7 @@ forum_url: http://forum.springframework.io
   <script type="text/javascript" src="js/application.js"></script>
   <script type="text/javascript" src="js/guide.js"></script>
   <script type="text/javascript">
-    var apiBaseUrl = "{{ page.main_site_url }}";
+    var apiBaseUrl = "{{ site.main_site_url }}";
     var projectId = "{{ site.projectId }}";
   </script>
   <meta name="google-site-verification" content="7qGntFPD9lWAVCtUu5U77v4l68PsTHf6xpzgjQv2j2M" />
@@ -41,20 +40,20 @@ forum_url: http://forum.springframework.io
       <div class="container-fluid">
         <div class="spring-logo--container">
           <div class="logo-bg"></div>
-          <a class="spring-logo" href="{{page.main_site_url}}"></a>
+          <a class="spring-logo" href="{{site.main_site_url}}"></a>
         </div>
         <ul class="nav pull-right">
           <li class="navbar-link">
-            <a href="{{page.main_site_url}}/docs">Docs</a>
+            <a href="{{site.main_site_url}}/docs">Docs</a>
           </li>
           <li class="navbar-link">
-            <a href="{{page.main_site_url}}/guides">Guides</a>
+            <a href="{{site.main_site_url}}/guides">Guides</a>
           </li>
           <li class="navbar-link active">
-            <a href="{{page.main_site_url}}/projects">Projects</a>
+            <a href="{{site.main_site_url}}/projects">Projects</a>
           </li>
           <li class="navbar-link">
-            <a href="{{page.main_site_url}}/blog">Blog</a>
+            <a href="{{site.main_site_url}}/blog">Blog</a>
           </li>
           <li class="navbar-link">
             <a href="{{page.forum_url}}">Forum</a>
@@ -69,7 +68,7 @@ forum_url: http://forum.springframework.io
     <div class="search-dropdown--container js-search-dropdown">
       <div class="container-fluid">
         <div class="search-form--container">
-          <form class="form-inline form-search" action="{{page.main_site_url}}/search" method="get">
+          <form class="form-inline form-search" action="{{site.main_site_url}}/search" method="get">
             <input type="text" class="search-query search-form--form js-search-input" placeholder="Search for documention, guides, and posts..." name="q" />
             <button type="submit" class="search-form--submit"><i class="icon-search"></i></button>
           </form>
@@ -89,10 +88,10 @@ forum_url: http://forum.springframework.io
           <div class="navbar">
             <div class="container">
               <ul class="nav">
-                <li><a href="{{page.main_site_url}}/tools">Tools</a></li>
-                <li><a href="{{page.main_site_url}}/services">Services</a></li>
-                <li><a href="{{page.main_site_url}}/about">About Us</a></li>
-                <li><a href="{{page.main_site_url}}/jobs">Work With Us</a></li>
+                <li><a href="{{site.main_site_url}}/tools">Tools</a></li>
+                <li><a href="{{site.main_site_url}}/services">Services</a></li>
+                <li><a href="{{site.main_site_url}}/about">About Us</a></li>
+                <li><a href="{{site.main_site_url}}/jobs">Work With Us</a></li>
               </ul>
             </div>
           </div>
@@ -100,7 +99,7 @@ forum_url: http://forum.springframework.io
                 document.write(d.getFullYear());</script> GoPivotal, Inc. All Rights Reserved.
           <a href="http://www.gopivotal.com/terms-of-use">Terms</a>,
           <a href="http://www.gopivotal.com/privacy-policy">Privacy</a>, and
-          <a href="{{page.main_site_url}}/logos">Usage</a>
+          <a href="{{site.main_site_url}}/logos">Usage</a>
         </div>
         <div class="span4 footer-newsletter--wrapper pull-right">
           <div class="footer-newsletter--container">
