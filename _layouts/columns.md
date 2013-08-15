@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-<div class="billboard-body--wrapper project-body--container">
+<div class="project-body--container">
   <div class="row-fluid"> <!-- TODO: everything in here invisible (wrong background) -->
     <div class="span8">
       <div class="project-body--section">

@@ -1,7 +1,5 @@
 {% include documentation.html %}
 
-<div class="right-pane-widget--container no-top-border">
-  <div class="project-sub-link--wrapper">
 {% capture projects %}
 {% if site.test %}
 {% include test/projects.md %}
@@ -9,10 +7,7 @@
 {% include projects.md %}
 {% endif %}
 {% endcapture %}
-{{ projects | markdownify }}
- </div>
-</div>
-<div class="right-pane-widget--container no-top-border project-additional-resource--wrapper">
+
 {% capture additional %}
 {% if site.test %}
 {% include test/additional.md %}
@@ -20,5 +15,17 @@
 {% include additional.md %}
 {% endif %}
 {% endcapture %}
+
+{%unless projects contains 'not found in _includes directory' %}
+<div class="right-pane-widget--container no-top-border">
+  <div class="project-sub-link--wrapper">
+{{ projects | markdownify }}
+ </div>
+</div>
+{%endunless%}
+
+{%unless additional contains 'not found in _includes directory' %}
+<div class="right-pane-widget--container no-top-border project-additional-resource--wrapper">
 {{ additional | markdownify }}
 </div>
+{%endunless%}
