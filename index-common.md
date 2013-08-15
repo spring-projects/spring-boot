@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Your Project Name Here
+title: Docs
 ---
 
 {% capture links %}
@@ -57,33 +57,4 @@ the energy hidden in matter rogue corpus callosum.
 
 {% endcapture %}
 
-{% capture projects %}
-{% include project-sub-link.md link="#" %}
-{% include project-sub-link.md link="#" %}
-{% include project-sub-link.md link="#" %}
-{% include project-sub-link.md link="#" %}
-{% endcapture %} <!-- TODO: what is this for? -->
-
-{% capture additional %}
-
-### Spring Data JPA Sample Projects
-
-* [Project Name 1](#)
-* [Project name 2](#)
-* [Project name nth](#)
-
-### Getting Started Guides
-
-* [Getting Started Guide 1]({{site.main_site_url}}/gs-rest-service)
-* [Getting Started Guide 2]({{site.main_site_url}}/gs-rest-service)
-* [Getting Started Guide nth]({{site.main_site_url}}/gs-rest-service)
-
-## Tutorials
-
-* [Tutorial 1](#)
-* [Tutorial 2](#)
-* [Tutorial nth](#)
-
-{% endcapture %}
-
-{% include home.md links=links description=description body=body quickstart=quickstart projects=projects additional=additional%}
+{% include home.md links=links description=description body=body quickstart=quickstart %}

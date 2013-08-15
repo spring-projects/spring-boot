@@ -23,12 +23,11 @@
           </div>
           <div class="btn btn-black uppercase project-quickstart-btn">Quick Start</div> <!-- TODO: this button not working -->
         </div>
-      </div>
-      
+      </div> 
     </div>
   </div>
   <div class="billboard-bg spring-data--bg"></div> <!-- TODO: this div adds a grey background to the material above it! -->
-</div> 
+</div>
 <div class="billboard-body--wrapper project-body--container">
   <div class="row-fluid">
     <div class="span8">
@@ -37,10 +36,10 @@
       </div>
       <div class="project-body--section">
 
-          <div class="row-fluid quickstart--container">
+        <div class="row-fluid quickstart--container">
           <div class="quickstart--header js-item-dropdown-widget--wrapper">
             <div class="quickstart--title">
-              Quick Start (TBD)
+              Quick Start
             </div>
             <div class="js-quickstart-selector"></div>
 
@@ -68,17 +67,6 @@
         </div>
       </div>
     </div>
-    <div class="span4">
-        {% include documentation.html %}
-
-      <div class="right-pane-widget--container no-top-border">
-        <div class="project-sub-link--wrapper">
-        {{ include.projects | markdownify }}
-        </div>
-      </div>
-      <div class="right-pane-widget--container no-top-border project-additional-resource--wrapper">
-        {{ include.additional | markdownify }}
-      </div>
-    </div>
+    <div class="span4">{% include right.md %}</div>
   </div>
 </div>

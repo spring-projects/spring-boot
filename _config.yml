@@ -9,7 +9,11 @@ redcarpet:
 # Spring specific
 main_site_url: http://springframework.io
 
+# For testing only
+test: true
+
 # Below this line might vary between projects
-projectId: spring-framework
+name: Spring Framework
+project: spring-framework
 github: https://github.com/SpringSource/spring-framework
 forum: http://forum.springsource.org
