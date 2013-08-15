@@ -39,6 +39,10 @@ applies when relevant classes are found and when you have not declared your own
 You can browse the source code of `spring-boot-autoconfigure` to see the `@Configuration`
 classes that we provide (see the `META-INF/spring.factories` file).
 
+> **Note:** If you are using `org.springframework.boot.SpringApplication`, you can see
+> which `@Conditions` were not applied by starting your application with the `--debug`
+> option.
+
 ###Disabling specific auto-configuration
 All auto-configuration that we provide attempts to back away as you start to define your
 own beans. If, however, you find that specific auto-configure classes are being applied
