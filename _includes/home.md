@@ -2,10 +2,11 @@
   <div class="billboard--container">
     <div class="container-fluid">
       <div  class="content--title">
-      <!-- TODO: when in <p/> style of this text is wrong (font too large) -->
-      <!-- TODO: why do we have to markdownify? -->
-{% if include.links %}
-{{ include.links | markdownify }}
+{% if include.breadcrumbs %}
+{% capture bread %}
+[Projects]({{ site.projects_site_url }}): {% assign items = include.breadcrumbs | append:"," | split:"," %}{% for link in items %}{{ link | append:": " }}{% endfor %}[Here]({{ site.projects_site_url }}{{ site.basedir }})
+{% endcapture %}
+{{ bread | markdownify }}
 {% endif %}
       </div>
       <div class="row-fluid">
@@ -21,14 +22,14 @@
           <div class="project--title">{{ page.title }}</div>
           
           <div class="project--description">
-           {{ include.description | markdownify }} <!-- TODO: this div has text with wrong colour if nested in <p/> -->
+           {{ include.description | markdownify }}
           </div>
           <div class="btn btn-black uppercase project-quickstart-btn">Quick Start</div> <!-- TODO: this button not working -->
         </div>
       </div> 
     </div>
   </div>
-  <div class="billboard-bg spring-data--bg"></div> <!-- TODO: this div adds a grey background to the material above it! -->
+  <div class="billboard-bg spring-data--bg"></div>
 </div>
 <div class="billboard-body--wrapper project-body--container">
   <div class="row-fluid">

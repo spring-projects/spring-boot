@@ -3,9 +3,8 @@ layout: default
 title: Docs
 ---
 
-{% capture links %}
-[Project]({{ page.main_site_url }}/projects/spring-framework) | [Another]({{ page.main_site_url }}/projects/spring-framework)
-{% endcapture %}
+<!-- optional comma-separated list of markdown to render as breadcrumbs (any links between current page and main projects page) -->
+{% assign breadcrumbs = '[Middle]({{ site.projects_site_url }}#middle-spring-framework),[End]({{ site.projects_site_url }}#end-spring-framework)' %}
 
 {% capture description %}
 
@@ -57,4 +56,4 @@ the energy hidden in matter rogue corpus callosum.
 
 {% endcapture %}
 
-{% include home.md links=links description=description body=body quickstart=quickstart %}
+{% include home.md breadcrumbs=breadcrumbs description=description body=body quickstart=quickstart %}

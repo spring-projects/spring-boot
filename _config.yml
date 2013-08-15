@@ -6,11 +6,12 @@ markdown: redcarpet
 redcarpet:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
 
-### Spring specific
+### Spring website specific
 main_site_url: http://springframework.io
+projects_site_url: http://projects.springframework.io
 
-### For testing only
-test: true
+### For testing only (comment this out in a real project)
+sample: true
 
 ### Below this line might vary between projects
 
@@ -20,7 +21,8 @@ baseurl: /spring-framework
 # Name of the project for display in places like page titles
 name: Spring Framework
 
-# ID of the project in the metadata API at springframework.io
+# ID of the project in the metadata API at springframework.io (if this is not a
+# valid project ID the javascript widgets in the home page will not work)
 project: spring-framework
 
 # Project github URL

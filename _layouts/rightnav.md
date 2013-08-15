@@ -2,7 +2,7 @@
 layout: default
 ---
 <div class="project-body--container">
-  <div class="row-fluid"> <!-- TODO: everything in here invisible (wrong background) -->
+  <div class="row-fluid">
     <div class="span8">
       <div class="project-body--section">
       {{ content }}

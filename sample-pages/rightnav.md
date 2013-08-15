@@ -1,5 +1,5 @@
 ---
-layout: columns
+layout: rightnav
 title: Page Title Here
 ---
 

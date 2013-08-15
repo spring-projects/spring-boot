@@ -1,25 +1,25 @@
 {% include documentation.html %}
 
-{% capture projects %}
-{% if site.test %}
-{% include test/projects.md %}
+{% capture badges %}
+{% if site.sample %}
+{% include samples/badges.md %}
 {% else %}
-{% include projects.md %}
+{% include badges.md %}
 {% endif %}
 {% endcapture %}
 
 {% capture additional %}
-{% if site.test %}
-{% include test/additional.md %}
+{% if site.sample %}
+{% include samples/additional.md %}
 {% else %}
 {% include additional.md %}
 {% endif %}
 {% endcapture %}
 
-{%unless projects contains 'not found in _includes directory' %}
+{%unless badges contains 'not found in _includes directory' %}
 <div class="right-pane-widget--container no-top-border">
   <div class="project-sub-link--wrapper">
-{{ projects | markdownify }}
+{{ badges | markdownify }}
  </div>
 </div>
 {%endunless%}
