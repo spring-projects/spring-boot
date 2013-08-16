@@ -157,11 +157,11 @@ public class LoggingApplicationContextInitializer implements
 
 		system.initialize();
 		if (this.springBootLogging != null) {
-			initializeLogLeve(system, this.springBootLogging);
+			initializeLogLevel(system, this.springBootLogging);
 		}
 	}
 
-	protected void initializeLogLeve(LoggingSystem system, LogLevel level) {
+	protected void initializeLogLevel(LoggingSystem system, LogLevel level) {
 		List<String> loggers = LOG_LEVEL_LOGGERS.get(level);
 		if (loggers != null) {
 			for (String logger : loggers) {
