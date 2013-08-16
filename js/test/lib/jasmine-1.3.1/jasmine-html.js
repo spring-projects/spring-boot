@@ -118,7 +118,7 @@ jasmine.HtmlReporter = function(_doc) {
       return true;
     }
 
-    return spec.getFullName().indexOf(focusedSpecName()) === 0;
+    return spec.getVersion().indexOf(focusedSpecName()) === 0;
   };
 
   return self;
@@ -398,17 +398,17 @@ jasmine.HtmlReporter.SpecView = function(spec, dom, views) {
   this.summary = this.createDom('div', { className: 'specSummary' },
     this.createDom('a', {
       className: 'description',
-      href: jasmine.HtmlReporter.sectionLink(this.spec.getFullName()),
-      title: this.spec.getFullName()
+      href: jasmine.HtmlReporter.sectionLink(this.spec.getVersion()),
+      title: this.spec.getVersion()
     }, this.spec.description)
   );
 
   this.detail = this.createDom('div', { className: 'specDetail' },
       this.createDom('a', {
         className: 'description',
-        href: '?spec=' + encodeURIComponent(this.spec.getFullName()),
-        title: this.spec.getFullName()
-      }, this.spec.getFullName())
+        href: '?spec=' + encodeURIComponent(this.spec.getVersion()),
+        title: this.spec.getVersion()
+      }, this.spec.getVersion())
   );
 };
 
@@ -471,7 +471,7 @@ jasmine.HtmlReporterHelpers.addHelpers(jasmine.HtmlReporter.SpecView);jasmine.Ht
   this.views = views;
 
   this.element = this.createDom('div', { className: 'suite' },
-    this.createDom('a', { className: 'description', href: jasmine.HtmlReporter.sectionLink(this.suite.getFullName()) }, this.suite.description)
+    this.createDom('a', { className: 'description', href: jasmine.HtmlReporter.sectionLink(this.suite.getVersion()) }, this.suite.description)
   );
 
   this.appendToSummary(this.suite, this.element);
@@ -548,8 +548,8 @@ jasmine.TrivialReporter.prototype.reportRunnerStarting = function(runner) {
   for (var i = 0; i < suites.length; i++) {
     var suite = suites[i];
     var suiteDiv = this.createDom('div', { className: 'suite' },
-        this.createDom('a', { className: 'run_spec', href: '?spec=' + encodeURIComponent(suite.getFullName()) }, "run"),
-        this.createDom('a', { className: 'description', href: '?spec=' + encodeURIComponent(suite.getFullName()) }, suite.description));
+        this.createDom('a', { className: 'run_spec', href: '?spec=' + encodeURIComponent(suite.getVersion()) }, "run"),
+        this.createDom('a', { className: 'description', href: '?spec=' + encodeURIComponent(suite.getVersion()) }, suite.description));
     this.suiteDivs[suite.id] = suiteDiv;
     var parentDiv = this.outerDiv;
     if (suite.parentSuite) {
@@ -620,11 +620,11 @@ jasmine.TrivialReporter.prototype.reportSpecResults = function(spec) {
     status = 'skipped';
   }
   var specDiv = this.createDom('div', { className: 'spec '  + status },
-      this.createDom('a', { className: 'run_spec', href: '?spec=' + encodeURIComponent(spec.getFullName()) }, "run"),
+      this.createDom('a', { className: 'run_spec', href: '?spec=' + encodeURIComponent(spec.getVersion()) }, "run"),
       this.createDom('a', {
         className: 'description',
-        href: '?spec=' + encodeURIComponent(spec.getFullName()),
-        title: spec.getFullName()
+        href: '?spec=' + encodeURIComponent(spec.getVersion()),
+        title: spec.getVersion()
       }, spec.description));
 
 
@@ -677,5 +677,5 @@ jasmine.TrivialReporter.prototype.specFilter = function(spec) {
   if (!paramMap.spec) {
     return true;
   }
-  return spec.getFullName().indexOf(paramMap.spec) === 0;
+  return spec.getVersion().indexOf(paramMap.spec) === 0;
 };

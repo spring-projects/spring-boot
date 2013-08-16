@@ -2227,8 +2227,8 @@ jasmine.Spec = function(env, suite, description) {
   spec.matchersClass = null;
 };
 
-jasmine.Spec.prototype.getFullName = function() {
-  return this.suite.getFullName() + ' ' + this.description + '.';
+jasmine.Spec.prototype.getVersion = function() {
+  return this.suite.getVersion() + ' ' + this.description + '.';
 };
 
 
@@ -2463,12 +2463,12 @@ jasmine.Suite = function(env, description, specDefinitions, parentSuite) {
   self.specs_ = [];
 };
 
-jasmine.Suite.prototype.getFullName = function() {
-  var fullName = this.description;
+jasmine.Suite.prototype.getVersion = function() {
+  var version = this.description;
   for (var parentSuite = this.parentSuite; parentSuite; parentSuite = parentSuite.parentSuite) {
-    fullName = parentSuite.description + ' ' + fullName;
+    version = parentSuite.description + ' ' + version;
   }
-  return fullName;
+  return version;
 };
 
 jasmine.Suite.prototype.finish = function(onComplete) {

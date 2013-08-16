@@ -20,9 +20,9 @@ describe("QuickStartWidget", function () {
               "url": "http://repo.springsource.org/milestone",
               "snapshotsEnabled": false
             },
-            "fullName": "1.4.0.RC1",
+            "version": "1.4.0.RC1",
             "supported": false,
-            "shortName": "1.4.0.RC1",
+            "versionDisplayName": "1.4.0.RC1",
             "current": false,
             "preRelease": true
           },
@@ -32,9 +32,9 @@ describe("QuickStartWidget", function () {
             "groupId": "org.springframework.data",
             "artifactId": "spring-data-jpa",
             "repository": null,
-            "fullName": "1.3.4.RELEASE",
+            "version": "1.3.4.RELEASE",
             "supported": false,
-            "shortName": "1.3.4",
+            "versionDisplayName": "1.3.4",
             "current": true,
             "preRelease": false
           }
