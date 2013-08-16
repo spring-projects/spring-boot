@@ -166,6 +166,9 @@
   background-color: #666;
 }
 
+.project-body--container .project-body--section#quick-start {
+  padding-top: 15px;
+}
 .project-body--container .project-body--section {
   margin-bottom: 30px;
   padding-right: 20px;
@@ -193,6 +196,7 @@
 
 .quickstart--container {
   border: 1px solid #34302d;
+  margin-top: 15px;
 }
 .quickstart--container .quickstart--title {
   font-family: "Montserrat", sans-serif;

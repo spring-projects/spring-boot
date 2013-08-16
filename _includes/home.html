@@ -24,7 +24,7 @@
           <div class="project--description">
            {{ include.description | markdownify }}
           </div>
-          <div class="btn btn-black uppercase project-quickstart-btn">Quick Start</div> <!-- TODO: this button not working -->
+          <a class="btn btn-black uppercase project-quickstart-btn" href="#quick-start">Quick Start</a> <!-- TODO: this button not working -->
         </div>
       </div> 
     </div>
@@ -37,7 +37,7 @@
       <div class="project-body--section">
       {{ include.body | markdownify }}
       </div>
-      <div class="project-body--section">
+      <div class="project-body--section" id="quick-start">
 
         <div class="row-fluid quickstart--container">
           <div class="quickstart--header js-item-dropdown-widget--wrapper">
