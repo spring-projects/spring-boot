@@ -53,70 +53,56 @@
 </script>
 
 
-{% capture maven_dependency %}
-{% include maven_dependency.xml %}
+{% capture maven_pom_template %}
+{% include pom.xml %}
 {% endcapture %}
 
-{%if maven_dependency contains 'not found in _includes directory' %}
-{% capture maven_dependency %}
-<dependency>
-    <groupId>{@= groupId @}</groupId>
-    <artifactId>{@= artifactId @}</artifactId>
-    <version>{@= version @}</version>
-</dependency>
-{% endcapture %}
-{% endif %}
-
-<script type="text/html" id="project-quickstart-maven-widget-dependency-template">{{ maven_dependency | escape }}</script>
-
-{% capture maven_repository %}
-{% include maven_repository.xml %}
-{% endcapture %}
-
-{%if maven_repository contains 'not found in _includes directory' %}
-{% capture maven_repository %}
-<repository>
-    <id>{@= id @}</id>
-    <name>{@= name @}</name>
-    <url>{@= url @}</url>
-    <snapshots>
-        <enabled>{@= snapshotsEnabled @}</enabled>
-    </snapshots>
-</repository>
+{%if maven_pom_template contains 'not found in _includes directory' %}
+{% capture maven_pom_template %}
+<dependencies>
+    <dependency>
+        <groupId>{@= groupId @}</groupId>
+        <artifactId>{@= artifactId @}</artifactId>
+        <version>{@= version @}</version>
+    </dependency>
+</dependencies>
+{@ if (repository) { @}
+<repositories>
+    <repository>
+        <id>{@= repository.id @}</id>
+        <name>{@= repository.name @}</name>
+        <url>{@= repository.url @}</url>
+        <snapshots>
+            <enabled>{@= repository.snapshotsEnabled @}</enabled>
+        </snapshots>
+    </repository>
+</repositories>{@ } @}
 {% endcapture %}
 {% endif %}
 
-<script type="text/html" id="project-quickstart-maven-widget-repository-template">{{ maven_repository | escape }}</script>
+<script type="text/html" id="project-quickstart-maven-widget-template">{{ maven_pom_template | escape }}</script>
 
-{% capture gradle_dependency %}
-{% include gradle_dependency.gradle %}
+{% capture gradle_template %}
+{% include build.gradle %}
 {% endcapture %}
 
-{%if gradle_dependency contains 'not found in _includes directory' %}
-{% capture gradle_dependency %}
+{%if gradle_template contains 'not found in _includes directory' %}
+{% capture gradle_template %}
 dependencies {
     compile '{@= groupId @}:{@= artifactId @}:{@= version @}'
 }
-{% endcapture %}
-{% endif %}
-
-<script type="text/html" id="project-quickstart-gradle-widget-dependency-template">{{ gradle_dependency | escape }}</script>
-
-{% capture gradle_repository %}
-{% include gradle_repository.gradle %}
-{% endcapture %}
-
-{%if gradle_repository contains 'not found in _includes directory' %}
-{% capture gradle_repository %}
+{@ if (repository) { @}
 repositories {
     maven {
-        url '{@= url @}'
+        url '{@= repository.url @}'
     }
 }
+{@ } @}
 {% endcapture %}
 {% endif %}
 
-<script type="text/html" id="project-quickstart-gradle-widget-repository-template">{{ gradle_repository | escape }}</script>
-<script type="text/html" id="project-quickstart-zip-widget-dependency-template">
+<script type="text/html" id="project-quickstart-gradle-widget-template">{{ gradle_template | escape }}</script>
+
+<script type="text/html" id="project-quickstart-zip-widget-template">
 This is a zip url
 </script>

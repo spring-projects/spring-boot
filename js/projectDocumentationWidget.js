@@ -1,5 +1,12 @@
 window.Spring = window.Spring || {};
 
+/* ERB style templates conflict with Jekyll HTML escaping */
+_.templateSettings = {
+  evaluate    : /\{@([\s\S]+?)@\}/g,
+  interpolate : /\{@=([\s\S]+?)@\}/g,
+  escape      : /\{@-([\s\S]+?)@\}/g
+};
+
 Spring.ProjectDocumentationWidget = function () {
   var quickStartEl = $('[data-quickstart-controls]');
   var mavenWidgetEl = $('.js-quickstart-maven-widget');
@@ -83,17 +90,15 @@ Spring.DocumentationWidgetView = Backbone.View.extend({
 Spring.SnippetView = Backbone.View.extend({
   initialize: function () {
     var snippetType = this.options.snippetType;
-    this.dependencyTemplate = _.template($("#project-quickstart-" + snippetType + "-widget-dependency-template").text());
-    this.repositoryTemplate = _.template($("#project-quickstart-" + snippetType + "-widget-repository-template").text());
+    this.combinedTemplate = _.template($("#project-quickstart-" + snippetType + "-widget-template").text());
+
     _.bindAll(this, "render");
   },
 
   render: function () {
+
     var html = $("<pre></pre>");
-    html.append(this.dependencyTemplate(this.model));
-    if (this.model.repository != null) {
-      html.append(this.repositoryTemplate(this.model.repository));
-    }
+    html.append(this.combinedTemplate(this.model));
     this.$el.html(html);
     return this;
   },
