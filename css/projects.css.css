@@ -134,7 +134,10 @@
   color: #d4d4d4;
 }
 .project-header--wrapper .project--links--container .project-link:last-child {
-  margin-right: 0;
+  margin-right: 20px;
+}
+.project-header--wrapper .project--links--container .project-link.project-link-forum {
+  margin-top: -5px;
 }
 .project-header--wrapper .project--links--container .project-link:hover {
   text-decoration: none;
