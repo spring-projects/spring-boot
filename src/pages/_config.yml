@@ -1,0 +1,32 @@
+### Global gh-pages pre-amble
+safe: true
+lsi: false
+pygments: true
+markdown: redcarpet
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
+
+### Spring website specific
+main_site_url: http://springframework.io
+projects_site_url: http://projects.springframework.io
+
+### For testing only (comment this out in a real project)
+# sample: true
+
+### Below this line might vary between projects
+
+# Context path in the remote website (usually /<project>), will be prepended to absolute URLs for statuc resources
+baseurl: /spring-boot
+
+# Name of the project for display in places like page titles
+name: Spring Boot
+
+# ID of the project in the metadata API at springframework.io (if this is not a
+# valid project ID the javascript widgets in the home page will not work)
+project: spring-boot
+
+# Project github URL
+github: https://github.com/SpringSource/spring-boot
+
+# A forum link for the navbar
+forum: http://forum.springsource.org

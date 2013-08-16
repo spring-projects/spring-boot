@@ -1,0 +1,31 @@
+{% include documentation.html %}
+
+{% capture badges %}
+{% if site.sample %}
+{% include samples/badges.md %}
+{% else %}
+{% include badges.md %}
+{% endif %}
+{% endcapture %}
+
+{% capture sidebar %}
+{% if site.sample %}
+{% include samples/sidebar.md %}
+{% else %}
+{% include sidebar.md %}
+{% endif %}
+{% endcapture %}
+
+{%unless badges contains 'not found in _includes directory' %}
+<div class="right-pane-widget--container no-top-border">
+  <div class="project-sub-link--wrapper">
+{{ badges | markdownify }}
+ </div>
+</div>
+{%endunless%}
+
+{%unless sidebar contains 'not found in _includes directory' %}
+<div class="right-pane-widget--container no-top-border project-sidebar-resource--wrapper">
+{{ sidebar | markdownify }}
+</div>
+{%endunless%}

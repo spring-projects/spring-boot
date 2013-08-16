@@ -1,6 +1,7 @@
 ---
 title: Docs
-layout: default
+layout: rightnav
 ---
 
 {% include README.md %}
+
