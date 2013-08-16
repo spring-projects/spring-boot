@@ -1,6 +1,11 @@
-## Spring Boot Samples
+## Spring Boot Modules
 
-* [Spring Boot Samples]({{site.github}}/tree/master/spring-boot-samples)
+* [Spring Boot]({{site.baseurl}}/spring-boot/README.html)
+* [Groovy CLI]({{site.baseurl}}/spring-boot-cli/README.html)
+* [Actuator]({{site.baseurl}}/spring-boot-actuator/README.html)
+* [Autoconfigure]({{site.baseurl}}/spring-boot-autoconfigure/README.html)
+* [Tools]({{site.baseurl}}/spring-boot-tools/README.html)
+* [Samples]({{site.github}}/tree/master/spring-boot-samples)
 
 ## Getting Started Guides
 
