@@ -76,25 +76,6 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		return entityManagerFactoryBean;
 	}
 
-	@Configuration
-	@ConditionalOnWebApplication
-	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
-			OpenEntityManagerInViewFilter.class })
-	@ConditionalOnExpression("${spring.jpa.openInView:${spring.jpa.open_in_view:true}}")
-	protected static class JpaWebConfiguration extends WebMvcConfigurerAdapter {
-
-		@Override
-		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
-		}
-
-		@Bean
-		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
-			return new OpenEntityManagerInViewInterceptor();
-		}
-
-	}
-
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
 	 * {@link EmbeddedDatabaseConfiguration}.
@@ -140,5 +121,24 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+	}
+
+	@Configuration
+	@ConditionalOnWebApplication
+	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
+			OpenEntityManagerInViewFilter.class })
+	@ConditionalOnExpression("${spring.jpa.openInView:${spring.jpa.open_in_view:true}}")
+	protected static class JpaWebConfiguration extends WebMvcConfigurerAdapter {
+
+		@Override
+		public void addInterceptors(InterceptorRegistry registry) {
+			registry.addWebRequestInterceptor(openEntityManagerInViewInterceptor());
+		}
+
+		@Bean
+		public OpenEntityManagerInViewInterceptor openEntityManagerInViewInterceptor() {
+			return new OpenEntityManagerInViewInterceptor();
+		}
+
 	}
 }
