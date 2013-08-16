@@ -8,11 +8,11 @@
 {% endif %}
 {% endcapture %}
 
-{% capture additional %}
+{% capture sidebar %}
 {% if site.sample %}
-{% include samples/additional.md %}
+{% include samples/sidebar.md %}
 {% else %}
-{% include additional.md %}
+{% include sidebar.md %}
 {% endif %}
 {% endcapture %}
 
@@ -24,8 +24,8 @@
 </div>
 {%endunless%}
 
-{%unless additional contains 'not found in _includes directory' %}
-<div class="right-pane-widget--container no-top-border project-additional-resource--wrapper">
-{{ additional | markdownify }}
+{%unless sidebar contains 'not found in _includes directory' %}
+<div class="right-pane-widget--container no-top-border project-sidebar-resource--wrapper">
+{{ sidebar | markdownify }}
 </div>
 {%endunless%}

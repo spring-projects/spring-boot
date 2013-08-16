@@ -220,7 +220,7 @@
   background-color: #34302d;
 }
 .quickstart--container .quickstart--dropdown .project-version--dropdown {
-  width: 100%%;
+  width: 100%;
   padding: 0;
 }
 .quickstart--container .quickstart--dropdown .project-version--dropdown .project-version {
@@ -315,19 +315,19 @@
   margin-right: 0;
 }
 
-.project-additional-resource--wrapper {
+.project-sidebar-resource--wrapper {
   padding: 20px;
 }
-.project-additional-resource--wrapper h3 {
+.project-sidebar-resource--wrapper h3 {
   margin: 5px 0;
 }
-.project-additional-resource--wrapper ul {
+.project-sidebar-resource--wrapper ul {
   margin: 0 0 25px 0;
 }
-.project-additional-resource--wrapper ul li {
+.project-sidebar-resource--wrapper ul li {
   border: none;
   padding: 5px 0;
 }
-.project-additional-resource--wrapper ul:last-child {
+.project-sidebar-resource--wrapper ul:last-child {
   margin-bottom: 0;
 }
