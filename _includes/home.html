@@ -19,7 +19,7 @@
               <div class="icon icon-forum"></div>
             </a>
           </div>
-          <div class="project--title">{{ page.title }}</div>
+          <div class="project--title">{{ site.name }}</div>
           
           <div class="project--description">
            {{ include.description | markdownify }}
@@ -42,15 +42,17 @@
         <div class="row-fluid quickstart--container">
           <div class="quickstart--header js-item-dropdown-widget--wrapper">
             <div class="quickstart--title">
-              Quick Start
+              Download
             </div>
             <div data-quickstart-controls style="display: inline-block"></div>
           </div>
           <div class="quickstart--body">
-            {{ include.quickstart | markdownify }}
+            The recommended way to get the code for this project is to use a dependency management system. The snippet below can be
+              copied and pasted into your build when you create a new project, or when adding <code>{{ site.project }}</code> to your project.
             <div class="highlight"><button class="copy-button snippet" id="copy-button-2" data-clipboard-target="code-block-2"></button>
                 <div class="js-quickstart-maven-widget"></div>
             </div>
+              {{ include.quickstart | markdownify }}
           </div>
         </div>
       </div>
