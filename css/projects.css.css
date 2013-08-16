@@ -305,8 +305,7 @@
   padding: 20px 20px 18px;
 }
 .project-sub-link--wrapper .project-sub-link {
-  background-color: #cbcaca;
-  width: 30px;
+  min-width: 30px;
   height: 30px;
   display: inline-block;
   margin-right: 2.9%;
