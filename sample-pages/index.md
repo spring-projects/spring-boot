@@ -2,8 +2,8 @@
 layout: default
 ---
 
-<!-- optional " : "-separated list of markdown to render as breadcrumbs (links between current page and main projects page) -->
-{% capture breadcrumbs %}[Parent]({{ site.projects_site_url }}#spring-project-parent){% endcapture %}
+<!-- Specify the parent of this project (or delete if none) to influence the rendering of the breadcrumb -->
+{% capture parent_link %}[Spring Parent]({{ site.projects_site_url }}/spring-parent){% endcapture %}
 
 {% capture description %}
 
@@ -55,4 +55,4 @@ the energy hidden in matter rogue corpus callosum.
 
 {% endcapture %}
 
-{% include home.html breadcrumbs=breadcrumbs description=description body=body quickstart=quickstart %}
+{% include home.html parent_link=parent_link description=description body=body quickstart=quickstart %}

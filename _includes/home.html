@@ -2,12 +2,10 @@
   <div class="billboard--container">
     <div class="container-fluid">
       <div  class="content--title">
-{% if include.breadcrumbs %}
-{% capture bread %}
-[Projects]({{ site.projects_site_url }}) : {{ include.breadcrumbs }}
+{% capture breadcrumb %}
+[Projects]({{ site.projects_site_url }}){% if include.parent_link %} : {{ include.parent_link }}{% endif %}
 {% endcapture %}
-{{ bread | markdownify }}
-{% endif %}
+{{ breadcrumb | markdownify }}
       </div>
       <div class="row-fluid">
         <div class="span8">
@@ -20,7 +18,7 @@
             </a>
           </div>
           <div class="project--title">{{ site.name }}</div>
-          
+
           <div class="project--description">
            {{ include.description | markdownify }}
           </div>
