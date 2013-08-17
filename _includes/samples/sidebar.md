@@ -10,7 +10,7 @@
 * [Getting Started Guide 2]({{site.main_site_url}}/gs-rest-service)
 * [Getting Started Guide nth]({{site.main_site_url}}/gs-rest-service)
 
-## Tutorials
+### Tutorials
 
 * [Tutorial 1](#)
 * [Tutorial 2](#)
