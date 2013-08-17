@@ -27,7 +27,7 @@ name: Spring Framework
 project: spring-framework
 
 # Project github URL
-github: https://github.com/SpringSource/spring-framework
+github: https://github.com/spring-projects/spring-framework
 
 # A forum link specific to this project
 forum: http://forum.springframework.io/forum/spring-projects/container
