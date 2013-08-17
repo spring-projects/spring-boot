@@ -9,6 +9,7 @@ redcarpet:
 ### Spring website specific
 main_site_url: http://springframework.io
 projects_site_url: http://projects.springframework.io
+forum_url: http://forum.springframework.io
 
 ### For testing only (comment this out in a real project)
 sample: true
@@ -28,5 +29,5 @@ project: spring-framework
 # Project github URL
 github: https://github.com/SpringSource/spring-framework
 
-# A forum link for the navbar
-forum: http://forum.springsource.org
+# A forum link specific to this project
+forum: http://forum.springframework.io/forum/spring-projects/container
