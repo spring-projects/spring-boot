@@ -84,7 +84,7 @@ public class BasicErrorController implements ErrorController {
 			}
 			map.put("status", status);
 			if (error != null) {
-				while (error instanceof ServletException) {
+				while (error instanceof ServletException && error.getCause() != null) {
 					error = ((ServletException) error).getCause();
 				}
 				map.put("exception", error.getClass().getName());
