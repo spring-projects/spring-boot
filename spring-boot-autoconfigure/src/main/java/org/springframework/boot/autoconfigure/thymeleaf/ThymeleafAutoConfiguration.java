@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.thymeleaf.TemplateProcessingParameters;
@@ -153,6 +154,9 @@ public class ThymeleafAutoConfiguration {
 			ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 			resolver.setTemplateEngine(this.templateEngine);
 			resolver.setCharacterEncoding("UTF-8");
+			// Needs to come before any fallback resolver (e.g. a
+			// InternalResourceViewResolver)
+			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 20);
 			return resolver;
 		}
 

@@ -21,6 +21,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
