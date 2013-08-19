@@ -58,6 +58,7 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
@@ -111,6 +112,14 @@ public class WebMvcAutoConfiguration {
 		private ResourceLoader resourceLoader;
 
 		@ConditionalOnBean(View.class)
+		@ConditionalOnMissingBean(InternalResourceViewResolver.class)
+		@Bean
+		public InternalResourceViewResolver defaultViewResolver() {
+			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+			return resolver;
+		}
+
+		@ConditionalOnBean(View.class)
 		@Bean
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
@@ -124,6 +133,9 @@ public class WebMvcAutoConfiguration {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
 			resolver.setContentNegotiationManager(beanFactory
 					.getBean(ContentNegotiationManager.class));
+			// ContentNegotiatingViewResolver uses all the other view resolvers to locate
+			// a view so it should have a high precedence
+			resolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return resolver;
 		}
 

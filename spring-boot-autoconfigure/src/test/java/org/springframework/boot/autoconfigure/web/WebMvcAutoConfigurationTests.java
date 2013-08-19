@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -35,7 +34,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractView;
 
 import static org.junit.Assert.assertEquals;
@@ -76,15 +74,6 @@ public class WebMvcAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
-	}
-
-	@Test
-	public void viewResolversCreatedIfViewsPresent() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, ViewConfig.class,
-				WebMvcAutoConfiguration.class);
-		this.context.refresh();
-		assertEquals(2, this.context.getBeanNamesForType(ViewResolver.class).length);
 	}
 
 	@Configuration
