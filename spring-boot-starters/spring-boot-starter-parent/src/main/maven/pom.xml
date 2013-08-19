@@ -22,6 +22,18 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+				<exclusions>
+					<!-- Starters use SLF4J -->
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot</artifactId>
 				<version>${spring.boot.version}</version>
