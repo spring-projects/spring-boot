@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -36,6 +38,13 @@ public abstract class AutoConfigurationUtils {
 	private static final String BASE_PACKAGES_BEAN = AutoConfigurationUtils.class
 			.getName() + ".basePackages";
 
+	private static Set<String> EXCLUDED_PACKAGES;
+	static {
+		Set<String> exclude = new HashSet<String>();
+		exclude.add("org.springframework.data.rest.webmvc");
+		EXCLUDED_PACKAGES = Collections.unmodifiableSet(exclude);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static List<String> getBasePackages(BeanFactory beanFactory) {
 		try {
@@ -49,17 +58,14 @@ public abstract class AutoConfigurationUtils {
 	public static void storeBasePackages(ConfigurableListableBeanFactory beanFactory,
 			List<String> basePackages) {
 		if (!beanFactory.containsBean(BASE_PACKAGES_BEAN)) {
-			beanFactory.registerSingleton(BASE_PACKAGES_BEAN, new ArrayList<String>(
-					basePackages));
+			beanFactory.registerSingleton(BASE_PACKAGES_BEAN, new ArrayList<String>());
 		}
-		else {
-			List<String> packages = getBasePackages(beanFactory);
-			for (String pkg : basePackages) {
-				if (packages.contains(pkg)) {
-					packages.add(pkg);
-				}
+		List<String> storePackages = getBasePackages(beanFactory);
+		for (String basePackage : basePackages) {
+			if (!EXCLUDED_PACKAGES.contains(basePackage)
+					&& !storePackages.contains(basePackage)) {
+				storePackages.add(basePackage);
 			}
 		}
 	}
-
 }
