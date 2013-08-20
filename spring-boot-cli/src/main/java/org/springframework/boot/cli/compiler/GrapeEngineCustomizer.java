@@ -83,6 +83,7 @@ class GrapeEngineCustomizer {
 		SpringBootResolver springBootResolver = new SpringBootResolver(
 				grapesResolver.getResolvers());
 		springBootResolver.setSettings(settings);
+		springBootResolver.setReturnFirst(grapesResolver.isReturnFirst());
 		springBootResolver.setName("springBoot");
 
 		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {

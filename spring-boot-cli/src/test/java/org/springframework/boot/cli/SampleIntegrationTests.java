@@ -156,6 +156,13 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void httpSample() throws Exception {
+		start("samples/http.groovy");
+		String output = this.outputCapture.getOutputAndRelease();
+		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+	}
+
+	@Test
 	public void integrationSample() throws Exception {
 		start("samples/integration.groovy");
 		String output = this.outputCapture.getOutputAndRelease();
