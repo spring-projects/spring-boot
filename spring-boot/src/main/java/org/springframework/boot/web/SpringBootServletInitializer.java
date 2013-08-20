@@ -42,7 +42,7 @@ import org.springframework.web.context.WebApplicationContext;
  * 
  * @author Dave Syer
  */
-public abstract class SpringServletInitializer implements WebApplicationInitializer {
+public abstract class SpringBootServletInitializer implements WebApplicationInitializer {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
