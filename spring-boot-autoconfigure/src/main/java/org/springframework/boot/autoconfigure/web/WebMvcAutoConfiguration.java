@@ -98,6 +98,12 @@ public class WebMvcAutoConfiguration {
 		}
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
+	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+		return new HiddenHttpMethodFilter();
+	}
+
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not
 	// on the classpath
 	@EnableWebMvc
@@ -111,24 +117,24 @@ public class WebMvcAutoConfiguration {
 		@Autowired
 		private ResourceLoader resourceLoader;
 
+		@Bean
 		@ConditionalOnBean(View.class)
 		@ConditionalOnMissingBean(InternalResourceViewResolver.class)
-		@Bean
 		public InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 			return resolver;
 		}
 
-		@ConditionalOnBean(View.class)
 		@Bean
+		@ConditionalOnBean(View.class)
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
 			resolver.setOrder(0);
 			return resolver;
 		}
 
-		@ConditionalOnBean(View.class)
 		@Bean
+		@ConditionalOnBean(View.class)
 		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
 			resolver.setContentNegotiationManager(beanFactory
@@ -211,12 +217,7 @@ public class WebMvcAutoConfiguration {
 				return requestHandler;
 			}
 		}
-	}
 
-	@Bean
-	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
-		return new HiddenHttpMethodFilter();
 	}
 
 }

@@ -39,27 +39,24 @@ import org.springframework.util.ClassUtils;
 public class EmbeddedDatabaseConfiguration {
 
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_DRIVER_CLASSES;
+	static {
+		Map<EmbeddedDatabaseType, String> drivers = new LinkedHashMap<EmbeddedDatabaseType, String>();
+		drivers.put(EmbeddedDatabaseType.H2, "org.h2.Driver");
+		drivers.put(EmbeddedDatabaseType.DERBY, "org.apache.derby.jdbc.EmbeddedDriver");
+		drivers.put(EmbeddedDatabaseType.HSQL, "org.hsqldb.jdbcDriver");
+		EMBEDDED_DATABASE_DRIVER_CLASSES = drivers;
+	}
+
 	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_URLS;
+	static {
+		Map<EmbeddedDatabaseType, String> urls = new LinkedHashMap<EmbeddedDatabaseType, String>();
+		urls.put(EmbeddedDatabaseType.H2, "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
+		urls.put(EmbeddedDatabaseType.DERBY, "jdbc:derby:memory:testdb;create=true");
+		urls.put(EmbeddedDatabaseType.HSQL, "jdbc:hsqldb:mem:testdb");
+		EMBEDDED_DATABASE_URLS = urls;
+	}
 
 	private EmbeddedDatabase database;
-
-	static {
-
-		EMBEDDED_DATABASE_DRIVER_CLASSES = new LinkedHashMap<EmbeddedDatabaseType, String>();
-		EMBEDDED_DATABASE_DRIVER_CLASSES.put(EmbeddedDatabaseType.H2, "org.h2.Driver");
-		EMBEDDED_DATABASE_DRIVER_CLASSES.put(EmbeddedDatabaseType.DERBY,
-				"org.apache.derby.jdbc.EmbeddedDriver");
-		EMBEDDED_DATABASE_DRIVER_CLASSES.put(EmbeddedDatabaseType.HSQL,
-				"org.hsqldb.jdbcDriver");
-
-		EMBEDDED_DATABASE_URLS = new LinkedHashMap<EmbeddedDatabaseType, String>();
-		EMBEDDED_DATABASE_URLS.put(EmbeddedDatabaseType.H2,
-				"jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
-		EMBEDDED_DATABASE_URLS.put(EmbeddedDatabaseType.DERBY,
-				"jdbc:derby:memory:testdb;create=true");
-		EMBEDDED_DATABASE_URLS.put(EmbeddedDatabaseType.HSQL, "jdbc:hsqldb:mem:testdb");
-
-	}
 
 	@Bean
 	public DataSource dataSource() {
