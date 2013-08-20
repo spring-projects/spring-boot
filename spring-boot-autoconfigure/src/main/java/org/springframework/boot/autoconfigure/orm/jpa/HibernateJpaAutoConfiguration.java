@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -80,6 +81,8 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
 		properties.put("hibernate.cache.provider_class",
 				"org.hibernate.cache.HashtableCacheProvider");
+		properties.put("hibernate.ejb.naming_strategy",
+				ImprovedNamingStrategy.class.getName());
 		if (StringUtils.hasLength(this.ddlAuto) && !"none".equals(this.ddlAuto)) {
 			properties.put("hibernate.hbm2ddl.auto", this.ddlAuto);
 		}
