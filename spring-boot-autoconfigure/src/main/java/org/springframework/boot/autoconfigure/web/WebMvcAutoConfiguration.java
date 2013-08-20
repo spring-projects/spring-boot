@@ -47,12 +47,12 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
@@ -69,7 +69,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class,
 		WebMvcConfigurerAdapter.class })
-@ConditionalOnMissingBean({ HandlerAdapter.class })
+@ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 public class WebMvcAutoConfiguration {
