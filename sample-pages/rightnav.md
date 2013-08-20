@@ -1,5 +1,5 @@
 ---
-layout: rightnav
+layout: project_page
 title: Page Title Here
 ---
 
