@@ -16,7 +16,7 @@ sample: true
 
 ### Below this line might vary between projects
 
-# Context path in the remote website (usually /<project>), will be prepended to absolute URLs for statuc resources
+# Context path in the remote website (usually /<project>), will be prepended to absolute URLs for static resources
 baseurl: /spring-framework
 
 # Name of the project for display in places like page titles
