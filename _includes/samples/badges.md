@@ -1,6 +1,6 @@
 {% capture cilink %}
 <a href="https://drone.io/github.com/springframework-meta/gs-rest-service/latest">
-  <img src="https://drone.io/github.com/springframework-meta/gs-rest-service/status.png">
+<img src="https://drone.io/github.com/springframework-meta/gs-rest-service/status.png">
 </a>
 {% endcapture %}
 

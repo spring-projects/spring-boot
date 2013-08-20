@@ -1,4 +1,4 @@
-{% include documentation.html %}
+{% include documentation.md %}
 
 {% capture badges %}
 {% if site.sample %}
@@ -18,9 +18,9 @@
 
 {%unless badges contains 'not found in _includes directory' %}
 <div class="right-pane-widget--container no-top-border">
-  <div class="project-sub-link--wrapper">
+<div class="project-sub-link--wrapper">
 {{ badges | markdownify }}
- </div>
+</div>
 </div>
 {%endunless%}
 

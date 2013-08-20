@@ -1,6 +1,4 @@
-<!-- Do not add indents, as this file is processed as markdown -->
-
-{% include billboard.html %}
+{% include billboard.md %}
 
 <div class="billboard-body--wrapper project-body--container">
 <div class="row-fluid">
@@ -9,6 +7,6 @@
 {{ include.project_content | markdownify }}
 </div>
 </div>
-<div class="span4">{% include project_sidebar.html %}</div>
+<div class="span4">{% include project_sidebar.md %}</div>
 </div>
 </div>

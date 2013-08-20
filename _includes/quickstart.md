@@ -1,5 +1,3 @@
-<!-- Do not add indents, as this file is processed as markdown -->
-
 <div class="project-body--section" id="quick-start">
 
 <div class="row-fluid quickstart--container">
