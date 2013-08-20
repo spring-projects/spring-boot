@@ -89,6 +89,7 @@ public class LoggingApplicationContextInitializer implements
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.springframework");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.apache.tomcat");
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.eclipse.jetty");
+		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
 	}
 
 	private final Log logger = LogFactory.getLog(getClass());

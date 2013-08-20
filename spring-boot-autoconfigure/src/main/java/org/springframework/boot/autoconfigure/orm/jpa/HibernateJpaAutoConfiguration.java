@@ -57,7 +57,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Value("${spring.jpa.database:DEFAULT}")
 	private Database database = Database.DEFAULT;
 
-	@Value("${spring.jpa.showSql:${spring.jpa.show_sql:false}}")
+	@Value("${spring.jpa.showSql:${spring.jpa.show_sql:true}}")
 	private boolean showSql;
 
 	@Value("${spring.jpa.ddlAuto:${spring.jpa.ddl_auto:none}}")
