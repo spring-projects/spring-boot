@@ -120,7 +120,7 @@
 }
 .project-header--wrapper .project--links--container {
   float: right;
-  margin-top: -2px;
+  margin-top: -5px;
 }
 .project-header--wrapper .project--links--container .project-link {
   display: inline-block;
@@ -135,9 +135,6 @@
 }
 .project-header--wrapper .project--links--container .project-link:last-child {
   margin-right: 20px;
-}
-.project-header--wrapper .project--links--container .project-link.project-link-forum {
-  margin-top: -5px;
 }
 .project-header--wrapper .project--links--container .project-link:hover {
   text-decoration: none;
@@ -162,10 +159,20 @@
 .project-header--wrapper .project-quickstart-btn {
   margin-top: 40px;
 }
-.project-header--wrapper .spring-data--bg {
+.project-header--wrapper .billboard-bg {
   background-color: #666;
 }
-
+.project-header--wrapper .billboard-bg .billboard-icon {
+  width: 330px;
+  height: 364px;
+  position: absolute;
+  right: 0;
+  margin-top: 25px;
+  opacity: 0.5;
+}
+.project-header--wrapper .billboard-bg .billboard-icon.icon-spring-data-large {
+  background-image: url("../img/icon-spring-data-large.png");
+}
 .project-body--container .project-body--section#quick-start {
   padding-top: 15px;
 }
@@ -336,4 +343,47 @@
 }
 .project-sidebar-resource--wrapper ul:last-child {
   margin-bottom: 0;
+}
+.github-fork-ribbon--wrapper {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  overflow: hidden;
+  margin-top: -102px;
+  z-index: 9999;
+  right: 0;
+}
+.github-fork-ribbon--wrapper .github-fork-ribbon {
+  position: absolute;
+  padding: 2px 0;
+  background-color: #34302d;
+  -webkit-box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.33);
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.33);
+  z-index: 9999;
+  top: 42px;
+  right: -43px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+}
+.github-fork-ribbon--wrapper .github-fork-ribbon a {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #f1f1f1;
+  text-decoration: none;
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 200px;
+  line-height: 20px;
+  display: inline-block;
+  padding: 2px 0;
+  border: 1px dotted rgba(255, 255, 255, 0.75);
+  border-width: 1px 0;
+}
+.github-fork-ribbon--wrapper .github-fork-ribbon a i {
+  font-size: 23px;
+  vertical-align: middle;
+  margin: 0 3px 0 0;
+  color: black;
 }

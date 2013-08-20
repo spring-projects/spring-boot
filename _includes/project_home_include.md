@@ -1,6 +1,14 @@
 {% include billboard.md %}
 
 <div class="billboard-body--wrapper project-body--container">
+<div class="github-fork-ribbon--wrapper">
+<div class="github-fork-ribbon">
+<a href="#">
+<i class="icon icon-github"></i>
+Fork me on GitHub
+</a>
+</div>
+</div>
 <div class="row-fluid">
 <div class="span8">
 <div class="project-body--section">

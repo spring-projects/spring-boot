@@ -14,7 +14,7 @@
 <i class="icon-github"></i>
 </a>
 <a href="{{ site.forum }}" class="project-link project-link-forum">
-<i class="icon-comment-alt"></i>
+<div class="spring-icon spring-icon-forum"></div>
 </a>
 </div>
 <div class="project--title">{{ site.name }}</div>
@@ -27,5 +27,7 @@
 </div>
 </div>
 </div>
-<div class="billboard-bg spring-data--bg"></div>
+<div class="billboard-bg">
+<div class="billboard-icon icon-spring-data-large"></div>
+</div>
 </div>
