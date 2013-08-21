@@ -47,6 +47,12 @@ Intelligent beings are creatures of the cosmos at the edge of forever of brillia
 * Possibility to integrate custom repository code
 * Easy Spring integration with custom namespace
 
+```java
+public static void main(){
+	foo();
+}
+```
+
 {% endcapture %}
 
 
