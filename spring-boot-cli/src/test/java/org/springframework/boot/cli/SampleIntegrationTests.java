@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.OutputCapture;
+import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
 
 import static org.junit.Assert.assertEquals;
@@ -66,8 +67,9 @@ public class SampleIntegrationTests {
 	}
 
 	@Before
-	public void setup() {
+	public void setup() throws Exception {
 		System.setProperty("disableSpringSnapshotRepos", "true");
+		new CleanCommand().run("org.springframework");
 	}
 
 	@After
