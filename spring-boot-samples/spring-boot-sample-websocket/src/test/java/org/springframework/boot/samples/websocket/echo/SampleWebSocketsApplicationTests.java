@@ -34,7 +34,6 @@ import org.springframework.boot.samples.websocket.client.GreetingService;
 import org.springframework.boot.samples.websocket.client.SimpleClientWebSocketHandler;
 import org.springframework.boot.samples.websocket.client.SimpleGreetingService;
 import org.springframework.boot.samples.websocket.config.SampleWebSocketsApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +44,7 @@ public class SampleWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
-	private static final String WS_URI = "ws://localhost:8080/echo";
+	private static final String WS_URI = "ws://localhost:8080/echo/websocket";
 
 	private static ConfigurableApplicationContext context;
 
@@ -72,8 +71,10 @@ public class SampleWebSocketsApplicationTests {
 
 	@Test
 	public void runAndWait() throws Exception {
-		ApplicationContext context = SpringApplication.run(ClientConfiguration.class, "--spring.main.web_environment=false");
-		assertEquals(0, context.getBean(ClientConfiguration.class).latch.getCount());
+		ConfigurableApplicationContext context = (ConfigurableApplicationContext) SpringApplication.run(ClientConfiguration.class, "--spring.main.web_environment=false");
+		long count = context.getBean(ClientConfiguration.class).latch.getCount();
+		context.close();
+		assertEquals(0, count);
 	}
 
 	@Configuration
@@ -84,7 +85,7 @@ public class SampleWebSocketsApplicationTests {
 		@Override
 		public void run(String... args) throws Exception {
 			logger.info("Waiting for response: latch=" + latch.getCount());
-			latch.await();
+			latch.await(10, TimeUnit.SECONDS);
 			logger.info("Got response: latch=" + latch.getCount());
 		}
 
