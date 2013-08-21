@@ -8,8 +8,8 @@ _.templateSettings = {
 };
 
 Spring.ProjectDocumentationWidget = function () {
-  var quickStartEl = $('[data-quickstart-controls]');
-  var mavenWidgetEl = $('.js-quickstart-maven-widget');
+  var quickStartEl = $('[data-download-widget-controls]');
+  var mavenWidgetEl = $('.js-download-maven-widget');
   var documentationEl = $('.js-documentation-widget');
 
   var projectUrl = apiBaseUrl + "/project_metadata/" + projectId;
@@ -33,7 +33,7 @@ Spring.buildQuickStartWidget = function (quickStartEl, mavenWidgetEl, project) {
   new Spring.QuickStartSelectorView({
     el: quickStartEl,
     model: project,
-    template: $("#project-quickstart-controls-template").text(),
+    template: $("#project-download-widget-controls-template").text(),
     snippetWidgetEl: mavenWidgetEl
   }).render();
 }
@@ -90,7 +90,7 @@ Spring.DocumentationWidgetView = Backbone.View.extend({
 Spring.SnippetView = Backbone.View.extend({
   initialize: function () {
     var snippetType = this.options.snippetType;
-    this.combinedTemplate = _.template($("#project-quickstart-" + snippetType + "-widget-template").text());
+    this.combinedTemplate = _.template($("#project-download-" + snippetType + "-widget-template").text());
 
     _.bindAll(this, "render");
   },

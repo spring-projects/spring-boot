@@ -1,6 +1,6 @@
 {% include billboard.md %}
 
-<div class="billboard-body--wrapper project-body--container">
+<div class="billboard-body--wrapper project-body--container" id="quick-start">
 <div class="github-fork-ribbon--wrapper">
 <div class="github-fork-ribbon">
 <a href="#">

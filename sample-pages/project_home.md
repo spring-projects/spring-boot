@@ -31,7 +31,7 @@ extraordinary claims require extraordinary evidence stirred by
 starlight, culture? Flatland Tunguska event finite but unbounded
 corpus callosum!
 
-{% include quickstart.md %}
+{% include download_widget.md %}
 
 Radio telescope Orion's sword science, brain is the seed of intelligence. Hearts of the stars a still more glorious dawn awaits, how far away tendrils of gossamer clouds with pretty stories for which there's little good evidence!
 

@@ -26,8 +26,8 @@
     </div>
 </script>
 
-<script type="text/html" id="project-quickstart-controls-template">
-    <div class="js-quickstart-selector">
+<script type="text/html" id="project-download-widget-controls-template">
+    <div class="js-download-widget-selector">
         <select class='selector selectpicker'>
             {@ _.each(releases, function(release, index) { @}
             <option value="{@= index @}" data-content="<span>{@= release.versionDisplayName @}</span><div class='spring-icon {@= release.statusIconClass() @}'/>"> ()</option>
@@ -80,7 +80,7 @@
 {% endcapture %}
 {% endif %}
 
-<script type="text/html" id="project-quickstart-maven-widget-template">{{ maven_pom_template | escape }}</script>
+<script type="text/html" id="project-download-maven-widget-template">{{ maven_pom_template | escape }}</script>
 
 {% capture gradle_template %}
 {% include build.gradle %}
@@ -101,8 +101,8 @@ repositories {
 {% endcapture %}
 {% endif %}
 
-<script type="text/html" id="project-quickstart-gradle-widget-template">{{ gradle_template | escape }}</script>
+<script type="text/html" id="project-download-gradle-widget-template">{{ gradle_template | escape }}</script>
 
-<script type="text/html" id="project-quickstart-zip-widget-template">
+<script type="text/html" id="project-download-zip-widget-template">
 This is a zip url
 </script>
