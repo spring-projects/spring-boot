@@ -12,7 +12,7 @@ projects_site_url: http://projects.springframework.io
 forum_url: http://forum.springframework.io
 
 ### For testing only (comment this out in a real project)
-sample: true
+#sample: true
 
 ### Below this line might vary between projects
 
