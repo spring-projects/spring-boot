@@ -17,27 +17,58 @@ package org.springframework.boot.samples.websocket.echo;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.samples.websocket.client.GreetingService;
 import org.springframework.boot.samples.websocket.client.SimpleClientWebSocketHandler;
 import org.springframework.boot.samples.websocket.client.SimpleGreetingService;
+import org.springframework.boot.samples.websocket.config.SampleWebSocketsApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.endpoint.StandardWebSocketClient;
 
-public class StandardClientApp {
+public class SampleWebSocketsApplicationTests {
 
-	private static Log logger = LogFactory.getLog(StandardClientApp.class);
+	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
 	private static final String WS_URI = "ws://localhost:8080/echo";
+
+	private static ConfigurableApplicationContext context;
+
+	@BeforeClass
+	public static void start() throws Exception {
+		Future<ConfigurableApplicationContext> future = Executors
+				.newSingleThreadExecutor().submit(
+						new Callable<ConfigurableApplicationContext>() {
+							@Override
+							public ConfigurableApplicationContext call() throws Exception {
+								return (ConfigurableApplicationContext) SpringApplication
+										.run(SampleWebSocketsApplication.class);
+							}
+						});
+		context = future.get(30, TimeUnit.SECONDS);
+	}
+
+	@AfterClass
+	public static void stop() {
+		if (context != null) {
+			context.close();
+		}
+	}
 
 	@Test
 	public void runAndWait() throws Exception {
