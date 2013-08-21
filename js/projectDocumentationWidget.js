@@ -100,6 +100,7 @@ Spring.SnippetView = Backbone.View.extend({
     var html = $("<pre></pre>");
     html.append(this.combinedTemplate(this.model));
     this.$el.html(html);
+    Spring.buildCopyButton(html, "snippet");
     return this;
   },
 
@@ -146,6 +147,7 @@ Spring.QuickStartSelectorView = Backbone.View.extend({
       snippetType: this.$('.js-active').data('snippet-type')
     });
     this.activeWidget.render();
+
   },
 
   changeDownloadSource: function (event) {
