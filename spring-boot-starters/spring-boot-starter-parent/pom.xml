@@ -2,7 +2,7 @@
 
 <!-- This POM file that can be used as a parent for your own builds. It provides
 	generally useful dependencies and plugins. NOTE: If you are editing a local
-	checkout of this file, be sure to modify 'spring-boot-starters/src/main/parent/pom.xml'. -->
+	checkout of this file, be sure to modify 'spring-boot-starter-parent/src/main/parent/pom.xml'. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -86,6 +86,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-security</artifactId>
+				<version>${spring.boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-websocket</artifactId>
 				<version>${spring.boot.version}</version>
 			</dependency>
 		</dependencies>

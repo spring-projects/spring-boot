@@ -32,7 +32,7 @@ import org.springframework.boot.samples.websocket.echo.DefaultEchoService;
 import org.springframework.boot.samples.websocket.echo.EchoService;
 import org.springframework.boot.samples.websocket.echo.EchoWebSocketHandler;
 import org.springframework.boot.samples.websocket.snake.SnakeWebSocketHandler;
-import org.springframework.boot.web.SpringServletInitializer;
+import org.springframework.boot.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -40,13 +40,13 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.WebSocketHttpRequestHandler;
+import org.springframework.web.socket.sockjs.SockJsHttpRequestHandler;
 import org.springframework.web.socket.sockjs.SockJsService;
-import org.springframework.web.socket.sockjs.support.DefaultSockJsService;
-import org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler;
+import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 import org.springframework.web.socket.support.PerConnectionWebSocketHandler;
 
 @Configuration
-public class SampleWebSocketsApplication extends SpringServletInitializer {
+public class SampleWebSocketsApplication extends SpringBootServletInitializer {
 
 	@Override
 	protected Class<?>[] getConfigClasses() {

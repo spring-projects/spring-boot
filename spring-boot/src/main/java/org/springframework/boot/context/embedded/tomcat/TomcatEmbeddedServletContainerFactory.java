@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
@@ -45,6 +47,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -213,11 +216,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 			context.getPipeline().addValve(valve);
 		}
 		for (ErrorPage errorPage : getErrorPages()) {
-			org.apache.catalina.deploy.ErrorPage tomcatPage = new org.apache.catalina.deploy.ErrorPage();
-			tomcatPage.setLocation(errorPage.getPath());
-			tomcatPage.setExceptionType(errorPage.getExceptionName());
-			tomcatPage.setErrorCode(errorPage.getStatusCode());
-			context.addErrorPage(tomcatPage);
+			new TomcatErrorPage(errorPage).addToContext(context);
 		}
 		for (MimeMappings.Mapping mapping : getMimeMappings()) {
 			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
@@ -378,6 +377,69 @@ public class TomcatEmbeddedServletContainerFactory extends
 		Assert.notNull(this.tomcatContextCustomizers,
 				"TomcatContextCustomizer must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
+	}
+
+	private static class TomcatErrorPage {
+
+		private String location;
+		private String exceptionType;
+		private int errorCode;
+
+		private Object nativePage;
+
+		public TomcatErrorPage(ErrorPage errorPage) {
+			this.location = errorPage.getPath();
+			this.exceptionType = errorPage.getExceptionName();
+			this.errorCode = errorPage.getStatusCode();
+			this.nativePage = createNativePage(errorPage);
+		}
+
+		private Object createNativePage(ErrorPage errorPage) {
+			Object nativePage = null;
+			try {
+				if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
+					nativePage = new org.apache.catalina.deploy.ErrorPage();
+				}
+				else {
+					if (ClassUtils.isPresent(
+							"org.apache.tomcat.util.descriptor.web.ErrorPage", null)) {
+						nativePage = BeanUtils.instantiate(ClassUtils.forName(
+								"org.apache.tomcat.util.descriptor.web.ErrorPage", null));
+					}
+				}
+			}
+			catch (ClassNotFoundException e) {
+			}
+			catch (LinkageError e) {
+			}
+			return nativePage;
+		}
+
+		public void addToContext(Context context) {
+			Assert.state(this.nativePage != null,
+					"Neither Tomcat 7 nor 8 detected so no native error page exists");
+			if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
+				org.apache.catalina.deploy.ErrorPage errorPage = (org.apache.catalina.deploy.ErrorPage) this.nativePage;
+				errorPage.setLocation(this.location);
+				errorPage.setErrorCode(this.errorCode);
+				errorPage.setExceptionType(this.exceptionType);
+				context.addErrorPage(errorPage);
+			}
+			else {
+				callMethod(this.nativePage, "setLocation", this.location, String.class);
+				callMethod(this.nativePage, "setErrorCode", this.errorCode, int.class);
+				callMethod(this.nativePage, "setExceptionType", this.exceptionType,
+						String.class);
+				callMethod(context, "addErrorPage", this.nativePage,
+						this.nativePage.getClass());
+			}
+		}
+
+		private void callMethod(Object target, String name, Object value, Class<?> type) {
+			Method method = ReflectionUtils.findMethod(target.getClass(), name, type);
+			ReflectionUtils.invokeMethod(method, target, value);
+		}
+
 	}
 
 }

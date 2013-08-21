@@ -14,7 +14,8 @@
 
 	<properties>
 		<java.version>1.7</java.version>
-		<tomcat.version>8.0-SNAPSHOT</tomcat.version>
+		<tomcat.version>8.0.0-RC1</tomcat.version>
+		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<start-class>org.springframework.boot.samples.websocket.config.ApplicationConfiguration</start-class>
 	</properties>
 
@@ -23,7 +24,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
-			<version>${spring.boot.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<!-- For SockJS -->
 		<dependency>
