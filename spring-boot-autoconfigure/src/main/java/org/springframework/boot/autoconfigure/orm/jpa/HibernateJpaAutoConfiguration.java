@@ -63,6 +63,9 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Value("${spring.jpa.ddlAuto:${spring.jpa.ddl_auto:none}}")
 	private String ddlAuto; // e.g. none, validate, update, create, create-drop
 
+	@Value("${spring.jpa.hibernate.namingstrategy:org.hibernate.cfg.ImprovedNamingStrategy}")
+	private String namingStrategy;
+
 	@Bean
 	@Override
 	public JpaVendorAdapter jpaVendorAdapter() {
@@ -81,8 +84,13 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
 		properties.put("hibernate.cache.provider_class",
 				"org.hibernate.cache.HashtableCacheProvider");
-		properties.put("hibernate.ejb.naming_strategy",
-				ImprovedNamingStrategy.class.getName());
+		if (StringUtils.hasLength(this.namingStrategy)) {
+			properties.put("hibernate.ejb.naming_strategy", this.namingStrategy);
+		}
+		else {
+			properties.put("hibernate.ejb.naming_strategy",
+					ImprovedNamingStrategy.class.getName());
+		}
 		if (StringUtils.hasLength(this.ddlAuto) && !"none".equals(this.ddlAuto)) {
 			properties.put("hibernate.hbm2ddl.auto", this.ddlAuto);
 		}
