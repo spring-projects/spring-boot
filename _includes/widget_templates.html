@@ -30,7 +30,7 @@
     <div class="js-download-widget-selector">
         <select class='selector selectpicker'>
             {@ _.each(releases, function(release, index) { @}
-            <option value="{@= index @}" data-content="<span>{@= release.versionDisplayName @}</span><div class='spring-icon {@= release.statusIconClass() @}'/>"> ()</option>
+            <option value="{@= index @}" data-content="<span>{@= release.versionDisplayName @}</span><div class='spring-icon {@= release.statusIconClass() @}'/>" data-current="{@= release.current @}"> ()</option>
             {@ }); @}
         </select>
     </div>

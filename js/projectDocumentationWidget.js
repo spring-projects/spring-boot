@@ -119,7 +119,7 @@ Spring.QuickStartSelectorView = Backbone.View.extend({
   initialize: function () {
     this.template = _.template(this.options.template);
     this.snippetWidgetEl = this.options.snippetWidgetEl;
-    _.bindAll(this, "render", "renderActiveWidget", "changeDownloadSource", "_moveItemSlider");
+    _.bindAll(this, "render", "renderActiveWidget", "changeDownloadSource", "_moveItemSlider", "selectCurrent");
   },
 
   render: function () {
@@ -127,8 +127,14 @@ Spring.QuickStartSelectorView = Backbone.View.extend({
       this.template(this.model)
     );
     this.renderActiveWidget();
+    this.selectCurrent();
     this.$('.selectpicker').selectpicker();
     return this;
+  },
+
+  selectCurrent: function() {
+      var selectedIndex = $('.selectpicker [data-current="true"]').val();
+      this.$('.selectpicker').val(selectedIndex).change();
   },
 
   renderActiveWidget: function() {

@@ -52,35 +52,37 @@ describe("QuickStartWidget", function () {
     });
 
     describe("maven view", function() {
-      it("shows the dependency based on the default release", function() {
-        expect($('#maven_widget')).toContainText("org.springframework.data");
-        expect($('#maven_widget')).toContainText("spring-data-jpa");
-        expect($('#maven_widget')).toContainText("1.4.0.RC1");
-      });
-
-      it("shows the right dependency when users select a different release", function() {
-        $('#jasmine_content select').val(1).change();
-
+      it("shows the current release dependency by default", function() {
         expect($('#maven_widget')).toContainText("org.springframework.data");
         expect($('#maven_widget')).toContainText("spring-data-jpa");
         expect($('#maven_widget')).toContainText("1.3.4.RELEASE");
       });
 
-      it("shows the repository information if it's present", function() {
-        expect($('#maven_widget')).toContainText("spring-milestones");
-        expect($('#maven_widget')).toContainText("Spring Milestones");
-        expect($('#maven_widget')).toContainText("http://repo.springsource.org/milestone");
-        expect($('#maven_widget')).toContainText("false");
+      it("shows the correct dependency when users select a different release", function() {
+        $('#jasmine_content select').val(0).change();
+
+        expect($('#maven_widget')).toContainText("org.springframework.data");
+        expect($('#maven_widget')).toContainText("spring-data-jpa");
+        expect($('#maven_widget')).toContainText("1.4.0.RC1");
       });
 
-      it("removes the repository if the user selects a relase without a repository", function (){
-        $('#jasmine_content select').val(1).change();
+      it("shows the repository information if user selects a release with a repository", function() {
+          $('#jasmine_content select').val(0).change();
 
-        expect($('#maven_widget')).not.toContainText("repository");
-        expect($('#maven_widget')).not.toContainText("spring-milestones");
-        expect($('#maven_widget')).not.toContainText("Spring Milestones");
-        expect($('#maven_widget')).not.toContainText("http://repo.springsource.org/milestone");
-        expect($('#maven_widget')).not.toContainText("false");
+          expect($('#maven_widget')).toContainText("spring-milestones");
+          expect($('#maven_widget')).toContainText("Spring Milestones");
+          expect($('#maven_widget')).toContainText("http://repo.springsource.org/milestone");
+          expect($('#maven_widget')).toContainText("false");
+      });
+
+      it("doesn't show the repository if the user selects a release without a repository", function (){
+          $('#jasmine_content select').val(1).change();
+
+          expect($('#maven_widget')).not.toContainText("repository");
+          expect($('#maven_widget')).not.toContainText("spring-milestones");
+          expect($('#maven_widget')).not.toContainText("Spring Milestones");
+          expect($('#maven_widget')).not.toContainText("http://repo.springsource.org/milestone");
+          expect($('#maven_widget')).not.toContainText("false");
       });
     });
 
@@ -89,12 +91,14 @@ describe("QuickStartWidget", function () {
         $("#quick_select_widget [data-snippet-type=gradle]").click();
       });
 
-      it("shows the dependency based on the default release", function() {
+      it("shows the current release dependency by default", function() {
         expect($('#maven_widget')).toContainText("dependencies");
-        expect($('#maven_widget')).toContainText("org.springframework.data:spring-data-jpa:1.4.0.RC1");
+        expect($('#maven_widget')).toContainText("org.springframework.data:spring-data-jpa:1.3.4.RELEASE");
       });
 
       it("shows the repository if the data has one", function() {
+        $('#jasmine_content select').val(0).change();
+
         expect($('#maven_widget')).toContainText("repositories");
         expect($('#maven_widget')).toContainText("http://repo.springsource.org/milestone");
       });
