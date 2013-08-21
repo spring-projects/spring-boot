@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -33,12 +32,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -116,6 +118,25 @@ public class HibernateJpaAutoConfigurationTests {
 		this.context = context;
 		this.context.refresh();
 		assertEquals(0, getInterceptorBeans().length);
+	}
+
+	@Test
+	public void testCustomNamingStrategy() throws Exception {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		TestUtils
+				.addEnviroment(context,
+						"spring.jpa.hibernate.namingstrategy:org.hibernate.cfg.EJB3NamingStrategy");
+		context.register(TestConfiguration.class,
+				ComponentScanDetectorConfiguration.class,
+				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context = context;
+		this.context.refresh();
+		LocalContainerEntityManagerFactoryBean bean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
+		String actual = (String) bean.getJpaPropertyMap().get(
+				"hibernate.ejb.naming_strategy");
+		assertThat(actual, equalTo("org.hibernate.cfg.EJB3NamingStrategy"));
 	}
 
 	private String[] getInterceptorBeans() {
