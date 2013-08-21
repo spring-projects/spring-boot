@@ -49,6 +49,7 @@
             margin: 0;
         }
     </style>
+    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
 </head>
 <body>
     <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websockets rely on Javascript being enabled. Please enable
@@ -110,11 +111,7 @@
                     }
                 }
             }, false);
-            if (window.location.protocol == 'http:') {
-                Game.connect('ws://' + window.location.host + '/snake');
-            } else {
-                Game.connect('wss://' + window.location.host + '/snake');
-            }
+            Game.connect();
         };
 
         Game.setDirection  = function(direction) {
@@ -185,15 +182,8 @@
             };
         })();
 
-        Game.connect = (function(host) {
-            if ('WebSocket' in window) {
-                Game.socket = new WebSocket(host);
-            } else if ('MozWebSocket' in window) {
-                Game.socket = new MozWebSocket(host);
-            } else {
-                Console.log('Error: WebSocket is not supported by this browser.');
-                return;
-            }
+        Game.connect = (function() {
+        	Game.socket = new SockJS("/snake");
 
             Game.socket.onopen = function () {
                 // Socket open.. start the game loop.
