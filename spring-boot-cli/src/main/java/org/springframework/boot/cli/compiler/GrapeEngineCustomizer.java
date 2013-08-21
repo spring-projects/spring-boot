@@ -19,10 +19,16 @@ package org.springframework.boot.cli.compiler;
 import groovy.grape.GrapeEngine;
 import groovy.grape.GrapeIvy;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +40,10 @@ import org.apache.ivy.core.event.resolve.EndResolveEvent;
 import org.apache.ivy.core.module.descriptor.Artifact;
 import org.apache.ivy.core.module.id.ModuleId;
 import org.apache.ivy.core.settings.IvySettings;
+import org.apache.ivy.plugins.parser.m2.PomReader;
+import org.apache.ivy.plugins.repository.Resource;
+import org.apache.ivy.plugins.repository.url.URLRepository;
+import org.apache.ivy.plugins.repository.url.URLResource;
 import org.apache.ivy.plugins.resolver.ChainResolver;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.plugins.resolver.IBiblioResolver;
@@ -79,13 +89,23 @@ class GrapeEngineCustomizer {
 	private void setupResolver(IvySettings settings) {
 		ChainResolver grapesResolver = (ChainResolver) settings
 				.getResolver("downloadGrapes");
+		List<DependencyResolver> grapesResolvers = grapesResolver.getResolvers();
 
-		SpringBootResolver springBootResolver = new SpringBootResolver(
-				grapesResolver.getResolvers());
+		// Replace localm2 resolver to fix missing artifact errors
+		for (int i = 0; i < grapesResolvers.size(); i++) {
+			DependencyResolver resolver = grapesResolvers.get(i);
+			if ("localm2".equals(resolver.getName())) {
+				((IBiblioResolver) resolver).setRepository(new LocalM2Repository());
+			}
+		}
+
+		// Create a new top level resolver, encapsulating the default resolvers
+		SpringBootResolver springBootResolver = new SpringBootResolver(grapesResolvers);
 		springBootResolver.setSettings(settings);
 		springBootResolver.setReturnFirst(grapesResolver.isReturnFirst());
 		springBootResolver.setName("springBoot");
 
+		// Add support for spring snapshots and milestones if required
 		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
 			springBootResolver.addSpringSnapshotResolver(newResolver("spring-snapshot",
 					"http://repo.springsource.org/snapshot"));
@@ -93,11 +113,12 @@ class GrapeEngineCustomizer {
 					"http://repo.springsource.org/milestone"));
 		}
 
-		grapesResolver.getResolvers().clear();
-		grapesResolver.getResolvers().add(springBootResolver);
+		// Replace the original resolvers
+		grapesResolvers.clear();
+		grapesResolvers.add(springBootResolver);
 	}
 
-	private DependencyResolver newResolver(String name, String root) {
+	private IBiblioResolver newResolver(String name, String root) {
 		IBiblioResolver resolver = new IBiblioResolver();
 		resolver.setName(name);
 		resolver.setRoot(root);
@@ -193,6 +214,70 @@ class GrapeEngineCustomizer {
 			}
 		}
 
+	}
+
+	/**
+	 * Variant of {@link URLRepository} used to fix the 'localm2' so that when the local
+	 * repo contains a POM but not an artifact we continue to maven central.
+	 * @see "http://issues.gradle.org/browse/GRADLE-2034"
+	 */
+	private static class LocalM2Repository extends URLRepository {
+
+		private Map<String, Resource> resourcesCache = new HashMap<String, Resource>();
+
+		@Override
+		public Resource getResource(String source) throws IOException {
+			Resource resource = this.resourcesCache.get(source);
+			if (resource == null) {
+				URL url = new URL(source);
+				resource = new LocalM2Resource(url);
+				this.resourcesCache.put(source, resource);
+			}
+			return resource;
+		}
+
+		private static class LocalM2Resource extends URLResource {
+
+			private Boolean artifactExists;
+
+			public LocalM2Resource(URL url) {
+				super(url);
+			}
+
+			@Override
+			public boolean exists() {
+				if (getURL().getPath().endsWith(".pom")) {
+					return super.exists() && artifactExists();
+				}
+				return super.exists();
+			}
+
+			private boolean artifactExists() {
+				if (this.artifactExists == null) {
+					try {
+						PomReader reader = new PomReader(getURL(), this);
+						final String packaging = reader.getPackaging();
+						if ("pom".equals(packaging)) {
+							this.artifactExists = true;
+						}
+						else {
+							File parent = new File(getURL().toURI()).getParentFile();
+							File[] artifactFiles = parent.listFiles(new FileFilter() {
+								@Override
+								public boolean accept(File file) {
+									return file.getName().endsWith("." + packaging);
+								}
+							});
+							this.artifactExists = artifactFiles.length > 0;
+						}
+					}
+					catch (Exception ex) {
+						throw new IllegalStateException(ex);
+					}
+				}
+				return this.artifactExists;
+			}
+		}
 	}
 
 	/**
