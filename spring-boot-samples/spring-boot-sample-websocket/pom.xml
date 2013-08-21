@@ -15,8 +15,7 @@
 	<properties>
 		<java.version>1.7</java.version>
 		<tomcat.version>8.0.0-RC1</tomcat.version>
-		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
-		<start-class>org.springframework.boot.samples.websocket.config.ApplicationConfiguration</start-class>
+		<start-class>org.springframework.boot.samples.websocket.config.SampleWebSocketsApplication</start-class>
 	</properties>
 
 
@@ -29,13 +28,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		<!-- For SockJS -->
-		<dependency>
-			<groupId>org.eclipse.jetty.websocket</groupId>
-			<artifactId>websocket-client</artifactId>
-			<version>9.0.3.v20130506</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -46,18 +38,5 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>tomcat-snapshots</id>
-			<url>https://repository.apache.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-	</repositories>
 
 </project>

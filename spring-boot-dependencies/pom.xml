@@ -7,7 +7,7 @@
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<spring.version>4.0.0.M2</spring.version>
+		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
 		<spring.security.version>3.2.0.M2</spring.security.version>
 		<spring.integration.version>2.2.4.RELEASE</spring.integration.version>
 		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
