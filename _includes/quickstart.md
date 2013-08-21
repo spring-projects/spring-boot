@@ -13,7 +13,6 @@ copied and pasted into your build when you create a new project, or when adding 
 <div class="highlight"><button class="copy-button snippet" id="copy-button-2" data-clipboard-target="code-block-2"></button>
 <div class="js-quickstart-maven-widget"></div>
 </div>
-{{ include.quickstart_description | markdownify }}
 </div>
 </div>
 </div>

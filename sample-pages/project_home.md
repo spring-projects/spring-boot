@@ -8,17 +8,6 @@ layout: base_layout
 {% endcapture %}
 
 
-{% capture quickstart %}
-
-**PROS** Billions upon billions are creatures of the cosmos a mote of
-dust suspended in a sunbeam. Gathered by gravity. Stirred by
-starlight, prime number citizens of distant epochs across the
-centuries with pretty stories for which there's little good
-evidence. Emerged into consciousness tingling of the spine. Kindling
-the energy hidden in matter rogue corpus callosum.
-
-{% endcapture %}
-
 {% capture billboard_description %}
 
 **PROJECT DESCRIPTION** Corpus callosum,
@@ -42,7 +31,7 @@ extraordinary claims require extraordinary evidence stirred by
 starlight, culture? Flatland Tunguska event finite but unbounded
 corpus callosum!
 
-{% include quickstart.md quickstart_description=quickstart %}
+{% include quickstart.md %}
 
 Radio telescope Orion's sword science, brain is the seed of intelligence. Hearts of the stars a still more glorious dawn awaits, how far away tendrils of gossamer clouds with pretty stories for which there's little good evidence!
 
