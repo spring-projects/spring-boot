@@ -12,7 +12,7 @@ Fork me on GitHub
 <div class="row-fluid">
 <div class="span8">
 <div class="project-body--section">
-{{ include.project_content | markdownify }}
+{{ include.main_content | markdownify }}
 </div>
 </div>
 <div class="span4">{% include project_sidebar.md %}</div>

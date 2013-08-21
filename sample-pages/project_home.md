@@ -1,5 +1,6 @@
 ---
 layout: base_layout
+title: Spring Project Title
 ---
 
 <!-- Specify the parent of this project (or delete if none) to influence the rendering of the breadcrumb -->
@@ -19,7 +20,7 @@ motes of rock and gas made in the interiors of collapsing stars.
 
 {% endcapture %}
 
-{% capture project_content %}
+{% capture main_content %}
 
 **INTRODUCTORY PARAGRAPHS** Birth, a very small stage in a vast cosmic
 arena extraordinary claims require extraordinary evidence! Flatland
@@ -57,4 +58,4 @@ public static void main(){
 
 
 
-{% include project_home_include.md parent_link=parent_link billboard_description=billboard_description project_content=project_content %}
+{% include project_home_include.md parent_link=parent_link billboard_description=billboard_description main_content=main_content %}

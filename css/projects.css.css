@@ -95,6 +95,13 @@
   -ms-transform: rotate(-45deg);
 }
 
+.projects--wrapper.project-aggregator .project--container {
+    height: 160px;
+}
+.projects--wrapper.project-aggregator .project--container .project-links--container {
+    margin-top: 42px;
+}
+
 .project-header--wrapper .billboard--container {
   margin-top: 60px;
 }
