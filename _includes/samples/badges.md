@@ -12,6 +12,6 @@
 [Bamboo Status](https://build.springsource.org/browse/XD)
 {% endcapture %}
 
-{% include badge.html link=cilink %}
-{% include badge.html link=travislink %}
-{% include badge.html link=bamboostatus %}
+{% include badge.md link=cilink %}
+{% include badge.md link=travislink %}
+{% include badge.md link=bamboostatus %}
