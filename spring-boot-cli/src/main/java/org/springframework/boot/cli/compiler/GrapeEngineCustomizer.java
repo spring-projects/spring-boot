@@ -48,14 +48,18 @@ import org.apache.ivy.plugins.resolver.ChainResolver;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.plugins.resolver.IBiblioResolver;
 import org.apache.ivy.util.AbstractMessageLogger;
+import org.apache.ivy.util.Message;
 import org.apache.ivy.util.MessageLogger;
 import org.springframework.boot.cli.Log;
 
 /**
- * Customizes the groovy grape engine to download from Spring repos and provide simple log
- * progress feedback.
+ * Customizes the groovy grape engine to enhance and patch the behaviour of ivy. Can add
+ * Spring repos to the search path, provide simple log progress feedback if downloads are
+ * taking a long time, and also fixes a problem where ivy cannot use a local Maven cache
+ * repo.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 class GrapeEngineCustomizer {
 
@@ -300,6 +304,7 @@ class GrapeEngineCustomizer {
 		@Override
 		public void log(String msg, int level) {
 			logDownloadingMessage();
+			Message.getDefaultLogger().log(msg, level);
 		}
 
 		@Override
