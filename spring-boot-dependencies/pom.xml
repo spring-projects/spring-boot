@@ -61,6 +61,11 @@
 				<version>1.2</version>
 			</dependency>
 			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>2.3</version>
+			</dependency>
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.11</version>
