@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,11 +30,12 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link InfoEndpoint}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	public InfoEndpointTests() {
-		super(Config.class, InfoEndpoint.class, "/info", true, "endpoints.info");
+		super(Config.class, InfoEndpoint.class, "/info", false, "endpoints.info");
 	}
 
 	@Test
