@@ -26,7 +26,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.sample.tomcat.SampleTomcatApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +55,7 @@ public class SampleTomcatApplicationTests {
 										.run(SampleTomcatApplication.class);
 							}
 						});
-		context = future.get(10, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass

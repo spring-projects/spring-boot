@@ -20,9 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
+import org.springframework.boot.actuate.properties.ManagementServerProperties.User;
 import org.springframework.boot.actuate.properties.SecurityProperties;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -43,6 +47,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
@@ -112,6 +117,9 @@ public class SecurityAutoConfiguration {
 		@Autowired
 		private SecurityProperties security;
 
+		@Autowired
+		private ManagementServerProperties management;
+
 		@Autowired(required = false)
 		private EndpointHandlerMapping endpointHandlerMapping;
 
@@ -129,19 +137,23 @@ public class SecurityAutoConfiguration {
 			}
 
 			if (this.security.getBasic().isEnabled()) {
-				String[] paths = getSecurePaths();
-				http.exceptionHandling().authenticationEntryPoint(entryPoint()).and()
-						.requestMatchers().antMatchers(paths);
+				http.exceptionHandling().authenticationEntryPoint(entryPoint());
 				http.httpBasic().and().anonymous().disable();
-				http.authorizeUrls().anyRequest()
-						.hasRole(this.security.getBasic().getRole());
+				ExpressionUrlAuthorizationConfigurer<HttpSecurity> authorizeUrls = http
+						.authorizeUrls();
+				if (getEndpointPaths(true).length > 0) {
+					authorizeUrls.antMatchers(getEndpointPaths(true)).hasRole(
+							this.management.getUser().getRole());
+				}
+				authorizeUrls.antMatchers(getSecureApplicationPaths())
+						.hasRole(this.security.getBasic().getRole()).and().httpBasic();
 			}
 
 			// No cookies for service endpoints by default
 			http.sessionManagement().sessionCreationPolicy(this.security.getSessions());
 		}
 
-		private String[] getSecurePaths() {
+		private String[] getSecureApplicationPaths() {
 			List<String> list = new ArrayList<String>();
 			for (String path : this.security.getBasic().getPath()) {
 				path = (path == null ? "" : path.trim());
@@ -203,11 +215,26 @@ public class SecurityAutoConfiguration {
 	@Configuration
 	public static class AuthenticationManagerConfiguration {
 
+		private static Log logger = LogFactory
+				.getLog(AuthenticationManagerConfiguration.class);
+
+		@Autowired
+		private ManagementServerProperties management;
+
 		@Bean
 		public AuthenticationManager authenticationManager() throws Exception {
+			User user = this.management.getUser();
+			if (user.isDefaultPassword()) {
+				logger.info("Using default password for ");
+			}
+			List<String> roles = new ArrayList<String>();
+			roles.add("USER");
+			if (!"USER".equals(user.getRole())) {
+				roles.add(user.getRole());
+			}
 			return new AuthenticationManagerBuilder().inMemoryAuthentication()
-					.withUser("user").password("password").roles("USER").and().and()
-					.build();
+					.withUser(user.getName()).password(user.getPassword())
+					.roles(roles.toArray(new String[roles.size()])).and().and().build();
 		}
 
 	}
