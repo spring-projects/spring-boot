@@ -26,13 +26,17 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -61,7 +65,7 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class /* Spring JDBC */)
 @ConditionalOnMissingBean(DataSource.class)
-public class DataSourceAutoConfiguration {
+public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
@@ -71,8 +75,66 @@ public class DataSourceAutoConfiguration {
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	private RelaxedPropertyResolver environment;
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = new RelaxedPropertyResolver(environment, "spring.database.");
+	}
+
+	@PostConstruct
+	protected void initialize() throws Exception {
+		if (this.dataSource == null) {
+			logger.debug("No DataSource found so not initializing");
+			return;
+		}
+
+		String schema = this.environment.getProperty("schema");
+		if (schema == null) {
+			schema = "classpath*:schema-"
+					+ this.environment.getProperty("platform", "all") + ".sql";
+		}
+
+		List<Resource> resources = new ArrayList<Resource>();
+		for (String schemaLocation : StringUtils.commaDelimitedListToStringArray(schema)) {
+			resources.addAll(Arrays.asList(this.applicationContext
+					.getResources(schemaLocation)));
+		}
+
+		boolean exists = false;
+		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+		for (Resource resource : resources) {
+			if (resource.exists()) {
+				exists = true;
+				populator.addScript(resource);
+				populator.setContinueOnError(true);
+			}
+		}
+
+		if (exists) {
+			DatabasePopulatorUtils.execute(populator, this.dataSource);
+		}
+	}
+
+	/**
+	 * Determines if the {@code dataSource} being used by Spring was created from
+	 * {@link EmbeddedDataSourceConfiguration}.
+	 * @return true if the data source was auto-configured.
+	 */
+	public static boolean containsAutoConfiguredDataSource(
+			ConfigurableListableBeanFactory beanFactory) {
+		try {
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition("dataSource");
+			return EmbeddedDataSourceConfiguration.class.getName().equals(
+					beanDefinition.getFactoryBeanName());
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return false;
+		}
+	}
+
 	@Conditional(DataSourceAutoConfiguration.EmbeddedDatabaseCondition.class)
-	@Import(EmbeddedDatabaseConfiguration.class)
+	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedConfiguration {
 	}
 
@@ -82,7 +144,7 @@ public class DataSourceAutoConfiguration {
 	}
 
 	@Conditional(DataSourceAutoConfiguration.BasicDatabaseCondition.class)
-	@Import(BasicDataSourceConfiguration.class)
+	@Import(CommonsDataSourceConfiguration.class)
 	protected static class DbcpConfiguration {
 	}
 
@@ -107,35 +169,6 @@ public class DataSourceAutoConfiguration {
 
 	}
 
-	@Value("${spring.database.schema:classpath*:schema-${spring.database.platform:all}.sql}")
-	private String schemaLocations = "";
-
-	@PostConstruct
-	protected void initialize() throws Exception {
-		if (this.dataSource == null) {
-			logger.debug("No DataSource found so not initializing");
-			return;
-		}
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		boolean exists = false;
-		List<Resource> resources = new ArrayList<Resource>();
-		for (String location : StringUtils
-				.commaDelimitedListToStringArray(this.schemaLocations)) {
-			resources
-					.addAll(Arrays.asList(this.applicationContext.getResources(location)));
-		}
-		for (Resource resource : resources) {
-			if (resource.exists()) {
-				exists = true;
-				populator.addScript(resource);
-				populator.setContinueOnError(true);
-			}
-		}
-		if (exists) {
-			DatabasePopulatorUtils.execute(populator, this.dataSource);
-		}
-	}
-
 	static abstract class NonEmbeddedDatabaseCondition extends SpringBootCondition {
 
 		protected abstract String getDataSourceClassName();
@@ -149,12 +182,13 @@ public class DataSourceAutoConfiguration {
 						+ " DataSource class not found");
 			}
 
-			String driverClassName = getDriverClassName(context.getEnvironment());
+			String driverClassName = getDriverClassName(context.getEnvironment(),
+					context.getClassLoader());
 			if (driverClassName == null) {
 				return Outcome.noMatch("no database driver");
 			}
 
-			String url = getUrl(context.getEnvironment());
+			String url = getUrl(context.getEnvironment(), context.getClassLoader());
 			if (url == null) {
 				return Outcome.noMatch("no database URL");
 			}
@@ -166,24 +200,21 @@ public class DataSourceAutoConfiguration {
 			return Outcome.match("missing database driver " + driverClassName);
 		}
 
-		private String getDriverClassName(Environment environment) {
+		private String getDriverClassName(Environment environment, ClassLoader classLoader) {
 			String driverClassName = environment == null ? null : environment
 					.getProperty("spring.database.driverClassName");
 			if (driverClassName == null) {
-				driverClassName = EmbeddedDatabaseConfiguration
-						.getEmbeddedDatabaseDriverClass(EmbeddedDatabaseConfiguration
-								.getEmbeddedDatabaseType());
+				driverClassName = EmbeddedDatabaseConnection.get(classLoader)
+						.getDriverClassName();
 			}
 			return driverClassName;
 		}
 
-		private String getUrl(Environment environment) {
+		private String getUrl(Environment environment, ClassLoader classLoader) {
 			String url = (environment == null ? null : environment
 					.getProperty("spring.database.url"));
 			if (url == null) {
-				url = EmbeddedDatabaseConfiguration
-						.getEmbeddedDatabaseUrl(EmbeddedDatabaseConfiguration
-								.getEmbeddedDatabaseType());
+				url = EmbeddedDatabaseConnection.get(classLoader).getUrl();
 			}
 			return url;
 		}
@@ -229,8 +260,8 @@ public class DataSourceAutoConfiguration {
 			if (anyMatches(context, metadata, this.tomcatCondition, this.dbcpCondition)) {
 				return Outcome.noMatch("existing non-embedded database detected");
 			}
-			EmbeddedDatabaseType type = EmbeddedDatabaseConfiguration
-					.getEmbeddedDatabaseType();
+			EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(
+					context.getClassLoader()).getType();
 			if (type == null) {
 				return Outcome.noMatch("no embedded database detected");
 			}

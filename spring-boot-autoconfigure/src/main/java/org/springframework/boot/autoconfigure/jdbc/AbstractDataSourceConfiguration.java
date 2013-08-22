@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.StringUtils;
 
 /**
@@ -26,8 +26,8 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(path = "spring.data")
-public abstract class AbstractDataSourceConfiguration {
+@ConfigurationProperties(path = "spring.datasource")
+public abstract class AbstractDataSourceConfiguration implements BeanClassLoaderAware {
 
 	private String driverClassName;
 
@@ -49,19 +49,25 @@ public abstract class AbstractDataSourceConfiguration {
 
 	private boolean testOnReturn = false;
 
+	private ClassLoader classLoader;
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
 	protected String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
 			return this.driverClassName;
 		}
-		EmbeddedDatabaseType embeddedDatabaseType = EmbeddedDatabaseConfiguration
-				.getEmbeddedDatabaseType();
-		this.driverClassName = EmbeddedDatabaseConfiguration
-				.getEmbeddedDatabaseDriverClass(embeddedDatabaseType);
+		EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
+				.get(this.classLoader);
+		this.driverClassName = embeddedDatabaseConnection.getDriverClassName();
 		if (!StringUtils.hasText(this.driverClassName)) {
 			throw new BeanCreationException(
 					"Cannot determine embedded database driver class for database type "
-							+ embeddedDatabaseType
-							+ ". If you want an embedded database please put a supoprted one on the classpath.");
+							+ embeddedDatabaseConnection + ". If you want an embedded "
+							+ "database please put a supoprted one on the classpath.");
 		}
 		return this.driverClassName;
 	}
@@ -70,15 +76,14 @@ public abstract class AbstractDataSourceConfiguration {
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
-		EmbeddedDatabaseType embeddedDatabaseType = EmbeddedDatabaseConfiguration
-				.getEmbeddedDatabaseType();
-		this.url = EmbeddedDatabaseConfiguration
-				.getEmbeddedDatabaseUrl(embeddedDatabaseType);
+		EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
+				.get(this.classLoader);
+		this.url = embeddedDatabaseConnection.getUrl();
 		if (!StringUtils.hasText(this.url)) {
 			throw new BeanCreationException(
 					"Cannot determine embedded database url for database type "
-							+ embeddedDatabaseType
-							+ ". If you want an embedded database please put a supported on on the classpath.");
+							+ embeddedDatabaseConnection + ". If you want an embedded "
+							+ "database please put a supported on on the classpath.");
 		}
 		return this.url;
 	}

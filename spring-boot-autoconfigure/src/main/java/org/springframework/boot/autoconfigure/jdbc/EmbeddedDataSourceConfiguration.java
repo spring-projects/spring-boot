@@ -19,41 +19,42 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
 /**
- * Configuration for a Tomcat database pool. The Tomcat pool provides superior performance
- * and tends not to deadlock in high volume environments.
+ * Configuration for embedded data sources.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
  * @see DataSourceAutoConfiguration
  */
 @Configuration
-public class TomcatDataSourceConfiguration extends AbstractDataSourceConfiguration {
+public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 
-	private org.apache.tomcat.jdbc.pool.DataSource pool;
+	private EmbeddedDatabase database;
+
+	private ClassLoader classLoader;
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
 
 	@Bean
 	public DataSource dataSource() {
-		this.pool = new org.apache.tomcat.jdbc.pool.DataSource();
-		this.pool.setDriverClassName(getDriverClassName());
-		this.pool.setUrl(getUrl());
-		this.pool.setUsername(getUsername());
-		this.pool.setPassword(getPassword());
-		this.pool.setMaxActive(getMaxActive());
-		this.pool.setMaxIdle(getMaxIdle());
-		this.pool.setMinIdle(getMinIdle());
-		this.pool.setTestOnBorrow(isTestOnBorrow());
-		this.pool.setTestOnReturn(isTestOnReturn());
-		this.pool.setValidationQuery(getValidationQuery());
-		return this.pool;
+		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
+				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType());
+		this.database = builder.build();
+		return this.database;
 	}
 
 	@PreDestroy
 	public void close() {
-		if (this.pool != null) {
-			this.pool.close();
+		if (this.database != null) {
+			this.database.shutdown();
 		}
 	}
 
