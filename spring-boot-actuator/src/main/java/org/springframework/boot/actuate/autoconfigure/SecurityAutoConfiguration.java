@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -141,12 +140,17 @@ public class SecurityAutoConfiguration {
 				http.httpBasic().and().anonymous().disable();
 				ExpressionUrlAuthorizationConfigurer<HttpSecurity> authorizeUrls = http
 						.authorizeUrls();
-				if (getEndpointPaths(true).length > 0) {
+				String[] paths = getEndpointPaths(true);
+				if (paths.length > 0) {
 					authorizeUrls.antMatchers(getEndpointPaths(true)).hasRole(
 							this.management.getUser().getRole());
 				}
-				authorizeUrls.antMatchers(getSecureApplicationPaths())
-						.hasRole(this.security.getBasic().getRole()).and().httpBasic();
+				paths = getSecureApplicationPaths();
+				if (paths.length > 0) {
+					authorizeUrls.antMatchers(getSecureApplicationPaths()).hasRole(
+							this.security.getBasic().getRole());
+				}
+				authorizeUrls.and().httpBasic();
 			}
 
 			// No cookies for service endpoints by default
@@ -164,7 +168,6 @@ public class SecurityAutoConfiguration {
 					list.add(path);
 				}
 			}
-			list.addAll(Arrays.asList(getEndpointPaths(true)));
 			return list.toArray(new String[list.size()]);
 		}
 

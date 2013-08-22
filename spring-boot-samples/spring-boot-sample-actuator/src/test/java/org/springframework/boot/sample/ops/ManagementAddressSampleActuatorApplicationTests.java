@@ -71,7 +71,7 @@ public class ManagementAddressSampleActuatorApplicationTests {
 										.run(SampleActuatorApplication.class, args);
 							}
 						});
-		context = future.get(30, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass
