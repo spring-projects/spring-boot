@@ -167,6 +167,11 @@
 				<version>2.2.9</version>
 			</dependency>
 			<dependency>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-core</artifactId>
+				<version>3.0.2</version>
+			</dependency>
+			<dependency>
 				<groupId>org.projectreactor</groupId>
 				<artifactId>reactor-spring</artifactId>
 				<version>${reactor.version}</version>
