@@ -225,7 +225,8 @@ public class SecurityAutoConfiguration {
 		public AuthenticationManager authenticationManager() throws Exception {
 			User user = this.management.getUser();
 			if (user.isDefaultPassword()) {
-				logger.info("Using default password for ");
+				logger.info("Using default password for management endpoints: "
+						+ user.getPassword());
 			}
 			List<String> roles = new ArrayList<String>();
 			roles.add("USER");
