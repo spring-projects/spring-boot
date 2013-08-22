@@ -29,7 +29,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.sample.tomcat.SampleTomcatApplication;
 import org.springframework.boot.sample.tomcat.service.HelloWorldService;
 import org.springframework.boot.sample.tomcat.web.SampleController;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -76,7 +75,7 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 										.run(NonAutoConfigurationSampleTomcatApplication.class);
 							}
 						});
-		context = future.get(10, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass
