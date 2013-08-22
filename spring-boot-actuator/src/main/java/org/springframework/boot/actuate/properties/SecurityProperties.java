@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.util.StringUtils;
 
 /**
  * Properties for the security aspects of an application.
@@ -148,7 +149,7 @@ public class SecurityProperties {
 
 		private String role = "USER";
 
-		private boolean defaultPassword;
+		private boolean defaultPassword = true;
 
 		public String getName() {
 			return this.name;
@@ -163,6 +164,10 @@ public class SecurityProperties {
 		}
 
 		public void setPassword(String password) {
+			if (password.startsWith("${") && password.endsWith("}")
+					|| !StringUtils.hasLength(password)) {
+				return;
+			}
 			this.defaultPassword = false;
 			this.password = password;
 		}
