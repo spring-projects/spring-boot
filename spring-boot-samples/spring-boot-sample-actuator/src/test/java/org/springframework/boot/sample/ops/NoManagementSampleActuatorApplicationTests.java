@@ -69,7 +69,7 @@ public class NoManagementSampleActuatorApplicationTests {
 										.run(SampleActuatorApplication.class, args);
 							}
 						});
-		context = future.get(10, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass

@@ -37,7 +37,7 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	private String password = "";
 
-	private int maxActive = 8;
+	private int maxActive = 100;
 
 	private int maxIdle = 8;
 
