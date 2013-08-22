@@ -28,7 +28,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.sample.ops.ui.SampleActuatorUiApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -63,7 +62,7 @@ public class SampleActuatorUiApplicationTests {
 										.run(SampleActuatorUiApplication.class);
 							}
 						});
-		context = future.get(30, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass

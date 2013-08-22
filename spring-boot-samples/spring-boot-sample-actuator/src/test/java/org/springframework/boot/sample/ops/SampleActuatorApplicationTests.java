@@ -67,7 +67,7 @@ public class SampleActuatorApplicationTests {
 										.run(SampleActuatorApplication.class);
 							}
 						});
-		context = future.get(30, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass

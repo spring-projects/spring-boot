@@ -59,7 +59,7 @@ public class SampleWebSocketsApplicationTests {
 										.run(SampleWebSocketsApplication.class);
 							}
 						});
-		context = future.get(30, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass

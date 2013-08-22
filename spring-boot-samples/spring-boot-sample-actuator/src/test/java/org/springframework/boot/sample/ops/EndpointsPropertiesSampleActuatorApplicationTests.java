@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.sample.ops.SampleActuatorApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -64,7 +63,7 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 										.run(configuration, args);
 							}
 						});
-		this.context = future.get(10, TimeUnit.SECONDS);
+		this.context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@After

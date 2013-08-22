@@ -41,7 +41,7 @@ public class SampleWebStaticApplicationTests {
 										.run(SampleWebStaticApplication.class);
 							}
 						});
-		context = future.get(30, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
 	@AfterClass
