@@ -1,0 +1,100 @@
+# Core
+
+spring:
+  # The name of the application
+  application.name: myapp
+
+  # The name of the main config file, default is application
+  config.name: application
+
+  # Profiles that should be active
+  profiles.active:
+
+  # Configuration for SpringApplication setters
+  main:
+    web-environment: true
+    show-banner:false
+    log-startup-info: false
+	# ...
+
+
+# Server settings (ServerProperties)
+server:
+  port: 8080
+  address: 127.0.0.1
+  sessionTimeout: 30
+  contextPath: /root
+
+  # Tomcat specifics
+  tomcat:
+    accessLogEnabled: false
+    protocolHeader: x-forwarded-proto
+    remoteIpHeader: x-forwarded-for
+    basedir:
+    backgroundProcessorDelay: 30 # secs
+
+
+---
+# Auto-Configure
+
+spring:
+  messages:
+    basename: messages
+
+  batch:
+    schema: classpath:org/springframework/batch/core/schema-@@platform@@.sql
+
+  database:
+    schema: classpath*:schema-<platform>.sql
+    platform: all
+
+  datasource:
+    driverClassName
+    url:
+    username: sa
+    password
+    max-active: 8
+    max-idle: 8
+    test-on-borrow
+    test-on-return
+    validation-query
+
+
+  jpa:
+    open-in-view:
+    show-sql:
+    database-platform:
+    generate-ddl:
+    properties:
+    hibernate:
+      naming-strategy:
+      cache-provider:
+      ddl-auto:
+
+
+  thymeleaf
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML5
+    cache: true
+
+
+
+# actuator
+
+endpoints:
+  beans:
+    path: /beans
+    sensitive: false
+  dump:
+  env
+  health
+  info
+  metrics
+  shutdown
+  trace
+
+management:
+  port
+
+security:
