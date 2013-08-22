@@ -49,6 +49,7 @@
             margin: 0;
         }
     </style>
+    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
     <script type="text/javascript">
         var ws = null;
 
@@ -60,15 +61,7 @@
 
         function connect() {
             var target = document.getElementById('target').value;
-            target = "ws://" + window.location.host + target
-            if ('WebSocket' in window) {
-                ws = new WebSocket(target);
-            } else if ('MozWebSocket' in window) {
-                ws = new MozWebSocket(target);
-            } else {
-                alert('WebSocket is not supported by this browser.');
-                return;
-            }
+            ws = new SockJS(target);
             ws.onopen = function () {
                 setConnected(true);
                 log('Info: WebSocket connection opened.');

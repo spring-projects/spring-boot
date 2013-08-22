@@ -11,7 +11,7 @@
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
-		<tomcat.version>8.0-SNAPSHOT</tomcat.version>
+		<tomcat.version>8.0.0-RC1</tomcat.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -35,14 +35,13 @@
 			<exclusions>
 				<exclusion>
 					<groupId>${project.groupId}</groupId>
-					<artifactId>spring-boot-up-tomcat</artifactId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-websocket</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -53,16 +52,4 @@
 			<artifactId>tomcat-embed-logging-juli</artifactId>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>tomcat-snapshots</id>
-			<url>https://repository.apache.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
-	</repositories>
 </project>
