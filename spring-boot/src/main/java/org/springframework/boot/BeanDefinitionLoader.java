@@ -154,7 +154,8 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-		String sourceString = xmlReader.getEnvironment().resolvePlaceholders(source.toString());
+		String sourceString = this.xmlReader.getEnvironment().resolvePlaceholders(
+				source.toString());
 		try {
 			// Use class utils so that period separated nested class names work
 			return load(ClassUtils.forName(sourceString, null));
@@ -163,37 +164,40 @@ class BeanDefinitionLoader {
 			// swallow exception and continue
 		}
 
-		ResourceLoader loader = this.resourceLoader != null ? 
-			this.resourceLoader : DEFAULT_RESOURCE_LOADER;
-		
+		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
+				: DEFAULT_RESOURCE_LOADER;
+
 		int loadCount = 0;
-		if( loader instanceof ResourcePatternResolver ) {
-	    	// Resource pattern matching available.
+		if (loader instanceof ResourcePatternResolver) {
+			// Resource pattern matching available.
 			try {
-				Resource[] resources = ((ResourcePatternResolver) loader).getResources(sourceString);
-				for(Resource resource : resources) {
-					if( resource.exists() ) {
+				Resource[] resources = ((ResourcePatternResolver) loader)
+						.getResources(sourceString);
+				for (Resource resource : resources) {
+					if (resource.exists()) {
 						loadCount += load(resource);
 					}
 				}
 			}
 			catch (IOException ex) {
 				throw new BeanDefinitionStoreException(
-						"Could not resolve bean definition resource pattern [" + sourceString + "]", ex);
+						"Could not resolve bean definition resource pattern ["
+								+ sourceString + "]", ex);
 			}
 		}
-		if( !(loader instanceof ResourcePatternResolver) ) {
-		    	// Can only load single resources by absolute URL.
-        		Resource loadedResource = loader.getResource(sourceString);
-        		if (loadedResource != null && loadedResource.exists()) {
-        			return load(loadedResource);
-        		}
+		if (!(loader instanceof ResourcePatternResolver)) {
+			// Can only load single resources by absolute URL.
+			Resource loadedResource = loader.getResource(sourceString);
+			if (loadedResource != null && loadedResource.exists()) {
+				return load(loadedResource);
+			}
 		}
-		if( loadCount > 0 ) {
+		if (loadCount > 0) {
 			return loadCount;
 		}
 		else {
-			// Attempt to treat the source as a package name, common to all PatternResolver types
+			// Attempt to treat the source as a package name, common to all
+			// PatternResolver types
 			Package packageResource = findPackage(source);
 			if (packageResource != null) {
 				return load(packageResource);
