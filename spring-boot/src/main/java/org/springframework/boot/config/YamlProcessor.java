@@ -129,7 +129,9 @@ public class YamlProcessor {
 	private boolean process(MatchCallback callback, Yaml yaml, Resource resource) {
 		int count = 0;
 		try {
-			this.logger.info("Loading from YAML: " + resource);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Loading from YAML: " + resource);
+			}
 			for (Object object : yaml.loadAll(resource.getInputStream())) {
 				if (object != null && process(asMap(object), callback)) {
 					count++;
@@ -138,8 +140,10 @@ public class YamlProcessor {
 					}
 				}
 			}
-			this.logger.info("Loaded " + count + " document" + (count > 1 ? "s" : "")
-					+ " from YAML resource: " + resource);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Loaded " + count + " document"
+						+ (count > 1 ? "s" : "") + " from YAML resource: " + resource);
+			}
 		}
 		catch (IOException ex) {
 			handleProcessError(resource, ex);
@@ -167,7 +171,9 @@ public class YamlProcessor {
 		Properties properties = new Properties();
 		assignProperties(properties, map, null);
 		if (this.documentMatchers.isEmpty()) {
-			this.logger.debug("Merging document (no matchers set)" + map);
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Merging document (no matchers set)" + map);
+			}
 			callback.process(properties, map);
 		}
 		else {
@@ -177,8 +183,10 @@ public class YamlProcessor {
 				MatchStatus match = matcher.matches(properties);
 				result = MatchStatus.getMostSpecific(match, result);
 				if (match == MatchStatus.FOUND) {
-					this.logger.debug("Matched document with document matcher: "
-							+ properties);
+					if (this.logger.isDebugEnabled()) {
+						this.logger.debug("Matched document with document matcher: "
+								+ properties);
+					}
 					callback.process(properties, map);
 					valueFound = true;
 					// No need to check for more matches
@@ -186,7 +194,9 @@ public class YamlProcessor {
 				}
 			}
 			if (result == MatchStatus.ABSTAIN && this.matchDefault) {
-				this.logger.debug("Matched document with default matcher: " + map);
+				if (this.logger.isDebugEnabled()) {
+					this.logger.debug("Matched document with default matcher: " + map);
+				}
 				callback.process(properties, map);
 			}
 			else if (!valueFound) {
