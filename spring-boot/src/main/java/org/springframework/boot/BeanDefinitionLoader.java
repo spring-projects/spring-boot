@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -154,56 +153,53 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(CharSequence source) {
-		String sourceString = this.xmlReader.getEnvironment().resolvePlaceholders(
+
+		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(
 				source.toString());
+
+		// Attempt as a Class
 		try {
-			// Use class utils so that period separated nested class names work
-			return load(ClassUtils.forName(sourceString, null));
+			return load(ClassUtils.forName(resolvedSource, null));
 		}
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
 
-		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
-				: DEFAULT_RESOURCE_LOADER;
-
+		// Attempt as resources
+		Resource[] resources = loadResources(resolvedSource);
 		int loadCount = 0;
-		if (loader instanceof ResourcePatternResolver) {
-			// Resource pattern matching available.
-			try {
-				Resource[] resources = ((ResourcePatternResolver) loader)
-						.getResources(sourceString);
-				for (Resource resource : resources) {
-					if (resource.exists()) {
-						loadCount += load(resource);
-					}
-				}
-			}
-			catch (IOException ex) {
-				throw new BeanDefinitionStoreException(
-						"Could not resolve bean definition resource pattern ["
-								+ sourceString + "]", ex);
+		boolean atLeastOneResourceExists = false;
+		for (Resource resource : resources) {
+			if (resource != null && resource.exists()) {
+				atLeastOneResourceExists = true;
+				loadCount += load(resource);
 			}
 		}
-		if (!(loader instanceof ResourcePatternResolver)) {
-			// Can only load single resources by absolute URL.
-			Resource loadedResource = loader.getResource(sourceString);
-			if (loadedResource != null && loadedResource.exists()) {
-				return load(loadedResource);
-			}
-		}
-		if (loadCount > 0) {
+		if (atLeastOneResourceExists) {
 			return loadCount;
 		}
-		else {
-			// Attempt to treat the source as a package name, common to all
-			// PatternResolver types
-			Package packageResource = findPackage(source);
-			if (packageResource != null) {
-				return load(packageResource);
-			}
+
+		// Attempt as package
+		Package packageResource = findPackage(resolvedSource);
+		if (packageResource != null) {
+			return load(packageResource);
 		}
-		throw new IllegalArgumentException("Invalid source '" + source + "'");
+
+		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
+	}
+
+	private Resource[] loadResources(String source) {
+		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
+				: DEFAULT_RESOURCE_LOADER;
+		try {
+			if (loader instanceof ResourcePatternResolver) {
+				return ((ResourcePatternResolver) loader).getResources(source);
+			}
+			return new Resource[] { loader.getResource(source) };
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Error reading source '" + source + "'");
+		}
 	}
 
 	private Package findPackage(CharSequence source) {
