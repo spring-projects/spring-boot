@@ -3,7 +3,7 @@
 <div class="billboard-body--wrapper project-body--container" id="quick-start">
 <div class="github-fork-ribbon--wrapper">
 <div class="github-fork-ribbon">
-<a href="{{ site.github_repo_url }}{{ site.baseurl }}">
+<a href="{{ site.github_repo_url }}">
 <i class="icon icon-github"></i>
 Fork me on GitHub
 </a>
