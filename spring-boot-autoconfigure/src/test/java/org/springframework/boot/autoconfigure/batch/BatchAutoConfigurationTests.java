@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.autoconfigure.batch.JobLauncherCommandLineRunner;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 
@@ -53,7 +53,7 @@ public class BatchAutoConfigurationTests {
 	public void testDefaultContext() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, BatchAutoConfiguration.class,
-				EmbeddedDatabaseConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
@@ -63,7 +63,7 @@ public class BatchAutoConfigurationTests {
 	public void testDefinesAndLaunchesJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JobConfiguration.class, BatchAutoConfiguration.class,
-				EmbeddedDatabaseConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
