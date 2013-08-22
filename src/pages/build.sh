@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-echo $* | grep -q "\-x" && set -x
+if [ "$1" == "-x" ]; then set -x && shift; fi
 
 if [ -e "$HOME/.rvm/scripts/rvm" ]; then
     source "$HOME/.rvm/scripts/rvm"
@@ -42,7 +42,7 @@ PAGES_HOME="`pwd -P`"
 cd "$SAVED" >&-
 
 function fail {
-    echo Cannot build pages. The most likely exaplanation
+    echo Cannot build pages. The most likely explanation
     echo is missing ruby or gem dependencies.
     echo Please ensure that you have installed ruby 1.9.3
     echo and execute
@@ -65,15 +65,15 @@ convert $TARGET/_includes/README.md
 
 # Sync the files in all docs/* directories
 ###################################################################
-(git ls-tree -r --name-only master | grep 'docs/' | xargs tar -cf - ) | (cd $TARGET; tar -xvf -)
+(git ls-tree -r --name-only master | grep 'docs/' | egrep -v 'src/pages' | xargs tar -cf - ) | (cd $TARGET; tar -xvf -)
 
 # Add all the module .md files if there are any
 ###################################################################
-(git ls-tree -r --name-only master | grep '.md$' | xargs tar -cf - ) | (cd $TARGET; tar -xvf -)
-for file in `git ls-tree -r --name-only master | grep '.md$'`
+(git ls-tree -r --name-only master | grep '.md$' | egrep -v 'src/pages' | xargs tar -cf - ) | (cd $TARGET; tar -xvf -)
+for file in `git ls-tree -r --name-only master | grep '.md$' | egrep -v 'src/pages'`
 do
-    convert $TARGET/"${file}"
-    add_header $TARGET/"${file}"
+    [ -f ${file} ] && convert $TARGET/"${file}"
+    [ -f ${file} ] && add_header $TARGET/"${file}"
 done
 
 cd $TARGET
@@ -82,4 +82,6 @@ if [ -f _config.yml ] && [ ! -z $VERSION ]; then
     sed -i -e "s/version: .*/version: $VERSION/" _config.yml
 fi
 
-jekyll build
+[ "$1" == "build" ] || [ "$1" == "serve" ] || ARGS="serve -w"
+
+jekyll $ARGS $*

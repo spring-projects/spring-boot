@@ -1,6 +1,6 @@
 ---
-title: Docs
-layout: default
+title: Spring Boot
+layout: base_layout
 home: 
 ---
 
