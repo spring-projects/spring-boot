@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -26,8 +24,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.TomcatDataSourceConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
@@ -42,15 +38,9 @@ public class TomcatDataSourceConfigurationTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	private Map<Object, Object> old;
-
-	private Map<Object, Object> map;
-
 	@After
 	public void restore() {
-		if (this.map != null && this.old != null) {
-			this.map.putAll(this.old);
-		}
+		EmbeddedDatabaseConnection.override = null;
 	}
 
 	@Test
@@ -62,9 +52,7 @@ public class TomcatDataSourceConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testBadUrl() throws Exception {
-		this.map = getField(EmbeddedDatabaseConfiguration.class, "EMBEDDED_DATABASE_URLS");
-		this.old = new HashMap<Object, Object>(this.map);
-		this.map.clear();
+		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
 		this.context.register(TomcatDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -73,10 +61,7 @@ public class TomcatDataSourceConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testBadDriverClass() throws Exception {
-		this.map = getField(EmbeddedDatabaseConfiguration.class,
-				"EMBEDDED_DATABASE_DRIVER_CLASSES");
-		this.old = new HashMap<Object, Object>(this.map);
-		this.map.clear();
+		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
 		this.context.register(TomcatDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
@@ -38,7 +38,7 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 
 	@Test
 	public void testDataSourceExists() throws Exception {
-		this.context.register(EmbeddedDatabaseConfiguration.class,
+		this.context.register(EmbeddedDataSourceConfiguration.class,
 				DataSourceTransactionManagerAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
