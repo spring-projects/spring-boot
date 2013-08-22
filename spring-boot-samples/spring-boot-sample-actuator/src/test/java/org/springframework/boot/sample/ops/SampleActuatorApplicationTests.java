@@ -29,7 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.properties.ManagementServerProperties;
+import org.springframework.boot.actuate.properties.SecurityProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -86,7 +86,8 @@ public class SampleActuatorApplicationTests {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse(entity.getHeaders().containsKey("Set-Cookie"));
+		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
+				.containsKey("Set-Cookie"));
 	}
 
 	@Test
@@ -168,7 +169,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return context.getBean(ManagementServerProperties.class).getUser().getPassword();
+		return context.getBean(SecurityProperties.class).getUser().getPassword();
 	}
 
 	private RestTemplate getRestTemplate() {

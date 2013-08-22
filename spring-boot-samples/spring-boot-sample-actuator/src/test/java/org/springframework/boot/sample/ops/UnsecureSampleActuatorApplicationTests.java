@@ -78,7 +78,8 @@ public class UnsecureSampleActuatorApplicationTests {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Hello Phil", body.get("message"));
-		assertFalse(entity.getHeaders().containsKey("Set-Cookie"));
+		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
+				.containsKey("Set-Cookie"));
 	}
 
 	private RestTemplate getRestTemplate() {

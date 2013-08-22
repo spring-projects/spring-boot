@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 	<properties>
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
-		<spring.security.version>3.2.0.M2</spring.security.version>
+		<spring.security.version>3.2.0.RC1</spring.security.version>
 		<spring.integration.version>2.2.4.RELEASE</spring.integration.version>
 		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
 		<groovy.version>2.1.6</groovy.version>
