@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.data.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.test.City;
 import org.springframework.boot.autoconfigure.data.test.CityRepository;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -46,7 +46,7 @@ public class JpaWebAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class,
-				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

@@ -24,8 +24,6 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,14 +32,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
+import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
+import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
@@ -57,9 +59,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
 		EnableTransactionManagement.class, EntityManager.class })
 @ConditionalOnBean(DataSource.class)
-public abstract class JpaBaseConfiguration implements BeanFactoryAware {
+public abstract class JpaBaseConfiguration implements BeanFactoryAware, EnvironmentAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
+
+	private RelaxedPropertyResolver environment;
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = new RelaxedPropertyResolver(environment, "spring.jpa.");
+	}
 
 	@Bean
 	public PlatformTransactionManager transactionManager() {
@@ -72,29 +81,25 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 		entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter());
 		entityManagerFactoryBean.setDataSource(getDataSource());
 		entityManagerFactoryBean.setPackagesToScan(getPackagesToScan());
+		entityManagerFactoryBean.getJpaPropertyMap().putAll(
+				this.environment.getSubProperties("properties."));
 		configure(entityManagerFactoryBean);
 		return entityManagerFactoryBean;
 	}
 
-	/**
-	 * Determines if the {@code dataSource} being used by Spring was created from
-	 * {@link EmbeddedDatabaseConfiguration}.
-	 * @return true if the data source was auto-configured.
-	 */
-	protected boolean isAutoConfiguredDataSource() {
-		try {
-			BeanDefinition beanDefinition = this.beanFactory
-					.getBeanDefinition("dataSource");
-			return EmbeddedDatabaseConfiguration.class.getName().equals(
-					beanDefinition.getFactoryBeanName());
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return false;
-		}
+	@Bean
+	public JpaVendorAdapter jpaVendorAdapter() {
+		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
+		adapter.setShowSql(this.environment.getProperty("show-sql", Boolean.class, true));
+		adapter.setDatabasePlatform(this.environment.getProperty("database-platform"));
+		adapter.setDatabase(this.environment.getProperty("database", Database.class,
+				Database.DEFAULT));
+		adapter.setGenerateDdl(this.environment.getProperty("generate-ddl",
+				Boolean.class, false));
+		return adapter;
 	}
 
-	@Bean
-	public abstract JpaVendorAdapter jpaVendorAdapter();
+	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
 
 	protected DataSource getDataSource() {
 		try {

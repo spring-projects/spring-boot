@@ -21,10 +21,9 @@ import javax.persistence.EntityManagerFactory;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.test.City;
 import org.springframework.boot.autoconfigure.data.test.CityRepository;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JpaRepositoriesAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class JpaRepositoriesAutoConfigurationTests {
@@ -47,7 +46,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
 				ComponentScanDetectorConfiguration.class,
-				EmbeddedDatabaseConfiguration.class, HibernateJpaAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

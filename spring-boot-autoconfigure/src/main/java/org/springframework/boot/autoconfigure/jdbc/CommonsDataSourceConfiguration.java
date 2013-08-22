@@ -33,11 +33,12 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * recommended in high volume environments (the Tomcat DataSource is more reliable).
  * 
  * @author Dave Syer
+ * @see DataSourceAutoConfiguration
  */
 @Configuration
-public class BasicDataSourceConfiguration extends AbstractDataSourceConfiguration {
+public class CommonsDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
-	private static Log logger = LogFactory.getLog(BasicDataSourceConfiguration.class);
+	private static Log logger = LogFactory.getLog(CommonsDataSourceConfiguration.class);
 
 	private BasicDataSource pool;
 

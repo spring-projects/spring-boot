@@ -16,23 +16,19 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.ejb.HibernateEntityManager;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hibernate JPA.
@@ -44,56 +40,31 @@ import org.springframework.util.StringUtils;
 @EnableTransactionManagement
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
-	private static final Map<EmbeddedDatabaseType, String> EMBEDDED_DATABASE_DIALECTS;
-	static {
-		EMBEDDED_DATABASE_DIALECTS = new LinkedHashMap<EmbeddedDatabaseType, String>();
-		EMBEDDED_DATABASE_DIALECTS.put(EmbeddedDatabaseType.HSQL,
-				"org.hibernate.dialect.HSQLDialect");
+	private RelaxedPropertyResolver environment;
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		super.setEnvironment(environment);
+		this.environment = new RelaxedPropertyResolver(environment,
+				"spring.jpa.hibernate.");
 	}
 
-	@Value("${spring.jpa.databasePlatform:${spring.jpa.database_platform:}}")
-	private String databasePlatform;
-
-	@Value("${spring.jpa.database:DEFAULT}")
-	private Database database = Database.DEFAULT;
-
-	@Value("${spring.jpa.showSql:${spring.jpa.show_sql:true}}")
-	private boolean showSql;
-
-	@Value("${spring.jpa.ddlAuto:${spring.jpa.ddl_auto:none}}")
-	private String ddlAuto; // e.g. none, validate, update, create, create-drop
-
-	@Value("${spring.jpa.hibernate.namingstrategy:org.hibernate.cfg.ImprovedNamingStrategy}")
-	private String namingStrategy;
-
-	@Bean
 	@Override
-	public JpaVendorAdapter jpaVendorAdapter() {
-		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-		adapter.setShowSql(this.showSql);
-		if (StringUtils.hasText(this.databasePlatform)) {
-			adapter.setDatabasePlatform(this.databasePlatform);
-		}
-		adapter.setDatabase(this.database);
-		return adapter;
+	protected AbstractJpaVendorAdapter createJpaVendorAdapter() {
+		return new HibernateJpaVendorAdapter();
 	}
 
 	@Override
 	protected void configure(
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
-		properties.put("hibernate.cache.provider_class",
-				"org.hibernate.cache.HashtableCacheProvider");
-		if (StringUtils.hasLength(this.namingStrategy)) {
-			properties.put("hibernate.ejb.naming_strategy", this.namingStrategy);
-		}
-		else {
-			properties.put("hibernate.ejb.naming_strategy",
-					ImprovedNamingStrategy.class.getName());
-		}
-		if (StringUtils.hasLength(this.ddlAuto) && !"none".equals(this.ddlAuto)) {
-			properties.put("hibernate.hbm2ddl.auto", this.ddlAuto);
+		properties.put("hibernate.cache.provider_class", this.environment.getProperty(
+				"cache-provider", "org.hibernate.cache.HashtableCacheProvider"));
+		properties.put("hibernate.ejb.naming_strategy", this.environment.getProperty(
+				"naming-strategy", ImprovedNamingStrategy.class.getName()));
+		String ddlAuto = this.environment.getProperty("ddl-auto", "none");
+		if (!"none".equals(ddlAuto)) {
+			properties.put("hibernate.hbm2ddl.auto", ddlAuto);
 		}
 	}
-
 }

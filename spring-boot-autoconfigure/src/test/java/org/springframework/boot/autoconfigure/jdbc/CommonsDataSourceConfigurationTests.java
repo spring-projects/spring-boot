@@ -19,23 +19,23 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.jdbc.BasicDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.CommonsDataSourceConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests for {@link BasicDataSourceConfiguration}.
+ * Tests for {@link CommonsDataSourceConfiguration}.
  * 
  * @author Dave Syer
  */
-public class BasicDataSourceConfigurationTests {
+public class CommonsDataSourceConfigurationTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void testDataSourceExists() throws Exception {
-		this.context.register(BasicDataSourceConfiguration.class);
+		this.context.register(CommonsDataSourceConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 		this.context.close();
