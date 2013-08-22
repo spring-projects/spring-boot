@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -40,7 +39,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link ThymeleafAutoConfiguration}
+ * Tests for {@link ThymeleafAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class ThymeleafAutoConfigurationTests {
@@ -51,8 +51,8 @@ public class ThymeleafAutoConfigurationTests {
 		context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.template.mode", "XHTML");
-		map.put("spring.template.suffix", "");
+		map.put("spring.thymeleaf.mode", "XHTML");
+		map.put("spring.thymeleaf.suffix", "");
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("test", map));
 		context.refresh();

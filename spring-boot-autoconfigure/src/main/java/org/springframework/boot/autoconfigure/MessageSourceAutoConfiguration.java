@@ -16,14 +16,16 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
@@ -33,15 +35,20 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @ConditionalOnMissingBean(MessageSource.class)
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class MessageSourceAutoConfiguration {
+public class MessageSourceAutoConfiguration implements EnvironmentAware {
 
-	@Value("${spring.messages.basename:messages}")
-	private String basename;
+	private RelaxedPropertyResolver environment;
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = new RelaxedPropertyResolver(environment, "spring.messages.");
+	}
 
 	@Bean
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-		messageSource.setBasename(this.basename);
+		String basename = this.environment.getProperty("basename", "messages");
+		messageSource.setBasename(basename);
 		return messageSource;
 	}
 

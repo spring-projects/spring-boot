@@ -26,15 +26,17 @@ import javax.servlet.Servlet;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.thymeleaf.TemplateProcessingParameters;
@@ -58,22 +60,19 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
-	protected static class DefaultTemplateResolverConfiguration {
+	protected static class DefaultTemplateResolverConfiguration implements
+			EnvironmentAware {
 
 		@Autowired
 		private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-		@Value("${spring.template.prefix:classpath:/templates/}")
-		private String prefix = "classpath:/templates/";
+		private RelaxedPropertyResolver environment;
 
-		@Value("${spring.template.suffix:.html}")
-		private String suffix = ".html";
-
-		@Value("${spring.template.cache:true}")
-		private boolean cacheable;
-
-		@Value("${spring.template.mode:HTML5}")
-		private String templateMode = "HTML5";
+		@Override
+		public void setEnvironment(Environment environment) {
+			this.environment = new RelaxedPropertyResolver(environment,
+					"spring.thymeleaf.");
+		}
 
 		@Bean
 		public ITemplateResolver defaultTemplateResolver() {
@@ -97,10 +96,12 @@ public class ThymeleafAutoConfiguration {
 					return "SPRING";
 				}
 			});
-			resolver.setPrefix(this.prefix);
-			resolver.setSuffix(this.suffix);
-			resolver.setTemplateMode(this.templateMode);
-			resolver.setCacheable(this.cacheable);
+			resolver.setPrefix(this.environment.getProperty("prefix",
+					"classpath:/templates/"));
+			resolver.setSuffix(this.environment.getProperty("suffix", ".html"));
+			resolver.setTemplateMode(this.environment.getProperty("mode", "HTML5"));
+			resolver.setCacheable(this.environment.getProperty("cache", Boolean.class,
+					true));
 			return resolver;
 		}
 
