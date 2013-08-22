@@ -54,7 +54,7 @@ public class BasicDataSourceConfiguration extends AbstractDataSourceConfiguratio
 		this.pool.setMaxIdle(getMaxIdle());
 		this.pool.setMinIdle(getMinIdle());
 		this.pool.setTestOnBorrow(isTestOnBorrow());
-		this.pool.setTestOnReturn(isTestOnBorrow());
+		this.pool.setTestOnReturn(isTestOnReturn());
 		this.pool.setValidationQuery(getValidationQuery());
 		return this.pool;
 	}
