@@ -37,6 +37,7 @@ import org.springframework.validation.DataBinder;
  * case for example).
  * 
  * @author Dave Syer
+ * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
 
@@ -224,74 +225,17 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private String getActualPropertyName(BeanWrapper target, String prefix, String name) {
 		prefix = StringUtils.hasText(prefix) ? prefix + "." : "";
-		for (Variation variation : Variation.values()) {
-			for (Manipulation manipulation : Manipulation.values()) {
-				// Apply all manipulations before attempting variations
-				String candidate = variation.apply(manipulation.apply(name));
-				try {
-					if (target.getPropertyType(prefix + candidate) != null) {
-						return candidate;
-					}
+		for (String candidate : new RelaxedNames(name)) {
+			try {
+				if (target.getPropertyType(prefix + candidate) != null) {
+					return candidate;
 				}
-				catch (InvalidPropertyException ex) {
-					// swallow and continue
-				}
+			}
+			catch (InvalidPropertyException ex) {
+				// swallow and continue
 			}
 		}
 		return name;
-	}
-
-	static enum Variation {
-		NONE {
-			@Override
-			public String apply(String value) {
-				return value;
-			}
-		},
-		UPPERCASE {
-			@Override
-			public String apply(String value) {
-				return value.toUpperCase();
-			}
-		},
-
-		LOWERCASE {
-			@Override
-			public String apply(String value) {
-				return value.toLowerCase();
-			}
-		};
-
-		public abstract String apply(String value);
-	}
-
-	static enum Manipulation {
-		NONE {
-			@Override
-			public String apply(String value) {
-				return value;
-			}
-		},
-		UNDERSCORE {
-			@Override
-			public String apply(String value) {
-				return value.replace("-", "_");
-			}
-		},
-
-		CAMELCASE {
-			@Override
-			public String apply(String value) {
-				StringBuilder builder = new StringBuilder();
-				for (String field : UNDERSCORE.apply(value).split("_")) {
-					builder.append(builder.length() == 0 ? field : StringUtils
-							.capitalize(field));
-				}
-				return builder.toString();
-			}
-		};
-
-		public abstract String apply(String value);
 	}
 
 	static class MapHolder {
