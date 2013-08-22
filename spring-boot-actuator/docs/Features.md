@@ -90,7 +90,7 @@ every request in the main server (and the management server if it is
 running on the same port).  There is a single account by default, and
 you can test it like this:
 
-    $ mvn user:password@localhost:8080/metrics
+    $ curl user:password@localhost:8080/metrics
     ... stuff comes out
 
 If the management server is running on a different port it is
