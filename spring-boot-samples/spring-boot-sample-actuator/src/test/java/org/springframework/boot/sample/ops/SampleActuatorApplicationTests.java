@@ -29,7 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.sample.ops.SampleActuatorApplication;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -92,7 +92,7 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -104,7 +104,7 @@ public class SampleActuatorApplicationTests {
 	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:8080/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -115,7 +115,7 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testEnv() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:8080/env", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -134,7 +134,7 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testErrorPage() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:8080/foo", Map.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -157,14 +157,18 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testBeans() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080/beans", List.class);
+		ResponseEntity<List> entity = getRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:8080/beans", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals(1, entity.getBody().size());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = (Map<String, Object>) entity.getBody().get(0);
 		assertTrue("Wrong body: " + body,
 				((String) body.get("context")).startsWith("application"));
+	}
+
+	private String getPassword() {
+		return context.getBean(ManagementServerProperties.class).getUser().getPassword();
 	}
 
 	private RestTemplate getRestTemplate() {

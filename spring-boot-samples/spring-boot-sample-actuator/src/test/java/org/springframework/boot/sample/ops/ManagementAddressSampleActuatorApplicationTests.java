@@ -30,7 +30,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.sample.ops.SampleActuatorApplication;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -84,7 +84,7 @@ public class ManagementAddressSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:" + port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -124,6 +124,10 @@ public class ManagementAddressSampleActuatorApplicationTests {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals(999, body.get("status"));
+	}
+
+	private String getPassword() {
+		return context.getBean(ManagementServerProperties.class).getUser().getPassword();
 	}
 
 	private RestTemplate getRestTemplate() {

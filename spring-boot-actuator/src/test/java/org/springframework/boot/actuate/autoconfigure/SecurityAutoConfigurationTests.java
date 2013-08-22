@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +45,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManager.class));
@@ -58,6 +57,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,

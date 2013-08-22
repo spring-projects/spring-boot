@@ -29,7 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.sample.ops.SampleActuatorApplication;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -79,7 +79,7 @@ public class ShutdownSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
 				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -90,13 +90,17 @@ public class ShutdownSampleActuatorApplicationTests {
 	@Test
 	public void testShutdown() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").postForEntity(
-				"http://localhost:8080/shutdown", null, Map.class);
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword())
+				.postForEntity("http://localhost:8080/shutdown", null, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertTrue("Wrong body: " + body,
 				((String) body.get("message")).contains("Shutting down"));
+	}
+
+	private String getPassword() {
+		return context.getBean(ManagementServerProperties.class).getUser().getPassword();
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {
