@@ -56,6 +56,27 @@ public static void main(){
 
 {% endcapture %}
 
+{% capture related_resources %}
+
+### Spring Sample Projects
+
+* [Project Name 1](#)
+* [Project name 2](#)
+* [Project name nth](#)
+
+### Getting Started Guides
+
+* [Getting Started Guide 1]({{site.main_site_url}}/gs-rest-service)
+* [Getting Started Guide 2]({{site.main_site_url}}/gs-rest-service)
+* [Getting Started Guide nth]({{site.main_site_url}}/gs-rest-service)
+
+### Tutorials
+
+* [Tutorial 1](#)
+* [Tutorial 2](#)
+* [Tutorial nth](#)
+
+{% endcapture %}
 
 
-{% include project_home_include.md parent_link=parent_link billboard_description=billboard_description main_content=main_content %}
+{% include project_home_include.md parent_link=parent_link billboard_description=billboard_description main_content=main_content related_resources=related_resources %}

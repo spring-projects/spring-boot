@@ -8,14 +8,6 @@
 {% endif %}
 {% endcapture %}
 
-{% capture sidebar %}
-{% if site.sample %}
-{% include samples/sidebar.md %}
-{% else %}
-{% include sidebar.md %}
-{% endif %}
-{% endcapture %}
-
 {%unless badges contains 'not found in _includes directory' %}
 <div class="right-pane-widget--container no-top-border">
 <div class="project-sub-link--wrapper">
@@ -24,8 +16,6 @@
 </div>
 {%endunless%}
 
-{%unless sidebar contains 'not found in _includes directory' %}
 <div class="right-pane-widget--container no-top-border project-sidebar-resource--wrapper">
-{{ sidebar | markdownify }}
+{{ include.related_resources | markdownify }}
 </div>
-{%endunless%}
