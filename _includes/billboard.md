@@ -10,7 +10,7 @@
 <div class="row-fluid">
 <div class="span8">
 <div class="project--links--container">
-<a href="{{ site.github }}" class="project-link">
+<a href="{{ site.github_repo_url }}" class="project-link">
 <i class="icon-github"></i>
 </a>
 <a href="{{ site.forum }}" class="project-link project-link-forum">
