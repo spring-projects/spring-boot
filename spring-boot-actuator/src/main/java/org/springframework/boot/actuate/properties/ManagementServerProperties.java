@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.properties;
 
 import java.net.InetAddress;
-import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
@@ -40,13 +39,7 @@ public class ManagementServerProperties {
 	@NotNull
 	private String contextPath = "";
 
-	private User user = new User();
-
 	private boolean allowShutdown = false;
-
-	public User getUser() {
-		return this.user;
-	}
 
 	public boolean isAllowShutdown() {
 		return this.allowShutdown;
@@ -87,47 +80,6 @@ public class ManagementServerProperties {
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
-	}
-
-	public static class User {
-
-		private String name = "user";
-
-		private String password = UUID.randomUUID().toString();
-
-		private String role = "ADMIN";
-
-		private boolean defaultPassword;
-
-		public String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public String getPassword() {
-			return this.password;
-		}
-
-		public void setPassword(String password) {
-			this.defaultPassword = false;
-			this.password = password;
-		}
-
-		public String getRole() {
-			return this.role;
-		}
-
-		public void setRole(String role) {
-			this.role = role;
-		}
-
-		public boolean isDefaultPassword() {
-			return this.defaultPassword;
-		}
-
 	}
 
 }

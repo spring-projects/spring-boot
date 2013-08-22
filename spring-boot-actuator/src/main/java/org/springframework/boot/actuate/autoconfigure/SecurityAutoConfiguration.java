@@ -17,7 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
-import org.springframework.boot.actuate.properties.ManagementServerProperties.User;
 import org.springframework.boot.actuate.properties.SecurityProperties;
+import org.springframework.boot.actuate.properties.SecurityProperties.User;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -40,13 +43,14 @@ import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 
@@ -85,6 +89,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 @Configuration
 @ConditionalOnClass({ EnableWebSecurity.class })
 @EnableWebSecurity
+// (debug = true)
 @EnableConfigurationProperties
 public class SecurityAutoConfiguration {
 
@@ -101,26 +106,24 @@ public class SecurityAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ BoostrapWebSecurityConfigurerAdapter.class })
-	public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
-		return new BoostrapWebSecurityConfigurerAdapter();
+	@ConditionalOnMissingBean({ ApplicationWebSecurityConfigurerAdapter.class })
+	public WebSecurityConfigurerAdapter applicationWebSecurityConfigurerAdapter() {
+		return new ApplicationWebSecurityConfigurerAdapter();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
+	public WebSecurityConfigurerAdapter managementWebSecurityConfigurerAdapter() {
+		return new ManagementWebSecurityConfigurerAdapter();
 	}
 
 	// Give user-supplied filters a chance to be last in line
-	@Order(Ordered.LOWEST_PRECEDENCE - 10)
-	private static class BoostrapWebSecurityConfigurerAdapter extends
+	@Order(Ordered.LOWEST_PRECEDENCE - 5)
+	private static class ApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
-
-		private static final String[] NO_PATHS = new String[0];
 
 		@Autowired
 		private SecurityProperties security;
-
-		@Autowired
-		private ManagementServerProperties management;
-
-		@Autowired(required = false)
-		private EndpointHandlerMapping endpointHandlerMapping;
 
 		@Autowired
 		private AuthenticationEventPublisher authenticationEventPublisher;
@@ -135,26 +138,20 @@ public class SecurityAutoConfiguration {
 				http.requiresChannel().anyRequest().requiresSecure();
 			}
 
-			if (this.security.getBasic().isEnabled()) {
+			String[] paths = getSecureApplicationPaths();
+			if (this.security.getBasic().isEnabled() && paths.length > 0) {
 				http.exceptionHandling().authenticationEntryPoint(entryPoint());
-				http.httpBasic().and().anonymous().disable();
-				ExpressionUrlAuthorizationConfigurer<HttpSecurity> authorizeUrls = http
-						.authorizeUrls();
-				String[] paths = getEndpointPaths(true);
-				if (paths.length > 0) {
-					authorizeUrls.antMatchers(getEndpointPaths(true)).hasRole(
-							this.management.getUser().getRole());
-				}
-				paths = getSecureApplicationPaths();
-				if (paths.length > 0) {
-					authorizeUrls.antMatchers(getSecureApplicationPaths()).hasRole(
-							this.security.getBasic().getRole());
-				}
-				authorizeUrls.and().httpBasic();
+				http.requestMatchers().antMatchers(paths);
+				http.authorizeRequests().anyRequest()
+						.hasRole(this.security.getUser().getRole()) //
+						.and().httpBasic() //
+						.and().anonymous().disable();
 			}
-
-			// No cookies for service endpoints by default
+			// Remove this when session creation is disabled by default
+			http.csrf().disable();
+			// No cookies for application endpoints by default
 			http.sessionManagement().sessionCreationPolicy(this.security.getSessions());
+
 		}
 
 		private String[] getSecureApplicationPaths() {
@@ -181,10 +178,72 @@ public class SecurityAutoConfiguration {
 		public void configure(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			ignoring.antMatchers(this.security.getIgnored());
-			ignoring.antMatchers(getEndpointPaths(false));
 			if (this.errorController != null) {
 				ignoring.antMatchers(this.errorController.getErrorPath());
 			}
+		}
+
+		@Override
+		protected AuthenticationManager authenticationManager() throws Exception {
+			AuthenticationManager manager = super.authenticationManager();
+			if (manager instanceof ProviderManager) {
+				((ProviderManager) manager)
+						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
+			}
+			return manager;
+		}
+
+	}
+
+	// Give user-supplied filters a chance to be last in line
+	@Order(Ordered.LOWEST_PRECEDENCE - 10)
+	private static class ManagementWebSecurityConfigurerAdapter extends
+			WebSecurityConfigurerAdapter {
+
+		private static final String[] NO_PATHS = new String[0];
+
+		@Autowired
+		private SecurityProperties security;
+
+		@Autowired
+		private ManagementServerProperties management;
+
+		@Autowired(required = false)
+		private EndpointHandlerMapping endpointHandlerMapping;
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+
+			if (this.security.isRequireSsl()) {
+				http.requiresChannel().anyRequest().requiresSecure();
+			}
+
+			String[] paths = getEndpointPaths(true);
+			if (this.security.getBasic().isEnabled() && paths.length > 0) {
+				http.exceptionHandling().authenticationEntryPoint(entryPoint());
+				http.requestMatchers().antMatchers(paths);
+				http.authorizeRequests().anyRequest()
+						.hasRole(this.security.getManagement().getRole()) //
+						.and().httpBasic() //
+						.and().anonymous().disable();
+			}
+			// No cookies for management endpoints by default
+			http.csrf().disable();
+			http.sessionManagement().sessionCreationPolicy(
+					this.security.getManagement().getSessions());
+
+		}
+
+		@Override
+		public void configure(WebSecurity builder) throws Exception {
+			IgnoredRequestConfigurer ignoring = builder.ignoring();
+			ignoring.antMatchers(getEndpointPaths(false));
+		}
+
+		private AuthenticationEntryPoint entryPoint() {
+			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+			entryPoint.setRealmName(this.security.getBasic().getRealm());
+			return entryPoint;
 		}
 
 		private String[] getEndpointPaths(boolean secure) {
@@ -202,16 +261,6 @@ public class SecurityAutoConfiguration {
 			return paths.toArray(new String[paths.size()]);
 		}
 
-		@Override
-		protected AuthenticationManager authenticationManager() throws Exception {
-			AuthenticationManager manager = super.authenticationManager();
-			if (manager instanceof ProviderManager) {
-				((ProviderManager) manager)
-						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
-			}
-			return manager;
-		}
-
 	}
 
 	@ConditionalOnMissingBean(AuthenticationManager.class)
@@ -222,23 +271,28 @@ public class SecurityAutoConfiguration {
 				.getLog(AuthenticationManagerConfiguration.class);
 
 		@Autowired
-		private ManagementServerProperties management;
+		private SecurityProperties security;
 
 		@Bean
 		public AuthenticationManager authenticationManager() throws Exception {
-			User user = this.management.getUser();
+
+			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> builder = new AuthenticationManagerBuilder(
+					ObjectPostProcessor.QUIESCENT_POSTPROCESSOR).inMemoryAuthentication();
+			User user = this.security.getUser();
+
 			if (user.isDefaultPassword()) {
-				logger.info("Using default password for management endpoints: "
+				logger.info("Using default password for application endpoints: "
 						+ user.getPassword());
 			}
-			List<String> roles = new ArrayList<String>();
-			roles.add("USER");
-			if (!"USER".equals(user.getRole())) {
-				roles.add(user.getRole());
-			}
-			return new AuthenticationManagerBuilder().inMemoryAuthentication()
-					.withUser(user.getName()).password(user.getPassword())
-					.roles(roles.toArray(new String[roles.size()])).and().and().build();
+
+			Set<String> roles = new LinkedHashSet<String>(Arrays.asList(this.security
+					.getManagement().getRole(), user.getRole()));
+
+			builder.withUser(user.getName()).password(user.getPassword())
+					.roles(roles.toArray(new String[roles.size()]));
+
+			return builder.and().build();
+
 		}
 
 	}
