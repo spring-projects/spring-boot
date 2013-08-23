@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
- * 
+ *
  * @author Dave Syer
  */
 public class SampleWebStaticApplicationTests {
@@ -63,7 +63,7 @@ public class SampleWebStaticApplicationTests {
 	@Test
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/resources/css/bootstrap.min.css", String.class);
+				"http://localhost:8080/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
 		assertEquals("Wrong content type:\n" + entity.getHeaders().getContentType(),
