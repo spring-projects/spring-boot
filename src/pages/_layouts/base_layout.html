@@ -1,0 +1,133 @@
+---
+---
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ site.name }}</title>
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/bootstrap/css/bootstrap.min.css" />
+  <link href='http://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/font-awesome/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/bootstrap/css/bootstrap-select.css" />
+
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/main.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/typography.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/icons.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/projects.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/buttons.css.css" />
+  <link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/guide.css.css" />
+
+  <script type="text/javascript" src="{{site.baseurl}}/js/jquery.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/bootstrap/js/bootstrap-select.js"></script>
+
+  <script type="text/javascript" src="{{site.baseurl}}/js/underscore.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/backbone.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/projectDocumentationWidget.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/application.js"></script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/ZeroClipboard.min.js"></script>
+  <script type="text/javascript">
+    var apiBaseUrl = "{{ site.main_site_url }}";
+    var projectId = "{{ site.project }}";
+    var siteBaseUrl = "{{ site.baseurl }}";
+  </script>
+  <script type="text/javascript" src="{{site.baseurl}}/js/copySnippets.js"></script>
+  <meta name="google-site-verification" content="7qGntFPD9lWAVCtUu5U77v4l68PsTHf6xpzgjQv2j2M" />
+</head>
+<body>
+  <header class="navbar header--navbar">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <div class="spring-logo--container">
+          <div class="logo-bg"></div>
+          <a class="spring-logo" href="{{site.main_site_url}}"></a>
+        </div>
+        <ul class="nav pull-right">
+          <li class="navbar-link">
+            <a href="{{site.main_site_url}}/docs">Docs</a>
+          </li>
+          <li class="navbar-link">
+            <a href="{{site.main_site_url}}/guides">Guides</a>
+          </li>
+          <li class="navbar-link active">
+            <a href="{{site.main_site_url}}/projects">Projects</a>
+          </li>
+          <li class="navbar-link">
+            <a href="{{site.main_site_url}}/blog">Blog</a>
+          </li>
+          <li class="navbar-link">
+            <a href="{{site.forum_url}}">Forum</a>
+          </li>
+          <li class="navbar-link nav-search">
+            <i class="icon-search navbar-search--icon js-search-input-open"></i>
+            <div class="search-input-close js-search-input-close">x</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="search-dropdown--container js-search-dropdown">
+      <div class="container-fluid">
+        <div class="search-form--container">
+          <form class="form-inline form-search" action="{{site.main_site_url}}/search" method="get">
+            <input type="text" class="search-query search-form--form js-search-input" placeholder="Search for documention, guides, and posts..." name="q" />
+            <button type="submit" class="search-form--submit"><i class="icon-search"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="body--container container-fluid">
+    {{ content }}
+  </div>
+
+  <footer class="footer">
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span8">
+          <div class="navbar">
+            <div class="container">
+              <ul class="nav">
+                <li><a href="{{site.main_site_url}}/tools">Tools</a></li>
+                <li><a href="{{site.main_site_url}}/services">Services</a></li>
+                <li><a href="{{site.main_site_url}}/about">About Us</a></li>
+                <li><a href="{{site.main_site_url}}/jobs">Work With Us</a></li>
+              </ul>
+            </div>
+          </div>
+          &copy; <script type="text/javascript"> var d = new Date();
+                document.write(d.getFullYear());</script> GoPivotal, Inc. All Rights Reserved.
+          <a href="http://www.gopivotal.com/terms-of-use">Terms</a>,
+          <a href="http://www.gopivotal.com/privacy-policy">Privacy</a>, and
+          <a href="{{site.main_site_url}}/logos">Usage</a>
+        </div>
+        <div class="span4 footer-newsletter--wrapper pull-right">
+          <div class="footer-newsletter--container">
+            <form>
+              <label>
+                Subscribe to our newsletter
+              </label>
+              <div class="footer-subscribe--input--container">
+                <input class="footer-subscribe--input" placeholder="Email Address (NOT REAL)" />
+                <input type="submit" class="btn footer-subscibe--btn" value="Subscribe" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <div id="scrim"></div>
+  {% include widget_templates.html %}
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-42447510-1', 'cfapps.io');
+    ga('send', 'pageview');
+
+  </script>
+</body>
+</html>
