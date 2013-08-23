@@ -109,7 +109,7 @@ public class ExplodedArchiveTests {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString(),
-				equalTo("jar:file:" + this.rootFolder.getPath() + "/nested.jar!/"));
+				equalTo("jar:file:" + this.rootFolder.getPath() + File.separator + "nested.jar!/"));
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class ExplodedArchiveTests {
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
 		assertThat(nestedEntries.size(), equalTo(1));
 		assertThat(nested.getUrl().toString(),
-				equalTo("file:" + this.rootFolder.getPath() + "/d/"));
+				equalTo("file:" + this.rootFolder.getPath() + File.separator + "d/"));
 	}
 
 	@Test
