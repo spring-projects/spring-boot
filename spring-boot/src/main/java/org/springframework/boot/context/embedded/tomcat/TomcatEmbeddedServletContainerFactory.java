@@ -18,14 +18,20 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+
 import org.apache.catalina.Context;
 import org.apache.catalina.Host;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
@@ -48,6 +54,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StreamUtils;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -161,6 +168,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
 						.getClassLoader())) {
 			addJspServlet(context);
+			context.addLifecycleListener(new StoreMergedWebXmlListener());
 		}
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
 		configureContext(context, initializersToUse);
@@ -439,6 +447,47 @@ public class TomcatEmbeddedServletContainerFactory extends
 		private void callMethod(Object target, String name, Object value, Class<?> type) {
 			Method method = ReflectionUtils.findMethod(target.getClass(), name, type);
 			ReflectionUtils.invokeMethod(method, target, value);
+		}
+
+	}
+
+	/**
+	 * {@link LifecycleListener} that stores an empty merged web.xml. This is critical for
+	 * Jasper to prevent warnings about missing web.xml files and to enable EL.
+	 */
+	private static class StoreMergedWebXmlListener implements LifecycleListener {
+
+		private String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
+				onStart((Context) event.getLifecycle());
+			}
+		}
+
+		private void onStart(Context context) {
+			ServletContext servletContext = context.getServletContext();
+			if (servletContext.getAttribute(this.MERGED_WEB_XML) == null) {
+				servletContext.setAttribute(this.MERGED_WEB_XML, getEmptyWebXml());
+			}
+		}
+
+		private String getEmptyWebXml() {
+			InputStream stream = TomcatEmbeddedServletContainerFactory.class
+					.getResourceAsStream("empty-web.xml");
+			Assert.state(stream != null, "Unable to read empty web.xml");
+			try {
+				try {
+					return StreamUtils.copyToString(stream, Charset.forName("UTF-8"));
+				}
+				finally {
+					stream.close();
+				}
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}
