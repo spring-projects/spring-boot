@@ -51,6 +51,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
@@ -245,6 +246,9 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ApplicationContext run(String... args) {
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+
 		// Call all non environment aware initializers very early
 		callNonEnvironmentAwareSpringApplicationInitializers(args);
 
@@ -275,6 +279,13 @@ public class SpringApplication {
 		}
 		load(context, sources.toArray(new Object[sources.size()]));
 		refresh(context);
+
+		stopWatch.stop();
+		if (this.logStartupInfo) {
+			new StartupInfoLogger(this.mainApplicationClass).logStarted(
+					getApplicationLog(), stopWatch);
+		}
+
 		runCommandLineRunners(context, args);
 		return context;
 	}
@@ -363,9 +374,12 @@ public class SpringApplication {
 		}
 	}
 
+	/**
+	 * Called to log startup information, subclasses may override to add additional
+	 * logging.
+	 */
 	protected void logStartupInfo() {
-		Log applicationLog = getApplicationLog();
-		new StartupInfoLogger(this.mainApplicationClass).log(applicationLog);
+		new StartupInfoLogger(this.mainApplicationClass).logStarting(getApplicationLog());
 	}
 
 	/**

@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,13 +45,19 @@ class StartupInfoLogger {
 		this.sourceClass = sourceClass;
 	}
 
-	public void log(Log log) {
+	public void logStarting(Log log) {
 		Assert.notNull(log, "Log must not be null");
 		if (log.isInfoEnabled()) {
 			log.info(getStartupMessage());
 		}
 		if (log.isDebugEnabled()) {
 			log.debug(getRunningMessage());
+		}
+	}
+
+	public void logStarted(Log log, StopWatch stopWatch) {
+		if (log.isInfoEnabled()) {
+			log.info(getStartedMessage(stopWatch));
 		}
 	}
 
@@ -71,6 +78,16 @@ class StartupInfoLogger {
 		message.append(getVersion(SpringApplication.class));
 		message.append(", Spring");
 		message.append(getVersion(ApplicationContext.class));
+		return message;
+	}
+
+	private StringBuilder getStartedMessage(StopWatch stopWatch) {
+		StringBuilder message = new StringBuilder();
+		message.append("Started ");
+		message.append(getApplicationName());
+		message.append(" in ");
+		message.append(stopWatch.getTotalTimeSeconds());
+		message.append(" seconds");
 		return message;
 	}
 
@@ -163,4 +180,5 @@ class StartupInfoLogger {
 		}
 		return defaultValue;
 	}
+
 }
