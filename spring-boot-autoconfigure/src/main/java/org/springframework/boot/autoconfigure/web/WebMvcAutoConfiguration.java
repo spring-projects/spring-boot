@@ -48,7 +48,6 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -146,12 +145,6 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
-		public void configureDefaultServletHandling(
-				DefaultServletHandlerConfigurer configurer) {
-			configurer.enable();
-		}
-
-		@Override
 		public void addFormatters(FormatterRegistry registry) {
 			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
 				registry.addConverter(converter);
@@ -172,8 +165,6 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/resources/**").addResourceLocations(
-					RESOURCE_LOCATIONS);
 			registry.addResourceHandler("/**").addResourceLocations(RESOURCE_LOCATIONS);
 		}
 
