@@ -19,6 +19,7 @@ package org.springframework.boot.context.initializer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.MapPropertySource;
@@ -39,6 +40,11 @@ public class ConfigFileApplicationContextInitializerTests {
 	private StaticApplicationContext context = new StaticApplicationContext();
 
 	private ConfigFileApplicationContextInitializer initializer = new ConfigFileApplicationContextInitializer();
+
+	@After
+	public void cleanup() {
+		System.clearProperty("my.property");
+	}
 
 	@Test
 	public void loadPropertiesFile() throws Exception {
@@ -79,6 +85,15 @@ public class ConfigFileApplicationContextInitializerTests {
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromcommandline"));
+	}
+
+	@Test
+	public void systemPropertyWins() throws Exception {
+		System.setProperty("my.property", "fromsystem");
+		this.initializer.setNames("testproperties");
+		this.initializer.initialize(this.context);
+		String property = this.context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("fromsystem"));
 	}
 
 	@Test
