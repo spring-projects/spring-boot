@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,12 +34,19 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.AbstractView;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -74,6 +84,30 @@ public class WebMvcAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void resourceHandlerMapping() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, WebMvcAutoConfiguration.class);
+		this.context.refresh();
+		SimpleUrlHandlerMapping mapping = (SimpleUrlHandlerMapping) this.context
+				.getBean("resourceHandlerMapping");
+		Field locationsField = ReflectionUtils.findField(
+				ResourceHttpRequestHandler.class, "locations");
+		locationsField.setAccessible(true);
+		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<String, List<Resource>>();
+		for (Map.Entry<String, Object> entry : mapping.getHandlerMap().entrySet()) {
+			ResourceHttpRequestHandler handler = (ResourceHttpRequestHandler) entry
+					.getValue();
+			mappingLocations.put(entry.getKey(),
+					(List<Resource>) locationsField.get(handler));
+		}
+		assertThat(mappingLocations.get("/**").size(), equalTo(5));
+		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
+		assertThat(mappingLocations.get("/webjars/**").get(0),
+				equalTo((Resource) new ClassPathResource("/META-INF/resources/webjars/")));
 	}
 
 	@Configuration
