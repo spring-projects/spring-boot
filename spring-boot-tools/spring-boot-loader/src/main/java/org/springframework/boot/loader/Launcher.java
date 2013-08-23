@@ -18,6 +18,7 @@ package org.springframework.boot.loader;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -67,13 +68,12 @@ public abstract class Launcher {
 	protected void launch(String[] args, ProtectionDomain protectionDomain)
 			throws Exception {
 		CodeSource codeSource = protectionDomain.getCodeSource();
-		URL codeSourceLocation = (codeSource == null ? null : codeSource.getLocation());
-		String codeSourcePath = (codeSourceLocation == null ? null : codeSourceLocation
-				.getPath());
-		if (codeSourcePath == null) {
+		URI location = (codeSource == null ? null : codeSource.getLocation().toURI());
+		String path = (location == null ? null : location.getPath());
+		if (path == null) {
 			throw new IllegalStateException("Unable to determine code source archive");
 		}
-		File root = new File(codeSourcePath);
+		File root = new File(path);
 		if (!root.exists()) {
 			throw new IllegalStateException(
 					"Unable to determine code source archive from " + root);
