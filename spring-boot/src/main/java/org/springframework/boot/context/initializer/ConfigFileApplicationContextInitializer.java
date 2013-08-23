@@ -17,6 +17,7 @@
 package org.springframework.boot.context.initializer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
@@ -127,6 +127,7 @@ public class ConfigFileApplicationContextInitializer implements
 	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 
 		List<String> candidates = getCandidateLocations();
+		Collections.reverse(candidates);
 
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
@@ -186,14 +187,7 @@ public class ConfigFileApplicationContextInitializer implements
 			}
 
 		}
-		MutablePropertySources propertySources = environment.getPropertySources();
-		if (propertySources.contains(COMMAND_LINE_PROPERTY_SOURCE_NAME)) {
-			propertySources.addAfter(COMMAND_LINE_PROPERTY_SOURCE_NAME, propertySource);
-		}
-		else {
-			propertySources.addFirst(propertySource);
-		}
-
+		environment.getPropertySources().addLast(propertySource);
 	}
 
 	private PropertySource<?> getPropertySource(Resource resource,
