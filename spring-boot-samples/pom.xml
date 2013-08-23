@@ -25,6 +25,7 @@
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-web-static</module>
+		<module>spring-boot-sample-web-jsp</module>
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-websocket</module>
 		<module>spring-boot-sample-xml</module>
