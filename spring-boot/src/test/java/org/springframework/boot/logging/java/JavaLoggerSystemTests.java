@@ -16,14 +16,14 @@
 
 package org.springframework.boot.logging.java;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.OutputCapture;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -42,18 +42,14 @@ public class JavaLoggerSystemTests {
 	private JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass()
 			.getClassLoader());
 
-	private PrintStream savedOutput;
-
-	private ByteArrayOutputStream output;
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	private Jdk14Logger logger;
 
 	@Before
 	public void init() throws SecurityException, IOException {
 		this.logger = new Jdk14Logger(getClass().getName());
-		this.savedOutput = System.err;
-		this.output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(this.output));
 	}
 
 	@After
@@ -61,19 +57,13 @@ public class JavaLoggerSystemTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
-		System.setErr(this.savedOutput);
-		System.err.println(this.output);
-	}
-
-	private String getOutput() {
-		return this.output.toString();
 	}
 
 	@Test
 	public void testCustomFormatter() throws Exception {
 		this.loggingSystem.initialize();
 		this.logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.contains("???? INFO ["));
 	}
@@ -86,7 +76,7 @@ public class JavaLoggerSystemTests {
 						"logging.properties"));
 		this.logger.info("Hello world");
 		this.logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.contains("1234 INFO ["));
 	}
@@ -95,7 +85,7 @@ public class JavaLoggerSystemTests {
 	public void testNonDefaultConfigLocation() throws Exception {
 		this.loggingSystem.initialize("classpath:logging-nondefault.properties");
 		this.logger.info("Hello world");
-		String output = getOutput().trim();
+		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("INFO: Hello"));
 	}
 
