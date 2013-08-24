@@ -147,12 +147,12 @@ only available in certain environments.  Any `@Component` that is marked with `@
 will only be loaded in the profile specified by the latter annotation.
 
 A `SpringApplication` takes this a stage further, in that you can use a 
-`spring.active.profiles` `Environment` property to specify which profiles are active. 
+`spring.profiles.active` `Environment` property to specify which profiles are active. 
 You can specify the property in any of the usual ways, for example you could include
 it in your `application.properties`:
 
 ```
-spring.active.profiles=dev,hsqldb
+spring.profiles.active=dev,hsqldb
 ```
 
 or specify on the command line using the switch `--spring.profiles.active=dev,hsqldb`.
