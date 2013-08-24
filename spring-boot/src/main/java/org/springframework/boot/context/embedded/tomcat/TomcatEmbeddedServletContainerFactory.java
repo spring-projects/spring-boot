@@ -152,6 +152,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 				.getClassLoader() : ClassUtils.getDefaultClassLoader());
 		WebappLoader loader = new WebappLoader(context.getParentClassLoader());
 		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		loader.setDelegate(true);
 		context.setLoader(loader);
 		if (isRegisterDefaultServlet()) {
 			addDefaultServlet(context);
