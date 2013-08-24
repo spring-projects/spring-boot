@@ -24,6 +24,8 @@ import java.io.PrintStream;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.springframework.boot.ansi.AnsiOutput;
+import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 /**
  * Capture output from System.out and System.err.
@@ -55,6 +57,7 @@ public class OutputCapture implements TestRule {
 	}
 
 	protected void captureOutput() {
+		AnsiOutput.setEnabled(Enabled.NEVER);
 		this.copy = new ByteArrayOutputStream();
 		this.captureOut = new CaptureOutputStream(System.out, this.copy);
 		this.captureErr = new CaptureOutputStream(System.err, this.copy);
@@ -63,6 +66,7 @@ public class OutputCapture implements TestRule {
 	}
 
 	protected void releaseOutput() {
+		AnsiOutput.setEnabled(Enabled.DETECT);
 		System.setOut(this.captureOut.getOriginal());
 		System.setErr(this.captureErr.getOriginal());
 		this.copy = null;
