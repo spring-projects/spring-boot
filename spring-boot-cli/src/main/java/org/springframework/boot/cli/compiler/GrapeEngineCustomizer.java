@@ -48,7 +48,6 @@ import org.apache.ivy.plugins.resolver.ChainResolver;
 import org.apache.ivy.plugins.resolver.DependencyResolver;
 import org.apache.ivy.plugins.resolver.IBiblioResolver;
 import org.apache.ivy.util.AbstractMessageLogger;
-import org.apache.ivy.util.Message;
 import org.apache.ivy.util.MessageLogger;
 import org.springframework.boot.cli.Log;
 
@@ -304,7 +303,6 @@ class GrapeEngineCustomizer {
 		@Override
 		public void log(String msg, int level) {
 			logDownloadingMessage();
-			Message.getDefaultLogger().log(msg, level);
 		}
 
 		@Override
