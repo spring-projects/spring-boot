@@ -119,12 +119,14 @@
 				<configuration>
 					<settingsFile>src/it/settings.xml</settingsFile>
 					<projectsDirectory>${main.basedir}/spring-boot-samples/</projectsDirectory>
-                    <pomExcludes>
-                        <!-- temporarily suspend integration test (Bamboo doesn't like it, WTF?) -->
-                        <pomExclude>spring-boot-sample-websocket/pom.xml</pomExclude>
-                    </pomExcludes>
+					<pomExcludes>
+						<!-- temporarily suspend integration test (Bamboo doesn't like it,
+							WTF?) -->
+						<pomExclude>spring-boot-sample-websocket/pom.xml</pomExclude>
+					</pomExcludes>
 					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
 					<skipInvocation>${skipTests}</skipInvocation>
+					<streamLogs>true</streamLogs>
 				</configuration>
 				<executions>
 					<execution>
