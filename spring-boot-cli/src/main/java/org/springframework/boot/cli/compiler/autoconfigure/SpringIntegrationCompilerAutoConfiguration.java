@@ -51,8 +51,7 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 						dependencies.getProperty("spring.integration.version"))
 				.add("org.springframework.integration",
 						"spring-integration-dsl-groovy-core",
-						dependencies.getProperty("spring.integration.dsl.version",
-								"1.0.0.M1"));
+						dependencies.getProperty("spring.integration.dsl.version"));
 		dependencies.ifAnyMissingClasses("groovy.util.XmlParser").add(
 				"org.codehaus.groovy", "groovy-xml",
 				dependencies.getProperty("groovy.version"));
