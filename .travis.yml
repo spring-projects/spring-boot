@@ -1,10 +1,10 @@
 language: java
 
-install: mvn -U install --quiet -DskipTests=true
+install: mvn install -DskipTests=true
 before_script:
    - "gem install travis-artifacts"
    - "mvn -version"
-script: mvn install -U -Dmaven.test.redirectTestOutputToFile=true -Pspring-snapshot
+script: mvn install -Dmaven.test.redirectTestOutputToFile=true -Pspring-snapshot
 
 after_failure:
   - "for f in `find . -name build.log`; do travis-artifacts upload --path $f; done"
