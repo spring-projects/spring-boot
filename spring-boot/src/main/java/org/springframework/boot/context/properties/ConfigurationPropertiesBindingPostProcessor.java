@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -62,12 +61,13 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * @author Phillip Webb
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
-		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, BeanClassLoaderAware,
-		ApplicationContextAware, InitializingBean, DisposableBean {
+		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
+		InitializingBean, DisposableBean {
 
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
-	private static final String VALIDATOR_CLASS = "javax.validation.Validator";
+	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
+			"javax.validation.ValidatorFactory" };
 
 	private PropertySources propertySources;
 
@@ -86,8 +86,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	private Environment environment = new StandardEnvironment();
-
-	private ClassLoader beanClassLoader;
 
 	private ApplicationContext applicationContext;
 
@@ -128,11 +126,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
-	}
-
-	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
@@ -146,14 +139,9 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 		if (this.validator == null) {
 			this.validator = getOptionalBean(VALIDATOR_BEAN_NAME, Validator.class);
-			if (this.validator == null
-					&& ClassUtils.isPresent(VALIDATOR_CLASS, this.beanClassLoader)) {
-				LocalValidatorFactoryBean validatorToUse = (LocalValidatorFactoryBean) ClassUtils
-						.forName(LocalValidatorFactoryBean.class.getName(),
-								this.beanClassLoader).newInstance();
-				validatorToUse.setApplicationContext(this.applicationContext);
-				validatorToUse.afterPropertiesSet();
-				this.validator = validatorToUse;
+			if (this.validator == null && isJsr303Present()) {
+				this.validator = new Jsr303ValidatorFactory()
+						.run(this.applicationContext);
 				this.ownedValidator = true;
 			}
 		}
@@ -163,6 +151,15 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 					ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME,
 					ConversionService.class);
 		}
+	}
+
+	private boolean isJsr303Present() {
+		for (String validatorClass : VALIDATOR_CLASSES) {
+			if (!ClassUtils.isPresent(validatorClass, null)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -329,6 +326,21 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			}
 		}
 		return this.defaultConversionService;
+	}
+
+	/**
+	 * Factory to create JSR 303 LocalValidatorFactoryBean. Inner class to prevent class
+	 * loader issues.
+	 */
+	private static class Jsr303ValidatorFactory {
+
+		public Validator run(ApplicationContext applicationContext) {
+			LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+			validator.setApplicationContext(applicationContext);
+			validator.afterPropertiesSet();
+			return validator;
+		}
+
 	}
 
 }
