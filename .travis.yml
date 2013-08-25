@@ -1,6 +1,6 @@
 language: java
 
-install: mvn install -DskipTests=true
+install: mvn install -DskipTests=true -Pspring-snapshot
 before_script:
    - "gem install travis-artifacts"
    - "mvn -version"
