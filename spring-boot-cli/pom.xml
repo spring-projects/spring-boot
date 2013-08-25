@@ -34,6 +34,12 @@
 			<artifactId>groovy-templates</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<!-- Provided (to ensure in m2 repo for @grab to resolve) -->
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-dsl-groovy-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -43,26 +49,8 @@
 			<scope>test</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-context</artifactId>
+					<groupId>${project.groupId}</groupId>
+					<artifactId>spring-boot</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -81,6 +69,23 @@
 			</resource>
 		</resources>
 		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework:spring-core</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework:spring-beans</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework:spring-aop</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework:spring-tx</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework:spring-expression</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework:spring-context</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework:spring-test</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework.retry:spring-retry</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework.integration:spring-integration-core</classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.springframework.integration:spring-integration-dsl-groovy-core</classpathDependencyExcludes>
+					</classpathDependencyExcludes>
+				</configuration>
+			</plugin>
 			<plugin>
 				<artifactId>maven-shade-plugin</artifactId>
 				<configuration>

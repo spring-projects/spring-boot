@@ -34,7 +34,7 @@
 	</scm>
 	<dependencyManagement>
 		<dependencies>
-			<!-- Additional Dependencies the consumers of spring-boot-dependencies 
+			<!-- Additional Dependencies the consumers of spring-boot-dependencies
 				will generally not need -->
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
@@ -294,7 +294,7 @@
 	</build>
 	<profiles>
 		<profile>
-			<!-- Allow snapshots and milestones when building locally, this profile 
+			<!-- Allow snapshots and milestones when building locally, this profile
 				should not be enabled during release. -->
 			<id>spring-snapshot-build</id>
 			<activation>
