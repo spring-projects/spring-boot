@@ -1,4 +1,4 @@
-# Spring Boot
+# Spring Boot [![Build Status](https://travis-ci.org/SpringSource/spring-boot.png?branch=master)](https://travis-ci.org/SpringSource/spring-boot)
 Spring Boot makes it easy to create Spring-powered, production-grade applications and
 services with absolute minimum fuss. It takes an opinionated view of the Spring platform
 so that new and existing users can quickly get to the bits they need.
@@ -46,7 +46,7 @@ You can download the Spring CLI distribution from the Spring software repository
 Cutting edge [snapshot distributions](http://repo.springsource.org/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
 
-Once downloaded, follow the 
+Once downloaded, follow the
 [INSTALL](spring-boot-cli/src/main/content/INSTALL.txt) instructions
 from the unpacked archive. In summary: there is a `spring` script
 (`spring.bat` for Windows) in a `bin/` directory in the `.zip` file,
