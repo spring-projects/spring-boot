@@ -57,7 +57,7 @@ public class OutputCapture implements TestRule {
 	}
 
 	protected void captureOutput() {
-		AnsiOutput.setEnabled(Enabled.NEVER);
+		AnsiOutputControl.get().disableAnsiOutput();
 		this.copy = new ByteArrayOutputStream();
 		this.captureOut = new CaptureOutputStream(System.out, this.copy);
 		this.captureErr = new CaptureOutputStream(System.err, this.copy);
@@ -66,7 +66,7 @@ public class OutputCapture implements TestRule {
 	}
 
 	protected void releaseOutput() {
-		AnsiOutput.setEnabled(Enabled.DETECT);
+		AnsiOutputControl.get().enabledAnsiOutput();
 		System.setOut(this.captureOut.getOriginal());
 		System.setErr(this.captureErr.getOriginal());
 		this.copy = null;
@@ -119,6 +119,42 @@ public class OutputCapture implements TestRule {
 		public PrintStream getOriginal() {
 			return this.original;
 		}
+	}
+
+	/**
+	 * Allow AnsiOutput to not be on the test classpath.
+	 */
+	private static class AnsiOutputControl {
+
+		public void disableAnsiOutput() {
+		}
+
+		public void enabledAnsiOutput() {
+		}
+
+		public static AnsiOutputControl get() {
+			try {
+				Class.forName("org.springframework.boot.ansi.AnsiOutput");
+				return new AnsiPresentOutputControl();
+			}
+			catch (ClassNotFoundException e) {
+				return new AnsiOutputControl();
+			}
+		}
+	}
+
+	private static class AnsiPresentOutputControl extends AnsiOutputControl {
+
+		@Override
+		public void disableAnsiOutput() {
+			AnsiOutput.setEnabled(Enabled.NEVER);
+		}
+
+		@Override
+		public void enabledAnsiOutput() {
+			AnsiOutput.setEnabled(Enabled.DETECT);
+		}
+
 	}
 
 }
