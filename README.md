@@ -232,7 +232,7 @@ latest and greatest, Spring Boot can be
 
 	$ mvn clean install
 
-> **NOTE:** You may need to increase the amount of memory available to maven by setting
+> **NOTE:** You may need to increase the amount of memory available to Maven by setting
 > a `MAVEN_OPTS` environment variable with the value `-Xmx512m -XX:MaxPermSize=128m`
 
 _Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests._
