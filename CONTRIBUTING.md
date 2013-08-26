@@ -39,6 +39,9 @@ can be build using the standard maven command:
 
 	$ mvn clean install
 
+> **NOTE:** You may need to increase the amount of memory available to Maven by setting
+> a `MAVEN_OPTS` environment variable with the value `-Xmx512m -XX:MaxPermSize=128m`
+
 If you are rebuilding often, you might also want to skip the tests until you are ready
 to submit a pull request:
 
@@ -79,9 +82,9 @@ from the `file` menu.
 Maven is well supported by most Java IDEs. Refer to you vendor documentation.
 
 ### Integration tests
-The sample application are used as integration tests during the build (when you 
-`mvn install`). Due to the fact that they make use of the `spring-boot-maven-plugin` 
-they cannot be called directly, and so instead are launched via the 
-`maven-invoker-plugin`. If you encounter build failures running the integration tests, 
+The sample application are used as integration tests during the build (when you
+`mvn install`). Due to the fact that they make use of the `spring-boot-maven-plugin`
+they cannot be called directly, and so instead are launched via the
+`maven-invoker-plugin`. If you encounter build failures running the integration tests,
 check the `build.log` file in the appropriate sample directory.
 
