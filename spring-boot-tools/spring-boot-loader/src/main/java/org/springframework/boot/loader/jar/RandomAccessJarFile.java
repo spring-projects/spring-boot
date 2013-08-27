@@ -187,7 +187,7 @@ public class RandomAccessJarFile extends JarFile {
 	public synchronized InputStream getInputStream(ZipEntry ze) throws IOException {
 		InputStream inputStream = getData(ze).getInputStream();
 		if (ze.getMethod() == ZipEntry.DEFLATED) {
-			inputStream = new ZipInflaterInputStream(inputStream);
+			inputStream = new ZipInflaterInputStream(inputStream, (int) ze.getSize());
 		}
 		return inputStream;
 	}
@@ -448,15 +448,35 @@ public class RandomAccessJarFile extends JarFile {
 	}
 
 	/**
-	 * {@link InflaterInputStream} that support the writing of an extra "dummy" byte which
-	 * is required with JDK 6
+	 * {@link InflaterInputStream} that supports the writing of an extra "dummy" byte
+	 * (which is required with JDK 6) and returns accurate available() results.
 	 */
 	private static class ZipInflaterInputStream extends InflaterInputStream {
 
 		private boolean extraBytesWritten;
 
-		public ZipInflaterInputStream(InputStream inputStream) {
+		private int available;
+
+		public ZipInflaterInputStream(InputStream inputStream, int size) {
 			super(inputStream, new Inflater(true), 512);
+			this.available = size;
+		}
+
+		@Override
+		public int available() throws IOException {
+			if (this.available < 0) {
+				return super.available();
+			}
+			return this.available;
+		}
+
+		@Override
+		public int read(byte[] b, int off, int len) throws IOException {
+			int result = super.read(b, off, len);
+			if (result != -1) {
+				this.available -= result;
+			}
+			return result;
 		}
 
 		@Override
@@ -476,4 +496,5 @@ public class RandomAccessJarFile extends JarFile {
 		}
 
 	}
+
 }
