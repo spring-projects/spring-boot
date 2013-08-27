@@ -16,9 +16,14 @@
 
 package org.springframework.boot.autoconfigure.data;
 
+import javax.sql.DataSource;
+
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,9 +37,11 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * @see EnableJpaRepositories
  */
 @Configuration
+@ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean(JpaRepositoryFactoryBean.class)
 @Import(JpaRepositoriesAutoConfigureRegistrar.class)
+@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class JpaRepositoriesAutoConfiguration {
 
 }
