@@ -40,15 +40,8 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies
 				.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
-				.add("org.springframework", "spring-webmvc",
-						dependencies.getProperty("spring.version"));
-
-		dependencies
-				.ifAnyMissingClasses("org.apache.catalina.startup.Tomcat")
-				.add("org.apache.tomcat.embed", "tomcat-embed-core",
-						dependencies.getProperty("tomcat.version"))
-				.add("org.apache.tomcat.embed", "tomcat-embed-logging-juli",
-						dependencies.getProperty("tomcat.version"));
+				.add("org.springframework.boot", "spring-boot-starter-web",
+						dependencies.getProperty("spring.boot.version"));
 
 		dependencies.add("org.codehaus.groovy", "groovy-templates",
 				dependencies.getProperty("groovy.version"));
