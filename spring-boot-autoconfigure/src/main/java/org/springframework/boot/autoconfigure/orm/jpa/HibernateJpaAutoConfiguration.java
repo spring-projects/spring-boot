@@ -18,9 +18,13 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
+
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +40,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass(HibernateEntityManager.class)
+@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
+		EnableTransactionManagement.class, EntityManager.class,
+		HibernateEntityManager.class })
+@ConditionalOnBean(DataSource.class)
 @EnableTransactionManagement
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 

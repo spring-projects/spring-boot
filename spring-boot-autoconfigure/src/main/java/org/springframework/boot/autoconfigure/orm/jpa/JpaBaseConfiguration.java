@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
@@ -27,8 +26,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationUtils;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -45,7 +42,6 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -56,9 +52,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Phillip Webb
  * @author Dave Syer
  */
-@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
-		EnableTransactionManagement.class, EntityManager.class })
-@ConditionalOnBean(DataSource.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware, EnvironmentAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
