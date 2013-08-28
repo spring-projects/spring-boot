@@ -37,7 +37,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -81,8 +80,6 @@ public class ConfigFileApplicationContextInitializer implements
 		SpringApplicationInitializer, Ordered, EnvironmentAware {
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
-
-	private static final String COMMAND_LINE_PROPERTY_SOURCE_NAME = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
 
 	private Environment environment;
 
