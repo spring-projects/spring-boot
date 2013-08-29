@@ -16,3 +16,4 @@ build.log
 .*.md.html
 manifest.yml
 Gemfile.lock
+MANIFEST.MF
