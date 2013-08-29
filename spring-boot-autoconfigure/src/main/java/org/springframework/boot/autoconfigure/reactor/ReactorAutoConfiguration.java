@@ -23,12 +23,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 
 import reactor.core.Environment;
 import reactor.core.Reactor;
-import reactor.spring.context.ConsumerBeanPostProcessor;
+import reactor.spring.context.config.EnableReactor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
@@ -36,25 +34,15 @@ import reactor.spring.context.ConsumerBeanPostProcessor;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass(ConsumerBeanPostProcessor.class)
+@ConditionalOnClass(EnableReactor.class)
 @ConditionalOnMissingBean(Reactor.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@EnableReactor
 public class ReactorAutoConfiguration {
 
 	@Bean
-	public Environment reactorEnvironment() {
-		return new Environment();
-	}
-
-	@Bean
-	public Reactor rootReactor() {
-		return reactorEnvironment().getRootReactor();
-	}
-
-	@Bean
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	protected ConsumerBeanPostProcessor reactorConsumerBeanPostProcessor() {
-		return new ConsumerBeanPostProcessor();
+	public Reactor rootReactor(Environment environment) {
+		return environment.getRootReactor();
 	}
 
 }

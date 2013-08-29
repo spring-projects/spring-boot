@@ -16,12 +16,6 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
@@ -54,17 +48,10 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 	public void applyImports(ImportCustomizer imports) {
 		imports.addImports("reactor.core.Reactor", "reactor.event.Event",
 				"reactor.function.Consumer", "reactor.function.Functions",
-				"reactor.event.selector.Selectors",
-				"reactor.spring.context.annotation.On",
-				"reactor.spring.context.annotation.Reply",
-				EnableReactor.class.getCanonicalName()).addStarImports(
+				"reactor.event.selector.Selectors", "reactor.spring.annotation.Selector",
+				"reactor.spring.annotation.ReplyTo",
+				"reactor.spring.context.config.EnableReactor").addStarImports(
 				"reactor.event.Selectors");
 	}
 
-	@Target(ElementType.TYPE)
-	@Documented
-	@Retention(RetentionPolicy.RUNTIME)
-	public static @interface EnableReactor {
-
-	}
 }
