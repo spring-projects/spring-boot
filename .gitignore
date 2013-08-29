@@ -16,3 +16,5 @@ build.log
 _site/
 .*.md.html
 manifest.yml
+MANIFEST.MF
+
