@@ -17,7 +17,7 @@
 		<tomcat.version>7.0.42</tomcat.version>
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<aspectj.version>1.7.3</aspectj.version>
-		<reactor.version>1.0.0.M1</reactor.version>
+		<reactor.version>1.0.0.M2</reactor.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
