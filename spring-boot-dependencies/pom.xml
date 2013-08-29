@@ -7,79 +7,104 @@
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
-		<spring.security.version>3.2.0.RC1</spring.security.version>
-		<spring.integration.version>2.2.4.RELEASE</spring.integration.version>
-		<spring.integration.groovydsl.version>1.0.0.M1</spring.integration.groovydsl.version>
-		<spring.batch.version>2.2.0.RELEASE</spring.batch.version>
-		<groovy.version>2.1.6</groovy.version>
-		<gradle.version>1.6</gradle.version>
-		<tomcat.version>7.0.42</tomcat.version>
-		<jetty.version>8.1.9.v20130131</jetty.version>
 		<aspectj.version>1.7.3</aspectj.version>
+		<commons-dbcp.version>1.4</commons-dbcp.version>
+		<commons-httpclient.version>3.1</commons-httpclient.version>
+		<gradle.version>1.6</gradle.version>
+		<groovy.version>2.1.6</groovy.version>
+		<h2.version>1.3.172</h2.version>
+		<hamcrest.version>1.3</hamcrest.version>
+		<hibernate-entitymanager.version>4.2.1.Final</hibernate-entitymanager.version>
+		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
+		<hibernate-validator.version>4.3.1.Final</hibernate-validator.version>
+		<hsqldb.version>2.2.9</hsqldb.version>
+		<jackson.version>2.2.2</jackson.version>
+		<jetty.version>8.1.9.v20130131</jetty.version>
+		<joda-time.version>2.3</joda-time.version>
+		<jstl.version>1.2</jstl.version>
+		<junit.version>4.11</junit.version>
+		<liquibase.version>3.0.2</liquibase.version>
+		<log4j.version>1.2.17</log4j.version>
+		<logback.version>1.0.13</logback.version>
+		<mockito.version>1.9.5</mockito.version>
 		<reactor.version>1.0.0.M2</reactor.version>
+		<servlet-api.version>3.0.1</servlet-api.version>
+		<slf4j.version>1.7.5</slf4j.version>
+		<snakeyaml.version>1.12</snakeyaml.version>
+		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
+		<spring-security.version>3.2.0.RC1</spring-security.version>
+		<spring-integration.version>2.2.4.RELEASE</spring-integration.version>
+		<spring-integration-groovydsl.version>1.0.0.M1</spring-integration-groovydsl.version>
+		<spring-batch.version>2.2.0.RELEASE</spring-batch.version>
+		<spring-data-jpa.version>1.3.2.RELEASE</spring-data-jpa.version>
+		<spring-data-mongo.version>1.2.3.RELEASE</spring-data-mongo.version>
+		<thymeleaf.version>2.0.16</thymeleaf.version>
+		<thymeleaf-extras-springsecurity3.version>2.0.0</thymeleaf-extras-springsecurity3.version>
+		<thymeleaf-layout-dialect.version>1.1.1</thymeleaf-layout-dialect.version>
+		<tomcat.version>7.0.42</tomcat.version>
 	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>1.0.13</version>
+				<version>${logback.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-databind</artifactId>
-				<version>2.2.2</version>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
 				<artifactId>jackson-core</artifactId>
-				<version>2.2.2</version>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.datatype</groupId>
 				<artifactId>jackson-datatype-joda</artifactId>
-				<version>2.2.2</version>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-dbcp</groupId>
 				<artifactId>commons-dbcp</artifactId>
-				<version>1.4</version>
+				<version>${commons-dbcp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-httpclient</groupId>
 				<artifactId>commons-httpclient</artifactId>
-				<version>3.1</version>
+				<version>${commons-httpclient.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
+				<version>${servlet-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
-				<version>1.2</version>
+				<version>${jstl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.3</version>
+				<version>${joda-time.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.11</version>
+				<version>${junit.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
+				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>nz.net.ultraq.thymeleaf</groupId>
 				<artifactId>thymeleaf-layout-dialect</artifactId>
-				<version>1.1.1</version>
+				<version>${thymeleaf-layout-dialect.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
@@ -145,37 +170,37 @@
 			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-library</artifactId>
-				<version>1.3</version>
+				<version>${hamcrest.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
-				<version>1.3.172</version>
+				<version>${h2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-entitymanager</artifactId>
-				<version>4.2.1.Final</version>
+				<version>${hibernate-entitymanager.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate.javax.persistence</groupId>
 				<artifactId>hibernate-jpa-2.0-api</artifactId>
-				<version>1.0.1.Final</version>
+				<version>${hibernate-jpa-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>4.3.1.Final</version>
+				<version>${hibernate-validator.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
-				<version>2.2.9</version>
+				<version>${hsqldb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>3.0.2</version>
+				<version>${liquibase.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectreactor</groupId>
@@ -185,32 +210,32 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>1.9.5</version>
+				<version>${mockito.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
-				<version>1.7.5</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
-				<version>1.7.5</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>jul-to-slf4j</artifactId>
-				<version>1.7.5</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.7.5</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-jdk14</artifactId>
-				<version>1.7.5</version>
+				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -308,12 +333,12 @@
 			<dependency>
 				<groupId>org.springframework.batch</groupId>
 				<artifactId>spring-batch-core</artifactId>
-				<version>${spring.batch.version}</version>
+				<version>${spring-batch.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-jpa</artifactId>
-				<version>1.3.4.RELEASE</version>
+				<version>${spring-data-jpa.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -328,82 +353,77 @@
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-mongodb</artifactId>
-				<version>1.2.3.RELEASE</version>
+				<version>${spring-data-mongo.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-core</artifactId>
-				<version>${spring.integration.version}</version>
+				<version>${spring-integration.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-file</artifactId>
-				<version>${spring.integration.version}</version>
+				<version>${spring-integration.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-http</artifactId>
-				<version>${spring.integration.version}</version>
+				<version>${spring-integration.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-ip</artifactId>
-				<version>${spring.integration.version}</version>
+				<version>${spring-integration.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-stream</artifactId>
-				<version>${spring.integration.version}</version>
+				<version>${spring-integration.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-dsl-groovy-core</artifactId>
-				<version>${spring.integration.groovydsl.version}</version>
+				<version>${spring-integration-groovydsl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-core</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-config</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-web</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-acl</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf</artifactId>
-				<version>2.0.16</version>
+				<version>${thymeleaf.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf-spring3</artifactId>
-				<version>2.0.16</version>
+				<version>${thymeleaf.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf.extras</groupId>
 				<artifactId>thymeleaf-extras-springsecurity3</artifactId>
-				<version>2.0.0</version>
-			</dependency>
-			<dependency>
-				<groupId>org.tuckey</groupId>
-				<artifactId>urlrewritefilter</artifactId>
-				<version>4.0.3</version>
+				<version>${thymeleaf-extras-springsecurity3.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
-				<version>1.12</version>
+				<version>${snakeyaml.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
