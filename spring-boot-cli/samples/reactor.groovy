@@ -14,12 +14,6 @@ class Runner implements CommandLineRunner {
 	@PostConstruct
 	void init() {
 		log.info "Registering consumer"
-		reactor.on(Selectors.$("hello"), [
-			accept: { 
-				log.info("Hello ${it.data}")
-				latch.countDown()
-			}
-		] as Consumer)
 	}
 
 	void run(String... args) {
@@ -28,9 +22,10 @@ class Runner implements CommandLineRunner {
 		latch.await()
 	}
 	
-	// @On(reactor="reactor", selector="hello")
-	void receive(Event<String> event) {
-		log.info "Hello ${event.data}"
+	@Selector(reactor="reactor", value="hello")
+	void receive(String data) {
+		log.info "Hello ${data}"
+		latch.countDown()
 	} 
 }
 
