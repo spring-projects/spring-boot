@@ -55,12 +55,12 @@ public class SampleWebSocketsApplication extends SpringBootServletInitializer {
 
 	@Bean(name = "/echo")
 	public WebSocketHandler echoWebSocketHandler() {
-		return new PerConnectionWebSocketHandler(EchoWebSocketHandler.class);
+		return new EchoWebSocketHandler(echoService());
 	}
 
 	@Bean(name = "/snake")
 	public WebSocketHandler snakeWebSocketHandler() {
-		return new SnakeWebSocketHandler();
+		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
 	}
 
 }
