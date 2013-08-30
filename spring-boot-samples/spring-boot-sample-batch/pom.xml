@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
+		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
+		<artifactId>spring-boot-samples</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
-		<relativePath>../../spring-boot-starters/spring-boot-starter-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-sample-batch</artifactId>
 	<packaging>jar</packaging>
@@ -18,20 +18,11 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
-		<!-- This dependency is just for our integration testing, your app would
-			not need it -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot</artifactId>
-			<version>${project.version}</version>
-			<classifier>tests</classifier>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>${project.groupId}</groupId>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
