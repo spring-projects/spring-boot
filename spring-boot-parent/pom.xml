@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>0.5.0.BUILD-SNAPSHOT</version>
+		<version>0.5.0.M2</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>

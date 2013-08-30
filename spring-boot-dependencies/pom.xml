@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-dependencies</artifactId>
-	<version>0.5.0.BUILD-SNAPSHOT</version>
+	<version>0.5.0.M2</version>
 	<packaging>pom</packaging>
 	<properties>
 		<aspectj.version>1.7.3</aspectj.version>
@@ -536,6 +536,16 @@
 					<name>Spring Snapshot Repository</name>
 					<url>http://repo.springsource.org/libs-snapshot-local</url>
 				</snapshotRepository>
+			</distributionManagement>
+		</profile>
+		<profile>
+			<id>milestone</id>
+			<distributionManagement>
+				<repository>
+					<id>spring-repo-milestone</id>
+					<name>Spring Milestone Repository</name>
+					<url>http://repo.springsource.org/libs-milestone-local</url>
+				</repository>
 			</distributionManagement>
 		</profile>
 	</profiles>

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>0.5.0.BUILD-SNAPSHOT</version>
+		<version>0.5.0.M2</version>
 	</parent>
 	<artifactId>spring-boot-starter-integration</artifactId>
 	<packaging>jar</packaging>
