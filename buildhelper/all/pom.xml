@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build-all</artifactId>
-	<version>0.5.0.M2</version>
+	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<prerequisites>
 		<maven>3.0.0</maven>
