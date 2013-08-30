@@ -43,7 +43,6 @@
 		<thymeleaf-layout-dialect.version>1.1.1</thymeleaf-layout-dialect.version>
 		<tomcat.version>7.0.42</tomcat.version>
 	</properties>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -436,6 +435,10 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>2.4</version>
 				</plugin>
@@ -522,36 +525,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-	<profiles>
-		<profile>
-			<id>spring-deploy</id>
-			<distributionManagement>
-				<downloadUrl>http://www.springsource.com/download/community</downloadUrl>
-				<site>
-					<id>spring-docs</id>
-					<url>scp://static.springframework.org/var/www/domains/springframework.org/static/htdocs/spring-boot/docs/${project.version}</url>
-				</site>
-				<repository>
-					<id>spring-repo-release</id>
-					<name>Spring Release Repository</name>
-					<url>http://repo.springsource.org/libs-release-local</url>
-				</repository>
-				<snapshotRepository>
-					<id>spring-repo-snapshot</id>
-					<name>Spring Snapshot Repository</name>
-					<url>http://repo.springsource.org/libs-snapshot-local</url>
-				</snapshotRepository>
-			</distributionManagement>
-		</profile>
-		<profile>
-			<id>milestone</id>
-			<distributionManagement>
-				<repository>
-					<id>spring-repo-milestone</id>
-					<name>Spring Milestone Repository</name>
-					<url>http://repo.springsource.org/libs-milestone-local</url>
-				</repository>
-			</distributionManagement>
-		</profile>
-	</profiles>
 </project>

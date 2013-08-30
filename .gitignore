@@ -17,4 +17,5 @@ _site/
 .*.md.html
 manifest.yml
 MANIFEST.MF
+settings.xml
 

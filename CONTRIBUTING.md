@@ -34,8 +34,10 @@ and tools should also work without issue.
 
 ### Building from source
 To build the source you will need to install
-[Apache Maven](http://maven.apache.org/run-maven/index.html) v3.0 or above. The project
-can be build using the standard maven command:
+[Apache Maven](http://maven.apache.org/run-maven/index.html) v3.0 or above.
+
+#### Default build
+The project can be build from the root directory using the standard maven command:
 
 	$ mvn clean install
 
@@ -46,6 +48,41 @@ If you are rebuilding often, you might also want to skip the tests until you are
 to submit a pull request:
 
 	$ mvn clean install -DskipTests
+
+#### Full Build
+Multi-module Maven builds cannot directly include maven plugins that are part of the
+reactor unless they have previously been built. Unfortunately this restriction causes
+some compilations for Spring Boot as we include a maven plugin and use it within the
+samples. The standard build works around this restriction by launching the samples via
+the `maven-invoker-plugin` so that they are not part of the reactor. This works fine
+most of the time, however, sometimes it useful to run a build that includes all modules
+(for example when using `maven-versions-plugin`. We use the full build on our CI servers
+and during the release process.
+
+Running a full build is a two phase process.
+
+1) Prepare the build
+
+Preparing the build will compile and install the `spring-boot-maven-plugin` so that it
+can be referenced during the full build. It also generates a `settings.xml` file that
+enables a `snapshot`, `milestone` or `release` profiles based on the version being
+build. To prepare the build, from the root directory use:
+
+	$ mvn -P snapshot,prepare install
+
+> **NOTE:** You may notice that preparing the build also changes the
+> `spring-boot-starter-parent` POM. This is required for our release process to work
+> correctly.
+
+2) Run the full build
+
+Once the build has been prepared, you can run a full build using the following commands:
+
+	$ cd spring-boot-full-build
+	$ mvn -s ../settings.xml -P full clean install
+
+We generate more artifacts when running the full build (such as Javadoc jars), so you
+may find the process a little slower than the standard build.
 
 ### Importing into eclipse with m2eclipse
 We recommend the [m2eclipe](http://eclipse.org/m2e/) eclipse plugin when working with
