@@ -161,6 +161,9 @@ class BeanDefinitionLoader {
 		try {
 			return load(ClassUtils.forName(resolvedSource, null));
 		}
+		catch (IllegalArgumentException ex) {
+			// swallow exception and continue
+		}
 		catch (ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
