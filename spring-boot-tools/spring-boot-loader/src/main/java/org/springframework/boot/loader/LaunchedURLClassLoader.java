@@ -40,6 +40,33 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		super(urls, parent);
 	}
 
+	/**
+	 * Attempt to load classes from the URLs before delegating to the parent loader.
+	 */
+	@Override
+	protected Class<?> loadClass(String name, boolean resolve)
+			throws ClassNotFoundException {
+		synchronized (getClassLoadingLock(name)) {
+			Class<?> loadedClass = findLoadedClass(name);
+			if (loadedClass == null) {
+				loadedClass = doLoadClass(name);
+			}
+			if (resolve) {
+				resolveClass(loadedClass);
+			}
+			return loadedClass;
+		}
+	}
+
+	private Class<?> doLoadClass(String name) throws ClassNotFoundException {
+		try {
+			return findClass(name);
+		}
+		catch (ClassNotFoundException e) {
+		}
+		return super.loadClass(name, false);
+	}
+
 	@Override
 	protected Class<?> findClass(final String name) throws ClassNotFoundException {
 		int lastDot = name.lastIndexOf('.');
