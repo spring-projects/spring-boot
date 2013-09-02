@@ -143,7 +143,7 @@ public abstract class Launcher {
 	 * @throws Exception
 	 */
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		return new LaunchedURLClassLoader(urls, getClass().getClassLoader().getParent());
+		return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
 	}
 
 	/**
