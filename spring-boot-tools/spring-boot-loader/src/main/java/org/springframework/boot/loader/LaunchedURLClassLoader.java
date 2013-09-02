@@ -31,6 +31,8 @@ import org.springframework.boot.loader.jar.RandomAccessJarFile;
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
+	private final ClassLoader rootClassLoader;
+
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
 	 * @param urls the URLs from which to load classes and resources
@@ -38,6 +40,17 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	 */
 	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
+		this.rootClassLoader = findRootClassLoader(parent);
+	}
+
+	private ClassLoader findRootClassLoader(ClassLoader classLoader) {
+		while (classLoader != null) {
+			if (classLoader.getParent() == null) {
+				return classLoader;
+			}
+			classLoader = classLoader.getParent();
+		}
+		return null;
 	}
 
 	/**
@@ -59,11 +72,24 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	}
 
 	private Class<?> doLoadClass(String name) throws ClassNotFoundException {
+
+		// 1) Try the root class loader
+		try {
+			if (this.rootClassLoader != null) {
+				return this.rootClassLoader.loadClass(name);
+			}
+		}
+		catch (Exception ex) {
+		}
+
+		// 2) Try to find locally
 		try {
 			return findClass(name);
 		}
-		catch (ClassNotFoundException e) {
+		catch (Exception ex) {
 		}
+
+		// 3) Use standard loading
 		return super.loadClass(name, false);
 	}
 
