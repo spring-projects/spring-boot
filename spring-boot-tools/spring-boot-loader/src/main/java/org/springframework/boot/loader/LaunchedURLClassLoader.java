@@ -46,7 +46,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		synchronized (getClassLoadingLock(name)) {
+		synchronized (this) {
 			Class<?> loadedClass = findLoadedClass(name);
 			if (loadedClass == null) {
 				loadedClass = doLoadClass(name);
