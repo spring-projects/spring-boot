@@ -109,7 +109,8 @@ public class ExplodedArchiveTests {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString(),
-				equalTo("jar:file:" + this.rootFolder.getPath() + File.separator + "nested.jar!/"));
+				equalTo("jar:file:" + this.rootFolder.getPath() + File.separator
+						+ "nested.jar!/"));
 	}
 
 	@Test
@@ -123,7 +124,6 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	@SuppressWarnings("resource")
 	public void getFilteredArchive() throws Exception {
 		Archive filteredArchive = this.archive
 				.getFilteredArchive(new Archive.EntryFilter() {
