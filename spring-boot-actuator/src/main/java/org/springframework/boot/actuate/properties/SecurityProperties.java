@@ -32,7 +32,12 @@ public class SecurityProperties {
 
 	private boolean requireSsl;
 
+	// Flip this when session creation is disabled by default
+	private boolean enableCsrf = false;
+
 	private Basic basic = new Basic();
+
+	private Headers headers = new Headers();
 
 	private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
@@ -42,6 +47,10 @@ public class SecurityProperties {
 	private Management management = new Management();
 
 	private User user = new User();
+
+	public Headers getHeaders() {
+		return this.headers;
+	}
 
 	public User getUser() {
 		return this.user;
@@ -75,12 +84,78 @@ public class SecurityProperties {
 		this.requireSsl = requireSsl;
 	}
 
+	public boolean isEnableCsrf() {
+		return this.enableCsrf;
+	}
+
+	public void setEnableCsrf(boolean enableCsrf) {
+		this.enableCsrf = enableCsrf;
+	}
+
 	public void setIgnored(String... ignored) {
 		this.ignored = ignored;
 	}
 
 	public String[] getIgnored() {
 		return this.ignored;
+	}
+
+	public static class Headers {
+
+		public static enum HSTS {
+			none, domain, all
+		}
+
+		private boolean xss;
+
+		private boolean cache;
+
+		private boolean frame;
+
+		private boolean contentType;
+
+		private HSTS hsts = HSTS.all;
+
+		public boolean isXss() {
+			return this.xss;
+		}
+
+		public void setXss(boolean xss) {
+			this.xss = xss;
+		}
+
+		public boolean isCache() {
+			return this.cache;
+		}
+
+		public void setCache(boolean cache) {
+			this.cache = cache;
+		}
+
+		public boolean isFrame() {
+			return this.frame;
+		}
+
+		public void setFrame(boolean frame) {
+			this.frame = frame;
+		}
+
+		public boolean isContentType() {
+			return this.contentType;
+		}
+
+		public void setContentType(boolean contentType) {
+			this.contentType = contentType;
+		}
+
+		public HSTS getHsts() {
+			return this.hsts;
+		}
+
+		public void setHsts(HSTS hsts) {
+			this.hsts = hsts;
+		}
+
 	}
 
 	public static class Basic {
