@@ -332,6 +332,7 @@
 								<goals>
 									<goal>jar</goal>
 								</goals>
+								<inherited>true</inherited>
 							</execution>
 						</executions>
 					</plugin>
