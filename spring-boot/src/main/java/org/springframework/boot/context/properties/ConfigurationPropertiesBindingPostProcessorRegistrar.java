@@ -32,7 +32,8 @@ import org.springframework.core.type.AnnotationMetadata;
 public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
 		ImportBeanDefinitionRegistrar {
 
-	public static final String BINDER_BEAN_NAME = "propertySourcesBinder";
+	public static final String BINDER_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
+			.getName();
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,

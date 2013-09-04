@@ -35,6 +35,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
@@ -62,7 +63,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
-		InitializingBean, DisposableBean {
+		InitializingBean, DisposableBean, Ordered {
 
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
@@ -88,6 +89,23 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private Environment environment = new StandardEnvironment();
 
 	private ApplicationContext applicationContext;
+
+	private int order = Ordered.HIGHEST_PRECEDENCE;
+
+	/**
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	/**
+	 * @return the order
+	 */
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
 
 	/**
 	 * @param propertySources
