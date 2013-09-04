@@ -33,6 +33,7 @@ import org.springframework.boot.actuate.properties.SecurityProperties.User;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -107,6 +108,7 @@ public class SecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ ApplicationWebSecurityConfigurerAdapter.class })
+	@ConditionalOnExpression("${security.basic.enabled:true}")
 	public WebSecurityConfigurerAdapter applicationWebSecurityConfigurerAdapter() {
 		return new ApplicationWebSecurityConfigurerAdapter();
 	}

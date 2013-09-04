@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.FilterChainProxy;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -49,6 +51,39 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManager.class));
+		// 4 for static resources, one for management endpoints and one for the rest
+		assertEquals(6, this.context.getBean(FilterChainProxy.class).getFilterChains()
+				.size());
+	}
+
+	@Test
+	public void testDisableIgnoredStaticApplicationPaths() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				EndpointAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "security.ignored:");
+		this.context.refresh();
+		// Just the application and\ management endpoints now
+		assertEquals(2, this.context.getBean(FilterChainProxy.class).getFilterChains()
+				.size());
+	}
+
+	@Test
+	public void testDisableBasicAuthOnApplicationPaths() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityAutoConfiguration.class,
+				EndpointAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "security.basic.enabled:false");
+		this.context.refresh();
+		// Just the management endpoints now
+		assertEquals(1, this.context.getBean(FilterChainProxy.class).getFilterChains()
+				.size());
 	}
 
 	@Test
