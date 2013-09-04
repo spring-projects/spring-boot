@@ -23,10 +23,12 @@ import javax.sql.DataSource;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -48,6 +50,17 @@ public class TomcatDataSourceConfigurationTests {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
+		assertNotNull(this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class));
+	}
+
+	@Test
+	public void testDataSourcePropertiesOverridden() throws Exception {
+		this.context.register(TomcatDataSourceConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
+		this.context.refresh();
+		assertEquals("jdbc:foo//bar/spam",
+				this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class)
+						.getUrl());
 	}
 
 	@Test(expected = BeanCreationException.class)
