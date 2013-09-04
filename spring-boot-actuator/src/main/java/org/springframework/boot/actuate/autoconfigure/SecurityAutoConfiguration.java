@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.actuate.properties.SecurityProperties;
+import org.springframework.boot.actuate.properties.SecurityProperties.Headers;
 import org.springframework.boot.actuate.properties.SecurityProperties.User;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -52,8 +53,11 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.header.writers.HstsHeaderWriter;
+import org.springframework.security.web.util.AnyRequestMatcher;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or
@@ -149,10 +153,14 @@ public class SecurityAutoConfiguration {
 						.and().httpBasic() //
 						.and().anonymous().disable();
 			}
-			// Remove this when session creation is disabled by default
-			http.csrf().disable();
+			if (!this.security.isEnableCsrf()) {
+				http.csrf().disable();
+			}
 			// No cookies for application endpoints by default
 			http.sessionManagement().sessionCreationPolicy(this.security.getSessions());
+
+			SecurityAutoConfiguration.configureHeaders(http.headers(),
+					this.security.getHeaders());
 
 		}
 
@@ -234,6 +242,9 @@ public class SecurityAutoConfiguration {
 			http.sessionManagement().sessionCreationPolicy(
 					this.security.getManagement().getSessions());
 
+			SecurityAutoConfiguration.configureHeaders(http.headers(),
+					this.security.getHeaders());
+
 		}
 
 		@Override
@@ -297,6 +308,28 @@ public class SecurityAutoConfiguration {
 
 		}
 
+	}
+
+	private static void configureHeaders(HeadersConfigurer<?> configurer,
+			SecurityProperties.Headers headers) throws Exception {
+		if (headers.getHsts() != Headers.HSTS.none) {
+			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.all;
+			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubdomains);
+			writer.setRequestMatcher(new AnyRequestMatcher());
+			configurer.addHeaderWriter(writer);
+		}
+		if (headers.isContentType()) {
+			configurer.contentTypeOptions();
+		}
+		if (headers.isXss()) {
+			configurer.xssProtection();
+		}
+		if (headers.isCache()) {
+			configurer.cacheControl();
+		}
+		if (headers.isFrame()) {
+			configurer.frameOptions();
+		}
 	}
 
 }
