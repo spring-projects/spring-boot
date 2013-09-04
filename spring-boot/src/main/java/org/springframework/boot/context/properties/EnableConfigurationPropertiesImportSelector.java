@@ -46,7 +46,8 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 	public String[] selectImports(AnnotationMetadata metadata) {
 		MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(
 				EnableConfigurationProperties.class.getName(), false);
-		Object[] type = (Object[]) attributes.getFirst("value");
+		Object[] type = attributes == null ? null : (Object[]) attributes
+				.getFirst("value");
 		if (type == null || type.length == 0) {
 			return new String[] { ConfigurationPropertiesBindingPostProcessorRegistrar.class
 					.getName() };

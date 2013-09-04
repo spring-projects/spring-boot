@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
@@ -26,7 +27,8 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(path = "spring.datasource")
+@ConfigurationProperties(name = "spring.datasource")
+@EnableConfigurationProperties
 public abstract class AbstractDataSourceConfiguration implements BeanClassLoaderAware {
 
 	private String driverClassName;
