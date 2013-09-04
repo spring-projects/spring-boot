@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests to exercise the samples.
- * 
+ *
  * @author Dave Syer
  */
 public class SampleIntegrationTests {
@@ -63,7 +63,7 @@ public class SampleIntegrationTests {
 						return command;
 					}
 				});
-		this.command = future.get(4, TimeUnit.MINUTES);
+		this.command = future.get(6, TimeUnit.MINUTES);
 	}
 
 	@Before
