@@ -187,7 +187,7 @@ public class SecurityAutoConfiguration {
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			ignoring.antMatchers(this.security.getIgnored());
+			ignoring.antMatchers(this.security.getIgnoredPaths());
 			if (this.errorController != null) {
 				ignoring.antMatchers(this.errorController.getErrorPath());
 			}
