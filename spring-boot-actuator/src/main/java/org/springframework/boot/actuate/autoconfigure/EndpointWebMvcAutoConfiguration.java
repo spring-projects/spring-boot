@@ -16,7 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -43,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -98,6 +106,20 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				createChildManagementContext();
 			}
 		}
+	}
+
+	@Bean
+	public Filter applicationContextIdFilter(ApplicationContext context) {
+		final String id = context.getId();
+		return new OncePerRequestFilter() {
+			@Override
+			protected void doFilterInternal(HttpServletRequest request,
+					HttpServletResponse response, FilterChain filterChain)
+					throws ServletException, IOException {
+				response.addHeader("X-Application-Context", id);
+				filterChain.doFilter(request, response);
+			}
+		};
 	}
 
 	private void createChildManagementContext() {
