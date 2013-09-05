@@ -40,8 +40,8 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.M1-bin.zip](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.zip)
-* [spring-boot-cli-0.5.0.M1-bin.tar.gz](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M1/spring-boot-cli-0.5.0.M1-bin.tar.gz)
+* [spring-boot-cli-0.5.0.M2-bin.zip](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M2/spring-boot-cli-0.5.0.M2-bin.zip)
+* [spring-boot-cli-0.5.0.M2-bin.tar.gz](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M2/spring-boot-cli-0.5.0.M2-bin.tar.gz)
 
 Cutting edge [snapshot distributions](http://repo.springsource.org/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
@@ -62,7 +62,7 @@ itself and the Spring Boot CLI. Get `gvm` from
 
     $ gvm install springboot
     $ spring --version
-    Spring Boot v0.5.0.M1
+    Spring Boot v0.5.0.M2
 
 ### OSX Homebrew installation
 If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to install
@@ -131,7 +131,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>0.5.0.M1</version>
+		<version>0.5.0.M2</version>
 	</parent>
 
 	<!-- Add typical dependencies for a web application -->
@@ -153,7 +153,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	</build>
 
 	<!-- Allow access to Spring milestones and snapshots -->
-	<!-- (you don't need this if you are using anything after 0.5.0.M1) -->
+	<!-- (you don't need this if you are using anything after 0.5.0.M2) -->
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
