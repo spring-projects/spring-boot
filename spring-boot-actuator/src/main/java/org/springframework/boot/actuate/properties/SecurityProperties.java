@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.properties;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -41,8 +43,12 @@ public class SecurityProperties {
 
 	private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
-	private String[] ignored = new String[] { "/css/**", "/js/**", "/images/**",
-			"/**/favicon.ico" };
+	private List<String> emptyIgnored = new ArrayList<String>();
+
+	private List<String> ignored = this.emptyIgnored;
+
+	private static String[] DEFAULT_IGNORED = new String[] { "/css/**", "/js/**",
+			"/images/**", "/**/favicon.ico" };
 
 	private Management management = new Management();
 
@@ -92,12 +98,19 @@ public class SecurityProperties {
 		this.enableCsrf = enableCsrf;
 	}
 
-	public void setIgnored(String... ignored) {
-		this.ignored = ignored;
+	public void setIgnored(List<String> ignored) {
+		this.ignored = new ArrayList<String>(ignored);
 	}
 
-	public String[] getIgnored() {
+	public List<String> getIgnored() {
 		return this.ignored;
+	}
+
+	public String[] getIgnoredPaths() {
+		if (this.ignored == this.emptyIgnored) {
+			return DEFAULT_IGNORED;
+		}
+		return this.ignored.toArray(new String[this.ignored.size()]);
 	}
 
 	public static class Headers {

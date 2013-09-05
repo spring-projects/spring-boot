@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.properties;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
@@ -41,7 +43,7 @@ public class SecurityPropertiesTests {
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
 				"security.ignored", "/css/**")));
 		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(1, security.getIgnored().length);
+		assertEquals(1, security.getIgnored().size());
 	}
 
 	@Test
@@ -52,7 +54,20 @@ public class SecurityPropertiesTests {
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
 				"security.ignored", "/css/**,/images/**")));
 		assertFalse(binder.getBindingResult().hasErrors());
-		assertEquals(2, security.getIgnored().length);
+		assertEquals(2, security.getIgnored().size());
+	}
+
+	@Test
+	public void testBindingIgnoredMultiValuedList() {
+		SecurityProperties security = new SecurityProperties();
+		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+		binder.setConversionService(new DefaultConversionService());
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("security.ignored[0]", "/css/**");
+		map.put("security.ignored[1]", "images/**");
+		binder.bind(new MutablePropertyValues(map));
+		assertFalse(binder.getBindingResult().hasErrors());
+		assertEquals(2, security.getIgnored().size());
 	}
 
 	@Test
