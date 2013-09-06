@@ -47,6 +47,28 @@ public class SecurityPropertiesTests {
 	}
 
 	@Test
+	public void testBindingIgnoredEmpty() {
+		SecurityProperties security = new SecurityProperties();
+		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+		binder.setConversionService(new DefaultConversionService());
+		binder.bind(new MutablePropertyValues(Collections.singletonMap(
+				"security.ignored", "")));
+		assertFalse(binder.getBindingResult().hasErrors());
+		assertEquals(0, security.getIgnored().size());
+	}
+
+	@Test
+	public void testBindingIgnoredDisable() {
+		SecurityProperties security = new SecurityProperties();
+		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
+		binder.setConversionService(new DefaultConversionService());
+		binder.bind(new MutablePropertyValues(Collections.singletonMap(
+				"security.ignored", "none")));
+		assertFalse(binder.getBindingResult().hasErrors());
+		assertEquals(1, security.getIgnored().size());
+	}
+
+	@Test
 	public void testBindingIgnoredMultiValued() {
 		SecurityProperties security = new SecurityProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
@@ -64,10 +86,11 @@ public class SecurityPropertiesTests {
 		binder.setConversionService(new DefaultConversionService());
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("security.ignored[0]", "/css/**");
-		map.put("security.ignored[1]", "images/**");
+		map.put("security.ignored[1]", "/foo/**");
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 		assertEquals(2, security.getIgnored().size());
+		assertTrue(security.getIgnored().contains("/foo/**"));
 	}
 
 	@Test

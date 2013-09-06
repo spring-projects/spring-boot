@@ -64,7 +64,7 @@ public class SecurityAutoConfigurationTests {
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestUtils.addEnviroment(this.context, "security.ignored:");
+		TestUtils.addEnviroment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application and\ management endpoints now
 		assertEquals(2, this.context.getBean(FilterChainProxy.class).getFilterChains()
