@@ -23,7 +23,7 @@ import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
- * {@link CompilerAutoConfiguration} for the Recator.
+ * {@link CompilerAutoConfiguration} for the Reactor.
  * 
  * @author Dave Syer
  */
