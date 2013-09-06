@@ -4,7 +4,7 @@ install: mvn install -U -DskipTests=true -Pspring-snapshot
 before_script:
    - "gem install travis-artifacts"
    - "mvn -version"
-script: mvn install -nsu -Dmaven.test.redirectTestOutputToFile=true -Pspring-snapshot
+script: mvn install -nsu -Dmaven.test.redirectTestOutputToFile=true
 
 after_failure:
   - "for f in `find . -name build.log`; do travis-artifacts upload --path $f; done"
