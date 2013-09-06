@@ -128,6 +128,9 @@ public class SecurityAutoConfiguration {
 	private static class ApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
+		private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
+				"/images/**", "/**/favicon.ico");
+
 		@Autowired
 		private SecurityProperties security;
 
@@ -187,10 +190,17 @@ public class SecurityAutoConfiguration {
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			ignoring.antMatchers(this.security.getIgnoredPaths());
-			if (this.errorController != null) {
-				ignoring.antMatchers(this.errorController.getErrorPath());
+			List<String> ignored = new ArrayList<String>(this.security.getIgnored());
+			if (ignored.isEmpty()) {
+				ignored.addAll(DEFAULT_IGNORED);
 			}
+			else if (ignored.contains("none")) {
+				ignored.remove("none");
+			}
+			if (this.errorController != null) {
+				ignored.add(this.errorController.getErrorPath());
+			}
+			ignoring.antMatchers(ignored.toArray(new String[0]));
 		}
 
 		@Override
