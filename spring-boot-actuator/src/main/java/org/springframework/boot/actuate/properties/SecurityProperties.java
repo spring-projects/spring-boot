@@ -195,6 +195,8 @@ public class SecurityProperties {
 
 	public static class Management {
 
+		private boolean enabled = true;
+
 		private String role = "ADMIN";
 
 		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
@@ -213,6 +215,14 @@ public class SecurityProperties {
 
 		public String getRole() {
 			return this.role;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

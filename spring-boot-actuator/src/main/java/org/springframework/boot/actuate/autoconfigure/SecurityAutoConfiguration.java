@@ -234,26 +234,28 @@ public class SecurityAutoConfiguration {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 
-			if (this.security.isRequireSsl()) {
-				http.requiresChannel().anyRequest().requiresSecure();
-			}
-
-			String[] paths = getEndpointPaths(true);
-			if (this.security.getBasic().isEnabled() && paths.length > 0) {
+			String[] paths = getEndpointPaths(true); // secure endpoints
+			if (paths.length > 0 && this.security.getManagement().isEnabled()) {
+				// Always protect them if present
+				if (this.security.isRequireSsl()) {
+					http.requiresChannel().anyRequest().requiresSecure();
+				}
 				http.exceptionHandling().authenticationEntryPoint(entryPoint());
 				http.requestMatchers().antMatchers(paths);
 				http.authorizeRequests().anyRequest()
 						.hasRole(this.security.getManagement().getRole()) //
 						.and().httpBasic() //
 						.and().anonymous().disable();
-			}
-			// No cookies for management endpoints by default
-			http.csrf().disable();
-			http.sessionManagement().sessionCreationPolicy(
-					this.security.getManagement().getSessions());
 
-			SecurityAutoConfiguration.configureHeaders(http.headers(),
-					this.security.getHeaders());
+				// No cookies for management endpoints by default
+				http.csrf().disable();
+				http.sessionManagement().sessionCreationPolicy(
+						this.security.getManagement().getSessions());
+
+				SecurityAutoConfiguration.configureHeaders(http.headers(),
+						this.security.getHeaders());
+
+			}
 
 		}
 
