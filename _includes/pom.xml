@@ -1,0 +1,11 @@
+<parent>
+    <groupId>{@= groupId @}</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>{@= version @}</version>
+</parent>
+<dependencies>
+    <dependency>
+        <groupId>{@= groupId @}</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+</dependencies>
