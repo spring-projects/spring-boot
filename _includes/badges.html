@@ -1,0 +1,16 @@
+{% if page.badges.twitter %}
+<div class="project-sub-link">
+    <a href="https://twitter.com/{{ page.badges.twitter }}">
+        <div class="spring-icon project-badges twitter" alt="Twitter" title="Twitter">
+        </div>
+    </a>
+</div>
+{% endif %}
+{% for badge in page.badges.custom %}
+<div class="project-sub-link">
+    <a href="{{ badge.url }}">
+        <div class="spring-icon project-badges {{ badge.icon }}" alt="{{ badge.name }}" title="{{ badge.name }}">
+        </div>
+    </a>
+</div>
+{% endfor %}

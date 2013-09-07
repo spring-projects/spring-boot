@@ -1,0 +1,29 @@
+{% capture billboard_quickstart_button %}
+<a class="btn btn-black uppercase project-quickstart-btn" href="#quick-start">Quick Start</a>
+{% endcapture %}
+{% capture content %}
+{% include billboard.html %}
+<div class="github-fork-ribbon--container">
+<a href="{{ site.github_repo_url }}"><img style="position: absolute; top: 0; right: 0; border: 0;" src="{{site.baseurl}}/img/forkme.png" alt="Fork me on GitHub"></a>
+</div>
+<div class="project-body--wrapper">
+    <div class="project-body--container">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span8">
+                    <div class="project-body--section">
+                        {{ main_content | markdownify }}
+                    </div>
+                </div>
+                <div class="span4">
+                    {% include project_sidebar.html %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endcapture %}
+{% capture end_content %}
+{% include widget_templates.html %}
+{% endcapture %}
+{% include page.html %}

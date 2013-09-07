@@ -1,0 +1,29 @@
+---
+---
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+{% capture head_links %}
+<link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/documentation.css" />
+{% endcapture %}
+
+{% capture content %}
+<div class="project-body--wrapper" id="quick-start">
+    <div class="project-body--container">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="project-body--section">
+{{ content }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endcapture %}
+
+
+
+{% include page.html %}
+</html>

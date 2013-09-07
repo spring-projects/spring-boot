@@ -1,0 +1,31 @@
+.project-body--container {
+    margin: 40px auto;
+}
+
+.body--container h1 {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.body--container h1 a {
+    display: none;
+}
+
+.body--container h1,h2 {
+    border-bottom: 1px solid #CCCCCC;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.body--container h2,h3,h4 {
+    padding-top: 24px;
+}
+
+.body--container p {
+    margin: 15px 0;
+}
+
+.project-body--container .copy-button  {
+    position: absolute;
+    margin-left: 963px;
+}

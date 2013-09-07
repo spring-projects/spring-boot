@@ -1,0 +1,244 @@
+.guides-section--container {
+    border: 1px solid #34302d;
+    padding: 40px;
+    min-height: 200px;
+    margin-top: 50px;
+}
+
+.guides-section--container:first-child {
+    margin-top: 0;
+}
+
+.guides-section--container .section-title--container {
+    background-color: #34302d;
+    color: #eeeeee;
+    padding: 40px 0;
+    margin: -40px 40px 40px -40px;
+    float: left;
+    width: 324px;
+    text-align: center;
+}
+
+.guides-section--container .section-title--container .section-title--icon
+    {
+    height: 100px;
+    width: 72px;
+    display: inline-block;
+    background-image: url("../img/iconsprite.png");
+}
+
+.guides-section--container .section-title--container .section-title--icon.gs-guides--icon
+    {
+    background-position: -1px -737px;
+}
+
+.guides-section--container .section-title--container .section-title--title
+    {
+    text-transform: uppercase;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    line-height: 18px;
+    padding: 30px 20px 25px;
+}
+
+.guides-section--container .section-title--container .section-title--intro
+    {
+    padding: 0 40px;
+    font-size: 14px;
+    line-height: 21px;
+}
+
+.guides-section--container .guides--wrapper {
+    margin-right: -40px;
+}
+
+.guides-section--container .guide--container {
+    display: inline-block;
+    width: 284px;
+    margin: 0 40px 20px 0;
+    vertical-align: top;
+}
+
+.guides-section--container .guide--container .guide--title {
+    font-size: 16px;
+    color: #5fa134;
+    line-height: 22px;
+}
+
+.guides-section--container .guide--container .guide--subtitle {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 5px;
+}
+
+.content--container h1 {
+    margin-bottom: 30px;
+}
+
+.content--container a {
+    color: #5fa134;
+}
+
+.content--container p,.content--container pre {
+    margin-bottom: 18px;
+    border-radius: 0;
+}
+
+.content--container h2 {
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 700;
+    margin: 30px 0 15px;
+}
+
+.content--container h3,.content--container h4 {
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    line-height: 26px;
+    font-weight: 700;
+    margin: 30px 0 15px;
+}
+
+.content--container p code {
+    color: #305CB5;
+    font-size: 14px;
+    padding: 2px 6px;
+}
+
+.content--container ul {
+    margin-bottom: 30px;
+}
+
+.content--container ul li {
+    padding: 5px 0;
+}
+
+.content--container ul li code {
+    color: #305CB5;
+    font-size: 14px;
+    padding: 2px 6px;
+}
+
+.content--container blockquote {
+    padding: 0 0 0 10px;
+    border-left: 5px solid #DDD;
+}
+
+.content--container pre {
+    word-break: normal;
+    word-wrap: normal;
+    white-space: pre;
+    overflow-x: scroll;
+    width: 96.9%%;
+}
+
+.content-right-pane--container h2 {
+    margin: 15px 6.2%;
+}
+
+.content-right-pane--container p {
+    font-size: 14px;
+    line-height: 21px;
+    margin: 15px 6.2%;
+}
+
+.content-right-pane--container h3 {
+    border-top: 1px solid #ddd;
+    padding: 6px 6.2%;
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+}
+
+.content-right-pane--container ul {
+    margin: 0;
+}
+
+.content-right-pane--container ul li {
+    line-height: 21px;
+}
+
+.content-right-pane--container ul li:last-child {
+    padding-bottom: 28px;
+}
+
+.content-right-pane--container ul li:first-child {
+    padding-bottom: 12px;
+}
+
+.content-right-pane--container .btn-group {
+    margin: 0 6.2%;
+    display: block;
+}
+
+.content-right-pane--container .btn-group .btn {
+    font-family: "Varela Round", sans-serif;
+    padding: 18px 6.4%;
+    font-size: 16px;
+    line-height: 16px;
+    border: 1px solid #ddd;
+    box-shadow: none;
+}
+
+.content-right-pane--container .btn-group .btn.active {
+    background: #fff;
+    box-shadow: none;
+}
+
+.content-right-pane--container .btn-group .btn:active {
+    box-shadow: inset 0 1px 3px #c8c8c8;
+}
+
+.content-right-pane--container .clone-url {
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    margin: 15px 6.2%;
+}
+
+.content-right-pane--container .clone-url input {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 14px 0 14px 14px;
+}
+
+.content-right-pane--container .clone-url input:focus {
+    outline: none;
+}
+
+.content-right-pane--container .clone-url button {
+    padding: 24px;
+    margin: 0;
+    float: right;
+    background-position: 7px -62px;
+}
+
+.content-right-pane--container .github_download {
+    display: block;
+    text-align: center;
+    margin: 15px 6.2%;
+}
+
+.copy-button {
+    background-color: #cccccc;
+    margin: 1px 1px 10px 0;
+    padding: 20px;
+    background-image: url("../img/iconsprite.png");
+    background-repeat: no-repeat;
+    background-position: 2px -66px;
+    width: 20px;
+    height: 22px;
+    border: none;
+    background-color: #34302d;
+}
+
+a.ci-status {
+    float: right;
+    margin-top: -27px;
+}
+
+.gs-guide-import {
+    display: none;
+}

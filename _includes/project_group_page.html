@@ -1,0 +1,11 @@
+{% capture content %}
+{% include billboard.html %}
+<div class="project-body--wrapper">
+    <div class="project-body--container">
+        <div class="projects--wrapper project-aggregator">
+{{ main_content | markdownify }}
+        </div>
+    </div>
+</div>
+{% endcapture %}
+{% include page.html %}

@@ -1,0 +1,8 @@
+#*
+.#*
+*~
+_site
+.idea
+*.sw?
+.project
+sample-pages

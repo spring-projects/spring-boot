@@ -1,0 +1,611 @@
+.projects--wrapper {
+    margin-left: -8px;
+}
+
+.projects--wrapper .project--container {
+    border: 1px solid #34302d;
+    display: inline-block;
+    width: 327px;
+    height: 337px;
+    margin: 0 6px 20px 6px;
+    vertical-align: top;
+    text-align: center;
+}
+
+.projects--wrapper .project--container .project-logo--container {
+    margin-bottom: 25px;
+    height: 137px;
+    vertical-align: middle;
+}
+
+.projects--wrapper .project--container .project-logo--container .project--logo
+    {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.projects--wrapper .project--container .project--title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.projects--wrapper .project--container .project--description {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.projects--wrapper .project--container .project-links--container {
+    position: absolute;
+    background-color: rgba(109, 179, 63, 0.95);
+    padding: 13px 0;
+    width: 326px;
+    margin: 127px 0 0 -20px;
+    height: 58px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    -webkit-transition: opacity 0.15s;
+    -moz-transition: opacity 0.15s;
+    -o-transition: opacity 0.15s;
+    -ms-transition: opacity 0.15s;
+}
+
+.projects--wrapper .project--container .project-links--container .project-link
+    {
+    display: inline-block;
+    margin: 0 15px;
+}
+
+.projects--wrapper .project--container .project-links--container .project-link [class^=icon-]
+    {
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+    color: rgba(241, 241, 241, 0.75);
+}
+
+.projects--wrapper .project--container .project-links--container .project-link p
+    {
+    margin: 6px 0;
+    color: rgba(241, 241, 241, 0.75);
+    font-size: 14px;
+    line-height: 14px;
+}
+
+.projects--wrapper .project--container .project-links--container .project-link:hover
+    {
+    text-decoration: none;
+}
+
+.projects--wrapper .project--container .project-links--container .project-link:hover [class^=icon-]
+    {
+    color: white;
+}
+
+.projects--wrapper .project--container:hover .project-links--container {
+    opacity: 1;
+}
+
+.projects--wrapper .project--container.parent-project .child-project-count--wrapper
+    {
+    float: right;
+}
+
+.projects--wrapper .project--container.parent-project .child-project-count--wrapper .child-project-count--number
+    {
+    position: relative;
+    z-index: 101;
+    color: #f1f1f1;
+    margin: -22px -9px 0 9px;
+}
+
+.projects--wrapper .project--container.parent-project .child-project-count--wrapper .child-project-count--background
+    {
+    position: absolute;
+    margin: -54px 0 0 -5px;
+    z-index: 100;
+    width: 0;
+    height: 0;
+    border-top: 40px solid transparent;
+    border-bottom: 40px solid transparent;
+    border-left: 40px solid #6db33f;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+}
+
+.projects--wrapper.project-aggregator>p {
+    display: inline-block;
+}
+
+.projects--wrapper.project-aggregator .project--container {
+    transition: all 0.20s;
+    -webkit-transition: all 0.20s;
+    -moz-transition: all 0.20s;
+    -ms-transition: all 0.20s;
+    -o-transition: all 0.20s;
+    height: auto;
+}
+
+.projects--wrapper.project-aggregator .project--container:hover {
+    text-decoration: none;
+    box-shadow: 0 0 3px #6db33f;
+    border-color: #6db33f;
+}
+
+.projects--wrapper.project-aggregator .project--container:active {
+    box-shadow: none;
+}
+
+.projects--wrapper.project-aggregator .project--container a {
+    padding: 30px 20px;
+    height: 160px;
+    width: 288px;
+    display: inline-block;
+    color: #34302D;
+    text-decoration: none;
+}
+
+.projects--wrapper.project-aggregator .project--container .project-links--container
+    {
+    margin-top: 42px;
+}
+
+.project-header--wrapper {
+    background-color: #666;
+    border-bottom: 1px solid #34302D;
+}
+
+.project-header--wrapper .content--title a {
+    color: #f1f1f1;
+}
+
+.project-header--wrapper .content--title p {
+    color: #f1f1f1;
+    font-size: 12px;
+    line-height: 12px;
+}
+
+.project-header--wrapper .project--title {
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    line-height: 24px;
+    margin-bottom: 20px;
+    color: #ebf1e7;
+}
+
+.project-header--wrapper .project--links--container {
+    float: right;
+    margin-top: -10px;
+}
+
+.project-header--wrapper .project--links--container .project-link {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.project-header--wrapper .project--links--container .project-link [class^=icon-]
+    {
+    font-size: 37px;
+    width: 34px;
+    height: 34px;
+    color: #d4d4d4;
+}
+
+.project-header--wrapper .project--links--container .project-link:last-child
+    {
+    margin-right: 20px;
+}
+
+.project-header--wrapper .project--links--container .project-link:hover
+    {
+    text-decoration: none;
+}
+
+.project-header--wrapper .project--links--container .project-link:hover [class^=icon-]
+    {
+    color: #6db33f;
+}
+
+.project-header--wrapper .project--links--container .project-link div.icon
+    {
+    margin-top: 3px;
+}
+
+.project-header--wrapper div.project--description {
+    color: #f1f1f1;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.project-header--wrapper div.project--description p {
+    color: #f1f1f1;
+}
+
+.project-header--wrapper .project--description a {
+    color: #5fa134;
+}
+
+.project-header--wrapper .project-quickstart-btn {
+    margin-top: 30px;
+}
+
+.project-header--wrapper .project-download-widget-btn {
+    margin-top: 40px;
+}
+
+.project-header--wrapper .billboard-bg {
+    height: auto;
+    border-bottom: none;
+}
+
+.project-header--wrapper .billboard--icon {
+    float: right;
+}
+
+.billboard--area {
+	padding-right: 25px;
+	padding-top: 9px;
+}
+
+
+.project-icon {
+    background-image: url("../img/project-icon-large.png");
+    background-position: left top;
+    background-repeat: no-repeat;
+    width: 370px;
+    height: 370px;
+    position: absolute;
+    top: 20px;
+    left: 677px;
+    opacity: 0.15;
+}
+
+.project-body--wrapper {
+    min-width: 1100px;
+}
+
+.project-body--container {
+    margin: 100px auto;
+    width: 1024px;
+}
+
+.project-body--container .project-body--section#download-widget {
+    padding-top: 15px;
+}
+
+.project-body--container .project-body--section {
+    margin-bottom: 30px;
+    padding-right: 20px;
+}
+
+.project-body--container .project-body--section p {
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 20px;
+}
+
+.project-body--container .project-body--section .download-widget--container p
+    {
+    margin-bottom: 0;
+}
+
+.project-body--container .project-body--section li {
+    padding: 5px 0;
+}
+
+.project-body--container .project-body--section .underlined-title {
+    border-bottom: 1px solid white;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.project-body--container .project-body--section h3 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+}
+
+.project-body--container .project-body--section pre {
+    border-radius: 0;
+}
+
+.download-widget--container {
+    border: 1px solid #34302d;
+    margin-top: 15px;
+}
+
+.download-widget--container .download-widget--title {
+    font-family: "Montserrat", sans-serif;
+    color: #f1f1f1;
+    background-color: #34302d;
+    font-size: 16px;
+    line-height: 16px;
+    padding: 17px 0;
+    width: 211px;
+    text-align: center;
+    display: inline-block;
+}
+
+.download-widget--container .btn-group.bootstrap-select.selector {
+    margin: 0 0 0 15px;
+}
+
+.download-widget--container .btn-group.bootstrap-select.selector .filter-option
+    {
+    padding: 7px 0 7px 19px;
+}
+
+.download-widget--container p {
+    margin-bottom: 0;
+}
+
+.download-widget--container .download-widget--dropdown {
+    display: inline-block;
+    width: 34.6%;
+    margin-left: 16px;
+}
+
+.download-widget--container .download-widget--dropdown .item-dropdown--title
+    {
+    padding: 9px 0 7px 20px;
+    border: 1px solid #34302d;
+}
+
+.download-widget--container .download-widget--dropdown .item-dropdown--title .icon
+    {
+    margin: -3px 0 0 6px;
+    vertical-align: middle;
+}
+
+.download-widget--container .download-widget--dropdown .item-dropdown--icon
+    {
+    padding: 9px;
+    background-color: #34302d;
+}
+
+.download-widget--container .download-widget--dropdown .project-version--dropdown
+    {
+    width: 100%;
+    padding: 0;
+}
+
+.download-widget--container .download-widget--dropdown .project-version--dropdown .project-version
+    {
+    color: #f1f1f1;
+    padding: 8px 20px;
+    border-top: 1px solid #4a4440;
+    cursor: pointer;
+}
+
+.download-widget--container .download-widget--dropdown .project-version--dropdown .project-version .icon
+    {
+    margin: -3px 0 0 6px;
+    vertical-align: middle;
+}
+
+.download-widget--container .download-widget--dropdown .project-version--dropdown .project-version.active
+    {
+    background-color: black;
+    border-color: transparent;
+}
+
+.download-widget--container .download-widget--dropdown .project-version--dropdown .project-version.active:hover
+    {
+    background-color: black;
+}
+
+.download-widget--container .download-widget--dropdown .project-version--dropdown .project-version:first-child
+    {
+    border: none;
+}
+
+.download-widget--container .download-widget--dropdown .project-version--dropdown .project-version:hover
+    {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.download-widget--container .download-widget--dropdown.js-open .item-dropdown--title
+    {
+    border: 1px solid #6db33f;
+}
+
+.download-widget--container .download-widget--dropdown:hover .item-dropdown--icon
+    {
+    color: white;
+}
+
+.download-widget--container .download-widget--body {
+    padding: 20px;
+}
+
+.download-widget--container .download-widget--body .highlight {
+    margin-top: 20px;
+}
+
+.download-widget--container .download-widget--body .highlight pre {
+    margin: 0;
+}
+
+.project-documentation--container {
+    border-color: #34302d;
+}
+
+.project-documentation--container .item-dropdown--title {
+    background-color: transparent;
+    border-bottom: 1px solid #34302d;
+    padding: 20px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    line-height: 14px;
+}
+
+.project-documentation--container .item--dropdown {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+}
+
+.project-documentation--container .item--dropdown .item--body-title {
+    padding-top: 15px;
+    color: #34302d;
+    margin: 0 20px;
+    border-color: #d7d5d3;
+}
+
+.project-documentation--container .item--dropdown .item--body--version {
+    margin: 0 20px;
+    border-color: #d7d5d3;
+}
+
+.project-documentation--container .item--dropdown .item--body--version p
+    {
+    color: #34302d;
+    display: inline-block;
+}
+
+.project-documentation--container .item--dropdown .item--body--version .icon
+    {
+    vertical-align: top;
+    margin: 2px 0 0 6px;
+}
+
+.project-documentation--container .item--dropdown .item--body--version .icon.icon-pre-release
+    {
+    background-color: #34302d;
+    border-radius: 2px;
+}
+
+.project-documentation--container .item--dropdown .item--body--version:last-child
+    {
+    margin-bottom: 20px;
+}
+
+.project-sub-link--wrapper {
+    padding: 15px;
+}
+
+.project-sub-link--wrapper .project-sub-link {
+    min-width: 32px;
+    height: 32px;
+    display: inline-block;
+    margin-right: 2.65%;
+    vertical-align: middle;
+}
+
+.project-sub-link--wrapper .project-sub-link:last-child {
+    margin-right: 0;
+}
+
+.project-sidebar-resource--wrapper {
+    padding: 20px;
+}
+
+.project-sidebar-resource--wrapper h3 {
+    margin: 5px 0;
+}
+
+.project-sidebar-resource--wrapper ul {
+    margin: 0 0 25px 0;
+}
+
+.project-sidebar-resource--wrapper ul li {
+    border: none;
+    padding: 5px 0;
+}
+
+.project-sidebar-resource--wrapper ul:last-child {
+    margin-bottom: 0;
+}
+
+.github-fork-ribbon--container {
+    position: relative;
+    min-width: 1100px;
+}
+
+.github-fork-ribbon--wrapper {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    overflow: hidden;
+    z-index: 9999;
+    right: 0;
+}
+
+.github-fork-ribbon--wrapper .github-fork-ribbon {
+    position: absolute;
+    padding: 2px 0;
+    background-color: #34302d;
+    -webkit-box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.33);
+    box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.33);
+    z-index: 9999;
+    top: 42px;
+    right: -43px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+}
+
+.github-fork-ribbon--wrapper .github-fork-ribbon a {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #f1f1f1;
+    text-decoration: none;
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    width: 200px;
+    line-height: 20px;
+    display: inline-block;
+    padding: 2px 0;
+    border: 1px dotted rgba(255, 255, 255, 0.75);
+    border-width: 1px 0;
+}
+
+.github-fork-ribbon--wrapper .github-fork-ribbon a i {
+    font-size: 23px;
+    vertical-align: middle;
+    margin: 0 3px 0 0;
+    color: black;
+}
+
+
+#download-widget {
+    margin-bottom: 10px;
+}
+
+.project-body--container p code {
+    color: #305CB5;
+}
+
+.project-body--container h2 {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.highlight pre {
+    overflow-x: auto;
+}
+
+.highlight pre code {
+    overflow-x: auto;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+}
+
+.project-body--container .copy-button  {
+    position: absolute;
+    margin-left: 614px;
+}
+
+.download-widget--body .copy-button  {
+    margin-left: 574px;
+}
