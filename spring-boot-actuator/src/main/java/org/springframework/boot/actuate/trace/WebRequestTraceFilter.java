@@ -90,7 +90,6 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 		HttpServletResponse response = (HttpServletResponse) res;
 
 		Map<String, Object> trace = getTrace(request);
-		this.traceRepository.add(trace);
 		if (this.logger.isTraceEnabled()) {
 			this.logger.trace("Processing request " + request.getMethod() + " "
 					+ request.getRequestURI());
@@ -108,12 +107,29 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 			}
 		}
 
-		chain.doFilter(request, response);
+		try {
+			chain.doFilter(request, response);
+		}
+		finally {
+			enhanceTrace(trace, response);
+			this.traceRepository.add(trace);
+		}
+	}
+
+	protected void enhanceTrace(Map<String, Object> trace, HttpServletResponse response) {
+		Map<String, String> headers = new LinkedHashMap<String, String>();
+		for (String header : response.getHeaderNames()) {
+			String value = response.getHeader(header);
+			headers.put(header, value);
+		}
+		@SuppressWarnings("unchecked")
+		Map<String, Object> allHeaders = (Map<String, Object>) trace.get("headers");
+		allHeaders.put("response", headers);
 	}
 
 	protected Map<String, Object> getTrace(HttpServletRequest request) {
 
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Map<String, Object> headers = new LinkedHashMap<String, Object>();
 		Enumeration<String> names = request.getHeaderNames();
 
 		while (names.hasMoreElements()) {
@@ -126,13 +142,15 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 			else if (values.isEmpty()) {
 				value = "";
 			}
-			map.put(name, value);
+			headers.put(name, value);
 
 		}
 		Map<String, Object> trace = new LinkedHashMap<String, Object>();
+		Map<String, Object> allHeaders = new LinkedHashMap<String, Object>();
+		allHeaders.put("request", headers);
 		trace.put("method", request.getMethod());
 		trace.put("path", request.getRequestURI());
-		trace.put("headers", map);
+		trace.put("headers", allHeaders);
 		return trace;
 	}
 

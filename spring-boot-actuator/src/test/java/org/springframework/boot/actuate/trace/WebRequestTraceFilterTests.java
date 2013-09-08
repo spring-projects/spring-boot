@@ -19,9 +19,8 @@ package org.springframework.boot.actuate.trace;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
-import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,6 +41,20 @@ public class WebRequestTraceFilterTests {
 		Map<String, Object> trace = this.filter.getTrace(request);
 		assertEquals("GET", trace.get("method"));
 		assertEquals("/foo", trace.get("path"));
-		assertEquals("{Accept=application/json}", trace.get("headers").toString());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
+		assertEquals("{Accept=application/json}", map.get("request").toString());
+	}
+
+	@Test
+	public void filterDumpsResponse() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/foo");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		response.addHeader("Content-Type", "application/json");
+		Map<String, Object> trace = this.filter.getTrace(request);
+		this.filter.enhanceTrace(trace, response);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) trace.get("headers");
+		assertEquals("{Content-Type=application/json}", map.get("response").toString());
 	}
 }
