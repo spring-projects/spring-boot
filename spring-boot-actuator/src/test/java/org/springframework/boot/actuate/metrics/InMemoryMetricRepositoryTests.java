@@ -16,24 +16,65 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.fail;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link InMemoryMetricRepository}.
  */
-@Ignore
 public class InMemoryMetricRepositoryTests {
 
-	// FIXME write tests
-	// FIXME possibly also add Metric/Measurement tests
+	private InMemoryMetricRepository repository = new InMemoryMetricRepository();
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void increment() {
+		this.repository.increment("foo", 1, new Date());
+		assertEquals(1.0, this.repository.findOne("foo").getValue(), 0.01);
+	}
+
+	@Test
+	public void incrementConcurrent() throws Exception {
+		Collection<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
+		for (int i = 0; i < 100; i++) {
+			tasks.add(new Callable<Boolean>() {
+				@Override
+				public Boolean call() throws Exception {
+					InMemoryMetricRepositoryTests.this.repository.increment("foo", 1,
+							new Date());
+					return true;
+				}
+			});
+			tasks.add(new Callable<Boolean>() {
+				@Override
+				public Boolean call() throws Exception {
+					InMemoryMetricRepositoryTests.this.repository.increment("foo", -1,
+							new Date());
+					return true;
+				}
+			});
+		}
+		List<Future<Boolean>> all = Executors.newFixedThreadPool(10).invokeAll(tasks);
+		for (Future<Boolean> future : all) {
+			assertTrue(future.get(1, TimeUnit.SECONDS));
+		}
+		assertEquals(0, this.repository.findOne("foo").getValue(), 0.01);
+	}
+
+	@Test
+	public void set() {
+		this.repository.set("foo", 1, new Date());
+		assertEquals(1.0, this.repository.findOne("foo").getValue(), 0.01);
 	}
 
 }
