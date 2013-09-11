@@ -16,6 +16,7 @@
 	<modules>
 		<module>spring-boot-sample-actuator</module>
 		<module>spring-boot-sample-actuator-ui</module>
+		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-batch</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-integration</module>

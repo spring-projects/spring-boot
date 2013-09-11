@@ -7,7 +7,7 @@
 		<artifactId>spring-boot-starters</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-starter-data-jpa</artifactId>
+	<artifactId>spring-boot-starter-aop</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
@@ -15,24 +15,20 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
+			<artifactId>spring-aop</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
 		</dependency>
 	</dependencies>
 </project>

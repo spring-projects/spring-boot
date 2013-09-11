@@ -1,5 +1,6 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.boot.autoconfigure.aop.AopAutoConfiguration,\
 org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration,\
 org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
