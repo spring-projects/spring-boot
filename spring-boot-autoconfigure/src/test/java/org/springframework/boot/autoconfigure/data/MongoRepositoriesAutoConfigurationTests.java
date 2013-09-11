@@ -16,28 +16,25 @@
 
 package org.springframework.boot.autoconfigure.data;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.City;
-import org.springframework.boot.autoconfigure.data.jpa.CityRepository;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.mongo.City;
+import org.springframework.boot.autoconfigure.data.mongo.CityRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
+
+import com.mongodb.Mongo;
 
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests for {@link JpaRepositoriesAutoConfiguration}.
- *
+ * Tests for {@link MongoRepositoriesAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
-public class JpaRepositoriesAutoConfigurationTests {
+public class MongoRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -46,18 +43,32 @@ public class JpaRepositoriesAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
 				ComponentScanDetectorConfiguration.class,
-				EmbeddedDataSourceConfiguration.class, HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
+				MongoRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
-		assertNotNull(this.context.getBean(EntityManagerFactory.class));
+		assertNotNull(this.context.getBean(Mongo.class));
+	}
+
+	@Test
+	public void testNoRepositoryConfiguration() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmptyConfiguration.class,
+				ComponentScanDetectorConfiguration.class,
+				MongoRepositoriesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(Mongo.class));
 	}
 
 	@Configuration
 	@ComponentScan(basePackageClasses = City.class)
 	protected static class TestConfiguration {
+
+	}
+
+	@Configuration
+	protected static class EmptyConfiguration {
 
 	}
 
