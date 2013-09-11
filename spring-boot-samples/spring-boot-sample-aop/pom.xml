@@ -3,11 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
+		<!-- Your own application should inherit from spring-boot-starter-parent -->
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starters</artifactId>
+		<artifactId>spring-boot-samples</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-starter-data-jpa</artifactId>
+	<artifactId>spring-boot-sample-aop</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
@@ -16,23 +17,14 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-jpa</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>
