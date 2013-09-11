@@ -293,10 +293,13 @@ entry.  If you want to extend or expand that, or point to a database
 or directory server, you only need to provide a `@Bean` definition for
 an `AuthenticationManager`, e.g. in your `SampleController`:
 
+
+
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
-      return new AuthenticationBuilder().inMemoryAuthentication().withUser("client")
-          .password("secret").roles("USER").and().and().build();
+        return new AuthenticationManagerBuilder(
+                ObjectPostProcessor.QUIESCENT_POSTPROCESSOR).inMemoryAuthentication().withUser("user")
+                .password("password").roles("USER").and().and().build();
     }
 
 Try it out:
