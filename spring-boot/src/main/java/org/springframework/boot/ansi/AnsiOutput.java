@@ -110,10 +110,15 @@ public abstract class AnsiOutput {
 	}
 
 	private static boolean detectIfEnabled() {
-		if (System.console() == null) {
+		try {
+			if (System.console() == null) {
+				return false;
+			}
+			return !(OPERATING_SYSTEM_NAME.indexOf("win") >= 0);
+		}
+		catch (Throwable e) {
 			return false;
 		}
-		return !(OPERATING_SYSTEM_NAME.indexOf("win") >= 0);
 	}
 
 	public static enum Enabled {

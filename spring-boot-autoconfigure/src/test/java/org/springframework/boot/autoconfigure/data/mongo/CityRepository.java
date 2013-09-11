@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.test;
+package org.springframework.boot.autoconfigure.data.mongo;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

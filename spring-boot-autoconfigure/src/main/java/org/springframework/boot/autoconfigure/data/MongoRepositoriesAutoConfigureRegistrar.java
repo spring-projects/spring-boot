@@ -17,33 +17,33 @@
 package org.springframework.boot.autoconfigure.data;
 
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.mongodb.repository.config.MongoRepositoryConfigurationExtension;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data JPA
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Mongo
  * Repositories.
  * 
- * @author Phillip Webb
  * @author Dave Syer
  */
-class JpaRepositoriesAutoConfigureRegistrar extends
+class MongoRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected AnnotationRepositoryConfigurationSource getConfigurationSource() {
-		return getConfigurationSource(EnableJpaRepositoriesConfiguration.class,
-				EnableJpaRepositories.class);
+		return getConfigurationSource(EnableMongoRepositoriesConfiguration.class,
+				EnableMongoRepositories.class);
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new JpaRepositoryConfigExtension();
+		return new MongoRepositoryConfigurationExtension();
 	}
 
-	@EnableJpaRepositories
-	private static class EnableJpaRepositoriesConfiguration {
+	@EnableMongoRepositories
+	private static class EnableMongoRepositoriesConfiguration {
 	}
+
 }

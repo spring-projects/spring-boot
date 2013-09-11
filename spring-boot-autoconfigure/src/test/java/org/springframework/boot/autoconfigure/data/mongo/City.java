@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.test;
+package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.io.Serializable;
 
