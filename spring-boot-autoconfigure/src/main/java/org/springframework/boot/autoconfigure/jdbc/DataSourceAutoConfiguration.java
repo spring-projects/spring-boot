@@ -197,7 +197,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 				return Outcome.match("found database driver " + driverClassName);
 			}
 
-			return Outcome.match("missing database driver " + driverClassName);
+			return Outcome.noMatch("missing database driver " + driverClassName);
 		}
 
 		private String getDriverClassName(Environment environment, ClassLoader classLoader) {
