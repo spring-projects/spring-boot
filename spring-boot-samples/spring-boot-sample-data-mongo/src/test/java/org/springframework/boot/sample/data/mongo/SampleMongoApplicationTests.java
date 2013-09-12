@@ -18,9 +18,12 @@ package org.springframework.boot.sample.data.mongo;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.OutputCapture;
+import org.springframework.core.NestedCheckedException;
 
 /**
  * Tests for {@link SampleMongoApplication}.
@@ -34,9 +37,28 @@ public class SampleMongoApplicationTests {
 	
 	@Test
 	public void testDefaultSettings() throws Exception {
-		SampleMongoApplication.main(new String[0]);
+		try {
+			SampleMongoApplication.main(new String[0]);
+		} catch (IllegalStateException e) {
+			if (serverNotRunning(e)) {
+				return;
+			}
+		}
 		String output = this.outputCapture.toString();
 		assertTrue("Wrong output: " + output, output.contains("firstName='Alice', lastName='Smith'"));
+	}
+
+	private boolean serverNotRunning(IllegalStateException e) {
+		@SuppressWarnings("serial")
+		NestedCheckedException nested = new NestedCheckedException("failed", e) {
+		};
+		if (nested.contains(IOException.class)) {
+			Throwable root = nested.getRootCause();
+			if (root.getMessage().contains("couldn't connect to [localhost")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
