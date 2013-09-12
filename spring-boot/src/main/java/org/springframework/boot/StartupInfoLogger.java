@@ -74,7 +74,7 @@ class StartupInfoLogger {
 
 	private StringBuilder getRunningMessage() {
 		StringBuilder message = new StringBuilder();
-		message.append("Running with Spring Bootstrap");
+		message.append("Running with Spring Boot");
 		message.append(getVersion(SpringApplication.class));
 		message.append(", Spring");
 		message.append(getVersion(ApplicationContext.class));
