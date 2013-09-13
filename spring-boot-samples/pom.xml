@@ -19,7 +19,7 @@
 		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-batch</module>
 		<module>spring-boot-sample-data-jpa</module>
-		<module>spring-boot-sample-data-mongo</module>
+		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-profile</module>
