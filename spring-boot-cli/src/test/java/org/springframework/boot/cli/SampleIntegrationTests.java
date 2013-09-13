@@ -178,4 +178,11 @@ public class SampleIntegrationTests {
 		assertTrue("Wrong output: " + output, output.contains("Hello World"));
 	}
 
+	@Test
+	public void txSample() throws Exception {
+		start("samples/app.xml", "samples/tx.groovy");
+		String output = this.outputCapture.getOutputAndRelease();
+		assertTrue("Wrong output: " + output, output.contains("Foo count="));
+	}
+
 }
