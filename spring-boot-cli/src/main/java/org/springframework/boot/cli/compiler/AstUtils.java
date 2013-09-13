@@ -16,18 +16,28 @@
 
 package org.springframework.boot.cli.compiler;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
+import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.FieldNode;
+import org.codehaus.groovy.ast.MethodNode;
 
 /**
  * General purpose AST utilities.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public abstract class AstUtils {
 
 	/**
 	 * Determine if an {@link AnnotatedNode} has one or more of the specified annotations.
+	 * N.B. the annotation type names are not normally fully qualified.
 	 */
 	public static boolean hasAtLeastOneAnnotation(AnnotatedNode node,
 			String... annotations) {
@@ -37,6 +47,30 @@ public abstract class AstUtils {
 				if (annotation.equals(annotationNode.getClassNode().getName())) {
 					return true;
 				}
+			}
+		}
+		return false;
+
+	}
+
+	/**
+	 * Determine if an {@link ClassNode} has one or more fields of the specified types or
+	 * method returning one or more of the specified types. N.B. the type names are not
+	 * normally fully qualified.
+	 */
+	public static boolean hasAtLeastOneFieldOrMethod(ClassNode node, String... types) {
+
+		Set<String> set = new HashSet<String>(Arrays.asList(types));
+		List<FieldNode> fields = node.getFields();
+		for (FieldNode field : fields) {
+			if (set.contains(field.getType().getName())) {
+				return true;
+			}
+		}
+		List<MethodNode> methods = node.getMethods();
+		for (MethodNode method : methods) {
+			if (set.contains(method.getReturnType().getName())) {
+				return true;
 			}
 		}
 		return false;
