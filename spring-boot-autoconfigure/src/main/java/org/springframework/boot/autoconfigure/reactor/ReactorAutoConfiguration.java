@@ -37,12 +37,18 @@ import reactor.spring.context.config.EnableReactor;
 @ConditionalOnClass(EnableReactor.class)
 @ConditionalOnMissingBean(Reactor.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-@EnableReactor
 public class ReactorAutoConfiguration {
 
 	@Bean
 	public Reactor rootReactor(Environment environment) {
 		return environment.getRootReactor();
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(Environment.class)
+	@EnableReactor
+	protected static class ReactorConfiguration {
+
 	}
 
 }
