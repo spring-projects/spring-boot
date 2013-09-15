@@ -27,7 +27,7 @@
 		<log4j.version>1.2.17</log4j.version>
 		<logback.version>1.0.13</logback.version>
 		<mockito.version>1.9.5</mockito.version>
-		<reactor.version>1.0.0.M2</reactor.version>
+		<reactor.version>1.0.0.M3</reactor.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<snakeyaml.version>1.12</snakeyaml.version>
