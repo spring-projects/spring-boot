@@ -16,6 +16,10 @@
 
 package org.springframework.boot.cli;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -32,13 +36,11 @@ import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Integration tests to exercise the samples.
  * 
  * @author Dave Syer
+ * @author Greg Turnquist
  */
 public class SampleIntegrationTests {
 
@@ -183,6 +185,15 @@ public class SampleIntegrationTests {
 		start("samples/app.xml", "samples/tx.groovy");
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Foo count="));
+	}
+
+	@Test
+	public void jmsSample() throws Exception {
+		start("samples/app.xml", "samples/jms.groovy");
+		String output = this.outputCapture.getOutputAndRelease();
+		assertTrue("Wrong output: " + output,
+				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
+		FileUtil.forceDelete(new File("activemq-data")); // cleanup ActiveMQ cruft
 	}
 
 }

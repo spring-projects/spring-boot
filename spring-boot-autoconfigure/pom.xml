@@ -27,6 +27,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
 			<optional>true</optional>
@@ -54,6 +59,11 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -125,6 +135,10 @@
 			<groupId>org.projectreactor</groupId>
 			<artifactId>reactor-spring</artifactId>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			 <groupId>org.apache.geronimo.specs</groupId>
+			 <artifactId>geronimo-jms_1.1_spec</artifactId>
 		</dependency>
 		<!-- Test -->
 		<dependency>
