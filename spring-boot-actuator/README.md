@@ -304,9 +304,9 @@ an `AuthenticationManager`, e.g. in your `SampleController`:
 
 Try it out:
 
-    $ curl user:password@localhost:8080/
-    {"status": 403, "error": "Forbidden", "message": "Access Denied"}
     $ curl client:secret@localhost:8080/
+    {"status": 403, "error": "Forbidden", "message": "Access Denied"}
+    $ curl user:password@localhost:8080/
     {"message": "Hello World"}
 
 ## Adding a database
