@@ -23,14 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link JmsTemplate}.
@@ -39,7 +34,6 @@ import org.springframework.util.ClassUtils;
  */
 @Configuration
 @ConditionalOnClass(JmsTemplate.class)
-// spring-jms
 public class JmsTemplateAutoConfiguration {
 
 	@Configuration
@@ -59,28 +53,13 @@ public class JmsTemplateAutoConfiguration {
 	}
 
 	@Configuration
-	@Conditional(JmsTemplateAutoConfiguration.ActiveMQCondition.class)
+	@ConditionalOnClass(ActiveMQConnectionFactory.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class ActiveMQConnectionFactoryCreator {
 		@Bean
 		ConnectionFactory connectionFactory() {
 			return new ActiveMQConnectionFactory("vm://localhost");
 		}
-	}
-
-	static class ActiveMQCondition extends SpringBootCondition {
-
-		private String className = "org.apache.activemq.ActiveMQConnectionFactory";
-
-		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-			if (ClassUtils.isPresent(className, context.getClassLoader())) {
-				return Outcome.match("found ActiveMQ connection factory " + className);
-			}
-			return Outcome.noMatch("Did not find an ActiveMQ connection factory");
-		}
-
 	}
 
 }
