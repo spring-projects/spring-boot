@@ -1,4 +1,4 @@
-# Spring Boot [![Build Status](https://travis-ci.org/SpringSource/spring-boot.png?branch=master)](https://travis-ci.org/SpringSource/spring-boot)
+# Spring Boot [![Build Status](https://travis-ci.org/spring-projects/spring-boot.png?branch=master)](https://travis-ci.org/spring-projects/spring-boot)
 Spring Boot makes it easy to create Spring-powered, production-grade applications and
 services with absolute minimum fuss. It takes an opinionated view of the Spring platform
 so that new and existing users can quickly get to the bits they need.
