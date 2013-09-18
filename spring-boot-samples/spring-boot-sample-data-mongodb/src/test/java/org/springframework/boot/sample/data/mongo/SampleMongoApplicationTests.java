@@ -27,14 +27,14 @@ import org.springframework.core.NestedCheckedException;
 
 /**
  * Tests for {@link SampleMongoApplication}.
- * 
+ *
  * @author Dave Syer
  */
 public class SampleMongoApplicationTests {
 
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
-	
+
 	@Test
 	public void testDefaultSettings() throws Exception {
 		try {

@@ -12,7 +12,7 @@ class JmsExample implements CommandLineRunner {
 
 	@Autowired
 	JmsTemplate jmsTemplate
-	
+
 	@Bean
 	DefaultMessageListenerContainer jmsListener(ConnectionFactory connectionFactory) {
 		new DefaultMessageListenerContainer([
@@ -24,8 +24,8 @@ class JmsExample implements CommandLineRunner {
 			}}
 		])
 	}
-	
-	void run(String... args) {	
+
+	void run(String... args) {
 		def messageCreator = { session ->
 			session.createObjectMessage("Greetings from Spring Boot via ActiveMQ")
 		} as MessageCreator
@@ -34,13 +34,13 @@ class JmsExample implements CommandLineRunner {
 		jmsTemplate.send("spring-boot", messageCreator)
 		latch.await()
 	}
-	
+
 }
 
 @Log
 class Receiver {
 	CountDownLatch latch
-	
+
     def receive(String message) {
         log.info "Received ${message}"
         latch.countDown()

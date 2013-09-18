@@ -27,13 +27,13 @@ import org.springframework.context.annotation.Configuration;
 @EnableAutoConfiguration
 @ComponentScan
 public class SampleMongoApplication implements CommandLineRunner {
-	
+
 	@Autowired
 	private CustomerRepository repository;
 
 	@Override
 	public void run(String... args) throws Exception {
-		
+
 		repository.deleteAll();
 
 		// save a couple of customers
