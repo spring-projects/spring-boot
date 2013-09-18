@@ -30,16 +30,16 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 public class JdbcCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
+	public boolean matches(ClassNode classNode) {
+		return AstUtils.hasAtLeastOneFieldOrMethod(classNode, "JdbcTemplate",
+				"NamedParameterJdbcTemplate", "DataSource");
+	}
+
+	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.jdbc.core.JdbcTemplate")
 				.add("org.springframework.boot", "spring-boot-starter-jdbc",
 						dependencies.getProperty("spring-boot.version"));
-	}
-
-	@Override
-	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneFieldOrMethod(classNode, "JdbcTemplate",
-				"NamedParameterJdbcTemplate", "DataSource");
 	}
 
 	@Override

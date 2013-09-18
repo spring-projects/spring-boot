@@ -16,11 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -31,6 +26,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JmsTemplateAutoConfiguration}.
@@ -55,10 +55,6 @@ public class JmsTemplateAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
 	}
 
-	@Configuration
-	protected static class TestConfiguration {
-	}
-
 	@Test
 	public void testConnectionFactoryBackoff() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -69,18 +65,6 @@ public class JmsTemplateAutoConfigurationTests {
 				.getBrokerURL());
 	}
 
-	@Configuration
-	protected static class TestConfiguration2 {
-		@Bean
-		ConnectionFactory connectionFactory() {
-			return new ActiveMQConnectionFactory() {
-				{
-					setBrokerURL("foobar");
-				}
-			};
-		}
-	}
-
 	@Test
 	public void testJmsTemplateBackoff() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -89,17 +73,6 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertEquals(999, jmsTemplate.getPriority());
-	}
-
-	@Configuration
-	protected static class TestConfiguration3 {
-		@Bean
-		JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
-			JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
-			jmsTemplate.setPriority(999);
-			return jmsTemplate;
-		}
-
 	}
 
 	@Test
@@ -135,6 +108,33 @@ public class JmsTemplateAutoConfigurationTests {
 	}
 
 	@Configuration
+	protected static class TestConfiguration {
+	}
+
+	@Configuration
+	protected static class TestConfiguration2 {
+		@Bean
+		ConnectionFactory connectionFactory() {
+			return new ActiveMQConnectionFactory() {
+				{
+					setBrokerURL("foobar");
+				}
+			};
+		}
+	}
+
+	@Configuration
+	protected static class TestConfiguration3 {
+		@Bean
+		JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
+			JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+			jmsTemplate.setPriority(999);
+			return jmsTemplate;
+		}
+
+	}
+
+	@Configuration
 	protected static class TestConfiguration4 implements BeanPostProcessor {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName)
@@ -152,5 +152,4 @@ public class JmsTemplateAutoConfigurationTests {
 			return bean;
 		}
 	}
-
 }

@@ -16,10 +16,11 @@
 
 package org.springframework.boot.autoconfigure.data;
 
+import java.lang.annotation.Annotation;
+
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
-import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
@@ -33,9 +34,13 @@ class JpaRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
-	protected AnnotationRepositoryConfigurationSource getConfigurationSource() {
-		return getConfigurationSource(EnableJpaRepositoriesConfiguration.class,
-				EnableJpaRepositories.class);
+	protected Class<? extends Annotation> getAnnotation() {
+		return EnableJpaRepositories.class;
+	}
+
+	@Override
+	protected Class<?> getConfiguration() {
+		return EnableJpaRepositoriesConfiguration.class;
 	}
 
 	@Override
