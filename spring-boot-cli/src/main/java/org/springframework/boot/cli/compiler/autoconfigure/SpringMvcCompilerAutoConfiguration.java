@@ -37,6 +37,12 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
+	public boolean matches(ClassNode classNode) {
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller",
+				"RestController", "EnableWebMvc", "WebConfiguration");
+	}
+
+	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies
 				.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
@@ -45,12 +51,6 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 
 		dependencies.add("org.codehaus.groovy", "groovy-templates",
 				dependencies.getProperty("groovy.version"));
-	}
-
-	@Override
-	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller",
-				"RestController", "EnableWebMvc", "WebConfiguration");
 	}
 
 	@Override

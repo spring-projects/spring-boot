@@ -16,9 +16,6 @@
 
 package org.springframework.boot.cli;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.net.URL;
 import java.util.concurrent.Callable;
@@ -35,6 +32,9 @@ import org.junit.Test;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests to exercise the samples.

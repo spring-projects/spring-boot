@@ -32,6 +32,11 @@ public class TransactionManagementCompilerAutoConfiguration extends
 		CompilerAutoConfiguration {
 
 	@Override
+	public boolean matches(ClassNode classNode) {
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableTransactionManagement");
+	}
+
+	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies
 				.ifAnyMissingClasses(
@@ -40,11 +45,6 @@ public class TransactionManagementCompilerAutoConfiguration extends
 						dependencies.getProperty("spring.version"))
 				.add("org.springframework.boot", "spring-boot-starter-aop",
 						dependencies.getProperty("spring-boot.version"));
-	}
-
-	@Override
-	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableTransactionManagement");
 	}
 
 	@Override

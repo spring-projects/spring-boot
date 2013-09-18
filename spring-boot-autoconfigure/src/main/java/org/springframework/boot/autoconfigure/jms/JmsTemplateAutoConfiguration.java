@@ -41,11 +41,11 @@ public class JmsTemplateAutoConfiguration {
 	protected static class JmsTemplateCreator {
 
 		@Autowired
-		ConnectionFactory connectionFactory;
+		private ConnectionFactory connectionFactory;
 
 		@Bean
 		public JmsTemplate jmsTemplate() {
-			JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory);
+			JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
 			jmsTemplate.setPubSubDomain(true);
 			return jmsTemplate;
 		}
@@ -56,10 +56,12 @@ public class JmsTemplateAutoConfiguration {
 	@ConditionalOnClass(ActiveMQConnectionFactory.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class ActiveMQConnectionFactoryCreator {
+
 		@Bean
 		ConnectionFactory connectionFactory() {
 			return new ActiveMQConnectionFactory("vm://localhost");
 		}
+
 	}
 
 }
