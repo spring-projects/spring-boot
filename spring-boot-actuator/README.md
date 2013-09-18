@@ -285,28 +285,30 @@ Try it out:
 
     $ curl localhost:8080/
     {"status": 403, "error": "Forbidden", "message": "Access Denied"}
-    $ curl user:password@localhost:8080/
+    $ curl user:<password>@localhost:8080/
     {"message": "Hello World"}
 
 The default auto configuration has an in-memory user database with one
-entry.  If you want to extend or expand that, or point to a database
-or directory server, you only need to provide a `@Bean` definition for
-an `AuthenticationManager`, e.g. in your `SampleController`:
+entry, and the `<password>` value has to be read from the logs (at
+INFO level) by default.  If you want to extend or expand that, or
+point to a database or directory server, you only need to provide a
+`@Bean` definition for an `AuthenticationManager`, e.g. in your
+`SampleController`:
 
 
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
         return new AuthenticationManagerBuilder(
-                ObjectPostProcessor.QUIESCENT_POSTPROCESSOR).inMemoryAuthentication().withUser("user")
-                .password("password").roles("USER").and().and().build();
+                ObjectPostProcessor.QUIESCENT_POSTPROCESSOR).inMemoryAuthentication().withUser("client")
+                .password("secret").roles("USER").and().and().build();
     }
 
 Try it out:
 
-    $ curl client:secret@localhost:8080/
-    {"status": 403, "error": "Forbidden", "message": "Access Denied"}
     $ curl user:password@localhost:8080/
+    {"status": 403, "error": "Forbidden", "message": "Access Denied"}
+    $ curl client:secret@localhost:8080/
     {"message": "Hello World"}
 
 ## Adding a database
@@ -345,9 +347,9 @@ Then you will be able to inject a `DataSource` into your controller:
       ...
     }
 
- The app will run (going back to the default security configuration):
+ The app will run (with the new security configuration):
 
-           $ curl user:password@localhost:8080/
+           $ curl client:secret@localhost:8080/
            {"error":"Internal Server Error", "status":500, "exception":...}
 
  but there's no data in the database yet and the `MESSAGES` table
@@ -362,7 +364,7 @@ Then you will be able to inject a `DataSource` into your controller:
 
 Now when you run the app you get a sensible response:
 
-       $ curl user:password@localhost:8080/
+       $ curl client:secret@localhost:8080/
        {"ID":0, "MESSAGE":"Hello Phil"}
 
 Obviously, this is only the start, but hopefully you have a good grasp
