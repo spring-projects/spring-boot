@@ -19,3 +19,5 @@ manifest.yml
 MANIFEST.MF
 settings.xml
 activemq-data
+*.iml
+.idea
