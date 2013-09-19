@@ -19,8 +19,6 @@ package org.springframework.boot.loader.util;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
-
 /**
  * Helper class for resolving placeholders in texts. Usually applied to file paths.
  * 
@@ -50,7 +48,7 @@ public abstract class SystemPropertyUtils {
 	/** Value separator for system property placeholders: ":" */
 	public static final String VALUE_SEPARATOR = ":";
 
-	private static final PropertyPlaceholderHelper helper = new PropertyPlaceholderHelper();
+	private static final String SIMPLE_PREFIX = PLACEHOLDER_PREFIX.substring(1);
 
 	/**
 	 * Resolve ${...} placeholders in the given text, replacing them with corresponding
@@ -62,147 +60,120 @@ public abstract class SystemPropertyUtils {
 	 * @throws IllegalArgumentException if there is an unresolvable placeholder
 	 */
 	public static String resolvePlaceholders(String text) {
-		return helper.replacePlaceholders(text);
+		if (text == null) {
+			throw new IllegalArgumentException("Argument 'value' must not be null.");
+		}
+		return parseStringValue(text, text, new HashSet<String>());
 	}
 
-	static protected class PropertyPlaceholderHelper {
+	private static String parseStringValue(String value, String current,
+			Set<String> visitedPlaceholders) {
 
-		private static final String simplePrefix = PLACEHOLDER_PREFIX.substring(1);
+		StringBuilder buf = new StringBuilder(current);
 
-		/**
-		 * Replaces all placeholders of format {@code $ name} with the value returned from
-		 * the supplied {@link PlaceholderResolver}.
-		 * @param value the value containing the placeholders to be replaced.
-		 * @return the supplied value with placeholders replaced inline.
-		 */
-		public String replacePlaceholders(String value) {
-			Assert.notNull(value, "Argument 'value' must not be null.");
-			return parseStringValue(value, value, new HashSet<String>());
-		}
-
-		private String parseStringValue(String value, String current,
-				Set<String> visitedPlaceholders) {
-
-			StringBuilder buf = new StringBuilder(current);
-
-			int startIndex = current.indexOf(PLACEHOLDER_PREFIX);
-			while (startIndex != -1) {
-				int endIndex = findPlaceholderEndIndex(buf, startIndex);
-				if (endIndex != -1) {
-					String placeholder = buf.substring(
-							startIndex + PLACEHOLDER_PREFIX.length(), endIndex);
-					String originalPlaceholder = placeholder;
-					if (!visitedPlaceholders.add(originalPlaceholder)) {
-						throw new IllegalArgumentException(
-								"Circular placeholder reference '" + originalPlaceholder
-										+ "' in property definitions");
-					}
-					// Recursive invocation, parsing placeholders contained in the
-					// placeholder
-					// key.
-					placeholder = parseStringValue(value, placeholder,
-							visitedPlaceholders);
-					// Now obtain the value for the fully resolved key...
-					String propVal = resolvePlaceholder(value, placeholder);
-					if (propVal == null && VALUE_SEPARATOR != null) {
-						int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
-						if (separatorIndex != -1) {
-							String actualPlaceholder = placeholder.substring(0,
-									separatorIndex);
-							String defaultValue = placeholder.substring(separatorIndex
-									+ VALUE_SEPARATOR.length());
-							propVal = resolvePlaceholder(value, actualPlaceholder);
-							if (propVal == null) {
-								propVal = defaultValue;
-							}
+		int startIndex = current.indexOf(PLACEHOLDER_PREFIX);
+		while (startIndex != -1) {
+			int endIndex = findPlaceholderEndIndex(buf, startIndex);
+			if (endIndex != -1) {
+				String placeholder = buf.substring(
+						startIndex + PLACEHOLDER_PREFIX.length(), endIndex);
+				String originalPlaceholder = placeholder;
+				if (!visitedPlaceholders.add(originalPlaceholder)) {
+					throw new IllegalArgumentException("Circular placeholder reference '"
+							+ originalPlaceholder + "' in property definitions");
+				}
+				// Recursive invocation, parsing placeholders contained in the
+				// placeholder
+				// key.
+				placeholder = parseStringValue(value, placeholder, visitedPlaceholders);
+				// Now obtain the value for the fully resolved key...
+				String propVal = resolvePlaceholder(value, placeholder);
+				if (propVal == null && VALUE_SEPARATOR != null) {
+					int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
+					if (separatorIndex != -1) {
+						String actualPlaceholder = placeholder.substring(0,
+								separatorIndex);
+						String defaultValue = placeholder.substring(separatorIndex
+								+ VALUE_SEPARATOR.length());
+						propVal = resolvePlaceholder(value, actualPlaceholder);
+						if (propVal == null) {
+							propVal = defaultValue;
 						}
 					}
-					if (propVal != null) {
-						// Recursive invocation, parsing placeholders contained in the
-						// previously resolved placeholder value.
-						propVal = parseStringValue(value, propVal, visitedPlaceholders);
-						buf.replace(startIndex, endIndex + PLACEHOLDER_SUFFIX.length(),
-								propVal);
-						startIndex = buf.indexOf(PLACEHOLDER_PREFIX,
-								startIndex + propVal.length());
-					}
-					else {
-						// Proceed with unprocessed value.
-						startIndex = buf.indexOf(PLACEHOLDER_PREFIX, endIndex
-								+ PLACEHOLDER_SUFFIX.length());
-					}
-					visitedPlaceholders.remove(originalPlaceholder);
+				}
+				if (propVal != null) {
+					// Recursive invocation, parsing placeholders contained in the
+					// previously resolved placeholder value.
+					propVal = parseStringValue(value, propVal, visitedPlaceholders);
+					buf.replace(startIndex, endIndex + PLACEHOLDER_SUFFIX.length(),
+							propVal);
+					startIndex = buf.indexOf(PLACEHOLDER_PREFIX,
+							startIndex + propVal.length());
 				}
 				else {
-					startIndex = -1;
+					// Proceed with unprocessed value.
+					startIndex = buf.indexOf(PLACEHOLDER_PREFIX, endIndex
+							+ PLACEHOLDER_SUFFIX.length());
 				}
+				visitedPlaceholders.remove(originalPlaceholder);
 			}
-
-			return buf.toString();
-		}
-
-		private String resolvePlaceholder(String text, String placeholderName) {
-			try {
-				String propVal = System.getProperty(placeholderName);
-				if (propVal == null) {
-					// Fall back to searching the system environment.
-					propVal = System.getenv(placeholderName);
-				}
-				return propVal;
-			}
-			catch (Throwable ex) {
-				System.err.println("Could not resolve placeholder '" + placeholderName
-						+ "' in [" + text + "] as system property: " + ex);
-				return null;
+			else {
+				startIndex = -1;
 			}
 		}
 
-		private int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
-			int index = startIndex + PLACEHOLDER_PREFIX.length();
-			int withinNestedPlaceholder = 0;
-			while (index < buf.length()) {
-				if (substringMatch(buf, index, PLACEHOLDER_SUFFIX)) {
-					if (withinNestedPlaceholder > 0) {
-						withinNestedPlaceholder--;
-						index = index + PLACEHOLDER_SUFFIX.length();
-					}
-					else {
-						return index;
-					}
-				}
-				else if (substringMatch(buf, index,
-						PropertyPlaceholderHelper.simplePrefix)) {
-					withinNestedPlaceholder++;
-					index = index + PropertyPlaceholderHelper.simplePrefix.length();
+		return buf.toString();
+	}
+
+	private static String resolvePlaceholder(String text, String placeholderName) {
+		try {
+			String propVal = System.getProperty(placeholderName);
+			if (propVal == null) {
+				// Fall back to searching the system environment.
+				propVal = System.getenv(placeholderName);
+			}
+			return propVal;
+		}
+		catch (Throwable ex) {
+			System.err.println("Could not resolve placeholder '" + placeholderName
+					+ "' in [" + text + "] as system property: " + ex);
+			return null;
+		}
+	}
+
+	private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
+		int index = startIndex + PLACEHOLDER_PREFIX.length();
+		int withinNestedPlaceholder = 0;
+		while (index < buf.length()) {
+			if (substringMatch(buf, index, PLACEHOLDER_SUFFIX)) {
+				if (withinNestedPlaceholder > 0) {
+					withinNestedPlaceholder--;
+					index = index + PLACEHOLDER_SUFFIX.length();
 				}
 				else {
-					index++;
+					return index;
 				}
 			}
-			return -1;
-		}
-
-		private static boolean substringMatch(CharSequence str, int index,
-				CharSequence substring) {
-			for (int j = 0; j < substring.length(); j++) {
-				int i = index + j;
-				if (i >= str.length() || str.charAt(i) != substring.charAt(j)) {
-					return false;
-				}
+			else if (substringMatch(buf, index, SIMPLE_PREFIX)) {
+				withinNestedPlaceholder++;
+				index = index + SIMPLE_PREFIX.length();
 			}
-			return true;
-		}
-
-		private static class Assert {
-
-			public static void notNull(Object target, String message) {
-				if (target == null) {
-					throw new IllegalStateException(message);
-				}
+			else {
+				index++;
 			}
-
 		}
+		return -1;
+	}
 
+	private static boolean substringMatch(CharSequence str, int index,
+			CharSequence substring) {
+		for (int j = 0; j < substring.length(); j++) {
+			int i = index + j;
+			if (i >= str.length() || str.charAt(i) != substring.charAt(j)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

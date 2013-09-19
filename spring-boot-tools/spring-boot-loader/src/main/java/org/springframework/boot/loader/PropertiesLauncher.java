@@ -23,22 +23,19 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.springframework.boot.loader.util.SystemPropertyUtils;
-import org.springframework.util.ResourceUtils;
 
 /**
- * <p>
  * {@link Launcher} for archives with user-configured classpath and main class via a
  * properties file. This model is often more flexible and more amenable to creating
  * well-behaved OS-level services than a model based on executable jars.
- * </p>
  * 
  * <p>
  * Looks in various places for a properties file to extract loader settings, defaulting to
@@ -48,7 +45,7 @@ import org.springframework.util.ResourceUtils;
  * will look for <code>foo.properties</code>. If that file doesn't exist then tries
  * <code>loader.config.location</code> (with allowed prefixes <code>classpath:</code> and
  * <code>file:</code> or any valid URL). Once that file is located turns it into
- * Properties and extracts optional values (which can also be provided oroverridden as
+ * Properties and extracts optional values (which can also be provided overridden as
  * System properties in case the file doesn't exist):
  * 
  * <ul>
@@ -59,15 +56,12 @@ import org.springframework.util.ResourceUtils;
  * loader is set up. No default, but will fall back to looking in a
  * <code>MANIFEST.MF</code> if there is one.</li>
  * </ul>
- * </p>
- * 
- * <p>
- * 
- * </p>
  * 
  * @author Dave Syer
  */
 public class PropertiesLauncher extends Launcher {
+
+	private Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * Properties key for main class
@@ -81,11 +75,9 @@ public class PropertiesLauncher extends Launcher {
 
 	public static final String HOME = "loader.home";
 
-	public static String CONFIG_NAME = "loader.config.name";
+	public static final String CONFIG_NAME = "loader.config.name";
 
-	public static String CONFIG_LOCATION = "loader.config.location";
-
-	private Logger logger = Logger.getLogger(Launcher.class.getName());
+	public static final String CONFIG_LOCATION = "loader.config.location";
 
 	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
 
@@ -94,51 +86,20 @@ public class PropertiesLauncher extends Launcher {
 	private Properties properties = new Properties();
 
 	@Override
-	public void launch(String[] args) {
-		try {
-			launch(args, new ExplodedArchive(new File(getHomeDirectory())));
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(1);
-		}
+	protected void launch(String[] args, ProtectionDomain protectionDomain)
+			throws Exception {
+		launch(args, new ExplodedArchive(getHomeDirectory()));
 	}
 
-	protected String getHomeDirectory() {
-		return SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
-				"${user.dir}"));
-	}
-
-	@Override
-	protected boolean isNestedArchive(Archive.Entry entry) {
-		String name = entry.getName();
-		if (entry.isDirectory()) {
-			for (String path : this.paths) {
-				if (path.length() > 0 && name.equals(path)) {
-					return true;
-				}
-			}
-		}
-		else {
-			for (String path : this.paths) {
-				if (path.length() > 0 && name.startsWith(path) && isArchive(name)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	@Override
-	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
-		lib.add(0, archive);
+	protected File getHomeDirectory() {
+		return new File(SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
+				"${user.dir}")));
 	}
 
 	/**
 	 * Look in various places for a properties file to extract loader settings. Default to
 	 * <code>application.properties</code> either on the current classpath or in the
 	 * current working directory.
-	 * 
 	 * @see org.springframework.boot.loader.Launcher#launch(java.lang.String[],
 	 * org.springframework.boot.loader.Archive)
 	 */
@@ -149,83 +110,24 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	protected void initialize() throws Exception {
+		initializeProperties();
+		initializePaths();
+	}
 
+	private void initializeProperties() throws Exception, IOException {
 		String config = SystemPropertyUtils.resolvePlaceholders(System.getProperty(
 				CONFIG_NAME, "application")) + ".properties";
-		while (config.startsWith("/")) {
-			config = config.substring(1);
-		}
-		this.logger.fine("Trying default location: " + config);
-		InputStream resource = getClass().getResourceAsStream("/" + config);
+		InputStream resource = getClasspathResource(config);
 		if (resource == null) {
-
 			config = SystemPropertyUtils.resolvePlaceholders(System.getProperty(
 					CONFIG_LOCATION, config));
-
-			if (config.startsWith("classpath:")) {
-
-				config = config.substring("classpath:".length());
-				while (config.startsWith("/")) {
-					config = config.substring(1);
-				}
-				config = "/" + config;
-				this.logger.fine("Trying classpath: " + config);
-				resource = getClass().getResourceAsStream(config);
-
-			}
-			else {
-
-				if (config.startsWith("file:")) {
-
-					config = config.substring("file:".length());
-					if (config.startsWith("//")) {
-						config = config.substring(2);
-					}
-
-				}
-				if (!config.contains(":")) {
-
-					File file = new File(config);
-					this.logger.fine("Trying file: " + config);
-					if (file.canRead()) {
-						resource = new FileInputStream(file);
-					}
-
-				}
-				else {
-
-					URL url = new URL(config);
-					if (exists(url)) {
-						URLConnection con = url.openConnection();
-						try {
-							resource = con.getInputStream();
-						}
-						catch (IOException ex) {
-							// Close the HTTP connection (if applicable).
-							if (con instanceof HttpURLConnection) {
-								((HttpURLConnection) con).disconnect();
-							}
-							throw ex;
-						}
-					}
-				}
-			}
+			resource = getResource(config);
 		}
+
 		if (resource != null) {
 			this.logger.info("Found: " + config);
-			this.properties.load(resource);
 			try {
-				String path = System.getProperty(PATH);
-				if (path == null) {
-					path = this.properties.getProperty(PATH);
-				}
-				if (path != null) {
-					path = SystemPropertyUtils.resolvePlaceholders(path);
-					this.paths = new ArrayList<String>(Arrays.asList(path.split(",")));
-					for (int i = 0; i < this.paths.size(); i++) {
-						this.paths.set(i, this.paths.get(i).trim());
-					}
-				}
+				this.properties.load(resource);
 			}
 			finally {
 				resource.close();
@@ -234,53 +136,153 @@ public class PropertiesLauncher extends Launcher {
 		else {
 			this.logger.info("Not found: " + config);
 		}
-		for (int i = 0; i < this.paths.size(); i++) {
-			if (!this.paths.get(i).endsWith("/")) {
-				// Always a directory
-				this.paths.set(i, this.paths.get(i) + "/");
-			}
-			if (this.paths.get(i).startsWith("./")) {
-				// No need for current dir path
-				this.paths.set(i, this.paths.get(i).substring(2));
+	}
+
+	private InputStream getResource(String config) throws Exception {
+		if (config.startsWith("classpath:")) {
+			return getClasspathResource(config.substring("classpath:".length()));
+		}
+		config = stripFileUrlPrefix(config);
+		if (isUrl(config)) {
+			return getURLResource(config);
+		}
+		return getFileResource(config);
+	}
+
+	private String stripFileUrlPrefix(String config) {
+		if (config.startsWith("file:")) {
+			config = config.substring("file:".length());
+			if (config.startsWith("//")) {
+				config = config.substring(2);
 			}
 		}
-		for (Iterator<String> iter = this.paths.iterator(); iter.hasNext();) {
-			String path = iter.next();
-			if (path.equals(".") || path.equals("")) {
-				// Empty path is always on the classpath so no need for it to be
-				// explicitly listed here
-				iter.remove();
+		return config;
+	}
+
+	private boolean isUrl(String config) {
+		return config.contains("://");
+	}
+
+	private InputStream getClasspathResource(String config) {
+		while (config.startsWith("/")) {
+			config = config.substring(1);
+		}
+		config = "/" + config;
+		this.logger.fine("Trying classpath: " + config);
+		return getClass().getResourceAsStream(config);
+	}
+
+	private InputStream getFileResource(String config) throws Exception {
+		File file = new File(config);
+		this.logger.fine("Trying file: " + config);
+		if (file.canRead()) {
+			return new FileInputStream(file);
+		}
+		return null;
+	}
+
+	private InputStream getURLResource(String config) throws Exception {
+		URL url = new URL(config);
+		if (exists(url)) {
+			URLConnection con = url.openConnection();
+			try {
+				return con.getInputStream();
 			}
+			catch (IOException ex) {
+				// Close the HTTP connection (if applicable).
+				if (con instanceof HttpURLConnection) {
+					((HttpURLConnection) con).disconnect();
+				}
+				throw ex;
+			}
+		}
+		return null;
+	}
+
+	private boolean exists(URL url) throws IOException {
+		// Try a URL connection content-length header...
+		URLConnection connection = url.openConnection();
+		try {
+			connection.setUseCaches(connection.getClass().getSimpleName()
+					.startsWith("JNLP"));
+			if (connection instanceof HttpURLConnection) {
+				HttpURLConnection httpConnection = (HttpURLConnection) connection;
+				httpConnection.setRequestMethod("HEAD");
+				int responseCode = httpConnection.getResponseCode();
+				if (responseCode == HttpURLConnection.HTTP_OK) {
+					return true;
+				}
+				else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+					return false;
+				}
+			}
+			return (connection.getContentLength() >= 0);
+		}
+		finally {
+			if (connection instanceof HttpURLConnection) {
+				((HttpURLConnection) connection).disconnect();
+			}
+		}
+	}
+
+	private void initializePaths() throws IOException {
+		String path = System.getProperty(PATH);
+		if (path == null) {
+			path = this.properties.getProperty(PATH);
+		}
+		if (path != null) {
+			this.paths = parsePathsProperty(SystemPropertyUtils.resolvePlaceholders(path));
 		}
 		this.logger.info("Nested archive paths: " + this.paths);
 	}
 
-	private boolean exists(URL url) throws IOException {
+	private List<String> parsePathsProperty(String commaSeparatedPaths) {
+		List<String> paths = new ArrayList<String>();
+		for (String path : commaSeparatedPaths.split(",")) {
+			path = cleanupPath(path);
+			// Empty path is always on the classpath so no need for it to be explicitly
+			// listed here
+			if (!(path.equals(".") || path.equals(""))) {
+				paths.add(path);
+			}
+		}
+		return paths;
+	}
 
-		// Try a URL connection content-length header...
-		URLConnection con = url.openConnection();
-		ResourceUtils.useCachesIfNecessary(con);
-		HttpURLConnection httpCon = (con instanceof HttpURLConnection ? (HttpURLConnection) con
-				: null);
-		if (httpCon != null) {
-			httpCon.setRequestMethod("HEAD");
-			int code = httpCon.getResponseCode();
-			if (code == HttpURLConnection.HTTP_OK) {
-				return true;
-			}
-			else if (code == HttpURLConnection.HTTP_NOT_FOUND) {
-				return false;
-			}
+	private String cleanupPath(String path) {
+		path = path.trim();
+		// Always a directory
+		if (!path.endsWith("/")) {
+			path = path + "/";
 		}
-		if (con.getContentLength() >= 0) {
-			return true;
+		// No need for current dir path
+		if (path.startsWith("./")) {
+			path = path.substring(2);
 		}
-		if (httpCon != null) {
-			// no HTTP OK status, and no content-length header: give up
-			httpCon.disconnect();
+		return path;
+	}
+
+	@Override
+	protected boolean isNestedArchive(Archive.Entry entry) {
+		String name = entry.getName();
+		for (String path : this.paths) {
+			if (path.length() > 0) {
+				if ((entry.isDirectory() && name.equals(path))
+						|| (!entry.isDirectory() && name.startsWith(path) && isArchive(name))) {
+					return true;
+				}
+			}
 		}
 		return false;
+	}
 
+	private boolean isArchive(String name) {
+		return name.endsWith(".jar") || name.endsWith(".zip");
+	}
+
+	@Override
+	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
+		lib.add(0, archive);
 	}
 
 	@Override
