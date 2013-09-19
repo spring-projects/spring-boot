@@ -71,7 +71,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 		WebMvcConfigurerAdapter.class })
 @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
-@AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
+@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 public class WebMvcAutoConfiguration {
 
 	private static final String[] SERVLET_RESOURCE_LOCATIONS = { "/" };
