@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loader;
 
+import java.io.File;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -40,7 +42,8 @@ public class PropertiesLauncherTests {
 
 	@Test
 	public void testDefaultHome() {
-		assertEquals(System.getProperty("user.dir"), this.launcher.getHomeDirectory());
+		assertEquals(new File(System.getProperty("user.dir")),
+				this.launcher.getHomeDirectory());
 	}
 
 	@Test
