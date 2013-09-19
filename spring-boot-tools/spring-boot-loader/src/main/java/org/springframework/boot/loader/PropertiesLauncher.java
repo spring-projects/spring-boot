@@ -149,6 +149,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	protected void initialize() throws Exception {
+
 		String config = SystemPropertyUtils.resolvePlaceholders(System.getProperty(
 				CONFIG_NAME, "application")) + ".properties";
 		while (config.startsWith("/")) {
@@ -219,7 +220,7 @@ public class PropertiesLauncher extends Launcher {
 					path = this.properties.getProperty(PATH);
 				}
 				if (path != null) {
-					path = SystemPropertyUtils.resolvePlaceholders(path, true);
+					path = SystemPropertyUtils.resolvePlaceholders(path);
 					this.paths = new ArrayList<String>(Arrays.asList(path.split(",")));
 					for (int i = 0; i < this.paths.size(); i++) {
 						this.paths.set(i, this.paths.get(i).trim());
@@ -234,13 +235,20 @@ public class PropertiesLauncher extends Launcher {
 			this.logger.info("Not found: " + config);
 		}
 		for (int i = 0; i < this.paths.size(); i++) {
+			if (!this.paths.get(i).endsWith("/")) {
+				// Always a directory
+				this.paths.set(i, this.paths.get(i) + "/");
+			}
 			if (this.paths.get(i).startsWith("./")) {
+				// No need for current dir path
 				this.paths.set(i, this.paths.get(i).substring(2));
 			}
 		}
 		for (Iterator<String> iter = this.paths.iterator(); iter.hasNext();) {
 			String path = iter.next();
 			if (path.equals(".") || path.equals("")) {
+				// Empty path is always on the classpath so no need for it to be
+				// explicitly listed here
 				iter.remove();
 			}
 		}
@@ -278,12 +286,11 @@ public class PropertiesLauncher extends Launcher {
 	@Override
 	protected String getMainClass(Archive archive) throws Exception {
 		if (System.getProperty(MAIN) != null) {
-			return SystemPropertyUtils
-					.resolvePlaceholders(System.getProperty(MAIN), true);
+			return SystemPropertyUtils.resolvePlaceholders(System.getProperty(MAIN));
 		}
 		if (this.properties.containsKey(MAIN)) {
-			return SystemPropertyUtils.resolvePlaceholders(
-					this.properties.getProperty(MAIN), true);
+			return SystemPropertyUtils.resolvePlaceholders(this.properties
+					.getProperty(MAIN));
 		}
 		return super.getMainClass(archive);
 	}
