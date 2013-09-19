@@ -14,6 +14,7 @@ org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\

@@ -298,11 +298,17 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * @param servletContext the operational servlet context
 	 */
 	protected void prepareEmbeddedWebApplicationContext(ServletContext servletContext) {
-		if (servletContext
-				.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
-			throw new IllegalStateException(
-					"Cannot initialize context because there is already a root application context present - "
-							+ "check whether you have multiple ServletContextInitializer!");
+		Object rootContext = servletContext
+				.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		if (rootContext != null) {
+			if (rootContext == this) {
+				throw new IllegalStateException(
+						"Cannot initialize context because there is already a root application context present - "
+								+ "check whether you have multiple ServletContextInitializers!");
+			}
+			else {
+				return;
+			}
 		}
 		Log logger = LogFactory.getLog(ContextLoader.class);
 		servletContext.log("Initializing Spring embedded WebApplicationContext");

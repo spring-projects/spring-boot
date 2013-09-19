@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.util.Arrays;
-
 import javax.servlet.Servlet;
 
 import org.apache.catalina.startup.Tomcat;
@@ -34,24 +32,18 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.web.servlet.DispatcherServlet;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet containers.
@@ -63,26 +55,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 @Configuration
 @Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
 public class EmbeddedServletContainerAutoConfiguration {
-
-	/*
-	 * The bean name for a DispatcherServlet that will be mapped to the root URL "/"
-	 */
-	public static final String DEFAULT_DISPATCHER_SERVLET_BEAN_NAME = "dispatcherServlet";
-
-	/**
-	 * Add the {@link DispatcherServlet} unless the user has defined their own
-	 * {@link ServletContextInitializer}s.
-	 */
-	@ConditionalOnClass(DispatcherServlet.class)
-	public static class DispatcherServletConfiguration {
-
-		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-		@Conditional(DefaultServletCondition.class)
-		public DispatcherServlet dispatcherServlet() {
-			return new DispatcherServlet();
-		}
-
-	}
 
 	/**
 	 * Nested configuration for if Tomcat is being used.
@@ -143,27 +115,6 @@ public class EmbeddedServletContainerAutoConfiguration {
 						"embeddedServletContainerCustomizerBeanPostProcessor",
 						beanDefinition);
 			}
-		}
-	}
-
-	private static class DefaultServletCondition extends SpringBootCondition {
-
-		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
-				AnnotatedTypeMetadata metadata) {
-
-			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-			String[] beans = beanFactory.getBeanNamesForType(DispatcherServlet.class,
-					false, false);
-			if (beans.length == 0) {
-				return Outcome.match("no DispatcherServlet found");
-			}
-			if (Arrays.asList(beans).contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
-				return Outcome.noMatch("found DispatcherServlet named "
-						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			}
-			return Outcome.match("multiple DispatcherServlets found and none is named "
-					+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 		}
 	}
 

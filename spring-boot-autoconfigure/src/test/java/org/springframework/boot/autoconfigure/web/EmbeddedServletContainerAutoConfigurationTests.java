@@ -49,7 +49,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	public void createFromConfigClass() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				EmbeddedContainerConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class);
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
 		verifyContext();
 	}
 
@@ -58,7 +59,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				DispatcherServletConfiguration.class,
 				EmbeddedContainerConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class);
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
 		verifyContext();
 	}
 
@@ -66,7 +68,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	public void contextAlreadyHasDispatcherServlet() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				SpringServletConfiguration.class, EmbeddedContainerConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class);
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
 		verifyContext();
 		assertEquals(2, this.context.getBeanNamesForType(DispatcherServlet.class).length);
 	}
@@ -76,7 +79,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				EmbeddedContainerConfiguration.class,
 				EnsureContainerHasNoServletContext.class,
-				EmbeddedServletContainerAutoConfiguration.class);
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
 		verifyContext();
 	}
 
@@ -85,17 +89,17 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				EmbeddedContainerConfiguration.class,
 				CallbackEmbeddedContainerCustomizer.class,
-				EmbeddedServletContainerAutoConfiguration.class);
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
 		verifyContext();
 		assertEquals(9000, getContainerFactory().getPort());
 	}
 
 	private void verifyContext() {
 		MockEmbeddedServletContainerFactory containerFactory = getContainerFactory();
-		Servlet servlet = this.context
-				.getBean(
-						EmbeddedServletContainerAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
-						Servlet.class);
+		Servlet servlet = this.context.getBean(
+				DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME,
+				Servlet.class);
 		verify(containerFactory.getServletContext()).addServlet("dispatcherServlet",
 				servlet);
 	}
