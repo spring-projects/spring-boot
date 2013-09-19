@@ -195,4 +195,8 @@ public abstract class Launcher {
 		return (Runnable) constructor.newInstance(mainClass, args);
 	}
 
+	protected boolean isArchive(String name) {
+		return name.endsWith(".jar") || name.endsWith(".zip");
+	}
+
 }
