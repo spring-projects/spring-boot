@@ -83,6 +83,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * {@link XmlEmbeddedWebApplicationContext} variants.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  * @see AnnotationConfigEmbeddedWebApplicationContext
  * @see XmlEmbeddedWebApplicationContext
  * @see EmbeddedServletContainerFactory
@@ -146,19 +147,10 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	}
 
 	private synchronized void createEmbeddedServletContainer() {
-		if (this.embeddedServletContainer == null && getServletContext() == null) {
+		if (this.embeddedServletContainer == null) {
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
 					.getEmbeddedServletContainer(getSelfInitializer());
-		}
-		else if (getServletContext() != null) {
-			try {
-				getSelfInitializer().onStartup(getServletContext());
-			}
-			catch (ServletException ex) {
-				throw new ApplicationContextException(
-						"Cannot initialize servlet context", ex);
-			}
 		}
 		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
 				getServletContext());

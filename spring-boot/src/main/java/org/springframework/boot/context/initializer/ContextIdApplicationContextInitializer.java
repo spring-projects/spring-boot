@@ -49,11 +49,23 @@ import org.springframework.util.StringUtils;
 public class ContextIdApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	private String name = "${spring.application.name:${vcap.application.name:${spring.config.name:application}}}";
+	private String name;
 
 	private int index = -1;
 
 	private int order = Integer.MAX_VALUE - 10;
+
+	public ContextIdApplicationContextInitializer() {
+		this(
+				"${spring.application.name:${vcap.application.name:${spring.config.name:application}}}");
+	}
+
+	/**
+	 * @param name
+	 */
+	public ContextIdApplicationContextInitializer(String name) {
+		this.name = name;
+	}
 
 	public void setOrder(int order) {
 		this.order = order;

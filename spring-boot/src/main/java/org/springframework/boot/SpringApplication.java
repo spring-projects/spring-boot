@@ -155,9 +155,7 @@ public class SpringApplication {
 
 	private ConfigurableEnvironment environment;
 
-	private ApplicationContext applicationContext;
-
-	private Class<? extends ApplicationContext> applicationContextClass;
+	private Class<? extends ConfigurableApplicationContext> applicationContextClass;
 
 	private boolean webEnvironment;
 
@@ -245,7 +243,8 @@ public class SpringApplication {
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */
-	public ApplicationContext run(String... args) {
+	public ConfigurableApplicationContext run(String... args) {
+
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 
@@ -265,18 +264,15 @@ public class SpringApplication {
 		}
 
 		// Create, load, refresh and run the ApplicationContext
-		ApplicationContext context = createApplicationContext();
-		if (context instanceof ConfigurableApplicationContext) {
-			((ConfigurableApplicationContext) context).registerShutdownHook();
-			((ConfigurableApplicationContext) context).setEnvironment(environment);
-		}
+		ConfigurableApplicationContext context = createApplicationContext();
+		context.registerShutdownHook();
+		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
-		if (context instanceof ConfigurableApplicationContext) {
-			applyInitializers((ConfigurableApplicationContext) context);
-		}
+		applyInitializers(context);
 		if (this.logStartupInfo) {
 			logStartupInfo();
 		}
+
 		load(context, sources.toArray(new Object[sources.size()]));
 		refresh(context);
 
@@ -288,6 +284,7 @@ public class SpringApplication {
 
 		runCommandLineRunners(context, args);
 		return context;
+
 	}
 
 	private Set<Object> assembleSources() {
@@ -309,10 +306,6 @@ public class SpringApplication {
 	private ConfigurableEnvironment getOrCreateEnvironment() {
 		if (this.environment != null) {
 			return this.environment;
-		}
-		if (this.applicationContext != null
-				&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
-			return (ConfigurableEnvironment) this.applicationContext.getEnvironment();
 		}
 		if (this.webEnvironment) {
 			return new StandardServletEnvironment();
@@ -398,13 +391,9 @@ public class SpringApplication {
 	 * method will respect any explicitly set application context or application context
 	 * class before falling back to a suitable default.
 	 * @return the application context (not yet refreshed)
-	 * @see #setApplicationContext(ApplicationContext)
 	 * @see #setApplicationContextClass(Class)
 	 */
-	protected ApplicationContext createApplicationContext() {
-		if (this.applicationContext != null) {
-			return this.applicationContext;
-		}
+	protected ConfigurableApplicationContext createApplicationContext() {
 
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
@@ -420,7 +409,8 @@ public class SpringApplication {
 			}
 		}
 
-		return (ApplicationContext) BeanUtils.instantiate(contextClass);
+		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
+
 	}
 
 	/**
@@ -428,7 +418,7 @@ public class SpringApplication {
 	 * apply additional processing as required.
 	 * @param context the application context
 	 */
-	protected void postProcessApplicationContext(ApplicationContext context) {
+	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
 		if (this.webEnvironment) {
 			if (context instanceof ConfigurableWebApplicationContext) {
 				ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
@@ -476,6 +466,10 @@ public class SpringApplication {
 	private BeanDefinitionRegistry getBeanDefinitionRegistry(ApplicationContext context) {
 		if (context instanceof BeanDefinitionRegistry) {
 			return (BeanDefinitionRegistry) context;
+		}
+		if (context instanceof AbstractApplicationContext) {
+			return (BeanDefinitionRegistry) ((AbstractApplicationContext) context)
+					.getBeanFactory();
 		}
 		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
@@ -628,23 +622,10 @@ public class SpringApplication {
 	 * specified defaults to {@link #DEFAULT_WEB_CONTEXT_CLASS} for web based applications
 	 * or {@link AnnotationConfigApplicationContext} for non web based applications.
 	 * @param applicationContextClass the context class to set
-	 * @see #setApplicationContext(ApplicationContext)
 	 */
 	public void setApplicationContextClass(
-			Class<? extends ApplicationContext> applicationContextClass) {
+			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
-	}
-
-	/**
-	 * Sets a Spring {@link ApplicationContext} that will be used for the application. If
-	 * not specified an {@link #DEFAULT_WEB_CONTEXT_CLASS} will be created for web based
-	 * applications or an {@link AnnotationConfigApplicationContext} for non web based
-	 * applications.
-	 * @param applicationContext the spring application context.
-	 * @see #setApplicationContextClass(Class)
-	 */
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
 	}
 
 	/**
@@ -655,15 +636,6 @@ public class SpringApplication {
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
 		this.initializers = new ArrayList<ApplicationContextInitializer<?>>(initializers);
-	}
-
-	/**
-	 * Add {@link ApplicationContextInitializer}s to be applied to the Spring
-	 * {@link ApplicationContext} .
-	 * @param initializers the initializers to add
-	 */
-	public void addInitializers(ApplicationContextInitializer<?>... initializers) {
-		this.initializers.addAll(Arrays.asList(initializers));
 	}
 
 	/**
@@ -682,18 +654,18 @@ public class SpringApplication {
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
-	public static ApplicationContext run(Object source, String... args) {
+	public static ConfigurableApplicationContext run(Object source, String... args) {
 		return run(new Object[] { source }, args);
 	}
 
 	/**
 	 * Static helper that can be used to run a {@link SpringApplication} from the
-	 * specified sources using default settings.
+	 * specified sources using default settings and user supplied arguments.
 	 * @param sources the sources to load
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
 	 */
-	public static ApplicationContext run(Object[] sources, String[] args) {
+	public static ConfigurableApplicationContext run(Object[] sources, String[] args) {
 		return new SpringApplication(sources).run(args);
 	}
 

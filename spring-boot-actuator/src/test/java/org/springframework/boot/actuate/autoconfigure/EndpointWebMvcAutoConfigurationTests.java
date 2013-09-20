@@ -24,12 +24,11 @@ import java.nio.charset.Charset;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
-import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -72,7 +71,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
@@ -89,7 +88,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
@@ -106,7 +105,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.register(RootConfig.class, DisableConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
-				WebMvcAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
@@ -127,7 +126,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 				ManagementServerPropertiesAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
-				WebMvcAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class);
+				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 7070, "controlleroutput");
 		assertContent("/endpoint", 7070, null);
@@ -145,7 +145,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 				ManagementServerPropertiesAutoConfiguration.class,
 				ServerPropertiesAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
-				WebMvcAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class);
+				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
 		assertContent("/test/endpoint", 8080, "endpointoutput");

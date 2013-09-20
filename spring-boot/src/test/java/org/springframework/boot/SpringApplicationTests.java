@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,9 +48,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -74,19 +73,19 @@ public class SpringApplicationTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private ApplicationContext context;
+	private ConfigurableApplicationContext context;
 
 	private Environment getEnvironment() {
-		if (this.context instanceof ConfigurableApplicationContext) {
-			return ((ConfigurableApplicationContext) this.context).getEnvironment();
+		if (this.context != null) {
+			return this.context.getEnvironment();
 		}
-		throw new IllegalStateException("No Environment available");
+		throw new IllegalStateException("Could not obtain Environment");
 	}
 
 	@After
 	public void close() {
-		if (this.context instanceof ConfigurableApplicationContext) {
-			((ConfigurableApplicationContext) this.context).close();
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
@@ -122,15 +121,6 @@ public class SpringApplicationTests {
 	}
 
 	@Test
-	public void specificApplicationContext() throws Exception {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		ApplicationContext applicationContext = new StaticApplicationContext();
-		application.setApplicationContext(applicationContext);
-		this.context = application.run();
-		assertThat(this.context, sameInstance(applicationContext));
-	}
-
-	@Test
 	public void specificApplicationContextClass() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(StaticApplicationContext.class);
@@ -144,12 +134,13 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
 		application
-				.addInitializers(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
-					@Override
-					public void initialize(ConfigurableApplicationContext context) {
-						reference.set(context);
-					}
-				});
+				.setInitializers(Arrays
+						.asList(new ApplicationContextInitializer<ConfigurableApplicationContext>() {
+							@Override
+							public void initialize(ConfigurableApplicationContext context) {
+								reference.set(context);
+							}
+						}));
 		this.context = application.run("--foo=bar");
 		assertThat(this.context, sameInstance(reference.get()));
 		// Custom initializers do not switch off the defaults
@@ -177,12 +168,9 @@ public class SpringApplicationTests {
 	public void customEnvironment() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		StaticApplicationContext applicationContext = spy(new StaticApplicationContext());
 		ConfigurableEnvironment environment = new StandardEnvironment();
-		application.setApplicationContext(applicationContext);
 		application.setEnvironment(environment);
 		application.run();
-		verify(applicationContext).setEnvironment(environment);
 		verify(application.getLoader()).setEnvironment(environment);
 	}
 
@@ -190,12 +178,9 @@ public class SpringApplicationTests {
 	public void customResourceLoader() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
-		StaticApplicationContext applicationContext = spy(new StaticApplicationContext());
 		ResourceLoader resourceLoader = new DefaultResourceLoader();
-		application.setApplicationContext(applicationContext);
 		application.setResourceLoader(resourceLoader);
-		application.run();
-		verify(applicationContext).setResourceLoader(resourceLoader);
+		this.context = application.run();
 		verify(application.getLoader()).setResourceLoader(resourceLoader);
 	}
 
@@ -204,22 +189,15 @@ public class SpringApplicationTests {
 		ResourceLoader resourceLoader = new DefaultResourceLoader();
 		TestSpringApplication application = new TestSpringApplication(resourceLoader,
 				ExampleWebConfig.class);
-		StaticApplicationContext applicationContext = spy(new StaticApplicationContext());
-		application.setApplicationContext(applicationContext);
-		application.run();
-		verify(applicationContext).setResourceLoader(resourceLoader);
+		this.context = application.run();
 		verify(application.getLoader()).setResourceLoader(resourceLoader);
-		applicationContext.close();
 	}
 
 	@Test
 	public void customBeanNameGenerator() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(
 				ExampleWebConfig.class);
-		StaticWebApplicationContext applicationContext = spy(new StaticWebApplicationContext());
-		applicationContext.setServletContext(new MockServletContext());
 		BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
-		application.setApplicationContext(applicationContext);
 		application.setBeanNameGenerator(beanNameGenerator);
 		this.context = application.run();
 		verify(application.getLoader()).setBeanNameGenerator(beanNameGenerator);
@@ -342,10 +320,10 @@ public class SpringApplicationTests {
 	@Test
 	public void registerShutdownHook() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
-		application.setApplicationContext(applicationContext);
-		application.run();
-		verify(applicationContext).registerShutdownHook();
+		application.setApplicationContextClass(SpyApplicationContext.class);
+		this.context = application.run();
+		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
+		verify(applicationContext.getApplicationContext()).registerShutdownHook();
 	}
 
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
@@ -362,6 +340,21 @@ public class SpringApplicationTests {
 	// FIXME test initializers
 
 	// FIXME test config files?
+
+	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
+
+		ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
+
+		@Override
+		public void registerShutdownHook() {
+			this.applicationContext.registerShutdownHook();
+		}
+
+		public ConfigurableApplicationContext getApplicationContext() {
+			return this.applicationContext;
+		}
+
+	}
 
 	private static class TestSpringApplication extends SpringApplication {
 

@@ -22,8 +22,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -68,6 +66,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithNothing.class,
 				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class,
 				MultipartAutoConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		assertNull(servlet.getMultipartResolver());
@@ -86,6 +85,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithNoMultipartJetty.class,
 				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class,
 				MultipartAutoConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		assertNull(servlet.getMultipartResolver());
@@ -114,6 +114,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithNoMultipartTomcat.class,
 				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class,
 				MultipartAutoConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		assertNull(servlet.getMultipartResolver());
@@ -129,6 +130,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithEverythingJetty.class,
 				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class,
 				MultipartAutoConfiguration.class);
 		this.context.getBean(MultipartConfigElement.class);
 		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
@@ -141,6 +143,7 @@ public class MultipartAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithEverythingTomcat.class,
 				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class,
 				MultipartAutoConfiguration.class);
 		this.context.getBean(MultipartConfigElement.class);
 		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
