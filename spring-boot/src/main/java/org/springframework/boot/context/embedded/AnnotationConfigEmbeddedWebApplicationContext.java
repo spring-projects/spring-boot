@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.embedded;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
@@ -186,11 +185,6 @@ public class AnnotationConfigEmbeddedWebApplicationContext extends
 		if (this.annotatedClasses != null && this.annotatedClasses.length > 0) {
 			this.reader.register(this.annotatedClasses);
 		}
-	}
-
-	@Override
-	public final void refresh() throws BeansException, IllegalStateException {
-		super.refresh();
 	}
 
 }
