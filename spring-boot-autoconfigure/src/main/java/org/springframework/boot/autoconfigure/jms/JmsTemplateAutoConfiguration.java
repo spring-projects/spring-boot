@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.jms;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
@@ -38,7 +41,11 @@ public class JmsTemplateAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(JmsTemplate.class)
+	@EnableConfigurationProperties(JmsTemplateProperties.class)
 	protected static class JmsTemplateCreator {
+		
+		@Autowired
+		private JmsTemplateProperties config;
 
 		@Autowired
 		private ConnectionFactory connectionFactory;
@@ -46,22 +53,87 @@ public class JmsTemplateAutoConfiguration {
 		@Bean
 		public JmsTemplate jmsTemplate() {
 			JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
-			jmsTemplate.setPubSubDomain(true);
+			jmsTemplate.setPubSubDomain(this.config.isPubSubDomain());
 			return jmsTemplate;
 		}
 
+	}
+	
+	@ConfigurationProperties(name = "spring.jms")
+	public static class JmsTemplateProperties {
+		
+		private boolean pubSubDomain = true;
+
+		public boolean isPubSubDomain() {
+			return pubSubDomain;
+		}
+
+		public void setPubSubDomain(boolean pubSubDomain) {
+			this.pubSubDomain = pubSubDomain;
+		}
+		
 	}
 
 	@Configuration
 	@ConditionalOnClass(ActiveMQConnectionFactory.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
+	@EnableConfigurationProperties(ActiveMQConnectionFactoryProperties.class)
 	protected static class ActiveMQConnectionFactoryCreator {
-
+		
+		@Autowired
+		private ActiveMQConnectionFactoryProperties config;
+		
 		@Bean
 		ConnectionFactory connectionFactory() {
-			return new ActiveMQConnectionFactory("vm://localhost");
+			if (this.config.isPooled()) {
+				PooledConnectionFactory pool = new PooledConnectionFactory();
+				pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config.getBrokerURL()));
+				return pool;
+			} else {
+				return new ActiveMQConnectionFactory(this.config.getBrokerURL());
+			}
 		}
 
+	}
+	
+	@ConfigurationProperties(name = "spring.activemq")
+	public static class ActiveMQConnectionFactoryProperties {
+		
+		private String brokerURL = "tcp://localhost:61616";
+		
+		private boolean inMemory = true;
+		
+		private boolean pooled = false;
+		
+		// Will override brokerURL if inMemory is set to true
+		public String getBrokerURL() {
+			if (this.inMemory) {
+				return "vm://localhost";
+			} else {
+				return this.brokerURL;
+			}
+		}
+
+		public void setBrokerURL(String brokerURL) {
+			this.brokerURL = brokerURL;
+		}
+
+		public boolean isInMemory() {
+			return inMemory;
+		}
+
+		public void setInMemory(boolean inMemory) {
+			this.inMemory = inMemory;
+		}
+
+		public boolean isPooled() {
+			return pooled;
+		}
+
+		public void setPooled(boolean pooled) {
+			this.pooled = pooled;
+		}
+		
 	}
 
 }
