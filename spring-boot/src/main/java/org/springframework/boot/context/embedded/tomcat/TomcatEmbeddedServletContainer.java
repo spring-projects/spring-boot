@@ -55,6 +55,16 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
 		try {
 			this.tomcat.start();
+			try {
+				// Allow the server to start so the ServletContext is available, but stop
+				// the connector to prevent requests from being handled before the Spring
+				// context is ready:
+				Connector connector = this.tomcat.getConnector();
+				connector.getProtocolHandler().stop();
+			}
+			catch (Exception e) {
+				this.logger.error("Cannot pause connector: ", e);
+			}
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 			// blocking non-daemon to stop immediate shutdown
 			Thread awaitThread = new Thread("container-" + (containerCounter++)) {
@@ -77,7 +87,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		Connector connector = this.tomcat.getConnector();
 		if (connector != null) {
 			try {
-				connector.getProtocolHandler().resume();
+				connector.getProtocolHandler().start();
 			}
 			catch (Exception e) {
 				this.logger.error("Cannot start connector: ", e);

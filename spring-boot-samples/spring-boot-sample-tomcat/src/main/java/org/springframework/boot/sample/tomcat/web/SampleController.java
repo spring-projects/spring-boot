@@ -27,7 +27,7 @@ public class SampleController {
 
 	@Autowired
 	private HelloWorldService helloWorldService;
-
+	
 	@RequestMapping("/")
 	@ResponseBody
 	public String helloWorld() {
