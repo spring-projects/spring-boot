@@ -189,7 +189,7 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void jmsSample() throws Exception {
-		start("samples/app.xml", "samples/jms.groovy");
+		start("samples/jms.groovy");
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output,
 				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
