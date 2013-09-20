@@ -48,14 +48,14 @@ public class PropertiesLauncherTests {
 
 	@Test
 	public void testUserSpecifiedMain() throws Exception {
-		this.launcher.initialize();
+		this.launcher.initialize(new File("."));
 		assertEquals("demo.Application", this.launcher.getMainClass(null));
 	}
 
 	@Test
 	public void testUserSpecifiedConfigName() throws Exception {
 		System.setProperty("loader.config.name", "foo");
-		this.launcher.initialize();
+		this.launcher.initialize(new File("."));
 		assertEquals("my.Application", this.launcher.getMainClass(null));
 		assertEquals("[etc/]", ReflectionTestUtils.getField(this.launcher, "paths")
 				.toString());
@@ -64,7 +64,7 @@ public class PropertiesLauncherTests {
 	@Test
 	public void testSystemPropertySpecifiedMain() throws Exception {
 		System.setProperty("loader.main", "foo.Bar");
-		this.launcher.initialize();
+		this.launcher.initialize(new File("."));
 		assertEquals("foo.Bar", this.launcher.getMainClass(null));
 	}
 

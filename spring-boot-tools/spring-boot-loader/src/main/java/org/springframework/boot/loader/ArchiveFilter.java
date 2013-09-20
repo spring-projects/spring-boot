@@ -16,28 +16,11 @@
 
 package org.springframework.boot.loader;
 
-import java.util.List;
-
 /**
- * {@link AbstractLauncher} for JAR based archives. This launcher assumes that dependency
- * jars are included inside a {@code /lib} directory.
- * 
- * @author Phillip Webb
+ * @author Dave Syer
  */
-public class JarLauncher extends AbstractLauncher {
+public interface ArchiveFilter {
 
-	public static void main(String[] args) {
-		new JarLauncher().launch(args);
-	}
-
-	@Override
-	public boolean isArchive(Archive.Entry entry) {
-		return !entry.isDirectory() && entry.getName().startsWith("lib/");
-	}
-
-	@Override
-	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
-		lib.add(0, archive);
-	}
+	public boolean isArchive(Archive.Entry entry);
 
 }
