@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.sample.tomcat.service.HelloWorldService;
@@ -54,7 +55,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
 	public static class NonAutoConfigurationSampleTomcatApplication {
 

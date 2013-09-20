@@ -40,7 +40,7 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
- * Configuration for triggered from {@link EndpointWebMvcAutoConfiguration} when a new
+ * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
  * {@link EmbeddedServletContainer} running on a different port is required.
  * 
  * @see EndpointWebMvcAutoConfiguration

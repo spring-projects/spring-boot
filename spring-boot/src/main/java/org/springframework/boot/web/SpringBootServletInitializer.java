@@ -22,8 +22,10 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.initializer.ParentContextApplicationContextInitializer;
+import org.springframework.boot.context.initializer.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.WebApplicationInitializer;
@@ -77,11 +79,12 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 		}
-		SpringApplication application = new SpringApplication(getConfigClasses());
-		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
-		context.setParent(parent);
-		context.setServletContext(servletContext);
-		application.setApplicationContext(context);
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.sources(getConfigClasses());
+		application.initializers(
+				new ParentContextApplicationContextInitializer(parent),
+				new ServletContextApplicationContextInitializer(servletContext));
+		application.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		return (WebApplicationContext) application.run();
 	}
 
