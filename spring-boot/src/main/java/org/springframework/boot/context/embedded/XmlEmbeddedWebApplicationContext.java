@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.embedded;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
@@ -132,8 +131,4 @@ public class XmlEmbeddedWebApplicationContext extends EmbeddedWebApplicationCont
 		this.reader.loadBeanDefinitions(resources);
 	}
 
-	@Override
-	public final void refresh() throws BeansException, IllegalStateException {
-		super.refresh();
-	}
 }

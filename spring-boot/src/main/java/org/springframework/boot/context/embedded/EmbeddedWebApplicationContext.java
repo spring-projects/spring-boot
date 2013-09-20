@@ -35,6 +35,7 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
@@ -112,6 +113,17 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 				.addBeanPostProcessor(new WebApplicationContextServletContextAwareProcessor(
 						this));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+	}
+
+	@Override
+	public final void refresh() throws BeansException, IllegalStateException {
+		try {
+			super.refresh();
+		}
+		catch (RuntimeException e) {
+			stopAndReleaseEmbeddedServletContainer();
+			throw e;
+		}
 	}
 
 	@Override
