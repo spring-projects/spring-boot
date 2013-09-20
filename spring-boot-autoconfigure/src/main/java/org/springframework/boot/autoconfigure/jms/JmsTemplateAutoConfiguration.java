@@ -33,7 +33,7 @@ import org.springframework.jms.core.JmsTemplate;
  * @author Greg Turnquist
  */
 @Configuration
-@ConditionalOnClass(JmsTemplate.class)
+@ConditionalOnClass({ JmsTemplate.class, ConnectionFactory.class })
 public class JmsTemplateAutoConfiguration {
 
 	@Configuration
