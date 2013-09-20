@@ -1,11 +1,13 @@
 package org.test
 
 @Grab("org.apache.activemq:activemq-all:5.4.0")
+@Grab("org.apache.activemq:activemq-pool:5.4.0")
 
 import java.util.concurrent.CountDownLatch
 
-@Configuration
 @Log
+@Configuration
+@EnableJmsMessaging
 class JmsExample implements CommandLineRunner {
 
 	private CountDownLatch latch = new CountDownLatch(1)
@@ -30,7 +32,6 @@ class JmsExample implements CommandLineRunner {
 			session.createObjectMessage("Greetings from Spring Boot via ActiveMQ")
 		} as MessageCreator
 		log.info "Sending JMS message..."
-		jmsTemplate.pubSubDomain = true
 		jmsTemplate.send("spring-boot", messageCreator)
 		latch.await()
 	}
