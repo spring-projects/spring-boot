@@ -173,7 +173,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private boolean isJsr303Present() {
 		for (String validatorClass : VALIDATOR_CLASSES) {
-			if (!ClassUtils.isPresent(validatorClass, null)) {
+			if (!ClassUtils.isPresent(validatorClass,
+					this.applicationContext.getClassLoader())) {
 				return false;
 			}
 		}

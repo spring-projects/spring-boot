@@ -175,21 +175,21 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void xmlSample() throws Exception {
-		start("samples/app.xml", "samples/runner.groovy");
+		start("samples/runner.xml", "samples/runner.groovy");
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Hello World"));
 	}
 
 	@Test
 	public void txSample() throws Exception {
-		start("samples/app.xml", "samples/tx.groovy");
+		start("samples/tx.groovy");
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Foo count="));
 	}
 
 	@Test
 	public void jmsSample() throws Exception {
-		start("samples/app.xml", "samples/jms.groovy");
+		start("samples/jms.groovy");
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output,
 				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
