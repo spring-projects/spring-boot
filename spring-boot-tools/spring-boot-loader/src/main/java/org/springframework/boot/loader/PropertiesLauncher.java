@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +32,8 @@ import java.util.logging.Logger;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 /**
- * {@link Launcher} for archives with user-configured classpath and main class via a
- * properties file. This model is often more flexible and more amenable to creating
+ * {@link AbstractLauncher} for archives with user-configured classpath and main class via
+ * a properties file. This model is often more flexible and more amenable to creating
  * well-behaved OS-level services than a model based on executable jars.
  * 
  * <p>
@@ -49,19 +48,20 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * System properties in case the file doesn't exist):
  * 
  * <ul>
- * <li><code>loader.path</code>: a comma-separated list of classpath directories
- * (containing file resources and/or archives in *.jar or *.zip). Defaults to
- * <code>lib</code> (i.e. a directory in the current working directory)</li>
+ * <li><code>loader.path</code>: a comma-separated list of directories to append to the
+ * classpath (containing file resources and/or nested archives in *.jar or *.zip).
+ * Defaults to <code>lib</code> (i.e. a directory in the current working directory)</li>
  * <li><code>loader.main</code>: the main method to delegate execution to once the class
- * loader is set up. No default, but will fall back to looking in a
- * <code>MANIFEST.MF</code> if there is one.</li>
+ * loader is set up. No default, but will fall back to looking for a
+ * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
+ * <code>${loader.home}/META-INF</code>.</li>
  * </ul>
  * 
  * @author Dave Syer
  */
-public class PropertiesLauncher extends Launcher {
+public class PropertiesLauncher implements ArchiveFilter {
 
-	private Logger logger = Logger.getLogger(Launcher.class.getName());
+	private Logger logger = Logger.getLogger(AbstractLauncher.class.getName());
 
 	/**
 	 * Properties key for main class
@@ -85,10 +85,32 @@ public class PropertiesLauncher extends Launcher {
 
 	private Properties properties = new Properties();
 
+	private LaunchHelper helper = new LaunchHelper();
+
+	public static void main(String[] args) {
+		new PropertiesLauncher().launch(args);
+	}
+
+	/**
+	 * Launch the application. This method is the initial entry point that should be
+	 * called by a subclass {@code public static void main(String[] args)} method.
+	 * @param args the incoming arguments
+	 */
+	public void launch(String[] args) {
+		try {
+			File home = getHomeDirectory();
+			initialize(home);
+			this.helper.launch(args, getMainClass(home), getLibrary(home, this.paths));
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			System.exit(1);
+		}
+	}
+
 	@Override
-	protected void launch(String[] args, ProtectionDomain protectionDomain)
-			throws Exception {
-		launch(args, new ExplodedArchive(getHomeDirectory()));
+	public boolean isArchive(Archive.Entry entry) {
+		return entry.isDirectory() || isArchive(entry.getName());
 	}
 
 	protected File getHomeDirectory() {
@@ -96,28 +118,62 @@ public class PropertiesLauncher extends Launcher {
 				"${user.dir}")));
 	}
 
-	/**
-	 * Look in various places for a properties file to extract loader settings. Default to
-	 * <code>application.properties</code> either on the current classpath or in the
-	 * current working directory.
-	 * @see org.springframework.boot.loader.Launcher#launch(java.lang.String[],
-	 * org.springframework.boot.loader.Archive)
-	 */
-	@Override
-	protected void launch(String[] args, Archive archive) throws Exception {
-		initialize();
-		super.launch(args, archive);
+	protected String getMainClass(File home) throws Exception {
+		if (System.getProperty(MAIN) != null) {
+			return SystemPropertyUtils.resolvePlaceholders(System.getProperty(MAIN));
+		}
+		if (this.properties.containsKey(MAIN)) {
+			return SystemPropertyUtils.resolvePlaceholders(this.properties
+					.getProperty(MAIN));
+		}
+		return this.helper.getMainClass(new ExplodedArchive(home));
 	}
 
-	protected void initialize() throws Exception {
-		initializeProperties();
+	protected void initialize(File home) throws Exception {
+		initializeProperties(home);
 		initializePaths();
 	}
 
-	private void initializeProperties() throws Exception, IOException {
+	private boolean isArchive(String name) {
+		return name.endsWith(".jar") || name.endsWith(".zip");
+	}
+
+	/**
+	 * Search the configured paths and look for nested archives.
+	 * 
+	 * @param home the home directory for this launch
+	 * @param paths the directory roots for classpath entries
+	 * @return a library of archives that can be used as a classpath
+	 * @throws Exception
+	 */
+	private List<Archive> getLibrary(File home, List<String> paths) throws Exception {
+		List<Archive> lib = new ArrayList<Archive>();
+		for (String path : paths) {
+			String root = cleanupPath(stripFileUrlPrefix(path));
+			File file = new File(root);
+			if (!root.startsWith("/")) {
+				file = new File(home, root);
+			}
+			if (file.isDirectory()) {
+				this.logger.info("Adding classpath entries from " + path);
+				Archive archive = new ExplodedArchive(file);
+				lib.addAll(this.helper.findNestedArchives(archive, this));
+				lib.add(0, archive);
+			}
+			else {
+				this.logger.info("No directory found at " + path);
+			}
+		}
+		return lib;
+	}
+
+	private void initializeProperties(File home) throws Exception, IOException {
 		String config = SystemPropertyUtils.resolvePlaceholders(System.getProperty(
 				CONFIG_NAME, "application")) + ".properties";
 		InputStream resource = getClasspathResource(config);
+		if (resource == null) {
+			resource = getResource(new File(home, config).getAbsolutePath());
+		}
 		if (resource == null) {
 			config = SystemPropertyUtils.resolvePlaceholders(System.getProperty(
 					CONFIG_LOCATION, config));
@@ -260,45 +316,6 @@ public class PropertiesLauncher extends Launcher {
 			path = path.substring(2);
 		}
 		return path;
-	}
-
-	@Override
-	protected boolean isNestedArchive(Archive.Entry entry) {
-		String name = entry.getName();
-		for (String path : this.paths) {
-			if (path.length() > 0) {
-				if ((entry.isDirectory() && name.equals(path))
-						|| (!entry.isDirectory() && name.startsWith(path) && isArchive(name))) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	private boolean isArchive(String name) {
-		return name.endsWith(".jar") || name.endsWith(".zip");
-	}
-
-	@Override
-	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
-		lib.add(0, archive);
-	}
-
-	@Override
-	protected String getMainClass(Archive archive) throws Exception {
-		if (System.getProperty(MAIN) != null) {
-			return SystemPropertyUtils.resolvePlaceholders(System.getProperty(MAIN));
-		}
-		if (this.properties.containsKey(MAIN)) {
-			return SystemPropertyUtils.resolvePlaceholders(this.properties
-					.getProperty(MAIN));
-		}
-		return super.getMainClass(archive);
-	}
-
-	public static void main(String[] args) {
-		new PropertiesLauncher().launch(args);
 	}
 
 }

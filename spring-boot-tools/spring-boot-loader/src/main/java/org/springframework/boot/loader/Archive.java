@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.jar.Manifest;
 
 /**
- * An archive that can be launched by the {@link Launcher}.
+ * An archive that can be launched by the {@link AbstractLauncher}.
  * 
  * @author Phillip Webb
  * @see JarFileArchive

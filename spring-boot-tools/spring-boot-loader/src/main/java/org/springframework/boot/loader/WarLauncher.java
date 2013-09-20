@@ -20,16 +20,20 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.
- * Supports dependencies in {@code WEB-INF/lib} as well as {@code WEB-INF/lib-provided},
- * classes are loaded from {@code WEB-INF/classes}.
+ * {@link AbstractLauncher} for WAR based archives. This launcher for standard WAR
+ * archives. Supports dependencies in {@code WEB-INF/lib} as well as
+ * {@code WEB-INF/lib-provided}, classes are loaded from {@code WEB-INF/classes}.
  * 
  * @author Phillip Webb
  */
-public class WarLauncher extends Launcher {
+public class WarLauncher extends AbstractLauncher {
+
+	public static void main(String[] args) {
+		new WarLauncher().launch(args);
+	}
 
 	@Override
-	protected boolean isNestedArchive(Archive.Entry entry) {
+	public boolean isArchive(Archive.Entry entry) {
 		if (entry.isDirectory()) {
 			return entry.getName().equals("WEB-INF/classes/");
 		}
@@ -62,10 +66,6 @@ public class WarLauncher extends Launcher {
 				return entryName;
 			}
 		});
-	}
-
-	public static void main(String[] args) {
-		new WarLauncher().launch(args);
 	}
 
 }
