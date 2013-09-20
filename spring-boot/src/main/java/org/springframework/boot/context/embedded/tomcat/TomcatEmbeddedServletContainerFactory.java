@@ -131,15 +131,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 		customizeConnector(connector);
 		tomcat.getService().addConnector(connector);
 		tomcat.setConnector(connector);
-		try {
-			// Allow the server to start so the ServletContext is available, but stop the
-			// connector to prevent requests from being handled before the Spring context
-			// is ready:
-			connector.getProtocolHandler().pause();
-		}
-		catch (Exception e) {
-			this.logger.error("Cannot pause connector: ", e);
-		}
 		tomcat.getHost().setAutoDeploy(false);
 		tomcat.getEngine().setBackgroundProcessorDelay(-1);
 
@@ -203,10 +194,15 @@ public class TomcatEmbeddedServletContainerFactory extends
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
 		connector.setPort(getPort());
-		if (connector.getProtocolHandler() instanceof AbstractProtocol
-				&& getAddress() != null) {
-			((AbstractProtocol) connector.getProtocolHandler()).setAddress(getAddress());
+		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
+			if (getAddress() != null) {
+				((AbstractProtocol) connector.getProtocolHandler())
+						.setAddress(getAddress());
+			}
 		}
+		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
+		// prematurely...
+		connector.setProperty("bindOnInit", "false");
 	}
 
 	/**
