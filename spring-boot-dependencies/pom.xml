@@ -7,7 +7,7 @@
 	<version>0.5.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<properties>
-		<activemq.version>5.7.0</activemq.version>
+		<activemq.version>5.4.0</activemq.version>
 		<aspectj.version>1.7.3</aspectj.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-httpclient.version>3.1</commons-httpclient.version>
