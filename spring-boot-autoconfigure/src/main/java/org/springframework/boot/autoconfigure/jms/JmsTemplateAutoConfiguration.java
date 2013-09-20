@@ -83,14 +83,12 @@ public class JmsTemplateAutoConfiguration {
 		@Autowired
 		private ActiveMQConnectionFactoryProperties config;
 		
-		private PooledConnectionFactory pool;
-
 		@Bean
 		ConnectionFactory connectionFactory() {
 			if (this.config.isPooled()) {
-				this.pool = new PooledConnectionFactory();
-				this.pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config.getBrokerURL()));
-				return this.pool;
+				PooledConnectionFactory pool = new PooledConnectionFactory();
+				pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config.getBrokerURL()));
+				return pool;
 			} else {
 				return new ActiveMQConnectionFactory(this.config.getBrokerURL());
 			}

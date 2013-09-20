@@ -174,6 +174,44 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(pool);
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
+		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool.getConnectionFactory();
+		assertEquals("vm://localhost", factory.getBrokerURL());
+	}
+
+	@Test
+	public void testActiveMQOverriddenPoolAndStandalone() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context
+				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.activemq.pooled:true",
+				"spring.activemq.inMemory:false");
+		this.context.refresh();
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		PooledConnectionFactory pool = this.context
+				.getBean(PooledConnectionFactory.class);
+		assertNotNull(jmsTemplate);
+		assertNotNull(pool);
+		assertEquals(jmsTemplate.getConnectionFactory(), pool);
+		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool.getConnectionFactory();
+		assertEquals("tcp://localhost:61616", factory.getBrokerURL());
+	}
+
+	@Test
+	public void testActiveMQOverriddenPoolAndRemoteServer() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context
+				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.activemq.pooled:true",
+				"spring.activemq.inMemory:false", "spring.activemq.brokerURL:tcp://remote-host:10000");
+		this.context.refresh();
+		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
+		PooledConnectionFactory pool = this.context
+				.getBean(PooledConnectionFactory.class);
+		assertNotNull(jmsTemplate);
+		assertNotNull(pool);
+		assertEquals(jmsTemplate.getConnectionFactory(), pool);
+		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool.getConnectionFactory();
+		assertEquals("tcp://remote-host:10000", factory.getBrokerURL());
 	}
 
 	@Configuration
