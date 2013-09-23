@@ -56,7 +56,7 @@ import org.springframework.boot.cli.Log;
  * Spring repos to the search path, provide simple log progress feedback if downloads are
  * taking a long time, and also fixes a problem where ivy cannot use a local Maven cache
  * repo.
- *
+ * 
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -111,9 +111,9 @@ class GrapeEngineCustomizer {
 		// Add support for spring snapshots and milestones if required
 		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
 			springBootResolver.addSpringSnapshotResolver(newResolver("spring-snapshot",
-					"http://repo.springsource.org/snapshot"));
+					"http://repo.spring.io/snapshot"));
 			springBootResolver.addSpringSnapshotResolver(newResolver("spring-milestone",
-					"http://repo.springsource.org/milestone"));
+					"http://repo.spring.io/milestone"));
 		}
 
 		// Replace the original resolvers

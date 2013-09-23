@@ -38,11 +38,11 @@ If you are using a milestone or snapshot release you will also need to add appro
 <pluginRepositories>
 	<pluginRepository>
 		<id>spring-snapshots</id>
-		<url>http://repo.springsource.org/snapshot</url>
+		<url>http://repo.spring.io/snapshot</url>
 	</pluginRepository>
 	<pluginRepository>
 		<id>spring-milestones</id>
-		<url>http://repo.springsource.org/milestone</url>
+		<url>http://repo.spring.io/milestone</url>
 	</pluginRepository>
 </pluginRepositories>
 ```

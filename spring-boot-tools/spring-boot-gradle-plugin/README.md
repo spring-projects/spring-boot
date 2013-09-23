@@ -20,8 +20,8 @@ If you are using a milestone or snapshot release you will also need to add appro
 ```groovy
 buildscript {
 	repositories {
-		maven.url "http://repo.springsource.org/snapshot"
-		maven.url "http://repo.springsource.org/milestone"
+		maven.url "http://repo.spring.io/snapshot"
+		maven.url "http://repo.spring.io/milestone"
 	}
 	// ...
 }

@@ -16,20 +16,13 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.version>3.0.5</maven.version>
 	</properties>
-	<developers>
-		<developer>
-			<id>spring</id>
-			<name>SpringSource</name>
-			<url>http://www.springsource.org</url>
-		</developer>
-	</developers>
 	<prerequisites>
 		<maven>3.0.0</maven>
 	</prerequisites>
 	<scm>
-		<url>http://github.com/SpringSource/spring-boot</url>
-		<connection>scm:git:git://github.com/SpringSource/spring-boot.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/SpringSource/spring-boot.git</developerConnection>
+		<url>http://github.com/spring-projects/spring-boot</url>
+		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
 	</scm>
 	<dependencyManagement>
 		<dependencies>
@@ -174,7 +167,7 @@
 	<repositories>
 		<repository>
 			<id>spring-ext</id>
-			<url>http://repo.springsource.org/ext-release-local/</url>
+			<url>http://repo.spring.io/ext-release-local/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -287,7 +280,7 @@
 				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://maven.springframework.org/milestone</url>
+					<url>http://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -295,7 +288,7 @@
 				<repository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://maven.springframework.org/snapshot</url>
+					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
@@ -305,7 +298,7 @@
 				<pluginRepository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
-					<url>http://maven.springframework.org/milestone</url>
+					<url>http://repo.spring.io/milestone</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
@@ -313,7 +306,7 @@
 				<pluginRepository>
 					<id>spring-snapshots</id>
 					<name>Spring Snapshots</name>
-					<url>http://maven.springframework.org/snapshot</url>
+					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>
