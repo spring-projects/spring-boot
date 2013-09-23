@@ -29,7 +29,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationUtils;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -46,9 +48,10 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Oliver Gierke
  */
 public abstract class AbstractRepositoryConfigurationSourceSupport implements
-		BeanFactoryAware, ImportBeanDefinitionRegistrar, BeanClassLoaderAware {
+		BeanFactoryAware, ImportBeanDefinitionRegistrar, BeanClassLoaderAware, EnvironmentAware {
 
 	private static Log logger = LogFactory
 			.getLog(AbstractRepositoryConfigurationSourceSupport.class);
@@ -56,6 +59,8 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	private ClassLoader beanClassLoader;
 
 	private BeanFactory beanFactory;
+	
+	private Environment environment;
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
@@ -90,7 +95,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
 				getConfiguration(), true);
 		AnnotationRepositoryConfigurationSource configurationSource = new AnnotationRepositoryConfigurationSource(
-				metadata, getAnnotation()) {
+				metadata, getAnnotation(), environment) {
 
 			@Override
 			public java.lang.Iterable<String> getBasePackages() {
@@ -136,4 +141,8 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 		this.beanFactory = beanFactory;
 	}
 
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
+	}
 }
