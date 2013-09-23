@@ -40,10 +40,10 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.M4-bin.zip](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.zip)
-* [spring-boot-cli-0.5.0.M4-bin.tar.gz](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.tar.gz)
+* [spring-boot-cli-0.5.0.M4-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.zip)
+* [spring-boot-cli-0.5.0.M4-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.tar.gz)
 
-Cutting edge [snapshot distributions](http://repo.springsource.org/snapshot/org/springframework/boot/spring-boot-cli/)
+Cutting edge [snapshot distributions](http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
 
 Once downloaded, follow the
@@ -69,7 +69,7 @@ If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to
 the Spring Boot CLI is:
 
 ```
-$ brew install http://repo.springsource.org/install/spring-boot-cli.rb
+$ brew install http://repo.spring.io/install/spring-boot-cli.rb
 ```
 
 Homebrew will install `spring` to `/usr/local/bin`. Now you can jump right to a
@@ -157,23 +157,23 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
-			<url>http://repo.springsource.org/snapshot</url>
+			<url>http://repo.spring.io/snapshot</url>
 			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 		<repository>
 			<id>spring-milestones</id>
-			<url>http://repo.springsource.org/milestone</url>
+			<url>http://repo.spring.io/milestone</url>
 			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-snapshots</id>
-			<url>http://repo.springsource.org/snapshot</url>
+			<url>http://repo.spring.io/snapshot</url>
 		</pluginRepository>
 		<pluginRepository>
 			<id>spring-milestones</id>
-			<url>http://repo.springsource.org/milestone</url>
+			<url>http://repo.spring.io/milestone</url>
 		</pluginRepository>
 	</pluginRepositories>
 </project>
@@ -226,7 +226,7 @@ should see  the following output:
 
 ## Building Spring Boot from source
 You don't need to build from source to use Spring Boot (it's in
-[repo.springsource.org](http://repo.springsource.org)), but if you want to try out the
+[repo.spring.io](http://repo.spring.io)), but if you want to try out the
 latest and greatest, Spring Boot can be
 [built with maven](http://maven.apache.org/run-maven/index.html) v3.0.5 or above.
 
