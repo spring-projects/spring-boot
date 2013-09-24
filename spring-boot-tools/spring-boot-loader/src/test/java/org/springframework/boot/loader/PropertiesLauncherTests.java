@@ -33,6 +33,7 @@ public class PropertiesLauncherTests {
 
 	@After
 	public void close() {
+		System.clearProperty("loader.system");
 		System.clearProperty("loader.home");
 		System.clearProperty("loader.path");
 		System.clearProperty("loader.main");
@@ -50,6 +51,7 @@ public class PropertiesLauncherTests {
 	public void testUserSpecifiedMain() throws Exception {
 		this.launcher.initialize(new File("."));
 		assertEquals("demo.Application", this.launcher.getMainClass(null));
+		assertEquals(null, System.getProperty("loader.main"));
 	}
 
 	@Test
@@ -66,6 +68,13 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.main", "foo.Bar");
 		this.launcher.initialize(new File("."));
 		assertEquals("foo.Bar", this.launcher.getMainClass(null));
+	}
+
+	@Test
+	public void testSystemPropertiesSet() throws Exception {
+		System.setProperty("loader.system", "true");
+		this.launcher.initialize(new File("."));
+		assertEquals("demo.Application", System.getProperty("loader.main"));
 	}
 
 }
