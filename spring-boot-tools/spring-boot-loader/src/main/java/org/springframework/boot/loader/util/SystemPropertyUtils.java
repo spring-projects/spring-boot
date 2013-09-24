@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.util;
 
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -61,13 +62,30 @@ public abstract class SystemPropertyUtils {
 	 */
 	public static String resolvePlaceholders(String text) {
 		if (text == null) {
-			throw new IllegalArgumentException("Argument 'value' must not be null.");
+			return text;
 		}
-		return parseStringValue(text, text, new HashSet<String>());
+		return parseStringValue(null, text, text, new HashSet<String>());
 	}
 
-	private static String parseStringValue(String value, String current,
-			Set<String> visitedPlaceholders) {
+	/**
+	 * Resolve ${...} placeholders in the given text, replacing them with corresponding
+	 * system property values.
+	 * @param properties a properties instance to use in addition to System
+	 * @param text the String to resolve
+	 * @return the resolved String
+	 * @see #PLACEHOLDER_PREFIX
+	 * @see #PLACEHOLDER_SUFFIX
+	 * @throws IllegalArgumentException if there is an unresolvable placeholder
+	 */
+	public static String resolvePlaceholders(Properties properties, String text) {
+		if (text == null) {
+			return text;
+		}
+		return parseStringValue(properties, text, text, new HashSet<String>());
+	}
+
+	private static String parseStringValue(Properties properties, String value,
+			String current, Set<String> visitedPlaceholders) {
 
 		StringBuilder buf = new StringBuilder(current);
 
@@ -85,9 +103,10 @@ public abstract class SystemPropertyUtils {
 				// Recursive invocation, parsing placeholders contained in the
 				// placeholder
 				// key.
-				placeholder = parseStringValue(value, placeholder, visitedPlaceholders);
+				placeholder = parseStringValue(properties, value, placeholder,
+						visitedPlaceholders);
 				// Now obtain the value for the fully resolved key...
-				String propVal = resolvePlaceholder(value, placeholder);
+				String propVal = resolvePlaceholder(properties, value, placeholder);
 				if (propVal == null && VALUE_SEPARATOR != null) {
 					int separatorIndex = placeholder.indexOf(VALUE_SEPARATOR);
 					if (separatorIndex != -1) {
@@ -95,7 +114,7 @@ public abstract class SystemPropertyUtils {
 								separatorIndex);
 						String defaultValue = placeholder.substring(separatorIndex
 								+ VALUE_SEPARATOR.length());
-						propVal = resolvePlaceholder(value, actualPlaceholder);
+						propVal = resolvePlaceholder(properties, value, actualPlaceholder);
 						if (propVal == null) {
 							propVal = defaultValue;
 						}
@@ -104,7 +123,8 @@ public abstract class SystemPropertyUtils {
 				if (propVal != null) {
 					// Recursive invocation, parsing placeholders contained in the
 					// previously resolved placeholder value.
-					propVal = parseStringValue(value, propVal, visitedPlaceholders);
+					propVal = parseStringValue(properties, value, propVal,
+							visitedPlaceholders);
 					buf.replace(startIndex, endIndex + PLACEHOLDER_SUFFIX.length(),
 							propVal);
 					startIndex = buf.indexOf(PLACEHOLDER_PREFIX,
@@ -125,20 +145,23 @@ public abstract class SystemPropertyUtils {
 		return buf.toString();
 	}
 
-	private static String resolvePlaceholder(String text, String placeholderName) {
+	private static String resolvePlaceholder(Properties properties, String text,
+			String placeholderName) {
 		try {
 			String propVal = System.getProperty(placeholderName);
 			if (propVal == null) {
 				// Fall back to searching the system environment.
 				propVal = System.getenv(placeholderName);
 			}
-			return propVal;
+			if (propVal != null) {
+				return propVal;
+			}
 		}
 		catch (Throwable ex) {
 			System.err.println("Could not resolve placeholder '" + placeholderName
 					+ "' in [" + text + "] as system property: " + ex);
-			return null;
 		}
+		return properties.getProperty(placeholderName);
 	}
 
 	private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
