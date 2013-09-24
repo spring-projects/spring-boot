@@ -4,10 +4,10 @@ Spring Boot CLI
 
 ==================================================================
 
-GoPivotal makes available all content in this download ("Content"). 
-Unless otherwise indicated below, the Content is provided to you under 
-the terms and conditions of the Eclipse Public License Version 1.0 ("EPL"). 
-A copy of the EPL is available in the file called license.txt. For 
+GoPivotal makes available all content in this download ("Content").
+Unless otherwise indicated below, the Content is provided to you under
+the terms and conditions of the Eclipse Public License Version 1.0 ("EPL").
+A copy of the EPL is available in the file called license.txt. For
 purposes of the EPL, "Program" will mean the Content.
 
 The following copyright statements and licenses apply to various open
