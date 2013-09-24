@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -38,6 +37,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -133,7 +134,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		// is intentionally not completely auto-configured.
 		childContext.register(EndpointWebMvcChildContextConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class);
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
 
 		// Ensure close on the parent also closes the child
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
@@ -154,7 +156,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		DISABLE, SAME, DIFFERENT;
 
-		public static ManagementServerPort get(BeanFactory beanFactory) {
+		public static ManagementServerPort get(ApplicationContext beanFactory) {
 
 			ServerProperties serverProperties;
 			try {
@@ -175,6 +177,10 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 			if (DISABLED_PORT.equals(managementServerProperties.getPort())) {
 				return DISABLE;
+			}
+			if (!(beanFactory instanceof GenericWebApplicationContext)) {
+				// Current context is no a a webapp
+				return DIFFERENT;
 			}
 			return managementServerProperties.getPort() == null
 					|| serverProperties.getPort() == managementServerProperties.getPort() ? SAME
