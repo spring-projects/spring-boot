@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
+package org.springframework.boot.loader.archive;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +33,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.loader.Archive.Entry;
+import org.springframework.boot.loader.TestJarCreator;
+import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.archive.Archive.Entry;
+import org.springframework.boot.loader.archive.ExplodedArchive;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -126,7 +129,7 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getFilteredArchive() throws Exception {
 		Archive filteredArchive = this.archive
-				.getFilteredArchive(new Archive.EntryFilter() {
+				.getFilteredArchive(new Archive.EntryRenameFilter() {
 					@Override
 					public String apply(String entryName, Entry entry) {
 						if (entryName.equals("1.dat")) {

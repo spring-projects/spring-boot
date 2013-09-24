@@ -19,21 +19,19 @@ package org.springframework.boot.loader;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.boot.loader.archive.Archive;
+
 /**
- * {@link AbstractLauncher} for WAR based archives. This launcher for standard WAR
- * archives. Supports dependencies in {@code WEB-INF/lib} as well as
- * {@code WEB-INF/lib-provided}, classes are loaded from {@code WEB-INF/classes}.
+ * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.
+ * Supports dependencies in {@code WEB-INF/lib} as well as {@code WEB-INF/lib-provided},
+ * classes are loaded from {@code WEB-INF/classes}.
  * 
  * @author Phillip Webb
  */
-public class WarLauncher extends AbstractLauncher {
-
-	public static void main(String[] args) {
-		new WarLauncher().launch(args);
-	}
+public class WarLauncher extends ExecutableArchiveLauncher {
 
 	@Override
-	public boolean isArchive(Archive.Entry entry) {
+	public boolean isNestedArchive(Archive.Entry entry) {
 		if (entry.isDirectory()) {
 			return entry.getName().equals("WEB-INF/classes/");
 		}
@@ -44,20 +42,18 @@ public class WarLauncher extends AbstractLauncher {
 	}
 
 	@Override
-	protected void postProcessLib(Archive archive, List<Archive> lib) throws Exception {
-		lib.add(0, filterArchive(archive));
+	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
+		archives.add(0, getFilteredArchive());
 	}
 
 	/**
 	 * Filter the specified WAR file to exclude elements that should not appear on the
 	 * classpath.
-	 * @param archive the source archive
 	 * @return the filtered archive
 	 * @throws IOException on error
 	 */
-	protected Archive filterArchive(Archive archive) throws IOException {
-		return archive.getFilteredArchive(new Archive.EntryFilter() {
-
+	protected Archive getFilteredArchive() throws IOException {
+		return getArchive().getFilteredArchive(new Archive.EntryRenameFilter() {
 			@Override
 			public String apply(String entryName, Archive.Entry entry) {
 				if (entryName.startsWith("META-INF/") || entryName.startsWith("WEB-INF/")) {
@@ -68,4 +64,7 @@ public class WarLauncher extends AbstractLauncher {
 		});
 	}
 
+	public static void main(String[] args) {
+		new WarLauncher().launch(args);
+	}
 }

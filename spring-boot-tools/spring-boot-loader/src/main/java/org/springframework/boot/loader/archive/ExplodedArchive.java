@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
+package org.springframework.boot.loader.archive;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,10 +24,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -37,7 +40,7 @@ import java.util.jar.Manifest;
  * 
  * @author Phillip Webb
  */
-public class ExplodedArchive implements Archive {
+public class ExplodedArchive extends Archive {
 
 	private static final Set<String> SKIPPED_NAMES = new HashSet<String>(Arrays.asList(
 			".", ".."));
@@ -83,6 +86,12 @@ public class ExplodedArchive implements Archive {
 	}
 
 	@Override
+	public URL getUrl() throws MalformedURLException {
+		FilteredURLStreamHandler handler = new FilteredURLStreamHandler();
+		return new URL("file", "", -1, this.root.getAbsolutePath() + "/", handler);
+	}
+
+	@Override
 	public Manifest getManifest() throws IOException {
 		if (this.manifest == null && this.entries.containsKey(MANIFEST_ENTRY_NAME)) {
 			FileEntry entry = (FileEntry) this.entries.get(MANIFEST_ENTRY_NAME);
@@ -98,25 +107,28 @@ public class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	public Iterable<Entry> getEntries() {
-		return this.entries.values();
+	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
+		List<Archive> nestedArchives = new ArrayList<Archive>();
+		for (Entry entry : getEntries()) {
+			if (filter.matches(entry)) {
+				nestedArchives.add(getNestedArchive(entry));
+			}
+		}
+		return Collections.unmodifiableList(nestedArchives);
 	}
 
 	@Override
-	public URL getUrl() throws MalformedURLException {
-		FilteredURLStreamHandler handler = new FilteredURLStreamHandler();
-		return new URL("file", "", -1, this.root.getAbsolutePath() + "/", handler);
-		// return this.root.toURI().toURL();
+	public Collection<Entry> getEntries() {
+		return Collections.unmodifiableCollection(this.entries.values());
 	}
 
-	@Override
-	public Archive getNestedArchive(Entry entry) throws IOException {
+	protected Archive getNestedArchive(Entry entry) throws IOException {
 		File file = ((FileEntry) entry).getFile();
 		return (file.isDirectory() ? new ExplodedArchive(file) : new JarFileArchive(file));
 	}
 
 	@Override
-	public Archive getFilteredArchive(EntryFilter filter) throws IOException {
+	public Archive getFilteredArchive(EntryRenameFilter filter) throws IOException {
 		Map<String, Entry> filteredEntries = new LinkedHashMap<String, Archive.Entry>();
 		for (Map.Entry<String, Entry> entry : this.entries.entrySet()) {
 			String filteredName = filter.apply(entry.getKey(), entry.getValue());

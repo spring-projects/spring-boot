@@ -25,7 +25,7 @@ import java.security.PrivilegedExceptionAction;
 import org.springframework.boot.loader.jar.RandomAccessJarFile;
 
 /**
- * {@link ClassLoader} used by the {@link AbstractLauncher}.
+ * {@link ClassLoader} used by the {@link Launcher}.
  * 
  * @author Phillip Webb
  */
