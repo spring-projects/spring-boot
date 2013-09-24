@@ -19,7 +19,9 @@ package org.springframework.boot.actuate.autoconfigure;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
@@ -44,17 +46,31 @@ import org.springframework.web.servlet.HandlerMapping;
  * @see EndpointWebMvcAutoConfiguration
  */
 @Configuration
-public class EndpointWebMvcChildContextConfiguration implements
-		EmbeddedServletContainerCustomizer {
+public class EndpointWebMvcChildContextConfiguration {
 
-	@Autowired
-	private ManagementServerProperties managementServerProperties;
+	@Configuration
+	protected static class ServerCustomization implements
+			EmbeddedServletContainerCustomizer {
 
-	@Override
-	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-		factory.setPort(this.managementServerProperties.getPort());
-		factory.setAddress(this.managementServerProperties.getAddress());
-		factory.setContextPath(this.managementServerProperties.getContextPath());
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		// This needs to be lazily initialized because EmbeddedServletContainerCustomizer
+		// instances get their callback very early in the context lifecycle.
+		private ManagementServerProperties managementServerProperties;
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+			if (this.managementServerProperties == null) {
+				this.managementServerProperties = BeanFactoryUtils
+						.beanOfTypeIncludingAncestors(this.beanFactory,
+								ManagementServerProperties.class);
+			}
+			factory.setPort(this.managementServerProperties.getPort());
+			factory.setAddress(this.managementServerProperties.getAddress());
+			factory.setContextPath(this.managementServerProperties.getContextPath());
+		}
+
 	}
 
 	@Bean

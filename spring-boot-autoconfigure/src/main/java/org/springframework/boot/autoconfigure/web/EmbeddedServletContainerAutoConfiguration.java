@@ -31,6 +31,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration.EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
@@ -53,6 +54,7 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
+@ConditionalOnWebApplication
 @Import(EmbeddedServletContainerCustomizerBeanPostProcessorRegistrar.class)
 public class EmbeddedServletContainerAutoConfiguration {
 
