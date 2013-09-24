@@ -35,5 +35,6 @@
 		<module>spring-boot-starter-tomcat</module>
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>
+		<module>spring-boot-starter-data-rest</module>
 	</modules>
 </project>
