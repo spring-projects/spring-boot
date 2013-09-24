@@ -161,7 +161,7 @@ public abstract class SystemPropertyUtils {
 			System.err.println("Could not resolve placeholder '" + placeholderName
 					+ "' in [" + text + "] as system property: " + ex);
 		}
-		return properties.getProperty(placeholderName);
+		return properties == null ? null : properties.getProperty(placeholderName);
 	}
 
 	private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {

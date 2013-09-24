@@ -96,6 +96,13 @@ public class PropertiesLauncher implements ArchiveFilter {
 	 */
 	public static final String CONFIG_LOCATION = "loader.config.location";
 
+	/**
+	 * Properties key for boolean flag (default false) which if set will cause the
+	 * external configuration properties to be copied to System properties (assuming that
+	 * is allowed by Java security).
+	 */
+	public static final String SET_SYSTEM_PROPERTIES = "loader.system";
+
 	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
 
 	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
@@ -213,10 +220,19 @@ public class PropertiesLauncher implements ArchiveFilter {
 					this.properties.put(key, value);
 				}
 			}
+			if (SystemPropertyUtils.resolvePlaceholders(
+					"${" + SET_SYSTEM_PROPERTIES + ":false}").equals("true")) {
+				this.logger.info("Adding resolved properties to System properties");
+				for (Object key : Collections.list(this.properties.propertyNames())) {
+					String value = this.properties.getProperty((String) key);
+					System.setProperty((String) key, value);
+				}
+			}
 		}
 		else {
 			this.logger.info("Not found: " + config);
 		}
+
 	}
 
 	private InputStream getResource(String config) throws Exception {
