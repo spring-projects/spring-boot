@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
+package org.springframework.boot.loader.archive;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -35,7 +36,7 @@ import org.springframework.boot.loader.jar.RandomAccessJarFile;
  * 
  * @author Phillip Webb
  */
-public class JarFileArchive implements Archive {
+public class JarFileArchive extends Archive {
 
 	private final RandomAccessJarFile jarFile;
 
@@ -56,29 +57,39 @@ public class JarFileArchive implements Archive {
 	}
 
 	@Override
-	public Manifest getManifest() throws IOException {
-		return this.jarFile.getManifest();
-	}
-
-	@Override
-	public Iterable<Entry> getEntries() {
-		return this.entries;
-	}
-
-	@Override
 	public URL getUrl() throws MalformedURLException {
 		return this.jarFile.getUrl();
 	}
 
 	@Override
-	public Archive getNestedArchive(Entry entry) throws IOException {
+	public Manifest getManifest() throws IOException {
+		return this.jarFile.getManifest();
+	}
+
+	@Override
+	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
+		List<Archive> nestedArchives = new ArrayList<Archive>();
+		for (Entry entry : getEntries()) {
+			if (filter.matches(entry)) {
+				nestedArchives.add(getNestedArchive(entry));
+			}
+		}
+		return Collections.unmodifiableList(nestedArchives);
+	}
+
+	@Override
+	public Collection<Entry> getEntries() {
+		return Collections.unmodifiableCollection(this.entries);
+	}
+
+	protected Archive getNestedArchive(Entry entry) throws IOException {
 		JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
 		RandomAccessJarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
 		return new JarFileArchive(jarFile);
 	}
 
 	@Override
-	public Archive getFilteredArchive(final EntryFilter filter) throws IOException {
+	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
 		RandomAccessJarFile filteredJar = this.jarFile
 				.getFilteredJarFile(new JarEntryFilter() {
 					@Override

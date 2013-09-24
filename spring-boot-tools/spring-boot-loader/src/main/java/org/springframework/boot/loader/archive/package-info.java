@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
-
 /**
- * @author Dave Syer
+ * Abstraction over logical Archives be they backed by a JAR file or unpacked into a
+ * folder.
+ *
+ * @see org.springframework.boot.loader.archive.Archive
  */
-public interface ArchiveFilter {
+package org.springframework.boot.loader.archive;
 
-	public boolean isArchive(Archive.Entry entry);
-
-}

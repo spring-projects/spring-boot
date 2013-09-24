@@ -14,48 +14,67 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
+package org.springframework.boot.loader.archive;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.List;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.Launcher;
+
 /**
- * An archive that can be launched by the {@link AbstractLauncher}.
+ * An archive that can be launched by the {@link Launcher}.
  * 
  * @author Phillip Webb
  * @see JarFileArchive
  */
-public interface Archive {
-
-	/**
-	 * Returns the manifest of the archive.
-	 * @return the manifest
-	 * @throws IOException
-	 */
-	Manifest getManifest() throws IOException;
-
-	/**
-	 * Returns archive entries.
-	 * @return the archive entries
-	 */
-	Iterable<Entry> getEntries();
+public abstract class Archive {
 
 	/**
 	 * Returns a URL that can be used to load the archive.
 	 * @return the archive URL
 	 * @throws MalformedURLException
 	 */
-	URL getUrl() throws MalformedURLException;
+	public abstract URL getUrl() throws MalformedURLException;
 
 	/**
-	 * Returns a nest archive from on the the contained entries.
-	 * @param entry the entry (may be a directory or file)
-	 * @return the nested archive
+	 * Obtain the main class that should be used to launch the application. By default
+	 * this method uses a {@code Start-Class} manifest entry.
+	 * @return the main class
+	 * @throws Exception
+	 */
+	public String getMainClass() throws Exception {
+		String mainClass = getManifest().getMainAttributes().getValue("Start-Class");
+		if (mainClass == null) {
+			throw new IllegalStateException("No 'Start-Class' manifest entry specified");
+		}
+		return mainClass;
+	}
+
+	/**
+	 * Returns the manifest of the archive.
+	 * @return the manifest
 	 * @throws IOException
 	 */
-	Archive getNestedArchive(Entry entry) throws IOException;
+	public abstract Manifest getManifest() throws IOException;
+
+	/**
+	 * Returns all entries from the archive.
+	 * @return the archive entries
+	 */
+	public abstract Collection<Entry> getEntries();
+
+	/**
+	 * Returns nested {@link Archive}s for entries that match the specified filter.
+	 * @param filter the filter used to limit entries
+	 * @return nested archives
+	 * @throws IOException
+	 */
+	public abstract List<Archive> getNestedArchives(EntryFilter filter)
+			throws IOException;
 
 	/**
 	 * Returns a filtered version of the archive.
@@ -63,7 +82,8 @@ public interface Archive {
 	 * @return a filter archive
 	 * @throws IOException
 	 */
-	Archive getFilteredArchive(EntryFilter filter) throws IOException;
+	public abstract Archive getFilteredArchive(EntryRenameFilter filter)
+			throws IOException;
 
 	/**
 	 * Represents a single entry in the archive.
@@ -85,9 +105,23 @@ public interface Archive {
 	}
 
 	/**
-	 * A filter for archive entries.
+	 * Strategy interface to filter {@link Entry Entries}.
 	 */
 	public static interface EntryFilter {
+
+		/**
+		 * Apply the jar entry filter.
+		 * @param entry the entry to filter
+		 * @return {@code true} if the filter matches
+		 */
+		boolean matches(Entry entry);
+
+	}
+
+	/**
+	 * Strategy interface to filter or rename {@link Entry Entries}.
+	 */
+	public static interface EntryRenameFilter {
 
 		/**
 		 * Apply the jar entry filter.

@@ -30,11 +30,15 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.archive.Archive.Entry;
+import org.springframework.boot.loader.archive.Archive.EntryFilter;
+import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 /**
- * {@link AbstractLauncher} for archives with user-configured classpath and main class via
- * a properties file. This model is often more flexible and more amenable to creating
+ * {@link Launcher} for archives with user-configured classpath and main class via a
+ * properties file. This model is often more flexible and more amenable to creating
  * well-behaved OS-level services than a model based on executable jars.
  * 
  * <p>
@@ -60,9 +64,9 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * 
  * @author Dave Syer
  */
-public class PropertiesLauncher implements ArchiveFilter {
+public class PropertiesLauncher extends Launcher {
 
-	private Logger logger = Logger.getLogger(AbstractLauncher.class.getName());
+	private Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * Properties key for main class
@@ -105,90 +109,26 @@ public class PropertiesLauncher implements ArchiveFilter {
 
 	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
 
+	private final File home;
+
 	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
 
 	private Properties properties = new Properties();
 
-	private LaunchHelper helper = new LaunchHelper();
-
-	public static void main(String[] args) {
-		new PropertiesLauncher().launch(args);
-	}
-
-	/**
-	 * Launch the application. This method is the initial entry point that should be
-	 * called by a subclass {@code public static void main(String[] args)} method.
-	 * @param args the incoming arguments
-	 */
-	public void launch(String[] args) {
+	public PropertiesLauncher() {
 		try {
-			File home = getHomeDirectory();
-			initialize(home);
-			this.helper.launch(args, getMainClass(home), getLibrary(home, this.paths));
+			this.home = getHomeDirectory();
+			initializeProperties(this.home);
+			initializePaths();
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(1);
+			throw new IllegalStateException(ex);
 		}
-	}
-
-	@Override
-	public boolean isArchive(Archive.Entry entry) {
-		return entry.isDirectory() || isArchive(entry.getName());
 	}
 
 	protected File getHomeDirectory() {
 		return new File(SystemPropertyUtils.resolvePlaceholders(System.getProperty(HOME,
 				"${user.dir}")));
-	}
-
-	protected String getMainClass(File home) throws Exception {
-		if (System.getProperty(MAIN) != null) {
-			return SystemPropertyUtils.resolvePlaceholders(System.getProperty(MAIN));
-		}
-		if (this.properties.containsKey(MAIN)) {
-			return SystemPropertyUtils.resolvePlaceholders(this.properties
-					.getProperty(MAIN));
-		}
-		return this.helper.getMainClass(new ExplodedArchive(home));
-	}
-
-	protected void initialize(File home) throws Exception {
-		initializeProperties(home);
-		initializePaths();
-	}
-
-	private boolean isArchive(String name) {
-		return name.endsWith(".jar") || name.endsWith(".zip");
-	}
-
-	/**
-	 * Search the configured paths and look for nested archives.
-	 * 
-	 * @param home the home directory for this launch
-	 * @param paths the directory roots for classpath entries
-	 * @return a library of archives that can be used as a classpath
-	 * @throws Exception
-	 */
-	private List<Archive> getLibrary(File home, List<String> paths) throws Exception {
-		List<Archive> lib = new ArrayList<Archive>();
-		for (String path : paths) {
-			String root = cleanupPath(stripFileUrlPrefix(path));
-			File file = new File(root);
-			if (!root.startsWith("/")) {
-				file = new File(home, root);
-			}
-			if (file.isDirectory()) {
-				this.logger.info("Adding classpath entries from " + path);
-				Archive archive = new ExplodedArchive(file);
-				lib.addAll(this.helper.findNestedArchives(archive, this));
-				lib.add(0, archive);
-			}
-			else {
-				this.logger.info("No directory found at " + path);
-			}
-		}
-		return lib;
 	}
 
 	private void initializeProperties(File home) throws Exception, IOException {
@@ -346,6 +286,46 @@ public class PropertiesLauncher implements ArchiveFilter {
 		return paths;
 	}
 
+	@Override
+	protected String getMainClass() throws Exception {
+		if (System.getProperty(MAIN) != null) {
+			return SystemPropertyUtils.resolvePlaceholders(System.getProperty(MAIN));
+		}
+		if (this.properties.containsKey(MAIN)) {
+			return SystemPropertyUtils.resolvePlaceholders(this.properties
+					.getProperty(MAIN));
+		}
+		return new ExplodedArchive(this.home).getMainClass();
+	}
+
+	@Override
+	protected List<Archive> getClassPathArchives() throws Exception {
+		List<Archive> lib = new ArrayList<Archive>();
+		for (String path : this.paths) {
+			String root = cleanupPath(stripFileUrlPrefix(path));
+			File file = new File(root);
+			if (!root.startsWith("/")) {
+				file = new File(this.home, root);
+			}
+			if (file.isDirectory()) {
+				this.logger.info("Adding classpath entries from " + path);
+				Archive archive = new ExplodedArchive(file);
+				lib.addAll(archive.getNestedArchives(new EntryFilter() {
+					@Override
+					public boolean matches(Entry entry) {
+						return entry.isDirectory() || entry.getName().endsWith(".jar")
+								|| entry.getName().endsWith(".zip");
+					}
+				}));
+				lib.add(0, archive);
+			}
+			else {
+				this.logger.info("No directory found at " + path);
+			}
+		}
+		return lib;
+	}
+
 	private String cleanupPath(String path) {
 		path = path.trim();
 		// Always a directory
@@ -357,6 +337,10 @@ public class PropertiesLauncher implements ArchiveFilter {
 			path = path.substring(2);
 		}
 		return path;
+	}
+
+	public static void main(String[] args) {
+		new PropertiesLauncher().launch(args);
 	}
 
 }

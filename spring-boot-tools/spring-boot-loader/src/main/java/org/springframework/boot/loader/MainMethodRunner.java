@@ -19,8 +19,8 @@ package org.springframework.boot.loader;
 import java.lang.reflect.Method;
 
 /**
- * Utility class that used by {@link AbstractLauncher}s to call a main method. This class allows
- * methods to be executed within a thread configured with a specific context classloader.
+ * Utility class that used by {@link Launcher}s to call a main method. This class allows
+ * methods to be executed within a thread configured with a specific context class loader.
  * 
  * @author Phillip Webb
  */

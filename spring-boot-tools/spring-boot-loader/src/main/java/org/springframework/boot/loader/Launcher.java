@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,79 +22,64 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.springframework.boot.loader.archive.Archive;
+
 /**
- * Common convenience methods shared by launcher implementations.
+ * Base class for launchers that can start an application with a fully configured
+ * classpath backed by one or more {@link Archive}s.
  * 
+ * @author Phillip Webb
  * @author Dave Syer
  */
-public class LaunchHelper {
+public abstract class Launcher {
 
-	private Logger logger = Logger.getLogger(LaunchHelper.class.getName());
+	protected Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * The main runner class. This must be loaded by the created ClassLoader so cannot be
 	 * directly referenced.
 	 */
-	private static final String RUNNER_CLASS = AbstractLauncher.class.getPackage()
-			.getName() + ".MainMethodRunner";
+	private static final String RUNNER_CLASS = Launcher.class.getPackage().getName()
+			+ ".MainMethodRunner";
 
 	/**
+	 * Launch the application. This method is the initial entry point that should be
+	 * called by a subclass {@code public static void main(String[] args)} method.
 	 * @param args the incoming arguments
-	 * @param mainClass the main class
-	 * @param lib a collection of archives (zip/jar/war or directory)
-	 * @throws Exception
 	 */
-	public void launch(String[] args, String mainClass, List<Archive> lib)
-			throws Exception {
-		ClassLoader classLoader = createClassLoader(lib);
-		launch(args, mainClass, classLoader);
-	}
-
-	/**
-	 * @param archive the archive to search
-	 * @return an accumulation of nested archives
-	 * @throws Exception
-	 */
-	public List<Archive> findNestedArchives(Archive archive, ArchiveFilter filter)
-			throws Exception {
-		List<Archive> lib = new ArrayList<Archive>();
-		for (Archive.Entry entry : archive.getEntries()) {
-			if (filter.isArchive(entry)) {
-				this.logger.fine("Adding: " + entry.getName());
-				lib.add(archive.getNestedArchive(entry));
-			}
+	protected void launch(String[] args) {
+		try {
+			ClassLoader classLoader = createClassLoader(getClassPathArchives());
+			launch(args, getMainClass(), classLoader);
 		}
-		return lib;
-	}
-
-	/**
-	 * Obtain the main class that should be used to launch the application. By default
-	 * this method uses a {@code Start-Class} manifest entry.
-	 * @param archive the archive
-	 * @return the main class
-	 * @throws Exception
-	 */
-	public String getMainClass(Archive archive) throws Exception {
-		String mainClass = archive.getManifest().getMainAttributes()
-				.getValue("Start-Class");
-		if (mainClass == null) {
-			throw new IllegalStateException("No 'Start-Class' manifest entry specified");
+		catch (Exception ex) {
+			ex.printStackTrace();
+			System.exit(1);
 		}
-		return mainClass;
 	}
 
 	/**
-	 * Create a classloader for the specified lib.
-	 * @param lib the lib
+	 * Create a classloader for the specified archives.
+	 * @param archives the archives
 	 * @return the classloader
 	 * @throws Exception
 	 */
-	protected ClassLoader createClassLoader(List<Archive> lib) throws Exception {
-		URL[] urls = new URL[lib.size()];
-		for (int i = 0; i < urls.length; i++) {
-			urls[i] = lib.get(i).getUrl();
+	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
+		List<URL> urls = new ArrayList<URL>(archives.size());
+		for (Archive archive : archives) {
+			urls.add(archive.getUrl());
 		}
-		return createClassLoader(urls);
+		return createClassLoader(urls.toArray(new URL[urls.size()]));
+	}
+
+	/**
+	 * Create a classloader for the specified URLs
+	 * @param urls the URLs
+	 * @return the classloader
+	 * @throws Exception
+	 */
+	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
+		return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
 	}
 
 	/**
@@ -114,16 +99,6 @@ public class LaunchHelper {
 	}
 
 	/**
-	 * Create a classloader for the specified URLs
-	 * @param urls the URLs
-	 * @return the classloader
-	 * @throws Exception
-	 */
-	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		return new LaunchedURLClassLoader(urls, getClass().getClassLoader());
-	}
-
-	/**
 	 * Create the {@code MainMethodRunner} used to launch the application.
 	 * @param mainClass the main class
 	 * @param args the incoming arguments
@@ -139,4 +114,17 @@ public class LaunchHelper {
 		return (Runnable) constructor.newInstance(mainClass, args);
 	}
 
+	/**
+	 * Returns the main class that should be launched.
+	 * @return the name of the main class
+	 * @throws Exception
+	 */
+	protected abstract String getMainClass() throws Exception;
+
+	/**
+	 * Returns the archives that will be used to construct the class path.
+	 * @return the class path archives
+	 * @throws Exception
+	 */
+	protected abstract List<Archive> getClassPathArchives() throws Exception;
 }

@@ -17,63 +17,72 @@
 package org.springframework.boot.loader;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link PropertiesLauncher}.
+ * 
  * @author Dave Syer
  */
 public class PropertiesLauncherTests {
 
-	private PropertiesLauncher launcher = new PropertiesLauncher();
+	@Before
+	public void setup() throws IOException {
+		System.setProperty("loader.home",
+				new File("src/test/resources").getAbsolutePath());
+	}
 
 	@After
 	public void close() {
-		System.clearProperty("loader.system");
 		System.clearProperty("loader.home");
 		System.clearProperty("loader.path");
 		System.clearProperty("loader.main");
 		System.clearProperty("loader.config.name");
 		System.clearProperty("loader.config.location");
+		System.clearProperty("loader.system");
 	}
 
 	@Test
 	public void testDefaultHome() {
-		assertEquals(new File(System.getProperty("user.dir")),
-				this.launcher.getHomeDirectory());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals(new File(System.getProperty("loader.home")),
+				launcher.getHomeDirectory());
 	}
 
 	@Test
 	public void testUserSpecifiedMain() throws Exception {
-		this.launcher.initialize(new File("."));
-		assertEquals("demo.Application", this.launcher.getMainClass(null));
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("demo.Application", launcher.getMainClass());
 		assertEquals(null, System.getProperty("loader.main"));
 	}
 
 	@Test
 	public void testUserSpecifiedConfigName() throws Exception {
+
 		System.setProperty("loader.config.name", "foo");
-		this.launcher.initialize(new File("."));
-		assertEquals("my.Application", this.launcher.getMainClass(null));
-		assertEquals("[etc/]", ReflectionTestUtils.getField(this.launcher, "paths")
-				.toString());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("my.Application", launcher.getMainClass());
+		assertEquals("[etc/]", ReflectionTestUtils.getField(launcher, "paths").toString());
 	}
 
 	@Test
 	public void testSystemPropertySpecifiedMain() throws Exception {
 		System.setProperty("loader.main", "foo.Bar");
-		this.launcher.initialize(new File("."));
-		assertEquals("foo.Bar", this.launcher.getMainClass(null));
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("foo.Bar", launcher.getMainClass());
 	}
 
 	@Test
 	public void testSystemPropertiesSet() throws Exception {
 		System.setProperty("loader.system", "true");
-		this.launcher.initialize(new File("."));
+		new PropertiesLauncher();
 		assertEquals("demo.Application", System.getProperty("loader.main"));
 	}
 
