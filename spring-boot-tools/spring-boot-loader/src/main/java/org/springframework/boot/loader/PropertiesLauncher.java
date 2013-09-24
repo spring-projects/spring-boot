@@ -25,6 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -69,14 +70,30 @@ public class PropertiesLauncher implements ArchiveFilter {
 	public static final String MAIN = "loader.main";
 
 	/**
-	 * Properties key for classpath entries (directories possibly containing jars)
+	 * Properties key for classpath entries (directories possibly containing jars).
+	 * Defaults to "lib/" (relative to {@link #HOME loader home directory}).
 	 */
 	public static final String PATH = "loader.path";
 
+	/**
+	 * Properties key for home directory. This is the location of external configuration
+	 * if not on classpath, and also the base path for any relative paths in the
+	 * {@link #PATH loader path}. Defaults to current working directory (
+	 * <code>${user.home}</code>).
+	 */
 	public static final String HOME = "loader.home";
 
+	/**
+	 * Properties key for name of external configuration file (excluding suffix). Defaults
+	 * to "application". Ignored if {@link #CONFIG_LOCATION loader config location} is
+	 * provided instead.
+	 */
 	public static final String CONFIG_NAME = "loader.config.name";
 
+	/**
+	 * Properties key for config file location (including optional classpath:, file: or
+	 * URL prefix)
+	 */
 	public static final String CONFIG_LOCATION = "loader.config.location";
 
 	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
@@ -187,6 +204,14 @@ public class PropertiesLauncher implements ArchiveFilter {
 			}
 			finally {
 				resource.close();
+			}
+			for (Object key : Collections.list(this.properties.propertyNames())) {
+				String text = this.properties.getProperty((String) key);
+				String value = SystemPropertyUtils.resolvePlaceholders(this.properties,
+						text);
+				if (value != null) {
+					this.properties.put(key, value);
+				}
 			}
 		}
 		else {
