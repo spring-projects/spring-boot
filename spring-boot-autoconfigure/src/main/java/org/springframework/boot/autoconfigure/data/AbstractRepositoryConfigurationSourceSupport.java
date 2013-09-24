@@ -51,7 +51,8 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Oliver Gierke
  */
 public abstract class AbstractRepositoryConfigurationSourceSupport implements
-		BeanFactoryAware, ImportBeanDefinitionRegistrar, BeanClassLoaderAware, EnvironmentAware {
+		BeanFactoryAware, ImportBeanDefinitionRegistrar, BeanClassLoaderAware,
+		EnvironmentAware {
 
 	private static Log logger = LogFactory
 			.getLog(AbstractRepositoryConfigurationSourceSupport.class);
@@ -59,7 +60,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	private ClassLoader beanClassLoader;
 
 	private BeanFactory beanFactory;
-	
+
 	private Environment environment;
 
 	@Override
@@ -95,7 +96,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 		StandardAnnotationMetadata metadata = new StandardAnnotationMetadata(
 				getConfiguration(), true);
 		AnnotationRepositoryConfigurationSource configurationSource = new AnnotationRepositoryConfigurationSource(
-				metadata, getAnnotation(), environment) {
+				metadata, getAnnotation(), this.environment) {
 
 			@Override
 			public java.lang.Iterable<String> getBasePackages() {
