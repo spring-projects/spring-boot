@@ -24,11 +24,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.ivy.util.FileUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
@@ -195,5 +191,14 @@ public class SampleIntegrationTests {
 				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
 		FileUtil.forceDelete(new File("activemq-data")); // cleanup ActiveMQ cruft
 	}
+
+    @Test
+    @Ignore // this test requires RabbitMQ to be run, so disable it be default
+    public void rabbitSample() throws Exception {
+        start("samples/rabbit.groovy");
+        String output = this.outputCapture.getOutputAndRelease();
+        assertTrue("Wrong output: " + output,
+                output.contains("Received Greetings from Spring Boot via RabbitMQ"));
+    }
 
 }
