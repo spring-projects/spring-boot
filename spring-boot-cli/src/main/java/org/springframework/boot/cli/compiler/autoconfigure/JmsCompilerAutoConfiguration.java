@@ -23,6 +23,8 @@ import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
+import java.lang.annotation.*;
+
 /**
  * {@link CompilerAutoConfiguration} for Spring JMS.
  * 
@@ -32,8 +34,9 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneFieldOrMethod(classNode, "JmsTemplate",
-				"DefaultMessageListenerContainer", "SimpleMessageListenerContainer");
+        // Slightly weird detection algorithm because there is no @Enable annotation for
+        // Spring JMS
+        return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJmsMessaging");
 	}
 
 	@Override
@@ -49,7 +52,15 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("javax.jms", "org.springframework.jms.core",
 				"org.springframework.jms.listener",
-				"org.springframework.jms.listener.adapter");
+				"org.springframework.jms.listener.adapter")
+                .addImports(EnableJmsMessaging.class.getCanonicalName());
 	}
+
+    @Target(ElementType.TYPE)
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    public static @interface EnableJmsMessaging {
+
+    }
 
 }

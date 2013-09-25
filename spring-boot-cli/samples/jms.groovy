@@ -5,8 +5,9 @@ package org.test
 
 import java.util.concurrent.CountDownLatch
 
-@Configuration
 @Log
+@Configuration
+@EnableJmsMessaging
 class JmsExample implements CommandLineRunner {
 
 	private CountDownLatch latch = new CountDownLatch(1)
@@ -31,7 +32,6 @@ class JmsExample implements CommandLineRunner {
 			session.createObjectMessage("Greetings from Spring Boot via ActiveMQ")
 		} as MessageCreator
 		log.info "Sending JMS message..."
-		jmsTemplate.pubSubDomain = true
 		jmsTemplate.send("spring-boot", messageCreator)
 		latch.await()
 	}
