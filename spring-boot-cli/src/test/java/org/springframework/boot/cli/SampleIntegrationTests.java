@@ -196,4 +196,12 @@ public class SampleIntegrationTests {
 		FileUtil.forceDelete(new File("activemq-data")); // cleanup ActiveMQ cruft
 	}
 
+    @Test
+    public void rabbitSample() throws Exception {
+        start("samples/rabbit.groovy");
+        String output = this.outputCapture.getOutputAndRelease();
+        assertTrue("Wrong output: " + output,
+                output.contains("Received Greetings from Spring Boot via RabbitMQ"));
+    }
+
 }
