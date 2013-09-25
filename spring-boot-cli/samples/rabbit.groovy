@@ -12,11 +12,27 @@ class RabbitExample implements CommandLineRunner {
     @Autowired
     RabbitTemplate rabbitTemplate
 
+    private String queueName = "spring-boot"
+
     @Bean
-    Binding binding() {
+    Queue queue() {
+        new Queue(queueName, false)
+    }
+
+    @Bean
+    TopicExchange exchange() {
+        new TopicExchange("spring-boot-exchange")
+    }
+
+    /**
+     * The queue and topic exchange cannot be inlined inside this method and have
+     * dynamic creation with Spring AMQP work properly.
+     */
+    @Bean
+    Binding binding(Queue queue, TopicExchange exchange) {
         BindingBuilder
-                .bind(new Queue("spring-boot", false))
-                .to(new TopicExchange("spring-boot-exchange"))
+                .bind(queue)
+                .to(exchange)
                 .with("spring-boot")
     }
 
@@ -24,14 +40,14 @@ class RabbitExample implements CommandLineRunner {
     SimpleMessageListenerContainer container(CachingConnectionFactory connectionFactory) {
         return new SimpleMessageListenerContainer(
             connectionFactory: connectionFactory,
-            queueNames: ["spring-boot"],
+            queueNames: [queueName],
             messageListener: new MessageListenerAdapter(new Receiver(latch:latch), "receive")
         )
     }
 
     void run(String... args) {
         log.info "Sending RabbitMQ message..."
-        rabbitTemplate.convertAndSend("spring-boot", "Greetings from Spring Boot via RabbitMQ")
+        rabbitTemplate.convertAndSend(queueName, "Greetings from Spring Boot via RabbitMQ")
         latch.await()
     }
 
