@@ -16,6 +16,9 @@
 
 package org.springframework.boot.cli;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.net.URL;
 import java.util.concurrent.Callable;
@@ -34,14 +37,12 @@ import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 /**
  * Integration tests to exercise the samples.
  * 
  * @author Dave Syer
  * @author Greg Turnquist
+ * @author Roy Clarkson
  */
 public class SampleIntegrationTests {
 
@@ -212,6 +213,14 @@ public class SampleIntegrationTests {
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output,
 				output.contains("Received Greetings from Spring Boot via RabbitMQ"));
+	}
+
+	@Test
+	public void deviceSample() throws Exception {
+		start("samples/device.groovy");
+		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
+				.openStream());
+		assertEquals("Hello Normal Device!", result);
 	}
 
 }
