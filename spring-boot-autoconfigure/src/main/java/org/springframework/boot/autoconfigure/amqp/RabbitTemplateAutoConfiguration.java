@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
- *
+ * 
  * @author Greg Turnquist
  */
 @Configuration
@@ -40,101 +41,102 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class RabbitTemplateAutoConfiguration {
 
-    @Bean
-    @ConditionalOnExpression("${spring.rabbitmq.dynamic:true}")
-    @ConditionalOnMissingBean(AmqpAdmin.class)
-    public AmqpAdmin amqpAdmin(CachingConnectionFactory connectionFactory) {
-        return new RabbitAdmin(connectionFactory);
-    }
+	@Bean
+	@ConditionalOnExpression("${spring.rabbitmq.dynamic:true}")
+	@ConditionalOnMissingBean(AmqpAdmin.class)
+	public AmqpAdmin amqpAdmin(CachingConnectionFactory connectionFactory) {
+		return new RabbitAdmin(connectionFactory);
+	}
 
-    @Configuration
-    @ConditionalOnMissingBean(RabbitTemplate.class)
-    protected static class RabbitTemplateCreator {
+	@Configuration
+	@ConditionalOnMissingBean(RabbitTemplate.class)
+	protected static class RabbitTemplateCreator {
 
-        @Autowired
-        CachingConnectionFactory connectionFactory;
+		@Autowired
+		CachingConnectionFactory connectionFactory;
 
-        @Bean
-        public RabbitTemplate rabbitTemplate() {
-            return new RabbitTemplate(this.connectionFactory);
-        }
+		@Bean
+		public RabbitTemplate rabbitTemplate() {
+			return new RabbitTemplate(this.connectionFactory);
+		}
 
-    }
+	}
 
-    @Configuration
-    @ConditionalOnMissingBean(CachingConnectionFactory.class)
-    @EnableConfigurationProperties(RabbitConnectionFactoryProperties.class)
-    protected static class RabbitConnectionFactoryCreator {
+	@Configuration
+	@ConditionalOnMissingBean(ConnectionFactory.class)
+	@EnableConfigurationProperties(RabbitConnectionFactoryProperties.class)
+	protected static class RabbitConnectionFactoryCreator {
 
-        @Autowired
-        private RabbitConnectionFactoryProperties config;
+		@Autowired
+		private RabbitConnectionFactoryProperties config;
 
-        @Bean
-        public CachingConnectionFactory connectionFactory() {
-            CachingConnectionFactory connectionFactory = new CachingConnectionFactory(this.config.getHost());
-            connectionFactory.setPort(this.config.getPort());
-            if (this.config.getUsername() != null) {
-                connectionFactory.setUsername(this.config.getUsername());
-            }
-            if (this.config.getPassword() != null) {
-                connectionFactory.setPassword(this.config.getPassword());
-            }
-            return connectionFactory;
-        }
-    }
+		@Bean
+		public CachingConnectionFactory connectionFactory() {
+			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
+					this.config.getHost());
+			connectionFactory.setPort(this.config.getPort());
+			if (this.config.getUsername() != null) {
+				connectionFactory.setUsername(this.config.getUsername());
+			}
+			if (this.config.getPassword() != null) {
+				connectionFactory.setPassword(this.config.getPassword());
+			}
+			return connectionFactory;
+		}
+	}
 
-    @ConfigurationProperties(name = "spring.rabbitmq")
-    public static class RabbitConnectionFactoryProperties {
+	@ConfigurationProperties(name = "spring.rabbitmq")
+	public static class RabbitConnectionFactoryProperties {
 
-        private String host = "localhost";
+		private String host = "localhost";
 
-        private int port = 5672;
+		private int port = 5672;
 
-        private String username;
+		private String username;
 
-        private String password;
+		private String password;
 
-        private boolean dynamic = true;
+		private boolean dynamic = true;
 
-        public String getHost() {
-            return host;
-        }
+		public String getHost() {
+			return this.host;
+		}
 
-        public void setHost(String host) {
-            this.host = host;
-        }
+		public void setHost(String host) {
+			this.host = host;
+		}
 
-        public int getPort() {
-            return port;
-        }
+		public int getPort() {
+			return this.port;
+		}
 
-        public void setPort(int port) {
-            this.port = port;
-        }
+		public void setPort(int port) {
+			this.port = port;
+		}
 
-        public String getUsername() {
-            return username;
-        }
+		public String getUsername() {
+			return this.username;
+		}
 
-        public void setUsername(String username) {
-            this.username = username;
-        }
+		public void setUsername(String username) {
+			this.username = username;
+		}
 
-        public String getPassword() {
-            return password;
-        }
+		public String getPassword() {
+			return this.password;
+		}
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
+		public void setPassword(String password) {
+			this.password = password;
+		}
 
-        public boolean isDynamic() {
-            return dynamic;
-        }
+		public boolean isDynamic() {
+			return this.dynamic;
+		}
 
-        public void setDynamic(boolean dynamic) {
-            this.dynamic = dynamic;
-        }
+		public void setDynamic(boolean dynamic) {
+			this.dynamic = dynamic;
+		}
 
-    }
+	}
 }
