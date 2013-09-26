@@ -153,7 +153,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	</build>
 
 	<!-- Allow access to Spring milestones and snapshots -->
-	<!-- (you don't need this if you are using anything after 0.5.0.M2) -->
+	<!-- (you don't need this if you are using anything after 0.5.0.RELEASE) -->
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
