@@ -27,80 +27,90 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link RabbitTemplateAutoConfiguration}.
- *
+ * 
  * @author Greg Turnquist
  */
 public class RabbitTemplateAutoconfigurationTests {
 
-    private AnnotationConfigApplicationContext context;
+	private AnnotationConfigApplicationContext context;
 
-    @Test
-    public void testDefaultRabbitTemplate() {
-        this.context = new AnnotationConfigApplicationContext();
-        this.context.register(TestConfiguration.class, RabbitTemplateAutoConfiguration.class);
-        this.context.refresh();
-        RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
-        CachingConnectionFactory connectionFactory = this.context.getBean(CachingConnectionFactory.class);
-        RabbitAdmin amqpAdmin = this.context.getBean(RabbitAdmin.class);
-        assertNotNull(rabbitTemplate);
-        assertNotNull(connectionFactory);
-        assertNotNull(amqpAdmin);
-        assertEquals(rabbitTemplate.getConnectionFactory(), connectionFactory);
-        assertEquals(connectionFactory.getHost(), "localhost");
-    }
+	@Test
+	public void testDefaultRabbitTemplate() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class,
+				RabbitTemplateAutoConfiguration.class);
+		this.context.refresh();
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		RabbitAdmin amqpAdmin = this.context.getBean(RabbitAdmin.class);
+		assertNotNull(rabbitTemplate);
+		assertNotNull(connectionFactory);
+		assertNotNull(amqpAdmin);
+		assertEquals(rabbitTemplate.getConnectionFactory(), connectionFactory);
+		assertEquals(connectionFactory.getHost(), "localhost");
+	}
 
-    @Test
-    public void testRabbitTemplateWithOverrides() {
-        this.context = new AnnotationConfigApplicationContext();
-        this.context.register(TestConfiguration.class, RabbitTemplateAutoConfiguration.class);
-        TestUtils.addEnviroment(this.context, "spring.rabbitmq.host:remote-server",
-                "spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret");
-        this.context.refresh();
-        CachingConnectionFactory connectionFactory = this.context.getBean(CachingConnectionFactory.class);
-        assertEquals(connectionFactory.getHost(), "remote-server");
-        assertEquals(connectionFactory.getPort(), 9000);
-    }
+	@Test
+	public void testRabbitTemplateWithOverrides() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class,
+				RabbitTemplateAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.rabbitmq.host:remote-server",
+				"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
+				"spring.rabbitmq.password:secret");
+		this.context.refresh();
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals(connectionFactory.getHost(), "remote-server");
+		assertEquals(connectionFactory.getPort(), 9000);
+	}
 
-    @Test
-    public void testConnectionFactoryBackoff() {
-        this.context = new AnnotationConfigApplicationContext();
-        this.context.register(TestConfiguration2.class, RabbitTemplateAutoConfiguration.class);
-        this.context.refresh();
-        RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
-        CachingConnectionFactory connectionFactory = this.context.getBean(CachingConnectionFactory.class);
-        assertEquals(rabbitTemplate.getConnectionFactory(), connectionFactory);
-        assertEquals(connectionFactory.getHost(), "otherserver");
-        assertEquals(connectionFactory.getPort(), 8001);
-    }
+	@Test
+	public void testConnectionFactoryBackoff() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration2.class,
+				RabbitTemplateAutoConfiguration.class);
+		this.context.refresh();
+		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals(rabbitTemplate.getConnectionFactory(), connectionFactory);
+		assertEquals(connectionFactory.getHost(), "otherserver");
+		assertEquals(connectionFactory.getPort(), 8001);
+	}
 
-    @Test
-    public void testStaticQueues() {
-        this.context = new AnnotationConfigApplicationContext();
-        this.context.register(TestConfiguration.class, RabbitTemplateAutoConfiguration.class);
-        TestUtils.addEnviroment(this.context, "spring.rabbitmq.dynamic:false");
-        this.context.refresh();
-        try {
-            this.context.getBean(AmqpAdmin.class);
-            fail("There should NOT be an AmqpAdmin bean when dynamic is switch to false");
-        } catch (Exception e) {}
-    }
+	@Test
+	public void testStaticQueues() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class,
+				RabbitTemplateAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.rabbitmq.dynamic:false");
+		this.context.refresh();
+		try {
+			this.context.getBean(AmqpAdmin.class);
+			fail("There should NOT be an AmqpAdmin bean when dynamic is switch to false");
+		}
+		catch (Exception e) {
+		}
+	}
 
-    @Configuration
-    protected static class TestConfiguration {
+	@Configuration
+	protected static class TestConfiguration {
 
-    }
+	}
 
-    @Configuration
-    protected static class TestConfiguration2 {
-        @Bean
-        ConnectionFactory aDifferentConnectionFactory() {
-            return new CachingConnectionFactory("otherserver", 8001);
-        }
-    }
+	@Configuration
+	protected static class TestConfiguration2 {
+		@Bean
+		ConnectionFactory aDifferentConnectionFactory() {
+			return new CachingConnectionFactory("otherserver", 8001);
+		}
+	}
 }
