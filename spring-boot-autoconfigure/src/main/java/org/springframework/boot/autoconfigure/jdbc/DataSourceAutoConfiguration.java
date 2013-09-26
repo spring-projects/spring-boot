@@ -183,7 +183,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 			}
 
 			String driverClassName = getDriverClassName(context.getEnvironment(),
-					context.getClassLoader());
+					getDataSourceClassLoader(context));
 			if (driverClassName == null) {
 				return Outcome.noMatch("no database driver");
 			}
@@ -198,6 +198,21 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 			}
 
 			return Outcome.noMatch("missing database driver " + driverClassName);
+		}
+
+		/**
+		 * Returns the class loader for the {@link DataSource} class. Used to ensure that
+		 * the driver class can actually be loaded by the data source.
+		 */
+		private ClassLoader getDataSourceClassLoader(ConditionContext context) {
+			try {
+				Class<?> dataSourceClass = ClassUtils.forName(getDataSourceClassName(),
+						context.getClassLoader());
+				return dataSourceClass.getClassLoader();
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 		private String getDriverClassName(Environment environment, ClassLoader classLoader) {
