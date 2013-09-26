@@ -84,6 +84,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private List<TomcatContextCustomizer> tomcatContextCustomizers = new ArrayList<TomcatContextCustomizer>();
 
+	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<TomcatConnectorCustomizer>();
+
 	private ResourceLoader resourceLoader;
 
 	private String protocol = DEFAULT_PROTOCOL;
@@ -203,6 +205,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
+		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
+			customizer.customize(connector);
+		}
 	}
 
 	/**
@@ -382,6 +387,40 @@ public class TomcatEmbeddedServletContainerFactory extends
 		Assert.notNull(this.tomcatContextCustomizers,
 				"TomcatContextCustomizer must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
+	}
+
+	/**
+	 * Set {@link TomcatConnectorCustomizer}s that should be applied to the Tomcat
+	 * {@link Connector} . Calling this method will replace any existing customizers.
+	 * @param tomcatConnectorCustomizers the customizers to set
+	 */
+	public void setTomcatConnectorCustomizers(
+			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
+		Assert.notNull(this.contextLifecycleListeners,
+				"TomcatConnectorCustomizer must not be null");
+		this.tomcatConnectorCustomizers = new ArrayList<TomcatConnectorCustomizer>(
+				tomcatConnectorCustomizers);
+	}
+
+	/**
+	 * Add {@link TomcatContextCustomizer}s that should be added to the Tomcat
+	 * {@link Connector}.
+	 * @param tomcatConnectorCustomizers the customizers to add
+	 */
+	public void addConnectorCustomizers(
+			TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
+		Assert.notNull(this.tomcatContextCustomizers,
+				"TomcatConnectorCustomizer must not be null");
+		this.tomcatConnectorCustomizers.addAll(Arrays.asList(tomcatConnectorCustomizers));
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link TomcatContextCustomizer}s that will be
+	 * applied to the Tomcat {@link Context} .
+	 * @return the tomcatContextCustomizers the listeners that will be applied
+	 */
+	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {
+		return this.tomcatConnectorCustomizers;
 	}
 
 	private static class TomcatErrorPage {

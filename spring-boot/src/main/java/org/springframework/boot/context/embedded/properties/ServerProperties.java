@@ -22,12 +22,16 @@ import java.net.InetAddress;
 import javax.validation.constraints.NotNull;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.connector.Connector;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
+import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.ProtocolHandler;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -119,6 +123,16 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private int backgroundProcessorDelay = 30; // seconds
 
+		private int maxThreads = 0; // Number of threads in protocol handler
+
+		public int getMaxThreads() {
+			return this.maxThreads;
+		}
+
+		public void setMaxThreads(int maxThreads) {
+			this.maxThreads = maxThreads;
+		}
+
 		public boolean getAccessLogEnabled() {
 			return this.accessLogEnabled;
 		}
@@ -189,6 +203,19 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				factory.addContextValves(valve);
 			}
 
+			if (this.maxThreads > 0) {
+				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+					@Override
+					public void customize(Connector connector) {
+						ProtocolHandler handler = connector.getProtocolHandler();
+						if (handler instanceof AbstractProtocol) {
+							AbstractProtocol protocol = (AbstractProtocol) handler;
+							protocol.setMaxThreads(Tomcat.this.maxThreads);
+						}
+					}
+				});
+			}
+
 			if (this.accessLogEnabled) {
 				AccessLogValve valve = new AccessLogValve();
 				String accessLogPattern = getAccessLogPattern();
@@ -202,7 +229,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				factory.addContextValves(valve);
 			}
 		}
-
 	}
 
 }
