@@ -33,10 +33,10 @@ import org.springframework.web.socket.support.PerConnectionWebSocketHandler;
 @Configuration
 @EnableAutoConfiguration
 public class SampleWebSocketsApplication extends SpringBootServletInitializer {
-	
+
 	@Override
-	protected Class<?>[] getConfigClasses() {
-		return new Class<?>[] { SampleWebSocketsApplication.class };
+	protected Class<?> getConfigClass() {
+		return SampleWebSocketsApplication.class;
 	}
 
 	public static void main(String[] args) {
