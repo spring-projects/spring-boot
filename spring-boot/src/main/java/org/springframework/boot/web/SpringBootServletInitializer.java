@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -76,8 +77,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 		}
-		SpringApplication application = new SpringApplication(
-				(Object[]) getConfigClasses());
+		SpringApplication application = new SpringApplication(getConfigClasses());
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		context.setParent(parent);
 		context.setServletContext(servletContext);
@@ -85,6 +85,30 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		return (WebApplicationContext) application.run();
 	}
 
-	protected abstract Class<?>[] getConfigClasses();
+	private Object[] getConfigClasses() {
+		Class<?>[] additionalConfigClasses = getAdditionalConfigClasses();
+		if (ObjectUtils.isEmpty(additionalConfigClasses)) {
+			return new Object[] { getConfigClass() };
+		}
+		Object[] configClasses = new Object[additionalConfigClasses.length + 1];
+		configClasses[0] = getConfigClass();
+		System.arraycopy(additionalConfigClasses, 0, configClasses, 1,
+				additionalConfigClasses.length);
+		return configClasses;
+	}
+
+	/**
+	 * Returns the main configuration class to load. If you need additional configuration
+	 * classes you can also override {@link #getAdditionalConfigClasses()}.
+	 */
+	protected abstract Class<?> getConfigClass();
+
+	/**
+	 * Returns configuration classes that should be loaded in addition to the
+	 * {@link #getConfigClass() main configuration class}.
+	 */
+	protected Class<?>[] getAdditionalConfigClasses() {
+		return null;
+	}
 
 }
