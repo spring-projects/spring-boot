@@ -22,6 +22,7 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.springframework.boot.gradle.task.Repackage;
+import org.springframework.boot.gradle.task.Run;
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
@@ -30,31 +31,37 @@ import org.springframework.boot.gradle.task.Repackage;
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
-	private static final String REPACKAGE_TASK_NAME = "repackage";
+    private static final String REPACKAGE_TASK_NAME = "repackage";
+    private static final String RUN_TASK_NAME = "run";
 
-	@Override
-	public void apply(Project project) {
-		project.getPlugins().apply(BasePlugin.class);
-		project.getPlugins().apply(JavaPlugin.class);
-		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
-		Repackage packageTask = addRepackageTask(project);
-		ensureTaksRunsOnAssembly(project, packageTask);
-	}
+    @Override
+    public void apply(Project project) {
+        project.getPlugins().apply(BasePlugin.class);
+        project.getPlugins().apply(JavaPlugin.class);
+        project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
+        Repackage packageTask = addRepackageTask(project);
+        ensureTaksRunsOnAssembly(project, packageTask);
+        addRunTask(project);
+    }
 
-	private Repackage addRepackageTask(Project project) {
-		Repackage packageTask = project.getTasks().create(REPACKAGE_TASK_NAME,
-				Repackage.class);
-		packageTask.setDescription("Repackage existing JAR and WAR "
-				+ "archives so that they can be executed from the command "
-				+ "line using 'java -jar'");
-		packageTask.setGroup(BasePlugin.BUILD_GROUP);
-		packageTask.dependsOn(project.getConfigurations()
-				.getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
-				.getBuildDependencies());
-		return packageTask;
-	}
+    private void addRunTask(Project project) {
+        Run runTask = project.getTasks().create(RUN_TASK_NAME, Run.class);
+        runTask.setDescription("Run the executable JAR/WAR");
+        runTask.setGroup("Execution");
+        runTask.dependsOn(REPACKAGE_TASK_NAME);
+    }
 
-	private void ensureTaksRunsOnAssembly(Project project, Repackage task) {
-		project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(task);
-	}
+    private Repackage addRepackageTask(Project project) {
+        Repackage packageTask = project.getTasks().create(REPACKAGE_TASK_NAME, Repackage.class);
+        packageTask.setDescription("Repackage existing JAR and WAR "
+                + "archives so that they can be executed from the command " + "line using 'java -jar'");
+        packageTask.setGroup(BasePlugin.BUILD_GROUP);
+        packageTask.dependsOn(project.getConfigurations().getByName(Dependency.ARCHIVES_CONFIGURATION)
+                .getAllArtifacts().getBuildDependencies());
+        return packageTask;
+    }
+
+    private void ensureTaksRunsOnAssembly(Project project, Repackage task) {
+        project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(task);
+    }
 }
