@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -110,6 +111,12 @@ public class WebMvcAutoConfiguration {
 
 		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
 
+		@Value("${spring.view.prefix:}")
+		private String prefix = "";
+
+		@Value("${spring.view.suffix:}")
+		private String suffix = "";
+
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
@@ -117,10 +124,11 @@ public class WebMvcAutoConfiguration {
 		private ResourceLoader resourceLoader;
 
 		@Bean
-		@ConditionalOnBean(View.class)
 		@ConditionalOnMissingBean(InternalResourceViewResolver.class)
 		public InternalResourceViewResolver defaultViewResolver() {
 			InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+			resolver.setPrefix(this.prefix);
+			resolver.setSuffix(this.suffix);
 			return resolver;
 		}
 
