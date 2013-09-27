@@ -23,6 +23,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitTemplateAutoConfiguration.RabbitConnectionFactoryProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,14 +32,16 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.rabbitmq.client.Channel;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
  * 
  * @author Greg Turnquist
  */
 @Configuration
-@ConditionalOnClass({ RabbitTemplate.class })
-@EnableConfigurationProperties
+@ConditionalOnClass({ RabbitTemplate.class, Channel.class })
+@EnableConfigurationProperties(RabbitConnectionFactoryProperties.class)
 public class RabbitTemplateAutoConfiguration {
 
 	@Bean
@@ -48,38 +51,30 @@ public class RabbitTemplateAutoConfiguration {
 		return new RabbitAdmin(connectionFactory);
 	}
 
-	@Configuration
+	@Autowired
+	private ConnectionFactory connectionFactory;
+
+	@Bean
 	@ConditionalOnMissingBean(RabbitTemplate.class)
-	protected static class RabbitTemplateCreator {
-
-		@Autowired
-		CachingConnectionFactory connectionFactory;
-
-		@Bean
-		public RabbitTemplate rabbitTemplate() {
-			return new RabbitTemplate(this.connectionFactory);
-		}
-
+	public RabbitTemplate rabbitTemplate() {
+		return new RabbitTemplate(this.connectionFactory);
 	}
 
 	@Configuration
 	@ConditionalOnMissingBean(ConnectionFactory.class)
-	@EnableConfigurationProperties(RabbitConnectionFactoryProperties.class)
 	protected static class RabbitConnectionFactoryCreator {
 
-		@Autowired
-		private RabbitConnectionFactoryProperties config;
-
 		@Bean
-		public CachingConnectionFactory connectionFactory() {
+		public ConnectionFactory rabbitConnectionFactory(
+				RabbitConnectionFactoryProperties config) {
 			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
-					this.config.getHost());
-			connectionFactory.setPort(this.config.getPort());
-			if (this.config.getUsername() != null) {
-				connectionFactory.setUsername(this.config.getUsername());
+					config.getHost());
+			connectionFactory.setPort(config.getPort());
+			if (config.getUsername() != null) {
+				connectionFactory.setUsername(config.getUsername());
 			}
-			if (this.config.getPassword() != null) {
-				connectionFactory.setPassword(this.config.getPassword());
+			if (config.getPassword() != null) {
+				connectionFactory.setPassword(config.getPassword());
 			}
 			return connectionFactory;
 		}

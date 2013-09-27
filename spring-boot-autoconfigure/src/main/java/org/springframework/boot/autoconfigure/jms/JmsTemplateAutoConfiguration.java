@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jms.JmsTemplateAutoConfiguration.JmsTemplateProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -37,41 +38,36 @@ import org.springframework.jms.core.JmsTemplate;
  */
 @Configuration
 @ConditionalOnClass({ JmsTemplate.class, ConnectionFactory.class })
+@EnableConfigurationProperties(JmsTemplateProperties.class)
 public class JmsTemplateAutoConfiguration {
 
-	@Configuration
+	@Autowired
+	private JmsTemplateProperties config;
+
+	@Autowired
+	private ConnectionFactory connectionFactory;
+
+	@Bean
 	@ConditionalOnMissingBean(JmsTemplate.class)
-	@EnableConfigurationProperties(JmsTemplateProperties.class)
-	protected static class JmsTemplateCreator {
-		
-		@Autowired
-		private JmsTemplateProperties config;
-
-		@Autowired
-		private ConnectionFactory connectionFactory;
-
-		@Bean
-		public JmsTemplate jmsTemplate() {
-			JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
-			jmsTemplate.setPubSubDomain(this.config.isPubSubDomain());
-			return jmsTemplate;
-		}
-
+	public JmsTemplate jmsTemplate() {
+		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
+		jmsTemplate.setPubSubDomain(this.config.isPubSubDomain());
+		return jmsTemplate;
 	}
-	
+
 	@ConfigurationProperties(name = "spring.jms")
 	public static class JmsTemplateProperties {
-		
+
 		private boolean pubSubDomain = true;
 
 		public boolean isPubSubDomain() {
-			return pubSubDomain;
+			return this.pubSubDomain;
 		}
 
 		public void setPubSubDomain(boolean pubSubDomain) {
 			this.pubSubDomain = pubSubDomain;
 		}
-		
+
 	}
 
 	@Configuration
@@ -79,37 +75,40 @@ public class JmsTemplateAutoConfiguration {
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	@EnableConfigurationProperties(ActiveMQConnectionFactoryProperties.class)
 	protected static class ActiveMQConnectionFactoryCreator {
-		
+
 		@Autowired
 		private ActiveMQConnectionFactoryProperties config;
-		
+
 		@Bean
-		ConnectionFactory connectionFactory() {
+		ConnectionFactory jmsConnectionFactory() {
 			if (this.config.isPooled()) {
 				PooledConnectionFactory pool = new PooledConnectionFactory();
-				pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config.getBrokerURL()));
+				pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config
+						.getBrokerURL()));
 				return pool;
-			} else {
+			}
+			else {
 				return new ActiveMQConnectionFactory(this.config.getBrokerURL());
 			}
 		}
 
 	}
-	
+
 	@ConfigurationProperties(name = "spring.activemq")
 	public static class ActiveMQConnectionFactoryProperties {
-		
+
 		private String brokerURL = "tcp://localhost:61616";
-		
+
 		private boolean inMemory = true;
-		
+
 		private boolean pooled = false;
-		
+
 		// Will override brokerURL if inMemory is set to true
 		public String getBrokerURL() {
 			if (this.inMemory) {
 				return "vm://localhost";
-			} else {
+			}
+			else {
 				return this.brokerURL;
 			}
 		}
@@ -119,7 +118,7 @@ public class JmsTemplateAutoConfiguration {
 		}
 
 		public boolean isInMemory() {
-			return inMemory;
+			return this.inMemory;
 		}
 
 		public void setInMemory(boolean inMemory) {
@@ -127,13 +126,13 @@ public class JmsTemplateAutoConfiguration {
 		}
 
 		public boolean isPooled() {
-			return pooled;
+			return this.pooled;
 		}
 
 		public void setPooled(boolean pooled) {
 			this.pooled = pooled;
 		}
-		
+
 	}
 
 }
