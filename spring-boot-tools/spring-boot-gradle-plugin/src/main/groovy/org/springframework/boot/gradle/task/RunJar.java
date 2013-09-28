@@ -11,12 +11,12 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.process.internal.DefaultExecAction;
 import org.gradle.process.internal.ExecAction;
 
-public class Run extends DefaultTask {
+public class RunJar extends DefaultTask {
 
     private File file;
 
     @TaskAction
-    public void run() {
+    public void runJar() {
         Project project = getProject();
         project.getTasks().withType(Jar.class, new Action<Jar>() {
             @Override

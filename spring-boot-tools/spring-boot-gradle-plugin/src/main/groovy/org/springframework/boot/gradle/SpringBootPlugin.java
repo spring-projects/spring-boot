@@ -22,7 +22,7 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.springframework.boot.gradle.task.Repackage;
-import org.springframework.boot.gradle.task.Run;
+import org.springframework.boot.gradle.task.RunJar;
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
@@ -32,7 +32,7 @@ import org.springframework.boot.gradle.task.Run;
 public class SpringBootPlugin implements Plugin<Project> {
 
     private static final String REPACKAGE_TASK_NAME = "repackage";
-    private static final String RUN_TASK_NAME = "run";
+    private static final String RUN_JAR_TASK_NAME = "runJar";
 
     @Override
     public void apply(Project project) {
@@ -40,15 +40,15 @@ public class SpringBootPlugin implements Plugin<Project> {
         project.getPlugins().apply(JavaPlugin.class);
         project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
         Repackage packageTask = addRepackageTask(project);
-        ensureTaksRunsOnAssembly(project, packageTask);
-        addRunTask(project);
+        ensureTaskRunsOnAssembly(project, packageTask);
+        addRunJarTask(project);
     }
 
-    private void addRunTask(Project project) {
-        Run runTask = project.getTasks().create(RUN_TASK_NAME, Run.class);
-        runTask.setDescription("Run the executable JAR/WAR");
-        runTask.setGroup("Execution");
-        runTask.dependsOn(REPACKAGE_TASK_NAME);
+    private void addRunJarTask(Project project) {
+        RunJar runJarTask = project.getTasks().create(RUN_JAR_TASK_NAME, RunJar.class);
+        runJarTask.setDescription("Run the executable JAR/WAR");
+        runJarTask.setGroup("Execution");
+        runJarTask.dependsOn(REPACKAGE_TASK_NAME);
     }
 
     private Repackage addRepackageTask(Project project) {
@@ -61,7 +61,7 @@ public class SpringBootPlugin implements Plugin<Project> {
         return packageTask;
     }
 
-    private void ensureTaksRunsOnAssembly(Project project, Repackage task) {
+    private void ensureTaskRunsOnAssembly(Project project, Repackage task) {
         project.getTasks().getByName(BasePlugin.ASSEMBLE_TASK_NAME).dependsOn(task);
     }
 }
