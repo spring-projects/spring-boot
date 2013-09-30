@@ -1,7 +1,10 @@
 # Contributing to Spring Boot
+
 Spring Boot is released under the non-restrictive Apache 2.0 license. If you would like
 to contribute something, or simply want to hack on the code this document should help
 you get started.
+
+## Sign the Contributor License Agreement
 
 Before we accept a non-trivial patch or pull request we will need you to sign the
 [contributor's agreement](https://support.springsource.com/spring_committer_signup).

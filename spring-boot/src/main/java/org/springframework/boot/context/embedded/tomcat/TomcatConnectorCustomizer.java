@@ -19,7 +19,10 @@ package org.springframework.boot.context.embedded.tomcat;
 import org.apache.catalina.connector.Connector;
 
 /**
+ * Callback interface that can be used to customize a Tomcat {@link Connector}.
+ * 
  * @author Dave Syer
+ * @see TomcatEmbeddedServletContainerFactory
  */
 public interface TomcatConnectorCustomizer {
 
