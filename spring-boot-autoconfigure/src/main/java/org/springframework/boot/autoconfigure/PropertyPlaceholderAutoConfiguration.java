@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +37,7 @@ import org.springframework.core.annotation.Order;
 public class PropertyPlaceholderAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer(
 			ApplicationContext context) {
 		return new PropertySourcesPlaceholderConfigurer();
