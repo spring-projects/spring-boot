@@ -16,6 +16,10 @@
 
 package org.springframework.boot.sample.ops;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +46,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for service demo application.
@@ -134,13 +134,27 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void testErrorPage() throws Exception {
+		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+				"http://localhost:8080/health", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertEquals("ok", entity.getBody());
+	}
+
+	@Test
+	public void testTrace() throws Exception {
+		getRestTemplate().getForEntity(
+				"http://localhost:8080/health", String.class);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080/foo", Map.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+		ResponseEntity<List> entity = getRestTemplate("user", getPassword()).getForEntity(
+				"http://localhost:8080/trace", List.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals(500, body.get("status"));
+		List<Map<String,Object>> list = (List<Map<String, Object>>) entity.getBody();
+		Map<String, Object> trace = list.get(list.size()-1);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) 
+				trace.get("info")).get("headers")).get("response");
+		assertEquals("200", map.get("status"));
 	}
 
 	@Test
