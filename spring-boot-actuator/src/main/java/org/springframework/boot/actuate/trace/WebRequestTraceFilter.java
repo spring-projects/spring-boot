@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.actuate.web.BasicErrorController;
 import org.springframework.core.Ordered;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,6 +56,8 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 	private int order = Integer.MAX_VALUE;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
+
+	private BasicErrorController errorController;
 
 	/**
 	 * @param traceRepository
@@ -122,6 +125,7 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 			String value = response.getHeader(header);
 			headers.put(header, value);
 		}
+		headers.put("status", "" + response.getStatus());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> allHeaders = (Map<String, Object>) trace.get("headers");
 		allHeaders.put("response", headers);
@@ -151,6 +155,13 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 		trace.put("method", request.getMethod());
 		trace.put("path", request.getRequestURI());
 		trace.put("headers", allHeaders);
+		Throwable error = (Throwable) request
+				.getAttribute("javax.servlet.error.exception");
+		if (error != null) {
+			if (this.errorController != null) {
+				trace.put("error", this.errorController.error(request));
+			}
+		}
 		return trace;
 	}
 
@@ -160,6 +171,10 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 
 	@Override
 	public void destroy() {
+	}
+
+	public void setErrorController(BasicErrorController errorController) {
+		this.errorController = errorController;
 	}
 
 }
