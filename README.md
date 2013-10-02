@@ -344,3 +344,14 @@ Example show how Spring Boot can be mixed with traditional XML configuration (we
 generally recommend using Java `@Configuration` whenever possible)
 
 
+## Guides
+
+The [spring.io](http://spring.io/) site contains several guides that show how to use Spring Boot step-by-step:
+* [Building an Application with Spring
+Boot](http://spring.io/guides/gs/spring-boot/) is a very basic guide
+that shows you how to create a simple application, run it and add some
+management services.
+* [Building a RESTful Web Service with Spring Boot Actuator](http://spring.io/guides/gs/actuator-service/)
+is a guide to creating a REST web service and also shows how the server can be configured.
+* [Converting a Spring Boot JAR Application to a WAR](http://spring.io/guides/gs/convert-jar-to-war/) shows you how to run applications in a
+web server as a WAR file.
