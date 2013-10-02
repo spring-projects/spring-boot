@@ -1,22 +1,32 @@
 package org.springframework.boot.sample.data.jpa;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationContextLoader;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Integration test to run the application.
  * 
  * @author Oliver Gierke
  */
-public class SampleDataJpaApplicationTests extends AbstractIntegrationTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = SampleDataJpaApplication.class, loader=SpringApplicationContextLoader.class)
+@WebAppConfiguration
+@ActiveProfiles("scratch") // Separate profile for web tests to avoid clashing databases
+public class SampleDataJpaApplicationTests {
 
 	@Autowired
 	private WebApplicationContext context;

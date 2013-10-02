@@ -65,8 +65,6 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	protected void configure(
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
-		properties.put("hibernate.cache.provider_class", this.environment.getProperty(
-				"cache-provider", "org.hibernate.cache.HashtableCacheProvider"));
 		properties.put("hibernate.ejb.naming_strategy", this.environment.getProperty(
 				"naming-strategy", ImprovedNamingStrategy.class.getName()));
 		String ddlAuto = this.environment.getProperty("ddl-auto", "none");
