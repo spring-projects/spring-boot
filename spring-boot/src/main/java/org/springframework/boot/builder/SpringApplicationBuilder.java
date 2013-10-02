@@ -61,7 +61,7 @@ public class SpringApplicationBuilder {
 	private SpringApplicationBuilder parent;
 	private AtomicBoolean running = new AtomicBoolean(false);
 	private Set<Object> sources = new LinkedHashSet<Object>();
-	private String[] defaultArgs;
+	private Set<String> defaultArgs = new LinkedHashSet<String>();
 	private ConfigurableEnvironment environment;
 
 	public SpringApplicationBuilder(Object... sources) {
@@ -320,12 +320,18 @@ public class SpringApplicationBuilder {
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder defaultArgs(String... defaultArgs) {
-		this.defaultArgs = defaultArgs;
-		this.application.setDefaultArgs(defaultArgs);
+		this.defaultArgs.addAll(Arrays.asList(defaultArgs));
+		this.application.setDefaultArgs(this.defaultArgs
+				.toArray(new String[this.defaultArgs.size()]));
 		if (this.parent != null) {
 			this.parent.defaultArgs(defaultArgs);
 			this.parent.environment(this.environment);
 		}
+		return this;
+	}
+
+	private SpringApplicationBuilder defaultArgs(Set<String> defaultArgs) {
+		this.defaultArgs = defaultArgs;
 		return this;
 	}
 

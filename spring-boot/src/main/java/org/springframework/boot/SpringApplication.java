@@ -54,6 +54,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
@@ -626,6 +627,9 @@ public class SpringApplication {
 	public void setApplicationContextClass(
 			Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.applicationContextClass = applicationContextClass;
+		if (!WebApplicationContext.class.isAssignableFrom(applicationContextClass)) {
+			this.webEnvironment = false;
+		}
 	}
 
 	/**
