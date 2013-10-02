@@ -25,6 +25,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,6 +45,18 @@ public class SpringApplicationBuilderTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+	}
+
+	@Test
+	public void profileAndDefaultArgs() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.sources(ExampleConfig.class)
+				.contextClass(StaticApplicationContext.class).profiles("foo")
+				.defaultArgs("--foo=bar");
+		this.context = application.run();
+		assertThat(this.context, is(instanceOf(StaticApplicationContext.class)));
+		assertThat(this.context.getEnvironment().getProperty("foo"), is(equalTo("bar")));
+		assertThat(this.context.getEnvironment().acceptsProfiles("foo"), is(true));
 	}
 
 	@Test
