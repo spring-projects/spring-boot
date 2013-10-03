@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.command.tester;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Set;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.CommandFactory;
+public abstract class AbstractTester {
 
-/**
- * Default implementation of {@link CommandFactory}.
- * 
- * @author Dave Syer
- */
-public class DefaultCommandFactory implements CommandFactory {
+    public TestResults findAndTest(List<Class<?>> compiled) throws FileNotFoundException {
+        Set<Class<?>> testable = findTestableClasses(compiled);
 
-	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command> asList(
-			new VersionCommand(), new RunCommand(), new CleanCommand(), new TestCommand());
+        if (testable.size() == 0) {
+            return TestResults.none;
+        }
 
-	@Override
-	public Collection<Command> getCommands() {
-		return DEFAULT_COMMANDS;
-	}
+        return test(testable.toArray(new Class<?>[]{}));
+    }
+
+    abstract protected Set<Class<?>> findTestableClasses(List<Class<?>> compiled);
+
+    abstract protected TestResults test(Class<?>[] testable);
 
 }
