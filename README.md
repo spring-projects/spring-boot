@@ -63,6 +63,33 @@ itself and the Spring Boot CLI. Get `gvm` from
     $ gvm install springboot
     $ spring --version
     Spring Boot v0.5.0.M4
+    
+> **Note:** If you are developing features for the CLI and want easy access to the version you just built, follow these extra instructions.
+
+    $ gvm install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin/spring-0.5.0.BUILD-SNAPSHOT/
+   	$ gvm use springboot dev
+   	$ spring --version
+    Spring CLI v0.5.0.BUILD-SNAPSHOT
+   	
+This will install a local instance of `spring` called the `dev` instance inside your gvm repository. It points at your target build location, so every time you rebuild Spring Boot, `spring` will be up-to-date.
+
+You can see it by doing this:
+
+    $ gvm ls springboot
+
+```
+================================================================================
+Available Springboot Versions
+================================================================================
+ > + dev                                                                           
+   * 0.5.0.M4                                                                      
+
+================================================================================
++ - local version
+* - installed
+> - currently in use
+================================================================================
+```
 
 ### OSX Homebrew installation
 If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to install
