@@ -1,20 +1,17 @@
 package org.springframework.boot.cli;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.NoSuchCommandException;
-import org.springframework.boot.cli.SpringCli;
 import org.springframework.boot.cli.SpringCli.NoArgumentsException;
 import org.springframework.boot.cli.SpringCli.NoHelpCommandArgumentsException;
+
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
