@@ -37,7 +37,7 @@ public class AopAutoConfiguration {
 
 	@Configuration
 	@EnableAspectJAutoProxy(proxyTargetClass = false)
-	@ConditionalOnExpression("!${spring.aop.proxyTargetClass:false}")
+	@ConditionalOnExpression("!${spring.aop.proxyTargetClass:true}")
 	public static class JdkDynamicAutoProxyConfiguration {
 	}
 
