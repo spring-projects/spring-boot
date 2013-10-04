@@ -37,7 +37,7 @@ public class SampleAmqpSimpleApplication {
 	private RabbitTemplate rabbitTemplate;
 	
 	@Autowired
-	private ConnectionFactory connectionFactor;
+	private ConnectionFactory connectionFactory;
 
 	@Bean
 	public ScheduledAnnotationBeanPostProcessor scheduledAnnotationBeanPostProcessor() {
@@ -51,7 +51,7 @@ public class SampleAmqpSimpleApplication {
 
 	@Bean
 	public SimpleMessageListenerContainer container() {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactor);
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
 		Object listener = new Object() {
 			public void handleMessage(String foo) {
 				System.out.println(foo);
