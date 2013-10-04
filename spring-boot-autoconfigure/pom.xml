@@ -151,6 +151,11 @@
 			 <artifactId>geronimo-jms_1.1_spec</artifactId>
 			 <optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.7.3</version>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
