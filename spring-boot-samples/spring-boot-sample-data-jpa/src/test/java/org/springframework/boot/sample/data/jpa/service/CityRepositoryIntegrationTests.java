@@ -15,22 +15,29 @@
  */
 package org.springframework.boot.sample.data.jpa.service;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.sample.data.jpa.AbstractIntegrationTests;
+import org.springframework.boot.sample.data.jpa.SampleDataJpaApplication;
 import org.springframework.boot.sample.data.jpa.domain.City;
+import org.springframework.boot.test.SpringApplicationContextLoader;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Integration tests for {@link CityRepository}.
  * 
  * @author Oliver Gierke
  */
-public class CityRepositoryIntegrationTests extends AbstractIntegrationTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = SampleDataJpaApplication.class, loader=SpringApplicationContextLoader.class)
+public class CityRepositoryIntegrationTests {
 
 	@Autowired
 	CityRepository repository;
@@ -39,6 +46,6 @@ public class CityRepositoryIntegrationTests extends AbstractIntegrationTests {
 	public void findsFirstPageOfCities() {
 
 		Page<City> cities = this.repository.findAll(new PageRequest(0, 10));
-		assertThat(cities.getTotalElements(), is(21L));
+		assertThat(cities.getTotalElements(), is(greaterThan(20L)));
 	}
 }

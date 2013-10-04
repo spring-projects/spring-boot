@@ -209,7 +209,7 @@ that is to simply refer to it in an `@Value` annotation, e.g.
     public class SampleController {
 
       @Value("${service.message:Hello World}")
-      private String value = "Goodbye Everypone"
+      private String value = "Goodbye Everyone"
 
       @RequestMapping("/")
       @ResponseBody
