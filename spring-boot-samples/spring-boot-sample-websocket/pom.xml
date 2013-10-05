@@ -11,7 +11,7 @@
 	</parent>
 	<properties>
 		<java.version>1.7</java.version>
-		<tomcat.version>8.0.0-RC1</tomcat.version>
+		<tomcat.version>8.0.0-RC3</tomcat.version>
 	</properties>
 	<dependencies>
 		<dependency>
