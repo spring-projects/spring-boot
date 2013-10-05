@@ -79,8 +79,13 @@ public class SnakeTimer {
 
     public static void broadcast(String message) throws Exception {
         for (Snake snake : SnakeTimer.getSnakes()) {
-            snake.sendMessage(message);
-        }
+			try {
+				snake.sendMessage(message);
+			}
+			catch (Throwable ex) {
+				// if Snake#sendMessage fails the client should be removed
+			}
+		}
     }
 
 
