@@ -8,6 +8,7 @@
 		</encoder>
 	</appender>
 	<logger name="org.springframework.boot.context.annotation" level="TRACE" />
+	<logger name="org.springframework.boot.context.initializer" level="TRACE" />
 	<logger name="org.springframework.boot.config" level="TRACE" />
 	<logger name="org.thymeleaf" level="TRACE" />
 	<root level="INFO">
