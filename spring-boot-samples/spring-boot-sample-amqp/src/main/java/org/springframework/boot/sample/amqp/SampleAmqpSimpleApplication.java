@@ -16,25 +16,23 @@
 
 package org.springframework.boot.sample.amqp;
 
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 
 @Configuration
 @EnableAutoConfiguration
-@ComponentScan
 public class SampleAmqpSimpleApplication {
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private AmqpTemplate amqpTemplate;
 	
 	@Autowired
 	private ConnectionFactory connectionFactory;
@@ -53,6 +51,7 @@ public class SampleAmqpSimpleApplication {
 	public SimpleMessageListenerContainer container() {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
 		Object listener = new Object() {
+			@SuppressWarnings("unused")
 			public void handleMessage(String foo) {
 				System.out.println(foo);
 			}
