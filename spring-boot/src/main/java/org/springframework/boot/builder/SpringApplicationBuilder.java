@@ -99,7 +99,7 @@ public class SpringApplicationBuilder {
 		if (this.parent != null) {
 			// If there is a parent initialize it and make sure it is added to the current
 			// context
-			addInitializers(new ParentContextApplicationContextInitializer(
+			addInitializers(true, new ParentContextApplicationContextInitializer(
 					this.parent.run(args)));
 		}
 
@@ -111,6 +111,8 @@ public class SpringApplicationBuilder {
 		if (this.running.compareAndSet(false, true)) {
 			synchronized (this.running) {
 				// If not already running copy the sources over and then run.
+				// this.application.setDefaultArgs(this.defaultArgs
+				// .toArray(new String[this.defaultArgs.size()]));
 				this.application.setSources(this.sources);
 				this.context = this.application.run(args);
 			}
@@ -190,7 +192,7 @@ public class SpringApplicationBuilder {
 		this.parent = new SpringApplicationBuilder();
 		this.parent.context = parent;
 		this.parent.running.set(true);
-		addInitializers(new ParentContextApplicationContextInitializer(parent));
+		addInitializers(true, new ParentContextApplicationContextInitializer(parent));
 		return this;
 	}
 
@@ -394,17 +396,24 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder initializers(
 			ApplicationContextInitializer<?>... initializers) {
-		addInitializers(initializers);
+		addInitializers(false, initializers);
 		return this;
 	}
 
 	/**
 	 * @param initializers the initializers to add
 	 */
-	private void addInitializers(ApplicationContextInitializer<?>... initializers) {
-		Set<ApplicationContextInitializer<?>> target = new LinkedHashSet<ApplicationContextInitializer<?>>(
-				this.application.getInitializers());
-		target.addAll(Arrays.asList(initializers));
+	private void addInitializers(boolean prepend,
+			ApplicationContextInitializer<?>... initializers) {
+		Set<ApplicationContextInitializer<?>> target = new LinkedHashSet<ApplicationContextInitializer<?>>();
+		if (prepend) {
+			target.addAll(Arrays.asList(initializers));
+			target.addAll(this.application.getInitializers());
+		}
+		else {
+			target.addAll(this.application.getInitializers());
+			target.addAll(Arrays.asList(initializers));
+		}
 		this.application.setInitializers(target);
 	}
 
