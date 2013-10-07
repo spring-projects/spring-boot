@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.builder;
 
 import org.junit.After;
 import org.junit.Test;
