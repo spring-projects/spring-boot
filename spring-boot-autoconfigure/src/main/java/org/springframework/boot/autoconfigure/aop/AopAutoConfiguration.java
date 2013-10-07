@@ -37,13 +37,13 @@ public class AopAutoConfiguration {
 
 	@Configuration
 	@EnableAspectJAutoProxy(proxyTargetClass = false)
-	@ConditionalOnExpression("!${spring.aop.proxyTargetClass:true}")
+	@ConditionalOnExpression("!${spring.aop.proxyTargetClass:false}")
 	public static class JdkDynamicAutoProxyConfiguration {
 	}
 
 	@Configuration
 	@EnableAspectJAutoProxy(proxyTargetClass = true)
-	@ConditionalOnExpression("${spring.aop.proxyTargetClass:true}")
+	@ConditionalOnExpression("${spring.aop.proxyTargetClass:false}")
 	public static class CglibAutoProxyConfiguration {
 	}
 
