@@ -111,8 +111,6 @@ public class SpringApplicationBuilder {
 		if (this.running.compareAndSet(false, true)) {
 			synchronized (this.running) {
 				// If not already running copy the sources over and then run.
-				// this.application.setDefaultArgs(this.defaultArgs
-				// .toArray(new String[this.defaultArgs.size()]));
 				this.application.setSources(this.sources);
 				this.context = this.application.run(args);
 			}
@@ -135,7 +133,8 @@ public class SpringApplicationBuilder {
 		child.sources(sources);
 
 		// Copy environment stuff from parent to child
-		child.defaultArgs(this.defaultArgs).environment(this.environment);
+		child.defaultArgs(this.defaultArgs.toArray(new String[this.defaultArgs.size()]))
+				.environment(this.environment);
 		child.parent = this;
 
 		// It's not possible if embedded containers are enabled to support web contexts as
