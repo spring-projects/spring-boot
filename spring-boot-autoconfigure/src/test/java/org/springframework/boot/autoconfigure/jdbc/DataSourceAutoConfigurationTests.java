@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,6 +87,19 @@ public class DataSourceAutoConfigurationTests {
 	public void testDataSourceInitialized() throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
+		assertNotNull(dataSource);
+		JdbcOperations template = new JdbcTemplate(dataSource);
+		assertEquals(new Integer(0),
+				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
+	}
+
+	@Test
+	public void testDataSourceInitializedWithExplicitScript() throws Exception {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("spring.database.schema",
 				ClassUtils.addResourcePathToPackagePath(getClass(), "schema.sql"));
@@ -100,6 +112,29 @@ public class DataSourceAutoConfigurationTests {
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertEquals(new Integer(0),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
+	}
+
+	@Test
+	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("spring.database.schema",
+				ClassUtils.addResourcePathToPackagePath(getClass(), "schema.sql")
+						+ ","
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"another.sql"));
+		this.context.getEnvironment().getPropertySources()
+				.addFirst(new MapPropertySource("test", map));
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
+		assertNotNull(dataSource);
+		JdbcOperations template = new JdbcTemplate(dataSource);
+		assertEquals(new Integer(0),
+				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
+		assertEquals(new Integer(0),
+				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
 	}
 
 	@Configuration

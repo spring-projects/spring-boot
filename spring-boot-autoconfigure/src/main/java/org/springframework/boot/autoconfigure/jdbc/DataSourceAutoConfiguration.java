@@ -92,7 +92,8 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		String schema = this.environment.getProperty("schema");
 		if (schema == null) {
 			schema = "classpath*:schema-"
-					+ this.environment.getProperty("platform", "all") + ".sql";
+					+ this.environment.getProperty("platform", "all")
+					+ ".sql,classpath*:schema.sql,classpath*:data.sql";
 		}
 
 		List<Resource> resources = new ArrayList<Resource>();
