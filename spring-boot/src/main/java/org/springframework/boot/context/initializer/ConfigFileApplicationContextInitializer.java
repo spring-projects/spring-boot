@@ -126,16 +126,29 @@ public class ConfigFileApplicationContextInitializer implements
 		List<String> candidates = getCandidateLocations();
 		Collections.reverse(candidates);
 
+		List<PropertySource<?>> sources = new ArrayList<PropertySource<?>>();
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
-			load(environment, resourceLoader, candidate, null);
+			PropertySource<?> source = load(environment, resourceLoader, candidate, null);
+			if (source != null) {
+				sources.add(source);
+			}
 		}
 
 		// Second load for specific profiles
 		for (String profile : environment.getActiveProfiles()) {
 			for (String candidate : candidates) {
-				load(environment, resourceLoader, candidate, profile);
+				PropertySource<?> source = load(environment, resourceLoader, candidate,
+						profile);
+				if (source != null) {
+					environment.getPropertySources().addLast(source);
+				}
 			}
+		}
+
+		// Originals go at the end so they don't override the specific profiles
+		for (PropertySource<?> source : sources) {
+			environment.getPropertySources().addLast(source);
 		}
 	}
 
@@ -154,8 +167,8 @@ public class ConfigFileApplicationContextInitializer implements
 		return candidates;
 	}
 
-	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
-			String location, String profile) {
+	private PropertySource<?> load(ConfigurableEnvironment environment,
+			ResourceLoader resourceLoader, String location, String profile) {
 		location = environment.resolvePlaceholders(location);
 		String suffix = "." + StringUtils.getFilenameExtension(location);
 
@@ -173,7 +186,7 @@ public class ConfigFileApplicationContextInitializer implements
 		Resource resource = resourceLoader.getResource(location);
 		PropertySource<?> propertySource = getPropertySource(resource, profile, loaders);
 		if (propertySource == null) {
-			return;
+			return null;
 		}
 		if (propertySource.containsProperty("spring.profiles.active")) {
 			Set<String> profiles = StringUtils.commaDelimitedListToSet(propertySource
@@ -184,7 +197,7 @@ public class ConfigFileApplicationContextInitializer implements
 			}
 
 		}
-		environment.getPropertySources().addLast(propertySource);
+		return propertySource;
 	}
 
 	private PropertySource<?> getPropertySource(Resource resource, String profile,
