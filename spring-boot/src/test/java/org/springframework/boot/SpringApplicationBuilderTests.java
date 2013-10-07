@@ -88,6 +88,23 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	public void parentFirstCreationWithProfileAndDefaultArgs() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ExampleConfig.class).profiles("node").defaultArgs("--transport=redis")
+				.child(ChildConfig.class).web(false);
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().acceptsProfiles("node"), is(true));
+		assertThat(this.context.getEnvironment().getProperty("transport"),
+				is(equalTo("redis")));
+		assertThat(this.context.getParent().getEnvironment().acceptsProfiles("node"),
+				is(true));
+		assertThat(this.context.getParent().getEnvironment().getProperty("transport"),
+				is(equalTo("redis")));
+		// only defined in node profile
+		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("spam")));
+	}
+
+	@Test
 	public void parentContextIdentical() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class);

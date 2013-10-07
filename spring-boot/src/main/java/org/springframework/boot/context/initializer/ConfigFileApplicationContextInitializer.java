@@ -171,7 +171,7 @@ public class ConfigFileApplicationContextInitializer implements
 		}
 
 		Resource resource = resourceLoader.getResource(location);
-		PropertySource<?> propertySource = getPropertySource(resource, loaders);
+		PropertySource<?> propertySource = getPropertySource(resource, profile, loaders);
 		if (propertySource == null) {
 			return;
 		}
@@ -187,9 +187,9 @@ public class ConfigFileApplicationContextInitializer implements
 		environment.getPropertySources().addLast(propertySource);
 	}
 
-	private PropertySource<?> getPropertySource(Resource resource,
+	private PropertySource<?> getPropertySource(Resource resource, String profile,
 			List<PropertySourceLoader> loaders) {
-		String key = resource.getDescription();
+		String key = resource.getDescription() + (profile == null ? "" : "#" + profile);
 		if (this.cached.containsKey(key)) {
 			return this.cached.get(key);
 		}
