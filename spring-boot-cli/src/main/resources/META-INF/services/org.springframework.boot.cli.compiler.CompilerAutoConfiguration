@@ -8,3 +8,4 @@ org.springframework.boot.cli.compiler.autoconfigure.JmsCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.TransactionManagementCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.SpringIntegrationCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.SpringSecurityCompilerAutoConfiguration
+org.springframework.boot.cli.compiler.autoconfigure.SpringMobileCompilerAutoConfiguration
