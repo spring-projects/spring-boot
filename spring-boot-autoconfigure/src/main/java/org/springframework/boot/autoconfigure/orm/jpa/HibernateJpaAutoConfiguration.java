@@ -23,9 +23,11 @@ import javax.sql.DataSource;
 
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.ejb.HibernateEntityManager;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -45,9 +47,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		HibernateEntityManager.class })
 @ConditionalOnBean(DataSource.class)
 @EnableTransactionManagement
-public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
+public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implements
+		BeanClassLoaderAware {
 
 	private RelaxedPropertyResolver environment;
+
+	private ClassLoader classLoader;
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
 
 	@Override
 	public void setEnvironment(Environment environment) {
@@ -67,9 +77,18 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
 		properties.put("hibernate.ejb.naming_strategy", this.environment.getProperty(
 				"naming-strategy", ImprovedNamingStrategy.class.getName()));
-		String ddlAuto = this.environment.getProperty("ddl-auto", "none");
+		String ddlAuto = this.environment.getProperty("ddl-auto", getDefaultDdlAuto());
 		if (!"none".equals(ddlAuto)) {
 			properties.put("hibernate.hbm2ddl.auto", ddlAuto);
 		}
+	}
+
+	private String getDefaultDdlAuto() {
+		EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
+				.get(this.classLoader);
+		if (embeddedDatabaseConnection == EmbeddedDatabaseConnection.NONE) {
+			return "none";
+		}
+		return "create-drop";
 	}
 }

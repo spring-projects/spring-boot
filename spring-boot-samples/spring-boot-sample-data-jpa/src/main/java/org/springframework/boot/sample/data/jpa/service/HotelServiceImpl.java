@@ -42,7 +42,7 @@ class HotelServiceImpl implements HotelService {
 	private final HotelRepository hotelRepository;
 
 	private final ReviewRepository reviewRepository;
-
+	
 	@Autowired
 	public HotelServiceImpl(HotelRepository hotelRepository,
 			ReviewRepository reviewRepository) {
