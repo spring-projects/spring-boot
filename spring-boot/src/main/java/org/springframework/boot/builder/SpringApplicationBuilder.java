@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.initializer.ParentContextApplicationContextInitializer;
+import org.springframework.boot.context.initializer.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -395,7 +396,14 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder initializers(
 			ApplicationContextInitializer<?>... initializers) {
-		addInitializers(false, initializers);
+		for (ApplicationContextInitializer<?> initializer : initializers) {
+			boolean prepend = false;
+			if (initializer instanceof ParentContextApplicationContextInitializer
+					|| initializer instanceof ServletContextApplicationContextInitializer) {
+				prepend = true;
+			}
+			addInitializers(prepend, initializer);
+		}
 		return this;
 	}
 
