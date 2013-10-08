@@ -20,14 +20,11 @@ import groovy.grape.Grape;
 import groovy.lang.Grapes;
 import groovy.lang.GroovyClassLoader;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Customizer that allows dependencies to be added during compilation. Delegates to Groovy
@@ -43,15 +40,17 @@ public class DependencyCustomizer {
 
 	private final List<Map<String, Object>> dependencies;
 
-	private Properties properties;
+	private final ArtifactCoordinatesResolver artifactCoordinatesResolver;
 
 	/**
 	 * Create a new {@link DependencyCustomizer} instance. The {@link #call()} method must
 	 * be used to actually resolve dependencies.
 	 * @param loader
 	 */
-	public DependencyCustomizer(GroovyClassLoader loader) {
+	public DependencyCustomizer(GroovyClassLoader loader,
+			ArtifactCoordinatesResolver artifactCoordinatesResolver) {
 		this.loader = loader;
+		this.artifactCoordinatesResolver = artifactCoordinatesResolver;
 		this.dependencies = new ArrayList<Map<String, Object>>();
 	}
 
@@ -61,27 +60,21 @@ public class DependencyCustomizer {
 	 */
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
+		this.artifactCoordinatesResolver = parent.artifactCoordinatesResolver;
 		this.dependencies = parent.dependencies;
 	}
 
-	public String getProperty(String key) {
-		return getProperty(key, "");
+	public String getVersion(String artifactId) {
+		return getVersion(artifactId, "");
+
 	}
 
-	public String getProperty(String key, String defaultValue) {
-		if (this.properties == null) {
-			this.properties = new Properties();
-			try {
-				for (URL url : Collections.list(this.loader
-						.getResources("META-INF/springcli.properties"))) {
-					this.properties.load(url.openStream());
-				}
-			}
-			catch (Exception e) {
-				// swallow and continue
-			}
+	public String getVersion(String artifactId, String defaultVersion) {
+		String version = this.artifactCoordinatesResolver.getVersion(artifactId);
+		if (version == null) {
+			version = defaultVersion;
 		}
-		return this.properties.getProperty(key, defaultValue);
+		return version;
 	}
 
 	/**
@@ -216,25 +209,33 @@ public class DependencyCustomizer {
 	}
 
 	/**
-	 * Add a single dependencies.
-	 * @param group the group ID
-	 * @param module the module ID
-	 * @param version the version
+	 * Add a single dependency and all of its dependencies. The group ID and version of
+	 * the dependency are resolves using the customizer's
+	 * {@link ArtifactCoordinatesResolver}.
+	 * @param module The module ID
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
-	public DependencyCustomizer add(String group, String module, String version) {
-		return this.add(group, module, version, true);
+	public DependencyCustomizer add(String module) {
+		return this.add(this.artifactCoordinatesResolver.getGroupId(module), module,
+				this.artifactCoordinatesResolver.getVersion(module), true);
 	}
 
 	/**
-	 * Add a single dependencies.
-	 * @param group the group ID
-	 * @param module the module ID
-	 * @param version the version
+	 * Add a single dependency and, optionally, all of its dependencies. The group ID and
+	 * version of the dependency are resolves using the customizer's
+	 * {@link ArtifactCoordinatesResolver}.
+	 * @param module The module ID
+	 * @param transitive {@code true} if the transitive dependencies should also be added,
+	 * otherwise {@code false}.
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
+	public DependencyCustomizer add(String module, boolean transitive) {
+		return this.add(this.artifactCoordinatesResolver.getGroupId(module), module,
+				this.artifactCoordinatesResolver.getVersion(module), transitive);
+	}
+
 	@SuppressWarnings("unchecked")
-	public DependencyCustomizer add(String group, String module, String version,
+	private DependencyCustomizer add(String group, String module, String version,
 			boolean transitive) {
 		if (canAdd()) {
 			Map<String, Object> dependency = new HashMap<String, Object>();

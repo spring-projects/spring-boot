@@ -202,6 +202,23 @@
 					<version>3.2</version>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.ant</groupId>
+							<artifactId>ant</artifactId>
+							<version>1.7.0</version>
+						</dependency>
+						<dependency>
+							<groupId>foundrylogic.vpp</groupId>
+							<artifactId>vpp</artifactId>
+							<version>2.2.1</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
 					<version>2.0</version>
@@ -309,6 +326,14 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>objectstyle</id>
+					<name>ObjectStyle.org Repository</name>
+					<url>http://objectstyle.org/maven2/</url>
+					<snapshots>
+						<enabled>false</enabled>
 					</snapshots>
 				</pluginRepository>
 			</pluginRepositories>
