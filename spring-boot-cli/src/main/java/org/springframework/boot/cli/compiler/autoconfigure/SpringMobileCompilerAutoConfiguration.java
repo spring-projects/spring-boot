@@ -31,8 +31,9 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Mobile.
- *
+ * 
  * @author Roy Clarkson
+ * @author Dave Syer
  */
 public class SpringMobileCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
@@ -44,8 +45,7 @@ public class SpringMobileCompilerAutoConfiguration extends CompilerAutoConfigura
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("org.springframework.mobile", "spring-mobile-device",
-				dependencies.getProperty("spring-mobile.version"));
+		dependencies.add("spring-mobile-device");
 	}
 
 	@Override
