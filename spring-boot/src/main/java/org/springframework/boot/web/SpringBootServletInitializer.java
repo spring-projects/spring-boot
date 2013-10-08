@@ -27,7 +27,6 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.initializer.ParentContextApplicationContextInitializer;
 import org.springframework.boot.context.initializer.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -79,8 +78,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 			servletContext.setAttribute(
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, null);
 		}
-		SpringApplicationBuilder application = new SpringApplicationBuilder()
-				.sources(getConfigClasses());
+		SpringApplicationBuilder application = new SpringApplicationBuilder();
 		if (parent != null) {
 			application.initializers(new ParentContextApplicationContextInitializer(
 					parent));
@@ -88,33 +86,20 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		application.initializers(new ServletContextApplicationContextInitializer(
 				servletContext));
 		application.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
+		configure(application);
 		return (WebApplicationContext) application.run();
 	}
 
-	private Object[] getConfigClasses() {
-		Class<?>[] additionalConfigClasses = getAdditionalConfigClasses();
-		if (ObjectUtils.isEmpty(additionalConfigClasses)) {
-			return new Object[] { getConfigClass() };
-		}
-		Object[] configClasses = new Object[additionalConfigClasses.length + 1];
-		configClasses[0] = getConfigClass();
-		System.arraycopy(additionalConfigClasses, 0, configClasses, 1,
-				additionalConfigClasses.length);
-		return configClasses;
-	}
-
 	/**
-	 * Returns the main configuration class to load. If you need additional configuration
-	 * classes you can also override {@link #getAdditionalConfigClasses()}.
+	 * Configure the application. Normally all you would need to do it add sources (e.g.
+	 * config classes) because other settings have sensible defaults. You might choose
+	 * (for instance) to add default command line arguments, or set an active Spring
+	 * profile.
+	 * 
+	 * @param application a builder for the application context
+	 * @see SpringApplicationBuilder
 	 */
-	protected abstract Class<?> getConfigClass();
-
-	/**
-	 * Returns configuration classes that should be loaded in addition to the
-	 * {@link #getConfigClass() main configuration class}.
-	 */
-	protected Class<?>[] getAdditionalConfigClasses() {
-		return null;
+	protected void configure(SpringApplicationBuilder application) {
 	}
 
 }
