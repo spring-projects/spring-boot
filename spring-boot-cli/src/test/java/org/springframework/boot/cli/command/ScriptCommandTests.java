@@ -22,8 +22,6 @@ import groovy.lang.Script;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.cli.GrapesCleaner;
-import org.springframework.boot.cli.command.OptionHandler;
-import org.springframework.boot.cli.command.ScriptCommand;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;

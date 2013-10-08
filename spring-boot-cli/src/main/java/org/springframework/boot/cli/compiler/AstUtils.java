@@ -32,6 +32,7 @@ import org.codehaus.groovy.ast.MethodNode;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Greg Turnquist
  */
 public abstract class AstUtils {
 
@@ -49,12 +50,40 @@ public abstract class AstUtils {
 				}
 			}
 		}
+
 		return false;
 
 	}
 
+    /**
+     * Determine if a {@link ClassNode} has one or more of the specified annotations on the class
+     * or any of its methods.
+     * N.B. the type names are not normally fully qualified.
+     */
+    public static boolean hasAtLeastOneAnnotation(ClassNode node, String... annotations) {
+        for (AnnotationNode annotationNode : node.getAnnotations()) {
+            for (String annotation : annotations) {
+                if (annotation.equals(annotationNode.getClassNode().getName())) {
+                    return true;
+                }
+            }
+        }
+
+        List<MethodNode> methods = node.getMethods();
+        for (MethodNode method : methods) {
+            for (AnnotationNode annotationNode : method.getAnnotations()) {
+                for (String annotation : annotations) {
+                    if (annotation.equals(annotationNode.getClassNode().getName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 	/**
-	 * Determine if an {@link ClassNode} has one or more fields of the specified types or
+	 * Determine if a {@link ClassNode} has one or more fields of the specified types or
 	 * method returning one or more of the specified types. N.B. the type names are not
 	 * normally fully qualified.
 	 */
@@ -73,8 +102,23 @@ public abstract class AstUtils {
 				return true;
 			}
 		}
+
 		return false;
 
 	}
+
+    /**
+     * Determine if a {@link ClassNode} subclasses any of the specified types
+     * N.B. the type names are not normally fully qualified.
+     */
+    public static boolean subclasses(ClassNode node, String... types) {
+        for (String type : types) {
+            if (node.getSuperClass().getName().equals(type)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

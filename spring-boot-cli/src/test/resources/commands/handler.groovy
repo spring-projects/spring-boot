@@ -3,6 +3,9 @@ package org.test.command
 @Grab("org.eclipse.jgit:org.eclipse.jgit:2.3.1.201302201838-r")
 import org.eclipse.jgit.api.Git
 
+@Grab("org.eclipse.jgit:org.eclipse.jgit:2.3.1.201302201838-r") @Grab("org.eclipse.jgit:org.eclipse.jgit:2.3.1.201302201838-r") @Grab("org.eclipse.jgit:org.eclipse.jgit:2.3.1.201302201838-r") @Grab("org.eclipse.jgit:org.eclipse.jgit:2.3.1.201302201838-r") @Grab("org.eclipse.jgit:org.eclipse.jgit:2.3.1.201302201838-r")
+import java.lang.Object
+
 class TestCommand extends OptionHandler {
 
 	void options() {
