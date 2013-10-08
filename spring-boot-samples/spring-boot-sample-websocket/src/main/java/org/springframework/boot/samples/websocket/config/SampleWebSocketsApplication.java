@@ -18,6 +18,7 @@ package org.springframework.boot.samples.websocket.config;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.samples.websocket.client.GreetingService;
 import org.springframework.boot.samples.websocket.client.SimpleGreetingService;
 import org.springframework.boot.samples.websocket.echo.DefaultEchoService;
@@ -35,9 +36,9 @@ import org.springframework.web.socket.support.PerConnectionWebSocketHandler;
 public class SampleWebSocketsApplication extends SpringBootServletInitializer {
 
 	@Override
-	protected Class<?> getConfigClass() {
-		return SampleWebSocketsApplication.class;
-	}
+	protected void configure(SpringApplicationBuilder application) {
+        application.sources(SampleWebSocketsApplication.class);
+    }
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleWebSocketsApplication.class, args);
