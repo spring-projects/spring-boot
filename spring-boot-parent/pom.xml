@@ -211,11 +211,6 @@
 							<artifactId>ant</artifactId>
 							<version>1.7.0</version>
 						</dependency>
-						<dependency>
-							<groupId>foundrylogic.vpp</groupId>
-							<artifactId>vpp</artifactId>
-							<version>2.2.1</version>
-						</dependency>
 					</dependencies>
 				</plugin>
 				<plugin>
@@ -326,14 +321,6 @@
 					<url>http://repo.spring.io/snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>objectstyle</id>
-					<name>ObjectStyle.org Repository</name>
-					<url>http://objectstyle.org/maven2/</url>
-					<snapshots>
-						<enabled>false</enabled>
 					</snapshots>
 				</pluginRepository>
 			</pluginRepositories>
