@@ -14,13 +14,29 @@
 		<main.basedir>${basedir}/..</main.basedir>
 		<start-class>org.springframework.boot.cli.SpringCli</start-class>
 	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-parent</artifactId>
+				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-xml</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectreactor</groupId>
+				<artifactId>reactor-core</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<!-- Compile -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-cli-properties</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
@@ -76,6 +92,12 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.vpp</exclude>
+                </excludes>
+			</resource>
+			<resource>
+				<directory>${project.build.directory}/generated-resources</directory>
 			</resource>
 			<resource>
 				<directory>src/main/groovy</directory>
@@ -151,6 +173,47 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-cli-properties</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<target>
+								<typedef resource="foundrylogic/vpp/typedef.properties" />
+								<taskdef resource="foundrylogic/vpp/taskdef.properties" />
+								<property name="dependencies" value="${project.parent}" />
+								<vppcopy
+									file="${basedir}/src/main/resources/META-INF/springcli.properties.vpp"
+									tofile="${project.build.directory}/generated-resources/META-INF/springcli.properties"
+									overwrite="true" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>foundrylogic.vpp</groupId>
+						<artifactId>vpp</artifactId>
+						<version>2.2.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>objectstyle</id>
+			<name>ObjectStyle.org Repository</name>
+			<url>http://objectstyle.org/maven2/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
