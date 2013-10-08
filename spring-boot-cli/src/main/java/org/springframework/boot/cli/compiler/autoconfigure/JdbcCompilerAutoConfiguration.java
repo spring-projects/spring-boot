@@ -38,8 +38,7 @@ public class JdbcCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.jdbc.core.JdbcTemplate")
-				.add("org.springframework.boot", "spring-boot-starter-jdbc",
-						dependencies.getProperty("spring-boot.version"));
+				.add("spring-boot-starter-jdbc");
 	}
 
 	@Override

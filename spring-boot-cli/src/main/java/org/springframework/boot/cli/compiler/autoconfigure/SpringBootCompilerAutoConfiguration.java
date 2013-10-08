@@ -39,8 +39,7 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
-				.add("org.springframework.boot", "spring-boot-starter",
-						dependencies.getProperty("spring-boot.version"));
+				.add("spring-boot-starter");
 	}
 
 	@Override

@@ -16,14 +16,18 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
-
-import java.lang.annotation.*;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring JMS.
@@ -34,17 +38,15 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-        // Slightly weird detection algorithm because there is no @Enable annotation for
-        // Spring JMS
-        return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJmsMessaging");
+		// Slightly weird detection algorithm because there is no @Enable annotation for
+		// Spring JMS
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableJmsMessaging");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("org.springframework", "spring-jms",
-				dependencies.getProperty("spring.version")).add(
-				"org.apache.geronimo.specs", "geronimo-jms_1.1_spec", "1.1");
+		dependencies.add("spring-jms").add("geronimo-jms_1.1_spec");
 
 	}
 
@@ -52,15 +54,15 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("javax.jms", "org.springframework.jms.core",
 				"org.springframework.jms.listener",
-				"org.springframework.jms.listener.adapter")
-                .addImports(EnableJmsMessaging.class.getCanonicalName());
+				"org.springframework.jms.listener.adapter").addImports(
+				EnableJmsMessaging.class.getCanonicalName());
 	}
 
-    @Target(ElementType.TYPE)
-    @Documented
-    @Retention(RetentionPolicy.RUNTIME)
-    public static @interface EnableJmsMessaging {
+	@Target(ElementType.TYPE)
+	@Documented
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface EnableJmsMessaging {
 
-    }
+	}
 
 }

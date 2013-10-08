@@ -36,12 +36,8 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses("org.reactor.Reactor")
-				.add("org.projectreactor", "reactor-spring",
-						dependencies.getProperty("reactor.version"), false)
-				.add("org.projectreactor", "reactor-core",
-						dependencies.getProperty("reactor.version"));
+		dependencies.ifAnyMissingClasses("reactor.core.Reactor")
+				.add("reactor-spring", false).add("reactor-core");
 	}
 
 	@Override

@@ -1,0 +1,18 @@
+#set( $artifacts = $project.getReference('maven.project').artifacts )
+#foreach( $artifact in $artifacts )
+#if ( $artifact.scope == 'provided' )
+${artifact.artifactId}.version: $artifact.version
+${artifact.artifactId}.groupId: $artifact.groupId
+#end
+#end
+groovy.version: $ant.get('groovy.version')
+jetty.version: $ant.get('jetty.version')
+reactor.version: $ant.get('reactor.version')
+spring.version: $ant.get('spring.version')
+spring-batch.version: $ant.get('spring-batch.version')
+spring-boot.version: $ant.get('project.version')
+spring-rabbit.version: $ant.get('spring-rabbit.version')
+spring-security.version: $ant.get('spring-security.version')
+spring-integration.version: $ant.get('spring-integration.version')
+spring-integration-groovydsl.version: $ant.get('spring-integration-groovydsl.version')
+tomcat.version: $ant.get('tomcat.version')
