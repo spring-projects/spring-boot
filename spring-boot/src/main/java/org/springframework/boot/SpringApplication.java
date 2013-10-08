@@ -296,7 +296,7 @@ public class SpringApplication {
 	}
 
 	private void callNonEnvironmentAwareSpringApplicationInitializers(String[] args) {
-		for (ApplicationContextInitializer<?> initializer : this.initializers) {
+		for (ApplicationContextInitializer<?> initializer : getInitializers()) {
 			if (initializer instanceof SpringApplicationInitializer
 					&& !(initializer instanceof EnvironmentAware)) {
 				((SpringApplicationInitializer) initializer).initialize(this, args);
@@ -334,7 +334,7 @@ public class SpringApplication {
 
 	private void callEnvironmentAwareSpringApplicationInitializers(String[] args,
 			ConfigurableEnvironment environment) {
-		for (ApplicationContextInitializer<?> initializer : this.initializers) {
+		for (ApplicationContextInitializer<?> initializer : getInitializers()) {
 			if (initializer instanceof SpringApplicationInitializer
 					&& initializer instanceof EnvironmentAware) {
 				((EnvironmentAware) initializer).setEnvironment(environment);
@@ -360,7 +360,7 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void applyInitializers(ConfigurableApplicationContext context) {
-		for (ApplicationContextInitializer initializer : this.initializers) {
+		for (ApplicationContextInitializer initializer : getInitializers()) {
 			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(
 					initializer.getClass(), ApplicationContextInitializer.class);
 			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
@@ -634,7 +634,9 @@ public class SpringApplication {
 
 	/**
 	 * Sets the {@link ApplicationContextInitializer} that will be applied to the Spring
-	 * {@link ApplicationContext}. Any existing initializers will be replaced.
+	 * {@link ApplicationContext}. Any existing initializers will be replaced. The default
+	 * initializers (from <code>META-INF/spring.factories</code> are always appended at
+	 * runtime).
 	 * @param initializers the initializers to set
 	 */
 	public void setInitializers(
@@ -648,7 +650,10 @@ public class SpringApplication {
 	 * @return the initializers
 	 */
 	public List<ApplicationContextInitializer<?>> getInitializers() {
-		return this.initializers;
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
+				this.initializers);
+		initializers.addAll(getSpringFactoriesApplicationContextInitializers());
+		return initializers;
 	}
 
 	/**
