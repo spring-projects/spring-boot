@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
@@ -78,14 +79,16 @@ public class SnakeTimer {
     }
 
     public static void broadcast(String message) throws Exception {
-        for (Snake snake : SnakeTimer.getSnakes()) {
-			try {
-				snake.sendMessage(message);
-			}
-			catch (Throwable ex) {
-				// if Snake#sendMessage fails the client should be removed
-			}
-		}
+        Collection<Snake> snakes = new CopyOnWriteArrayList<>(SnakeTimer.getSnakes());
+        for (Snake snake : snakes) {
+            try {
+                snake.sendMessage(message);
+            }
+            catch (Throwable ex) {
+                // if Snake#sendMessage fails the client is removed
+                removeSnake(snake);
+            }
+        }
     }
 
 
