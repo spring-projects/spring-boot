@@ -17,6 +17,11 @@
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-cli-properties</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
 		</dependency>
@@ -62,12 +67,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>

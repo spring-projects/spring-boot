@@ -17,17 +17,25 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.grape.Grape;
+import groovy.lang.Grab;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.ModuleNode;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
@@ -37,6 +45,8 @@ import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
+import org.codehaus.groovy.transform.ASTTransformation;
+import org.codehaus.groovy.transform.ASTTransformationVisitor;
 
 /**
  * Compiler for Groovy source files. Primarily a simple Facade for
@@ -61,6 +71,8 @@ public class GroovyCompiler {
 
 	private ExtendedGroovyClassLoader loader;
 
+	private ArtifactCoordinatesResolver artifactCoordinatesResolver;
+
 	/**
 	 * Create a new {@link GroovyCompiler} instance.
 	 * @param configuration the compiler configuration
@@ -73,9 +85,12 @@ public class GroovyCompiler {
 		if (configuration.getClasspath().length() > 0) {
 			this.loader.addClasspath(configuration.getClasspath());
 		}
+		this.artifactCoordinatesResolver = new PropertiesArtifactCoordinatesResolver(
+				this.loader);
 		new GrapeEngineCustomizer(Grape.getInstance()).customize();
 		compilerConfiguration
 				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
+
 	}
 
 	public void addCompilationCustomizers(CompilationCustomizer... customizers) {
@@ -115,8 +130,8 @@ public class GroovyCompiler {
 
 		CompilerConfiguration compilerConfiguration = this.loader.getConfiguration();
 
-		CompilationUnit compilationUnit = new CompilationUnit(compilerConfiguration,
-				null, this.loader);
+		final CompilationUnit compilationUnit = new CompilationUnit(
+				compilerConfiguration, null, this.loader);
 		SourceUnit sourceUnit = new SourceUnit(file[0], compilerConfiguration,
 				this.loader, compilationUnit.getErrorCollector());
 		ClassCollector collector = this.loader.createCollector(compilationUnit,
@@ -124,6 +139,9 @@ public class GroovyCompiler {
 		compilationUnit.setClassgenCallback(collector);
 
 		compilationUnit.addSources(file);
+
+		addAstTransformations(compilationUnit);
+
 		compilationUnit.compile(Phases.CLASS_GENERATION);
 		for (Object loadedClass : collector.getLoadedClasses()) {
 			classes.add((Class<?>) loadedClass);
@@ -143,6 +161,43 @@ public class GroovyCompiler {
 
 		return classes.toArray(new Class<?>[classes.size()]);
 
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void addAstTransformations(final CompilationUnit compilationUnit) {
+		try {
+			Field field = CompilationUnit.class.getDeclaredField("phaseOperations");
+			field.setAccessible(true);
+
+			LinkedList[] phaseOperations = (LinkedList[]) field.get(compilationUnit);
+			processConversionOperations(phaseOperations[Phases.CONVERSION]);
+		}
+		catch (Exception npe) {
+			throw new IllegalStateException(
+					"Phase operations not available from compilation unit");
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void processConversionOperations(LinkedList conversionOperations) {
+		for (int i = 0; i < conversionOperations.size(); i++) {
+			Object operation = conversionOperations.get(i);
+
+			if (operation.getClass().getName()
+					.startsWith(ASTTransformationVisitor.class.getName())) {
+				conversionOperations.add(i, new CompilationUnit.SourceUnitOperation() {
+
+					private final ASTTransformation transformation = new DefaultDependencyCoordinatesAstTransformation();
+
+					@Override
+					public void call(SourceUnit source) throws CompilationFailedException {
+						this.transformation.visit(new ASTNode[] { source.getAST() },
+								source);
+					}
+				});
+				break;
+			}
+		}
 	}
 
 	/**
@@ -166,7 +221,8 @@ public class GroovyCompiler {
 
 			// Early sweep to get dependencies
 			DependencyCustomizer dependencyCustomizer = new DependencyCustomizer(
-					GroovyCompiler.this.loader);
+					GroovyCompiler.this.loader,
+					GroovyCompiler.this.artifactCoordinatesResolver);
 			for (CompilerAutoConfiguration autoConfiguration : customizers) {
 				if (autoConfiguration.matches(classNode)) {
 					if (GroovyCompiler.this.configuration.isGuessDependencies()) {
@@ -198,6 +254,72 @@ public class GroovyCompiler {
 			importCustomizer.call(source, context, classNode);
 		}
 
+	}
+
+	private class DefaultDependencyCoordinatesAstTransformation implements
+			ASTTransformation {
+
+		@Override
+		public void visit(ASTNode[] nodes, final SourceUnit source) {
+			for (ASTNode node : nodes) {
+				if (node instanceof ModuleNode) {
+					ModuleNode module = (ModuleNode) node;
+					for (ClassNode classNode : module.getClasses()) {
+						for (AnnotationNode annotationNode : classNode.getAnnotations()) {
+							if (isGrabAnnotation(annotationNode)) {
+								transformGrabAnnotationIfNecessary(annotationNode);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		private boolean isGrabAnnotation(AnnotationNode annotationNode) {
+			String annotationClassName = annotationNode.getClassNode().getName();
+			return annotationClassName.equals(Grab.class.getName())
+					|| annotationClassName.equals(Grab.class.getSimpleName());
+		}
+
+		private void transformGrabAnnotationIfNecessary(AnnotationNode grabAnnotation) {
+			Expression valueExpression = grabAnnotation.getMember("value");
+			if (valueExpression instanceof ConstantExpression) {
+				ConstantExpression constantExpression = (ConstantExpression) valueExpression;
+				Object valueObject = constantExpression.getValue();
+				if (valueObject instanceof String) {
+					String value = (String) valueObject;
+					if (!isConvenienceForm(value)) {
+						transformGrabAnnotation(grabAnnotation, constantExpression);
+					}
+				}
+			}
+		}
+
+		private boolean isConvenienceForm(String value) {
+			return value.contains(":") || value.contains("#");
+		}
+
+		private void transformGrabAnnotation(AnnotationNode grabAnnotation,
+				ConstantExpression moduleExpression) {
+
+			grabAnnotation.setMember("module", moduleExpression);
+
+			String module = (String) moduleExpression.getValue();
+
+			if (grabAnnotation.getMember("group") == null) {
+				ConstantExpression groupIdExpression = new ConstantExpression(
+						GroovyCompiler.this.artifactCoordinatesResolver
+								.getGroupId(module));
+				grabAnnotation.setMember("group", groupIdExpression);
+			}
+			if (grabAnnotation.getMember("version") == null) {
+				ConstantExpression versionExpression = new ConstantExpression(
+						GroovyCompiler.this.artifactCoordinatesResolver
+								.getVersion(module));
+				grabAnnotation.setMember("version", versionExpression);
+			}
+
+		}
 	}
 
 }

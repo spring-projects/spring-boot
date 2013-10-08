@@ -39,10 +39,7 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 		dependencies
 				.ifAnyMissingClasses(
 						"org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
-				.add("org.springframework.security", "spring-security-config",
-						dependencies.getProperty("spring-security.version"))
-				.add("org.springframework.security", "spring-security-web",
-						dependencies.getProperty("spring-security.version"), false);
+				.add("spring-security-config").add("spring-security-web", false);
 	}
 
 	@Override

@@ -16,6 +16,12 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -23,45 +29,42 @@ import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
-import java.lang.annotation.*;
-
 /**
  * {@link CompilerAutoConfiguration} for Spring Rabbit.
- *
+ * 
  * @author Greg Turnquist
  */
 public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-    @Override
-    public boolean matches(ClassNode classNode) {
-        // Slightly weird detection algorithm because there is no @Enable annotation for
-        // Integration
-        return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRabbitMessaging");
-    }
+	@Override
+	public boolean matches(ClassNode classNode) {
+		// Slightly weird detection algorithm because there is no @Enable annotation for
+		// Integration
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableRabbitMessaging");
+	}
 
-    @Override
-    public void applyDependencies(DependencyCustomizer dependencies)
-            throws CompilationFailedException {
-        dependencies.add("org.springframework.amqp", "spring-rabbit",
-                dependencies.getProperty("spring-rabbit.version"));
+	@Override
+	public void applyDependencies(DependencyCustomizer dependencies)
+			throws CompilationFailedException {
+		dependencies.add("spring-rabbit");
 
-    }
+	}
 
-    @Override
-    public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-        imports.addStarImports("org.springframework.amqp.rabbit.core",
-                "org.springframework.amqp.rabbit.connection",
-                "org.springframework.amqp.rabbit.listener",
-                "org.springframework.amqp.rabbit.listener.adapter",
-                "org.springframework.amqp.core").addImports(EnableRabbitMessaging.class.getCanonicalName());
-    }
+	@Override
+	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
+		imports.addStarImports("org.springframework.amqp.rabbit.core",
+				"org.springframework.amqp.rabbit.connection",
+				"org.springframework.amqp.rabbit.listener",
+				"org.springframework.amqp.rabbit.listener.adapter",
+				"org.springframework.amqp.core").addImports(
+				EnableRabbitMessaging.class.getCanonicalName());
+	}
 
-    @Target(ElementType.TYPE)
-    @Documented
-    @Retention(RetentionPolicy.RUNTIME)
-    public static @interface EnableRabbitMessaging {
+	@Target(ElementType.TYPE)
+	@Documented
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface EnableRabbitMessaging {
 
-    }
-
+	}
 
 }
