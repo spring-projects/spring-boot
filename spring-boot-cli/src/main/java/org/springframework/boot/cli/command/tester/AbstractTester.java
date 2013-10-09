@@ -20,20 +20,23 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Abstract base class for tester implementations.
+ * 
+ * @author Greg Turnquist
+ */
 public abstract class AbstractTester {
 
-    public TestResults findAndTest(List<Class<?>> compiled) throws FileNotFoundException {
-        Set<Class<?>> testable = findTestableClasses(compiled);
+	public TestResults findAndTest(List<Class<?>> compiled) throws FileNotFoundException {
+		Set<Class<?>> testable = findTestableClasses(compiled);
+		if (testable.size() == 0) {
+			return TestResults.NONE;
+		}
+		return test(testable.toArray(new Class<?>[] {}));
+	}
 
-        if (testable.size() == 0) {
-            return TestResults.none;
-        }
+	protected abstract Set<Class<?>> findTestableClasses(List<Class<?>> compiled);
 
-        return test(testable.toArray(new Class<?>[]{}));
-    }
-
-    abstract protected Set<Class<?>> findTestableClasses(List<Class<?>> compiled);
-
-    abstract protected TestResults test(Class<?>[] testable);
+	protected abstract TestResults test(Class<?>[] testable);
 
 }
