@@ -96,7 +96,7 @@ If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to
 the Spring Boot CLI is:
 
 ```
-$ brew install http://repo.spring.io/install/spring-boot-cli.rb
+$ brew install http://repo.spring.io/install/springboot.rb
 ```
 
 Homebrew will install `spring` to `/usr/local/bin`. Now you can jump right to a
