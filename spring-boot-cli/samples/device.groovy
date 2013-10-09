@@ -6,15 +6,15 @@ class Example {
 
 	@RequestMapping("/")
 	@ResponseBody
-	public String helloWorld(Device device) {
+	String helloWorld(Device device) {
 		if (device.isNormal()) {
-			return "Hello Normal Device!"
+			"Hello Normal Device!"
 		} else if (device.isMobile()) {
-			return "Hello Mobile Device!"
+			"Hello Mobile Device!"
 		} else if (device.isTablet()) {
-			return "Hello Tablet Device!"
+			"Hello Tablet Device!"
 		} else {
-			return "Hello Unknown Device!"
+			"Hello Unknown Device!"
 		}
 	}
 

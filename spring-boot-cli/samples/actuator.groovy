@@ -1,6 +1,6 @@
 package org.test
 
-@Grab("org.springframework.boot:spring-boot-starter-actuator:0.5.0.BUILD-SNAPSHOT")
+@Grab("spring-boot-starter-actuator")
 
 @Controller
 class SampleController {
