@@ -25,25 +25,25 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spock test framework
- *
+ * 
  * @author Greg Turnquist
  */
 public class SpockCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-    @Override
-    public boolean matches(ClassNode classNode) {
-        return AstUtils.subclasses(classNode, "Specification");
-    }
+	@Override
+	public boolean matches(ClassNode classNode) {
+		return AstUtils.subclasses(classNode, "Specification");
+	}
 
-    @Override
-    public void applyDependencies(DependencyCustomizer dependencies)
-            throws CompilationFailedException {
-        dependencies.add("spock-core");
-    }
+	@Override
+	public void applyDependencies(DependencyCustomizer dependencies)
+			throws CompilationFailedException {
+		dependencies.add("spock-core");
+	}
 
-    @Override
-    public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-        imports.addStarImports("spock.lang");
-    }
+	@Override
+	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
+		imports.addStarImports("spock.lang");
+	}
 
 }

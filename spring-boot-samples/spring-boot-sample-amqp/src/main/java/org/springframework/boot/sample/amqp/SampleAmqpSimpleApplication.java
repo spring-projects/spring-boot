@@ -33,7 +33,7 @@ public class SampleAmqpSimpleApplication {
 
 	@Autowired
 	private AmqpTemplate amqpTemplate;
-	
+
 	@Autowired
 	private ConnectionFactory connectionFactory;
 
@@ -49,7 +49,8 @@ public class SampleAmqpSimpleApplication {
 
 	@Bean
 	public SimpleMessageListenerContainer container() {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(
+				this.connectionFactory);
 		Object listener = new Object() {
 			@SuppressWarnings("unused")
 			public void handleMessage(String foo) {
@@ -61,7 +62,6 @@ public class SampleAmqpSimpleApplication {
 		container.setQueueNames("foo");
 		return container;
 	}
-
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleAmqpSimpleApplication.class, args);

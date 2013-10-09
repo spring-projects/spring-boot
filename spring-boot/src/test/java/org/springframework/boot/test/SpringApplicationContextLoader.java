@@ -50,7 +50,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * create the application context.
  * 
  * @author Dave Syer
- * 
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
 

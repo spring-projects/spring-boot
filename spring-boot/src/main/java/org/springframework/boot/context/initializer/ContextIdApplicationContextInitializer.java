@@ -56,8 +56,8 @@ public class ContextIdApplicationContextInitializer implements
 	private int order = Integer.MAX_VALUE - 10;
 
 	public ContextIdApplicationContextInitializer() {
-		this(
-				"${spring.application.name:${vcap.application.name:${spring.config.name:application}}}");
+		this("${spring.application.name:${vcap.application.name:"
+				+ "${spring.config.name:application}}}");
 	}
 
 	/**

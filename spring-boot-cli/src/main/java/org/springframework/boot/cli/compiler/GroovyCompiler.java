@@ -64,6 +64,7 @@ import org.codehaus.groovy.transform.ASTTransformationVisitor;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class GroovyCompiler {
 
@@ -72,6 +73,8 @@ public class GroovyCompiler {
 	private ExtendedGroovyClassLoader loader;
 
 	private ArtifactCoordinatesResolver artifactCoordinatesResolver;
+
+	private final ASTTransformation dependencyCoordinatesTransformation = new DefaultDependencyCoordinatesAstTransformation();
 
 	/**
 	 * Create a new {@link GroovyCompiler} instance.
@@ -168,7 +171,6 @@ public class GroovyCompiler {
 		try {
 			Field field = CompilationUnit.class.getDeclaredField("phaseOperations");
 			field.setAccessible(true);
-
 			LinkedList[] phaseOperations = (LinkedList[]) field.get(compilationUnit);
 			processConversionOperations(phaseOperations[Phases.CONVERSION]);
 		}
@@ -186,13 +188,10 @@ public class GroovyCompiler {
 			if (operation.getClass().getName()
 					.startsWith(ASTTransformationVisitor.class.getName())) {
 				conversionOperations.add(i, new CompilationUnit.SourceUnitOperation() {
-
-					private final ASTTransformation transformation = new DefaultDependencyCoordinatesAstTransformation();
-
 					@Override
 					public void call(SourceUnit source) throws CompilationFailedException {
-						this.transformation.visit(new ASTNode[] { source.getAST() },
-								source);
+						GroovyCompiler.this.dependencyCoordinatesTransformation.visit(
+								new ASTNode[] { source.getAST() }, source);
 					}
 				});
 				break;
@@ -312,6 +311,7 @@ public class GroovyCompiler {
 								.getGroupId(module));
 				grabAnnotation.setMember("group", groupIdExpression);
 			}
+
 			if (grabAnnotation.getMember("version") == null) {
 				ConstantExpression versionExpression = new ConstantExpression(
 						GroovyCompiler.this.artifactCoordinatesResolver

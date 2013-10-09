@@ -35,12 +35,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class AopAutoConfigurationTests {
 
-	public interface TestInterface {
-
-		public abstract void foo();
-
-	}
-
 	private AnnotationConfigApplicationContext context;
 
 	@Test
@@ -116,6 +110,12 @@ public class AopAutoConfigurationTests {
 		public void before() {
 			this.called = true;
 		}
+	}
+
+	public interface TestInterface {
+
+		public abstract void foo();
+
 	}
 
 }
