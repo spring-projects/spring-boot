@@ -4,6 +4,7 @@
 *#
 *~
 /build
+/code
 .classpath
 .project
 .settings
