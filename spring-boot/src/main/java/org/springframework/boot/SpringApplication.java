@@ -645,6 +645,15 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Add {@link ApplicationContextInitializer}s to be applied to the Spring
+	 * {@link ApplicationContext} .
+	 * @param initializers the initializers to add
+	 */
+	public void addInitializers(ApplicationContextInitializer<?>... initializers) {
+		this.initializers.addAll(Arrays.asList(initializers));
+	}
+
+	/**
 	 * Returns a mutable list of the {@link ApplicationContextInitializer}s that will be
 	 * applied to the Spring {@link ApplicationContext}.
 	 * @return the initializers

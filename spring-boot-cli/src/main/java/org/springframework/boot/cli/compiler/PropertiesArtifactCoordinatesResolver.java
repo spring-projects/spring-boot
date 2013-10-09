@@ -24,6 +24,11 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.Properties;
 
+/**
+ * {@link ArtifactCoordinatesResolver} backed by a properties file.
+ * 
+ * @author Andy Wilkinson
+ */
 final class PropertiesArtifactCoordinatesResolver implements ArtifactCoordinatesResolver {
 
 	private final GroovyClassLoader loader;
@@ -60,7 +65,7 @@ final class PropertiesArtifactCoordinatesResolver implements ArtifactCoordinates
 				try {
 					properties.load(inputStream);
 				}
-				catch (IOException ioe) {
+				catch (IOException ex) {
 					// Swallow and continue
 				}
 				finally {
@@ -68,7 +73,7 @@ final class PropertiesArtifactCoordinatesResolver implements ArtifactCoordinates
 				}
 			}
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			// Swallow and continue
 		}
 		this.properties = properties;

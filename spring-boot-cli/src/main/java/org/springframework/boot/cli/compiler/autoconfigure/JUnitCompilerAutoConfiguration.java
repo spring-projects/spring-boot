@@ -25,28 +25,26 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for JUnit
- *
+ * 
  * @author Greg Turnquist
  */
 public class JUnitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
-    @Override
-    public boolean matches(ClassNode classNode) {
-        return AstUtils.hasAtLeastOneAnnotation(classNode, "Test");
-    }
+	@Override
+	public boolean matches(ClassNode classNode) {
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "Test");
+	}
 
-    @Override
-    public void applyDependencies(DependencyCustomizer dependencies)
-            throws CompilationFailedException {
-        dependencies.add("junit").add("spring-test").add("hamcrest-library");
-    }
+	@Override
+	public void applyDependencies(DependencyCustomizer dependencies)
+			throws CompilationFailedException {
+		dependencies.add("junit").add("spring-test").add("hamcrest-library");
+	}
 
-    @Override
-    public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-        imports.addStarImports("org.junit")
-                .addStaticStars("org.junit.Assert").addImports()
-                .addStaticStars("org.hamcrest.MatcherAssert")
-                .addStaticStars("org.hamcrest.Matchers");
-    }
-
+	@Override
+	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
+		imports.addStarImports("org.junit").addStaticStars("org.junit.Assert")
+				.addStaticStars("org.hamcrest.MatcherAssert")
+				.addStaticStars("org.hamcrest.Matchers");
+	}
 }
