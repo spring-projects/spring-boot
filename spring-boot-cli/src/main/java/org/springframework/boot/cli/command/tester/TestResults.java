@@ -21,74 +21,78 @@ import java.util.List;
 
 /**
  * Platform neutral way to collect test results
- *
- * NOTE: This is needed to avoid having to add JUnit's jar file to the deployable artifacts
+ * 
+ * NOTE: This is needed to avoid having to add JUnit's jar file to the deployable
+ * artifacts
+ * 
+ * @author Greg Turnquist
  */
 public class TestResults {
 
-    public static final NoTestResults none = new NoTestResults();
+	public static final TestResults NONE = new TestResults() {
 
-    private int runCount;
-    private int failureCount;
-    private Failure[] failures = new Failure[0];
+		@Override
+		public int getRunCount() {
+			return 0;
+		}
 
-    public void add(TestResults results) {
-        this.runCount += results.getRunCount();
-        this.failureCount += results.getFailureCount();
+		@Override
+		public int getFailureCount() {
+			return 0;
+		}
 
-        List<Failure> failures = Arrays.asList(this.failures);
-        failures.addAll(Arrays.asList(results.getFailures()));
-        this.failures = failures.toArray(new Failure[]{});
-    }
+		@Override
+		public Failure[] getFailures() {
+			return new Failure[0];
+		}
 
+		@Override
+		public boolean wasSuccessful() {
+			return true;
+		}
 
-    public boolean wasSuccessful() {
-        return this.failureCount == 0;
-    }
+	};
 
-    public int getRunCount() {
-        return runCount;
-    }
+	private int runCount;
 
-    public void setRunCount(int runCount) {
-        this.runCount = runCount;
-    }
+	private int failureCount;
 
-    public int getFailureCount() {
-        return failureCount;
-    }
+	private Failure[] failures = new Failure[0];
 
-    public void setFailureCount(int failureCount) {
-        this.failureCount = failureCount;
-    }
+	public void add(TestResults results) {
+		this.runCount += results.getRunCount();
+		this.failureCount += results.getFailureCount();
+		List<Failure> failures = Arrays.asList(this.failures);
+		failures.addAll(Arrays.asList(results.getFailures()));
+		this.failures = failures.toArray(new Failure[] {});
+	}
 
-    public Failure[] getFailures() {
-        return failures;
-    }
+	public boolean wasSuccessful() {
+		return this.failureCount == 0;
+	}
 
-    public void setFailures(Failure[] failures) {
-        this.failures = failures;
-    }
+	public int getRunCount() {
+		return this.runCount;
+	}
 
-    private static class NoTestResults extends TestResults {
-        @Override
-        public int getRunCount() {
-            return 0;
-        }
+	public void setRunCount(int runCount) {
+		this.runCount = runCount;
+	}
 
-        @Override
-        public int getFailureCount() {
-            return 0;
-        }
+	public int getFailureCount() {
+		return this.failureCount;
+	}
 
-        @Override
-        public Failure[] getFailures() {
-            return new Failure[0];
-        }
+	public void setFailureCount(int failureCount) {
+		this.failureCount = failureCount;
+	}
 
-        @Override
-        public boolean wasSuccessful() {
-            return true;
-        }
-    }
+	public Failure[] getFailures() {
+		return this.failures;
+	}
+
+	public void setFailures(Failure[] failures) {
+		this.failures = failures;
+	}
+
 }

@@ -22,6 +22,7 @@ import org.springframework.boot.cli.command.tester.TestResults
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 
+
 /**
  * Groovy script to run JUnit tests inside the {@link TestCommand}.
  * Needs to be compiled along with the actual code to work properly.

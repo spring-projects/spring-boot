@@ -18,31 +18,35 @@ package org.springframework.boot.cli.command.tester;
 
 /**
  * Platform neutral way to capture a test failure
- *
+ * 
  * NOTE: This is needed to avoid having to add JUnit jar file to the deployable artifacts
+ * 
+ * @author Greg Turnquist
  */
 public class Failure {
-    private String description;
-    private String trace;
 
-    public Failure(String description, String trace) {
-        this.description = description;
-        this.trace = trace;
-    }
+	private String description;
 
-    public String getDescription() {
-        return description;
-    }
+	private String trace;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public Failure(String description, String trace) {
+		this.description = description;
+		this.trace = trace;
+	}
 
-    public String getTrace() {
-        return trace;
-    }
+	public String getDescription() {
+		return this.description;
+	}
 
-    public void setTrace(String trace) {
-        this.trace = trace;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getTrace() {
+		return this.trace;
+	}
+
+	public void setTrace(String trace) {
+		this.trace = trace;
+	}
 }

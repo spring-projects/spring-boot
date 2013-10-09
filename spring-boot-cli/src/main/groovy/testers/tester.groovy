@@ -16,6 +16,7 @@
 
 import org.springframework.boot.cli.command.tester.TestResults
 
+
 /**
  * Groovy script define abstract basis for automated testers for {@link TestCommand}.
  * Needs to be compiled along with the actual code to work properly.
@@ -28,14 +29,14 @@ public abstract class AbstractTester {
         Set<Class<?>> testable = findTestableClasses(compiled)
 
         if (testable.size() == 0) {
-            return TestResults.none
+            return TestResults.NONE
         }
 
         return test(testable.toArray(new Class<?>[0]))
     }
 
-    abstract protected Set<Class<?>> findTestableClasses(List<Class<?>> compiled)
+    protected abstract Set<Class<?>> findTestableClasses(List<Class<?>> compiled)
 
-    abstract protected TestResults test(Class<?>[] testable)
+    protected abstract TestResults test(Class<?>[] testable)
 
 }

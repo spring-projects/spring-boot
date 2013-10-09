@@ -17,9 +17,6 @@
 package org.springframework.boot.cli.command;
 
 import java.awt.Desktop;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import joptsimple.OptionSet;
@@ -94,13 +91,10 @@ public class RunCommand extends OptionParsingCommand {
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
-			List<?> nonOptionArguments = options.nonOptionArguments();
-			File[] files = getFileArguments(nonOptionArguments);
-			List<?> args = nonOptionArguments.subList(files.length,
-					nonOptionArguments.size());
+			FileOptions fileOptions = new FileOptions(options);
 
 			if (options.has(this.editOption)) {
-				Desktop.getDesktop().edit(files[0]);
+				Desktop.getDesktop().edit(fileOptions.getFiles().get(0));
 			}
 
 			SpringApplicationRunnerConfiguration configuration = new SpringApplicationRunnerConfigurationAdapter(
@@ -108,31 +102,9 @@ public class RunCommand extends OptionParsingCommand {
 			if (configuration.isLocal() && System.getProperty("grape.root") == null) {
 				System.setProperty("grape.root", ".");
 			}
-			this.runner = new SpringApplicationRunner(configuration, files,
-					args.toArray(new String[args.size()]));
+			this.runner = new SpringApplicationRunner(configuration,
+					fileOptions.getFilesArray(), fileOptions.getArgsArray());
 			this.runner.compileAndRun();
-		}
-
-		private File[] getFileArguments(List<?> nonOptionArguments) {
-			List<File> files = new ArrayList<File>();
-			for (Object option : nonOptionArguments) {
-				if (option instanceof String) {
-					String filename = (String) option;
-					if ("--".equals(filename)) {
-						break;
-					}
-					if (filename.endsWith(".groovy") || filename.endsWith(".java")) {
-						File file = new File(filename);
-						if (file.isFile() && file.canRead()) {
-							files.add(file);
-						}
-					}
-				}
-			}
-			if (files.size() == 0) {
-				throw new RuntimeException("Please specify a file to run");
-			}
-			return files.toArray(new File[files.size()]);
 		}
 
 		/**
