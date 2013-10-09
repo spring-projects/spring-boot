@@ -1,6 +1,6 @@
 package org.test
 
-@Grab("org.hsqldb:hsqldb-j5:2.0.0")
+@Grab("hsqldb")
 @Configuration
 @EnableBatchProcessing
 class JobConfig {

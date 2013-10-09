@@ -1,8 +1,6 @@
 package app
 
-import groovy.util.logging.Log
-
-@Grab("org.thymeleaf:thymeleaf-spring3:2.0.16")
+@Grab("thymeleaf-spring3")
 @Controller
 class Example {
 

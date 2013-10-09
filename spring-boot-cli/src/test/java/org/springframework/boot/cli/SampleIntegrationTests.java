@@ -16,9 +16,6 @@
 
 package org.springframework.boot.cli;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.net.URL;
 import java.util.concurrent.Callable;
@@ -36,6 +33,9 @@ import org.junit.Test;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests to exercise the samples.
@@ -91,13 +91,6 @@ public class SampleIntegrationTests {
 	@Test
 	public void appSample() throws Exception {
 		start("samples/app.groovy");
-		String output = this.outputCapture.getOutputAndRelease();
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
-	}
-
-	@Test
-	public void simpleGrabSample() throws Exception {
-		start("samples/simpleGrab.groovy");
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output, output.contains("Hello World"));
 	}

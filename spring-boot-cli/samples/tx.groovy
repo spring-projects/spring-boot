@@ -1,6 +1,6 @@
 package org.test
 
-@Grab("org.hsqldb:hsqldb:2.2.9")
+@Grab("hsqldb")
 
 @Configuration
 @EnableTransactionManagement
