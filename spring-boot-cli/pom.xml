@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>0.5.0.BUILD-SNAPSHOT</version>
+		<version>0.5.0.M5</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-cli</artifactId>
@@ -19,7 +18,7 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-parent</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
+				<version>0.5.0.M5</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -143,10 +142,8 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>${start-class}</mainClass>
 								</transformer>
 							</transformers>
@@ -185,10 +182,7 @@
 								<typedef resource="foundrylogic/vpp/typedef.properties" />
 								<taskdef resource="foundrylogic/vpp/taskdef.properties" />
 								<property name="dependencies" value="${project.parent}" />
-								<vppcopy
-									file="${basedir}/src/main/resources/META-INF/springcli.properties.vpp"
-									tofile="${project.build.directory}/generated-resources/META-INF/springcli.properties"
-									overwrite="true" />
+								<vppcopy file="${basedir}/src/main/resources/META-INF/springcli.properties.vpp" tofile="${project.build.directory}/generated-resources/META-INF/springcli.properties" overwrite="true" />
 							</target>
 						</configuration>
 						<goals>
