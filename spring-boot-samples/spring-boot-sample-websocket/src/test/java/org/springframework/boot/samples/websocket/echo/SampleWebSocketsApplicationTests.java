@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.samples.websocket.echo;
 
-import static org.junit.Assert.assertEquals;
+package org.springframework.boot.samples.websocket.echo;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -40,6 +39,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.endpoint.StandardWebSocketClient;
 
+import static org.junit.Assert.assertEquals;
+
 public class SampleWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
@@ -55,7 +56,7 @@ public class SampleWebSocketsApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
+								return SpringApplication
 										.run(SampleWebSocketsApplication.class);
 							}
 						});
@@ -71,7 +72,8 @@ public class SampleWebSocketsApplicationTests {
 
 	@Test
 	public void runAndWait() throws Exception {
-		ConfigurableApplicationContext context = (ConfigurableApplicationContext) SpringApplication.run(ClientConfiguration.class, "--spring.main.web_environment=false");
+		ConfigurableApplicationContext context = SpringApplication.run(
+				ClientConfiguration.class, "--spring.main.web_environment=false");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		context.close();
 		assertEquals(0, count);
@@ -84,15 +86,16 @@ public class SampleWebSocketsApplicationTests {
 
 		@Override
 		public void run(String... args) throws Exception {
-			logger.info("Waiting for response: latch=" + latch.getCount());
-			latch.await(10, TimeUnit.SECONDS);
-			logger.info("Got response: latch=" + latch.getCount());
+			logger.info("Waiting for response: latch=" + this.latch.getCount());
+			this.latch.await(10, TimeUnit.SECONDS);
+			logger.info("Got response: latch=" + this.latch.getCount());
 		}
 
 		@Bean
 		public WebSocketConnectionManager wsConnectionManager() {
 
-			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(), handler(), WS_URI);
+			WebSocketConnectionManager manager = new WebSocketConnectionManager(client(),
+					handler(), WS_URI);
 			manager.setAutoStartup(true);
 
 			return manager;
@@ -105,7 +108,7 @@ public class SampleWebSocketsApplicationTests {
 
 		@Bean
 		public SimpleClientWebSocketHandler handler() {
-			return new SimpleClientWebSocketHandler(greetingService(), latch);
+			return new SimpleClientWebSocketHandler(greetingService(), this.latch);
 		}
 
 		@Bean

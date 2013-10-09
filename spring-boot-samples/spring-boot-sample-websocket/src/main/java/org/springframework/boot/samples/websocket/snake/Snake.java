@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.samples.websocket.snake;
 
 import java.util.ArrayDeque;
@@ -23,117 +24,116 @@ import java.util.Deque;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
-
 public class Snake {
 
-    private static final int DEFAULT_LENGTH = 5;
+	private static final int DEFAULT_LENGTH = 5;
 
-    private final int id;
-    private final WebSocketSession session;
+	private final int id;
+	private final WebSocketSession session;
 
-    private Direction direction;
-    private int length = DEFAULT_LENGTH;
-    private Location head;
-    private final Deque<Location> tail = new ArrayDeque<Location>();
-    private final String hexColor;
+	private Direction direction;
+	private int length = DEFAULT_LENGTH;
+	private Location head;
+	private final Deque<Location> tail = new ArrayDeque<Location>();
+	private final String hexColor;
 
-    public Snake(int id, WebSocketSession session) {
-        this.id = id;
-        this.session = session;
-        this.hexColor = SnakeUtils.getRandomHexColor();
-        resetState();
-    }
+	public Snake(int id, WebSocketSession session) {
+		this.id = id;
+		this.session = session;
+		this.hexColor = SnakeUtils.getRandomHexColor();
+		resetState();
+	}
 
-    private void resetState() {
-        this.direction = Direction.NONE;
-        this.head = SnakeUtils.getRandomLocation();
-        this.tail.clear();
-        this.length = DEFAULT_LENGTH;
-    }
+	private void resetState() {
+		this.direction = Direction.NONE;
+		this.head = SnakeUtils.getRandomLocation();
+		this.tail.clear();
+		this.length = DEFAULT_LENGTH;
+	}
 
-    private synchronized void kill() throws Exception {
-        resetState();
-        sendMessage("{'type': 'dead'}");
-    }
+	private synchronized void kill() throws Exception {
+		resetState();
+		sendMessage("{'type': 'dead'}");
+	}
 
-    private synchronized void reward() throws Exception {
-        length++;
-        sendMessage("{'type': 'kill'}");
-    }
+	private synchronized void reward() throws Exception {
+		this.length++;
+		sendMessage("{'type': 'kill'}");
+	}
 
+	protected void sendMessage(String msg) throws Exception {
+		this.session.sendMessage(new TextMessage(msg));
+	}
 
-    protected void sendMessage(String msg) throws Exception {
-    	session.sendMessage(new TextMessage(msg));
-    }
+	public synchronized void update(Collection<Snake> snakes) throws Exception {
+		Location nextLocation = this.head.getAdjacentLocation(this.direction);
+		if (nextLocation.x >= SnakeUtils.PLAYFIELD_WIDTH) {
+			nextLocation.x = 0;
+		}
+		if (nextLocation.y >= SnakeUtils.PLAYFIELD_HEIGHT) {
+			nextLocation.y = 0;
+		}
+		if (nextLocation.x < 0) {
+			nextLocation.x = SnakeUtils.PLAYFIELD_WIDTH;
+		}
+		if (nextLocation.y < 0) {
+			nextLocation.y = SnakeUtils.PLAYFIELD_HEIGHT;
+		}
+		if (this.direction != Direction.NONE) {
+			this.tail.addFirst(this.head);
+			if (this.tail.size() > this.length) {
+				this.tail.removeLast();
+			}
+			this.head = nextLocation;
+		}
 
-    public synchronized void update(Collection<Snake> snakes) throws Exception {
-        Location nextLocation = head.getAdjacentLocation(direction);
-        if (nextLocation.x >= SnakeUtils.PLAYFIELD_WIDTH) {
-            nextLocation.x = 0;
-        }
-        if (nextLocation.y >= SnakeUtils.PLAYFIELD_HEIGHT) {
-            nextLocation.y = 0;
-        }
-        if (nextLocation.x < 0) {
-            nextLocation.x = SnakeUtils.PLAYFIELD_WIDTH;
-        }
-        if (nextLocation.y < 0) {
-            nextLocation.y = SnakeUtils.PLAYFIELD_HEIGHT;
-        }
-        if (direction != Direction.NONE) {
-            tail.addFirst(head);
-            if (tail.size() > length) {
-                tail.removeLast();
-            }
-            head = nextLocation;
-        }
+		handleCollisions(snakes);
+	}
 
-        handleCollisions(snakes);
-    }
+	private void handleCollisions(Collection<Snake> snakes) throws Exception {
+		for (Snake snake : snakes) {
+			boolean headCollision = this.id != snake.id
+					&& snake.getHead().equals(this.head);
+			boolean tailCollision = snake.getTail().contains(this.head);
+			if (headCollision || tailCollision) {
+				kill();
+				if (this.id != snake.id) {
+					snake.reward();
+				}
+			}
+		}
+	}
 
-    private void handleCollisions(Collection<Snake> snakes) throws Exception {
-        for (Snake snake : snakes) {
-            boolean headCollision = id != snake.id && snake.getHead().equals(head);
-            boolean tailCollision = snake.getTail().contains(head);
-            if (headCollision || tailCollision) {
-                kill();
-                if (id != snake.id) {
-                    snake.reward();
-                }
-            }
-        }
-    }
+	public synchronized Location getHead() {
+		return this.head;
+	}
 
-    public synchronized Location getHead() {
-        return head;
-    }
+	public synchronized Collection<Location> getTail() {
+		return this.tail;
+	}
 
-    public synchronized Collection<Location> getTail() {
-        return tail;
-    }
+	public synchronized void setDirection(Direction direction) {
+		this.direction = direction;
+	}
 
-    public synchronized void setDirection(Direction direction) {
-        this.direction = direction;
-    }
+	public synchronized String getLocationsJson() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x),
+				Integer.valueOf(this.head.y)));
+		for (Location location : this.tail) {
+			sb.append(',');
+			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x),
+					Integer.valueOf(location.y)));
+		}
+		return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id),
+				sb.toString());
+	}
 
-    public synchronized String getLocationsJson() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("{x: %d, y: %d}",
-                Integer.valueOf(head.x), Integer.valueOf(head.y)));
-        for (Location location : tail) {
-            sb.append(',');
-            sb.append(String.format("{x: %d, y: %d}",
-                    Integer.valueOf(location.x), Integer.valueOf(location.y)));
-        }
-        return String.format("{'id':%d,'body':[%s]}",
-                Integer.valueOf(id), sb.toString());
-    }
+	public int getId() {
+		return this.id;
+	}
 
-    public int getId() {
-        return id;
-    }
-
-    public String getHexColor() {
-        return hexColor;
-    }
+	public String getHexColor() {
+		return this.hexColor;
+	}
 }
