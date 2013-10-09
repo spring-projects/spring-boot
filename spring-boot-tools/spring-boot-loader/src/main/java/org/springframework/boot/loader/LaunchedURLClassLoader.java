@@ -21,6 +21,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
+import java.util.Enumeration;
 
 import org.springframework.boot.loader.jar.RandomAccessJarFile;
 
@@ -51,6 +52,43 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			classLoader = classLoader.getParent();
 		}
 		return null;
+	}
+
+	@Override
+	public URL getResource(String name) {
+		URL url = null;
+		if (this.rootClassLoader != null) {
+			url = this.rootClassLoader.getResource(name);
+		}
+		return (url == null ? findResource(name) : url);
+	}
+
+	@Override
+	public Enumeration<URL> getResources(String name) throws IOException {
+
+		if (this.rootClassLoader == null) {
+			return findResources(name);
+		}
+
+		final Enumeration<URL> rootResources = this.rootClassLoader.getResources(name);
+		final Enumeration<URL> localResources = findResources(name);
+
+		return new Enumeration<URL>() {
+
+			@Override
+			public boolean hasMoreElements() {
+				return rootResources.hasMoreElements()
+						|| localResources.hasMoreElements();
+			}
+
+			@Override
+			public URL nextElement() {
+				if (rootResources.hasMoreElements()) {
+					return rootResources.nextElement();
+				}
+				return localResources.nextElement();
+			}
+		};
 	}
 
 	/**
