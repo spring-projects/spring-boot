@@ -48,6 +48,26 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<useProjectReferences>false</useProjectReferences>
+					<additionalConfig>
+						<file>
+							<name>.settings/org.eclipse.jdt.ui.prefs</name>
+							<location>${main.basedir}/eclipse/org.eclipse.jdt.ui.prefs</location>
+						</file>
+						<file>
+							<name>.settings/org.eclipse.jdt.core.prefs</name>
+							<location>${main.basedir}/eclipse/org.eclipse.jdt.core.prefs</location>
+						</file>
+					</additionalConfig>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>

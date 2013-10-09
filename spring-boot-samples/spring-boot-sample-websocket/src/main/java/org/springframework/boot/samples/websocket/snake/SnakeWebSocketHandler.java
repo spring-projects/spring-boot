@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.samples.websocket.snake;
 
 import java.awt.Color;
@@ -28,85 +29,84 @@ import org.springframework.web.socket.adapter.TextWebSocketHandlerAdapter;
 
 public class SnakeWebSocketHandler extends TextWebSocketHandlerAdapter {
 
-    public static final int PLAYFIELD_WIDTH = 640;
-    public static final int PLAYFIELD_HEIGHT = 480;
-    public static final int GRID_SIZE = 10;
+	public static final int PLAYFIELD_WIDTH = 640;
+	public static final int PLAYFIELD_HEIGHT = 480;
+	public static final int GRID_SIZE = 10;
 
-    private static final AtomicInteger snakeIds = new AtomicInteger(0);
-    private static final Random random = new Random();
+	private static final AtomicInteger snakeIds = new AtomicInteger(0);
+	private static final Random random = new Random();
 
+	private final int id;
+	private Snake snake;
 
-    private final int id;
-    private Snake snake;
+	public static String getRandomHexColor() {
+		float hue = random.nextFloat();
+		// sat between 0.1 and 0.3
+		float saturation = (random.nextInt(2000) + 1000) / 10000f;
+		float luminance = 0.9f;
+		Color color = Color.getHSBColor(hue, saturation, luminance);
+		return '#' + Integer.toHexString((color.getRGB() & 0xffffff) | 0x1000000)
+				.substring(1);
+	}
 
-    public static String getRandomHexColor() {
-        float hue = random.nextFloat();
-        // sat between 0.1 and 0.3
-        float saturation = (random.nextInt(2000) + 1000) / 10000f;
-        float luminance = 0.9f;
-        Color color = Color.getHSBColor(hue, saturation, luminance);
-        return '#' + Integer.toHexString(
-                (color.getRGB() & 0xffffff) | 0x1000000).substring(1);
-    }
+	public static Location getRandomLocation() {
+		int x = roundByGridSize(random.nextInt(PLAYFIELD_WIDTH));
+		int y = roundByGridSize(random.nextInt(PLAYFIELD_HEIGHT));
+		return new Location(x, y);
+	}
 
+	private static int roundByGridSize(int value) {
+		value = value + (GRID_SIZE / 2);
+		value = value / GRID_SIZE;
+		value = value * GRID_SIZE;
+		return value;
+	}
 
-    public static Location getRandomLocation() {
-        int x = roundByGridSize(random.nextInt(PLAYFIELD_WIDTH));
-        int y = roundByGridSize(random.nextInt(PLAYFIELD_HEIGHT));
-        return new Location(x, y);
-    }
+	public SnakeWebSocketHandler() {
+		this.id = snakeIds.getAndIncrement();
+	}
 
-
-    private static int roundByGridSize(int value) {
-        value = value + (GRID_SIZE / 2);
-        value = value / GRID_SIZE;
-        value = value * GRID_SIZE;
-        return value;
-    }
-
-    public SnakeWebSocketHandler() {
-        this.id = snakeIds.getAndIncrement();
-    }
-
-
-    @Override
+	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        this.snake = new Snake(id, session);
-        SnakeTimer.addSnake(snake);
-        StringBuilder sb = new StringBuilder();
-        for (Iterator<Snake> iterator = SnakeTimer.getSnakes().iterator();
-                iterator.hasNext();) {
-            Snake snake = iterator.next();
-            sb.append(String.format("{id: %d, color: '%s'}",
-                    Integer.valueOf(snake.getId()), snake.getHexColor()));
-            if (iterator.hasNext()) {
-                sb.append(',');
-            }
-        }
-        SnakeTimer.broadcast(String.format("{'type': 'join','data':[%s]}",
-                sb.toString()));
-    }
+		this.snake = new Snake(this.id, session);
+		SnakeTimer.addSnake(this.snake);
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<Snake> iterator = SnakeTimer.getSnakes().iterator(); iterator
+				.hasNext();) {
+			Snake snake = iterator.next();
+			sb.append(String.format("{id: %d, color: '%s'}",
+					Integer.valueOf(snake.getId()), snake.getHexColor()));
+			if (iterator.hasNext()) {
+				sb.append(',');
+			}
+		}
+		SnakeTimer
+				.broadcast(String.format("{'type': 'join','data':[%s]}", sb.toString()));
+	}
 
+	@Override
+	protected void handleTextMessage(WebSocketSession session, TextMessage message)
+			throws Exception {
+		String payload = message.getPayload();
+		if ("west".equals(payload)) {
+			this.snake.setDirection(Direction.WEST);
+		}
+		else if ("north".equals(payload)) {
+			this.snake.setDirection(Direction.NORTH);
+		}
+		else if ("east".equals(payload)) {
+			this.snake.setDirection(Direction.EAST);
+		}
+		else if ("south".equals(payload)) {
+			this.snake.setDirection(Direction.SOUTH);
+		}
+	}
 
-    @Override
-	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-    	String payload = message.getPayload();
-        if ("west".equals(payload)) {
-            snake.setDirection(Direction.WEST);
-        } else if ("north".equals(payload)) {
-            snake.setDirection(Direction.NORTH);
-        } else if ("east".equals(payload)) {
-            snake.setDirection(Direction.EAST);
-        } else if ("south".equals(payload)) {
-            snake.setDirection(Direction.SOUTH);
-        }
-    }
-
-
-    @Override
-	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        SnakeTimer.removeSnake(snake);
-        SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}",
-                Integer.valueOf(id)));
-    }
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status)
+			throws Exception {
+		SnakeTimer.removeSnake(this.snake);
+		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}",
+				Integer.valueOf(this.id)));
+	}
 }

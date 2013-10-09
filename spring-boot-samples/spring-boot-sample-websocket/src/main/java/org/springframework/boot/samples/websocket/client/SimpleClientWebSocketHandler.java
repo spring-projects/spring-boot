@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.samples.websocket.client;
 
 import java.util.concurrent.CountDownLatch;
@@ -33,7 +34,8 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandlerAdapter {
 	private CountDownLatch latch;
 
 	@Autowired
-	public SimpleClientWebSocketHandler(GreetingService greetingService, CountDownLatch latch) {
+	public SimpleClientWebSocketHandler(GreetingService greetingService,
+			CountDownLatch latch) {
 		this.greetingService = greetingService;
 		this.latch = latch;
 	}
@@ -45,10 +47,11 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandlerAdapter {
 	}
 
 	@Override
-	public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-		logger.info("Received: " + message + " (" + latch.getCount() + ")");
+	public void handleTextMessage(WebSocketSession session, TextMessage message)
+			throws Exception {
+		this.logger.info("Received: " + message + " (" + this.latch.getCount() + ")");
 		session.close();
-		latch.countDown();
+		this.latch.countDown();
 	}
 
 }

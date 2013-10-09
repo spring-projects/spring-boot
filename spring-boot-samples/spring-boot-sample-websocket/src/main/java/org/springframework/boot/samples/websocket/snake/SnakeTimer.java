@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.samples.websocket.snake;
 
 import java.util.Collection;
@@ -32,84 +33,77 @@ import org.apache.juli.logging.LogFactory;
  */
 public class SnakeTimer {
 
-    private static final Log log =
-            LogFactory.getLog(SnakeTimer.class);
+	private static final Log log = LogFactory.getLog(SnakeTimer.class);
 
-    private static Timer gameTimer = null;
+	private static Timer gameTimer = null;
 
-    private static final long TICK_DELAY = 100;
+	private static final long TICK_DELAY = 100;
 
-    private static final ConcurrentHashMap<Integer, Snake> snakes =
-            new ConcurrentHashMap<Integer, Snake>();
+	private static final ConcurrentHashMap<Integer, Snake> snakes = new ConcurrentHashMap<Integer, Snake>();
 
-    public static synchronized void addSnake(Snake snake) {
-        if (snakes.size() == 0) {
-            startTimer();
-        }
-        snakes.put(Integer.valueOf(snake.getId()), snake);
-    }
+	public static synchronized void addSnake(Snake snake) {
+		if (snakes.size() == 0) {
+			startTimer();
+		}
+		snakes.put(Integer.valueOf(snake.getId()), snake);
+	}
 
+	public static Collection<Snake> getSnakes() {
+		return Collections.unmodifiableCollection(snakes.values());
+	}
 
-    public static Collection<Snake> getSnakes() {
-        return Collections.unmodifiableCollection(snakes.values());
-    }
+	public static synchronized void removeSnake(Snake snake) {
+		snakes.remove(Integer.valueOf(snake.getId()));
+		if (snakes.size() == 0) {
+			stopTimer();
+		}
+	}
 
+	public static void tick() throws Exception {
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<Snake> iterator = SnakeTimer.getSnakes().iterator(); iterator
+				.hasNext();) {
+			Snake snake = iterator.next();
+			snake.update(SnakeTimer.getSnakes());
+			sb.append(snake.getLocationsJson());
+			if (iterator.hasNext()) {
+				sb.append(',');
+			}
+		}
+		broadcast(String.format("{'type': 'update', 'data' : [%s]}", sb.toString()));
+	}
 
-    public static synchronized void removeSnake(Snake snake) {
-        snakes.remove(Integer.valueOf(snake.getId()));
-        if (snakes.size() == 0) {
-            stopTimer();
-        }
-    }
+	public static void broadcast(String message) throws Exception {
+		Collection<Snake> snakes = new CopyOnWriteArrayList<>(SnakeTimer.getSnakes());
+		for (Snake snake : snakes) {
+			try {
+				snake.sendMessage(message);
+			}
+			catch (Throwable ex) {
+				// if Snake#sendMessage fails the client is removed
+				removeSnake(snake);
+			}
+		}
+	}
 
+	public static void startTimer() {
+		gameTimer = new Timer(SnakeTimer.class.getSimpleName() + " Timer");
+		gameTimer.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				try {
+					tick();
+				}
+				catch (Throwable e) {
+					log.error("Caught to prevent timer from shutting down", e);
+				}
+			}
+		}, TICK_DELAY, TICK_DELAY);
+	}
 
-    public static void tick() throws Exception {
-        StringBuilder sb = new StringBuilder();
-        for (Iterator<Snake> iterator = SnakeTimer.getSnakes().iterator();
-                iterator.hasNext();) {
-            Snake snake = iterator.next();
-            snake.update(SnakeTimer.getSnakes());
-            sb.append(snake.getLocationsJson());
-            if (iterator.hasNext()) {
-                sb.append(',');
-            }
-        }
-        broadcast(String.format("{'type': 'update', 'data' : [%s]}",
-                sb.toString()));
-    }
-
-    public static void broadcast(String message) throws Exception {
-        Collection<Snake> snakes = new CopyOnWriteArrayList<>(SnakeTimer.getSnakes());
-        for (Snake snake : snakes) {
-            try {
-                snake.sendMessage(message);
-            }
-            catch (Throwable ex) {
-                // if Snake#sendMessage fails the client is removed
-                removeSnake(snake);
-            }
-        }
-    }
-
-
-    public static void startTimer() {
-        gameTimer = new Timer(SnakeTimer.class.getSimpleName() + " Timer");
-        gameTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    tick();
-                } catch (Throwable e) {
-                    log.error("Caught to prevent timer from shutting down", e);
-                }
-            }
-        }, TICK_DELAY, TICK_DELAY);
-    }
-
-
-    public static void stopTimer() {
-        if (gameTimer != null) {
-            gameTimer.cancel();
-        }
-    }
+	public static void stopTimer() {
+		if (gameTimer != null) {
+			gameTimer.cancel();
+		}
+	}
 }

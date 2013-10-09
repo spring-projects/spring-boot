@@ -10,6 +10,7 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<properties>
+		<main.basedir>${basedir}/../..</main.basedir>
 		<java.version>1.7</java.version>
 		<tomcat.version>8.0.0-RC3</tomcat.version>
 	</properties>
