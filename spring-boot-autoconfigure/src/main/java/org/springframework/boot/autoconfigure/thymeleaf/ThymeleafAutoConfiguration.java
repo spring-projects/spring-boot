@@ -102,8 +102,7 @@ public class ThymeleafAutoConfiguration {
 			resolver.setTemplateMode(this.environment.getProperty("mode", "HTML5"));
 			resolver.setCacheable(this.environment.getProperty("cache", Boolean.class,
 					true));
-			resolver.setCharacterEncoding(this.environment.getProperty("encoding", String.class,
-					null));
+			resolver.setCharacterEncoding(this.environment.getProperty("encoding",null));
 			return resolver;
 		}
 
