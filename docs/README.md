@@ -1,7 +1,7 @@
 ---
 layout: documentation_page
 ---
-# Spring Boot [![Build Status](https://travis-ci.org/SpringSource/spring-boot.png?branch=master)](https://travis-ci.org/SpringSource/spring-boot)
+# Spring Boot [![Build Status](https://travis-ci.org/spring-projects/spring-boot.png?branch=master)](https://travis-ci.org/spring-projects/spring-boot)
 Spring Boot makes it easy to create Spring-powered, production-grade applications and
 services with absolute minimum fuss. It takes an opinionated view of the Spring platform
 so that new and existing users can quickly get to the bits they need.
@@ -43,10 +43,10 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.M4-bin.zip](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.zip)
-* [spring-boot-cli-0.5.0.M4-bin.tar.gz](http://repo.springsource.org/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.tar.gz)
+* [spring-boot-cli-0.5.0.M5-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M5/spring-boot-cli-0.5.0.M5-bin.zip)
+* [spring-boot-cli-0.5.0.M5-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M5/spring-boot-cli-0.5.0.M5-bin.tar.gz)
 
-Cutting edge [snapshot distributions](http://repo.springsource.org/snapshot/org/springframework/boot/spring-boot-cli/)
+Cutting edge [snapshot distributions](http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
 
 Once downloaded, follow the
@@ -65,14 +65,41 @@ itself and the Spring Boot CLI. Get `gvm` from
 
     $ gvm install springboot
     $ spring --version
-    Spring Boot v0.5.0.M4
+    Spring Boot v0.5.0.M5
+    
+> **Note:** If you are developing features for the CLI and want easy access to the version you just built, follow these extra instructions.
+
+    $ gvm install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin/spring-0.5.0.BUILD-SNAPSHOT/
+   	$ gvm use springboot dev
+   	$ spring --version
+    Spring CLI v0.5.0.BUILD-SNAPSHOT
+   	
+This will install a local instance of `spring` called the `dev` instance inside your gvm repository. It points at your target build location, so every time you rebuild Spring Boot, `spring` will be up-to-date.
+
+You can see it by doing this:
+
+    $ gvm ls springboot
+
+```
+================================================================================
+Available Springboot Versions
+================================================================================
+ > + dev                                                                           
+   * 0.5.0.M5                                                                      
+
+================================================================================
++ - local version
+* - installed
+> - currently in use
+================================================================================
+```
 
 ### OSX Homebrew installation
 If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to install
 the Spring Boot CLI is:
 
 ```
-$ brew install http://repo.springsource.org/install/spring-boot-cli.rb
+$ brew install http://repo.spring.io/install/spring-boot-cli.rb
 ```
 
 Homebrew will install `spring` to `/usr/local/bin`. Now you can jump right to a
@@ -134,7 +161,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>0.5.0.M4</version>
+		<version>0.5.0.M5</version>
 	</parent>
 
 	<!-- Add typical dependencies for a web application -->
@@ -156,27 +183,27 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	</build>
 
 	<!-- Allow access to Spring milestones and snapshots -->
-	<!-- (you don't need this if you are using anything after 0.5.0.M2) -->
+	<!-- (you don't need this if you are using anything after 0.5.0.RELEASE) -->
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
-			<url>http://repo.springsource.org/snapshot</url>
+			<url>http://repo.spring.io/snapshot</url>
 			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 		<repository>
 			<id>spring-milestones</id>
-			<url>http://repo.springsource.org/milestone</url>
+			<url>http://repo.spring.io/milestone</url>
 			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-snapshots</id>
-			<url>http://repo.springsource.org/snapshot</url>
+			<url>http://repo.spring.io/snapshot</url>
 		</pluginRepository>
 		<pluginRepository>
 			<id>spring-milestones</id>
-			<url>http://repo.springsource.org/milestone</url>
+			<url>http://repo.spring.io/milestone</url>
 		</pluginRepository>
 	</pluginRepositories>
 </project>
@@ -229,7 +256,7 @@ should see  the following output:
 
 ## Building Spring Boot from source
 You don't need to build from source to use Spring Boot (it's in
-[repo.springsource.org](http://repo.springsource.org)), but if you want to try out the
+[repo.spring.io](http://repo.spring.io)), but if you want to try out the
 latest and greatest, Spring Boot can be
 [built with maven](http://maven.apache.org/run-maven/index.html) v3.0.5 or above.
 
@@ -347,3 +374,14 @@ Example show how Spring Boot can be mixed with traditional XML configuration (we
 generally recommend using Java `@Configuration` whenever possible)
 
 
+## Guides
+
+The [spring.io](http://spring.io/) site contains several guides that show how to use Spring Boot step-by-step:
+* [Building an Application with Spring
+Boot](http://spring.io/guides/gs/spring-boot/) is a very basic guide
+that shows you how to create a simple application, run it and add some
+management services.
+* [Building a RESTful Web Service with Spring Boot Actuator](http://spring.io/guides/gs/actuator-service/)
+is a guide to creating a REST web service and also shows how the server can be configured.
+* [Converting a Spring Boot JAR Application to a WAR](http://spring.io/guides/gs/convert-jar-to-war/) shows you how to run applications in a
+web server as a WAR file.

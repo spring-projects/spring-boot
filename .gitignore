@@ -5,6 +5,11 @@ _site
 .idea
 *.sw?
 .project
+.settings/
+.classpath
+.gradle
 sample-pages
 code
+spring-boot-*/
+spring-boot/
 
