@@ -40,8 +40,8 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.M4-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.zip)
-* [spring-boot-cli-0.5.0.M4-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M4/spring-boot-cli-0.5.0.M4-bin.tar.gz)
+* [spring-boot-cli-0.5.0.M5-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M5/spring-boot-cli-0.5.0.M5-bin.zip)
+* [spring-boot-cli-0.5.0.M5-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M5/spring-boot-cli-0.5.0.M5-bin.tar.gz)
 
 Cutting edge [snapshot distributions](http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
@@ -62,7 +62,7 @@ itself and the Spring Boot CLI. Get `gvm` from
 
     $ gvm install springboot
     $ spring --version
-    Spring Boot v0.5.0.M4
+    Spring Boot v0.5.0.M5
     
 > **Note:** If you are developing features for the CLI and want easy access to the version you just built, follow these extra instructions.
 
@@ -82,7 +82,7 @@ You can see it by doing this:
 Available Springboot Versions
 ================================================================================
  > + dev                                                                           
-   * 0.5.0.M4                                                                      
+   * 0.5.0.M5                                                                      
 
 ================================================================================
 + - local version
@@ -158,7 +158,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>0.5.0.M4</version>
+		<version>0.5.0.M5</version>
 	</parent>
 
 	<!-- Add typical dependencies for a web application -->
