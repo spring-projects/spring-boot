@@ -209,7 +209,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 > **Note:** If you prefer [Gradle](http://www.gradle.org) as your build system, we provide
 > a [plugin](spring-boot-tools/spring-boot-gradle-plugin/README.md) that can help you
 > package an executable JAR.
-
+<span id="quick-start-java-example"></span>
 ### Quick start Java example
 Here is the main class for a simple web application (just save the content to
 `src/main/java/SampleController.java`):
