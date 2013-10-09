@@ -40,6 +40,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.AbstractView;
@@ -87,11 +89,43 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void resourceHandlerMapping() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, WebMvcAutoConfiguration.class);
 		this.context.refresh();
+		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		assertThat(mappingLocations.get("/**").size(), equalTo(5));
+		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
+		assertThat(mappingLocations.get("/webjars/**").get(0),
+				equalTo((Resource) new ClassPathResource("/META-INF/resources/webjars/")));
+	}
+
+	@Test
+	public void resourceHandlerMappingOverrideWebjars() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(WebJars.class, Config.class, WebMvcAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
+		assertThat(mappingLocations.get("/webjars/**").get(0),
+				equalTo((Resource) new ClassPathResource("/foo/")));
+	}
+
+	@Test
+	public void resourceHandlerMappingOverrideAll() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(AllResources.class, Config.class,
+				WebMvcAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		assertThat(mappingLocations.get("/**").size(), equalTo(1));
+		assertThat(mappingLocations.get("/**").get(0),
+				equalTo((Resource) new ClassPathResource("/foo/")));
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Map<String, List<Resource>> getMappingLocations()
+			throws IllegalAccessException {
 		SimpleUrlHandlerMapping mapping = (SimpleUrlHandlerMapping) this.context
 				.getBean("resourceHandlerMapping");
 		Field locationsField = ReflectionUtils.findField(
@@ -104,10 +138,7 @@ public class WebMvcAutoConfigurationTests {
 			mappingLocations.put(entry.getKey(),
 					(List<Resource>) locationsField.get(handler));
 		}
-		assertThat(mappingLocations.get("/**").size(), equalTo(5));
-		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
-		assertThat(mappingLocations.get("/webjars/**").get(0),
-				equalTo((Resource) new ClassPathResource("/META-INF/resources/webjars/")));
+		return mappingLocations;
 	}
 
 	@Configuration
@@ -124,6 +155,27 @@ public class WebMvcAutoConfigurationTests {
 					response.getOutputStream().write("Hello World".getBytes());
 				}
 			};
+		}
+
+	}
+
+	@Configuration
+	protected static class WebJars extends WebMvcConfigurerAdapter {
+
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/webjars/**").addResourceLocations(
+					"classpath:/foo/");
+		}
+
+	}
+
+	@Configuration
+	protected static class AllResources extends WebMvcConfigurerAdapter {
+
+		@Override
+		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			registry.addResourceHandler("/**").addResourceLocations("classpath:/foo/");
 		}
 
 	}
