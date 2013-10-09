@@ -9,8 +9,7 @@
 |Externalized configuration | Properties or YAML | Support for Spring profiles. Bind automatically to @Bean. |
 
 For a quick introduction and to get started quickly with a new
-project, carry on reading.  For more in depth coverage of the features
-of Spring Boot.Strap, go to the [Feature Guide](docs/Features.md).
+project, carry on reading.
 
 # Getting Started
 
@@ -149,5 +148,4 @@ again and you will see the message:
 ```
 
 To add more features, add some `@Bean` definitions to your
-`Application` class, and read more in the
-[Feature Guide](docs/Features.md).
+`Application` class.
