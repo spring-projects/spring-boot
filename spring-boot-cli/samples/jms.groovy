@@ -1,8 +1,7 @@
 package org.test
 
 @Grab("org.apache.activemq:activemq-all:5.4.0")
-@Grab("org.apache.activemq:activemq-pool:5.4.0")
-
+@Grab("activemq-pool")
 import java.util.concurrent.CountDownLatch
 
 @Log
