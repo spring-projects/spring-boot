@@ -47,11 +47,11 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(name = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
-	private int port = 8080;
+	private Integer port;
 
 	private InetAddress address;
 
-	private int sessionTimeout = 30;
+	private Integer sessionTimeout;
 
 	@NotNull
 	private String contextPath = "";
@@ -70,11 +70,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.contextPath = contextPath;
 	}
 
-	public int getPort() {
+	public Integer getPort() {
 		return this.port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
@@ -86,11 +86,11 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.address = address;
 	}
 
-	public int getSessionTimeout() {
+	public Integer getSessionTimeout() {
 		return this.sessionTimeout;
 	}
 
-	public void setSessionTimeout(int sessionTimeout) {
+	public void setSessionTimeout(Integer sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
 	}
 
@@ -100,10 +100,18 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-		factory.setPort(getPort());
-		factory.setAddress(getAddress());
-		factory.setContextPath(getContextPath());
-		factory.setSessionTimeout(getSessionTimeout());
+		if (getPort() != null) {
+			factory.setPort(getPort());
+		}
+		if (getAddress() != null) {
+			factory.setAddress(getAddress());
+		}
+		if (getContextPath() != null) {
+			factory.setContextPath(getContextPath());
+		}
+		if (getSessionTimeout() != null) {
+			factory.setSessionTimeout(getSessionTimeout());
+		}
 		if (factory instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat().customizeTomcat((TomcatEmbeddedServletContainerFactory) factory);
 		}

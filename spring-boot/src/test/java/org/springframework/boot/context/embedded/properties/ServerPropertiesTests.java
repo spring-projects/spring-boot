@@ -24,7 +24,6 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.boot.context.embedded.properties.ServerProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -51,7 +50,7 @@ public class ServerPropertiesTests {
 	public void testPortBinding() throws Exception {
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
 				Collections.singletonMap("server.port", "9000")));
-		assertEquals(9000, this.properties.getPort());
+		assertEquals(9000, this.properties.getPort().intValue());
 	}
 
 	@Test

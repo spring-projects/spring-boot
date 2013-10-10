@@ -27,11 +27,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.properties.ServerProperties;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
@@ -76,7 +77,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertNotNull(server);
-		assertEquals(9000, server.getPort());
+		assertEquals(9000, server.getPort().intValue());
 		Mockito.verify(containerFactory).setPort(9000);
 	}
 
@@ -86,12 +87,44 @@ public class ServerPropertiesAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo");
+		TestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo",
+				"server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertNotNull(server);
 		assertEquals(new File("target/foo"), server.getTomcat().getBasedir());
-		Mockito.verify(containerFactory).setPort(8080);
+		Mockito.verify(containerFactory).setPort(9000);
+	}
+
+	@Test
+	public void customizeWithContainerFactory() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(CustomContainerConfig.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		containerFactory = this.context
+				.getBean(ConfigurableEmbeddedServletContainerFactory.class);
+		ServerProperties server = this.context.getBean(ServerProperties.class);
+		assertNotNull(server);
+		// The server.port environment property was not explicitly set so the container
+		// factory should take precedence...
+		assertEquals(3000, containerFactory.getPort());
+	}
+
+	@Test
+	public void customizeTomcatWithCustomizer() throws Exception {
+		containerFactory = Mockito.mock(TomcatEmbeddedServletContainerFactory.class);
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(Config.class, CustomizeConfig.class,
+				ServerPropertiesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		ServerProperties server = this.context.getBean(ServerProperties.class);
+		assertNotNull(server);
+		// The server.port environment property was not explicitly set so the container
+		// customizer should take precedence...
+		Mockito.verify(containerFactory).setPort(3000);
 	}
 
 	@Test
@@ -116,6 +149,39 @@ public class ServerPropertiesAutoConfigurationTests {
 		@Bean
 		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
 			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomContainerConfig {
+
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
+			factory.setPort(3000);
+			return factory;
+		}
+
+		@Bean
+		public EmbeddedServletContainerCustomizerBeanPostProcessor embeddedServletContainerCustomizerBeanPostProcessor() {
+			return new EmbeddedServletContainerCustomizerBeanPostProcessor();
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomizeConfig {
+
+		@Bean
+		public EmbeddedServletContainerCustomizer containerCustomizer() {
+			return new EmbeddedServletContainerCustomizer() {
+
+				@Override
+				public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+					factory.setPort(3000);
+				}
+			};
 		}
 
 	}
