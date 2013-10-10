@@ -31,8 +31,11 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
+import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
 import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.ImportNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
@@ -263,13 +266,31 @@ public class GroovyCompiler {
 			for (ASTNode node : nodes) {
 				if (node instanceof ModuleNode) {
 					ModuleNode module = (ModuleNode) node;
-					for (ClassNode classNode : module.getClasses()) {
-						for (AnnotationNode annotationNode : classNode.getAnnotations()) {
-							if (isGrabAnnotation(annotationNode)) {
-								transformGrabAnnotationIfNecessary(annotationNode);
-							}
-						}
+					for (ImportNode importNode : module.getImports()) {
+						visitAnnotatedNode(importNode);
 					}
+					for (ClassNode classNode : module.getClasses()) {
+						visitAnnotatedNode(classNode);
+						classNode.visitContents(new ClassCodeVisitorSupport() {
+							@Override
+							protected SourceUnit getSourceUnit() {
+								return source;
+							}
+
+							@Override
+							public void visitAnnotations(AnnotatedNode node) {
+								visitAnnotatedNode(node);
+							}
+						});
+					}
+				}
+			}
+		}
+
+		private void visitAnnotatedNode(AnnotatedNode annotatedNode) {
+			for (AnnotationNode annotationNode : annotatedNode.getAnnotations()) {
+				if (isGrabAnnotation(annotationNode)) {
+					transformGrabAnnotationIfNecessary(annotationNode);
 				}
 			}
 		}
