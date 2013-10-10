@@ -50,6 +50,7 @@ import org.apache.ivy.plugins.resolver.IBiblioResolver;
 import org.apache.ivy.util.AbstractMessageLogger;
 import org.apache.ivy.util.MessageLogger;
 import org.springframework.boot.cli.Log;
+import org.xml.sax.SAXException;
 
 /**
  * Customizes the groovy grape engine to enhance and patch the behavior of ivy. Can add
@@ -258,8 +259,7 @@ class GrapeEngineCustomizer {
 			private boolean artifactExists() {
 				if (this.artifactExists == null) {
 					try {
-						PomReader reader = new PomReader(getURL(), this);
-						final String packaging = reader.getPackaging();
+						final String packaging = getPackaging();
 						if ("pom".equals(packaging)) {
 							this.artifactExists = true;
 						}
@@ -279,6 +279,15 @@ class GrapeEngineCustomizer {
 					}
 				}
 				return this.artifactExists;
+			}
+
+			private String getPackaging() throws IOException, SAXException {
+				PomReader reader = new PomReader(getURL(), this);
+				String packaging = reader.getPackaging();
+				if ("bundle".equals(packaging)) {
+					packaging = "jar";
+				}
+				return packaging;
 			}
 		}
 	}
