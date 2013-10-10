@@ -81,10 +81,9 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 
 	@Override
 	public <T> T getProperty(String key, Class<T> targetType, T defaultValue) {
-		for (String relaxedKey : new RelaxedNames(key)) {
-			if (this.resolver.containsProperty(this.prefix + relaxedKey)) {
-				return this.resolver.getProperty(this.prefix + relaxedKey, targetType,
-						defaultValue);
+		for (String relaxedKey : new RelaxedNames(this.prefix + key)) {
+			if (this.resolver.containsProperty(relaxedKey)) {
+				return this.resolver.getProperty(relaxedKey, targetType, defaultValue);
 			}
 		}
 		return defaultValue;
@@ -92,10 +91,9 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 
 	@Override
 	public <T> Class<T> getPropertyAsClass(String key, Class<T> targetType) {
-		for (String relaxedKey : new RelaxedNames(key)) {
-			if (this.resolver.containsProperty(this.prefix + relaxedKey)) {
-				return this.resolver.getPropertyAsClass(this.prefix + relaxedKey,
-						targetType);
+		for (String relaxedKey : new RelaxedNames(this.prefix + key)) {
+			if (this.resolver.containsProperty(relaxedKey)) {
+				return this.resolver.getPropertyAsClass(relaxedKey, targetType);
 			}
 		}
 		return null;
@@ -103,8 +101,8 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 
 	@Override
 	public boolean containsProperty(String key) {
-		for (String relaxedKey : new RelaxedNames(key)) {
-			if (this.resolver.containsProperty(this.prefix + relaxedKey)) {
+		for (String relaxedKey : new RelaxedNames(this.prefix + key)) {
+			if (this.resolver.containsProperty(relaxedKey)) {
 				return true;
 			}
 		}
@@ -126,7 +124,7 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 
 	/**
 	 * Return a Map of all values from all underlying properties that start with the
-	 * specified key. NOTE: this method can only be used in the underlying resolver is a
+	 * specified key. NOTE: this method can only be used if the underlying resolver is a
 	 * {@link ConfigurableEnvironment}.
 	 * @param keyPrefix the key prefix used to filter results
 	 * @return a map of all sub properties starting with the specified key prefix.

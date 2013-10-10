@@ -145,6 +145,14 @@ public class RelaxedPropertyResolverTests {
 	}
 
 	@Test
+	public void prefixedRelaxed() throws Exception {
+		this.resolver = new RelaxedPropertyResolver(this.environment, "a.");
+		this.source.put("A_B", "test");
+		assertThat(this.resolver.containsProperty("b"), equalTo(true));
+		assertThat(this.resolver.getProperty("b"), equalTo("test"));
+	}
+
+	@Test
 	public void subProperties() throws Exception {
 		this.source.put("x.y.my-sub.a.b", "1");
 		this.source.put("x.y.mySub.a.c", "2");

@@ -97,13 +97,19 @@ public final class RelaxedNames implements Iterable<String> {
 				return value;
 			}
 		},
-		UNDERSCORE {
+		HYPHEN_TO_UNDERSCORE {
 			@Override
 			public String apply(String value) {
 				return value.replace("-", "_");
 			}
 		},
-		UNCAMELCASE {
+		PERIOD_TO_UNDERSCORE {
+			@Override
+			public String apply(String value) {
+				return value.replace(".", "_");
+			}
+		},
+		CAMELCASE_TO_UNDERSCORE {
 			@Override
 			public String apply(String value) {
 				value = value.replaceAll("([^A-Z-])([A-Z])", "$1_$2");
@@ -119,14 +125,18 @@ public final class RelaxedNames implements Iterable<String> {
 				return builder.toString();
 			}
 		},
-		CAMELCASE {
+		UNDERSCORE_TO_CAMELCASE {
 			@Override
 			public String apply(String value) {
 				StringBuilder builder = new StringBuilder();
-				for (String field : UNDERSCORE.apply(value).split("_")) {
+				for (String field : value.split("[_\\-.]")) {
 					builder.append(builder.length() == 0 ? field : StringUtils
 							.capitalize(field));
 				}
+				for (String suffix : new String[] { "_", "-", "." })
+					if (value.endsWith(suffix)) {
+						builder.append(suffix);
+					}
 				return builder.toString();
 			}
 		};
