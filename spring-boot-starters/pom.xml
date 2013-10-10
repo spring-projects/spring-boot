@@ -26,6 +26,7 @@
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-security</module>
+		<module>spring-boot-starter-test</module>
 		<module>spring-boot-starter-tomcat</module>
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>
