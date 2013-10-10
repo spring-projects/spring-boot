@@ -183,8 +183,9 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				return DIFFERENT;
 			}
 			return managementServerProperties.getPort() == null
-					|| serverProperties.getPort() == managementServerProperties.getPort() ? SAME
-					: DIFFERENT;
+					|| serverProperties.getPort() == null
+					|| serverProperties.getPort().equals(
+							managementServerProperties.getPort()) ? SAME : DIFFERENT;
 		}
 	};
 }
