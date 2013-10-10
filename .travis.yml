@@ -1,4 +1,5 @@
 language: java
+services: mongodb
 
 install: mvn install -U -DskipTests=true -Pspring-snapshot
 before_script:
