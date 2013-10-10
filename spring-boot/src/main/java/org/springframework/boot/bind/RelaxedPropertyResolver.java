@@ -81,9 +81,13 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 
 	@Override
 	public <T> T getProperty(String key, Class<T> targetType, T defaultValue) {
-		for (String relaxedKey : new RelaxedNames(this.prefix + key)) {
-			if (this.resolver.containsProperty(relaxedKey)) {
-				return this.resolver.getProperty(relaxedKey, targetType, defaultValue);
+		RelaxedNames prefixes = new RelaxedNames(this.prefix);
+		RelaxedNames keys = new RelaxedNames(key);
+		for (String prefix : prefixes) {
+			for (String relaxedKey : keys) {
+				if (this.resolver.containsProperty(prefix + relaxedKey)) {
+					return this.resolver.getProperty(prefix + relaxedKey, targetType);
+				}
 			}
 		}
 		return defaultValue;
@@ -91,9 +95,14 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 
 	@Override
 	public <T> Class<T> getPropertyAsClass(String key, Class<T> targetType) {
-		for (String relaxedKey : new RelaxedNames(this.prefix + key)) {
-			if (this.resolver.containsProperty(relaxedKey)) {
-				return this.resolver.getPropertyAsClass(relaxedKey, targetType);
+		RelaxedNames prefixes = new RelaxedNames(this.prefix);
+		RelaxedNames keys = new RelaxedNames(key);
+		for (String prefix : prefixes) {
+			for (String relaxedKey : keys) {
+				if (this.resolver.containsProperty(prefix + relaxedKey)) {
+					return this.resolver.getPropertyAsClass(prefix + relaxedKey,
+							targetType);
+				}
 			}
 		}
 		return null;
@@ -101,9 +110,13 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 
 	@Override
 	public boolean containsProperty(String key) {
-		for (String relaxedKey : new RelaxedNames(this.prefix + key)) {
-			if (this.resolver.containsProperty(relaxedKey)) {
-				return true;
+		RelaxedNames prefixes = new RelaxedNames(this.prefix);
+		RelaxedNames keys = new RelaxedNames(key);
+		for (String prefix : prefixes) {
+			for (String relaxedKey : keys) {
+				if (this.resolver.containsProperty(prefix + relaxedKey)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -128,15 +141,14 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	 * {@link ConfigurableEnvironment}.
 	 * @param keyPrefix the key prefix used to filter results
 	 * @return a map of all sub properties starting with the specified key prefix.
-	 * @see #getSubProperties(PropertySources, RelaxedNames)
-	 * @see #getSubProperties(PropertySources, String, RelaxedNames)
+	 * @see #getSubProperties(PropertySources, String)
+	 * @see #getSubProperties(PropertySources, String, String)
 	 */
 	public Map<String, Object> getSubProperties(String keyPrefix) {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, this.resolver,
 				"SubProperties not available.");
 		ConfigurableEnvironment env = (ConfigurableEnvironment) this.resolver;
-		return getSubProperties(env.getPropertySources(), this.prefix, new RelaxedNames(
-				keyPrefix));
+		return getSubProperties(env.getPropertySources(), this.prefix, keyPrefix);
 	}
 
 	/**
@@ -145,10 +157,10 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	 * @param propertySources the property sources to scan
 	 * @param keyPrefix the key prefixes to test
 	 * @return a map of all sub properties starting with the specified key prefixes.
-	 * @see #getSubProperties(PropertySources, String, RelaxedNames)
+	 * @see #getSubProperties(PropertySources, String, String)
 	 */
 	public static Map<String, Object> getSubProperties(PropertySources propertySources,
-			RelaxedNames keyPrefix) {
+			String keyPrefix) {
 		return getSubProperties(propertySources, null, keyPrefix);
 	}
 
@@ -160,16 +172,17 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	 * {@code null})
 	 * @param keyPrefix the key prefixes to test
 	 * @return a map of all sub properties starting with the specified key prefixes.
-	 * @see #getSubProperties(PropertySources, String, RelaxedNames)
+	 * @see #getSubProperties(PropertySources, String, String)
 	 */
 	public static Map<String, Object> getSubProperties(PropertySources propertySources,
-			String rootPrefix, RelaxedNames keyPrefix) {
+			String rootPrefix, String keyPrefix) {
+		RelaxedNames keyPrefixes = new RelaxedNames(keyPrefix);
 		Map<String, Object> subProperties = new LinkedHashMap<String, Object>();
 		for (PropertySource<?> source : propertySources) {
 			if (source instanceof EnumerablePropertySource) {
 				for (String name : ((EnumerablePropertySource<?>) source)
 						.getPropertyNames()) {
-					String key = getSubKey(name, rootPrefix, keyPrefix);
+					String key = getSubKey(name, rootPrefix, keyPrefixes);
 					if (key != null) {
 						subProperties.put(key, source.getProperty(name));
 					}
@@ -179,11 +192,14 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 		return Collections.unmodifiableMap(subProperties);
 	}
 
-	private static String getSubKey(String name, String rootPrefix, RelaxedNames keyPrefix) {
-		rootPrefix = (rootPrefix == null ? "" : rootPrefix);
-		for (String candidateKeyPrefix : keyPrefix) {
-			if (name.startsWith(rootPrefix + candidateKeyPrefix)) {
-				return name.substring((rootPrefix + candidateKeyPrefix).length());
+	private static String getSubKey(String name, String rootPrefixes,
+			RelaxedNames keyPrefix) {
+		rootPrefixes = (rootPrefixes == null ? "" : rootPrefixes);
+		for (String rootPrefix : new RelaxedNames(rootPrefixes)) {
+			for (String candidateKeyPrefix : keyPrefix) {
+				if (name.startsWith(rootPrefix + candidateKeyPrefix)) {
+					return name.substring((rootPrefix + candidateKeyPrefix).length());
+				}
 			}
 		}
 		return null;

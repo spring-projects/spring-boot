@@ -125,7 +125,7 @@ public final class RelaxedNames implements Iterable<String> {
 				return builder.toString();
 			}
 		},
-		UNDERSCORE_TO_CAMELCASE {
+		SEPARATED_TO_CAMELCASE {
 			@Override
 			public String apply(String value) {
 				StringBuilder builder = new StringBuilder();
