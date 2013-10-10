@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link RelaxedNames}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class RelaxedNamesTests {
 
@@ -43,17 +44,35 @@ public class RelaxedNamesTests {
 		assertThat(iterator.next(), equalTo("MY_RELAXED_PROPERTY"));
 		assertThat(iterator.next(), equalTo("MYRELAXEDPROPERTY"));
 		assertThat(iterator.hasNext(), equalTo(false));
+	}
 
-		iterator = new RelaxedNames("nes_ted").iterator();
-		assertThat(iterator.next(), equalTo("nes_ted"));
+	@Test
+	public void fromUnderscores() throws Exception {
+		Iterator<String> iterator = new RelaxedNames("nes_ted").iterator();
 		assertThat(iterator.next(), equalTo("nes_ted"));
 		assertThat(iterator.next(), equalTo("nesTed"));
-		assertThat(iterator.next(), equalTo("nes_ted"));
-		assertThat(iterator.next(), equalTo("nes_ted"));
 		assertThat(iterator.next(), equalTo("nested"));
 		assertThat(iterator.next(), equalTo("NES_TED"));
-		assertThat(iterator.next(), equalTo("NES_TED"));
 		assertThat(iterator.next(), equalTo("NESTED"));
+		assertThat(iterator.hasNext(), equalTo(false));
+	}
+
+	@Test
+	public void fromPlain() throws Exception {
+		Iterator<String> iterator = new RelaxedNames("plain").iterator();
+		assertThat(iterator.next(), equalTo("plain"));
+		assertThat(iterator.next(), equalTo("PLAIN"));
+		assertThat(iterator.hasNext(), equalTo(false));
+	}
+
+	@Test
+	public void fromCamelCase() throws Exception {
+		Iterator<String> iterator = new RelaxedNames("caMel").iterator();
+		assertThat(iterator.next(), equalTo("caMel"));
+		assertThat(iterator.next(), equalTo("ca_mel"));
+		assertThat(iterator.next(), equalTo("camel"));
+		assertThat(iterator.next(), equalTo("CAMEL"));
+		assertThat(iterator.next(), equalTo("CA_MEL"));
 		assertThat(iterator.hasNext(), equalTo(false));
 	}
 

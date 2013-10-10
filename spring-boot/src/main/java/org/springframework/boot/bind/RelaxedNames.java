@@ -17,7 +17,8 @@
 package org.springframework.boot.bind;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
@@ -33,6 +34,8 @@ public final class RelaxedNames implements Iterable<String> {
 
 	private final String name;
 
+	private Set<String> values = new LinkedHashSet<String>();
+
 	/**
 	 * Create a new {@link RelaxedNames} instance.
 	 * 
@@ -41,45 +44,27 @@ public final class RelaxedNames implements Iterable<String> {
 	 */
 	public RelaxedNames(String name) {
 		this.name = name;
+		initialize(RelaxedNames.this.name, this.values);
 	}
 
 	@Override
 	public Iterator<String> iterator() {
-		return new RelaxedNamesIterator();
+		return this.values.iterator();
 	}
 
-	private class RelaxedNamesIterator implements Iterator<String> {
-
-		private int variation = 0;
-
-		private int manipulation = 0;
-
-		@Override
-		public boolean hasNext() {
-			return (this.variation < Variation.values().length);
+	private void initialize(String name, Set<String> values) {
+		if (values.contains(name)) {
+			return;
 		}
-
-		@Override
-		public String next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
+		for (Variation variation : Variation.values()) {
+			for (Manipulation manipulation : Manipulation.values()) {
+				String result = name;
+				result = manipulation.apply(result);
+				result = variation.apply(result);
+				values.add(result);
+				initialize(result, values);
 			}
-			String result = RelaxedNames.this.name;
-			result = Manipulation.values()[this.manipulation].apply(result);
-			result = Variation.values()[this.variation].apply(result);
-			this.manipulation++;
-			if (this.manipulation >= Manipulation.values().length) {
-				this.variation++;
-				this.manipulation = 0;
-			}
-			return result;
 		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-
 	}
 
 	static enum Variation {
@@ -116,6 +101,22 @@ public final class RelaxedNames implements Iterable<String> {
 			@Override
 			public String apply(String value) {
 				return value.replace("-", "_");
+			}
+		},
+		UNCAMELCASE {
+			@Override
+			public String apply(String value) {
+				value = value.replaceAll("([^A-Z-])([A-Z])", "$1_$2");
+				StringBuilder builder = new StringBuilder();
+				for (String field : value.split("_")) {
+					if (builder.length() == 0) {
+						builder.append(field);
+					}
+					else {
+						builder.append("_").append(StringUtils.uncapitalize(field));
+					}
+				}
+				return builder.toString();
 			}
 		},
 		CAMELCASE {
