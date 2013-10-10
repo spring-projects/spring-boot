@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.command;
 
-import groovy.lang.GroovyObject;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,6 +36,8 @@ import org.springframework.boot.cli.command.tester.Failure;
 import org.springframework.boot.cli.command.tester.TestResults;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
+
+import groovy.lang.GroovyObject;
 
 /**
  * Invokes testing for auto-compiled scripts
@@ -88,7 +88,6 @@ public class TestCommand extends OptionParsingCommand {
 	private static class TestOptionHandler extends OptionHandler {
 
 		private final GroovyCompiler compiler;
-
 		private TestResults results;
 
 		public TestOptionHandler() {
@@ -113,11 +112,11 @@ public class TestCommand extends OptionParsingCommand {
 			 * against the composite AST.
 			 */
 
-			// Compile - Pass 1 - collect testers
+			// Compile - Pass 1 - compile source code to see what test libraries were pulled in
 			Object[] sources = this.compiler.sources(fileOptions.getFilesArray());
-			Set<File> testerFiles = compileAndCollectTesterFiles(sources);
+			List<File> testerFiles = compileAndCollectTesterFiles(sources);
 
-			// Compile - Pass 2 - with appropriate testers added in
+			// Compile - Pass 2 - add appropriate testers
 			List<File> files = new ArrayList<File>(fileOptions.getFiles());
 			files.addAll(testerFiles);
 			sources = this.compiler.sources(files.toArray(new File[files.size()]));
@@ -133,8 +132,7 @@ public class TestCommand extends OptionParsingCommand {
 					Class<?> sourceClass = (Class<?>) source;
 					if (sourceClass.getSuperclass().getName().equals("AbstractTester")) {
 						testers.add(sourceClass);
-					}
-					else {
+					} else {
 						compiled.add((Class<?>) source);
 					}
 				}
@@ -145,14 +143,16 @@ public class TestCommand extends OptionParsingCommand {
 				GroovyObject obj = (GroovyObject) tester.newInstance();
 				this.results.add((TestResults) obj.invokeMethod("findAndTest", compiled));
 			}
+
 			printReport(this.results);
 		}
 
-		private Set<File> compileAndCollectTesterFiles(Object[] sources)
+		private List<File> compileAndCollectTesterFiles(Object[] sources)
 				throws CompilationFailedException, IOException {
-			Set<File> testerFiles = new LinkedHashSet<File>();
-			addTesterOnClass(sources, "org.junit.Test", "junit", testerFiles);
-			addTesterOnClass(sources, "spock.lang.Specification", "spock", testerFiles);
+			Set<String> testerUnits = new LinkedHashSet<String>();
+			List<File> testerFiles = new ArrayList<File>();
+			addTesterOnClass(sources, "org.junit.Test", testerFiles, testerUnits, "junit");
+			addTesterOnClass(sources, "spock.lang.Specification", testerFiles, testerUnits, "junit", "spock");
 			if (!testerFiles.isEmpty()) {
 				testerFiles.add(createTempTesterFile("tester"));
 			}
@@ -161,15 +161,18 @@ public class TestCommand extends OptionParsingCommand {
 		}
 
 		private void addTesterOnClass(Object[] sources, String className,
-				String testerName, Set<File> testerFiles) {
+				List<File> testerFiles, Set<String> testerUnits, String... testerNames) {
 			for (Object source : sources) {
 				if (source instanceof Class<?>) {
 					try {
 						((Class<?>) source).getClassLoader().loadClass(className);
-						testerFiles.add(createTempTesterFile(testerName));
+						for (String testerName : testerNames) {
+							if (testerUnits.add(testerName)) {
+								testerFiles.add(createTempTesterFile(testerName));
+							}
+						}
 						return;
-					}
-					catch (ClassNotFoundException ex) {
+					} catch (ClassNotFoundException ex) {
 					}
 				}
 			}
@@ -183,8 +186,7 @@ public class TestCommand extends OptionParsingCommand {
 						"testers/" + name + ".groovy");
 				FileUtil.copy(resource, file, null);
 				return file;
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new IllegalStateException("Could not create temp file for source: "
 						+ name);
 			}
@@ -201,7 +203,7 @@ public class TestCommand extends OptionParsingCommand {
 			String trailer = "";
 			String trace = "";
 			for (Failure failure : results.getFailures()) {
-				trailer += failure.getDescription().toString();
+				trailer += "Failed: " + failure.getDescription().toString() + "\n";
 				trace += failure.getTrace() + "\n";
 			}
 

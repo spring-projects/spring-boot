@@ -31,39 +31,41 @@ import java.lang.reflect.Method
  */
 class JUnitTester extends AbstractTester {
 
-    @Override
-    protected Set<Class<?>> findTestableClasses(List<Class<?>> compiled) {
-        // Look for @Test methods
-        Set<Class<?>> testable = new LinkedHashSet<Class<?>>()
-        for (Class<?> clazz : compiled) {
-            for (Method method : clazz.getMethods()) {
-                for (Annotation annotation : method.getAnnotations()) {
-                    if (annotation.toString().contains("Test")) {
-                        testable.add(clazz)
-                    }
-                }
-            }
-        }
-        return testable
-    }
+	@Override
+	protected Set<Class<?>> findTestableClasses(List<Class<?>> compiled) {
+		// Look for @Test methods
+		Set<Class<?>> testable = new LinkedHashSet<Class<?>>()
+		for (Class<?> clazz : compiled) {
+			for (Method method : clazz.getMethods()) {
+				for (Annotation annotation : method.getAnnotations()) {
+					if (annotation.toString().contains("Test")) {
+						testable.add(clazz)
+					}
+				}
+			}
+		}
+		return testable
+	}
 
-    @Override
-    protected TestResults test(Class<?>[] testable) {
-        Result results = JUnitCore.runClasses(testable)
+	@Override
+	protected TestResults test(List<Class<?>> testable) {
+		return JUnitTester.runEmbeddedTests(testable)
+	}
 
-        TestResults testResults = new TestResults()
-        testResults.setFailureCount(results.getFailureCount())
-        testResults.setRunCount(results.getRunCount())
+	static TestResults runEmbeddedTests(List<Class<?>> testable) {
+		Result results = JUnitCore.runClasses(testable.toArray(new Class<?>[0]))
 
-        List<org.springframework.boot.cli.command.tester.Failure> failures =
-            new ArrayList<Failure>()
-        for (org.junit.runner.notification.Failure failure : results.getFailures()) {
-            failures.add(new Failure(failure.getDescription().toString(), failure.getTrace()))
-        }
+		TestResults testResults = new TestResults()
+		testResults.setRunCount(results.getRunCount())
 
-        testResults.setFailures(failures.toArray(new Failure[0]))
+		List<Failure> failures = new ArrayList<Failure>()
+		for (org.junit.runner.notification.Failure failure : results.getFailures()) {
+			failures.add(new Failure(failure.exception.toString(), failure.trace))
+		}
 
-        return testResults
-    }
+		testResults.setFailures(failures)
+
+		return testResults
+	}
 
 }
