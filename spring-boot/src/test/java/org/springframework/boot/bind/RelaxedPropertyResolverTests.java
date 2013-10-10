@@ -51,6 +51,7 @@ public class RelaxedPropertyResolverTests {
 		this.environment = new StandardEnvironment();
 		this.source = new LinkedHashMap<String, Object>();
 		this.source.put("myString", "value");
+		this.source.put("myobject", "object");
 		this.source.put("myInteger", 123);
 		this.source.put("myClass", "java.lang.String");
 		this.environment.getPropertySources().addFirst(
@@ -86,6 +87,12 @@ public class RelaxedPropertyResolverTests {
 	public void getProperty() throws Exception {
 		assertThat(this.resolver.getProperty("my-string"), equalTo("value"));
 		assertThat(this.resolver.getProperty("my-missing"), nullValue());
+	}
+
+	@Test
+	public void getPropertyNoSeparator() throws Exception {
+		assertThat(this.resolver.getProperty("myobject"), equalTo("object"));
+		assertThat(this.resolver.getProperty("my-object"), equalTo("object"));
 	}
 
 	@Test
@@ -148,8 +155,10 @@ public class RelaxedPropertyResolverTests {
 	public void prefixedRelaxed() throws Exception {
 		this.resolver = new RelaxedPropertyResolver(this.environment, "a.");
 		this.source.put("A_B", "test");
+		this.source.put("a.foobar", "spam");
 		assertThat(this.resolver.containsProperty("b"), equalTo(true));
 		assertThat(this.resolver.getProperty("b"), equalTo("test"));
+		assertThat(this.resolver.getProperty("foo-bar"), equalTo("spam"));
 	}
 
 	@Test
