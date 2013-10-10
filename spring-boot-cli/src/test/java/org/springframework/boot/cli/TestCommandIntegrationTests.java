@@ -25,6 +25,7 @@ import org.springframework.boot.cli.command.TestCommand;
 import org.springframework.boot.cli.command.tester.TestResults;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -37,12 +38,11 @@ public class TestCommandIntegrationTests {
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
 		GrapesCleaner.cleanIfNecessary();
-		// System.setProperty("ivy.message.logger.level", "3");
 	}
 
 	@Before
 	public void setup() throws Exception {
-		System.setProperty("disableSpringSnapshotRepos", "true");
+		System.setProperty("disableSpringSnapshotRepos", "false");
 		new CleanCommand().run("org.springframework");
 	}
 
@@ -77,9 +77,9 @@ public class TestCommandIntegrationTests {
 			TestCommand command = new TestCommand();
 			command.run("samples/nothing.groovy");
 		}
-		catch (RuntimeException e) {
-			assertEquals("Can't find samples/nothing.groovy", e.getMessage());
-			throw e;
+		catch (RuntimeException ex) {
+			assertEquals("Can't find samples/nothing.groovy", ex.getMessage());
+			throw ex;
 		}
 	}
 
@@ -121,6 +121,16 @@ public class TestCommandIntegrationTests {
 		assertEquals(2, results.getRunCount());
 		assertEquals(0, results.getFailureCount());
 		assertTrue(results.wasSuccessful());
+	}
+
+	@Test
+	public void verifyFailures() throws Exception {
+		TestCommand command = new TestCommand();
+		command.run("samples/failures.groovy");
+		TestResults results = command.getResults();
+		assertEquals(5, results.getRunCount());
+		assertEquals(3, results.getFailureCount());
+		assertFalse(results.wasSuccessful());
 	}
 
 }

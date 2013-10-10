@@ -25,18 +25,18 @@ import org.springframework.boot.cli.command.tester.TestResults
  */
 public abstract class AbstractTester {
 
-    public TestResults findAndTest(List<Class<?>> compiled) throws FileNotFoundException {
-        Set<Class<?>> testable = findTestableClasses(compiled)
+	public TestResults findAndTest(List<Class<?>> compiled) throws FileNotFoundException {
+		Set<Class<?>> testable = findTestableClasses(compiled)
 
-        if (testable.size() == 0) {
-            return TestResults.NONE
-        }
+		if (testable.size() == 0) {
+			return TestResults.NONE
+		}
 
-        return test(testable.toArray(new Class<?>[0]))
-    }
+		return test(new ArrayList<Class<?>>(testable))
+	}
 
-    protected abstract Set<Class<?>> findTestableClasses(List<Class<?>> compiled)
+	protected abstract Set<Class<?>> findTestableClasses(List<Class<?>> compiled)
 
-    protected abstract TestResults test(Class<?>[] testable)
+	protected abstract TestResults test(List<Class<?>> testable)
 
 }

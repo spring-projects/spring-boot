@@ -16,7 +16,7 @@
 
 package org.springframework.boot.cli.command.tester;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,8 +42,8 @@ public class TestResults {
 		}
 
 		@Override
-		public Failure[] getFailures() {
-			return new Failure[0];
+		public List<Failure> getFailures() {
+			return new ArrayList<Failure>();
 		}
 
 		@Override
@@ -52,23 +52,16 @@ public class TestResults {
 		}
 
 	};
-
-	private int runCount;
-
-	private int failureCount;
-
-	private Failure[] failures = new Failure[0];
+	private int runCount = 0;
+	private List<Failure> failures = new ArrayList<Failure>();
 
 	public void add(TestResults results) {
 		this.runCount += results.getRunCount();
-		this.failureCount += results.getFailureCount();
-		List<Failure> failures = Arrays.asList(this.failures);
-		failures.addAll(Arrays.asList(results.getFailures()));
-		this.failures = failures.toArray(new Failure[] {});
+		this.failures.addAll(results.getFailures());
 	}
 
 	public boolean wasSuccessful() {
-		return this.failureCount == 0;
+		return this.failures.size() == 0;
 	}
 
 	public int getRunCount() {
@@ -80,18 +73,14 @@ public class TestResults {
 	}
 
 	public int getFailureCount() {
-		return this.failureCount;
+		return this.failures.size();
 	}
 
-	public void setFailureCount(int failureCount) {
-		this.failureCount = failureCount;
-	}
-
-	public Failure[] getFailures() {
+	public List<Failure> getFailures() {
 		return this.failures;
 	}
 
-	public void setFailures(Failure[] failures) {
+	public void setFailures(List<Failure> failures) {
 		this.failures = failures;
 	}
 
