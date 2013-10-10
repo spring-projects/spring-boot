@@ -34,6 +34,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring3.view.ThymeleafView;
 import org.thymeleaf.spring3.view.ThymeleafViewResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.templateresolver.TemplateResolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -60,6 +62,25 @@ public class ThymeleafAutoConfigurationTests {
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("template.txt", attrs);
 		assertEquals("<html>bar</html>", result);
+		context.close();
+	}
+
+	@Test
+	public void overrideCharacterEncoding() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("spring.thymeleaf.encoding", "UTF-16");
+		context.getEnvironment().getPropertySources()
+				.addFirst(new MapPropertySource("test", map));
+		context.refresh();
+		context.getBean(TemplateEngine.class).initialize();
+		ITemplateResolver resolver = context.getBean(ITemplateResolver.class);
+		assertTrue(resolver instanceof TemplateResolver);
+		assertEquals("UTF-16", ((TemplateResolver) resolver).getCharacterEncoding());
+		ThymeleafViewResolver views = context.getBean(ThymeleafViewResolver.class);
+		assertEquals("UTF-16", views.getCharacterEncoding());
 		context.close();
 	}
 

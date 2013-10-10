@@ -100,6 +100,8 @@ public class ThymeleafAutoConfiguration {
 					"classpath:/templates/"));
 			resolver.setSuffix(this.environment.getProperty("suffix", ".html"));
 			resolver.setTemplateMode(this.environment.getProperty("mode", "HTML5"));
+			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
+					"UTF-8"));
 			resolver.setCacheable(this.environment.getProperty("cache", Boolean.class,
 					true));
 			return resolver;
@@ -144,7 +146,15 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class })
-	protected static class ThymeleafViewResolverConfiguration {
+	protected static class ThymeleafViewResolverConfiguration implements EnvironmentAware {
+
+		private RelaxedPropertyResolver environment;
+
+		@Override
+		public void setEnvironment(Environment environment) {
+			this.environment = new RelaxedPropertyResolver(environment,
+					"spring.thymeleaf.");
+		}
 
 		@Autowired
 		private SpringTemplateEngine templateEngine;
@@ -154,7 +164,8 @@ public class ThymeleafAutoConfiguration {
 		public ThymeleafViewResolver thymeleafViewResolver() {
 			ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 			resolver.setTemplateEngine(this.templateEngine);
-			resolver.setCharacterEncoding("UTF-8");
+			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
+					"UTF-8"));
 			// Needs to come before any fallback resolver (e.g. a
 			// InternalResourceViewResolver)
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 20);
