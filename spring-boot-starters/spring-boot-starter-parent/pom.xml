@@ -125,14 +125,14 @@
 				<filtering>true</filtering>
 				<includes>
 					<include>**/application.yml</include>
-					<include>**/application.propeties</include>
+					<include>**/application.properties</include>
 				</includes>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>**/application.yml</exclude>
-					<exclude>**/application.propeties</exclude>
+					<exclude>**/application.properties</exclude>
 				</excludes>
 			</resource>
 		</resources>
