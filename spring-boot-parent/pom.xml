@@ -40,6 +40,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-aether-provider</artifactId>
+				<version>3.1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-archiver</artifactId>
 				<version>2.5</version>
 			</dependency>
@@ -103,6 +108,21 @@
 				<artifactId>plexus-utils</artifactId>
 				<version>3.0.10</version>
 			</dependency>
+			<dependency>
+      			<groupId>org.eclipse.aether</groupId>
+      			<artifactId>aether-api</artifactId>
+      			<version>${aether.version}</version>
+   			</dependency>
+   			<dependency>
+      			<groupId>org.eclipse.aether</groupId>
+      			<artifactId>aether-impl</artifactId>
+      			<version>${aether.version}</version>
+   			</dependency>
+    		<dependency>
+      			<groupId>org.eclipse.aether</groupId>
+      			<artifactId>aether-util</artifactId>
+      			<version>${aether.version}</version>
+    		</dependency>
 			<dependency>
 				<groupId>org.gradle</groupId>
 				<artifactId>gradle-core</artifactId>

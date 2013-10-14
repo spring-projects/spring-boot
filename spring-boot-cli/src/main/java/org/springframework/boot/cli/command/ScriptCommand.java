@@ -28,11 +28,11 @@ import java.net.URL;
 
 import joptsimple.OptionParser;
 
-import org.apache.ivy.util.FileUtil;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
+import org.springframework.boot.cli.util.FileUtils;
 
 /**
  * {@link Command} to run a Groovy script.
@@ -219,7 +219,7 @@ public class ScriptCommand implements Command {
 		try {
 			File file = File.createTempFile(name, ".groovy");
 			file.deleteOnExit();
-			FileUtil.copy(url, file, null);
+			FileUtils.copy(url, file);
 			return file;
 		}
 		catch (IOException ex) {

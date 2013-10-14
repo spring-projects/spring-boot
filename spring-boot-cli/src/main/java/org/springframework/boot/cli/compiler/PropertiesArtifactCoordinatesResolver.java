@@ -21,6 +21,7 @@ import groovy.lang.GroovyClassLoader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -53,14 +54,16 @@ final class PropertiesArtifactCoordinatesResolver implements ArtifactCoordinates
 		if (this.properties == null) {
 			loadProperties();
 		}
-		return this.properties.getProperty(name);
+		String property = this.properties.getProperty(name);
+		return property;
 	}
 
 	private void loadProperties() {
 		Properties properties = new Properties();
 		try {
-			for (URL url : Collections.list(this.loader
-					.getResources("META-INF/springcli.properties"))) {
+			ArrayList<URL> urls = Collections.list(this.loader
+					.getResources("META-INF/springcli.properties"));
+			for (URL url : urls) {
 				InputStream inputStream = url.openStream();
 				try {
 					properties.load(inputStream);
