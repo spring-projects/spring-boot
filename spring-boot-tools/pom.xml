@@ -19,4 +19,25 @@
 		<module>spring-boot-maven-plugin</module>
 		<module>spring-boot-gradle-plugin</module>
 	</modules>
+    <build>
+        <plugins>
+ 			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<verbose>true</verbose>
+					<dateFormat>yyyy-MM-dd'T'HH:mm:ssZ</dateFormat>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>src/main/resources/org/springframework/boot/git.properties</generateGitPropertiesFilename>
+				</configuration>
+			</plugin>
+       </plugins>
+    </build>
 </project>
