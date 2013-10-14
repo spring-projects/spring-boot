@@ -132,17 +132,12 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private void initializeProperties(File home) throws Exception, IOException {
-		String config = SystemPropertyUtils.resolvePlaceholders(System.getProperty(
-				CONFIG_NAME, "application")) + ".properties";
-		InputStream resource = getClasspathResource(config);
-		if (resource == null) {
-			resource = getResource(new File(home, config).getAbsolutePath());
-		}
-		if (resource == null) {
-			config = SystemPropertyUtils.resolvePlaceholders(System.getProperty(
-					CONFIG_LOCATION, config));
-			resource = getResource(config);
-		}
+		String config = "classpath:"
+				+ SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils
+						.getProperty(CONFIG_NAME, "application")) + ".properties";
+		config = SystemPropertyUtils.resolvePlaceholders(SystemPropertyUtils.getProperty(
+				CONFIG_LOCATION, config));
+		InputStream resource = getResource(config);
 
 		if (resource != null) {
 			this.logger.info("Found: " + config);

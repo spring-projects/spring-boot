@@ -147,21 +147,55 @@ public abstract class SystemPropertyUtils {
 
 	private static String resolvePlaceholder(Properties properties, String text,
 			String placeholderName) {
+		String propVal = getProperty(placeholderName, null, text);
+		if (propVal != null) {
+			return propVal;
+		}
+		return properties == null ? null : properties.getProperty(placeholderName);
+	}
+
+	public static String getProperty(String key) {
+		return getProperty(key, null, "");
+	}
+
+	public static String getProperty(String key, String defaultValue) {
+		return getProperty(key, defaultValue, "");
+	}
+
+	/**
+	 * Search the System properties and environment variables for a value with the
+	 * provided key. Environment variables in <code>UPPER_CASE</code> style are allowed
+	 * where System properties would normally be <code>lower.case</code>.
+	 * 
+	 * @param key the key to resolve
+	 * @param text optional extra context for an error message if the key resolution fails
+	 * (e.g. if System properties are not accessible)
+	 * @return a static property value or null of not found
+	 */
+	public static String getProperty(String key, String defaultValue, String text) {
 		try {
-			String propVal = System.getProperty(placeholderName);
+			String propVal = System.getProperty(key);
 			if (propVal == null) {
 				// Fall back to searching the system environment.
-				propVal = System.getenv(placeholderName);
+				propVal = System.getenv(key);
+			}
+			if (propVal == null) {
+				// Try with underscores.
+				propVal = System.getenv(key.replace(".", "_"));
+			}
+			if (propVal == null) {
+				// Try uppercase with underscores as well.
+				propVal = System.getenv(key.toUpperCase().replace(".", "_"));
 			}
 			if (propVal != null) {
 				return propVal;
 			}
 		}
 		catch (Throwable ex) {
-			System.err.println("Could not resolve placeholder '" + placeholderName
-					+ "' in [" + text + "] as system property: " + ex);
+			System.err.println("Could not resolve key '" + key + "' in '" + text
+					+ "' as system property or in environment: " + ex);
 		}
-		return properties == null ? null : properties.getProperty(placeholderName);
+		return defaultValue;
 	}
 
 	private static int findPlaceholderEndIndex(CharSequence buf, int startIndex) {
