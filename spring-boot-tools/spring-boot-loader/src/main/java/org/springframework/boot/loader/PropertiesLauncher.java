@@ -21,7 +21,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
+import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 /**
@@ -318,7 +321,24 @@ public class PropertiesLauncher extends Launcher {
 				this.logger.info("No directory found at " + path);
 			}
 		}
+		addParentClassLoaderEntries(lib);
 		return lib;
+	}
+
+	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
+			URISyntaxException {
+		ClassLoader parentClassLoader = getClass().getClassLoader();
+		if (parentClassLoader instanceof URLClassLoader) {
+			URLClassLoader urlClassLoader = (URLClassLoader) parentClassLoader;
+			for (URL url : urlClassLoader.getURLs()) {
+				if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
+					lib.add(0, new JarFileArchive(new File(url.toURI())));
+				}
+				else {
+					lib.add(0, new ExplodedArchive(new File(url.getFile())));
+				}
+			}
+		}
 	}
 
 	private String cleanupPath(String path) {
