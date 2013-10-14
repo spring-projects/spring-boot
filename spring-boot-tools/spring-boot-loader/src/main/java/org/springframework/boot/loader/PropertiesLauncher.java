@@ -261,7 +261,7 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private void initializePaths() throws IOException {
-		String path = System.getProperty(PATH);
+		String path = SystemPropertyUtils.getProperty(PATH);
 		if (path == null) {
 			path = this.properties.getProperty(PATH);
 		}
