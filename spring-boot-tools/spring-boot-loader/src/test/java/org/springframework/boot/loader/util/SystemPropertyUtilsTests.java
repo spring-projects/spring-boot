@@ -19,7 +19,6 @@ package org.springframework.boot.loader.util;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,6 +50,11 @@ public class SystemPropertyUtilsTests {
 	@Test
 	public void testNestedPlaceholder() {
 		assertEquals("foo", SystemPropertyUtils.resolvePlaceholders("${bar:${spam:foo}}"));
+	}
+
+	@Test
+	public void testEnvVar() {
+		assertEquals(System.getenv("LANG"), SystemPropertyUtils.getProperty("lang"));
 	}
 
 }
