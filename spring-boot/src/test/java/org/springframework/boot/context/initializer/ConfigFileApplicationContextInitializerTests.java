@@ -105,6 +105,14 @@ public class ConfigFileApplicationContextInitializerTests {
 	}
 
 	@Test
+	public void profilePropertiesUsedInPlaceholders() throws Exception {
+		this.initializer.setNames("enableprofile");
+		this.initializer.initialize(this.context);
+		String property = this.context.getEnvironment().getProperty("one.more");
+		assertThat(property, equalTo("fromprofilepropertiesfile"));
+	}
+
+	@Test
 	public void yamlProfiles() throws Exception {
 		this.initializer.setNames("testprofiles");
 		this.context.getEnvironment().setActiveProfiles("dev");
