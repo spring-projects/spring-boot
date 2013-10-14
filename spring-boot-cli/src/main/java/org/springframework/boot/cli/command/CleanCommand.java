@@ -18,14 +18,13 @@ package org.springframework.boot.cli.command;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import org.apache.ivy.util.FileUtil;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.Log;
+import org.springframework.boot.cli.util.FileUtils;
 
 /**
  * {@link Command} to 'clean' up grapes, removing cached dependencies and forcing a
@@ -108,7 +107,7 @@ public class CleanCommand extends OptionParsingCommand {
 				return;
 			}
 
-			for (Object obj : FileUtil.listAll(file, Collections.emptyList())) {
+			for (Object obj : FileUtils.recursiveList(file)) {
 				File candidate = (File) obj;
 				if (candidate.getName().contains("SNAPSHOT")) {
 					delete(candidate);
@@ -118,7 +117,7 @@ public class CleanCommand extends OptionParsingCommand {
 
 		private void delete(File file) {
 			Log.info("Deleting: " + file);
-			FileUtil.forceDelete(file);
+			FileUtils.recursiveDelete(file);
 		}
 
 		private File getModulePath(File root, String group, String module, Layout layout) {

@@ -21,8 +21,8 @@ import groovy.lang.GroovyObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,13 +31,13 @@ import java.util.logging.Level;
 
 import joptsimple.OptionSet;
 
-import org.apache.ivy.util.FileUtil;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.springframework.boot.cli.Log;
 import org.springframework.boot.cli.command.tester.Failure;
 import org.springframework.boot.cli.command.tester.TestResults;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
+import org.springframework.boot.cli.util.FileUtils;
 
 /**
  * Invokes testing for auto-compiled scripts
@@ -179,9 +179,9 @@ public class TestCommand extends OptionParsingCommand {
 			try {
 				File file = File.createTempFile(name, ".groovy");
 				file.deleteOnExit();
-				InputStream resource = getClass().getClassLoader().getResourceAsStream(
+				URL resource = getClass().getClassLoader().getResource(
 						"testers/" + name + ".groovy");
-				FileUtil.copy(resource, file, null);
+				FileUtils.copy(resource, file);
 				return file;
 			}
 			catch (IOException ex) {

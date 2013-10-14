@@ -36,19 +36,73 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.3</version>
+		</dependency>
 		<!-- Compile -->
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.ivy</groupId>
-			<artifactId>ivy</artifactId>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-aether-provider</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>org.eclipse.sisu.plexus</artifactId>
+					<groupId>org.eclipse.sisu</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-settings-builder</artifactId>
+			<version>${maven.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy</artifactId>
 		</dependency>
+		<dependency>
+      		<groupId>org.eclipse.aether</groupId>
+      		<artifactId>aether-api</artifactId>
+   		</dependency>
+   		<dependency>
+      		<groupId>org.eclipse.aether</groupId>
+      		<artifactId>aether-connector-basic</artifactId>
+      		<version>${aether.version}</version>
+   		</dependency>
+   		<dependency>
+      		<groupId>org.eclipse.aether</groupId>
+      		<artifactId>aether-impl</artifactId>
+   		</dependency>
+   		<dependency>
+      		<groupId>org.eclipse.aether</groupId>
+      		<artifactId>aether-spi</artifactId>
+      		<version>${aether.version}</version>
+   		</dependency>
+   		<dependency>
+      		<groupId>org.eclipse.aether</groupId>
+      		<artifactId>aether-transport-file</artifactId>
+      		<version>${aether.version}</version>
+   		</dependency>
+    	<dependency>
+      		<groupId>org.eclipse.aether</groupId>
+      		<artifactId>aether-transport-http</artifactId>
+      		<version>${aether.version}</version>
+      		<exclusions>
+      			<exclusion>
+      				<artifactId>jcl-over-slf4j</artifactId>
+      				<groupId>org.slf4j</groupId>
+      			</exclusion>
+      		</exclusions>
+    	</dependency>
+    	<dependency>
+      		<groupId>org.eclipse.aether</groupId>
+      		<artifactId>aether-util</artifactId>
+   		</dependency>
 		<!-- Optional -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -78,6 +132,10 @@
 					<groupId>${project.groupId}</groupId>
 					<artifactId>spring-boot</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -95,9 +153,6 @@
                 <excludes>
                     <exclude>**/*.vpp</exclude>
                 </excludes>
-			</resource>
-			<resource>
-				<directory>${project.build.directory}/generated-resources</directory>
 			</resource>
 			<resource>
 				<directory>src/main/groovy</directory>
@@ -179,7 +234,7 @@
 				<executions>
 					<execution>
 						<id>generate-cli-properties</id>
-						<phase>generate-sources</phase>
+						<phase>compile</phase>
 						<configuration>
 							<target>
 								<typedef resource="foundrylogic/vpp/typedef.properties" />
@@ -187,7 +242,7 @@
 								<property name="dependencies" value="${project.parent}" />
 								<vppcopy
 									file="${basedir}/src/main/resources/META-INF/springcli.properties.vpp"
-									tofile="${project.build.directory}/generated-resources/META-INF/springcli.properties"
+									tofile="${project.build.directory}/classes/META-INF/springcli.properties"
 									overwrite="true" />
 							</target>
 						</configuration>
@@ -218,8 +273,7 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-antrun-plugin
-										</artifactId>
+										<artifactId>maven-antrun-plugin</artifactId>
 										<versionRange>[1.7,)</versionRange>
 										<goals>
 											<goal>run</goal>
