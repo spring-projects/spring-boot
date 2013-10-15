@@ -69,7 +69,7 @@ public abstract class SpringBootCondition implements Condition {
 			message.append("#");
 			message.append(methodMetadata.getMethodName());
 		}
-		message.append(result.isMatch() ? " matched" : "did not match");
+		message.append(result.isMatch() ? " matched" : " did not match");
 		if (StringUtils.hasLength(result.getMessage())) {
 			message.append(" due to ");
 			message.append(result.getMessage());
