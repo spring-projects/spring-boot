@@ -16,12 +16,34 @@
 
 package org.springframework.boot.gradle
 
+import org.springframework.boot.loader.tools.Layout
+import org.springframework.boot.loader.tools.Layouts
+
 /**
- * Gradle DSL Extension for 'Spring Boot'.
+ * Gradle DSL Extension for 'Spring Boot'.  Most of the time Spring Boot can guess the
+ * settings in this extension, but occasionally you might need to explicitly set one
+ * or two of them. E.g.
+ * 
+ * <pre>
+ *     apply plugin: "spring-boot"
+ *     springBoot {
+ *         mainClass = 'org.demo.Application'
+ *         layout = 'ZIP'
+ *     }
+ * </pre>
  *
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class SpringBootPluginExtension {
+
+	static enum LayoutType {
+		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(new Layouts.Expanded());
+		Layout layout;
+		private LayoutType(Layout layout) {
+			this.layout = layout;
+		}
+	}
 
 	/**
 	 * The main class that should be run. If not specified the value from the
@@ -31,7 +53,8 @@ public class SpringBootPluginExtension {
 	String mainClass
 
 	/**
-	 * The name of the provided configuration. If not specified 'providedRuntime' will
+	 * The name of the ivy configuration name to treat as 'provided' (when packaging 
+	 * those dependencies in a separate path). If not specified 'providedRuntime' will
 	 * be used.
 	 */
 	String providedConfiguration
@@ -40,4 +63,23 @@ public class SpringBootPluginExtension {
 	 * If the original source archive should be backed-up before being repackaged.
 	 */
 	boolean backupSource = true;
+
+	/**
+	 * The layout of the archive if it can't be derived from the file extension.
+	 * Valid values are JAR, WAR, ZIP, DIR (for exploded zip file). ZIP and DIR
+	 * are actually synonymous, and should be used if there is no MANIFEST.MF
+	 * available, or if you want the MANIFEST.MF 'Main-Class' to be 
+	 * PropertiesLauncher. Gradle will coerce literal String values to the 
+	 * correct type.
+	 */
+	LayoutType layout;
+
+	/**
+	 * Convenience method for use in a custom task.
+	 * 
+	 * @return the Layout to use or null if not explicitly set
+	 */
+	Layout convertLayout() {
+		layout==null ? null : layout.layout
+	}
 }

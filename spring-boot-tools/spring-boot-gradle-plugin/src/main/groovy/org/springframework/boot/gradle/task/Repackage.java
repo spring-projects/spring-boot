@@ -50,11 +50,13 @@ public class Repackage extends DefaultTask {
 				if (file.exists()) {
 					Repackager repackager = new Repackager(file);
 					repackager.setMainClass(extension.getMainClass());
+					if (extension.convertLayout() != null) {
+						repackager.setLayout(extension.convertLayout());
+					}
 					repackager.setBackupSource(extension.isBackupSource());
 					try {
 						repackager.repackage(libraries);
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						throw new IllegalStateException(ex.getMessage(), ex);
 					}
 				}

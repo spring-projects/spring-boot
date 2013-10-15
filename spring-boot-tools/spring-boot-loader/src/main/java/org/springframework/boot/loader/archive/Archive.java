@@ -47,9 +47,21 @@ public abstract class Archive {
 	 * @throws Exception
 	 */
 	public String getMainClass() throws Exception {
-		String mainClass = getManifest().getMainAttributes().getValue("Start-Class");
+		Manifest manifest = getManifest();
+		String mainClass = null;
+		if (manifest != null) {
+			mainClass = manifest.getMainAttributes().getValue("Start-Class");
+		}
 		if (mainClass == null) {
-			throw new IllegalStateException("No 'Start-Class' manifest entry specified");
+			String url = "UNKNOWN";
+			try {
+				url = getUrl().toString();
+			}
+			catch (Exception e) {
+				// ignore
+			}
+			throw new IllegalStateException(
+					"No 'Start-Class' manifest entry specified in " + url);
 		}
 		return mainClass;
 	}
