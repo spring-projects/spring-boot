@@ -300,28 +300,36 @@ public class PropertiesLauncher extends Launcher {
 	protected List<Archive> getClassPathArchives() throws Exception {
 		List<Archive> lib = new ArrayList<Archive>();
 		for (String path : this.paths) {
-			String root = cleanupPath(stripFileUrlPrefix(path));
-			File file = new File(root);
-			if (!root.startsWith("/")) {
-				file = new File(this.home, root);
-			}
-			if (file.isDirectory()) {
-				this.logger.info("Adding classpath entries from " + path);
-				Archive archive = new ExplodedArchive(file);
-				lib.addAll(archive.getNestedArchives(new EntryFilter() {
-					@Override
-					public boolean matches(Entry entry) {
-						return entry.isDirectory() || entry.getName().endsWith(".jar")
-								|| entry.getName().endsWith(".zip");
-					}
-				}));
-				lib.add(0, archive);
-			}
-			else {
-				this.logger.info("No directory found at " + path);
+			for (Archive archive : getClassPathArchives(path)) {
+				List<Archive> nested = new ArrayList<Archive>(
+						archive.getNestedArchives(new EntryFilter() {
+							@Override
+							public boolean matches(Entry entry) {
+								return entry.isDirectory()
+										|| entry.getName().endsWith(".jar")
+										|| entry.getName().endsWith(".zip");
+							}
+						}));
+				nested.add(0, archive);
+				lib.addAll(nested);
 			}
 		}
 		addParentClassLoaderEntries(lib);
+		return lib;
+	}
+
+	private List<Archive> getClassPathArchives(String path) {
+		String root = cleanupPath(stripFileUrlPrefix(path));
+		List<Archive> lib = new ArrayList<Archive>();
+		File file = new File(root);
+		if (!root.startsWith("/")) {
+			file = new File(this.home, root);
+		}
+		if (file.isDirectory()) {
+			this.logger.info("Adding classpath entries from " + file);
+			Archive archive = new ExplodedArchive(file);
+			lib.add(archive);
+		}
 		return lib;
 	}
 
