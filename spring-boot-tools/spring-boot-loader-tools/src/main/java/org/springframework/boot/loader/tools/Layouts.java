@@ -43,6 +43,9 @@ public class Layouts {
 		if (file.getName().toLowerCase().endsWith(".war")) {
 			return new War();
 		}
+		if (file.isDirectory() || file.getName().toLowerCase().endsWith(".zip")) {
+			return new Expanded();
+		}
 		throw new IllegalStateException("Unable to deduce layout for '" + file + "'");
 	}
 
@@ -65,6 +68,18 @@ public class Layouts {
 		public String getClassesLocation() {
 			return "";
 		}
+	}
+
+	/**
+	 * Executable expanded archive layout.
+	 */
+	public static class Expanded extends Jar {
+
+		@Override
+		public String getLauncherClassName() {
+			return "org.springframework.boot.loader.PropertiesLauncher";
+		}
+
 	}
 
 	/**

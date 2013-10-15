@@ -46,6 +46,10 @@ public class Verify {
 		new WarArchiveVerification(file).verify();
 	}
 
+	public static void verifyZip(File file) throws Exception {
+		new ZipArchiveVerification(file).verify();
+	}
+
 	private static abstract class AbstractArchiveVerification {
 
 		private File file;
@@ -147,6 +151,22 @@ public class Verify {
 		@Override
 		protected void verifyManifest(Manifest manifest) throws Exception {
 			assertEquals("org.springframework.boot.loader.WarLauncher", manifest
+					.getMainAttributes().getValue("Main-Class"));
+			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
+					.getValue("Start-Class"));
+			assertEquals("Foo", manifest.getMainAttributes().getValue("Not-Used"));
+		}
+	}
+
+	private static class ZipArchiveVerification extends AbstractArchiveVerification {
+
+		public ZipArchiveVerification(File file) {
+			super(file);
+		}
+
+		@Override
+		protected void verifyManifest(Manifest manifest) throws Exception {
+			assertEquals("org.springframework.boot.loader.PropertiesLauncher", manifest
 					.getMainAttributes().getValue("Main-Class"));
 			assertEquals("org.test.SampleApplication", manifest.getMainAttributes()
 					.getValue("Start-Class"));

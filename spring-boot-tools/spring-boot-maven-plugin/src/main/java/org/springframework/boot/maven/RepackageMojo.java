@@ -29,6 +29,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 
@@ -81,12 +83,22 @@ public class RepackageMojo extends AbstractMojo {
 	@Parameter
 	private String mainClass;
 
+	/**
+	 * The layout to use (JAR, WAR, ZIP, DIR) in case it cannot be inferred.
+	 */
+	@Parameter
+	private LayoutType layout;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
 		Repackager repackager = new Repackager(source);
 		repackager.setMainClass(this.mainClass);
+		if (this.layout != null) {
+			getLog().info("Layout: " + this.layout);
+			repackager.setLayout(this.layout.layout());
+		}
 		Libraries libraries = new ArtifactsLibraries(this.project.getArtifacts());
 		try {
 			repackager.repackage(target, libraries);
@@ -110,6 +122,20 @@ public class RepackageMojo extends AbstractMojo {
 		}
 		return new File(this.outputDirectory, this.finalName + classifier + "."
 				+ this.project.getPackaging());
+	}
+
+	public static enum LayoutType {
+		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(
+				new Layouts.Expanded());
+		private Layout layout;
+
+		public Layout layout() {
+			return this.layout;
+		}
+
+		private LayoutType(Layout layout) {
+			this.layout = layout;
+		}
 	}
 
 }
