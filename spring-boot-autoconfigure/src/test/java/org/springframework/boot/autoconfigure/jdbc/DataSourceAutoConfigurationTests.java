@@ -101,7 +101,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.database.schema",
+		map.put(DataSourceAutoConfiguration.CONFIGURATION_PREFIX + ".schema",
 				ClassUtils.addResourcePathToPackagePath(getClass(), "schema.sql"));
 		this.context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("test", map));
@@ -119,7 +119,7 @@ public class DataSourceAutoConfigurationTests {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.database.schema",
+		map.put(DataSourceAutoConfiguration.CONFIGURATION_PREFIX + ".schema",
 				ClassUtils.addResourcePathToPackagePath(getClass(), "schema.sql")
 						+ ","
 						+ ClassUtils.addResourcePathToPackagePath(getClass(),
