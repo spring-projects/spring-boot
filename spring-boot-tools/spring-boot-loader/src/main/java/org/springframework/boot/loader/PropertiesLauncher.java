@@ -21,10 +21,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,6 +39,7 @@ import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
+import org.springframework.boot.loader.archive.FilteredArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
@@ -286,14 +290,30 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected String getMainClass() throws Exception {
-		if (System.getProperty(MAIN) != null) {
-			return SystemPropertyUtils.resolvePlaceholders(System.getProperty(MAIN));
+		String property = SystemPropertyUtils.getProperty(MAIN);
+		if (property != null) {
+			String mainClass = SystemPropertyUtils.resolvePlaceholders(property);
+			this.logger.info("Main class from environment: " + mainClass);
+			return mainClass;
 		}
 		if (this.properties.containsKey(MAIN)) {
-			return SystemPropertyUtils.resolvePlaceholders(this.properties
+			String mainClass = SystemPropertyUtils.resolvePlaceholders(this.properties
 					.getProperty(MAIN));
+			this.logger.info("Main class from properties: " + mainClass);
+			return mainClass;
 		}
-		return new ExplodedArchive(this.home).getMainClass();
+		try {
+			// Prefer home dir for MANIFEST if there is one
+			String mainClass = new ExplodedArchive(this.home).getMainClass();
+			this.logger.info("Main class from home directory manifest: " + mainClass);
+			return mainClass;
+		}
+		catch (IllegalStateException e) {
+			// Otherwise try the parent archive
+			String mainClass = createArchive().getMainClass();
+			this.logger.info("Main class from archive manifest: " + mainClass);
+			return mainClass;
+		}
 	}
 
 	@Override
@@ -302,14 +322,7 @@ public class PropertiesLauncher extends Launcher {
 		for (String path : this.paths) {
 			for (Archive archive : getClassPathArchives(path)) {
 				List<Archive> nested = new ArrayList<Archive>(
-						archive.getNestedArchives(new EntryFilter() {
-							@Override
-							public boolean matches(Entry entry) {
-								return entry.isDirectory()
-										|| entry.getName().endsWith(".jar")
-										|| entry.getName().endsWith(".zip");
-							}
-						}));
+						archive.getNestedArchives(new ArchiveEntryFilter()));
 				nested.add(0, archive);
 				lib.addAll(nested);
 			}
@@ -318,7 +331,7 @@ public class PropertiesLauncher extends Launcher {
 		return lib;
 	}
 
-	private List<Archive> getClassPathArchives(String path) {
+	private List<Archive> getClassPathArchives(String path) throws Exception {
 		String root = cleanupPath(stripFileUrlPrefix(path));
 		List<Archive> lib = new ArrayList<Archive>();
 		File file = new File(root);
@@ -330,7 +343,44 @@ public class PropertiesLauncher extends Launcher {
 			Archive archive = new ExplodedArchive(file);
 			lib.add(archive);
 		}
+		Archive nested = getNestedArchive(root);
+		if (nested != null) {
+			this.logger.info("Adding classpath entries from nested " + nested.getUrl()
+					+ root);
+			lib.add(nested);
+		}
 		return lib;
+	}
+
+	private Archive getNestedArchive(final String root) throws Exception {
+		Archive parent = createArchive();
+		if (root.startsWith("/") || parent.getUrl().equals(this.home.toURI().toURL())) {
+			// If home dir is same as parent archive, no need to add it twice.
+			return null;
+		}
+		EntryFilter filter = new PrefixMatchingArchiveFilter(root);
+		if (parent.getNestedArchives(filter).isEmpty()) {
+			return null;
+		}
+		// If there are more archives nested in this subdirectory (root) then create a new
+		// virtual archive for them, and have it added to the classpath
+		return new FilteredArchive(parent, filter);
+	}
+
+	private Archive createArchive() throws Exception {
+		ProtectionDomain protectionDomain = getClass().getProtectionDomain();
+		CodeSource codeSource = protectionDomain.getCodeSource();
+		URI location = (codeSource == null ? null : codeSource.getLocation().toURI());
+		String path = (location == null ? null : location.getPath());
+		if (path == null) {
+			throw new IllegalStateException("Unable to determine code source archive");
+		}
+		File root = new File(path);
+		if (!root.exists()) {
+			throw new IllegalStateException(
+					"Unable to determine code source archive from " + root);
+		}
+		return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
 	}
 
 	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
@@ -364,6 +414,40 @@ public class PropertiesLauncher extends Launcher {
 
 	public static void main(String[] args) {
 		new PropertiesLauncher().launch(args);
+	}
+
+	/**
+	 * Convenience class for finding nested archives (archive entries that can be
+	 * classpath entries).
+	 * 
+	 * @author Dave Syer
+	 */
+	private static final class ArchiveEntryFilter implements EntryFilter {
+		@Override
+		public boolean matches(Entry entry) {
+			return entry.isDirectory() || entry.getName().endsWith(".jar")
+					|| entry.getName().endsWith(".zip");
+		}
+	}
+
+	/**
+	 * Convenience class for finding nested archives that have a prefix in their file path
+	 * (e.g. "lib/").
+	 * 
+	 * @author Dave Syer
+	 */
+	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
+		private final String prefix;
+		private final ArchiveEntryFilter filter = new ArchiveEntryFilter();
+
+		private PrefixMatchingArchiveFilter(String prefix) {
+			this.prefix = prefix;
+		}
+
+		@Override
+		public boolean matches(Entry entry) {
+			return entry.getName().startsWith(this.prefix) && this.filter.matches(entry);
+		}
 	}
 
 }
