@@ -27,7 +27,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "spring.datasource")
+@ConfigurationProperties(name = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 @EnableConfigurationProperties
 public abstract class AbstractDataSourceConfiguration implements BeanClassLoaderAware {
 

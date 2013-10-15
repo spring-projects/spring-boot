@@ -69,6 +69,8 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
+	public static final String CONFIGURATION_PREFIX = "spring.datasource";
+
 	@Autowired(required = false)
 	private DataSource dataSource;
 
@@ -79,7 +81,8 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment, "spring.database.");
+		this.environment = new RelaxedPropertyResolver(environment, CONFIGURATION_PREFIX
+				+ ".");
 	}
 
 	@PostConstruct
@@ -218,7 +221,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 		private String getDriverClassName(Environment environment, ClassLoader classLoader) {
 			String driverClassName = environment == null ? null : environment
-					.getProperty("spring.database.driverClassName");
+					.getProperty(CONFIGURATION_PREFIX + ".driverClassName");
 			if (driverClassName == null) {
 				driverClassName = EmbeddedDatabaseConnection.get(classLoader)
 						.getDriverClassName();
@@ -228,7 +231,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 		private String getUrl(Environment environment, ClassLoader classLoader) {
 			String url = (environment == null ? null : environment
-					.getProperty("spring.database.url"));
+					.getProperty(CONFIGURATION_PREFIX + ".url"));
 			if (url == null) {
 				url = EmbeddedDatabaseConnection.get(classLoader).getUrl();
 			}
