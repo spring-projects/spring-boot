@@ -64,7 +64,6 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class /* Spring JDBC */)
-@ConditionalOnMissingBean(DataSource.class)
 public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
@@ -138,16 +137,19 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 	}
 
 	@Conditional(DataSourceAutoConfiguration.EmbeddedDatabaseCondition.class)
+	@ConditionalOnMissingBean(DataSource.class)
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedConfiguration {
 	}
 
 	@Conditional(DataSourceAutoConfiguration.TomcatDatabaseCondition.class)
+	@ConditionalOnMissingBean(DataSource.class)
 	@Import(TomcatDataSourceConfiguration.class)
 	protected static class TomcatConfiguration {
 	}
 
 	@Conditional(DataSourceAutoConfiguration.BasicDatabaseCondition.class)
+	@ConditionalOnMissingBean(DataSource.class)
 	@Import(CommonsDataSourceConfiguration.class)
 	protected static class DbcpConfiguration {
 	}
