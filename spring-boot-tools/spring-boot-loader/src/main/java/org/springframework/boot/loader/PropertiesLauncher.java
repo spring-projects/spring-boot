@@ -419,8 +419,6 @@ public class PropertiesLauncher extends Launcher {
 	/**
 	 * Convenience class for finding nested archives (archive entries that can be
 	 * classpath entries).
-	 * 
-	 * @author Dave Syer
 	 */
 	private static final class ArchiveEntryFilter implements EntryFilter {
 		@Override
@@ -433,8 +431,6 @@ public class PropertiesLauncher extends Launcher {
 	/**
 	 * Convenience class for finding nested archives that have a prefix in their file path
 	 * (e.g. "lib/").
-	 * 
-	 * @author Dave Syer
 	 */
 	private static final class PrefixMatchingArchiveFilter implements EntryFilter {
 		private final String prefix;
