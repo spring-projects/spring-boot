@@ -20,19 +20,19 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
- * A {@link ZipInputStream} backed by {@link RandomAccessData}. Parsed entries provide
+ * A {@link JarInputStream} backed by {@link RandomAccessData}. Parsed entries provide
  * access to the underlying data {@link RandomAccessData#getSubsection(long, long)
  * subsection}.
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataZipInputStream extends ZipInputStream {
+public class RandomAccessDataJarInputStream extends JarInputStream {
 
 	private RandomAccessData data;
 
@@ -41,8 +41,9 @@ public class RandomAccessDataZipInputStream extends ZipInputStream {
 	/**
 	 * Create a new {@link RandomAccessData} instance.
 	 * @param data the source of the zip stream
+	 * @throws IOException
 	 */
-	public RandomAccessDataZipInputStream(RandomAccessData data) {
+	public RandomAccessDataJarInputStream(RandomAccessData data) throws IOException {
 		this(data, new TrackingInputStream(data.getInputStream()));
 	}
 
@@ -51,17 +52,18 @@ public class RandomAccessDataZipInputStream extends ZipInputStream {
 	 * {@link TrackingInputStream}.
 	 * @param data the source of the zip stream
 	 * @param trackingInputStream a tracking input stream
+	 * @throws IOException
 	 */
-	private RandomAccessDataZipInputStream(RandomAccessData data,
-			TrackingInputStream trackingInputStream) {
+	private RandomAccessDataJarInputStream(RandomAccessData data,
+			TrackingInputStream trackingInputStream) throws IOException {
 		super(trackingInputStream);
 		this.data = data;
 		this.trackingInputStream = trackingInputStream;
 	}
 
 	@Override
-	public RandomAccessDataZipEntry getNextEntry() throws IOException {
-		ZipEntry entry = super.getNextEntry();
+	public RandomAccessDataJarEntry getNextEntry() throws IOException {
+		JarEntry entry = (JarEntry) super.getNextEntry();
 		if (entry == null) {
 			return null;
 		}
@@ -69,7 +71,7 @@ public class RandomAccessDataZipInputStream extends ZipInputStream {
 		closeEntry();
 		int end = getPosition();
 		RandomAccessData entryData = this.data.getSubsection(start, end - start);
-		return new RandomAccessDataZipEntry(entry, entryData);
+		return new RandomAccessDataJarEntry(entry, entryData);
 	}
 
 	private int getPosition() throws IOException {

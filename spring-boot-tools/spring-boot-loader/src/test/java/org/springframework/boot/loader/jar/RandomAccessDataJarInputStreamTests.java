@@ -32,15 +32,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
-import org.springframework.boot.loader.jar.RandomAccessDataZipEntry;
-import org.springframework.boot.loader.jar.RandomAccessDataZipInputStream;
+import org.springframework.boot.loader.jar.RandomAccessDataJarEntry;
+import org.springframework.boot.loader.jar.RandomAccessDataJarInputStream;
 
 /**
- * Tests for {@link RandomAccessDataZipInputStream}.
+ * Tests for {@link RandomAccessDataJarInputStream}.
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataZipInputStreamTests {
+public class RandomAccessDataJarInputStreamTests {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -76,11 +76,11 @@ public class RandomAccessDataZipInputStreamTests {
 
 	@Test
 	public void entryData() throws Exception {
-		RandomAccessDataZipInputStream z = new RandomAccessDataZipInputStream(
+		RandomAccessDataJarInputStream z = new RandomAccessDataJarInputStream(
 				new RandomAccessDataFile(file));
 		try {
-			RandomAccessDataZipEntry entry1 = z.getNextEntry();
-			RandomAccessDataZipEntry entry2 = z.getNextEntry();
+			RandomAccessDataJarEntry entry1 = z.getNextEntry();
+			RandomAccessDataJarEntry entry2 = z.getNextEntry();
 			assertThat(entry1.getName(), equalTo("a"));
 			assertThat(entry1.getData().getSize(), equalTo(10L));
 			assertThat(entry2.getName(), equalTo("b"));

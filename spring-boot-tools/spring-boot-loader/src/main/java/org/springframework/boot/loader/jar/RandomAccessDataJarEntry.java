@@ -16,25 +16,25 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.util.zip.ZipEntry;
+import java.util.jar.JarEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
- * A {@link ZipEntry} returned from a {@link RandomAccessDataZipInputStream}.
+ * A {@link JarEntry} returned from a {@link RandomAccessDataJarInputStream}.
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataZipEntry extends ZipEntry {
+public class RandomAccessDataJarEntry extends JarEntry {
 
 	private RandomAccessData data;
 
 	/**
-	 * Create new {@link RandomAccessDataZipEntry} instance.
-	 * @param entry the underying {@link ZipEntry}
+	 * Create new {@link RandomAccessDataJarEntry} instance.
+	 * @param entry the underlying {@link JarEntry}
 	 * @param data the entry data
 	 */
-	public RandomAccessDataZipEntry(ZipEntry entry, RandomAccessData data) {
+	public RandomAccessDataJarEntry(JarEntry entry, RandomAccessData data) {
 		super(entry);
 		this.data = data;
 	}
@@ -44,6 +44,6 @@ public class RandomAccessDataZipEntry extends ZipEntry {
 	 * @return the entry data
 	 */
 	public RandomAccessData getData() {
-		return data;
+		return this.data;
 	}
 }

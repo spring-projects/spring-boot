@@ -16,7 +16,7 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,14 +31,15 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import org.springframework.boot.loader.data.ByteArrayRandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
@@ -62,6 +63,9 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  * @author Phillip Webb
  */
 public class RandomAccessJarFile extends JarFile {
+
+	private static final RandomAccessData EMPTY_DATA = new ByteArrayRandomAccessData(
+			new byte[0]);
 
 	private final RandomAccessDataFile rootJarFile;
 
@@ -113,19 +117,17 @@ public class RandomAccessJarFile extends JarFile {
 		this.data = data;
 		this.size = data.getSize();
 
-		RandomAccessDataZipInputStream inputStream = new RandomAccessDataZipInputStream(
+		RandomAccessDataJarInputStream inputStream = new RandomAccessDataJarInputStream(
 				data);
 		try {
-			RandomAccessDataZipEntry zipEntry = inputStream.getNextEntry();
+			RandomAccessDataJarEntry zipEntry = inputStream.getNextEntry();
 			while (zipEntry != null) {
 				addJarEntry(zipEntry, filters);
 				zipEntry = inputStream.getNextEntry();
 			}
-			this.manifest = findManifest();
+			this.manifest = inputStream.getManifest();
 			if (this.manifest != null) {
-				for (JarEntry containedEntry : this.entries.values()) {
-					((Entry) containedEntry).configure(this.manifest);
-				}
+				addManifestEntries(filters);
 			}
 		}
 		finally {
@@ -133,7 +135,36 @@ public class RandomAccessJarFile extends JarFile {
 		}
 	}
 
-	private void addJarEntry(RandomAccessDataZipEntry zipEntry, JarEntryFilter... filters) {
+	private void addManifestEntries(JarEntryFilter... filters) throws IOException {
+
+		Map<String, JarEntry> originalEntries = this.entries;
+		this.entries = new LinkedHashMap<String, JarEntry>();
+
+		ZipInputStream zipInputStream = new ZipInputStream(this.data.getInputStream());
+		try {
+			JarEntry entry;
+			do {
+				entry = new JarEntry(zipInputStream.getNextEntry());
+				entry.setMethod(ZipEntry.STORED);
+				RandomAccessData data = EMPTY_DATA;
+				if (MANIFEST_NAME.equals(entry.getName())) {
+					ByteArrayOutputStream manifestBytes = new ByteArrayOutputStream();
+					this.manifest.write(manifestBytes);
+					manifestBytes.close();
+					data = new ByteArrayRandomAccessData(manifestBytes.toByteArray());
+				}
+				addJarEntry(new RandomAccessDataJarEntry(entry, data), filters);
+			}
+			while (!MANIFEST_NAME.equals(entry.getName()));
+
+			this.entries.putAll(originalEntries);
+		}
+		finally {
+			zipInputStream.close();
+		}
+	}
+
+	private void addJarEntry(RandomAccessDataJarEntry zipEntry, JarEntryFilter... filters) {
 		Entry jarEntry = new Entry(zipEntry);
 		String name = zipEntry.getName();
 		for (JarEntryFilter filter : filters) {
@@ -143,16 +174,6 @@ public class RandomAccessJarFile extends JarFile {
 			jarEntry.setName(name);
 			this.entries.put(name, jarEntry);
 		}
-	}
-
-	private Manifest findManifest() throws IOException {
-		ZipEntry manifestEntry = getEntry(MANIFEST_NAME);
-		if (manifestEntry != null) {
-			BufferedInputStream inputStream = new BufferedInputStream(
-					getInputStream(manifestEntry));
-			return new Manifest(inputStream);
-		}
-		return null;
 	}
 
 	protected final RandomAccessDataFile getRootJarFile() {
@@ -305,15 +326,9 @@ public class RandomAccessJarFile extends JarFile {
 
 		private RandomAccessData entryData;
 
-		private Attributes attributes;
-
-		public Entry(RandomAccessDataZipEntry entry) {
+		public Entry(RandomAccessDataJarEntry entry) {
 			super(entry);
 			this.entryData = entry.getData();
-		}
-
-		void configure(Manifest manifest) {
-			this.attributes = manifest.getAttributes(getName());
 		}
 
 		void setName(String name) {
@@ -323,11 +338,6 @@ public class RandomAccessJarFile extends JarFile {
 		@Override
 		public String getName() {
 			return (this.name == null ? super.getName() : this.name);
-		}
-
-		@Override
-		public Attributes getAttributes() throws IOException {
-			return this.attributes;
 		}
 
 		public RandomAccessData getData() {
