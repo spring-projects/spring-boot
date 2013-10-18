@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 import org.junit.Before;
@@ -89,6 +90,13 @@ public class RandomAccessJarFileTests {
 	public void getManifest() throws Exception {
 		assertThat(this.jarFile.getManifest().getMainAttributes().getValue("Built-By"),
 				equalTo("j1"));
+	}
+
+	@Test
+	public void getManifestEntry() throws Exception {
+		ZipEntry entry = this.jarFile.getJarEntry("META-INF/MANIFEST.MF");
+		Manifest manifest = new Manifest(this.jarFile.getInputStream(entry));
+		assertThat(manifest.getMainAttributes().getValue("Built-By"), equalTo("j1"));
 	}
 
 	@Test
