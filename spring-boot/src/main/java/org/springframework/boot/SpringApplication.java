@@ -19,8 +19,13 @@ package org.springframework.boot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -43,6 +48,8 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -162,7 +169,9 @@ public class SpringApplication {
 
 	private List<ApplicationContextInitializer<?>> initializers;
 
-	private String[] defaultArgs;
+	private Map<String, Object> defaultProperties;
+
+	private Set<String> profiles = new HashSet<String>();
 
 	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
@@ -255,6 +264,9 @@ public class SpringApplication {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		addPropertySources(environment, args);
+		for (String profile : this.profiles) {
+			environment.addActiveProfile(profile);
+		}
 
 		// Call all remaining initializers
 		callEnvironmentAwareSpringApplicationInitializers(args, environment);
@@ -321,12 +333,11 @@ public class SpringApplication {
 	 * @param args run arguments
 	 */
 	protected void addPropertySources(ConfigurableEnvironment environment, String[] args) {
+		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
+			environment.getPropertySources().addLast(
+					new MapPropertySource("defaultProperties", this.defaultProperties));
+		}
 		if (this.addCommandLineProperties) {
-			if (this.defaultArgs != null) {
-				environment.getPropertySources().addFirst(
-						new SimpleCommandLinePropertySource("defaultCommandLineArgs",
-								this.defaultArgs));
-			}
 			environment.getPropertySources().addFirst(
 					new SimpleCommandLinePropertySource(args));
 		}
@@ -557,13 +568,34 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Set default arguments which will be used in addition to those specified to the
-	 * {@code run} methods. Default arguments can always be overridden by user defined
-	 * arguments..
-	 * @param defaultArgs the default args to set
+	 * Set default environment properties which will be used in addition to those in the
+	 * existing {@link Environment}.
+	 * @param defaultProperties the additional properties to set
 	 */
-	public void setDefaultArgs(String... defaultArgs) {
-		this.defaultArgs = defaultArgs;
+	public void setDefaultProperties(Map<String, Object> defaultProperties) {
+		this.defaultProperties = defaultProperties;
+	}
+
+	/**
+	 * Convenient alternative to {@link #setDefaultProperties(Map)}.
+	 * 
+	 * @param defaultProperties some {@link Properties}
+	 */
+	public void setDefaultProperties(Properties defaultProperties) {
+		this.defaultProperties = new HashMap<String, Object>();
+		for (Object key : Collections.list(defaultProperties.propertyNames())) {
+			this.defaultProperties.put((String) key, defaultProperties.get(key));
+		}
+	}
+
+	/**
+	 * Set additional profile values to use (on top of those set in system or command line
+	 * properties).
+	 * 
+	 * @param profiles the additional profiles to set
+	 */
+	public void setAdditionalProfiles(Collection<String> profiles) {
+		this.profiles = new LinkedHashSet<String>(profiles);
 	}
 
 	/**

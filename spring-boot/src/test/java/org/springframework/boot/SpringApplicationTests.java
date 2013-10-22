@@ -49,6 +49,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -301,7 +302,8 @@ public class SpringApplicationTests {
 	@Test
 	public void defaultCommandLineArgs() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setDefaultArgs("--baz", "--bar=spam", "bucket");
+		application.setDefaultProperties(StringUtils.splitArrayElementsIntoProperties(
+				new String[] { "baz=", "bar=spam" }, "="));
 		application.setWebEnvironment(false);
 		this.context = application.run("--bar=foo", "bucket", "crap");
 		assertThat(this.context, instanceOf(AnnotationConfigApplicationContext.class));

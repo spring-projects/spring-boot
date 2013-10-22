@@ -16,7 +16,11 @@
 package org.springframework.boot.builder;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,7 +33,6 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.StringUtils;
 
 /**
  * Builder for {@link SpringApplication} and {@link ApplicationContext} instances with
@@ -62,8 +65,9 @@ public class SpringApplicationBuilder {
 	private SpringApplicationBuilder parent;
 	private AtomicBoolean running = new AtomicBoolean(false);
 	private Set<Object> sources = new LinkedHashSet<Object>();
-	private Set<String> defaultArgs = new LinkedHashSet<String>();
+	private Map<String, Object> defaultProperties = new LinkedHashMap<String, Object>();
 	private ConfigurableEnvironment environment;
+	private Set<String> additionalProfiles = new LinkedHashSet<String>();
 
 	public SpringApplicationBuilder(Object... sources) {
 		this.application = new SpringApplication(sources);
@@ -134,8 +138,8 @@ public class SpringApplicationBuilder {
 		child.sources(sources);
 
 		// Copy environment stuff from parent to child
-		child.defaultArgs(this.defaultArgs.toArray(new String[this.defaultArgs.size()]))
-				.environment(this.environment);
+		child.properties(this.defaultProperties).environment(this.environment)
+				.additionalProfiles(this.additionalProfiles);
 		child.parent = this;
 
 		// It's not possible if embedded containers are enabled to support web contexts as
@@ -163,7 +167,7 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder parent(Object... sources) {
 		if (this.parent == null) {
 			this.parent = new SpringApplicationBuilder(sources).web(false)
-					.defaultArgs(this.defaultArgs).environment(this.environment);
+					.properties(this.defaultProperties).environment(this.environment);
 		}
 		else {
 			this.parent.sources(sources);
@@ -315,39 +319,66 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Default command line arguments (overridden by explicit arguments at runtime in
-	 * {@link #run(String...)}).
+	 * Default properties for the environment in the form <code>key=value</code> or
+	 * <code>key:value</code>.
 	 * 
-	 * @param defaultArgs the args to set.
+	 * @param defaultProperties the properties to set.
 	 * @return the current builder
 	 */
-	public SpringApplicationBuilder defaultArgs(String... defaultArgs) {
-		this.defaultArgs.addAll(Arrays.asList(defaultArgs));
-		this.application.setDefaultArgs(this.defaultArgs
-				.toArray(new String[this.defaultArgs.size()]));
+	public SpringApplicationBuilder properties(String... defaultProperties) {
+		this.defaultProperties.putAll(getMapFromKeyValuePairs(defaultProperties));
+		this.application.setDefaultProperties(this.defaultProperties);
 		if (this.parent != null) {
-			this.parent.defaultArgs(defaultArgs);
+			this.parent.properties(defaultProperties);
 			this.parent.environment(this.environment);
 		}
 		return this;
 	}
 
-	private SpringApplicationBuilder defaultArgs(Set<String> defaultArgs) {
-		this.defaultArgs = defaultArgs;
+	private Map<String, Object> getMapFromKeyValuePairs(String[] args) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (String pair : args) {
+			int index = pair.indexOf(":");
+			if (index <= 0) {
+				index = pair.indexOf("=");
+			}
+			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String value = index > 0 ? pair.substring(index + 1) : "";
+			map.put(key, value);
+		}
+		return map;
+	}
+
+	/**
+	 * Default properties for the environment. Multiple calls to this method are
+	 * cumulative.
+	 * 
+	 * @param defaults
+	 * @return the current builder
+	 * 
+	 * @see SpringApplicationBuilder#properties(String...)
+	 */
+	public SpringApplicationBuilder properties(Map<String, Object> defaults) {
+		this.defaultProperties.putAll(defaults);
 		return this;
 	}
 
 	/**
-	 * Set the active Spring profiles for this app (and its parent and children).
-	 * Synonymous with {@link #defaultArgs(String...)
-	 * defaultArgs("--spring.profiles.active=[profiles]")}
+	 * Add to the active Spring profiles for this app (and its parent and children).
 	 * 
-	 * @param profiles the profiles to set.
+	 * @param profiles the profiles to add.
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder profiles(String... profiles) {
-		defaultArgs("--spring.profiles.active="
-				+ StringUtils.arrayToCommaDelimitedString(profiles));
+		this.additionalProfiles.addAll(Arrays.asList(profiles));
+		this.application.setAdditionalProfiles(this.additionalProfiles);
+		return this;
+	}
+
+	private SpringApplicationBuilder additionalProfiles(
+			Collection<String> additionalProfiles) {
+		this.additionalProfiles = new LinkedHashSet<String>(additionalProfiles);
+		this.application.setAdditionalProfiles(additionalProfiles);
 		return this;
 	}
 

@@ -18,8 +18,10 @@ package org.springframework.boot.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -34,7 +36,6 @@ import org.springframework.test.context.support.AbstractContextLoader;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
@@ -63,16 +64,15 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		SpringApplication application = new SpringApplication();
 		application.setSources(sources);
 
-		Set<String> args = new LinkedHashSet<String>();
+		Map<String, Object> args = new LinkedHashMap<String, Object>();
 		if (!ObjectUtils.isEmpty(mergedConfig.getActiveProfiles())) {
-			args.add("--spring.profiles.active="
-					+ StringUtils.arrayToCommaDelimitedString(mergedConfig
-							.getActiveProfiles()));
+			application.setAdditionalProfiles(Arrays.asList(mergedConfig
+					.getActiveProfiles()));
 		}
 		// Not running an embedded server, just setting up web context
-		args.add("--server.port=0");
-		args.add("--management.port=0");
-		application.setDefaultArgs(args.toArray(new String[args.size()]));
+		args.put("server.port", "0");
+		args.put("management.port", "0");
+		application.setDefaultProperties(args);
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
 				application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> type : mergedConfig
