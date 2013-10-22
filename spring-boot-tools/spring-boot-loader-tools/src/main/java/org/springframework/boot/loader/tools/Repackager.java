@@ -18,8 +18,6 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -35,9 +33,7 @@ public class Repackager {
 
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
-	private static final String GIT_COMMIT_ATTRIBUTE = "Spring-Boot-Commit-Id";
-
-	private static final String GIT_COMMIT_PROPERTY = "git.commit.id";
+	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
 
 	private String mainClass;
 
@@ -182,21 +178,10 @@ public class Repackager {
 		manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE,
 				this.layout.getLauncherClassName());
 		manifest.getMainAttributes().putValue(START_CLASS_ATTRIBUTE, startClass);
-		Properties gitProperties = new Properties();
-		try {
-			InputStream resource = getClass().getResourceAsStream(
-					"/org/springframework/boot/git.properties");
-			if (resource != null) {
-				gitProperties.load(resource);
-			}
-		}
-		catch (IOException e) {
-			// ignore
-		}
-		if (gitProperties.getProperty(GIT_COMMIT_PROPERTY) != null) {
-			manifest.getMainAttributes().putValue(GIT_COMMIT_ATTRIBUTE,
-					gitProperties.getProperty(GIT_COMMIT_PROPERTY));
-		}
+
+		String bootVersion = getClass().getPackage().getImplementationVersion();
+		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
+
 		return manifest;
 	}
 
