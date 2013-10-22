@@ -17,13 +17,11 @@
 package org.springframework.boot.cli;
 
 import java.io.File;
-import java.net.URL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.ivy.util.FileUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,6 +31,8 @@ import org.junit.Test;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
+import org.springframework.boot.cli.util.FileUtils;
+import org.springframework.boot.cli.util.IoUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -129,35 +129,30 @@ public class SampleIntegrationTests {
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
-		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
-				.openStream());
+		String result = IoUtils.readEntirely("http://localhost:8080");
 		assertEquals("World!", result);
 	}
 
 	@Test
 	public void webSample() throws Exception {
 		start("samples/web.groovy");
-		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
-				.openStream());
+		String result = IoUtils.readEntirely("http://localhost:8080");
 		assertEquals("World!", result);
 	}
 
 	@Test
 	public void uiSample() throws Exception {
 		start("samples/ui.groovy", "--classpath=.:src/test/resources");
-		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
-				.openStream());
+		String result = IoUtils.readEntirely("http://localhost:8080");
 		assertTrue("Wrong output: " + result, result.contains("Hello World"));
-		result = FileUtil.readEntirely(new URL(
-				"http://localhost:8080/css/bootstrap.min.css").openStream());
+		result = IoUtils.readEntirely("http://localhost:8080/css/bootstrap.min.css");
 		assertTrue("Wrong output: " + result, result.contains("container"));
 	}
 
 	@Test
 	public void actuatorSample() throws Exception {
 		start("samples/actuator.groovy");
-		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
-				.openStream());
+		String result = IoUtils.readEntirely("http://localhost:8080");
 		assertEquals("{\"message\":\"Hello World!\"}", result);
 	}
 
@@ -195,7 +190,7 @@ public class SampleIntegrationTests {
 		String output = this.outputCapture.getOutputAndRelease();
 		assertTrue("Wrong output: " + output,
 				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
-		FileUtil.forceDelete(new File("activemq-data")); // cleanup ActiveMQ cruft
+		FileUtils.recursiveDelete(new File("activemq-data")); // cleanup ActiveMQ cruft
 	}
 
 	@Test
@@ -211,8 +206,7 @@ public class SampleIntegrationTests {
 	@Test
 	public void deviceSample() throws Exception {
 		start("samples/device.groovy");
-		String result = FileUtil.readEntirely(new URL("http://localhost:8080")
-				.openStream());
+		String result = IoUtils.readEntirely("http://localhost:8080");
 		assertEquals("Hello Normal Device!", result);
 	}
 

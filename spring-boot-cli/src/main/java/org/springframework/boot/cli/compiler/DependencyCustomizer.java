@@ -16,42 +16,42 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.grape.Grape;
-import groovy.lang.Grapes;
+import groovy.lang.Grab;
 import groovy.lang.GroovyClassLoader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.codehaus.groovy.ast.AnnotationNode;
+import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.ModuleNode;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
 
 /**
- * Customizer that allows dependencies to be added during compilation. Delegates to Groovy
- * {@link Grapes} to actually resolve dependencies. This class provides a fluent API for
- * conditionally adding dependencies. For example:
- * {@code dependencies.ifMissing("com.corp.SomeClass").add(group, module, version)}.
+ * Customizer that allows dependencies to be added during compilation. Adding a dependency
+ * results in a {@link Grab @Grab} annotation being added to the primary {@link ClassNode
+ * class} is the {@link ModuleNode module} that's being customized.
+ * <p>
+ * This class provides a fluent API for conditionally adding dependencies. For example:
+ * {@code dependencies.ifMissing("com.corp.SomeClass").add(module)}.
  * 
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class DependencyCustomizer {
 
 	private final GroovyClassLoader loader;
 
-	private final List<Map<String, Object>> dependencies;
+	private final ClassNode classNode;
 
 	private final ArtifactCoordinatesResolver artifactCoordinatesResolver;
 
 	/**
-	 * Create a new {@link DependencyCustomizer} instance. The {@link #call()} method must
-	 * be used to actually resolve dependencies.
+	 * Create a new {@link DependencyCustomizer} instance.
 	 * @param loader
 	 */
-	public DependencyCustomizer(GroovyClassLoader loader,
+	public DependencyCustomizer(GroovyClassLoader loader, ModuleNode moduleNode,
 			ArtifactCoordinatesResolver artifactCoordinatesResolver) {
 		this.loader = loader;
+		this.classNode = moduleNode.getClasses().get(0);
 		this.artifactCoordinatesResolver = artifactCoordinatesResolver;
-		this.dependencies = new ArrayList<Map<String, Object>>();
 	}
 
 	/**
@@ -60,8 +60,8 @@ public class DependencyCustomizer {
 	 */
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
+		this.classNode = parent.classNode;
 		this.artifactCoordinatesResolver = parent.artifactCoordinatesResolver;
-		this.dependencies = parent.dependencies;
 	}
 
 	public String getVersion(String artifactId) {
@@ -177,38 +177,6 @@ public class DependencyCustomizer {
 	}
 
 	/**
-	 * Create a nested {@link DependencyCustomizer} that only applies the specified one
-	 * was not yet added.
-	 * @return a nested {@link DependencyCustomizer}
-	 */
-	public DependencyCustomizer ifNotAdded(final String group, final String module) {
-		return new DependencyCustomizer(this) {
-			@Override
-			protected boolean canAdd() {
-				if (DependencyCustomizer.this.contains(group, module)) {
-					return false;
-				}
-				return DependencyCustomizer.this.canAdd();
-			}
-		};
-	}
-
-	/**
-	 * @param group the group ID
-	 * @param module the module ID
-	 * @return true if this module is already in the dependencies
-	 */
-	protected boolean contains(String group, String module) {
-		for (Map<String, Object> dependency : this.dependencies) {
-			if (group.equals(dependency.get("group"))
-					&& module.equals(dependency.get("module"))) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Add a single dependency and all of its dependencies. The group ID and version of
 	 * the dependency are resolves using the customizer's
 	 * {@link ArtifactCoordinatesResolver}.
@@ -234,28 +202,24 @@ public class DependencyCustomizer {
 				this.artifactCoordinatesResolver.getVersion(module), transitive);
 	}
 
-	@SuppressWarnings("unchecked")
 	private DependencyCustomizer add(String group, String module, String version,
 			boolean transitive) {
 		if (canAdd()) {
-			Map<String, Object> dependency = new HashMap<String, Object>();
-			dependency.put("group", group);
-			dependency.put("module", module);
-			dependency.put("version", version);
-			dependency.put("transitive", transitive);
-			return add(dependency);
+			this.classNode.addAnnotation(createGrabAnnotation(group, module, version,
+					transitive));
 		}
 		return this;
 	}
 
-	/**
-	 * Add a dependencies.
-	 * @param dependencies a map of the dependencies to add.
-	 * @return this {@link DependencyCustomizer} for continued use
-	 */
-	public DependencyCustomizer add(Map<String, Object>... dependencies) {
-		this.dependencies.addAll(Arrays.asList(dependencies));
-		return this;
+	private AnnotationNode createGrabAnnotation(String group, String module,
+			String version, boolean transitive) {
+		AnnotationNode annotationNode = new AnnotationNode(new ClassNode(Grab.class));
+		annotationNode.addMember("group", new ConstantExpression(group));
+		annotationNode.addMember("module", new ConstantExpression(module));
+		annotationNode.addMember("version", new ConstantExpression(version));
+		annotationNode.addMember("transitive", new ConstantExpression(transitive));
+		annotationNode.addMember("initClass", new ConstantExpression(false));
+		return annotationNode;
 	}
 
 	/**
@@ -264,14 +228,5 @@ public class DependencyCustomizer {
 	 */
 	protected boolean canAdd() {
 		return true;
-	}
-
-	/**
-	 * Apply the dependencies.
-	 */
-	void call() {
-		HashMap<String, Object> args = new HashMap<String, Object>();
-		args.put("classLoader", this.loader);
-		Grape.grab(args, this.dependencies.toArray(new Map[this.dependencies.size()]));
 	}
 }
