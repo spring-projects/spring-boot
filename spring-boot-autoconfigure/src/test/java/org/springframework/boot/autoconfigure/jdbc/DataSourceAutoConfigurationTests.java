@@ -157,7 +157,7 @@ public class DataSourceAutoConfigurationTests {
 		public DataSource dataSource() {
 			this.pool = new BasicDataSource();
 			this.pool.setDriverClassName("org.hsqldb.jdbcDriver");
-			this.pool.setUrl("jdbc:hsqldb:overridedb");
+			this.pool.setUrl("jdbc:hsqldb:target/overridedb");
 			this.pool.setUsername("sa");
 			return this.pool;
 		}
