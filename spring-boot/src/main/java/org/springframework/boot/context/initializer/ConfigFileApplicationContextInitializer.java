@@ -125,6 +125,8 @@ public class ConfigFileApplicationContextInitializer implements
 
 		List<String> candidates = getCandidateLocations();
 		Collections.reverse(candidates);
+		PropertySource<?> removed = environment.getPropertySources().remove(
+				"defaultProperties");
 
 		List<PropertySource<?>> sources = new ArrayList<PropertySource<?>>();
 		// Initial load allows profiles to be activated
@@ -149,6 +151,10 @@ public class ConfigFileApplicationContextInitializer implements
 		// Originals go at the end so they don't override the specific profiles
 		for (PropertySource<?> source : sources) {
 			environment.getPropertySources().addLast(source);
+		}
+
+		if (removed != null) {
+			environment.getPropertySources().addLast(removed);
 		}
 	}
 

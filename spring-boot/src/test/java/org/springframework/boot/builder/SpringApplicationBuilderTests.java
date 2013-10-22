@@ -18,7 +18,6 @@ package org.springframework.boot.builder;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -48,14 +47,15 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	public void profileAndDefaultArgs() throws Exception {
+	public void profileAndProperties() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder()
 				.sources(ExampleConfig.class)
 				.contextClass(StaticApplicationContext.class).profiles("foo")
-				.defaultArgs("--foo=bar");
+				.properties("foo=bar");
 		this.context = application.run();
 		assertThat(this.context, is(instanceOf(StaticApplicationContext.class)));
-		assertThat(this.context.getEnvironment().getProperty("foo"), is(equalTo("bar")));
+		assertThat(this.context.getEnvironment().getProperty("foo"),
+				is(equalTo("bucket")));
 		assertThat(this.context.getEnvironment().acceptsProfiles("foo"), is(true));
 	}
 
@@ -90,7 +90,7 @@ public class SpringApplicationBuilderTests {
 	@Test
 	public void parentFirstCreationWithProfileAndDefaultArgs() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
-				ExampleConfig.class).profiles("node").defaultArgs("--transport=redis")
+				ExampleConfig.class).profiles("node").properties("transport=redis")
 				.child(ChildConfig.class).web(false);
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().acceptsProfiles("node"), is(true));
