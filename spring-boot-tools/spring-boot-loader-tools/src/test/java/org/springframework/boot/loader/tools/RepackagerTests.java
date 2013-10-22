@@ -18,6 +18,7 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -27,11 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Libraries;
-import org.springframework.boot.loader.tools.LibraryCallback;
-import org.springframework.boot.loader.tools.LibraryScope;
-import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 
@@ -256,6 +252,18 @@ public class RepackagerTests {
 		assertThat(hasEntry(file, "test/" + libJarFile.getName()), equalTo(true));
 		assertThat(getManifest(file).getMainAttributes().getValue("Main-Class"),
 				equalTo("testLauncher"));
+	}
+
+	@Test
+	public void springBootVersion() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		repackager.repackage(NO_LIBRARIES);
+		Manifest actualManifest = getManifest(file);
+		assertThat(
+				actualManifest.getMainAttributes().containsKey(
+						new Attributes.Name("Spring-Boot-Version")), equalTo(true));
 	}
 
 	@Test
