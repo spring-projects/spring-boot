@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -57,7 +56,6 @@ import static org.junit.Assert.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  */
-@Ignore
 public class WebMvcAutoConfigurationTests {
 
 	private static final MockEmbeddedServletContainerFactory containerFactory = new MockEmbeddedServletContainerFactory();
