@@ -23,13 +23,11 @@
 			<directoryMode>755</directoryMode>
 		</fileSet>
 	</fileSets>
-	<dependencySets>
-		<dependencySet>
-			<includes>
-				<include>org.springframework.boot:spring-boot-cli:jar:*</include>
-			</includes>
-			<outputDirectory>lib</outputDirectory>
-			<directoryMode>755</directoryMode>
-		</dependencySet>
-	</dependencySets>
+	<files>
+		<file>
+			<source>${project.build.directory}/${project.artifactId}-${project.version}-repackaged.jar</source>
+			<outputDirectory>/lib</outputDirectory>
+			<destName>${project.build.finalName}.jar</destName>
+		</file>
+	</files>
 </assembly>

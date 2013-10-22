@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.grape.GrapeEngine;
+import groovy.lang.GroovyClassLoader;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -52,8 +53,6 @@ import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.spi.log.Logger;
-import org.eclipse.aether.spi.log.LoggerFactory;
 import org.eclipse.aether.transfer.AbstractTransferListener;
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
@@ -78,13 +77,13 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private static final String DEPENDENCY_VERSION = "version";
 
-	private final ProgressReporter progressReporter = new ProgressReporter();
+	private final Artifact parentArtifact;
 
-	private final ArtifactCoordinatesResolver artifactCoordinatesResolver;
+	private final ProgressReporter progressReporter = new ProgressReporter();
 
 	private final ArtifactDescriptorReader artifactDescriptorReader;
 
-	private final ExtendedGroovyClassLoader defaultClassLoader;
+	private final GroovyClassLoader defaultClassLoader;
 
 	private final RepositorySystemSession repositorySystemSession;
 
@@ -92,14 +91,14 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private final List<RemoteRepository> repositories;
 
-	public AetherGrapeEngine(ExtendedGroovyClassLoader classLoader,
-			ArtifactCoordinatesResolver artifactCoordinatesResolver) {
+	public AetherGrapeEngine(GroovyClassLoader classLoader, String parentGroupId,
+			String parentArtifactId, String parentVersion) {
 		this.defaultClassLoader = classLoader;
-		this.artifactCoordinatesResolver = artifactCoordinatesResolver;
+		this.parentArtifact = new DefaultArtifact(parentGroupId, parentArtifactId, "pom",
+				parentVersion);
 
 		DefaultServiceLocator mavenServiceLocator = MavenRepositorySystemUtils
 				.newServiceLocator();
-		mavenServiceLocator.setService(LoggerFactory.class, NopLoggerFactory.class);
 		mavenServiceLocator.addService(RepositorySystem.class,
 				DefaultRepositorySystem.class);
 
@@ -166,8 +165,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 		try {
 			List<File> files = resolve(dependencies);
-			ExtendedGroovyClassLoader classLoader = (ExtendedGroovyClassLoader) args
-					.get("classLoader");
+			GroovyClassLoader classLoader = (GroovyClassLoader) args.get("classLoader");
 			if (classLoader == null) {
 				classLoader = this.defaultClassLoader;
 			}
@@ -233,10 +231,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private List<Dependency> getManagedDependencies() {
 		ArtifactDescriptorRequest parentRequest = new ArtifactDescriptorRequest();
-		Artifact parentArtifact = new DefaultArtifact("org.springframework.boot",
-				"spring-boot-starter-parent", "pom",
-				this.artifactCoordinatesResolver.getVersion("spring-boot"));
-		parentRequest.setArtifact(parentArtifact);
+		parentRequest.setArtifact(this.parentArtifact);
 
 		try {
 			ArtifactDescriptorResult artifactDescriptorResult = this.artifactDescriptorReader
@@ -250,41 +245,33 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	@Override
 	public Map<String, Map<String, List<String>>> enumerateGrapes() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Grape enumeration is not supported");
 	}
 
 	@Override
 	public URI[] resolve(Map args, Map... dependencies) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Resolving to URIs is not supported");
 	}
 
 	@Override
 	public URI[] resolve(Map args, List depsInfo, Map... dependencies) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Resolving to URIs is not supported");
 	}
 
 	@Override
 	public Map[] listDependencies(ClassLoader classLoader) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Listing dependencies is not supported");
 	}
 
 	@Override
 	public void addResolver(Map<String, Object> args) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Adding a resolver is not supported");
 	}
 
 	@Override
 	public Object grab(String endorsedModule) {
-		throw new UnsupportedOperationException("Auto-generated method stub");
-	}
-
-	private static final class NopLoggerFactory implements LoggerFactory {
-
-		@Override
-		public Logger getLogger(String name) {
-			// TODO Something more robust; I'm surprised this doesn't NPE
-			return null;
-		}
+		throw new UnsupportedOperationException(
+				"Grabbing an endorsed module is not supported");
 	}
 
 	private static final class ProgressReporter {
