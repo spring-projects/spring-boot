@@ -8,99 +8,77 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
-	<artifactId>spring-boot-cli</artifactId>
+	<artifactId>spring-boot-cli-grape</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 		<start-class>org.springframework.boot.cli.SpringCli</start-class>
 	</properties>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-parent</artifactId>
-				<version>0.5.0.BUILD-SNAPSHOT</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.codehaus.groovy</groupId>
-				<artifactId>groovy-xml</artifactId>
-				<version>${groovy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.projectreactor</groupId>
-				<artifactId>reactor-core</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	<dependencies>
-		<!-- Compile -->
-		<dependency>
-			<groupId>net.sf.jopt-simple</groupId>
-			<artifactId>jopt-simple</artifactId>
-		</dependency>
+		<!-- Provided -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy</artifactId>
-		</dependency>
-		<!-- Optional -->
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-templates</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<!--  Provided -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-cli-grape</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Test -->
+		<!-- Compile -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot</artifactId>
-			<version>${project.version}</version>
-			<classifier>tests</classifier>
-			<scope>test</scope>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-aether-provider</artifactId>
 			<exclusions>
 				<exclusion>
-					<groupId>${project.groupId}</groupId>
-					<artifactId>spring-boot</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
+					<artifactId>org.eclipse.sisu.plexus</artifactId>
+					<groupId>org.eclipse.sisu</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-connector-basic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-impl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-spi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-file</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-http</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jcl-over-slf4j</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-util</artifactId>
+		</dependency>
+		<!--  Test -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.javassist</groupId>
-			<artifactId>javassist</artifactId>
-			<version>3.16.1-GA</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.vpp</exclude>
-                </excludes>
-			</resource>
-			<resource>
-				<directory>src/main/groovy</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -145,67 +123,13 @@
 									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>${start-class}</mainClass>
 								</transformer>
 							</transformers>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<inherited>false</inherited>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/repackage-jar.xml</descriptor>
-						<descriptor>src/main/assembly/bin-package.xml</descriptor>
-					</descriptors>
-					<archive>
-						<manifest>
-							<mainClass>${start-class}</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-distribution</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-cli-properties</id>
-						<phase>compile</phase>
-						<configuration>
-							<target>
-								<typedef resource="foundrylogic/vpp/typedef.properties" />
-								<taskdef resource="foundrylogic/vpp/taskdef.properties" />
-								<property name="dependencies" value="${project.parent}" />
-								<vppcopy
-									file="${basedir}/src/main/resources/META-INF/springcli.properties.vpp"
-									tofile="${project.build.directory}/classes/META-INF/springcli.properties"
-									overwrite="true" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>foundrylogic.vpp</groupId>
-						<artifactId>vpp</artifactId>
-						<version>2.2.1</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 		<pluginManagement>

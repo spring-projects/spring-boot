@@ -16,13 +16,17 @@
 
 package org.springframework.boot.cli.compiler;
 
+import groovy.grape.GrapeEngine;
 import groovy.lang.Grab;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -70,6 +74,9 @@ import org.codehaus.groovy.transform.ASTTransformationVisitor;
  */
 public class GroovyCompiler {
 
+	private static final ClassLoader AETHER_CLASS_LOADER = new URLClassLoader(
+			new URL[] { GroovyCompiler.class.getResource("/internal/") });
+
 	private GroovyCompilerConfiguration configuration;
 
 	private ExtendedGroovyClassLoader loader;
@@ -84,6 +91,7 @@ public class GroovyCompiler {
 	 * Create a new {@link GroovyCompiler} instance.
 	 * @param configuration the compiler configuration
 	 */
+	@SuppressWarnings("unchecked")
 	public GroovyCompiler(final GroovyCompilerConfiguration configuration) {
 		this.configuration = configuration;
 		CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
@@ -95,8 +103,20 @@ public class GroovyCompiler {
 		this.artifactCoordinatesResolver = new PropertiesArtifactCoordinatesResolver(
 				this.loader);
 
-		new GrapeEngineInstaller(new AetherGrapeEngine(this.loader,
-				this.artifactCoordinatesResolver)).install();
+		try {
+			Class<GrapeEngine> grapeEngineClass = (Class<GrapeEngine>) AETHER_CLASS_LOADER
+					.loadClass("org.springframework.boot.cli.compiler.AetherGrapeEngine");
+			Constructor<GrapeEngine> constructor = grapeEngineClass.getConstructor(
+					GroovyClassLoader.class, String.class, String.class, String.class);
+			GrapeEngine grapeEngine = constructor.newInstance(this.loader,
+					"org.springframework.boot", "spring-boot-starter-parent",
+					this.artifactCoordinatesResolver.getVersion("spring-boot"));
+
+			new GrapeEngineInstaller(grapeEngine).install();
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to install custom GrapeEngine", ex);
+		}
 
 		compilerConfiguration
 				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
