@@ -34,7 +34,7 @@
 		<snakeyaml.version>1.12</snakeyaml.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
 		<spring.version>4.0.0.BUILD-SNAPSHOT</spring.version>
-		<spring-security.version>3.2.0.RC1</spring-security.version>
+		<spring-security.version>3.2.0.CI-SNAPSHOT</spring-security.version>
 		<spring-integration.version>2.2.4.RELEASE</spring-integration.version>
 		<spring-integration-groovydsl.version>1.0.0.M1</spring-integration-groovydsl.version>
 		<spring-batch.version>2.2.0.RELEASE</spring-batch.version>
