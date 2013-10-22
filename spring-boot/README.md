@@ -105,7 +105,7 @@ callbacks (such as the `DisposableBean` interface, or the `@PreDestroy` annotati
 can be used.
 
 In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator`
-interface if they with to return a specific exit code when the application ends.
+interface if they wish to return a specific exit code when the application ends.
 
 ### Externalized Configuration
 A `SpringApplication` will load properties from `application.properties` in the root of 
