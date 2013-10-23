@@ -59,6 +59,9 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 		if ("hsql".equals(platform)) {
 			platform = "hsqldb";
 		}
+		if ("postgres".equals(platform)) {
+			platform = "postgresql";
+		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		String schemaLocation = this.environment.getProperty("schema",
 				DEFAULT_SCHEMA_LOCATION);

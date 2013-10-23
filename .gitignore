@@ -20,5 +20,6 @@ manifest.yml
 MANIFEST.MF
 settings.xml
 activemq-data
+overridedb.*
 *.iml
 .idea
