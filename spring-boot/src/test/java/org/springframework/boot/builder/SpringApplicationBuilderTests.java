@@ -16,6 +16,9 @@
 
 package org.springframework.boot.builder;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -23,6 +26,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -78,6 +83,31 @@ public class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	public void contextWithClassLoader() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ExampleConfig.class).contextClass(SpyApplicationContext.class);
+		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass()
+				.getClassLoader());
+		application.resourceLoader(new DefaultResourceLoader(classLoader));
+		this.context = application.run();
+		assertThat(((SpyApplicationContext) this.context).getClassLoader(),
+				is(equalTo(classLoader)));
+	}
+
+	@Test
+	public void parentContextWithClassLoader() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ChildConfig.class).contextClass(SpyApplicationContext.class);
+		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass()
+				.getClassLoader());
+		application.resourceLoader(new DefaultResourceLoader(classLoader));
+		application.parent(ExampleConfig.class);
+		this.context = application.run();
+		assertThat(((SpyApplicationContext) this.context).getResourceLoader()
+				.getClassLoader(), is(equalTo(classLoader)));
+	}
+
+	@Test
 	public void parentFirstCreation() throws Exception {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(
 				ExampleConfig.class).child(ChildConfig.class);
@@ -127,7 +157,8 @@ public class SpringApplicationBuilderTests {
 
 	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
 
-		ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
+		private ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
+		private ResourceLoader resourceLoader;
 
 		@Override
 		public void setParent(ApplicationContext parent) {
@@ -136,6 +167,16 @@ public class SpringApplicationBuilderTests {
 
 		public ConfigurableApplicationContext getApplicationContext() {
 			return this.applicationContext;
+		}
+
+		@Override
+		public void setResourceLoader(ResourceLoader resourceLoader) {
+			super.setResourceLoader(resourceLoader);
+			this.resourceLoader = resourceLoader;
+		}
+
+		public ResourceLoader getResourceLoader() {
+			return this.resourceLoader;
 		}
 
 	}

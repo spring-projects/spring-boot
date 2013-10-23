@@ -53,6 +53,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -442,8 +443,15 @@ public class SpringApplication {
 			}
 		}
 
-		if (context instanceof GenericApplicationContext && this.resourceLoader != null) {
-			((GenericApplicationContext) context).setResourceLoader(this.resourceLoader);
+		if (this.resourceLoader != null) {
+			if (context instanceof GenericApplicationContext) {
+				((GenericApplicationContext) context)
+						.setResourceLoader(this.resourceLoader);
+			}
+			if (context instanceof DefaultResourceLoader) {
+				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader
+						.getClassLoader());
+			}
 		}
 	}
 
