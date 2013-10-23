@@ -58,10 +58,12 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ThymeleafAutoConfiguration {
 
+	public static final String DEFAULT_PREFIX = "classpath:/templates/";
+	public static final String DEFAULT_SUFFIX = ".html";
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
-	protected static class DefaultTemplateResolverConfiguration implements
-			EnvironmentAware {
+	public static class DefaultTemplateResolverConfiguration implements EnvironmentAware {
 
 		@Autowired
 		private ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -96,15 +98,23 @@ public class ThymeleafAutoConfiguration {
 					return "SPRING";
 				}
 			});
-			resolver.setPrefix(this.environment.getProperty("prefix",
-					"classpath:/templates/"));
-			resolver.setSuffix(this.environment.getProperty("suffix", ".html"));
+			resolver.setPrefix(this.environment.getProperty("prefix", DEFAULT_PREFIX));
+			resolver.setSuffix(this.environment.getProperty("suffix", DEFAULT_SUFFIX));
 			resolver.setTemplateMode(this.environment.getProperty("mode", "HTML5"));
 			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
 					"UTF-8"));
 			resolver.setCacheable(this.environment.getProperty("cache", Boolean.class,
 					true));
 			return resolver;
+		}
+
+		public static boolean templateExists(Environment environment,
+				ResourceLoader resourceLoader, String view) {
+			String prefix = environment.getProperty("spring.thymeleaf.prefix",
+					ThymeleafAutoConfiguration.DEFAULT_PREFIX);
+			String suffix = environment.getProperty("spring.thymeleaf.suffix",
+					ThymeleafAutoConfiguration.DEFAULT_SUFFIX);
+			return resourceLoader.getResource(prefix + view + suffix).exists();
 		}
 
 	}
@@ -182,6 +192,7 @@ public class ThymeleafAutoConfiguration {
 		public SpringSecurityDialect securityDialect() {
 			return new SpringSecurityDialect();
 		}
+
 	}
 
 }

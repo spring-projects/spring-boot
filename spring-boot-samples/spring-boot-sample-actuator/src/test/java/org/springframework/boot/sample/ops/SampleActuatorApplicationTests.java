@@ -18,10 +18,12 @@ package org.springframework.boot.sample.ops;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -35,8 +37,12 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.properties.SecurityProperties;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -134,26 +140,42 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void testErrorPage() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/health", String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("ok", entity.getBody());
+		ResponseEntity<String> entity = getRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:8080/foo", String.class);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+		String body = entity.getBody();
+		assertNotNull(body);
+		assertTrue("Wrong body: " + body,
+				body.contains("\"error\":"));
+	}
+
+	@Test
+	public void testHtmlErrorPage() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		HttpEntity<?> request = new HttpEntity<Void>(headers);
+		ResponseEntity<String> entity = getRestTemplate("user", getPassword()).exchange(
+				"http://localhost:8080/foo", HttpMethod.GET, request, String.class);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
+		String body = entity.getBody();
+		assertNotNull("Body was null", body);
+		assertTrue("Wrong body: " + body,
+				body.contains("This application has no explicit mapping for /error"));
 	}
 
 	@Test
 	public void testTrace() throws Exception {
-		getRestTemplate().getForEntity(
-				"http://localhost:8080/health", String.class);
+		getRestTemplate().getForEntity("http://localhost:8080/health", String.class);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<List> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080/trace", List.class);
+		ResponseEntity<List> entity = getRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:8080/trace", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
-		List<Map<String,Object>> list = (List<Map<String, Object>>) entity.getBody();
-		Map<String, Object> trace = list.get(list.size()-1);
+		List<Map<String, Object>> list = (List<Map<String, Object>>) entity.getBody();
+		Map<String, Object> trace = list.get(list.size() - 1);
 		@SuppressWarnings("unchecked")
-		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) 
-				trace.get("info")).get("headers")).get("response");
+		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) trace
+				.get("info")).get("headers")).get("response");
 		assertEquals("200", map.get("status"));
 	}
 
