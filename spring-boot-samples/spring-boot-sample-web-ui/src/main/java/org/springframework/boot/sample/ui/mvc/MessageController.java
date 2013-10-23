@@ -66,4 +66,10 @@ public class MessageController {
 		redirect.addFlashAttribute("globalMessage", "Successfully created a new message");
 		return new ModelAndView("redirect:/{message.id}", "message.id", message.getId());
 	}
+
+	@RequestMapping("/foo")
+	public String foo() {
+		throw new RuntimeException("Expected exception in controller");
+	}
+
 }

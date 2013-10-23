@@ -29,16 +29,23 @@ import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.DefaultTemplateResolverConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.expression.MapAccessor;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -79,8 +86,26 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	@Bean(name = "error")
 	@ConditionalOnMissingBean(name = "error")
+	@ConditionalOnExpression("${error.whitelabel.enabled:true}")
+	@Conditional(ErrorTemplateMissingCondition.class)
 	public View defaultErrorView() {
 		return this.defaultErrorView;
+	}
+
+	private static class ErrorTemplateMissingCondition extends SpringBootCondition {
+		@Override
+		public Outcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			if (ClassUtils.isPresent("org.thymeleaf.spring3.SpringTemplateEngine",
+					context.getClassLoader())) {
+				if (DefaultTemplateResolverConfiguration.templateExists(
+						context.getEnvironment(), context.getResourceLoader(), "error")) {
+					return Outcome.noMatch("Thymeleaf template found for error view");
+				}
+			}
+			// FIXME: add matcher for JSP view if Jasper detected
+			return Outcome.match("no error template view detected");
+		};
 	}
 
 	private static class SpelView implements View {
