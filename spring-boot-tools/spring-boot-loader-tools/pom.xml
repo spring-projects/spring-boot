@@ -15,8 +15,8 @@
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
 		</dependency>
 		<!-- Provided -->
 		<dependency>
