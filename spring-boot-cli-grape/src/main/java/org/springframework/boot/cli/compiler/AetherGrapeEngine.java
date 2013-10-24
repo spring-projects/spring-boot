@@ -148,12 +148,18 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 		this.repositorySystemSession = repositorySystemSession;
 
-		this.repositories = Arrays.asList(new RemoteRepository.Builder("central",
-				"default", "http://repo1.maven.org/maven2/").build(),
-				new RemoteRepository.Builder("spring-snapshot", "default",
-						"http://repo.spring.io/snapshot").build(),
-				new RemoteRepository.Builder("spring-milestone", "default",
-						"http://repo.spring.io/milestone").build());
+		List<RemoteRepository> repositories = new ArrayList<RemoteRepository>();
+		repositories.add(new RemoteRepository.Builder("central", "default",
+				"http://repo1.maven.org/maven2/").build());
+
+		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
+			repositories.add(new RemoteRepository.Builder("spring-snapshot", "default",
+					"http://repo.spring.io/snapshot").build());
+			repositories.add(new RemoteRepository.Builder("spring-milestone", "default",
+					"http://repo.spring.io/milestone").build());
+		}
+
+		this.repositories = repositories;
 
 		this.artifactDescriptorReader = mavenServiceLocator
 				.getService(ArtifactDescriptorReader.class);
