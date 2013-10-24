@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -44,6 +45,14 @@ public @interface ConditionalOnMissingBean {
 	 * @return the class types of beans to check
 	 */
 	Class<?>[] value() default {};
+
+	/**
+	 * The annotation type decorating a bean that should be checked. The condition matches
+	 * when each class specified is missing from all beans in the
+	 * {@link ApplicationContext}.
+	 * @return the class types of beans to check
+	 */
+	Class<? extends Annotation>[] annotation() default {};
 
 	/**
 	 * The names of beans to check. The condition matches when each bean name specified is

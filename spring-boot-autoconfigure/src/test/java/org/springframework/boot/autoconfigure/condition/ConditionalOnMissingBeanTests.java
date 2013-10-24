@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -84,6 +85,14 @@ public class ConditionalOnMissingBeanTests {
 		assertThat(this.context.getBeansOfType(ExampleBean.class).size(), equalTo(1));
 	}
 
+	@Test
+	public void testAnnotationOnMissingBeanCondition() {
+		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class);
+		this.context.refresh();
+		assertFalse(this.context.containsBean("bar"));
+		assertEquals("foo", this.context.getBean("foo"));
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
@@ -94,6 +103,16 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
+	@ConditionalOnMissingBean(annotation = EnableScheduling.class)
+	protected static class OnAnnotationConfiguration {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
+
+	@Configuration
+	@EnableScheduling
 	protected static class FooConfiguration {
 		@Bean
 		public String foo() {
