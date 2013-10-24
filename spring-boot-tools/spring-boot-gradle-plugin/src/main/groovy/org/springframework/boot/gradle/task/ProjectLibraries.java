@@ -49,7 +49,7 @@ class ProjectLibraries implements Libraries {
 				this.providedConfigurationName);
 		if (provided != null) {
 			compile = compile.minus(provided);
-			runtime = compile.minus(provided);
+			runtime = runtime.minus(provided);
 		}
 
 		libraries(LibraryScope.COMPILE, compile, callback);
