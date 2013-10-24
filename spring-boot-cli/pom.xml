@@ -100,11 +100,17 @@
 			<resource>
 				<directory>src/main/groovy</directory>
 			</resource>
+			<resource>
+				<directory>${project.build.directory}/generated-resources</directory>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${project.build.directory}/generated-resources</additionalClasspathElement>
+					</additionalClasspathElements>
 					<classpathDependencyExcludes>
 						<classpathDependencyExcludes>org.springframework:spring-core</classpathDependencyExcludes>
 						<classpathDependencyExcludes>org.springframework:spring-beans</classpathDependencyExcludes>
@@ -190,7 +196,7 @@
 								<property name="dependencies" value="${project.parent}" />
 								<vppcopy
 									file="${basedir}/src/main/resources/META-INF/springcli.properties.vpp"
-									tofile="${project.build.directory}/classes/META-INF/springcli.properties"
+									tofile="${project.build.directory}/generated-resources/META-INF/springcli.properties"
 									overwrite="true" />
 							</target>
 						</configuration>
