@@ -49,7 +49,6 @@ public class SampleIntegrationTests {
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
 		GrapesCleaner.cleanIfNecessary();
-		// System.setProperty("ivy.message.logger.level", "3");
 	}
 
 	@Rule

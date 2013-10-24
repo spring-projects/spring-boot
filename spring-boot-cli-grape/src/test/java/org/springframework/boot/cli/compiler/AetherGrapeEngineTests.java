@@ -70,6 +70,19 @@ public class AetherGrapeEngineTests {
 		assertEquals(6, customClassLoader.getURLs().length);
 	}
 
+	@Test(expected = DependencyResolutionFailedException.class)
+	public void resolutionWithSnapshotRepositoriesDisabled() {
+		Map<String, Object> args = new HashMap<String, Object>();
+		System.setProperty("disableSpringSnapshotRepos", "true");
+		try {
+			new AetherGrapeEngine(this.groovyClassLoader, null, null, null).grab(args,
+					createDependency("org.springframework", "spring-jdbc", "3.2.0.M1"));
+		}
+		finally {
+			System.clearProperty("disableSpringSnapshotRepos");
+		}
+	}
+
 	private Map<String, Object> createDependency(String group, String module,
 			String version) {
 		Map<String, Object> dependency = new HashMap<String, Object>();
