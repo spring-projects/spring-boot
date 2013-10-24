@@ -24,6 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +40,7 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.impl.ArtifactDescriptorReader;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
@@ -76,6 +78,9 @@ public class AetherGrapeEngine implements GrapeEngine {
 	private static final String DEPENDENCY_GROUP = "group";
 
 	private static final String DEPENDENCY_VERSION = "version";
+
+	private static final Collection<Exclusion> WILDCARD_EXCLUSION = Arrays
+			.asList(new Exclusion("*", "*", "*", "*"));
 
 	private final Artifact parentArtifact;
 
@@ -190,15 +195,36 @@ public class AetherGrapeEngine implements GrapeEngine {
 		return dependencies;
 	}
 
+	private boolean isTransitive(Map<?, ?> dependencyMap) {
+		Boolean transitive = (Boolean) dependencyMap.get("transitive");
+		if (transitive == null) {
+			transitive = true;
+		}
+		return transitive;
+	}
+
 	private Dependency createDependency(Map<?, ?> dependencyMap) {
+		Artifact artifact = createArtifact(dependencyMap);
+
+		Dependency dependency;
+
+		if (!isTransitive(dependencyMap)) {
+			dependency = new Dependency(artifact, JavaScopes.COMPILE, null,
+					WILDCARD_EXCLUSION);
+		}
+		else {
+			dependency = new Dependency(artifact, JavaScopes.COMPILE);
+		}
+
+		return dependency;
+	}
+
+	private Artifact createArtifact(Map<?, ?> dependencyMap) {
 		String group = (String) dependencyMap.get(DEPENDENCY_GROUP);
 		String module = (String) dependencyMap.get(DEPENDENCY_MODULE);
 		String version = (String) dependencyMap.get(DEPENDENCY_VERSION);
 
-		// TODO Transitivity
-
-		Artifact artifact = new DefaultArtifact(group, module, "jar", version);
-		return new Dependency(artifact, JavaScopes.COMPILE);
+		return new DefaultArtifact(group, module, "jar", version);
 	}
 
 	private List<File> resolve(List<Dependency> dependencies)

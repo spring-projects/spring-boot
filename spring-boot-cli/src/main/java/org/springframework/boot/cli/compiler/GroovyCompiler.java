@@ -353,30 +353,37 @@ public class GroovyCompiler {
 		}
 
 		private void transformGrabAnnotation(AnnotationNode grabAnnotation) {
+			grabAnnotation.setMember("initClass", new ConstantExpression(false));
+
 			Expression valueExpression = grabAnnotation.getMember("value");
+			String value = null;
 			if (valueExpression instanceof ConstantExpression) {
 				ConstantExpression constantExpression = (ConstantExpression) valueExpression;
 				Object valueObject = constantExpression.getValue();
 				if (valueObject instanceof String) {
-					String value = (String) valueObject;
-					if (!isConvenienceForm(value)) {
-						applyGroupAndVersion(grabAnnotation, constantExpression);
+					value = (String) valueObject;
+					if (isConvenienceForm(value)) {
+						return;
 					}
-					grabAnnotation.setMember("initClass", new ConstantExpression(false));
 				}
 			}
+
+			applyGroupAndVersion(grabAnnotation, value);
 		}
 
 		private boolean isConvenienceForm(String value) {
 			return value.contains(":") || value.contains("#");
 		}
 
-		private void applyGroupAndVersion(AnnotationNode grabAnnotation,
-				ConstantExpression moduleExpression) {
+		private void applyGroupAndVersion(AnnotationNode grabAnnotation, String module) {
 
-			grabAnnotation.setMember("module", moduleExpression);
-
-			String module = (String) moduleExpression.getValue();
+			if (module != null) {
+				grabAnnotation.setMember("module", new ConstantExpression(module));
+			}
+			else {
+				module = (String) ((ConstantExpression) grabAnnotation.getMembers().get(
+						"module")).getValue();
+			}
 
 			if (grabAnnotation.getMember("group") == null) {
 				ConstantExpression groupIdExpression = new ConstantExpression(
@@ -391,10 +398,6 @@ public class GroovyCompiler {
 								.getVersion(module));
 				grabAnnotation.setMember("version", versionExpression);
 			}
-
-			grabAnnotation.setMember("initClass", new ConstantExpression(false));
-
 		}
 	}
-
 }
