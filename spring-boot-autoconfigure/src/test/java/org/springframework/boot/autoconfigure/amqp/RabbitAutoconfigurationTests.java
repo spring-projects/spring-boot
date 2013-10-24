@@ -32,19 +32,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link RabbitTemplateAutoConfiguration}.
+ * Tests for {@link RabbitAutoConfiguration}.
  * 
  * @author Greg Turnquist
  */
-public class RabbitTemplateAutoconfigurationTests {
+public class RabbitAutoconfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
 	@Test
 	public void testDefaultRabbitTemplate() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
-				RabbitTemplateAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
 		this.context.refresh();
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
 		CachingConnectionFactory connectionFactory = this.context
@@ -60,23 +59,55 @@ public class RabbitTemplateAutoconfigurationTests {
 	@Test
 	public void testRabbitTemplateWithOverrides() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
-				RabbitTemplateAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "spring.rabbitmq.host:remote-server",
 				"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
-				"spring.rabbitmq.password:secret");
+				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost");
 		this.context.refresh();
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		assertEquals(connectionFactory.getHost(), "remote-server");
 		assertEquals(connectionFactory.getPort(), 9000);
+		assertEquals(connectionFactory.getVirtualHost(), "/vhost");
+	}
+
+	@Test
+	public void testRabbitTemplateEmptyVirtualHost() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.rabbitmq.virtual_host:");
+		this.context.refresh();
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals(connectionFactory.getVirtualHost(), "/");
+	}
+
+	@Test
+	public void testRabbitTemplateVirtualHostMissingSlash() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.rabbitmq.virtual_host:foo");
+		this.context.refresh();
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals(connectionFactory.getVirtualHost(), "/foo");
+	}
+
+	@Test
+	public void testRabbitTemplateDefaultVirtualHost() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring.rabbitmq.virtual_host:/");
+		this.context.refresh();
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals(connectionFactory.getVirtualHost(), "/");
 	}
 
 	@Test
 	public void testConnectionFactoryBackoff() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration2.class,
-				RabbitTemplateAutoConfiguration.class);
+		this.context.register(TestConfiguration2.class, RabbitAutoConfiguration.class);
 		this.context.refresh();
 		RabbitTemplate rabbitTemplate = this.context.getBean(RabbitTemplate.class);
 		CachingConnectionFactory connectionFactory = this.context
@@ -89,8 +120,7 @@ public class RabbitTemplateAutoconfigurationTests {
 	@Test
 	public void testStaticQueues() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
-				RabbitTemplateAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "spring.rabbitmq.dynamic:false");
 		this.context.refresh();
 		try {

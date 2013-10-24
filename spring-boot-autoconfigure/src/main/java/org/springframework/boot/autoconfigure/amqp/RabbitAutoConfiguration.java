@@ -23,7 +23,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.amqp.RabbitTemplateAutoConfiguration.RabbitConnectionFactoryProperties;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration.RabbitConnectionFactoryProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,7 +42,7 @@ import com.rabbitmq.client.Channel;
 @Configuration
 @ConditionalOnClass({ RabbitTemplate.class, Channel.class })
 @EnableConfigurationProperties(RabbitConnectionFactoryProperties.class)
-public class RabbitTemplateAutoConfiguration {
+public class RabbitAutoConfiguration {
 
 	@Bean
 	@ConditionalOnExpression("${spring.rabbitmq.dynamic:true}")
@@ -76,6 +76,9 @@ public class RabbitTemplateAutoConfiguration {
 			if (config.getPassword() != null) {
 				connectionFactory.setPassword(config.getPassword());
 			}
+			if (config.getVirtualHost() != null) {
+				connectionFactory.setVirtualHost(config.getVirtualHost());
+			}
 			return connectionFactory;
 		}
 	}
@@ -90,6 +93,8 @@ public class RabbitTemplateAutoConfiguration {
 		private String username;
 
 		private String password;
+
+		private String virtualHost;
 
 		private boolean dynamic = true;
 
@@ -131,6 +136,17 @@ public class RabbitTemplateAutoConfiguration {
 
 		public void setDynamic(boolean dynamic) {
 			this.dynamic = dynamic;
+		}
+
+		public String getVirtualHost() {
+			return this.virtualHost;
+		}
+
+		public void setVirtualHost(String virtualHost) {
+			while (virtualHost.startsWith("/") && virtualHost.length() > 0) {
+				virtualHost = virtualHost.substring(1);
+			}
+			this.virtualHost = "/" + virtualHost;
 		}
 
 	}
