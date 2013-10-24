@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +33,7 @@ import static org.junit.Assert.assertTrue;
  * 
  * @author Dave Syer
  */
+// FIXME: unignore test
 @Ignore
 public class ConditionalOnBeanTests {
 
@@ -77,9 +79,26 @@ public class ConditionalOnBeanTests {
 		assertEquals("bar", this.context.getBean("bar"));
 	}
 
+	@Test
+	public void testAnnotationOnBeanCondition() {
+		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class);
+		this.context.refresh();
+		assertTrue(this.context.containsBean("bar"));
+		assertEquals("bar", this.context.getBean("bar"));
+	}
+
 	@Configuration
 	@ConditionalOnBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnBean(annotation = EnableScheduling.class)
+	protected static class OnAnnotationConfiguration {
 		@Bean
 		public String bar() {
 			return "bar";
@@ -96,6 +115,7 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Configuration
+	@EnableScheduling
 	protected static class FooConfiguration {
 		@Bean
 		public String foo() {

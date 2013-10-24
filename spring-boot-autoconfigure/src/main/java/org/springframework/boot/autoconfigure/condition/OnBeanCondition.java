@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -36,6 +38,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks for the presence or absence of specific beans.
@@ -96,6 +99,11 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					context.getClassLoader(), considerHierarchy)));
 		}
 
+		for (String annotation : beans.getAnnotations()) {
+			beanNames.addAll(Arrays.asList(getBeanNamesForAnnotation(beanFactory,
+					annotation, context.getClassLoader(), considerHierarchy)));
+		}
+
 		for (String beanName : beans.getNames()) {
 			if (containsBean(beanFactory, beanName, considerHierarchy)) {
 				beanNames.add(beanName);
@@ -132,10 +140,45 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		}
 	}
 
+	private String[] getBeanNamesForAnnotation(
+			ConfigurableListableBeanFactory beanFactory, String type,
+			ClassLoader classLoader, boolean considerHierarchy) throws LinkageError {
+		String[] result = NO_BEANS;
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends Annotation> typeClass = (Class<? extends Annotation>) ClassUtils
+					.forName(type, classLoader);
+			Map<String, Object> annotated = beanFactory.getBeansWithAnnotation(typeClass);
+			result = annotated.keySet().toArray(new String[annotated.size()]);
+			if (considerHierarchy) {
+				if (beanFactory.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
+					String[] parentResult = getBeanNamesForAnnotation(
+							(ConfigurableListableBeanFactory) beanFactory
+									.getParentBeanFactory(),
+							type, classLoader, true);
+					List<String> resultList = new ArrayList<String>();
+					resultList.addAll(Arrays.asList(result));
+					for (String beanName : parentResult) {
+						if (!resultList.contains(beanName)
+								&& !beanFactory.containsLocalBean(beanName)) {
+							resultList.add(beanName);
+						}
+					}
+					result = StringUtils.toStringArray(resultList);
+				}
+			}
+			return result;
+		}
+		catch (ClassNotFoundException ex) {
+			return NO_BEANS;
+		}
+	}
+
 	private static class BeanSearchSpec {
 
 		private List<String> names = new ArrayList<String>();
 		private List<String> types = new ArrayList<String>();
+		private List<String> annotations = new ArrayList<String>();
 		private SearchStrategy strategy;
 
 		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
@@ -144,12 +187,16 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					.getAllAnnotationAttributes(annotationType.getName(), true);
 			collect(attributes, "name", this.names);
 			collect(attributes, "value", this.types);
+			collect(attributes, "annotation", this.annotations);
 			if (this.types.isEmpty() && this.names.isEmpty()) {
 				addDeducedBeanType(context, metadata, this.types);
 			}
-			Assert.isTrue(!this.types.isEmpty() || !this.names.isEmpty(), "@"
-					+ ClassUtils.getShortName(annotationType)
-					+ " annotations must specify at least one bean");
+			Assert.isTrue(
+					!this.types.isEmpty() || !this.names.isEmpty()
+							|| !this.annotations.isEmpty(),
+					"@"
+							+ ClassUtils.getShortName(annotationType)
+							+ " annotations must specify at least one bean (type, name or annotation)");
 			this.strategy = (SearchStrategy) metadata.getAnnotationAttributes(
 					annotationType.getName()).get("search");
 		}
@@ -202,6 +249,10 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		public List<String> getTypes() {
 			return this.types;
+		}
+
+		public List<String> getAnnotations() {
+			return this.annotations;
 		}
 
 		@Override
