@@ -37,17 +37,7 @@ public class GrapeEngineInstaller {
 			try {
 				Field instanceField = Grape.class.getDeclaredField("instance");
 				instanceField.setAccessible(true);
-
-				GrapeEngine existingGrapeEngine = (GrapeEngine) instanceField.get(null);
-
-				if (existingGrapeEngine == null) {
-					instanceField.set(null, this.grapeEngine);
-				}
-				else if (!existingGrapeEngine.getClass().equals(
-						this.grapeEngine.getClass())) {
-					throw new IllegalStateException(
-							"Another GrapeEngine of a different type has already been initialized");
-				}
+				instanceField.set(null, this.grapeEngine);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Failed to install GrapeEngine", ex);
