@@ -46,18 +46,20 @@ public class Repackage extends DefaultTask {
 		project.getTasks().withType(Jar.class, new Action<Jar>() {
 			@Override
 			public void execute(Jar archive) {
-				File file = archive.getArchivePath();
-				if (file.exists()) {
-					Repackager repackager = new Repackager(file);
-					repackager.setMainClass(extension.getMainClass());
-					if (extension.convertLayout() != null) {
-						repackager.setLayout(extension.convertLayout());
-					}
-					repackager.setBackupSource(extension.isBackupSource());
-					try {
-						repackager.repackage(libraries);
-					} catch (IOException ex) {
-						throw new IllegalStateException(ex.getMessage(), ex);
+				if ("".equals(archive.getClassifier())) {
+					File file = archive.getArchivePath();
+					if (file.exists()) {
+						Repackager repackager = new Repackager(file);
+						repackager.setMainClass(extension.getMainClass());
+						if (extension.convertLayout() != null) {
+							repackager.setLayout(extension.convertLayout());
+						}
+						repackager.setBackupSource(extension.isBackupSource());
+						try {
+							repackager.repackage(libraries);
+						} catch (IOException ex) {
+							throw new IllegalStateException(ex.getMessage(), ex);
+						}
 					}
 				}
 			}
