@@ -51,7 +51,7 @@
 			<artifactId>groovy-templates</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!--  Provided -->
+		<!-- Provided -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot-cli-grape</artifactId>
@@ -93,9 +93,9 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
-                <excludes>
-                    <exclude>**/*.vpp</exclude>
-                </excludes>
+				<excludes>
+					<exclude>**/*.vpp</exclude>
+				</excludes>
 			</resource>
 			<resource>
 				<directory>src/main/groovy</directory>
@@ -216,7 +216,8 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -234,7 +235,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute/>
+										<execute />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

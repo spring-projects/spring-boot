@@ -116,11 +116,11 @@
 			<artifactId>spring-security-acl</artifactId>
 			<optional>true</optional>
 		</dependency>
-        <dependency>
-            <groupId>org.springframework.amqp</groupId>
-            <artifactId>spring-rabbit</artifactId>
-            <optional>true</optional>
-        </dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.mobile</groupId>
 			<artifactId>spring-mobile-device</artifactId>
@@ -152,9 +152,9 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			 <groupId>org.apache.geronimo.specs</groupId>
-			 <artifactId>geronimo-jms_1.1_spec</artifactId>
-			 <optional>true</optional>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jms_1.1_spec</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
