@@ -71,7 +71,7 @@ public class SampleIntegrationTests {
 
 	@Before
 	public void setup() throws Exception {
-		System.setProperty("disableSpringSnapshotRepos", "true");
+		System.setProperty("disableSpringSnapshotRepos", "false");
 		new CleanCommand().run("org.springframework");
 	}
 
