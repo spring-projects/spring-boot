@@ -41,7 +41,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.NotWritablePropertyException;
-import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -72,6 +71,34 @@ public class RelaxedDataBinderTests {
 	public void testBindString() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "foo: bar");
+		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
+	public void testBindStringWithPrefix() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "test.foo: bar", "test");
+		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
+	public void testBindFromEnvironmentStyleWithPrefix() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "TEST_FOO: bar", "test");
+		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
+	public void testBindFromEnvironmentStyleWithNestedPrefix() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "TEST_IT_FOO: bar", "test.it");
+		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
+	public void testBindCapitals() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "FOO: bar");
 		assertEquals("bar", target.getFoo());
 	}
 
@@ -215,8 +242,6 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	// @Ignore("Should be possible but currently not supported")
-	// FIXME: bind to map containing beans
 	public void testBindNestedMapOfBean() throws Exception {
 		TargetWithNestedMapOfBean target = new TargetWithNestedMapOfBean();
 		bind(target, "nested.foo.foo: bar\n" + "nested.bar.foo: bucket");
@@ -225,8 +250,6 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
-	// @Ignore("Should be possible but currently not supported")
-	// FIXME: bind to map containing beans
 	public void testBindNestedMapOfListOfBean() throws Exception {
 		TargetWithNestedMapOfListOfBean target = new TargetWithNestedMapOfListOfBean();
 		bind(target, "nested.foo[0].foo: bar\n" + "nested.bar[0].foo: bucket\n"

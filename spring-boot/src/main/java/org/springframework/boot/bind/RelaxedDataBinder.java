@@ -121,9 +121,11 @@ public class RelaxedDataBinder extends DataBinder {
 		MutablePropertyValues rtn = new MutablePropertyValues();
 		for (PropertyValue pv : propertyValues.getPropertyValues()) {
 			String name = pv.getName();
-			if (name.startsWith(this.namePrefix)) {
-				name = name.substring(this.namePrefix.length());
-				rtn.add(name, pv.getValue());
+			for (String candidate : new RelaxedNames(this.namePrefix)) {
+				if (name.startsWith(candidate)) {
+					name = name.substring(candidate.length());
+					rtn.add(name, pv.getValue());
+				}
 			}
 		}
 		return rtn;
