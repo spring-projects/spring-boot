@@ -72,15 +72,6 @@ public class OutputCapture implements TestRule {
 		this.copy = null;
 	}
 
-	public String getOutputAndRelease() {
-		try {
-			return toString();
-		}
-		finally {
-			releaseOutput();
-		}
-	}
-
 	@Override
 	public String toString() {
 		return this.copy.toString();
