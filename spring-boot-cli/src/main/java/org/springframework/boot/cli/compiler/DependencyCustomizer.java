@@ -41,17 +41,17 @@ public class DependencyCustomizer {
 
 	private final ClassNode classNode;
 
-	private final ArtifactCoordinatesResolver artifactCoordinatesResolver;
+	private final ArtifactCoordinatesResolver coordinatesResolver;
 
 	/**
 	 * Create a new {@link DependencyCustomizer} instance.
 	 * @param loader
 	 */
 	public DependencyCustomizer(GroovyClassLoader loader, ModuleNode moduleNode,
-			ArtifactCoordinatesResolver artifactCoordinatesResolver) {
+			ArtifactCoordinatesResolver coordinatesResolver) {
 		this.loader = loader;
 		this.classNode = moduleNode.getClasses().get(0);
-		this.artifactCoordinatesResolver = artifactCoordinatesResolver;
+		this.coordinatesResolver = coordinatesResolver;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class DependencyCustomizer {
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
 		this.classNode = parent.classNode;
-		this.artifactCoordinatesResolver = parent.artifactCoordinatesResolver;
+		this.coordinatesResolver = parent.coordinatesResolver;
 	}
 
 	public String getVersion(String artifactId) {
@@ -70,7 +70,7 @@ public class DependencyCustomizer {
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.artifactCoordinatesResolver.getVersion(artifactId);
+		String version = this.coordinatesResolver.getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -184,8 +184,8 @@ public class DependencyCustomizer {
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module) {
-		return this.add(this.artifactCoordinatesResolver.getGroupId(module), module,
-				this.artifactCoordinatesResolver.getVersion(module), true);
+		return this.add(this.coordinatesResolver.getGroupId(module), module,
+				this.coordinatesResolver.getVersion(module), true);
 	}
 
 	/**
@@ -198,8 +198,8 @@ public class DependencyCustomizer {
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module, boolean transitive) {
-		return this.add(this.artifactCoordinatesResolver.getGroupId(module), module,
-				this.artifactCoordinatesResolver.getVersion(module), transitive);
+		return this.add(this.coordinatesResolver.getGroupId(module), module,
+				this.coordinatesResolver.getVersion(module), transitive);
 	}
 
 	private DependencyCustomizer add(String group, String module, String version,

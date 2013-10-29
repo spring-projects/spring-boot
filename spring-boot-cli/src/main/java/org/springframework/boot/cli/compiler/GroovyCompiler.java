@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.compiler;
 
 import groovy.grape.GrapeEngine;
-import groovy.lang.Grab;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 
@@ -34,14 +33,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.AnnotatedNode;
-import org.codehaus.groovy.ast.AnnotationNode;
-import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
 import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.ImportNode;
-import org.codehaus.groovy.ast.ModuleNode;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
@@ -66,6 +58,7 @@ import org.codehaus.groovy.transform.ASTTransformationVisitor;
  * 
  * <li>Generated class files can also be loaded using
  * {@link ClassLoader#getResource(String)}</li>
+ * 
  * <ul>
  * 
  * @author Phillip Webb
@@ -77,32 +70,45 @@ public class GroovyCompiler {
 	private static final ClassLoader AETHER_CLASS_LOADER = new URLClassLoader(
 			new URL[] { GroovyCompiler.class.getResource("/internal/") });
 
-	private GroovyCompilerConfiguration configuration;
+	private final GroovyCompilerConfiguration configuration;
 
-	private ExtendedGroovyClassLoader loader;
+	private final ExtendedGroovyClassLoader loader;
 
-	private ArtifactCoordinatesResolver artifactCoordinatesResolver;
+	private final ArtifactCoordinatesResolver coordinatesResolver;
 
-	private final ASTTransformation dependencyCustomizerTransformation = new DependencyCustomizerAstTransformation();
+	private final ServiceLoader<CompilerAutoConfiguration> compilerAutoConfigurations;
 
-	private final ASTTransformation dependencyCoordinatesTransformation = new DefaultDependencyCoordinatesAstTransformation();
+	private final List<ASTTransformation> transformations;
 
 	/**
 	 * Create a new {@link GroovyCompiler} instance.
 	 * @param configuration the compiler configuration
 	 */
-	@SuppressWarnings("unchecked")
 	public GroovyCompiler(final GroovyCompilerConfiguration configuration) {
 		this.configuration = configuration;
-		CompilerConfiguration compilerConfiguration = new CompilerConfiguration();
 		this.loader = new ExtendedGroovyClassLoader(getClass().getClassLoader(),
-				compilerConfiguration);
+				new CompilerConfiguration());
 		if (configuration.getClasspath().length() > 0) {
 			this.loader.addClasspath(configuration.getClasspath());
 		}
-		this.artifactCoordinatesResolver = new PropertiesArtifactCoordinatesResolver(
-				this.loader);
+		this.coordinatesResolver = new PropertiesArtifactCoordinatesResolver(this.loader);
+		installGrapeEngine();
+		this.loader.getConfiguration().addCompilationCustomizers(
+				new CompilerAutoConfigureCustomizer());
+		this.compilerAutoConfigurations = ServiceLoader.load(
+				CompilerAutoConfiguration.class, GroovyCompiler.class.getClassLoader());
 
+		this.transformations = new ArrayList<ASTTransformation>();
+		this.transformations.add(new DependencyAutoConfigurationTransformation(this.loader,
+				this.coordinatesResolver, this.compilerAutoConfigurations));
+		if (this.configuration.isGuessDependencies()) {
+			this.transformations.add(new ResolveDependencyCoordinatesTransformation(
+					this.coordinatesResolver));
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void installGrapeEngine() {
 		try {
 			Class<GrapeEngine> grapeEngineClass = (Class<GrapeEngine>) AETHER_CLASS_LOADER
 					.loadClass("org.springframework.boot.cli.compiler.AetherGrapeEngine");
@@ -110,16 +116,13 @@ public class GroovyCompiler {
 					GroovyClassLoader.class, String.class, String.class, String.class);
 			GrapeEngine grapeEngine = constructor.newInstance(this.loader,
 					"org.springframework.boot", "spring-boot-starter-parent",
-					this.artifactCoordinatesResolver.getVersion("spring-boot"));
+					this.coordinatesResolver.getVersion("spring-boot"));
 
 			new GrapeEngineInstaller(grapeEngine).install();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to install custom GrapeEngine", ex);
 		}
-
-		compilerConfiguration
-				.addCompilationCustomizers(new CompilerAutoConfigureCustomizer());
 	}
 
 	public void addCompilationCustomizers(CompilationCustomizer... customizers) {
@@ -157,12 +160,12 @@ public class GroovyCompiler {
 		this.loader.clearCache();
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 
-		CompilerConfiguration compilerConfiguration = this.loader.getConfiguration();
+		CompilerConfiguration configuration = this.loader.getConfiguration();
 
-		final CompilationUnit compilationUnit = new CompilationUnit(
-				compilerConfiguration, null, this.loader);
-		SourceUnit sourceUnit = new SourceUnit(file[0], compilerConfiguration,
-				this.loader, compilationUnit.getErrorCollector());
+		CompilationUnit compilationUnit = new CompilationUnit(configuration, null,
+				this.loader);
+		SourceUnit sourceUnit = new SourceUnit(file[0], configuration, this.loader,
+				compilationUnit.getErrorCollector());
 		ClassCollector collector = this.loader.createCollector(compilationUnit,
 				sourceUnit);
 		compilationUnit.setClassgenCallback(collector);
@@ -189,18 +192,23 @@ public class GroovyCompiler {
 		}
 
 		return classes.toArray(new Class<?>[classes.size()]);
-
 	}
 
 	@SuppressWarnings("rawtypes")
-	private void addAstTransformations(final CompilationUnit compilationUnit) {
+	private void addAstTransformations(CompilationUnit compilationUnit) {
+		LinkedList[] phaseOperations = getPhaseOperations(compilationUnit);
+		processConversionOperations(phaseOperations[Phases.CONVERSION]);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private LinkedList[] getPhaseOperations(final CompilationUnit compilationUnit) {
 		try {
 			Field field = CompilationUnit.class.getDeclaredField("phaseOperations");
 			field.setAccessible(true);
 			LinkedList[] phaseOperations = (LinkedList[]) field.get(compilationUnit);
-			processConversionOperations(phaseOperations[Phases.CONVERSION]);
+			return phaseOperations;
 		}
-		catch (Exception npe) {
+		catch (Exception ex) {
 			throw new IllegalStateException(
 					"Phase operations not available from compilation unit");
 		}
@@ -208,24 +216,26 @@ public class GroovyCompiler {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void processConversionOperations(LinkedList conversionOperations) {
-		for (int i = 0; i < conversionOperations.size(); i++) {
-			Object operation = conversionOperations.get(i);
+		int index = getIndexOfASTTransformationVisitor(conversionOperations);
+		conversionOperations.add(index, new CompilationUnit.SourceUnitOperation() {
+			@Override
+			public void call(SourceUnit source) throws CompilationFailedException {
+				ASTNode[] nodes = new ASTNode[] { source.getAST() };
+				for (ASTTransformation transformation : GroovyCompiler.this.transformations) {
+					transformation.visit(nodes, source);
+				}
+			}
+		});
+	}
 
-			if (operation.getClass().getName()
+	private int getIndexOfASTTransformationVisitor(LinkedList<?> conversionOperations) {
+		for (int index = 0; index < conversionOperations.size(); index++) {
+			if (conversionOperations.get(index).getClass().getName()
 					.startsWith(ASTTransformationVisitor.class.getName())) {
-				conversionOperations.add(i, new CompilationUnit.SourceUnitOperation() {
-					@Override
-					public void call(SourceUnit source) throws CompilationFailedException {
-						ASTNode[] astNodes = new ASTNode[] { source.getAST() };
-						GroovyCompiler.this.dependencyCustomizerTransformation.visit(
-								astNodes, source);
-						GroovyCompiler.this.dependencyCoordinatesTransformation.visit(
-								astNodes, source);
-					}
-				});
-				break;
+				return index;
 			}
 		}
+		return conversionOperations.size();
 	}
 
 	/**
@@ -243,12 +253,8 @@ public class GroovyCompiler {
 
 			ImportCustomizer importCustomizer = new ImportCustomizer();
 
-			ServiceLoader<CompilerAutoConfiguration> customizers = ServiceLoader.load(
-					CompilerAutoConfiguration.class,
-					GroovyCompiler.class.getClassLoader());
-
 			// Additional auto configuration
-			for (CompilerAutoConfiguration autoConfiguration : customizers) {
+			for (CompilerAutoConfiguration autoConfiguration : GroovyCompiler.this.compilerAutoConfigurations) {
 				if (autoConfiguration.matches(classNode)) {
 					if (GroovyCompiler.this.configuration.isGuessImports()) {
 						autoConfiguration.applyImports(importCustomizer);
@@ -269,135 +275,5 @@ public class GroovyCompiler {
 			importCustomizer.call(source, context, classNode);
 		}
 
-	}
-
-	private class DependencyCustomizerAstTransformation implements ASTTransformation {
-
-		@Override
-		public void visit(ASTNode[] nodes, SourceUnit source) {
-
-			ServiceLoader<CompilerAutoConfiguration> customizers = ServiceLoader.load(
-					CompilerAutoConfiguration.class,
-					GroovyCompiler.class.getClassLoader());
-
-			for (ASTNode astNode : nodes) {
-				if (astNode instanceof ModuleNode) {
-					ModuleNode module = (ModuleNode) astNode;
-
-					DependencyCustomizer dependencyCustomizer = new DependencyCustomizer(
-							GroovyCompiler.this.loader, module,
-							GroovyCompiler.this.artifactCoordinatesResolver);
-
-					ClassNode firstClass = null;
-
-					for (ClassNode classNode : module.getClasses()) {
-						if (firstClass == null) {
-							firstClass = classNode;
-						}
-						for (CompilerAutoConfiguration autoConfiguration : customizers) {
-							if (autoConfiguration.matches(classNode)) {
-								if (GroovyCompiler.this.configuration
-										.isGuessDependencies()) {
-									autoConfiguration
-											.applyDependencies(dependencyCustomizer);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private class DefaultDependencyCoordinatesAstTransformation implements
-			ASTTransformation {
-
-		@Override
-		public void visit(ASTNode[] nodes, final SourceUnit source) {
-			for (ASTNode node : nodes) {
-				if (node instanceof ModuleNode) {
-					ModuleNode module = (ModuleNode) node;
-					for (ImportNode importNode : module.getImports()) {
-						visitAnnotatedNode(importNode);
-					}
-					for (ClassNode classNode : module.getClasses()) {
-						visitAnnotatedNode(classNode);
-						classNode.visitContents(new ClassCodeVisitorSupport() {
-							@Override
-							protected SourceUnit getSourceUnit() {
-								return source;
-							}
-
-							@Override
-							public void visitAnnotations(AnnotatedNode node) {
-								visitAnnotatedNode(node);
-							}
-						});
-					}
-				}
-			}
-		}
-
-		private void visitAnnotatedNode(AnnotatedNode annotatedNode) {
-			for (AnnotationNode annotationNode : annotatedNode.getAnnotations()) {
-				if (isGrabAnnotation(annotationNode)) {
-					transformGrabAnnotation(annotationNode);
-				}
-			}
-		}
-
-		private boolean isGrabAnnotation(AnnotationNode annotationNode) {
-			String annotationClassName = annotationNode.getClassNode().getName();
-			return annotationClassName.equals(Grab.class.getName())
-					|| annotationClassName.equals(Grab.class.getSimpleName());
-		}
-
-		private void transformGrabAnnotation(AnnotationNode grabAnnotation) {
-			grabAnnotation.setMember("initClass", new ConstantExpression(false));
-
-			Expression valueExpression = grabAnnotation.getMember("value");
-			String value = null;
-			if (valueExpression instanceof ConstantExpression) {
-				ConstantExpression constantExpression = (ConstantExpression) valueExpression;
-				Object valueObject = constantExpression.getValue();
-				if (valueObject instanceof String) {
-					value = (String) valueObject;
-					if (isConvenienceForm(value)) {
-						return;
-					}
-				}
-			}
-
-			applyGroupAndVersion(grabAnnotation, value);
-		}
-
-		private boolean isConvenienceForm(String value) {
-			return value.contains(":") || value.contains("#");
-		}
-
-		private void applyGroupAndVersion(AnnotationNode grabAnnotation, String module) {
-
-			if (module != null) {
-				grabAnnotation.setMember("module", new ConstantExpression(module));
-			}
-			else {
-				module = (String) ((ConstantExpression) grabAnnotation.getMembers().get(
-						"module")).getValue();
-			}
-
-			if (grabAnnotation.getMember("group") == null) {
-				ConstantExpression groupIdExpression = new ConstantExpression(
-						GroovyCompiler.this.artifactCoordinatesResolver
-								.getGroupId(module));
-				grabAnnotation.setMember("group", groupIdExpression);
-			}
-
-			if (grabAnnotation.getMember("version") == null) {
-				ConstantExpression versionExpression = new ConstantExpression(
-						GroovyCompiler.this.artifactCoordinatesResolver
-								.getVersion(module));
-				grabAnnotation.setMember("version", versionExpression);
-			}
-		}
 	}
 }
