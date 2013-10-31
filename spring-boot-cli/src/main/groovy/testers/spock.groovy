@@ -14,49 +14,34 @@
  * limitations under the License.
  */
 
-import org.junit.runner.Result
-import org.springframework.boot.cli.command.tester.Failure
 import org.springframework.boot.cli.command.tester.TestResults
 import spock.lang.Specification
-import spock.util.EmbeddedSpecRunner
 
 /**
  * Groovy script to run Spock tests inside the {@link TestCommand}.
  * Needs to be compiled along with the actual code to work properly.
  *
+ * NOTE: SpockTester depends on JUnitTester to actually run the tests
+ *
  * @author Greg Turnquist
  */
 class SpockTester extends AbstractTester {
 
-    @Override
-    protected Set<Class<?>> findTestableClasses(List<Class<?>> compiled) {
-        // Look for classes that implement spock.lang.Specification
-        Set<Class<?>> testable = new LinkedHashSet<Class<?>>()
-        for (Class<?> clazz : compiled) {
-            if (Specification.class.isAssignableFrom(clazz)) {
-                testable.add(clazz)
-            }
-        }
-        return testable
-    }
+	@Override
+	protected Set<Class<?>> findTestableClasses(List<Class<?>> compiled) {
+		// Look for classes that implement spock.lang.Specification
+		Set<Class<?>> testable = new LinkedHashSet<Class<?>>()
+		for (Class<?> clazz : compiled) {
+			if (Specification.class.isAssignableFrom(clazz)) {
+				testable.add(clazz)
+			}
+		}
+		return testable
+	}
 
-    @Override
-    protected TestResults test(Class<?>[] testable) {
-        Result results = new EmbeddedSpecRunner().runClasses(Arrays.asList(testable))
-
-        TestResults testResults = new TestResults()
-        testResults.setFailureCount(results.getFailureCount())
-        testResults.setRunCount(results.getRunCount())
-
-        List<org.springframework.boot.cli.command.tester.Failure> failures =
-            new ArrayList<Failure>()
-        for (org.junit.runner.notification.Failure failure : results.getFailures()) {
-            failures.add(new Failure(failure.getDescription().toString(), failure.getTrace()))
-        }
-
-        testResults.setFailures(failures.toArray(new Failure[0]))
-
-        return testResults
-    }
+	@Override
+	protected TestResults test(List<Class<?>> testable) {
+		return JUnitTester.runEmbeddedTests(testable)
+	}
 
 }
