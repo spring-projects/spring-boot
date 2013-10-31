@@ -118,9 +118,6 @@ public class SampleIntegrationTests {
 
 	@Test
 	public void integrationSample() throws Exception {
-		// Depends on 1.0.0.M1 of spring-integration-dsl-groovy-core
-		System.clearProperty("disableSpringSnapshotRepos");
-
 		String output = this.cli.run("samples/integration.groovy");
 		assertTrue("Wrong output: " + output, output.contains("Hello, World"));
 	}
