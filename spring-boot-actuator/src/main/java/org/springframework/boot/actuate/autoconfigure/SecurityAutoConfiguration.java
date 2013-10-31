@@ -57,7 +57,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
-import org.springframework.security.web.util.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or
@@ -299,10 +299,10 @@ public class SecurityAutoConfiguration {
 		private SecurityProperties security;
 
 		@Bean
-		public AuthenticationManager authenticationManager() throws Exception {
+		public AuthenticationManager authenticationManager(ObjectPostProcessor<Object> objectPostProcessor) throws Exception {
 
 			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> builder = new AuthenticationManagerBuilder(
-					ObjectPostProcessor.QUIESCENT_POSTPROCESSOR).inMemoryAuthentication();
+					objectPostProcessor).inMemoryAuthentication();
 			User user = this.security.getUser();
 
 			if (user.isDefaultPassword()) {
@@ -327,7 +327,7 @@ public class SecurityAutoConfiguration {
 		if (headers.getHsts() != Headers.HSTS.none) {
 			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.all;
 			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubdomains);
-			writer.setRequestMatcher(new AnyRequestMatcher());
+			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
 			configurer.addHeaderWriter(writer);
 		}
 		if (headers.isContentType()) {
