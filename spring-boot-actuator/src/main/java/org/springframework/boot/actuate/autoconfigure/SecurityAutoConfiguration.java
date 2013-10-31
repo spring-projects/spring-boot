@@ -98,6 +98,8 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 @EnableConfigurationProperties
 public class SecurityAutoConfiguration {
 
+	private static final String[] NO_PATHS = new String[0];
+
 	@Bean(name = "org.springframework.actuate.properties.SecurityProperties")
 	@ConditionalOnMissingBean
 	public SecurityProperties securityProperties() {
@@ -119,6 +121,7 @@ public class SecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
+	@ConditionalOnExpression("${security.management.enabled:true}")
 	public WebSecurityConfigurerAdapter managementWebSecurityConfigurerAdapter() {
 		return new ManagementWebSecurityConfigurerAdapter();
 	}
@@ -139,6 +142,9 @@ public class SecurityAutoConfiguration {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
+
+		@Autowired(required = false)
+		private EndpointHandlerMapping endpointHandlerMapping;
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
@@ -191,6 +197,10 @@ public class SecurityAutoConfiguration {
 		public void configure(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			List<String> ignored = new ArrayList<String>(this.security.getIgnored());
+			if (!this.security.getManagement().isEnabled()) {
+				ignored.addAll(Arrays.asList(getEndpointPaths(
+						this.endpointHandlerMapping, true)));
+			}
 			if (ignored.isEmpty()) {
 				ignored.addAll(DEFAULT_IGNORED);
 			}
@@ -220,8 +230,6 @@ public class SecurityAutoConfiguration {
 	private static class ManagementWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
-		private static final String[] NO_PATHS = new String[0];
-
 		@Autowired
 		private SecurityProperties security;
 
@@ -234,7 +242,8 @@ public class SecurityAutoConfiguration {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 
-			String[] paths = getEndpointPaths(true); // secure endpoints
+			// secure endpoints
+			String[] paths = getEndpointPaths(this.endpointHandlerMapping, true);
 			if (paths.length > 0 && this.security.getManagement().isEnabled()) {
 				// Always protect them if present
 				if (this.security.isRequireSsl()) {
@@ -262,28 +271,13 @@ public class SecurityAutoConfiguration {
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			ignoring.antMatchers(getEndpointPaths(false));
+			ignoring.antMatchers(getEndpointPaths(this.endpointHandlerMapping, false));
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
 			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
 			entryPoint.setRealmName(this.security.getBasic().getRealm());
 			return entryPoint;
-		}
-
-		private String[] getEndpointPaths(boolean secure) {
-			if (this.endpointHandlerMapping == null) {
-				return NO_PATHS;
-			}
-
-			List<Endpoint<?>> endpoints = this.endpointHandlerMapping.getEndpoints();
-			List<String> paths = new ArrayList<String>(endpoints.size());
-			for (Endpoint<?> endpoint : endpoints) {
-				if (endpoint.isSensitive() == secure) {
-					paths.add(endpoint.getPath());
-				}
-			}
-			return paths.toArray(new String[paths.size()]);
 		}
 
 	}
@@ -299,7 +293,8 @@ public class SecurityAutoConfiguration {
 		private SecurityProperties security;
 
 		@Bean
-		public AuthenticationManager authenticationManager(ObjectPostProcessor<Object> objectPostProcessor) throws Exception {
+		public AuthenticationManager authenticationManager(
+				ObjectPostProcessor<Object> objectPostProcessor) throws Exception {
 
 			InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> builder = new AuthenticationManagerBuilder(
 					objectPostProcessor).inMemoryAuthentication();
@@ -320,6 +315,22 @@ public class SecurityAutoConfiguration {
 
 		}
 
+	}
+
+	private static String[] getEndpointPaths(
+			EndpointHandlerMapping endpointHandlerMapping, boolean secure) {
+		if (endpointHandlerMapping == null) {
+			return NO_PATHS;
+		}
+
+		List<Endpoint<?>> endpoints = endpointHandlerMapping.getEndpoints();
+		List<String> paths = new ArrayList<String>(endpoints.size());
+		for (Endpoint<?> endpoint : endpoints) {
+			if (endpoint.isSensitive() == secure) {
+				paths.add(endpoint.getPath());
+			}
+		}
+		return paths.toArray(new String[paths.size()]);
 	}
 
 	private static void configureHeaders(HeadersConfigurer<?> configurer,
