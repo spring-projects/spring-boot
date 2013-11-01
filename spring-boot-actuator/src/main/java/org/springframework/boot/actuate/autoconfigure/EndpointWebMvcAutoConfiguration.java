@@ -50,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -103,7 +104,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		if (event.getApplicationContext() == this.applicationContext) {
-			if (ManagementServerPort.get(this.applicationContext) == ManagementServerPort.DIFFERENT) {
+			if (ManagementServerPort.get(this.applicationContext) == ManagementServerPort.DIFFERENT
+					&& this.applicationContext instanceof WebApplicationContext) {
 				createChildManagementContext();
 			}
 		}
