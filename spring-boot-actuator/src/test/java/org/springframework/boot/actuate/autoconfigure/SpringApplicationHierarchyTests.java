@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
@@ -28,7 +27,6 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Dave Syer
  * 
  */
-@Ignore("Unignore me when security configuration can be made conditional")
 public class SpringApplicationHierarchyTests {
 
 	private ConfigurableApplicationContext context;
