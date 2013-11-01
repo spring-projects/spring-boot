@@ -96,8 +96,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
  */
 @Configuration
 @ConditionalOnClass({ EnableWebSecurity.class })
-// @ConditionalOnMissingBean(SecurityAutoConfiguration.class)
-@EnableWebSecurity
+@ConditionalOnMissingBean(annotation = EnableWebSecurity.class)
 @EnableConfigurationProperties
 public class SecurityAutoConfiguration {
 
@@ -137,6 +136,7 @@ public class SecurityAutoConfiguration {
 
 	// Get the ignored paths in early
 	@Order(Ordered.HIGHEST_PRECEDENCE)
+	@EnableWebSecurity
 	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
 			SecurityConfigurer<Filter, WebSecurity> {
 
