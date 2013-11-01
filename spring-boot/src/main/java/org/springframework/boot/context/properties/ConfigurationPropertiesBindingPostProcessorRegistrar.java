@@ -38,9 +38,11 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
-		BeanDefinition beanDefinition = new RootBeanDefinition(
-				ConfigurationPropertiesBindingPostProcessor.class);
-		registry.registerBeanDefinition(BINDER_BEAN_NAME, beanDefinition);
+		if (!registry.containsBeanDefinition(BINDER_BEAN_NAME)) {
+			BeanDefinition beanDefinition = new RootBeanDefinition(
+					ConfigurationPropertiesBindingPostProcessor.class);
+			registry.registerBeanDefinition(BINDER_BEAN_NAME, beanDefinition);
+		}
 	}
 
 }
