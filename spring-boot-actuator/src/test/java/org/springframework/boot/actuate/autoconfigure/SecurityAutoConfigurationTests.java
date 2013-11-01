@@ -66,7 +66,7 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "security.ignored:none");
 		this.context.refresh();
-		// Just the application and\ management endpoints now
+		// Just the application and management endpoints now
 		assertEquals(2, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
 	}
@@ -81,8 +81,8 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
-		// Just the management endpoints now
-		assertEquals(1, this.context.getBean(FilterChainProxy.class).getFilterChains()
+		// Just the management endpoints and default ignores now
+		assertEquals(5, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
 	}
 
