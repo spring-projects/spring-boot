@@ -40,6 +40,7 @@ import org.springframework.boot.actuate.metrics.MetricRepository;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +49,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.http.MediaType;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
@@ -57,6 +59,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  * @author Phillip Webb
  */
 @Configuration
+@ConditionalOnClass(MediaType.class)
 public class EndpointAutoConfiguration {
 
 	@Autowired(required = false)
