@@ -18,6 +18,7 @@ package org.springframework.boot.builder;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
@@ -62,6 +64,28 @@ public class SpringApplicationBuilderTests {
 		assertThat(this.context.getEnvironment().getProperty("foo"),
 				is(equalTo("bucket")));
 		assertThat(this.context.getEnvironment().acceptsProfiles("foo"), is(true));
+	}
+
+	@Test
+	public void propertiesAsMap() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.sources(ExampleConfig.class)
+				.contextClass(StaticApplicationContext.class)
+				.properties(Collections.<String, Object> singletonMap("bar", "foo"));
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("foo")));
+	}
+
+	@Test
+	public void propertiesAsProperties() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder()
+				.sources(ExampleConfig.class)
+				.contextClass(StaticApplicationContext.class)
+				.properties(
+						StringUtils.splitArrayElementsIntoProperties(
+								new String[] { "bar=foo" }, "="));
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().getProperty("bar"), is(equalTo("foo")));
 	}
 
 	@Test
