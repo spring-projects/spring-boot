@@ -98,6 +98,9 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 @EnableConfigurationProperties
 public class SecurityAutoConfiguration {
 
+	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
+			"/images/**", "/**/favicon.ico");
+
 	private static final String[] NO_PATHS = new String[0];
 
 	@Bean(name = "org.springframework.actuate.properties.SecurityProperties")
@@ -130,9 +133,6 @@ public class SecurityAutoConfiguration {
 	@Order(Ordered.LOWEST_PRECEDENCE - 5)
 	private static class ApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
-
-		private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
-				"/images/**", "/**/favicon.ico");
 
 		@Autowired
 		private SecurityProperties security;
@@ -271,7 +271,19 @@ public class SecurityAutoConfiguration {
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			ignoring.antMatchers(getEndpointPaths(this.endpointHandlerMapping, false));
+			List<String> ignored = new ArrayList<String>();
+			if (!this.security.getBasic().isEnabled()) {
+				ignored.addAll(this.security.getIgnored());
+				if (ignored.isEmpty()) {
+					ignored.addAll(DEFAULT_IGNORED);
+				}
+				else if (ignored.contains("none")) {
+					ignored.remove("none");
+				}
+			}
+			ignored.addAll(Arrays.asList(getEndpointPaths(this.endpointHandlerMapping,
+					false)));
+			ignoring.antMatchers(ignored.toArray(new String[0]));
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
