@@ -80,12 +80,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			initializers.add(BeanUtils.instantiate(type));
 		}
 		if (mergedConfig instanceof WebMergedContextConfiguration) {
-			WebMergedContextConfiguration webConfig = (WebMergedContextConfiguration) mergedConfig;
-			MockServletContext servletContext = new MockServletContext(
-					webConfig.getResourceBasePath());
-			initializers.add(0, new ServletContextApplicationContextInitializer(
-					servletContext));
-			application.setApplicationContextClass(GenericWebApplicationContext.class);
+			new WebConfigurer().setup(mergedConfig, application, initializers);
 		}
 		else {
 			application.setWebEnvironment(false);
@@ -103,6 +98,19 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	@Override
 	protected String getResourceSuffix() {
 		return "-context.xml";
+	}
+
+	private static class WebConfigurer {
+		void setup(MergedContextConfiguration mergedConfig,
+				SpringApplication application,
+				List<ApplicationContextInitializer<?>> initializers) {
+			WebMergedContextConfiguration webConfig = (WebMergedContextConfiguration) mergedConfig;
+			MockServletContext servletContext = new MockServletContext(
+					webConfig.getResourceBasePath());
+			initializers.add(0, new ServletContextApplicationContextInitializer(
+					servletContext));
+			application.setApplicationContextClass(GenericWebApplicationContext.class);
+		}
 	}
 
 }
