@@ -22,6 +22,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.Filter;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -98,9 +101,6 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 @EnableConfigurationProperties
 public class SecurityAutoConfiguration {
 
-	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
-			"/images/**", "/**/favicon.ico");
-
 	private static final String[] NO_PATHS = new String[0];
 
 	@Bean(name = "org.springframework.actuate.properties.SecurityProperties")
@@ -129,6 +129,56 @@ public class SecurityAutoConfiguration {
 		return new ManagementWebSecurityConfigurerAdapter();
 	}
 
+	@Bean
+	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
+	public SecurityConfigurer<Filter, WebSecurity> ignoredPathsWebSecurityConfigurerAdapter() {
+		return new IgnoredPathsWebSecurityConfigurerAdapter();
+	}
+
+	// Get the ignored paths in early
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
+			SecurityConfigurer<Filter, WebSecurity> {
+
+		private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
+				"/images/**", "/**/favicon.ico");
+
+		@Autowired(required = false)
+		private ErrorController errorController;
+
+		@Autowired(required = false)
+		private EndpointHandlerMapping endpointHandlerMapping;
+
+		@Autowired
+		private SecurityProperties security;
+
+		@Override
+		public void configure(WebSecurity builder) throws Exception {
+		}
+
+		@Override
+		public void init(WebSecurity builder) throws Exception {
+			IgnoredRequestConfigurer ignoring = builder.ignoring();
+			ignoring.antMatchers(getEndpointPaths(this.endpointHandlerMapping, false));
+			List<String> ignored = new ArrayList<String>(this.security.getIgnored());
+			if (!this.security.getManagement().isEnabled()) {
+				ignored.addAll(Arrays.asList(getEndpointPaths(
+						this.endpointHandlerMapping, true)));
+			}
+			if (ignored.isEmpty()) {
+				ignored.addAll(DEFAULT_IGNORED);
+			}
+			else if (ignored.contains("none")) {
+				ignored.remove("none");
+			}
+			if (this.errorController != null) {
+				ignored.add(this.errorController.getErrorPath());
+			}
+			ignoring.antMatchers(ignored.toArray(new String[0]));
+		}
+
+	}
+
 	// Give user-supplied filters a chance to be last in line
 	@Order(Ordered.LOWEST_PRECEDENCE - 5)
 	private static class ApplicationWebSecurityConfigurerAdapter extends
@@ -139,12 +189,6 @@ public class SecurityAutoConfiguration {
 
 		@Autowired
 		private AuthenticationEventPublisher authenticationEventPublisher;
-
-		@Autowired(required = false)
-		private ErrorController errorController;
-
-		@Autowired(required = false)
-		private EndpointHandlerMapping endpointHandlerMapping;
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
@@ -191,26 +235,6 @@ public class SecurityAutoConfiguration {
 			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
 			entryPoint.setRealmName(this.security.getBasic().getRealm());
 			return entryPoint;
-		}
-
-		@Override
-		public void configure(WebSecurity builder) throws Exception {
-			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			List<String> ignored = new ArrayList<String>(this.security.getIgnored());
-			if (!this.security.getManagement().isEnabled()) {
-				ignored.addAll(Arrays.asList(getEndpointPaths(
-						this.endpointHandlerMapping, true)));
-			}
-			if (ignored.isEmpty()) {
-				ignored.addAll(DEFAULT_IGNORED);
-			}
-			else if (ignored.contains("none")) {
-				ignored.remove("none");
-			}
-			if (this.errorController != null) {
-				ignored.add(this.errorController.getErrorPath());
-			}
-			ignoring.antMatchers(ignored.toArray(new String[0]));
 		}
 
 		@Override
@@ -266,24 +290,6 @@ public class SecurityAutoConfiguration {
 
 			}
 
-		}
-
-		@Override
-		public void configure(WebSecurity builder) throws Exception {
-			IgnoredRequestConfigurer ignoring = builder.ignoring();
-			List<String> ignored = new ArrayList<String>();
-			if (!this.security.getBasic().isEnabled()) {
-				ignored.addAll(this.security.getIgnored());
-				if (ignored.isEmpty()) {
-					ignored.addAll(DEFAULT_IGNORED);
-				}
-				else if (ignored.contains("none")) {
-					ignored.remove("none");
-				}
-			}
-			ignored.addAll(Arrays.asList(getEndpointPaths(this.endpointHandlerMapping,
-					false)));
-			ignoring.antMatchers(ignored.toArray(new String[0]));
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
