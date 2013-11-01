@@ -17,10 +17,12 @@ package org.springframework.boot.builder;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -326,13 +328,7 @@ public class SpringApplicationBuilder {
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder properties(String... defaultProperties) {
-		this.defaultProperties.putAll(getMapFromKeyValuePairs(defaultProperties));
-		this.application.setDefaultProperties(this.defaultProperties);
-		if (this.parent != null) {
-			this.parent.properties(defaultProperties);
-			this.parent.environment(this.environment);
-		}
-		return this;
+		return properties(getMapFromKeyValuePairs(defaultProperties));
 	}
 
 	private Map<String, Object> getMapFromKeyValuePairs(String[] args) {
@@ -350,6 +346,25 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
+	 * Default properties for the environment in the form <code>key=value</code> or
+	 * <code>key:value</code>.
+	 * 
+	 * @param defaultProperties the properties to set.
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder properties(Properties defaultProperties) {
+		return properties(getMapFromProperties(defaultProperties));
+	}
+
+	private Map<String, Object> getMapFromProperties(Properties properties) {
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		for (Object key : Collections.list(properties.propertyNames())) {
+			map.put((String) key, properties.get(key));
+		}
+		return map;
+	}
+
+	/**
 	 * Default properties for the environment. Multiple calls to this method are
 	 * cumulative.
 	 * 
@@ -360,6 +375,11 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder properties(Map<String, Object> defaults) {
 		this.defaultProperties.putAll(defaults);
+		this.application.setDefaultProperties(this.defaultProperties);
+		if (this.parent != null) {
+			this.parent.properties(this.defaultProperties);
+			this.parent.environment(this.environment);
+		}
 		return this;
 	}
 
