@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -31,6 +32,7 @@ import org.springframework.util.StringUtils;
  * logging to help the user diagnose what classes are loaded.
  * 
  * @author Phillip Webb
+ * @author Greg Turnquist
  */
 public abstract class SpringBootCondition implements Condition {
 
@@ -39,18 +41,22 @@ public abstract class SpringBootCondition implements Condition {
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Outcome result = getMatchOutcome(context, metadata);
+		StringBuilder message = getMessage(metadata, result);
+
 		if (!result.isMatch()) {
 			// Log non-matching conditions at debug
 			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(getMessage(metadata, result));
+				this.logger.debug(message);
 			}
+			AutoConfigurationReport.registerDecision(context, message.toString(), getClassOrMethodName(metadata), result);
 			return false;
 		}
 
 		// Log matching conditions at trace
 		if (this.logger.isTraceEnabled()) {
-			this.logger.trace(getMessage(metadata, result));
+			this.logger.trace(message);
 		}
+		AutoConfigurationReport.registerDecision(context, message.toString(), getClassOrMethodName(metadata), result);
 		return true;
 	}
 
@@ -59,22 +65,27 @@ public abstract class SpringBootCondition implements Condition {
 		message.append("Condition ");
 		message.append(ClassUtils.getShortName(getClass()));
 		message.append(" on ");
-		if (metadata instanceof ClassMetadata) {
-			ClassMetadata classMetadata = (ClassMetadata) metadata;
-			message.append(classMetadata.getClassName());
-		}
-		else if (metadata instanceof MethodMetadata) {
-			MethodMetadata methodMetadata = (MethodMetadata) metadata;
-			message.append(methodMetadata.getDeclaringClassName());
-			message.append("#");
-			message.append(methodMetadata.getMethodName());
-		}
+		message.append(getClassOrMethodName(metadata));
 		message.append(result.isMatch() ? " matched" : " did not match");
 		if (StringUtils.hasLength(result.getMessage())) {
 			message.append(" due to ");
 			message.append(result.getMessage());
 		}
 		return message;
+	}
+
+	private String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
+		if (metadata instanceof ClassMetadata) {
+			ClassMetadata classMetadata = (ClassMetadata) metadata;
+			return classMetadata.getClassName();
+		}
+		else if (metadata instanceof MethodMetadata) {
+			MethodMetadata methodMetadata = (MethodMetadata) metadata;
+			return methodMetadata.getDeclaringClassName() + "#" + methodMetadata.getMethodName();
+		}
+		else {
+			return "";
+		}
 	}
 
 	/**
@@ -102,39 +113,4 @@ public abstract class SpringBootCondition implements Condition {
 		return condition.matches(context, metadata);
 	}
 
-	/**
-	 * Outcome for a match, including log message.
-	 */
-	protected final static class Outcome {
-
-		private final boolean match;
-
-		private final String message;
-
-		public Outcome(boolean match, String message) {
-			this.match = match;
-			this.message = message;
-		}
-
-		public boolean isMatch() {
-			return this.match;
-		}
-
-		public String getMessage() {
-			return this.message;
-		}
-
-		public static Outcome match() {
-			return match(null);
-		}
-
-		public static Outcome match(String message) {
-			return new Outcome(true, message);
-		}
-
-		public static Outcome noMatch(String message) {
-			return new Outcome(false, message);
-		}
-
-	}
 }

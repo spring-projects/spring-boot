@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.Outcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
