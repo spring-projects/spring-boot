@@ -18,8 +18,9 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.TestUtils;
-import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
@@ -28,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
+import org.springframework.boot.autoconfigure.report.AutoConfigurationReportCreator;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +41,7 @@ import static org.junit.Assert.assertNull;
  * 
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Greg Turnquist
  */
 public class EndpointAutoConfigurationTests {
 
@@ -62,6 +65,20 @@ public class EndpointAutoConfigurationTests {
 		assertNotNull(this.context.getBean(ShutdownEndpoint.class));
 		assertNotNull(this.context.getBean(TraceEndpoint.class));
 	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void noAutoConfigurationAuditEndpointByDefault() {
+		this.context.getBean(AutoConfigurationReportEndpoint.class);
+	}
+
+	@Test
+	public void autoconfigurationAuditEndpoints() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EndpointAutoConfiguration.class, AutoConfigurationReportCreator.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
+	}
+
 
 	@Test
 	public void testInfoEndpointConfiguration() throws Exception {
