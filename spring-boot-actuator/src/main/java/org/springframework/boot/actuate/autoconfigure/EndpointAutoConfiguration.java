@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -41,7 +42,9 @@ import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,9 +57,10 @@ import org.springframework.http.MediaType;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
  * {@link Endpoint}s.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Greg Turnquist
  */
 @Configuration
 @ConditionalOnClass(MediaType.class)
@@ -129,6 +133,13 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnBean(AutoConfigurationReport.class)
+	@ConditionalOnMissingBean
+	public AutoConfigurationReportEndpoint autoConfigurationAuditEndpoint() {
+		return new AutoConfigurationReportEndpoint();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();
@@ -139,7 +150,6 @@ public class EndpointAutoConfiguration {
 
 		@Autowired
 		private ConfigurableEnvironment environment = new StandardEnvironment();
-
 		@Value("${spring.git.properties:classpath:git.properties}")
 		private Resource gitProperties;
 
