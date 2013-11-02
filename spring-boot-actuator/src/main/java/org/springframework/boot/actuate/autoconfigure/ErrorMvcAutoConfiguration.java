@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.DefaultTemplateResolverConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -58,6 +59,7 @@ import org.springframework.web.servlet.View;
  * @author Dave Syer
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnWebApplication
 // Ensure this loads before the main WebMvcAutoConfiguration so that the error View is
 // available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
