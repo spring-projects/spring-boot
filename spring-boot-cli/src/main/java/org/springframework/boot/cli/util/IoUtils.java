@@ -74,7 +74,7 @@ public class IoUtils {
 	}
 
 	/**
-	 * Quietly closes the given {@link Closeables Closeable}. Any exceptions thrown by
+	 * Quietly closes the given {@link Closeable Closeables}. Any exceptions thrown by
 	 * {@link Closeable#close() close()} are swallowed. Any {@code null}
 	 * {@code Closeables} are ignored.
 	 * @param closeables The {@link Closeable closeables} to close
