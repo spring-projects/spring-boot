@@ -1,6 +1,17 @@
 # Spring Boot - Loader
-The Spring Boot Loader module allows JAR and WAR files that contain nested dependencies
-to be run using `java -jar archive.jar`.
+
+The Spring Boot Loader module allows JAR and WAR files that contain
+nested dependencies to be run using `java -jar archive.jar`. There are
+3 launcher classes (`JarLauncher`, `WarLauncher` and
+`PropertiesLauncher`). Their purpose is to load resources (.class
+files etc.) from nested JAR files or JAR files in directories (as
+opposed to explicitly on the classpath). In the case of the
+`[Jar|War]Launcher` the nested paths are fixed `(lib/*.jar` and
+`lib-provided/*.jar` for the WAR case) so you just add extra JARs in
+those locations if you want more. The `PropertiesLauncher` looks in
+`lib/` by default, but you can add additional locations by setting an
+environment variable `LOADER_PATH`or `loader.path` in
+`application.properties` (colon-separated list of directories).
 
 > **Note:** The quickest way to build a compatible archive is to use the
 > [spring-boot-maven-plugin](../spring-boot-maven-plugin) or
