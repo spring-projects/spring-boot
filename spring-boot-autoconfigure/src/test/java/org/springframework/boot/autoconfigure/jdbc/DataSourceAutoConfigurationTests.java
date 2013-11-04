@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.TestUtils;
@@ -82,7 +81,6 @@ public class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore
 	public void testExplicitDriverClassClearsUserName() throws Exception {
 		TestUtils
 				.addEnviroment(
