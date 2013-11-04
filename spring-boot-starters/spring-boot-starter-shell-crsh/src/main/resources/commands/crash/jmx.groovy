@@ -31,7 +31,7 @@ public class jmx extends BaseCommand {
   public void find(
       InvocationContext<ObjectName> context,
       @Usage("The object name pattern")
-      @Option(names = {"p", "pattern"})
+      @Option(names=["p", "pattern"])
       String pattern) throws Exception {
 
     //
