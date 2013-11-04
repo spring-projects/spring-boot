@@ -100,6 +100,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-shell-crsh</artifactId>
+				<version>0.5.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-websocket</artifactId>
 				<version>0.5.0.BUILD-SNAPSHOT</version>
 			</dependency>

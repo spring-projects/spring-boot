@@ -72,6 +72,11 @@
 			<artifactId>tomcat-embed-core</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.crashub</groupId>
+			<artifactId>crash.embed.spring</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework</groupId>

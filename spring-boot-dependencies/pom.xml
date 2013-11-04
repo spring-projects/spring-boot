@@ -47,6 +47,7 @@
 		<thymeleaf-extras-springsecurity3.version>2.0.1</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.1.3</thymeleaf-layout-dialect.version>
 		<tomcat.version>7.0.42</tomcat.version>
+		<crashub.version>1.3.0-beta8</crashub.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -480,6 +481,31 @@
 				<groupId>org.apache.geronimo.specs</groupId>
 				<artifactId>geronimo-jms_1.1_spec</artifactId>
 				<version>1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.cli</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.connectors.ssh</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.connectors.telnet</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.embed.spring</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.shell</artifactId>
+				<version>${crashub.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
