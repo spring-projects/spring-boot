@@ -89,6 +89,20 @@ public enum EmbeddedDatabaseConnection {
 	static EmbeddedDatabaseConnection override;
 
 	/**
+	 * Convenience method to determine if a given driver class name represents an embedded
+	 * database type.
+	 * 
+	 * @param driverClass the driver class
+	 * @return true if the driver class is one of the embedded types
+	 */
+	public static boolean isEmbedded(String driverClass) {
+		return driverClass != null
+				&& (driverClass.equals(HSQL.driverClass)
+						|| driverClass.equals(H2.driverClass) || driverClass
+							.equals(DERBY.driverClass));
+	}
+
+	/**
 	 * Returns the most suitable {@link EmbeddedDatabaseConnection} for the given class
 	 * loader.
 	 * @param classLoader the class loader used to check for classes

@@ -49,8 +49,12 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		this.pool = new BasicDataSource();
 		this.pool.setDriverClassName(getDriverClassName());
 		this.pool.setUrl(getUrl());
-		this.pool.setUsername(getUsername());
-		this.pool.setPassword(getPassword());
+		if (getUsername() != null) {
+			this.pool.setUsername(getUsername());
+		}
+		if (getPassword() != null) {
+			this.pool.setPassword(getPassword());
+		}
 		this.pool.setMaxActive(getMaxActive());
 		this.pool.setMaxIdle(getMaxIdle());
 		this.pool.setMinIdle(getMinIdle());
