@@ -86,7 +86,8 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	@PostConstruct
 	protected void initialize() throws Exception {
-		if (this.dataSource == null) {
+		if (this.dataSource == null
+				|| !this.environment.getProperty("initialize", Boolean.class, true)) {
 			logger.debug("No DataSource found so not initializing");
 			return;
 		}

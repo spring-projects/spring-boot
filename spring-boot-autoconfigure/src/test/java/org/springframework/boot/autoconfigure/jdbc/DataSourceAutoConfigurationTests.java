@@ -16,13 +16,19 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -73,16 +79,21 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testExplicitDriverClassClearsUserName() throws Exception {
-		TestUtils.addEnviroment(this.context,
-				"spring.datasource.driverClassName:com.mysql.jdbc.Driver",
-				"spring.datasource.url:jdbc:mysql://localhost");
+		TestUtils
+				.addEnviroment(
+						this.context,
+						"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
+						"spring.datasource.url:jdbc:foo://localhost",
+						"spring.datasource.initialize:false");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource bean = this.context.getBean(DataSource.class);
 		assertNotNull(bean);
 		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
-		assertEquals("com.mysql.jdbc.Driver", pool.getDriverClassName());
+		assertEquals(
+				"org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
+				pool.getDriverClassName());
 		assertNull(pool.getUsername());
 	}
 
@@ -192,6 +203,41 @@ public class DataSourceAutoConfigurationTests {
 			this.pool.setUrl("jdbc:hsqldb:target/overridedb");
 			this.pool.setUsername("sa");
 			return this.pool;
+		}
+
+	}
+
+	public static class DatabaseDriver implements Driver {
+
+		@Override
+		public Connection connect(String url, Properties info) throws SQLException {
+			return Mockito.mock(Connection.class);
+		}
+
+		@Override
+		public boolean acceptsURL(String url) throws SQLException {
+			return true;
+		}
+
+		@Override
+		public DriverPropertyInfo[] getPropertyInfo(String url, Properties info)
+				throws SQLException {
+			return new DriverPropertyInfo[0];
+		}
+
+		@Override
+		public int getMajorVersion() {
+			return 1;
+		}
+
+		@Override
+		public int getMinorVersion() {
+			return 0;
+		}
+
+		@Override
+		public boolean jdbcCompliant() {
+			return false;
 		}
 
 	}
