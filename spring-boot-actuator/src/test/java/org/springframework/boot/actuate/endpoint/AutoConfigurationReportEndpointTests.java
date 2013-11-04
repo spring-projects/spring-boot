@@ -16,27 +16,32 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import org.springframework.boot.autoconfigure.report.EnableAutoConfigurationReport;
+import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * Tests for {@link AutoConfigurationReportEndpoint}.
- *
+ * 
  * @author Greg Turnquist
  */
-public class AutoConfigurationReportEndpointTests extends AbstractEndpointTests<AutoConfigurationReportEndpoint> {
+public class AutoConfigurationReportEndpointTests extends
+		AbstractEndpointTests<AutoConfigurationReportEndpoint> {
 
 	public AutoConfigurationReportEndpointTests() {
-		super(Config.class, AutoConfigurationReportEndpoint.class,
-				"/autoconfigurationreport", true, "endpoints.autoconfigurationreport");
+		super(Config.class, AutoConfigurationReportEndpoint.class, "/auto", true,
+				"endpoints.autoconfigurationreport");
 	}
 
 	@Configuration
 	@EnableConfigurationProperties
-	@EnableAutoConfigurationReport
 	public static class Config {
+
+		@Bean
+		public AutoConfigurationReport autoConfigurationReport() {
+			return new AutoConfigurationReport();
+		}
 
 		@Bean
 		public AutoConfigurationReportEndpoint endpoint() {

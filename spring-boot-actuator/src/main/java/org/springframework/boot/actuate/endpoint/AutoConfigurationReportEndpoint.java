@@ -22,17 +22,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Endpoint to serve up autoconfiguration report if actuator is on the classpath.
- *
+ * 
  * @author Greg Turnquist
  */
 @ConfigurationProperties(name = "endpoints.autoconfigurationreport", ignoreUnknownFields = false)
-public class AutoConfigurationReportEndpoint extends AbstractEndpoint<AutoConfigurationReport> {
+public class AutoConfigurationReportEndpoint extends
+		AbstractEndpoint<AutoConfigurationReport> {
 
 	@Autowired
 	private AutoConfigurationReport autoConfigurationReport;
 
 	public AutoConfigurationReportEndpoint() {
-		super("/autoconfigurationreport");
+		super("/auto");
 	}
 
 	@Override

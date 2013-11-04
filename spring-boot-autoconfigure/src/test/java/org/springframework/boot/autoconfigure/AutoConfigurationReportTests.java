@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +27,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.JmsTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
+import org.springframework.boot.autoconfigure.report.AutoConfigurationReportApplicationContextInitializer;
 import org.springframework.boot.autoconfigure.report.CreatedBeanInfo;
-import org.springframework.boot.autoconfigure.report.EnableAutoConfigurationReport;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,9 +36,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jms.core.JmsTemplate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for {@link AutoConfigurationReport}.
- *
+ * 
  * @author Greg Turnquist
  */
 public class AutoConfigurationReportTests {
@@ -53,6 +53,8 @@ public class AutoConfigurationReportTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
+		new AutoConfigurationReportApplicationContextInitializer()
+				.initialize(this.context);
 		this.context.refresh();
 		AutoConfigurationReport autoconfigSettings = this.context
 				.getBean(AutoConfigurationReport.class);
@@ -86,7 +88,8 @@ public class AutoConfigurationReportTests {
 	@Test
 	public void rabbitReportTest() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class,
+				AutoConfigurationReport.class);
 		this.context.refresh();
 		AutoConfigurationReport autoconfigSettings = this.context
 				.getBean(AutoConfigurationReport.class);
@@ -117,13 +120,16 @@ public class AutoConfigurationReportTests {
 				totalDecisions += 1;
 				if (decision.contains("RabbitConnectionFactoryCreator matched")) {
 					foundRabbitConnectionFactory = true;
-				} else if (decision.contains("OnExpressionCondition")
+				}
+				else if (decision.contains("OnExpressionCondition")
 						&& decision.contains("amqpAdmin matched due to SpEL expression")) {
 					foundAmqpAdminExpressionCondition = true;
-				} else if (decision.contains("OnBeanCondition")
+				}
+				else if (decision.contains("OnBeanCondition")
 						&& decision.contains("amqpAdmin matched")) {
 					foundAmqpAdminBeanCondition = true;
-				} else if (decision.contains("rabbitTemplate matched")) {
+				}
+				else if (decision.contains("rabbitTemplate matched")) {
 					foundRabbitTemplateCondition = true;
 				}
 			}
@@ -139,7 +145,8 @@ public class AutoConfigurationReportTests {
 	public void verifyItGathersNegativeMatches() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration2.class,
-				JmsTemplateAutoConfiguration.class, MultipartAutoConfiguration.class);
+				JmsTemplateAutoConfiguration.class, MultipartAutoConfiguration.class,
+				AutoConfigurationReport.class);
 		this.context.refresh();
 		AutoConfigurationReport autoconfigSettings = this.context
 				.getBean(AutoConfigurationReport.class);
@@ -156,7 +163,8 @@ public class AutoConfigurationReportTests {
 						.contains("JmsTemplateAutoConfiguration#jmsTemplate did not match")
 						&& decision.contains("found the following [myOwnJmsTemplate]")) {
 					foundMyOwnJmsTemplateAndBackedOff = true;
-				} else if (decision.contains("MultipartAutoConfiguration did not match")
+				}
+				else if (decision.contains("MultipartAutoConfiguration did not match")
 						&& decision
 								.contains("list['javax.servlet.MultipartConfigElement']")
 						&& decision.contains("found no beans")) {
@@ -164,7 +172,8 @@ public class AutoConfigurationReportTests {
 				}
 			}
 		}
-		// varying situations might cause multi-conditional beans to evaluate in different orders
+		// varying situations might cause multi-conditional beans to evaluate in different
+		// orders
 		assertTrue(totalNegativeDecisions >= 2);
 		assertTrue(foundMyOwnJmsTemplateAndBackedOff);
 		assertTrue(didNotFindMultipartConfigElement);
@@ -172,12 +181,10 @@ public class AutoConfigurationReportTests {
 	}
 
 	@Configuration
-	@EnableAutoConfigurationReport
 	public static class TestConfiguration {
 	}
 
 	@Configuration
-	@EnableAutoConfigurationReport
 	public static class TestConfiguration2 {
 		@Bean
 		JmsTemplate myOwnJmsTemplate(javax.jms.ConnectionFactory connectionFactory) {
