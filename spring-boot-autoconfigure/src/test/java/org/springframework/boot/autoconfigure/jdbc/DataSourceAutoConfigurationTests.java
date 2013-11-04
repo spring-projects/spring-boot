@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ import org.springframework.util.ClassUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -52,6 +54,36 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
+	}
+
+	@Test
+	public void testEmbeddedTypeDefaultsUsername() throws Exception {
+		TestUtils.addEnviroment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertNotNull(bean);
+		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
+		assertEquals("org.hsqldb.jdbcDriver", pool.getDriverClassName());
+		assertEquals("sa", pool.getUsername());
+	}
+
+	@Test
+	public void testExplicitDriverClassClearsUserName() throws Exception {
+		TestUtils.addEnviroment(this.context,
+				"spring.datasource.driverClassName:com.mysql.jdbc.Driver",
+				"spring.datasource.url:jdbc:mysql://localhost");
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		assertNotNull(bean);
+		org.apache.tomcat.jdbc.pool.DataSource pool = (org.apache.tomcat.jdbc.pool.DataSource) bean;
+		assertEquals("com.mysql.jdbc.Driver", pool.getDriverClassName());
+		assertNull(pool.getUsername());
 	}
 
 	@Test

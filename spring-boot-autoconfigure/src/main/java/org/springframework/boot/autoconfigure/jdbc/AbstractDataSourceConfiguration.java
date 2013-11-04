@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -29,15 +30,16 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(name = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 @EnableConfigurationProperties
-public abstract class AbstractDataSourceConfiguration implements BeanClassLoaderAware {
+public abstract class AbstractDataSourceConfiguration implements BeanClassLoaderAware,
+		InitializingBean {
 
 	private String driverClassName;
 
 	private String url;
 
-	private String username = "sa";
+	private String username;
 
-	private String password = "";
+	private String password;
 
 	private int maxActive = 100;
 
@@ -53,41 +55,67 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	private ClassLoader classLoader;
 
+	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
+
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
+				.get(this.classLoader);
 	}
 
 	protected String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
 			return this.driverClassName;
 		}
-		EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
-				.get(this.classLoader);
-		this.driverClassName = embeddedDatabaseConnection.getDriverClassName();
-		if (!StringUtils.hasText(this.driverClassName)) {
+		String driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
+		if (!StringUtils.hasText(driverClassName)) {
 			throw new BeanCreationException(
 					"Cannot determine embedded database driver class for database type "
-							+ embeddedDatabaseConnection + ". If you want an embedded "
-							+ "database please put a supoprted one on the classpath.");
+							+ this.embeddedDatabaseConnection
+							+ ". If you want an embedded "
+							+ "database please put a supported one on the classpath.");
 		}
-		return this.driverClassName;
+		return driverClassName;
 	}
 
 	protected String getUrl() {
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
-		EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
-				.get(this.classLoader);
-		this.url = embeddedDatabaseConnection.getUrl();
-		if (!StringUtils.hasText(this.url)) {
+		String url = this.embeddedDatabaseConnection.getUrl();
+		if (!StringUtils.hasText(url)) {
 			throw new BeanCreationException(
 					"Cannot determine embedded database url for database type "
-							+ embeddedDatabaseConnection + ". If you want an embedded "
+							+ this.embeddedDatabaseConnection
+							+ ". If you want an embedded "
 							+ "database please put a supported on on the classpath.");
 		}
-		return this.url;
+		return url;
+	}
+
+	protected String getUsername() {
+		if (StringUtils.hasText(this.username)) {
+			return this.username;
+		}
+		if (EmbeddedDatabaseConnection.isEmbedded(this.driverClassName)) {
+			return "sa";
+		}
+		return null;
+	}
+
+	protected String getPassword() {
+		if (StringUtils.hasText(this.password)) {
+			return this.password;
+		}
+		if (EmbeddedDatabaseConnection.isEmbedded(this.driverClassName)) {
+			return "";
+		}
+		return null;
 	}
 
 	public void setDriverClassName(String driverClassName) {
@@ -128,14 +156,6 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	public void setTestOnReturn(boolean testOnReturn) {
 		this.testOnReturn = testOnReturn;
-	}
-
-	protected String getUsername() {
-		return this.username;
-	}
-
-	protected String getPassword() {
-		return this.password;
 	}
 
 	protected int getMaxActive() {
