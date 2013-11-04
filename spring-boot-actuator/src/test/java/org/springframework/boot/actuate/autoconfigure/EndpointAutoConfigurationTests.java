@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReportCreator;
+import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -74,11 +74,11 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void autoconfigurationAuditEndpoints() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class, AutoConfigurationReportCreator.class);
+		this.context.register(EndpointAutoConfiguration.class,
+				AutoConfigurationReport.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
 	}
-
 
 	@Test
 	public void testInfoEndpointConfiguration() throws Exception {

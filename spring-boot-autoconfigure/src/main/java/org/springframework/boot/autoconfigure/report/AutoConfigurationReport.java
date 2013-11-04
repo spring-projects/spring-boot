@@ -28,10 +28,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.Outcome;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -46,6 +48,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 public class AutoConfigurationReport implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
 
+	private static final String AUTO_CONFIGURATION_REPORT = "autoConfigurationReport";
+
 	private static Log logger = LogFactory.getLog(AutoConfigurationReport.class);
 
 	private Set<CreatedBeanInfo> beansCreated = new LinkedHashSet<CreatedBeanInfo>();
@@ -57,11 +61,25 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 
 	public static void registerDecision(ConditionContext context, String message,
 			String classOrMethodName, Outcome outcome) {
-		if (context.getBeanFactory().containsBeanDefinition("autoConfigurationReport")) {
+		if (context.getBeanFactory().containsBeanDefinition(AUTO_CONFIGURATION_REPORT)
+				|| context.getBeanFactory().containsSingleton(AUTO_CONFIGURATION_REPORT)) {
 			AutoConfigurationReport autoconfigurationReport = context.getBeanFactory()
 					.getBean(AutoConfigurationReport.class);
 			autoconfigurationReport.registerDecision(message, classOrMethodName, outcome);
 		}
+	}
+
+	public static AutoConfigurationReport registerReport(
+			ConfigurableApplicationContext applicationContext,
+			ConfigurableListableBeanFactory beanFactory) {
+		if (!beanFactory.containsBean(AutoConfigurationReport.AUTO_CONFIGURATION_REPORT)) {
+			AutoConfigurationReport report = new AutoConfigurationReport();
+			report.setApplicationContext(applicationContext);
+			beanFactory.registerSingleton(
+					AutoConfigurationReport.AUTO_CONFIGURATION_REPORT, report);
+		}
+		return beanFactory.getBean(AutoConfigurationReport.AUTO_CONFIGURATION_REPORT,
+				AutoConfigurationReport.class);
 	}
 
 	private void registerDecision(String message, String classOrMethodName,

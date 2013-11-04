@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.report.EnableAutoConfigurationReport;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,7 +33,6 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @EnableAutoConfiguration
-@EnableAutoConfigurationReport
 @ComponentScan
 @Controller
 public class SampleSecureApplication extends WebMvcConfigurerAdapter {
