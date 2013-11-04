@@ -74,25 +74,27 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for embedding an extensible shell into a Spring
- * Boot enabled application. By default a SSH daemon is started on port 2000 with a default username
- * <code>user</code> and password (default password is logged during application startup).
+ * {@link EnableAutoConfiguration Auto-configuration} for embedding an extensible shell
+ * into a Spring Boot enabled application. By default a SSH daemon is started on port 2000
+ * with a default username <code>user</code> and password (default password is logged
+ * during application startup).
  * 
  * <p>
- * This configuration will auto detect the existence of a Spring Security {@link AuthenticationManager}
- * and will delegate authentication requests for shell access to this detected instance.
+ * This configuration will auto detect the existence of a Spring Security
+ * {@link AuthenticationManager} and will delegate authentication requests for shell
+ * access to this detected instance.
  * 
  * <p>
- * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in the
- * application context. Those beans will get auto detected during startup and registered with the
- * underlying shell infrastructure.
+ * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
+ * the application context. Those beans will get auto detected during startup and
+ * registered with the underlying shell infrastructure.
  * 
  * <p>
- * Additional shell commands can be implemented using the guide and documentation at 
- * <a href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands using
- * the following classpath scanning pattern <code>classpath*:/commands/**</code>. To add different
- * locations or override the default use <code>shell.command_path_patterns</code> in your application
- * configuration.
+ * Additional shell commands can be implemented using the guide and documentation at <a
+ * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
+ * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
+ * add different locations or override the default use
+ * <code>shell.command_path_patterns</code> in your application configuration.
  * 
  * @author Christian Dupuis
  */
@@ -104,8 +106,7 @@ public class CrshAutoConfiguration {
 
 	@Autowired
 	private CrshProperties properties;
-	
-	
+
 	@Bean
 	@ConditionalOnExpression("#{environment['shell.auth'] == 'jaas'}")
 	@ConditionalOnMissingBean({ AuthenticationProperties.class })
@@ -126,7 +127,7 @@ public class CrshAutoConfiguration {
 	public AuthenticationProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
-	
+
 	@Bean
 	@ConditionalOnExpression("#{environment['shell.auth'] == 'spring'}")
 	@ConditionalOnMissingBean({ AuthenticationProperties.class })
@@ -144,23 +145,21 @@ public class CrshAutoConfiguration {
 	@ConditionalOnMissingBean({ PluginLifeCycle.class })
 	public PluginLifeCycle shellBootstrap() {
 		CrshBootstrap bs = new CrshBootstrap();
-		bs.setConfig(properties.mergeProperties(new Properties()));
+		bs.setConfig(this.properties.mergeProperties(new Properties()));
 		return bs;
 	}
 
-
 	public static class CrshBootstrap extends PluginLifeCycle {
-		
+
 		@Autowired
 		private ListableBeanFactory beanFactory;
-		
+
 		@Autowired
 		private CrshProperties properties;
 
 		@Autowired
 		private ResourcePatternResolver resourceLoader;
 
-		
 		@PreDestroy
 		public void destroy() {
 			stop();
@@ -168,77 +167,83 @@ public class CrshAutoConfiguration {
 
 		@PostConstruct
 		public void init() throws Exception {
-			FS commandFileSystem = createFileSystem(properties.getCommandPathPatterns());
-			FS confFileSystem = createFileSystem(properties.getConfigPathPatterns());
+			FS commandFileSystem = createFileSystem(this.properties
+					.getCommandPathPatterns());
+			FS confFileSystem = createFileSystem(this.properties.getConfigPathPatterns());
 
-			PluginDiscovery discovery = new BeanFactoryFilteringPluginDiscovery(resourceLoader.getClassLoader(),
-					beanFactory, properties.getDisabledPlugins());
+			PluginDiscovery discovery = new BeanFactoryFilteringPluginDiscovery(
+					this.resourceLoader.getClassLoader(), this.beanFactory,
+					this.properties.getDisabledPlugins());
 
-			PluginContext context = new PluginContext(discovery, createPluginContextAttributes(), 
-					commandFileSystem, confFileSystem,	resourceLoader.getClassLoader());
+			PluginContext context = new PluginContext(discovery,
+					createPluginContextAttributes(), commandFileSystem, confFileSystem,
+					this.resourceLoader.getClassLoader());
 
 			context.refresh();
 			start(context);
 		}
 
-		
-		protected FS createFileSystem(String[] pathPatterns) throws IOException, URISyntaxException {
+		protected FS createFileSystem(String[] pathPatterns) throws IOException,
+				URISyntaxException {
 			Assert.notNull(pathPatterns);
 			FS cmdFS = new FS();
 			for (String pathPattern : pathPatterns) {
-				cmdFS.mount(new SimpleFileSystemDriver(new DirectoryHandle(pathPattern, resourceLoader)));
+				cmdFS.mount(new SimpleFileSystemDriver(new DirectoryHandle(pathPattern,
+						this.resourceLoader)));
 			}
 			return cmdFS;
 		}
-		
+
 		protected Map<String, Object> createPluginContextAttributes() {
 			Map<String, Object> attributes = new HashMap<String, Object>();
-			String bootVersion = CrshAutoConfiguration.class.getPackage().getImplementationVersion();
+			String bootVersion = CrshAutoConfiguration.class.getPackage()
+					.getImplementationVersion();
 			if (bootVersion != null) {
 				attributes.put("spring.boot.version", bootVersion);
 			}
 			attributes.put("spring.version", SpringVersion.getVersion());
-			if (beanFactory != null) {
-				attributes.put("spring.beanfactory", beanFactory);
+			if (this.beanFactory != null) {
+				attributes.put("spring.beanfactory", this.beanFactory);
 			}
 			return attributes;
 		}
-		
+
 	}
-	
 
 	@SuppressWarnings("rawtypes")
-	private static class AuthenticationManagerAdapter extends CRaSHPlugin<AuthenticationPlugin> implements
-			AuthenticationPlugin<String> {
-		
-		private static final PropertyDescriptor<String> ROLES = PropertyDescriptor.create(
-				"auth.spring.roles", "ADMIN", "Comma separated list of roles required to access the shell");
-		
-	
-		@Autowired(required=false)
+	private static class AuthenticationManagerAdapter extends
+			CRaSHPlugin<AuthenticationPlugin> implements AuthenticationPlugin<String> {
+
+		private static final PropertyDescriptor<String> ROLES = PropertyDescriptor
+				.create("auth.spring.roles", "ADMIN",
+						"Comma separated list of roles required to access the shell");
+
+		@Autowired(required = false)
 		private AccessDecisionManager accessDecisionManager;
-		
+
 		@Autowired
 		private AuthenticationManager authenticationManager;
-		
+
 		private String[] roles = new String[] { "ROLE_ADMIN" };
-		
-		
+
 		@Override
 		public boolean authenticate(String username, String password) throws Exception {
 			// Authenticate first to make credentials are valid
-			Authentication token = new UsernamePasswordAuthenticationToken(username, password);
+			Authentication token = new UsernamePasswordAuthenticationToken(username,
+					password);
 			try {
-				token = authenticationManager.authenticate(token);
+				token = this.authenticationManager.authenticate(token);
 			}
 			catch (AuthenticationException ae) {
 				return false;
 			}
-			
+
 			// Test access rights if a Spring Security AccessDecisionManager is installed
-			if (accessDecisionManager != null && token.isAuthenticated() && roles != null) {
+			if (this.accessDecisionManager != null && token.isAuthenticated()
+					&& this.roles != null) {
 				try {
-					accessDecisionManager.decide(token, this, SecurityConfig.createList(roles));
+					this.accessDecisionManager.decide(token, this,
+							SecurityConfig.createList(this.roles));
 				}
 				catch (AccessDeniedException e) {
 					return false;
@@ -256,7 +261,7 @@ public class CrshAutoConfiguration {
 		public AuthenticationPlugin<String> getImplementation() {
 			return this;
 		}
-		
+
 		@Override
 		public String getName() {
 			return "spring";
@@ -266,35 +271,33 @@ public class CrshAutoConfiguration {
 		public void init() {
 			String rolesPropertyValue = getContext().getProperty(ROLES);
 			if (rolesPropertyValue != null) {
-				this.roles = StringUtils.commaDelimitedListToStringArray(rolesPropertyValue);
+				this.roles = StringUtils
+						.commaDelimitedListToStringArray(rolesPropertyValue);
 			}
 		}
 
-		
 		@Override
 		protected Iterable<PropertyDescriptor<?>> createConfigurationCapabilities() {
-			return Arrays.<PropertyDescriptor<?>>asList(ROLES);
+			return Arrays.<PropertyDescriptor<?>> asList(ROLES);
 		}
-		
+
 	}
-	
-	
-	private static class BeanFactoryFilteringPluginDiscovery extends ServiceLoaderDiscovery {
+
+	private static class BeanFactoryFilteringPluginDiscovery extends
+			ServiceLoaderDiscovery {
 
 		private ListableBeanFactory beanFactory;
-		
+
 		private String[] disabledPlugins;
 
-		
-		public BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader, ListableBeanFactory beanFactory, 
-				String[] disabledPlugins)
+		public BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
+				ListableBeanFactory beanFactory, String[] disabledPlugins)
 				throws NullPointerException {
 			super(classLoader);
 			this.beanFactory = beanFactory;
 			this.disabledPlugins = disabledPlugins;
 		}
 
-		
 		@Override
 		@SuppressWarnings("rawtypes")
 		public Iterable<CRaSHPlugin<?>> getPlugins() {
@@ -306,29 +309,31 @@ public class CrshAutoConfiguration {
 				}
 			}
 
-			Collection<CRaSHPlugin> springPlugins = beanFactory.getBeansOfType(CRaSHPlugin.class).values();
+			Collection<CRaSHPlugin> springPlugins = this.beanFactory.getBeansOfType(
+					CRaSHPlugin.class).values();
 			for (CRaSHPlugin<?> p : springPlugins) {
 				if (!shouldFilter(p)) {
 					plugins.add(p);
 				}
 			}
-			
+
 			return plugins;
 		}
-		
-		
+
 		@SuppressWarnings("rawtypes")
 		protected boolean shouldFilter(CRaSHPlugin<?> plugin) {
 			Assert.notNull(plugin);
-			
+
 			Set<Class> classes = ClassUtils.getAllInterfacesAsSet(plugin);
 			classes.add(plugin.getClass());
-			
+
 			for (Class<?> clazz : classes) {
-				if (disabledPlugins != null && disabledPlugins.length > 0) {
-					for (String disabledPlugin : disabledPlugins) {
-						if (ClassUtils.getShortName(clazz).equalsIgnoreCase(disabledPlugin) 
-								|| ClassUtils.getQualifiedName(clazz).equalsIgnoreCase(disabledPlugin)) {
+				if (this.disabledPlugins != null && this.disabledPlugins.length > 0) {
+					for (String disabledPlugin : this.disabledPlugins) {
+						if (ClassUtils.getShortName(clazz).equalsIgnoreCase(
+								disabledPlugin)
+								|| ClassUtils.getQualifiedName(clazz).equalsIgnoreCase(
+										disabledPlugin)) {
 							return true;
 						}
 					}
@@ -336,22 +341,20 @@ public class CrshAutoConfiguration {
 			}
 			return false;
 		}
-		
+
 	}
-	
 
 	private static class SimpleFileSystemDriver extends AbstractFSDriver<ResourceHandle> {
 
 		private ResourceHandle root;
 
-
 		public SimpleFileSystemDriver(ResourceHandle handle) {
 			this.root = handle;
 		}
 
-		
 		@Override
-		public Iterable<ResourceHandle> children(ResourceHandle handle) throws IOException {
+		public Iterable<ResourceHandle> children(ResourceHandle handle)
+				throws IOException {
 			if (handle instanceof DirectoryHandle) {
 				return ((DirectoryHandle) handle).members();
 			}
@@ -379,32 +382,30 @@ public class CrshAutoConfiguration {
 		@Override
 		public Iterator<InputStream> open(ResourceHandle handle) throws IOException {
 			if (handle instanceof FileHandle) {
-				return Collections.singletonList(((FileHandle) handle).openStream()).iterator();
+				return Collections.singletonList(((FileHandle) handle).openStream())
+						.iterator();
 			}
-			return Collections.<InputStream>emptyList().iterator();
+			return Collections.<InputStream> emptyList().iterator();
 		}
 
 		@Override
 		public ResourceHandle root() throws IOException {
-			return root;
+			return this.root;
 		}
 
 	}
-	
-	
+
 	private static class DirectoryHandle extends ResourceHandle {
 
 		private ResourcePatternResolver resourceLoader;
-
 
 		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader) {
 			super(name);
 			this.resourceLoader = resourceLoader;
 		}
 
-		
 		public List<ResourceHandle> members() throws IOException {
-			Resource[] resources = resourceLoader.getResources(getName());
+			Resource[] resources = this.resourceLoader.getResources(getName());
 			List<ResourceHandle> files = new ArrayList<ResourceHandle>();
 			for (Resource resource : resources) {
 				if (!resource.getURL().getPath().endsWith("/")) {
@@ -415,48 +416,43 @@ public class CrshAutoConfiguration {
 		}
 
 	}
-	
 
 	private static class FileHandle extends ResourceHandle {
 
 		private Resource resource;
-
 
 		public FileHandle(String name, Resource resource) {
 			super(name);
 			this.resource = resource;
 		}
 
-		
 		public InputStream openStream() throws IOException {
 			return this.resource.getInputStream();
 		}
-		
+
 		public long getLastModified() {
 			try {
 				return this.resource.lastModified();
 			}
-			catch (IOException e) {}
+			catch (IOException e) {
+			}
 			return -1;
 		}
-		
+
 	}
-	
 
 	private abstract static class ResourceHandle {
 
 		private String name;
 
-		
 		public ResourceHandle(String name) {
 			this.name = name;
 		}
 
-		
 		public String getName() {
-			return name;
+			return this.name;
 		}
-		
+
 	}
-	
+
 }
