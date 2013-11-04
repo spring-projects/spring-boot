@@ -27,6 +27,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -72,6 +73,17 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 				DispatcherServletAutoConfiguration.class);
 		verifyContext();
 		assertEquals(2, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+	}
+
+	@Test
+	public void contextAlreadyHasDispatcherServletAndRegistration() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				DispatcherServletWithRegistrationConfiguration.class,
+				EmbeddedContainerConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		verifyContext();
+		assertEquals(1, this.context.getBeanNamesForType(DispatcherServlet.class).length);
 	}
 
 	@Test
@@ -135,6 +147,21 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		@Bean
 		public DispatcherServlet springServlet() {
 			return new DispatcherServlet();
+		}
+
+	}
+
+	@Configuration
+	public static class DispatcherServletWithRegistrationConfiguration {
+
+		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+		public DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
+
+		@Bean
+		public ServletRegistrationBean dispatcherRegistration() {
+			return new ServletRegistrationBean(dispatcherServlet(), "/app/*");
 		}
 
 	}
