@@ -35,22 +35,23 @@ public class InMemoryMetricRepository implements MetricRepository {
 
 	@Override
 	public void increment(String metricName, int amount, Date timestamp) {
-		Measurement current = this.metrics.get(metricName);
-		if (current != null) {
-			Object lock = this.locks.putIfAbsent(metricName, new Object());
-			if (lock == null) {
-				lock = this.locks.get(metricName);
-			}
-			synchronized (lock) {
-				current = this.metrics.get(metricName);
+		Object lock = this.locks.putIfAbsent(metricName, new Object());
+		if (lock == null) {
+			lock = this.locks.get(metricName);
+		}
+		synchronized (lock) {
+			Measurement current = this.metrics.get(metricName);
+			if (current != null) {
 				Metric metric = current.getMetric();
 				this.metrics.replace(metricName, current, new Measurement(timestamp,
 						metric.increment(amount)));
 				return;
 			}
+			else {
+				this.metrics.putIfAbsent(metricName, new Measurement(timestamp,
+						new Metric(metricName, amount)));
+			}
 		}
-		this.metrics.putIfAbsent(metricName, new Measurement(timestamp, new Metric(
-				metricName, amount)));
 	}
 
 	@Override
