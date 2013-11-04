@@ -70,6 +70,7 @@ public class SpringApplicationBuilder {
 	private Map<String, Object> defaultProperties = new LinkedHashMap<String, Object>();
 	private ConfigurableEnvironment environment;
 	private Set<String> additionalProfiles = new LinkedHashSet<String>();
+	private Set<ApplicationContextInitializer<?>> initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
 
 	public SpringApplicationBuilder(Object... sources) {
 		this.application = new SpringApplication(sources);
@@ -466,12 +467,13 @@ public class SpringApplicationBuilder {
 		Set<ApplicationContextInitializer<?>> target = new LinkedHashSet<ApplicationContextInitializer<?>>();
 		if (prepend) {
 			target.addAll(Arrays.asList(initializers));
-			target.addAll(this.application.getInitializers());
+			target.addAll(this.initializers);
 		}
 		else {
-			target.addAll(this.application.getInitializers());
+			target.addAll(this.initializers);
 			target.addAll(Arrays.asList(initializers));
 		}
+		this.initializers = target;
 		this.application.setInitializers(target);
 	}
 
