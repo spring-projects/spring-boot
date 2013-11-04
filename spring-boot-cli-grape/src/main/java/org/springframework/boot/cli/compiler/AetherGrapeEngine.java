@@ -141,8 +141,18 @@ public class AetherGrapeEngine implements GrapeEngine {
 			}
 		});
 
-		LocalRepository localRepo = new LocalRepository(new File(
-				System.getProperty("user.home"), ".m2/repository"));
+		String grapeRootProperty = System.getProperty("grape.root");
+		File root;
+		if (grapeRootProperty != null && grapeRootProperty.trim().length() > 0) {
+			root = new File(grapeRootProperty);
+
+		}
+		else {
+			root = new File(System.getProperty("user.home"), ".m2");
+		}
+
+		LocalRepository localRepo = new LocalRepository(new File(root, "repository"));
+
 		repositorySystemSession.setLocalRepositoryManager(this.repositorySystem
 				.newLocalRepositoryManager(repositorySystemSession, localRepo));
 
