@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import joptsimple.OptionSet;
 
@@ -46,11 +45,8 @@ import org.springframework.boot.cli.util.FileUtils;
  */
 public class TestCommand extends OptionParsingCommand {
 
-	private TestOptionHandler testOptionHandler;
-
 	public TestCommand() {
 		super("test", "Test a groovy script", new TestOptionHandler());
-		this.testOptionHandler = (TestOptionHandler) this.getHandler();
 	}
 
 	@Override
@@ -59,7 +55,7 @@ public class TestCommand extends OptionParsingCommand {
 	}
 
 	public TestResults getResults() {
-		return this.testOptionHandler.results;
+		return ((TestOptionHandler) this.getHandler()).results;
 	}
 
 	private static class TestGroovyCompilerConfiguration implements
@@ -79,27 +75,17 @@ public class TestCommand extends OptionParsingCommand {
 		public String getClasspath() {
 			return "";
 		}
-
-		public Level getLogLevel() {
-			return Level.INFO;
-		}
 	}
 
 	private static class TestOptionHandler extends OptionHandler {
 
-		private final GroovyCompiler compiler;
 		private TestResults results;
-
-		public TestOptionHandler() {
-			TestGroovyCompilerConfiguration configuration = new TestGroovyCompilerConfiguration();
-			this.compiler = new GroovyCompiler(configuration);
-			if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
-				System.setProperty("groovy.grape.report.downloads", "true");
-			}
-		}
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
+			TestGroovyCompilerConfiguration configuration = new TestGroovyCompilerConfiguration();
+			GroovyCompiler compiler = new GroovyCompiler(configuration);
+
 			FileOptions fileOptions = new FileOptions(options, getClass()
 					.getClassLoader());
 
@@ -114,13 +100,13 @@ public class TestCommand extends OptionParsingCommand {
 
 			// Compile - Pass 1 - compile source code to see what test libraries were
 			// pulled in
-			Object[] sources = this.compiler.sources(fileOptions.getFilesArray());
+			Object[] sources = compiler.sources(fileOptions.getFilesArray());
 			List<File> testerFiles = compileAndCollectTesterFiles(sources);
 
 			// Compile - Pass 2 - add appropriate testers
 			List<File> files = new ArrayList<File>(fileOptions.getFiles());
 			files.addAll(testerFiles);
-			sources = this.compiler.sources(files.toArray(new File[files.size()]));
+			sources = compiler.sources(files.toArray(new File[files.size()]));
 			if (sources.length == 0) {
 				throw new RuntimeException("No classes found in '" + files + "'");
 			}

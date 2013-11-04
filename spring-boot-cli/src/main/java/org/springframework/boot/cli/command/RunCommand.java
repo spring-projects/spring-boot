@@ -76,7 +76,7 @@ public class RunCommand extends OptionParsingCommand {
 		protected void options() {
 			this.watchOption = option("watch", "Watch the specified file for changes");
 			this.localOption = option("local",
-					"Accumulate the dependencies in a local folder (./grapes)");
+					"Accumulate the dependencies in a local folder (./repository)");
 			this.editOption = option(asList("edit", "e"),
 					"Open the file with the default system editor");
 			this.noGuessImportsOption = option("no-guess-imports",
