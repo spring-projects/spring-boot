@@ -20,37 +20,39 @@ import org.springframework.boot.autoconfigure.condition.Outcome;
 
 /**
  * Collects details about decision made during autoconfiguration (pass or fail)
- *
+ * 
  * @author Greg Turnquist
  */
 public class AutoConfigurationDecision {
+
 	private final String message;
 	private final String classOrMethodName;
 	private final Outcome outcome;
 
-	public AutoConfigurationDecision(String message, String classOrMethodName, Outcome outcome) {
+	public AutoConfigurationDecision(String message, String classOrMethodName,
+			Outcome outcome) {
 		this.message = message;
 		this.classOrMethodName = classOrMethodName;
 		this.outcome = outcome;
 	}
 
 	public String getMessage() {
-		return message;
+		return this.message;
 	}
 
 	public String getClassOrMethodName() {
-		return classOrMethodName;
+		return this.classOrMethodName;
 	}
 
 	public Outcome getOutcome() {
-		return outcome;
+		return this.outcome;
 	}
 
 	@Override
 	public String toString() {
-		return "AutoConfigurationDecision{" + "message='" + message + '\''
-				+ ", classOrMethodName='" + classOrMethodName + '\'' + ", outcome="
-				+ outcome + '}';
+		return "AutoConfigurationDecision{" + "message='" + this.message + '\''
+				+ ", classOrMethodName='" + this.classOrMethodName + '\'' + ", outcome="
+				+ this.outcome + '}';
 	}
 
 	@Override
@@ -62,10 +64,10 @@ public class AutoConfigurationDecision {
 
 		AutoConfigurationDecision decision = (AutoConfigurationDecision) o;
 
-		if (message != null ? !message.equals(decision.message)
+		if (this.message != null ? !this.message.equals(decision.message)
 				: decision.message != null)
 			return false;
-		if (outcome != null ? !outcome.equals(decision.outcome)
+		if (this.outcome != null ? !this.outcome.equals(decision.outcome)
 				: decision.outcome != null)
 			return false;
 
@@ -74,8 +76,8 @@ public class AutoConfigurationDecision {
 
 	@Override
 	public int hashCode() {
-		int result = message != null ? message.hashCode() : 0;
-		result = 31 * result + (outcome != null ? outcome.hashCode() : 0);
+		int result = this.message != null ? this.message.hashCode() : 0;
+		result = 31 * result + (this.outcome != null ? this.outcome.hashCode() : 0);
 		return result;
 	}
 }

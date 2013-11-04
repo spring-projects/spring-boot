@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.util.ClassUtils;
 
 /**
  * Bean used to gather autoconfiguration decisions, and then generate a collection of info
@@ -56,7 +57,7 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 	private Map<String, List<AutoConfigurationDecision>> autoconfigurationDecisions = new LinkedHashMap<String, List<AutoConfigurationDecision>>();
 	private Map<String, List<String>> positive = new LinkedHashMap<String, List<String>>();
 	private Map<String, List<String>> negative = new LinkedHashMap<String, List<String>>();
-	private ApplicationContext context;
+	private ConfigurableApplicationContext context;
 	private boolean initialized = false;
 
 	public static void registerDecision(ConditionContext context, String message,
@@ -64,7 +65,7 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 		if (context.getBeanFactory().containsBeanDefinition(AUTO_CONFIGURATION_REPORT)
 				|| context.getBeanFactory().containsSingleton(AUTO_CONFIGURATION_REPORT)) {
 			AutoConfigurationReport autoconfigurationReport = context.getBeanFactory()
-					.getBean(AutoConfigurationReport.class);
+					.getBean(AUTO_CONFIGURATION_REPORT, AutoConfigurationReport.class);
 			autoconfigurationReport.registerDecision(message, classOrMethodName, outcome);
 		}
 	}
@@ -120,7 +121,7 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
-		this.context = applicationContext;
+		this.context = (ConfigurableApplicationContext) applicationContext;
 	}
 
 	@Override
@@ -133,22 +134,30 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 			synchronized (this) {
 				if (!this.initialized) {
 					this.initialized = true;
-					splitDecisionsIntoPositiveAndNegative();
-					scanPositiveDecisionsForBeansBootCreated();
-					if (this.context.getEnvironment().getProperty("debug", Boolean.class,
-							false)) {
-						logger.info("Created beans:");
-						for (CreatedBeanInfo info : this.beansCreated) {
-							logger.info(info);
-						}
-						logger.info("Negative decisions:");
-						for (String key : this.negative.keySet()) {
-							logger.info(key + ": " + this.negative.get(key));
+					try {
+						splitDecisionsIntoPositiveAndNegative();
+						scanPositiveDecisionsForBeansBootCreated();
+					}
+					finally {
+						if (shouldLogReport()) {
+							logger.info("Created beans:");
+							for (CreatedBeanInfo info : this.beansCreated) {
+								logger.info(info);
+							}
+							logger.info("Negative decisions:");
+							for (String key : this.negative.keySet()) {
+								logger.info(key + ": " + this.negative.get(key));
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private boolean shouldLogReport() {
+		return this.context.getEnvironment().getProperty("debug", Boolean.class, false)
+				|| !this.context.isActive();
 	}
 
 	/**
@@ -194,21 +203,36 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 			for (AutoConfigurationDecision decision : this.autoconfigurationDecisions
 					.get(key)) {
 				for (String beanName : this.context.getBeanDefinitionNames()) {
-					Object bean = this.context.getBean(beanName);
+					Object bean = null;
 					if (decision.getMessage().contains(beanName)
 							&& decision.getMessage().contains("matched")) {
-						boolean anyMethodsAreBeans = false;
-						for (Method method : bean.getClass().getMethods()) {
-							if (this.context.containsBean(method.getName())) {
-								this.beansCreated.add(new CreatedBeanInfo(method
-										.getName(), method.getReturnType(), this.positive
-										.get(key)));
-								anyMethodsAreBeans = true;
+						try {
+							bean = this.context.getBean(beanName);
+							boolean anyMethodsAreBeans = false;
+							for (Method method : bean.getClass().getMethods()) {
+								if (this.context.containsBean(method.getName())) {
+									this.beansCreated.add(new CreatedBeanInfo(method
+											.getName(), method.getReturnType(),
+											this.positive.get(key)));
+									anyMethodsAreBeans = true;
+								}
+							}
+
+							if (!anyMethodsAreBeans) {
+								this.beansCreated.add(new CreatedBeanInfo(beanName, bean
+										.getClass(), this.positive.get(key)));
 							}
 						}
-
-						if (!anyMethodsAreBeans) {
-							this.beansCreated.add(new CreatedBeanInfo(beanName, bean,
+						catch (RuntimeException e) {
+							Class<?> type = null;
+							ConfigurableApplicationContext configurable = this.context;
+							String beanClassName = configurable.getBeanFactory()
+									.getBeanDefinition(beanName).getBeanClassName();
+							if (beanClassName != null) {
+								type = ClassUtils.resolveClassName(beanClassName,
+										configurable.getClassLoader());
+							}
+							this.beansCreated.add(new CreatedBeanInfo(beanName, type,
 									this.positive.get(key)));
 						}
 					}

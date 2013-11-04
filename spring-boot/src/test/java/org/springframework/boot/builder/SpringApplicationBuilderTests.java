@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
@@ -167,6 +168,14 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(
 				any(ApplicationContext.class));
+	}
+
+	@Test
+	public void initializersCreatedOnce() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ExampleConfig.class).web(false);
+		this.context = application.run();
+		assertEquals(7, application.application().getInitializers().size());
 	}
 
 	@Configuration

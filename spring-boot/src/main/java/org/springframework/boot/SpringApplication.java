@@ -168,7 +168,7 @@ public class SpringApplication {
 
 	private boolean webEnvironment;
 
-	private List<ApplicationContextInitializer<?>> initializers;
+	private Collection<ApplicationContextInitializer<?>> initializers;
 
 	private Map<String, Object> defaultProperties;
 
@@ -207,7 +207,7 @@ public class SpringApplication {
 			this.initialSources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
-		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		this.initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
 		this.initializers.addAll(getSpringFactoriesApplicationContextInitializers());
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
@@ -716,15 +716,12 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns a mutable list of the {@link ApplicationContextInitializer}s that will be
+	 * Returns readonly list of the {@link ApplicationContextInitializer}s that will be
 	 * applied to the Spring {@link ApplicationContext}.
 	 * @return the initializers
 	 */
 	public List<ApplicationContextInitializer<?>> getInitializers() {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
-				getSpringFactoriesApplicationContextInitializers());
-		initializers.addAll(this.initializers);
-		return initializers;
+		return new ArrayList<ApplicationContextInitializer<?>>(this.initializers);
 	}
 
 	/**

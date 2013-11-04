@@ -29,12 +29,6 @@ public class CreatedBeanInfo {
 	private final Class<?> type;
 	private final List<String> decisions;
 
-	public CreatedBeanInfo(String beanName, Object bean, List<String> decisions) {
-		this.name = beanName;
-		this.type = bean.getClass();
-		this.decisions = decisions;
-	}
-
 	public CreatedBeanInfo(String beanName, Class<?> declaredBeanType,
 			List<String> decisions) {
 		this.name = beanName;
