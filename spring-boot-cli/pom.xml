@@ -188,7 +188,7 @@
 				<executions>
 					<execution>
 						<id>generate-cli-properties</id>
-						<phase>compile</phase>
+						<phase>generate-resources</phase>
 						<configuration>
 							<target>
 								<typedef resource="foundrylogic/vpp/typedef.properties" />
