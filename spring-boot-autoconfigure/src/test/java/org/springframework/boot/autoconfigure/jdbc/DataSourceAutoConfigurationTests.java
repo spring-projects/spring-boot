@@ -16,11 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
@@ -47,6 +42,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.util.ClassUtils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration}.

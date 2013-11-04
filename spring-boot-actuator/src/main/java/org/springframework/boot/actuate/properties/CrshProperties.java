@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  */
 @ConfigurationProperties(name = "shell", ignoreUnknownFields = true)
 public class CrshProperties {
-	
+
 	protected static final String CRASH_AUTH = "crash.auth";
 	protected static final String CRASH_AUTH_JAAS_DOMAIN = "crash.auth.jaas.domain";
 	protected static final String CRASH_AUTH_KEY_PATH = "crash.auth.key.path";
@@ -49,13 +49,13 @@ public class CrshProperties {
 	protected static final String CRASH_VFS_REFRESH_PERIOD = "crash.vfs.refresh_period";
 
 	private String auth = "simple";
-	
+
 	@Autowired(required = false)
 	private AuthenticationProperties authenticationProperties;
 
 	private int commandRefreshInterval = -1;
 
-	private String[] commandPathPatterns = new String[] { "classpath*:/commands/**", 
+	private String[] commandPathPatterns = new String[] { "classpath*:/commands/**",
 			"classpath*:/crash/commands/**" };
 
 	private String[] configPathPatterns = new String[] { "classpath*:/crash/*" };
@@ -66,7 +66,6 @@ public class CrshProperties {
 
 	private Telnet telnet = new Telnet();
 
-
 	public String getAuth() {
 		return this.auth;
 	}
@@ -74,11 +73,11 @@ public class CrshProperties {
 	public AuthenticationProperties getAuthenticationProperties() {
 		return this.authenticationProperties;
 	}
-	
+
 	public int getCommandRefreshInterval() {
 		return this.commandRefreshInterval;
 	}
-	
+
 	public String[] getCommandPathPatterns() {
 		return this.commandPathPatterns;
 	}
@@ -100,28 +99,29 @@ public class CrshProperties {
 	}
 
 	public Properties mergeProperties(Properties properties) {
-		properties = ssh.mergeProperties(properties);
-		properties = telnet.mergeProperties(properties);
+		properties = this.ssh.mergeProperties(properties);
+		properties = this.telnet.mergeProperties(properties);
 
-		properties.put(CRASH_AUTH, auth);
-		if (authenticationProperties != null) {
-			properties = authenticationProperties.mergeProperties(properties);
+		properties.put(CRASH_AUTH, this.auth);
+		if (this.authenticationProperties != null) {
+			properties = this.authenticationProperties.mergeProperties(properties);
 		}
-		
+
 		if (this.commandRefreshInterval > 0) {
-			properties.put(CRASH_VFS_REFRESH_PERIOD, String.valueOf(this.commandRefreshInterval));
+			properties.put(CRASH_VFS_REFRESH_PERIOD,
+					String.valueOf(this.commandRefreshInterval));
 		}
-		
+
 		// special handling for disabling Ssh and Telnet support
-		List<String> dp = new ArrayList<String>(Arrays.asList(this.disabledPlugins)); 
-		if (!ssh.isEnabled()) {
+		List<String> dp = new ArrayList<String>(Arrays.asList(this.disabledPlugins));
+		if (!this.ssh.isEnabled()) {
 			dp.add("org.crsh.ssh.SSHPlugin");
 		}
-		if (!telnet.isEnabled()) {
+		if (!this.telnet.isEnabled()) {
 			dp.add("org.crsh.telnet.TelnetPlugin");
 		}
 		this.disabledPlugins = dp.toArray(new String[dp.size()]);
-		
+
 		return properties;
 	}
 
@@ -130,11 +130,12 @@ public class CrshProperties {
 		this.auth = auth;
 	}
 
-	public void setAuthenticationProperties(AuthenticationProperties authenticationProperties) {
+	public void setAuthenticationProperties(
+			AuthenticationProperties authenticationProperties) {
 		Assert.notNull(authenticationProperties);
 		this.authenticationProperties = authenticationProperties;
 	}
-	
+
 	public void setCommandRefreshInterval(int commandRefreshInterval) {
 		this.commandRefreshInterval = commandRefreshInterval;
 	}
@@ -163,18 +164,15 @@ public class CrshProperties {
 		Assert.notNull(telnet);
 		this.telnet = telnet;
 	}
-	
-	
+
 	public interface AuthenticationProperties extends PropertiesProvider {
 	}
-	
-	
+
 	@ConfigurationProperties(name = "shell.auth.jaas", ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties implements AuthenticationProperties {
 
 		private String domain = "my-domain";
 
-		
 		@Override
 		public Properties mergeProperties(Properties properties) {
 			properties.put(CRASH_AUTH_JAAS_DOMAIN, this.domain);
@@ -187,14 +185,12 @@ public class CrshProperties {
 		}
 
 	}
-	
 
 	@ConfigurationProperties(name = "shell.auth.key", ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties implements AuthenticationProperties {
 
 		private String path;
 
-		
 		@Override
 		public Properties mergeProperties(Properties properties) {
 			if (this.path != null) {
@@ -210,41 +206,40 @@ public class CrshProperties {
 
 	}
 
-	
 	public interface PropertiesProvider {
 		Properties mergeProperties(Properties properties);
 	}
 
-	
 	@ConfigurationProperties(name = "shell.auth.simple", ignoreUnknownFields = false)
-	public static class SimpleAuthenticationProperties implements AuthenticationProperties {
+	public static class SimpleAuthenticationProperties implements
+			AuthenticationProperties {
 
-		private static Log logger = LogFactory.getLog(SimpleAuthenticationProperties.class);
-		
+		private static Log logger = LogFactory
+				.getLog(SimpleAuthenticationProperties.class);
 
 		private String username = "user";
 
 		private String password = UUID.randomUUID().toString();
-		
-		private boolean defaultPassword = true;
 
+		private boolean defaultPassword = true;
 
 		public boolean isDefaultPassword() {
 			return this.defaultPassword;
 		}
-		
+
 		@Override
 		public Properties mergeProperties(Properties properties) {
 			properties.put(CRASH_AUTH_SIMPLE_USERNAME, this.username);
 			properties.put(CRASH_AUTH_SIMPLE_PASSWORD, this.password);
 			if (this.defaultPassword) {
-				logger.info("Using default password for shell access: "	+ this.password);
+				logger.info("Using default password for shell access: " + this.password);
 			}
 			return properties;
 		}
 
 		public void setPassword(String password) {
-			if (password.startsWith("${") && password.endsWith("}")	|| !StringUtils.hasLength(password)) {
+			if (password.startsWith("${") && password.endsWith("}")
+					|| !StringUtils.hasLength(password)) {
 				return;
 			}
 			this.password = password;
@@ -255,20 +250,20 @@ public class CrshProperties {
 			Assert.hasLength(username);
 			this.username = username;
 		}
-		
+
 	}
 
-
 	@ConfigurationProperties(name = "shell.auth.spring", ignoreUnknownFields = false)
-	public static class SpringAuthenticationProperties implements AuthenticationProperties {
+	public static class SpringAuthenticationProperties implements
+			AuthenticationProperties {
 
 		private String[] roles = new String[] { "ROLE_ADMIN" };
 
-		
 		@Override
 		public Properties mergeProperties(Properties properties) {
 			if (this.roles != null) {
-				properties.put(CRASH_AUTH_SPRING_ROLES, StringUtils.arrayToCommaDelimitedString(this.roles));
+				properties.put(CRASH_AUTH_SPRING_ROLES,
+						StringUtils.arrayToCommaDelimitedString(this.roles));
 			}
 			return properties;
 		}
@@ -280,7 +275,6 @@ public class CrshProperties {
 
 	}
 
-	
 	public static class Ssh implements PropertiesProvider {
 
 		private boolean enabled = true;
@@ -289,11 +283,10 @@ public class CrshProperties {
 
 		private String port = "2000";
 
-		
 		public boolean isEnabled() {
 			return this.enabled;
 		}
-		
+
 		@Override
 		public Properties mergeProperties(Properties properties) {
 			if (this.enabled) {
@@ -321,18 +314,16 @@ public class CrshProperties {
 
 	}
 
-	
 	public static class Telnet implements PropertiesProvider {
 
 		private boolean enabled = false;
 
 		private String port = "5000";
 
-		
 		public boolean isEnabled() {
 			return this.enabled;
 		}
-		
+
 		@Override
 		public Properties mergeProperties(Properties properties) {
 			if (this.enabled) {
