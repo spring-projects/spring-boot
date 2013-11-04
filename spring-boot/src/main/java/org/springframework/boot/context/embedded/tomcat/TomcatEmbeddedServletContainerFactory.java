@@ -372,7 +372,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	/**
 	 * Returns a mutable collection of the {@link TomcatContextCustomizer}s that will be
 	 * applied to the Tomcat {@link Context} .
-	 * @return the tomcatContextCustomizers the listeners that will be applied
+	 * @return the listeners that will be applied
 	 */
 	public Collection<TomcatContextCustomizer> getTomcatContextCustomizers() {
 		return this.tomcatContextCustomizers;
@@ -415,9 +415,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 	}
 
 	/**
-	 * Returns a mutable collection of the {@link TomcatContextCustomizer}s that will be
+	 * Returns a mutable collection of the {@link TomcatConnectorCustomizer}s that will be
 	 * applied to the Tomcat {@link Context} .
-	 * @return the tomcatContextCustomizers the listeners that will be applied
+	 * @return the listeners that will be applied
 	 */
 	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {
 		return this.tomcatConnectorCustomizers;
