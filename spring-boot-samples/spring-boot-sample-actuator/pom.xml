@@ -32,6 +32,10 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-shell-crsh</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
