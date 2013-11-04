@@ -18,8 +18,10 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
@@ -34,6 +36,8 @@ public class Repackager {
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
+	
+	private static final String GIT_COMMIT_ATTRIBUTE = "Spring-Boot-Commit-Id";
 
 	private String mainClass;
 
@@ -181,6 +185,28 @@ public class Repackager {
 
 		String bootVersion = getClass().getPackage().getImplementationVersion();
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
+		
+		String gitCommitHash = null;
+		JarFile jarFile = null;
+		try {
+			URL classContainer = getClass().getProtectionDomain().getCodeSource().getLocation();
+			if (classContainer.toString().endsWith(".jar")) {
+				jarFile = new JarFile(new File(classContainer.toURI()), false);
+				ZipEntry manifestEntry = jarFile.getEntry("META-INF/MANIFEST.MF");
+				gitCommitHash = new Manifest(jarFile.getInputStream(manifestEntry)).
+						getMainAttributes().getValue(GIT_COMMIT_ATTRIBUTE);
+			}
+		} catch (Exception ignoreAndMoveOn) { }
+		finally {
+			if (jarFile != null) {
+				try { jarFile.close(); }
+				catch (IOException ignored) {}
+			}
+		}
+		
+		if (gitCommitHash != null && gitCommitHash.length() > 0) {
+			manifest.getMainAttributes().putValue(GIT_COMMIT_ATTRIBUTE, gitCommitHash);
+		}
 
 		return manifest;
 	}
