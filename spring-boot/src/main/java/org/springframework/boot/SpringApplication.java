@@ -259,46 +259,68 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 
-		// Call all non environment aware initializers very early
-		callNonEnvironmentAwareSpringApplicationInitializers(args);
+		try {
 
-		// Create and configure the environment
-		ConfigurableEnvironment environment = getOrCreateEnvironment();
-		addPropertySources(environment, args);
-		for (String profile : this.profiles) {
-			environment.addActiveProfile(profile);
+			// Call all non environment aware initializers very early
+			callNonEnvironmentAwareSpringApplicationInitializers(args);
+
+			// Create and configure the environment
+			ConfigurableEnvironment environment = getOrCreateEnvironment();
+			addPropertySources(environment, args);
+			for (String profile : this.profiles) {
+				environment.addActiveProfile(profile);
+			}
+
+			// Call all remaining initializers
+			callEnvironmentAwareSpringApplicationInitializers(args, environment);
+			Set<Object> sources = assembleSources();
+			Assert.notEmpty(sources, "Sources must not be empty");
+			if (this.showBanner) {
+				printBanner();
+			}
+
+			// Create, load, refresh and run the ApplicationContext
+			ConfigurableApplicationContext context = createApplicationContext();
+			context.registerShutdownHook();
+			context.setEnvironment(environment);
+			postProcessApplicationContext(context);
+			applyInitializers(context);
+			if (this.logStartupInfo) {
+				logStartupInfo();
+			}
+
+			load(context, sources.toArray(new Object[sources.size()]));
+			refresh(context);
+
+			stopWatch.stop();
+			if (this.logStartupInfo) {
+				new StartupInfoLogger(this.mainApplicationClass).logStarted(
+						getApplicationLog(), stopWatch);
+			}
+
+			runCommandLineRunners(context, args);
+			return context;
+		}
+		catch (RuntimeException e) {
+			handle(e, args);
+			throw e;
+		}
+		catch (Error e) {
+			handle(e, args);
+			throw e;
 		}
 
-		// Call all remaining initializers
-		callEnvironmentAwareSpringApplicationInitializers(args, environment);
-		Set<Object> sources = assembleSources();
-		Assert.notEmpty(sources, "Sources must not be empty");
-		if (this.showBanner) {
-			printBanner();
+	}
+
+	private void handle(Throwable e, String... args) {
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
+				getInitializers());
+		Collections.reverse(initializers);
+		for (ApplicationContextInitializer<?> initializer : initializers) {
+			if (initializer instanceof SpringApplicationErrorHandler) {
+				((SpringApplicationErrorHandler) initializer).handle(this, args, e);
+			}
 		}
-
-		// Create, load, refresh and run the ApplicationContext
-		ConfigurableApplicationContext context = createApplicationContext();
-		context.registerShutdownHook();
-		context.setEnvironment(environment);
-		postProcessApplicationContext(context);
-		applyInitializers(context);
-		if (this.logStartupInfo) {
-			logStartupInfo();
-		}
-
-		load(context, sources.toArray(new Object[sources.size()]));
-		refresh(context);
-
-		stopWatch.stop();
-		if (this.logStartupInfo) {
-			new StartupInfoLogger(this.mainApplicationClass).logStarted(
-					getApplicationLog(), stopWatch);
-		}
-
-		runCommandLineRunners(context, args);
-		return context;
-
 	}
 
 	private Set<Object> assembleSources() {
@@ -700,8 +722,8 @@ public class SpringApplication {
 	 */
 	public List<ApplicationContextInitializer<?>> getInitializers() {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
-				this.initializers);
-		initializers.addAll(getSpringFactoriesApplicationContextInitializers());
+				getSpringFactoriesApplicationContextInitializers());
+		initializers.addAll(this.initializers);
 		return initializers;
 	}
 
