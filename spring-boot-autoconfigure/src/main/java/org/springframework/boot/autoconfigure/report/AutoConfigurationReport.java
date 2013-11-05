@@ -39,9 +39,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.ClassUtils;
 
 /**
- * Bean used to gather autoconfiguration decisions, and then generate a collection of info
- * for beans that were created as well as situations where the conditional outcome was
- * negative.
+ * Bean used to gather auto-configuration decisions, and then generate a collection of
+ * info for beans that were created as well as situations where the conditional outcome
+ * was negative.
  * 
  * @author Greg Turnquist
  * @author Dave Syer
@@ -54,10 +54,15 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 	private static Log logger = LogFactory.getLog(AutoConfigurationReport.class);
 
 	private Set<CreatedBeanInfo> beansCreated = new LinkedHashSet<CreatedBeanInfo>();
+
 	private Map<String, List<AutoConfigurationDecision>> autoconfigurationDecisions = new LinkedHashMap<String, List<AutoConfigurationDecision>>();
+
 	private Map<String, List<String>> positive = new LinkedHashMap<String, List<String>>();
+
 	private Map<String, List<String>> negative = new LinkedHashMap<String, List<String>>();
+
 	private ConfigurableApplicationContext context;
+
 	private boolean initialized = false;
 
 	public static void registerDecision(ConditionContext context, String message,
