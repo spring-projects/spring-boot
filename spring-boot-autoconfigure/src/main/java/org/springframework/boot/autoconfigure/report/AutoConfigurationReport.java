@@ -105,7 +105,7 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 	public Set<Class<?>> getBeanTypesCreated() {
 		Set<Class<?>> beanTypesCreated = new HashSet<Class<?>>();
 		for (CreatedBeanInfo bootCreatedBeanInfo : this.getBeansCreated()) {
-			beanTypesCreated.add(bootCreatedBeanInfo.getBeanType());
+			beanTypesCreated.add(bootCreatedBeanInfo.getType());
 		}
 		return beanTypesCreated;
 	}
