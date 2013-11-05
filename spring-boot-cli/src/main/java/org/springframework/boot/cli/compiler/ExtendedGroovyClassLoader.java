@@ -26,8 +26,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationUnit;
@@ -159,39 +162,39 @@ class ExtendedGroovyClassLoader extends GroovyClassLoader {
 	 */
 	private static class DefaultScopeParentClassLoader extends ClassLoader {
 
+		private static final String[] GROOVY_JARS_PREFIXES = { "groovy", "antlr", "asm" };
+
 		private final URLClassLoader groovyOnlyClassLoader;
 
 		public DefaultScopeParentClassLoader(ClassLoader parent) {
 			super(parent);
-			this.groovyOnlyClassLoader = new URLClassLoader(
-					new URL[] { getGroovyJar(parent) }, null);
+			this.groovyOnlyClassLoader = new URLClassLoader(getGroovyJars(parent), null);
 		}
 
-		private URL getGroovyJar(final ClassLoader parent) {
-			URL result = findGroovyJarDirectly(parent);
-			if (result == null) {
-				result = findGroovyJarFromClassPath(parent);
+		private URL[] getGroovyJars(final ClassLoader parent) {
+			Set<URL> urls = new HashSet<URL>();
+			findGroovyJarsDirectly(parent, urls);
+			if (urls.isEmpty()) {
+				findGroovyJarsFromClassPath(parent, urls);
 			}
-			Assert.state(result != null, "Unable to find groovy JAR");
-			return result;
+			Assert.state(urls.size() > 0, "Unable to find groovy JAR");
+			return new ArrayList<URL>(urls).toArray(new URL[urls.size()]);
 		}
 
-		private URL findGroovyJarDirectly(ClassLoader classLoader) {
+		private void findGroovyJarsDirectly(ClassLoader classLoader, Set<URL> urls) {
 			while (classLoader != null) {
 				if (classLoader instanceof URLClassLoader) {
-					URL[] urls = ((URLClassLoader) classLoader).getURLs();
-					for (URL url : urls) {
+					for (URL url : ((URLClassLoader) classLoader).getURLs()) {
 						if (isGroovyJar(url.toString())) {
-							return url;
+							urls.add(url);
 						}
 					}
 				}
 				classLoader = classLoader.getParent();
 			}
-			return null;
 		}
 
-		private URL findGroovyJarFromClassPath(ClassLoader parent) {
+		private void findGroovyJarsFromClassPath(ClassLoader parent, Set<URL> urls) {
 			String classpath = System.getProperty("java.class.path");
 			String[] entries = classpath.split(System.getProperty("path.separator"));
 			for (String entry : entries) {
@@ -199,7 +202,7 @@ class ExtendedGroovyClassLoader extends GroovyClassLoader {
 					File file = new File(entry);
 					if (file.canRead()) {
 						try {
-							return file.toURI().toURL();
+							urls.add(file.toURI().toURL());
 						}
 						catch (MalformedURLException ex) {
 							// Swallow and continue
@@ -207,11 +210,15 @@ class ExtendedGroovyClassLoader extends GroovyClassLoader {
 					}
 				}
 			}
-			return null;
 		}
 
 		private boolean isGroovyJar(String entry) {
-			return entry.contains("/groovy-all");
+			for (String jarPrefix : GROOVY_JARS_PREFIXES) {
+				if (entry.contains("/" + jarPrefix + "-")) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		@Override

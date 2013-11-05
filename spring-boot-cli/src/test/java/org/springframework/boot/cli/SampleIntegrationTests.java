@@ -16,11 +16,7 @@
 
 package org.springframework.boot.cli;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.BeforeClass;
@@ -85,31 +81,29 @@ public class SampleIntegrationTests {
 				"foo=bar");
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
-		String result = readEntirely("http://localhost:8080");
+		String result = this.cli.getHttpOutput();
 		assertEquals("World!", result);
 	}
 
 	@Test
 	public void webSample() throws Exception {
 		this.cli.run("samples/web.groovy");
-		String result = readEntirely("http://localhost:8080");
-		assertEquals("World!", result);
+		assertEquals("World!", this.cli.getHttpOutput());
 	}
 
 	@Test
 	public void uiSample() throws Exception {
 		this.cli.run("samples/ui.groovy", "--classpath=.:src/test/resources");
-		String result = readEntirely("http://localhost:8080");
+		String result = this.cli.getHttpOutput();
 		assertTrue("Wrong output: " + result, result.contains("Hello World"));
-		result = readEntirely("http://localhost:8080/css/bootstrap.min.css");
+		result = this.cli.getHttpOutput("http://localhost:8080/css/bootstrap.min.css");
 		assertTrue("Wrong output: " + result, result.contains("container"));
 	}
 
 	@Test
 	public void actuatorSample() throws Exception {
 		this.cli.run("samples/actuator.groovy");
-		String result = readEntirely("http://localhost:8080");
-		assertEquals("{\"message\":\"Hello World!\"}", result);
+		assertEquals("{\"message\":\"Hello World!\"}", this.cli.getHttpOutput());
 	}
 
 	@Test
@@ -156,24 +150,7 @@ public class SampleIntegrationTests {
 	@Test
 	public void deviceSample() throws Exception {
 		this.cli.run("samples/device.groovy");
-		String result = readEntirely("http://localhost:8080");
-		assertEquals("Hello Normal Device!", result);
-	}
-
-	private static String readEntirely(String uri) {
-		try {
-			InputStream stream = URI.create(uri).toURL().openStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-			String line;
-			StringBuilder result = new StringBuilder();
-			while ((line = reader.readLine()) != null) {
-				result.append(line);
-			}
-			return result.toString();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
+		assertEquals("Hello Normal Device!", this.cli.getHttpOutput());
 	}
 
 }

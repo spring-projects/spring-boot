@@ -16,6 +16,10 @@
 
 package org.springframework.boot.cli;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -84,6 +88,26 @@ public class CliTester implements TestRule {
 	@Override
 	public Statement apply(final Statement base, Description description) {
 		return this.outputCapture.apply(new RunLauncherStatement(base), description);
+	}
+
+	public String getHttpOutput() {
+		return getHttpOutput("http://localhost:8080");
+	}
+
+	public String getHttpOutput(String uri) {
+		try {
+			InputStream stream = URI.create(uri).toURL().openStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			String line;
+			StringBuilder result = new StringBuilder();
+			while ((line = reader.readLine()) != null) {
+				result.append(line);
+			}
+			return result.toString();
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private final class RunLauncherStatement extends Statement {
