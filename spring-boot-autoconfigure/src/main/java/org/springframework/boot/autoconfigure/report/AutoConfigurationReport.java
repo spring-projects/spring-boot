@@ -139,7 +139,7 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 						scanPositiveDecisionsForBeansBootCreated();
 					}
 					finally {
-						if (shouldLogReport()) {
+						if (shouldLogReport() && logger.isInfoEnabled()) {
 							logger.info("Created beans:");
 							for (CreatedBeanInfo info : this.beansCreated) {
 								logger.info(info);
