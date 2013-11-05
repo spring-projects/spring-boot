@@ -33,5 +33,4 @@ class FailingSpockTest extends Specification {
 		//throw new RuntimeException("This should fail!")
 		true == false
 	}
-
 }

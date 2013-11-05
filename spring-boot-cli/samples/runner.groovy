@@ -6,5 +6,3 @@ class Runner implements CommandLineRunner {
 		print "Hello World!"
 	}
 }
-
-

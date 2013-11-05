@@ -19,5 +19,3 @@ class MyService {
 		return "World!";
 	}
 }
-
-

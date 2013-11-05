@@ -7,58 +7,57 @@ import java.util.concurrent.CountDownLatch
 @EnableRabbitMessaging
 class RabbitExample implements CommandLineRunner {
 
-    private CountDownLatch latch = new CountDownLatch(1)
+	private CountDownLatch latch = new CountDownLatch(1)
 
-    @Autowired
-    RabbitTemplate rabbitTemplate
+	@Autowired
+	RabbitTemplate rabbitTemplate
 
-    private String queueName = "spring-boot"
+	private String queueName = "spring-boot"
 
-    @Bean
-    Queue queue() {
-        new Queue(queueName, false)
-    }
+	@Bean
+	Queue queue() {
+		new Queue(queueName, false)
+	}
 
-    @Bean
-    TopicExchange exchange() {
-        new TopicExchange("spring-boot-exchange")
-    }
+	@Bean
+	TopicExchange exchange() {
+		new TopicExchange("spring-boot-exchange")
+	}
 
-    /**
-     * The queue and topic exchange cannot be inlined inside this method and have
-     * dynamic creation with Spring AMQP work properly.
-     */
-    @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        BindingBuilder
-                .bind(queue)
-                .to(exchange)
-                .with("spring-boot")
-    }
+	/**
+	 * The queue and topic exchange cannot be inlined inside this method and have
+	 * dynamic creation with Spring AMQP work properly.
+	 */
+	@Bean
+	Binding binding(Queue queue, TopicExchange exchange) {
+		BindingBuilder
+				.bind(queue)
+				.to(exchange)
+				.with("spring-boot")
+	}
 
-    @Bean
-    SimpleMessageListenerContainer container(CachingConnectionFactory connectionFactory) {
-        return new SimpleMessageListenerContainer(
-            connectionFactory: connectionFactory,
-            queueNames: [queueName],
-            messageListener: new MessageListenerAdapter(new Receiver(latch:latch), "receive")
-        )
-    }
+	@Bean
+	SimpleMessageListenerContainer container(CachingConnectionFactory connectionFactory) {
+		return new SimpleMessageListenerContainer(
+		connectionFactory: connectionFactory,
+		queueNames: [queueName],
+		messageListener: new MessageListenerAdapter(new Receiver(latch:latch), "receive")
+		)
+	}
 
-    void run(String... args) {
-        log.info "Sending RabbitMQ message..."
-        rabbitTemplate.convertAndSend(queueName, "Greetings from Spring Boot via RabbitMQ")
-        latch.await()
-    }
-
+	void run(String... args) {
+		log.info "Sending RabbitMQ message..."
+		rabbitTemplate.convertAndSend(queueName, "Greetings from Spring Boot via RabbitMQ")
+		latch.await()
+	}
 }
 
 @Log
 class Receiver {
-    CountDownLatch latch
+	CountDownLatch latch
 
-    def receive(String message) {
-        log.info "Received ${message}"
-        latch.countDown()
-    }
+	def receive(String message) {
+		log.info "Received ${message}"
+		latch.countDown()
+	}
 }
