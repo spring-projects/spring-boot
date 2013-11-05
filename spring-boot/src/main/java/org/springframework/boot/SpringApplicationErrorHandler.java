@@ -16,21 +16,27 @@
 
 package org.springframework.boot;
 
+import org.springframework.context.ConfigurableApplicationContext;
+
 /**
- * Strategy interface that can be used to capture errors in a {@link SpringApplication}
- * after it fails to start up.
+ * Strategy interface that can be used on a {@link SpringApplicationInitializer} to
+ * capture errors in a {@link SpringApplication} after it fails to start up.
  * 
  * @author Dave Syer
+ * @see SpringApplicationInitializer
  */
 public interface SpringApplicationErrorHandler {
 
 	/**
-	 * Finalize the application.
-	 * 
-	 * @param springApplication the spring application.
+	 * Handle an application startup error.
+	 * @param application the spring application.
+	 * @param applicationContext the spring context (if one was created, may be
+	 * {@code null})
 	 * @param args the run arguments
-	 * @param e an exception thrown during startup (or null if none)
+	 * @param exception an exception thrown during startup (or null if none)
 	 */
-	void handle(SpringApplication springApplication, String[] args, Throwable e);
+	void handleError(SpringApplication application,
+			ConfigurableApplicationContext applicationContext, String[] args,
+			Throwable exception);
 
 }

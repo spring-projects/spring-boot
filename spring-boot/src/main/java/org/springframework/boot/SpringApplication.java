@@ -168,7 +168,7 @@ public class SpringApplication {
 
 	private boolean webEnvironment;
 
-	private Collection<ApplicationContextInitializer<?>> initializers;
+	private Set<ApplicationContextInitializer<?>> initializers;
 
 	private Map<String, Object> defaultProperties;
 
@@ -258,9 +258,9 @@ public class SpringApplication {
 
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
+		ConfigurableApplicationContext context = null;
 
 		try {
-
 			// Call all non environment aware initializers very early
 			callNonEnvironmentAwareSpringApplicationInitializers(args);
 
@@ -280,7 +280,7 @@ public class SpringApplication {
 			}
 
 			// Create, load, refresh and run the ApplicationContext
-			ConfigurableApplicationContext context = createApplicationContext();
+			context = createApplicationContext();
 			context.registerShutdownHook();
 			context.setEnvironment(environment);
 			postProcessApplicationContext(context);
@@ -301,24 +301,26 @@ public class SpringApplication {
 			runCommandLineRunners(context, args);
 			return context;
 		}
-		catch (RuntimeException e) {
-			handle(e, args);
-			throw e;
+		catch (RuntimeException ex) {
+			handleError(context, args, ex);
+			throw ex;
 		}
-		catch (Error e) {
-			handle(e, args);
-			throw e;
+		catch (Error ex) {
+			handleError(context, args, ex);
+			throw ex;
 		}
 
 	}
 
-	private void handle(Throwable e, String... args) {
+	private void handleError(ConfigurableApplicationContext context, String[] args,
+			Throwable exception) {
 		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
 				getInitializers());
 		Collections.reverse(initializers);
 		for (ApplicationContextInitializer<?> initializer : initializers) {
 			if (initializer instanceof SpringApplicationErrorHandler) {
-				((SpringApplicationErrorHandler) initializer).handle(this, args, e);
+				((SpringApplicationErrorHandler) initializer).handleError(this, context,
+						args, exception);
 			}
 		}
 	}
@@ -703,7 +705,8 @@ public class SpringApplication {
 	 */
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
-		this.initializers = new ArrayList<ApplicationContextInitializer<?>>(initializers);
+		this.initializers = new LinkedHashSet<ApplicationContextInitializer<?>>(
+				initializers);
 	}
 
 	/**
@@ -716,12 +719,12 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns readonly list of the {@link ApplicationContextInitializer}s that will be
+	 * Returns readonly set of the {@link ApplicationContextInitializer}s that will be
 	 * applied to the Spring {@link ApplicationContext}.
 	 * @return the initializers
 	 */
-	public List<ApplicationContextInitializer<?>> getInitializers() {
-		return new ArrayList<ApplicationContextInitializer<?>>(this.initializers);
+	public Set<ApplicationContextInitializer<?>> getInitializers() {
+		return Collections.unmodifiableSet(this.initializers);
 	}
 
 	/**
