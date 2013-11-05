@@ -63,12 +63,19 @@ import org.springframework.core.io.ResourceLoader;
 public class SpringApplicationBuilder {
 
 	private SpringApplication application;
+
 	private ConfigurableApplicationContext context;
+
 	private SpringApplicationBuilder parent;
+
 	private AtomicBoolean running = new AtomicBoolean(false);
+
 	private Set<Object> sources = new LinkedHashSet<Object>();
+
 	private Map<String, Object> defaultProperties = new LinkedHashMap<String, Object>();
+
 	private ConfigurableEnvironment environment;
+
 	private Set<String> additionalProfiles = new LinkedHashSet<String>();
 	private Set<ApplicationContextInitializer<?>> initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
 

@@ -34,15 +34,13 @@ class JmsExample implements CommandLineRunner {
 		jmsTemplate.send("spring-boot", messageCreator)
 		latch.await()
 	}
-
 }
 
 @Log
 class Receiver {
 	CountDownLatch latch
-
-    def receive(String message) {
-        log.info "Received ${message}"
-        latch.countDown()
-    }
+	def receive(String message) {
+		log.info "Received ${message}"
+		latch.countDown()
+	}
 }
