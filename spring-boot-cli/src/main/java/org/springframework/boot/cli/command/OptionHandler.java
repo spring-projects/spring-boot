@@ -28,10 +28,11 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 
 /**
- * A handler that parses and handles options.
+ * Delegate used by {@link OptionParsingCommand} to parse options and run the command.
  * 
  * @author Dave Syer
  * @see OptionParsingCommand
+ * @see #run(OptionSet)
  */
 public class OptionHandler {
 
@@ -70,6 +71,11 @@ public class OptionHandler {
 		run(options);
 	}
 
+	/**
+	 * Run the command using the specified parsed {@link OptionSet}.
+	 * @param options the parsed option set
+	 * @throws Exception
+	 */
 	protected void run(OptionSet options) throws Exception {
 	}
 

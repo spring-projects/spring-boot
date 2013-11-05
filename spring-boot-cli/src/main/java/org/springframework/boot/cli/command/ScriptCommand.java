@@ -23,6 +23,7 @@ import groovy.lang.MetaMethod;
 import groovy.lang.Script;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -32,7 +33,8 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
-import org.springframework.boot.cli.util.FileUtils;
+import org.springframework.boot.cli.compiler.GroovyCompilerScope;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * {@link Command} to run a Groovy script.
@@ -219,7 +221,7 @@ public class ScriptCommand implements Command {
 		try {
 			File file = File.createTempFile(name, ".groovy");
 			file.deleteOnExit();
-			FileUtils.copy(url, file);
+			FileCopyUtils.copy(url.openStream(), new FileOutputStream(file));
 			return file;
 		}
 		catch (IOException ex) {
@@ -229,6 +231,11 @@ public class ScriptCommand implements Command {
 	}
 
 	private static class ScriptConfiguration implements GroovyCompilerConfiguration {
+
+		@Override
+		public GroovyCompilerScope getScope() {
+			return GroovyCompilerScope.EXTENSION;
+		}
 
 		@Override
 		public boolean isGuessImports() {
@@ -241,8 +248,8 @@ public class ScriptCommand implements Command {
 		}
 
 		@Override
-		public String getClasspath() {
-			return "";
+		public String[] getClasspath() {
+			return NO_CLASSPATH;
 		}
 
 	}

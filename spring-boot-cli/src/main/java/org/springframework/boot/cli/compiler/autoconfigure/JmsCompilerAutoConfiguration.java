@@ -16,18 +16,13 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
+import org.springframework.boot.groovy.EnableJmsMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring JMS.
@@ -46,7 +41,7 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies.add("spring-jms").add("geronimo-jms_1.1_spec");
+		dependencies.add("spring-jms", "geronimo-jms_1.1_spec");
 
 	}
 
@@ -56,13 +51,6 @@ public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"org.springframework.jms.listener",
 				"org.springframework.jms.listener.adapter").addImports(
 				EnableJmsMessaging.class.getCanonicalName());
-	}
-
-	@Target(ElementType.TYPE)
-	@Documented
-	@Retention(RetentionPolicy.RUNTIME)
-	public static @interface EnableJmsMessaging {
-
 	}
 
 }

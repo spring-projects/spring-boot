@@ -177,15 +177,16 @@ public class DependencyCustomizer {
 	}
 
 	/**
-	 * Add a single dependency and all of its dependencies. The group ID and version of
-	 * the dependency are resolves using the customizer's
-	 * {@link ArtifactCoordinatesResolver}.
-	 * @param module The module ID
+	 * Add dependencies and all of their dependencies. The group ID and version of the
+	 * dependency are resolves using the customizer's {@link ArtifactCoordinatesResolver}.
+	 * @param modules The module IDs
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
-	public DependencyCustomizer add(String module) {
-		return this.add(this.coordinatesResolver.getGroupId(module), module,
-				this.coordinatesResolver.getVersion(module), true);
+	public DependencyCustomizer add(String... modules) {
+		for (String module : modules) {
+			add(module, true);
+		}
+		return this;
 	}
 
 	/**
@@ -198,15 +199,10 @@ public class DependencyCustomizer {
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module, boolean transitive) {
-		return this.add(this.coordinatesResolver.getGroupId(module), module,
-				this.coordinatesResolver.getVersion(module), transitive);
-	}
-
-	private DependencyCustomizer add(String group, String module, String version,
-			boolean transitive) {
 		if (canAdd()) {
-			this.classNode.addAnnotation(createGrabAnnotation(group, module, version,
-					transitive));
+			this.classNode.addAnnotation(createGrabAnnotation(
+					this.coordinatesResolver.getGroupId(module), module,
+					this.coordinatesResolver.getVersion(module), transitive));
 		}
 		return this;
 	}

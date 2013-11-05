@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.testrunner;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.CommandFactory;
+import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
- * Default implementation of {@link CommandFactory}.
+ * Configuration for {@link TestRunner}.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
  */
-public class DefaultCommandFactory implements CommandFactory {
-
-	private static final List<Command> DEFAULT_COMMANDS = Arrays
-			.<Command> asList(new VersionCommand(), new RunCommand(), new CleanCommand(),
-					new TestCommand());
-
-	@Override
-	public Collection<Command> getCommands() {
-		return DEFAULT_COMMANDS;
-	}
+public interface TestRunnerConfiguration extends GroovyCompilerConfiguration {
 
 }

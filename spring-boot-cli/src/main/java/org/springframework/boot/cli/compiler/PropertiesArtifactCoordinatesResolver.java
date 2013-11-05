@@ -16,27 +16,25 @@
 
 package org.springframework.boot.cli.compiler;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Properties;
+
+import org.springframework.util.Assert;
 
 /**
  * {@link ArtifactCoordinatesResolver} backed by a properties file.
  * 
  * @author Andy Wilkinson
  */
-final class PropertiesArtifactCoordinatesResolver implements ArtifactCoordinatesResolver {
+public final class PropertiesArtifactCoordinatesResolver implements
+		ArtifactCoordinatesResolver {
 
-	private final GroovyClassLoader loader;
+	private final ClassLoader loader;
 
 	private Properties properties = null;
 
-	public PropertiesArtifactCoordinatesResolver(GroovyClassLoader loader) {
+	public PropertiesArtifactCoordinatesResolver(ClassLoader loader) {
 		this.loader = loader;
 	}
 
@@ -52,34 +50,24 @@ final class PropertiesArtifactCoordinatesResolver implements ArtifactCoordinates
 
 	private String getProperty(String name) {
 		if (this.properties == null) {
-			loadProperties();
+			this.properties = loadProperties();
 		}
 		String property = this.properties.getProperty(name);
 		return property;
 	}
 
-	private void loadProperties() {
+	private Properties loadProperties() {
 		Properties properties = new Properties();
+		InputStream inputStream = this.loader
+				.getResourceAsStream("META-INF/springcli.properties");
+		Assert.state(inputStream != null, "Unable to load springcli properties");
 		try {
-			ArrayList<URL> urls = Collections.list(this.loader
-					.getResources("META-INF/springcli.properties"));
-			for (URL url : urls) {
-				InputStream inputStream = url.openStream();
-				try {
-					properties.load(inputStream);
-				}
-				catch (IOException ex) {
-					// Swallow and continue
-				}
-				finally {
-					inputStream.close();
-				}
-			}
+			properties.load(inputStream);
+			return properties;
 		}
 		catch (IOException ex) {
-			// Swallow and continue
+			throw new IllegalStateException("Unable to load springcli properties", ex);
 		}
-		this.properties = properties;
 	}
 
 }

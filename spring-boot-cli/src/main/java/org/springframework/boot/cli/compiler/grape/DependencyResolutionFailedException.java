@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.CommandFactory;
+package org.springframework.boot.cli.compiler.grape;
 
 /**
- * Default implementation of {@link CommandFactory}.
+ * Thrown to indicate a failure during dependency resolution.
  * 
- * @author Dave Syer
+ * @author Andy Wilkinson
  */
-public class DefaultCommandFactory implements CommandFactory {
+public class DependencyResolutionFailedException extends RuntimeException {
 
-	private static final List<Command> DEFAULT_COMMANDS = Arrays
-			.<Command> asList(new VersionCommand(), new RunCommand(), new CleanCommand(),
-					new TestCommand());
-
-	@Override
-	public Collection<Command> getCommands() {
-		return DEFAULT_COMMANDS;
+	/**
+	 * Creates a new {@code DependencyResolutionFailedException} with the given
+	 * {@code cause}.
+	 * @param cause The cause of the resolution failure
+	 */
+	public DependencyResolutionFailedException(Throwable cause) {
+		super(cause);
 	}
 
 }

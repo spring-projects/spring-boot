@@ -23,6 +23,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.runner.SpringApplicationRunner;
 import org.springframework.boot.cli.runner.SpringApplicationRunnerConfiguration;
 
@@ -121,6 +122,11 @@ public class RunCommand extends OptionParsingCommand {
 			}
 
 			@Override
+			public GroovyCompilerScope getScope() {
+				return GroovyCompilerScope.DEFAULT;
+			}
+
+			@Override
 			public boolean isWatchForFileChanges() {
 				return this.options.has(RunOptionHandler.this.watchOption);
 			}
@@ -152,11 +158,12 @@ public class RunCommand extends OptionParsingCommand {
 			}
 
 			@Override
-			public String getClasspath() {
+			public String[] getClasspath() {
 				if (this.options.has(RunOptionHandler.this.classpathOption)) {
-					return this.options.valueOf(RunOptionHandler.this.classpathOption);
+					return this.options.valueOf(RunOptionHandler.this.classpathOption)
+							.split(":");
 				}
-				return "";
+				return NO_CLASSPATH;
 			}
 
 		}

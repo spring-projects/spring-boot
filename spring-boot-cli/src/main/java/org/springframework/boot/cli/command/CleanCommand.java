@@ -18,13 +18,13 @@ package org.springframework.boot.cli.command;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.Log;
-import org.springframework.boot.cli.util.FileUtils;
 
 /**
  * {@link Command} to 'clean' up grapes, removing cached dependencies and forcing a
@@ -107,7 +107,7 @@ public class CleanCommand extends OptionParsingCommand {
 				return;
 			}
 
-			for (Object obj : FileUtils.recursiveList(file)) {
+			for (Object obj : recursiveList(file)) {
 				File candidate = (File) obj;
 				if (candidate.getName().contains("SNAPSHOT")) {
 					delete(candidate);
@@ -117,7 +117,7 @@ public class CleanCommand extends OptionParsingCommand {
 
 		private void delete(File file) {
 			Log.info("Deleting: " + file);
-			FileUtils.recursiveDelete(file);
+			recursiveDelete(file);
 		}
 
 		private File getModulePath(File root, String group, String module, Layout layout) {
@@ -165,6 +165,30 @@ public class CleanCommand extends OptionParsingCommand {
 
 		private static enum Layout {
 			IVY, MAVEN;
+		}
+
+		private void recursiveDelete(File file) {
+			if (file.exists()) {
+				if (file.isDirectory()) {
+					for (File inDir : file.listFiles()) {
+						recursiveDelete(inDir);
+					}
+				}
+				if (!file.delete()) {
+					throw new IllegalStateException("Failed to delete " + file);
+				}
+			}
+		}
+
+		private List<File> recursiveList(File file) {
+			List<File> files = new ArrayList<File>();
+			if (file.isDirectory()) {
+				for (File inDir : file.listFiles()) {
+					files.addAll(recursiveList(inDir));
+				}
+			}
+			files.add(file);
+			return files;
 		}
 
 	}

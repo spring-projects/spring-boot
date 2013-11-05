@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import org.junit.Test;
+import org.junit.internal.TextListener;
+import org.junit.runner.JUnitCore;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.CommandFactory;
+import static org.junit.Assert.fail;
 
 /**
- * Default implementation of {@link CommandFactory}.
- * 
- * @author Dave Syer
+ * @author pwebb
  */
-public class DefaultCommandFactory implements CommandFactory {
+public class TestTest {
 
-	private static final List<Command> DEFAULT_COMMANDS = Arrays
-			.<Command> asList(new VersionCommand(), new RunCommand(), new CleanCommand(),
-					new TestCommand());
-
-	@Override
-	public Collection<Command> getCommands() {
-		return DEFAULT_COMMANDS;
+	@Test
+	public void testName() throws Exception {
+		fail("Arse");
 	}
 
+	public static void main(String[] args) {
+		JUnitCore core = new JUnitCore();
+		core.addListener(new TextListener(System.out));
+		core.run(TestTest.class);
+
+	}
 }

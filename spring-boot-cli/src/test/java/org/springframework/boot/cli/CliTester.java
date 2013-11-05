@@ -27,8 +27,10 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.springframework.boot.OutputCapture;
+import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.CleanCommand;
 import org.springframework.boot.cli.command.RunCommand;
+import org.springframework.boot.cli.command.TestCommand;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
@@ -41,7 +43,7 @@ public class CliTester implements TestRule {
 
 	private long timeout = TimeUnit.MINUTES.toMillis(6);
 
-	private List<RunCommand> commands = new ArrayList<RunCommand>();
+	private List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
 
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
@@ -53,6 +55,20 @@ public class CliTester implements TestRule {
 					@Override
 					public RunCommand call() throws Exception {
 						RunCommand command = new RunCommand();
+						command.run(args);
+						return command;
+					}
+				});
+		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
+		return getOutput();
+	}
+
+	public String test(final String... args) throws Exception {
+		Future<TestCommand> future = Executors.newSingleThreadExecutor().submit(
+				new Callable<TestCommand>() {
+					@Override
+					public TestCommand call() throws Exception {
+						TestCommand command = new TestCommand();
 						command.run(args);
 						return command;
 					}
@@ -87,9 +103,9 @@ public class CliTester implements TestRule {
 					this.base.evaluate();
 				}
 				finally {
-					for (RunCommand command : CliTester.this.commands) {
-						if (command != null) {
-							command.stop();
+					for (AbstractCommand command : CliTester.this.commands) {
+						if (command != null && command instanceof RunCommand) {
+							((RunCommand) command).stop();
 						}
 					}
 					System.clearProperty("disableSpringSnapshotRepos");

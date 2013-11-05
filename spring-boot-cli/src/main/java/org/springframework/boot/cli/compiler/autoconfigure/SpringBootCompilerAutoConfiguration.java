@@ -71,7 +71,6 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 	public void applyToMainClass(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
-		// Could add switch for auto config, but it seems like it wouldn't get used much
 		addEnableAutoConfigurationAnnotation(source, classNode);
 	}
 

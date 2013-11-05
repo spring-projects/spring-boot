@@ -38,10 +38,9 @@ public class TransactionManagementCompilerAutoConfiguration extends
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies
-				.ifAnyMissingClasses(
-						"org.springframework.transaction.annotation.Transactional")
-				.add("spring-tx").add("spring-boot-starter-aop");
+		dependencies.ifAnyMissingClasses(
+				"org.springframework.transaction.annotation.Transactional").add(
+				"spring-tx", "spring-boot-starter-aop");
 	}
 
 	@Override
