@@ -40,7 +40,7 @@ public abstract class SpringBootCondition implements Condition {
 
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		Outcome result = getMatchOutcome(context, metadata);
+		ConditionOutcome result = getMatchOutcome(context, metadata);
 		StringBuilder message = getMessage(metadata, result);
 
 		if (!result.isMatch()) {
@@ -60,7 +60,7 @@ public abstract class SpringBootCondition implements Condition {
 		return true;
 	}
 
-	private StringBuilder getMessage(AnnotatedTypeMetadata metadata, Outcome result) {
+	private StringBuilder getMessage(AnnotatedTypeMetadata metadata, ConditionOutcome result) {
 		StringBuilder message = new StringBuilder();
 		message.append("Condition ");
 		message.append(ClassUtils.getShortName(getClass()));
@@ -91,7 +91,7 @@ public abstract class SpringBootCondition implements Condition {
 	/**
 	 * Determine the outcome of the match along with suitable log output.
 	 */
-	public abstract Outcome getMatchOutcome(ConditionContext context,
+	public abstract ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata);
 
 	protected final boolean anyMatches(ConditionContext context,

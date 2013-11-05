@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.Outcome;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -66,7 +66,7 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 	private boolean initialized = false;
 
 	public static void registerDecision(ConditionContext context, String message,
-			String classOrMethodName, Outcome outcome) {
+			String classOrMethodName, ConditionOutcome outcome) {
 		if (context.getBeanFactory().containsBeanDefinition(AUTO_CONFIGURATION_REPORT)
 				|| context.getBeanFactory().containsSingleton(AUTO_CONFIGURATION_REPORT)) {
 			AutoConfigurationReport autoconfigurationReport = context.getBeanFactory()
@@ -89,7 +89,7 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 	}
 
 	private void registerDecision(String message, String classOrMethodName,
-			Outcome outcome) {
+			ConditionOutcome outcome) {
 		AutoConfigurationDecision decision = new AutoConfigurationDecision(message,
 				classOrMethodName, outcome);
 		if (!this.autoconfigurationDecisions.containsKey(classOrMethodName)) {

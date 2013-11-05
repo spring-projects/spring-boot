@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.Outcome;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
@@ -65,20 +65,20 @@ public class DispatcherServletAutoConfiguration {
 	private static class DefaultDispatcherServletCondition extends SpringBootCondition {
 
 		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 			String[] beans = beanFactory.getBeanNamesForType(DispatcherServlet.class,
 					false, false);
 			if (beans.length == 0) {
-				return Outcome.match("no DispatcherServlet found");
+				return ConditionOutcome.match("no DispatcherServlet found");
 			}
 			if (Arrays.asList(beans).contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
-				return Outcome.noMatch("found DispatcherServlet named "
+				return ConditionOutcome.noMatch("found DispatcherServlet named "
 						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			}
-			return Outcome
+			return ConditionOutcome
 					.match("one or more DispatcherServlets found and none is named "
 							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 		}

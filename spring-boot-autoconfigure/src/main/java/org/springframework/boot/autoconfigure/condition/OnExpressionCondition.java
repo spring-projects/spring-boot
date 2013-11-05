@@ -33,7 +33,7 @@ import org.springframework.core.type.ClassMetadata;
 public class OnExpressionCondition extends SpringBootCondition {
 
 	@Override
-	public Outcome getMatchOutcome(ConditionContext context,
+	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
 		String expression = (String) metadata.getAnnotationAttributes(
@@ -59,7 +59,7 @@ public class OnExpressionCondition extends SpringBootCondition {
 			message.append(" on " + ((ClassMetadata) metadata).getClassName());
 		}
 		message.append(": " + expression);
-		return new Outcome(result, message.toString());
+		return new ConditionOutcome(result, message.toString());
 	}
 
 }
