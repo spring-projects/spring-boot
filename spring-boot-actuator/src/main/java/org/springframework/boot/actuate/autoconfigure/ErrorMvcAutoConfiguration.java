@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.Outcome;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.DefaultTemplateResolverConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -97,17 +97,17 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	private static class ErrorTemplateMissingCondition extends SpringBootCondition {
 		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			if (ClassUtils.isPresent("org.thymeleaf.spring3.SpringTemplateEngine",
 					context.getClassLoader())) {
 				if (DefaultTemplateResolverConfiguration.templateExists(
 						context.getEnvironment(), context.getResourceLoader(), "error")) {
-					return Outcome.noMatch("Thymeleaf template found for error view");
+					return ConditionOutcome.noMatch("Thymeleaf template found for error view");
 				}
 			}
 			// FIXME: add matcher for JSP view if Jasper detected
-			return Outcome.match("no error template view detected");
+			return ConditionOutcome.match("no error template view detected");
 		};
 	}
 

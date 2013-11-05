@@ -17,34 +17,54 @@
 package org.springframework.boot.autoconfigure.condition;
 
 /**
- * Outcome for a match, including log message.
+ * Outcome for a condition match, including log message.
+ * 
+ * @author Phillip Webb
  */
-public class Outcome {
+public class ConditionOutcome {
 
 	private final boolean match;
+
 	private final String message;
 
-	public Outcome(boolean match, String message) {
+	public ConditionOutcome(boolean match, String message) {
 		this.match = match;
 		this.message = message;
 	}
 
-	public static Outcome match() {
+	/**
+	 * Create a new {@link ConditionOutcome} instance for a 'match'.
+	 */
+	public static ConditionOutcome match() {
 		return match(null);
 	}
 
-	public static Outcome match(String message) {
-		return new Outcome(true, message);
+	/**
+	 * Create a new {@link ConditionOutcome} instance for 'match'.
+	 * @param message the message
+	 */
+	public static ConditionOutcome match(String message) {
+		return new ConditionOutcome(true, message);
 	}
 
-	public static Outcome noMatch(String message) {
-		return new Outcome(false, message);
+	/**
+	 * Create a new {@link ConditionOutcome} instance for 'no match'.
+	 * @param message the message
+	 */
+	public static ConditionOutcome noMatch(String message) {
+		return new ConditionOutcome(false, message);
 	}
 
+	/**
+	 * Return {@code true} if the outcome was a match.
+	 */
 	public boolean isMatch() {
 		return this.match;
 	}
 
+	/**
+	 * Return an outcome message or {@code null}.
+	 */
 	public String getMessage() {
 		return this.message;
 	}

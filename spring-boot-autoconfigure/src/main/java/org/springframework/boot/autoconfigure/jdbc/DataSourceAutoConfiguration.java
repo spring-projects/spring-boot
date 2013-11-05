@@ -33,7 +33,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.Outcome;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
@@ -182,30 +182,30 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		protected abstract String getDataSourceClassName();
 
 		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 
 			if (!ClassUtils.isPresent(getDataSourceClassName(), context.getClassLoader())) {
-				return Outcome.noMatch(getDataSourceClassName()
+				return ConditionOutcome.noMatch(getDataSourceClassName()
 						+ " DataSource class not found");
 			}
 
 			String driverClassName = getDriverClassName(context.getEnvironment(),
 					getDataSourceClassLoader(context));
 			if (driverClassName == null) {
-				return Outcome.noMatch("no database driver");
+				return ConditionOutcome.noMatch("no database driver");
 			}
 
 			String url = getUrl(context.getEnvironment(), context.getClassLoader());
 			if (url == null) {
-				return Outcome.noMatch("no database URL");
+				return ConditionOutcome.noMatch("no database URL");
 			}
 
 			if (ClassUtils.isPresent(driverClassName, context.getClassLoader())) {
-				return Outcome.match("found database driver " + driverClassName);
+				return ConditionOutcome.match("found database driver " + driverClassName);
 			}
 
-			return Outcome.noMatch("missing database driver " + driverClassName);
+			return ConditionOutcome.noMatch("missing database driver " + driverClassName);
 		}
 
 		/**
@@ -253,10 +253,10 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		}
 
 		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			if (matches(context, metadata, this.tomcatCondition)) {
-				return Outcome.noMatch("tomcat DataSource");
+				return ConditionOutcome.noMatch("tomcat DataSource");
 			}
 			return super.getMatchOutcome(context, metadata);
 		}
@@ -278,17 +278,17 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		private SpringBootCondition dbcpCondition = new BasicDatabaseCondition();
 
 		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			if (anyMatches(context, metadata, this.tomcatCondition, this.dbcpCondition)) {
-				return Outcome.noMatch("existing non-embedded database detected");
+				return ConditionOutcome.noMatch("existing non-embedded database detected");
 			}
 			EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(
 					context.getClassLoader()).getType();
 			if (type == null) {
-				return Outcome.noMatch("no embedded database detected");
+				return ConditionOutcome.noMatch("no embedded database detected");
 			}
-			return Outcome.match("embedded database " + type + " detected");
+			return ConditionOutcome.match("embedded database " + type + " detected");
 		}
 	}
 
@@ -301,20 +301,20 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		private SpringBootCondition embeddedCondition = new EmbeddedDatabaseCondition();
 
 		@Override
-		public Outcome getMatchOutcome(ConditionContext context,
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 
 			if (anyMatches(context, metadata, this.tomcatCondition, this.dbcpCondition,
 					this.embeddedCondition)) {
-				return Outcome.match("existing auto database detected");
+				return ConditionOutcome.match("existing auto database detected");
 			}
 
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					context.getBeanFactory(), DataSource.class, true, false).length > 0) {
-				return Outcome.match("Existing bean configured database detected");
+				return ConditionOutcome.match("Existing bean configured database detected");
 			}
 
-			return Outcome.noMatch("no existing bean configured database");
+			return ConditionOutcome.noMatch("no existing bean configured database");
 		}
 	}
 }

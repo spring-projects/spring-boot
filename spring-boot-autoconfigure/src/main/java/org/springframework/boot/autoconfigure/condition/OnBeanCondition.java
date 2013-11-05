@@ -56,7 +56,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	}
 
 	@Override
-	public Outcome getMatchOutcome(ConditionContext context,
+	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
 		if (metadata.isAnnotated(ConditionalOnBean.class.getName())) {
@@ -64,7 +64,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					ConditionalOnBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				return Outcome.noMatch("@ConditionalOnBean " + spec + " found no beans");
+				return ConditionOutcome.noMatch("@ConditionalOnBean " + spec + " found no beans");
 			}
 		}
 
@@ -73,12 +73,12 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					ConditionalOnMissingBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (!matching.isEmpty()) {
-				return Outcome.noMatch("@ConditionalOnMissingBean " + spec
+				return ConditionOutcome.noMatch("@ConditionalOnMissingBean " + spec
 						+ " found the following " + matching);
 			}
 		}
 
-		return Outcome.match();
+		return ConditionOutcome.match();
 	}
 
 	private List<String> getMatchingBeans(ConditionContext context, BeanSearchSpec beans) {

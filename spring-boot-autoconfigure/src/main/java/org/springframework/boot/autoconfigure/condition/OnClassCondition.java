@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 class OnClassCondition extends SpringBootCondition {
 
 	@Override
-	public Outcome getMatchOutcome(ConditionContext context,
+	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
 		MultiValueMap<String, Object> onClasses = getAttributes(metadata,
@@ -46,7 +46,7 @@ class OnClassCondition extends SpringBootCondition {
 			List<String> missing = getMatchingClasses(onClasses, MatchType.MISSING,
 					context);
 			if (!missing.isEmpty()) {
-				return Outcome.noMatch("required @ConditionalOnClass classes not found: "
+				return ConditionOutcome.noMatch("required @ConditionalOnClass classes not found: "
 						+ StringUtils.collectionToCommaDelimitedString(missing));
 			}
 		}
@@ -57,12 +57,12 @@ class OnClassCondition extends SpringBootCondition {
 			List<String> present = getMatchingClasses(onMissingClasses,
 					MatchType.PRESENT, context);
 			if (!present.isEmpty()) {
-				return Outcome.noMatch("required @ConditionalOnMissing classes found: "
+				return ConditionOutcome.noMatch("required @ConditionalOnMissing classes found: "
 						+ StringUtils.collectionToCommaDelimitedString(present));
 			}
 		}
 
-		return Outcome.match();
+		return ConditionOutcome.match();
 	}
 
 	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,

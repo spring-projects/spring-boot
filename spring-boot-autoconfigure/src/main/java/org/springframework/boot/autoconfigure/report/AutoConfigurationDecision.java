@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.report;
 
-import org.springframework.boot.autoconfigure.condition.Outcome;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 
 /**
  * Collects details about decision made during autoconfiguration (pass or fail)
@@ -27,10 +27,10 @@ public class AutoConfigurationDecision {
 
 	private final String message;
 	private final String classOrMethodName;
-	private final Outcome outcome;
+	private final ConditionOutcome outcome;
 
 	public AutoConfigurationDecision(String message, String classOrMethodName,
-			Outcome outcome) {
+			ConditionOutcome outcome) {
 		this.message = message;
 		this.classOrMethodName = classOrMethodName;
 		this.outcome = outcome;
@@ -44,7 +44,7 @@ public class AutoConfigurationDecision {
 		return this.classOrMethodName;
 	}
 
-	public Outcome getOutcome() {
+	public ConditionOutcome getOutcome() {
 		return this.outcome;
 	}
 
