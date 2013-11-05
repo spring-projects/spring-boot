@@ -321,8 +321,8 @@ public class SecurityAutoConfiguration {
 			User user = this.security.getUser();
 
 			if (user.isDefaultPassword()) {
-				logger.info("Using default password for application endpoints: "
-						+ user.getPassword());
+				logger.info("\n\n" + "Using default password for application endpoints: "
+						+ user.getPassword() + "\n\n");
 			}
 
 			Set<String> roles = new LinkedHashSet<String>(Arrays.asList(this.security
