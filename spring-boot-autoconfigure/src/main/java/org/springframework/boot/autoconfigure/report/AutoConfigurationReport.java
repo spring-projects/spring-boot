@@ -156,7 +156,10 @@ public class AutoConfigurationReport implements ApplicationContextAware,
 	}
 
 	private boolean shouldLogReport() {
-		return this.context.getEnvironment().getProperty("debug", Boolean.class, false)
+		String debug = this.context.getEnvironment().getProperty("debug", "false")
+				.toLowerCase().trim();
+		return debug.equals("true") || debug.equals("") //
+				// inactive context is a sign that it crashed
 				|| !this.context.isActive();
 	}
 
