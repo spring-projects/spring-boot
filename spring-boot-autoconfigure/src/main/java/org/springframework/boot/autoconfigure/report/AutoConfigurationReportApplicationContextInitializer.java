@@ -39,7 +39,9 @@ public class AutoConfigurationReportApplicationContextInitializer implements
 	}
 
 	@Override
-	public void handle(SpringApplication springApplication, String[] args, Throwable e) {
+	public void handleError(SpringApplication application,
+			ConfigurableApplicationContext applicationContext, String[] args,
+			Throwable exception) {
 		if (this.report != null) {
 			this.report.initialize(); // salvage a report if possible
 		}
