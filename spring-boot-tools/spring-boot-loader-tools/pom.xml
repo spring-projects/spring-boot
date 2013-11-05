@@ -80,44 +80,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.1.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>git</executable>
-                    <arguments>
-                        <argument>log</argument>
-                        <argument>--pretty=format:Spring-Boot-Commit-Id: %H</argument>
-                        <argument>-n1</argument>
-                    </arguments>
-                    <outputFile>${project.build.directory}/build-number.mf</outputFile>
-                    <successCodes>
-                        <!-- Skip failures due to missing Git or the project not being a Git repo
-                             (needed for add-ons which ultimately extend this POM but don't use Git) -->
-                        <successCode>0</successCode>
-                        <successCode>1</successCode>
-                        <successCode>127</successCode>
-                        <successCode>128</successCode>
-                    </successCodes>
-                </configuration>
-            </plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-          			<archive>
-            			<manifestFile>${project.build.directory}/build-number.mf</manifestFile>
-          			</archive>
-        		</configuration>
-			</plugin>
 		</plugins>
 	</build>
 </project>
