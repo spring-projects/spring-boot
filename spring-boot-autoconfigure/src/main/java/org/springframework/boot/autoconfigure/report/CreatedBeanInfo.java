@@ -46,7 +46,7 @@ public class CreatedBeanInfo {
 		return this.name;
 	}
 
-	public Class<?> getBeanType() {
+	public Class<?> getType() {
 		return this.type;
 	}
 
