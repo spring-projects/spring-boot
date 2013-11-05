@@ -54,7 +54,7 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void noTests() throws Throwable {
 		TestCommand command = new TestCommand();
-		command.run("samples/book.groovy");
+		command.run("test-samples/book.groovy");
 		TestResults results = command.getResults();
 		assertEquals(0, results.getRunCount());
 		assertEquals(0, results.getFailureCount());
@@ -64,7 +64,7 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void empty() throws Exception {
 		TestCommand command = new TestCommand();
-		command.run("samples/empty.groovy");
+		command.run("test-samples/empty.groovy");
 		TestResults results = command.getResults();
 		assertEquals(0, results.getRunCount());
 		assertEquals(0, results.getFailureCount());
@@ -75,10 +75,10 @@ public class TestCommandIntegrationTests {
 	public void noFile() throws Exception {
 		try {
 			TestCommand command = new TestCommand();
-			command.run("samples/nothing.groovy");
+			command.run("test-samples/nothing.groovy");
 		}
 		catch (RuntimeException ex) {
-			assertEquals("Can't find samples/nothing.groovy", ex.getMessage());
+			assertEquals("Can't find test-samples/nothing.groovy", ex.getMessage());
 			throw ex;
 		}
 	}
@@ -86,7 +86,7 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void appAndTestsInOneFile() throws Exception {
 		TestCommand command = new TestCommand();
-		command.run("samples/book_and_tests.groovy");
+		command.run("test-samples/book_and_tests.groovy");
 		TestResults results = command.getResults();
 		assertEquals(1, results.getRunCount());
 		assertEquals(0, results.getFailureCount());
@@ -96,7 +96,7 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void appInOneFileTestsInAnotherFile() throws Exception {
 		TestCommand command = new TestCommand();
-		command.run("samples/book.groovy", "samples/test.groovy");
+		command.run("test-samples/book.groovy", "test-samples/test.groovy");
 		TestResults results = command.getResults();
 		assertEquals(1, results.getRunCount());
 		assertEquals(0, results.getFailureCount());
@@ -106,7 +106,7 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void spockTester() throws Exception {
 		TestCommand command = new TestCommand();
-		command.run("samples/spock.groovy");
+		command.run("test-samples/spock.groovy");
 		TestResults results = command.getResults();
 		assertEquals(1, results.getRunCount());
 		assertEquals(0, results.getFailureCount());
@@ -116,7 +116,7 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void spockAndJunitTester() throws Exception {
 		TestCommand command = new TestCommand();
-		command.run("samples/spock.groovy", "samples/book_and_tests.groovy");
+		command.run("test-samples/spock.groovy", "test-samples/book_and_tests.groovy");
 		TestResults results = command.getResults();
 		assertEquals(2, results.getRunCount());
 		assertEquals(0, results.getFailureCount());
@@ -126,7 +126,7 @@ public class TestCommandIntegrationTests {
 	@Test
 	public void verifyFailures() throws Exception {
 		TestCommand command = new TestCommand();
-		command.run("samples/failures.groovy");
+		command.run("test-samples/failures.groovy");
 		TestResults results = command.getResults();
 		assertEquals(5, results.getRunCount());
 		assertEquals(3, results.getFailureCount());
