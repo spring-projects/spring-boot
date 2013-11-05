@@ -14,29 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.CommandFactory;
-
 /**
- * Default implementation of {@link CommandFactory}.
- * 
- * @author Dave Syer
+ * Groovy util classes that are "shared" between the CLI and user applications. Classes is
+ * this package can be loaded from compiled user code. Not under the cli package in case
+ * we want to extract into a separate jar at a future date.
  */
-public class DefaultCommandFactory implements CommandFactory {
+package org.springframework.boot.groovy;
 
-	private static final List<Command> DEFAULT_COMMANDS = Arrays
-			.<Command> asList(new VersionCommand(), new RunCommand(), new CleanCommand(),
-					new TestCommand());
-
-	@Override
-	public Collection<Command> getCommands() {
-		return DEFAULT_COMMANDS;
-	}
-
-}

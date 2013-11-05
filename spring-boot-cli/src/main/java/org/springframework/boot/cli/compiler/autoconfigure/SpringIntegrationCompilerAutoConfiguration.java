@@ -16,17 +16,12 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
+import org.springframework.boot.groovy.EnableIntegrationPatterns;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Integration.
@@ -45,8 +40,8 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses("org.springframework.integration.Message")
-				.add("spring-integration-core").add("spring-integration-dsl-groovy-core");
+		dependencies.ifAnyMissingClasses("org.springframework.integration.Message").add(
+				"spring-boot-starter-integration", "spring-integration-dsl-groovy-core");
 		dependencies.ifAnyMissingClasses("groovy.util.XmlParser").add("groovy-xml");
 	}
 
@@ -61,15 +56,8 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 				"org.springframework.integration.annotation.Headers",
 				"org.springframework.integration.annotation.Payload",
 				"org.springframework.integration.annotation.Payloads",
-				EnableIntegrationPatterns.class.getCanonicalName(),
 				"org.springframework.integration.dsl.groovy.MessageFlow",
-				"org.springframework.integration.dsl.groovy.builder.IntegrationBuilder");
-	}
-
-	@Target(ElementType.TYPE)
-	@Documented
-	@Retention(RetentionPolicy.RUNTIME)
-	public static @interface EnableIntegrationPatterns {
-
+				"org.springframework.integration.dsl.groovy.builder.IntegrationBuilder",
+				EnableIntegrationPatterns.class.getCanonicalName());
 	}
 }

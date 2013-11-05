@@ -38,7 +38,7 @@ public class SpringBatchCompilerAutoConfiguration extends CompilerAutoConfigurat
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.batch.core.Job").add(
-				"spring-batch-core");
+				"spring-boot-starter-batch");
 		dependencies.ifAnyMissingClasses("org.springframework.jdbc.core.JdbcTemplate")
 				.add("spring-jdbc");
 	}

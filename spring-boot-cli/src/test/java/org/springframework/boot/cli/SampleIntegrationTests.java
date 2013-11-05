@@ -16,14 +16,17 @@
 
 package org.springframework.boot.cli;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.cli.util.FileUtils;
-import org.springframework.boot.cli.util.IoUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -38,13 +41,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class SampleIntegrationTests {
 
+	@Rule
+	public CliTester cli = new CliTester();
+
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
 		GrapesCleaner.cleanIfNecessary();
 	}
-
-	@Rule
-	public CliTester cli = new CliTester();
 
 	@Test
 	public void appSample() throws Exception {
@@ -61,7 +64,6 @@ public class SampleIntegrationTests {
 	@Test
 	public void jobSample() throws Exception {
 		String output = this.cli.run("samples/job.groovy", "foo=bar");
-		System.out.println(output);
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
 	}
@@ -83,30 +85,30 @@ public class SampleIntegrationTests {
 				"foo=bar");
 		assertTrue("Wrong output: " + output,
 				output.contains("completed with the following parameters"));
-		String result = IoUtils.readEntirely("http://localhost:8080");
+		String result = readEntirely("http://localhost:8080");
 		assertEquals("World!", result);
 	}
 
 	@Test
 	public void webSample() throws Exception {
 		this.cli.run("samples/web.groovy");
-		String result = IoUtils.readEntirely("http://localhost:8080");
+		String result = readEntirely("http://localhost:8080");
 		assertEquals("World!", result);
 	}
 
 	@Test
 	public void uiSample() throws Exception {
 		this.cli.run("samples/ui.groovy", "--classpath=.:src/test/resources");
-		String result = IoUtils.readEntirely("http://localhost:8080");
+		String result = readEntirely("http://localhost:8080");
 		assertTrue("Wrong output: " + result, result.contains("Hello World"));
-		result = IoUtils.readEntirely("http://localhost:8080/css/bootstrap.min.css");
+		result = readEntirely("http://localhost:8080/css/bootstrap.min.css");
 		assertTrue("Wrong output: " + result, result.contains("container"));
 	}
 
 	@Test
 	public void actuatorSample() throws Exception {
 		this.cli.run("samples/actuator.groovy");
-		String result = IoUtils.readEntirely("http://localhost:8080");
+		String result = readEntirely("http://localhost:8080");
 		assertEquals("{\"message\":\"Hello World!\"}", result);
 	}
 
@@ -139,7 +141,7 @@ public class SampleIntegrationTests {
 		String output = this.cli.run("samples/jms.groovy");
 		assertTrue("Wrong output: " + output,
 				output.contains("Received Greetings from Spring Boot via ActiveMQ"));
-		FileUtils.recursiveDelete(new File("activemq-data")); // cleanup ActiveMQ cruft
+		FileUtils.deleteDirectory(new File("activemq-data"));// cleanup ActiveMQ cruft
 	}
 
 	@Test
@@ -154,8 +156,24 @@ public class SampleIntegrationTests {
 	@Test
 	public void deviceSample() throws Exception {
 		this.cli.run("samples/device.groovy");
-		String result = IoUtils.readEntirely("http://localhost:8080");
+		String result = readEntirely("http://localhost:8080");
 		assertEquals("Hello Normal Device!", result);
+	}
+
+	private static String readEntirely(String uri) {
+		try {
+			InputStream stream = URI.create(uri).toURL().openStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+			String line;
+			StringBuilder result = new StringBuilder();
+			while ((line = reader.readLine()) != null) {
+				result.append(line);
+			}
+			return result.toString();
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 }

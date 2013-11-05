@@ -14,38 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler;
+package org.springframework.boot.cli;
+
+import org.junit.Rule;
+import org.junit.Test;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 /**
- * Configuration for the {@link GroovyCompiler}.
+ * Tests for CLI Classloader issues.
  * 
  * @author Phillip Webb
  */
-public interface GroovyCompilerConfiguration {
+public class ClassLoaderIntegrationTests {
 
-	/**
-	 * Constant to be used when there is not {@link #getClasspath() classpath}.
-	 */
-	public static final String[] NO_CLASSPATH = {};
+	@Rule
+	public CliTester cli = new CliTester();
 
-	/**
-	 * Returns the scope in which the compiler operates.
-	 */
-	GroovyCompilerScope getScope();
-
-	/**
-	 * Returns if import declarations should be guessed.
-	 */
-	boolean isGuessImports();
-
-	/**
-	 * Returns if jar dependencies should be guessed.
-	 */
-	boolean isGuessDependencies();
-
-	/**
-	 * @return a path for local resources
-	 */
-	String[] getClasspath();
-
+	@Test
+	public void runWithIsolatedClassLoader() throws Exception {
+		// CLI classes or dependencies should not be exposed to the app
+		String output = this.cli.run("src/test/resources/classloader-test-app.groovy",
+				SpringCli.class.getName());
+		assertThat(output, containsString("HasClasses-false-true-false"));
+	}
 }

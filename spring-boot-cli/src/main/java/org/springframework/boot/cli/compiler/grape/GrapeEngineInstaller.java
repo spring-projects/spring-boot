@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.compiler.grape;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import groovy.grape.Grape;
+import groovy.grape.GrapeEngine;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.CommandFactory;
+import java.lang.reflect.Field;
 
 /**
- * Default implementation of {@link CommandFactory}.
+ * Utility to install a specific {@link Grape} engine with Groovy.
  * 
- * @author Dave Syer
+ * @author Andy Wilkinson
  */
-public class DefaultCommandFactory implements CommandFactory {
+public abstract class GrapeEngineInstaller {
 
-	private static final List<Command> DEFAULT_COMMANDS = Arrays
-			.<Command> asList(new VersionCommand(), new RunCommand(), new CleanCommand(),
-					new TestCommand());
-
-	@Override
-	public Collection<Command> getCommands() {
-		return DEFAULT_COMMANDS;
+	public static void install(GrapeEngine engine) {
+		synchronized (Grape.class) {
+			try {
+				Field field = Grape.class.getDeclaredField("instance");
+				field.setAccessible(true);
+				field.set(null, engine);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Failed to install GrapeEngine", ex);
+			}
+		}
 	}
-
 }

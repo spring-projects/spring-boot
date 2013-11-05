@@ -44,7 +44,7 @@ import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
-import org.objectweb.asm.Opcodes;
+import org.springframework.asm.Opcodes;
 import org.springframework.boot.cli.Command;
 
 /**

@@ -43,19 +43,60 @@
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy</artifactId>
+			<artifactId>groovy-all</artifactId>
 		</dependency>
-		<!-- Optional -->
 		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-templates</artifactId>
-			<optional>true</optional>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-aether-provider</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>org.eclipse.sisu.plexus</artifactId>
+					<groupId>org.eclipse.sisu</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-connector-basic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-impl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-spi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-file</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-http</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jcl-over-slf4j</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-util</artifactId>
 		</dependency>
 		<!-- Provided -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-cli-grape</artifactId>
-			<version>${project.version}</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Test -->
@@ -75,11 +116,6 @@
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
@@ -111,74 +147,80 @@
 					<additionalClasspathElements>
 						<additionalClasspathElement>${project.build.directory}/generated-resources</additionalClasspathElement>
 					</additionalClasspathElements>
-					<classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework:spring-core</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework:spring-beans</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework:spring-aop</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework:spring-tx</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework:spring-expression</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework:spring-context</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework:spring-test</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework.retry:spring-retry</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework.integration:spring-integration-core</classpathDependencyExcludes>
-						<classpathDependencyExcludes>org.springframework.integration:spring-integration-dsl-groovy-core</classpathDependencyExcludes>
-					</classpathDependencyExcludes>
 				</configuration>
 			</plugin>
+			<!-- Build an executable JAR manually since we can't easily depend on
+				a maven plugin that is part of the reactor -->
 			<plugin>
-				<artifactId>maven-shade-plugin</artifactId>
-				<configuration>
-					<filters>
-						<filter>
-							<artifact>*:*</artifact>
-							<excludes>
-								<exclude>META-INF/*.SF</exclude>
-								<exclude>META-INF/*.DSA</exclude>
-								<exclude>META-INF/*.RSA</exclude>
-							</excludes>
-						</filter>
-					</filters>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<phase>package</phase>
+						<id>unpack</id>
+						<phase>prepare-package</phase>
 						<goals>
-							<goal>shade</goal>
+							<goal>unpack</goal>
 						</goals>
 						<configuration>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-								</transformer>
-							</transformers>
-							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>spring-boot-loader</artifactId>
+									<version>${project.version}</version>
+									<type>jar</type>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/assembly</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
+							<includeScope>compile</includeScope>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<inherited>false</inherited>
-				<configuration>
-					<descriptors>
-						<descriptor>src/main/assembly/repackage-jar.xml</descriptor>
-						<descriptor>src/main/assembly/bin-package.xml</descriptor>
-					</descriptors>
-					<archive>
-						<manifest>
-							<mainClass>${start-class}</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
 				<executions>
 					<execution>
-						<id>make-distribution</id>
+						<id>jar-with-dependencies</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/jar-with-dependencies.xml</descriptor>
+							</descriptors>
+							<archive>
+								<manifest>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Start-Class>${start-class}</Start-Class>
+								</manifestEntries>
+							</archive>
+						</configuration>
+					</execution>
+					<execution>
+						<id>bin-package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/assembly/bin-package.xml</descriptor>
+							</descriptors>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -236,6 +278,27 @@
 									</pluginExecutionFilter>
 									<action>
 										<execute />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[2.8,)
+										</versionRange>
+										<goals>
+											<goal>
+												copy-dependencies
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>

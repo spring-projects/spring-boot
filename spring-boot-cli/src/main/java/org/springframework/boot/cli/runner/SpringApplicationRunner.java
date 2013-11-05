@@ -37,7 +37,7 @@ public class SpringApplicationRunner {
 
 	private static int runnerCounter = 0;
 
-	private SpringApplicationRunnerConfiguration configuration;
+	private final SpringApplicationRunnerConfiguration configuration;
 
 	private final File[] files;
 

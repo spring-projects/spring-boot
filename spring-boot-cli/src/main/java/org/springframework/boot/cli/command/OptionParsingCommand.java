@@ -19,10 +19,11 @@ package org.springframework.boot.cli.command;
 import org.springframework.boot.cli.Command;
 
 /**
- * Base class for a {@link Command} that pare options using an {@link OptionHandler}.
+ * Base class for a {@link Command} that parse options using an {@link OptionHandler}.
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @see OptionHandler
  */
 public abstract class OptionParsingCommand extends AbstractCommand {
 

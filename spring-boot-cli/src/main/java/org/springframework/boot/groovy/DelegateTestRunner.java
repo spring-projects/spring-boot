@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.groovy;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.CommandFactory;
+import org.junit.internal.TextListener;
+import org.junit.runner.JUnitCore;
+import org.springframework.boot.cli.testrunner.TestRunner;
 
 /**
- * Default implementation of {@link CommandFactory}.
+ * Delegate test runner to launch tests in user application classpath.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
+ * @see TestRunner
  */
-public class DefaultCommandFactory implements CommandFactory {
+public class DelegateTestRunner {
 
-	private static final List<Command> DEFAULT_COMMANDS = Arrays
-			.<Command> asList(new VersionCommand(), new RunCommand(), new CleanCommand(),
-					new TestCommand());
-
-	@Override
-	public Collection<Command> getCommands() {
-		return DEFAULT_COMMANDS;
+	public static void run(Class<?>[] testClasses) {
+		JUnitCore jUnitCore = new JUnitCore();
+		jUnitCore.addListener(new TextListener(System.out));
+		jUnitCore.run(testClasses);
 	}
 
 }

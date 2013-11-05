@@ -25,7 +25,7 @@
 	</fileSets>
 	<files>
 		<file>
-			<source>${project.build.directory}/${project.artifactId}-${project.version}-repackaged.jar</source>
+			<source>${project.build.directory}/${project.artifactId}-${project.version}-full.jar</source>
 			<outputDirectory>/lib</outputDirectory>
 			<destName>${project.build.finalName}.jar</destName>
 		</file>
