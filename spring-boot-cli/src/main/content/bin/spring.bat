@@ -59,7 +59,7 @@ set CMD_LINE_ARGS=%$
 @rem Setup the command line
 
 set CLASSPATH=%SPRING_HOME%\lib\*
-"%JAVA_EXE%" %JAVA_OPTS% -cp "%CLASSPATH%" org.springframework.boot.cli.SpringCli %CMD_LINE_ARGS%
+"%JAVA_EXE%" %JAVA_OPTS% -cp "%CLASSPATH%" org.springframework.boot.loader.JarLauncher %CMD_LINE_ARGS%
 
 :end
 @rem End local scope for the variables with windows NT shell
