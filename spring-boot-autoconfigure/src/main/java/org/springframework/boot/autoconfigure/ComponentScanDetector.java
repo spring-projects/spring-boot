@@ -52,7 +52,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @see AutoConfigurationUtils
  */
-class ComponentScanDetector implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
+public class ComponentScanDetector implements ImportBeanDefinitionRegistrar,
+		BeanFactoryAware {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
