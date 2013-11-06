@@ -18,6 +18,7 @@ package org.springframework.boot.cli.compiler.grape;
 
 import groovy.lang.GroovyClassLoader;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,6 +46,20 @@ public class AetherGrapeEngineTests {
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
 
 		assertEquals(6, this.groovyClassLoader.getURLs().length);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void dependencyResolutionWithExclusions() {
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("excludes",
+				Arrays.asList(createExclusion("org.springframework", "spring-core")));
+
+		this.grapeEngine.grab(args,
+				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"),
+				createDependency("org.springframework", "spring-beans", "3.2.4.RELEASE"));
+
+		assertEquals(4, this.groovyClassLoader.getURLs().length);
 	}
 
 	@Test
@@ -116,5 +131,12 @@ public class AetherGrapeEngineTests {
 		resolver.put("name", name);
 		resolver.put("root", url);
 		return resolver;
+	}
+
+	private Map<String, Object> createExclusion(String group, String module) {
+		Map<String, Object> exclusion = new HashMap<String, Object>();
+		exclusion.put("group", group);
+		exclusion.put("module", module);
+		return exclusion;
 	}
 }

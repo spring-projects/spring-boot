@@ -139,8 +139,9 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	@Override
 	public Object grab(Map args, Map... dependencyMaps) {
+		List<Exclusion> exclusions = createExclusions(args);
+		List<Dependency> dependencies = createDependencies(dependencyMaps, exclusions);
 		try {
-			List<Dependency> dependencies = createDependencies(dependencyMaps);
 			List<File> files = resolve(dependencies);
 			GroovyClassLoader classLoader = getClassLoader(args);
 			for (File file : files) {
@@ -156,25 +157,43 @@ public class AetherGrapeEngine implements GrapeEngine {
 		return null;
 	}
 
-	private GroovyClassLoader getClassLoader(Map args) {
-		GroovyClassLoader classLoader = (GroovyClassLoader) args.get("classLoader");
-		return (classLoader == null ? this.classLoader : classLoader);
+	@SuppressWarnings("unchecked")
+	private List<Exclusion> createExclusions(Map<?, ?> args) {
+		List<Exclusion> exclusions = new ArrayList<Exclusion>();
+		List<Map<String, Object>> exclusionMaps = (List<Map<String, Object>>) args
+				.get("excludes");
+		if (exclusionMaps != null) {
+			for (Map<String, Object> exclusionMap : exclusionMaps) {
+				exclusions.add(createExclusion(exclusionMap));
+			}
+		}
+		return exclusions;
 	}
 
-	private List<Dependency> createDependencies(Map<?, ?>... dependencyMaps) {
+	private Exclusion createExclusion(Map<String, Object> exclusionMap) {
+		String group = (String) exclusionMap.get("group");
+		String module = (String) exclusionMap.get("module");
+		return new Exclusion(group, module, "*", "*");
+	}
+
+	private List<Dependency> createDependencies(Map<?, ?>[] dependencyMaps,
+			List<Exclusion> exclusions) {
 		List<Dependency> dependencies = new ArrayList<Dependency>(dependencyMaps.length);
 		for (Map<?, ?> dependencyMap : dependencyMaps) {
-			dependencies.add(createDependency(dependencyMap));
+			dependencies.add(createDependency(dependencyMap, exclusions));
 		}
 		return dependencies;
 	}
 
-	private Dependency createDependency(Map<?, ?> dependencyMap) {
+	private Dependency createDependency(Map<?, ?> dependencyMap,
+			List<Exclusion> exclusions) {
 		Artifact artifact = createArtifact(dependencyMap);
 		if (isTransitive(dependencyMap)) {
-			return new Dependency(artifact, JavaScopes.COMPILE);
+			return new Dependency(artifact, JavaScopes.COMPILE, false, exclusions);
 		}
-		return new Dependency(artifact, JavaScopes.COMPILE, null, WILDCARD_EXCLUSION);
+		else {
+			return new Dependency(artifact, JavaScopes.COMPILE, null, WILDCARD_EXCLUSION);
+		}
 	}
 
 	private Artifact createArtifact(Map<?, ?> dependencyMap) {
@@ -214,6 +233,11 @@ public class AetherGrapeEngine implements GrapeEngine {
 			files.add(result.getArtifact().getFile());
 		}
 		return files;
+	}
+
+	private GroovyClassLoader getClassLoader(Map args) {
+		GroovyClassLoader classLoader = (GroovyClassLoader) args.get("classLoader");
+		return (classLoader == null ? this.classLoader : classLoader);
 	}
 
 	@Override
