@@ -87,23 +87,6 @@ public class AetherGrapeEngineTests {
 		assertEquals(6, customClassLoader.getURLs().length);
 	}
 
-	@Test(expected = DependencyResolutionFailedException.class)
-	public void resolutionWithSnapshotRepositoriesDisabled() {
-		Map<String, Object> args = new HashMap<String, Object>();
-		System.setProperty("disableSpringSnapshotRepos", "true");
-		try {
-			AetherGrapeEngine aetherGrapeEngine = new AetherGrapeEngine(
-					this.groovyClassLoader);
-			aetherGrapeEngine.addResolver(createResolver("restlet.org",
-					"http://maven.restlet.org"));
-			aetherGrapeEngine.grab(args,
-					createDependency("org.springframework", "spring-jdbc", "3.2.0.M1"));
-		}
-		finally {
-			System.clearProperty("disableSpringSnapshotRepos");
-		}
-	}
-
 	@Test
 	public void resolutionWithCustomResolver() {
 		Map<String, Object> args = new HashMap<String, Object>();
