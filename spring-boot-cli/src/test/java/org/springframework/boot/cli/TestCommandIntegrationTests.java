@@ -40,7 +40,7 @@ public class TestCommandIntegrationTests {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Rule
-	public CliTester cli = new CliTester();
+	public CliTester cli = new CliTester("test-samples/");
 
 	@BeforeClass
 	public static void cleanGrapes() throws Exception {
@@ -60,13 +60,13 @@ public class TestCommandIntegrationTests {
 
 	@Test
 	public void noTests() throws Throwable {
-		String output = this.cli.test("test-samples/book.groovy");
+		String output = this.cli.test("book.groovy");
 		assertThat(output, containsString("No tests found"));
 	}
 
 	@Test
 	public void empty() throws Exception {
-		String output = this.cli.test("test-samples/empty.groovy");
+		String output = this.cli.test("empty.groovy");
 		assertThat(output, containsString("No tests found"));
 	}
 
@@ -74,39 +74,37 @@ public class TestCommandIntegrationTests {
 	public void noFile() throws Exception {
 		TestCommand command = new TestCommand();
 		this.thrown.expect(RuntimeException.class);
-		this.thrown.expectMessage("Can't find test-samples/nothing.groovy");
-		command.run("test-samples/nothing.groovy");
+		this.thrown.expectMessage("Can't find nothing.groovy");
+		command.run("nothing.groovy");
 	}
 
 	@Test
 	public void appAndTestsInOneFile() throws Exception {
-		String output = this.cli.test("test-samples/book_and_tests.groovy");
+		String output = this.cli.test("book_and_tests.groovy");
 		assertThat(output, containsString("OK (1 test)"));
 	}
 
 	@Test
 	public void appInOneFileTestsInAnotherFile() throws Exception {
-		String output = this.cli.test("test-samples/book.groovy",
-				"test-samples/test.groovy");
+		String output = this.cli.test("book.groovy", "test.groovy");
 		assertThat(output, containsString("OK (1 test)"));
 	}
 
 	@Test
 	public void spockTester() throws Exception {
-		String output = this.cli.test("test-samples/spock.groovy");
+		String output = this.cli.test("spock.groovy");
 		assertThat(output, containsString("OK (1 test)"));
 	}
 
 	@Test
 	public void spockAndJunitTester() throws Exception {
-		String output = this.cli.test("test-samples/spock.groovy",
-				"test-samples/book_and_tests.groovy");
+		String output = this.cli.test("spock.groovy", "book_and_tests.groovy");
 		assertThat(output, containsString("OK (2 tests)"));
 	}
 
 	@Test
 	public void verifyFailures() throws Exception {
-		String output = this.cli.test("test-samples/failures.groovy");
+		String output = this.cli.test("failures.groovy");
 		assertThat(output, containsString("Tests run: 5,  Failures: 3"));
 	}
 }

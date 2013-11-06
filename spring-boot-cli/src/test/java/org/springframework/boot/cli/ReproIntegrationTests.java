@@ -23,20 +23,18 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
 
 /**
- * Integration tests to exercise reproduce raised issues.
+ * Integration tests to exercise and reproduce specific issues.
  * 
  * @author Phillip Webb
  */
 public class ReproIntegrationTests {
 
-	private static final String SRC = "src/test/resources/repro-samples";
-
 	@Rule
-	public CliTester cli = new CliTester();
+	public CliTester cli = new CliTester("src/test/resources/repro-samples/");
 
 	@Test
 	public void grabAntBuilder() throws Exception {
-		this.cli.run(SRC + "/grab-ant-builder.groovy");
+		this.cli.run("grab-ant-builder.groovy");
 		assertThat(this.cli.getHttpOutput(),
 				containsString("{\"message\":\"Hello World\"}"));
 	}
