@@ -72,8 +72,19 @@ public class OutputCapture implements TestRule {
 		this.copy = null;
 	}
 
+	public void flush() {
+		try {
+			this.captureOut.flush();
+			this.captureErr.flush();
+		}
+		catch (IOException e) {
+			// ignore
+		}
+	}
+
 	@Override
 	public String toString() {
+		flush();
 		return this.copy.toString();
 	}
 
@@ -104,11 +115,16 @@ public class OutputCapture implements TestRule {
 		public void write(byte[] b, int off, int len) throws IOException {
 			this.copy.write(b, off, len);
 			this.original.write(b, off, len);
-			this.original.flush();
 		}
 
 		public PrintStream getOriginal() {
 			return this.original;
+		}
+
+		@Override
+		public void flush() throws IOException {
+			this.copy.flush();
+			this.original.flush();
 		}
 	}
 
