@@ -1,18 +1,5 @@
 language: java
 services: mongodb
 
-install: mvn install -U -DskipTests=true -Pspring-snapshot
-before_script:
-   - "gem install travis-artifacts"
-   - "mvn -version"
-script: mvn install -nsu -Dmaven.test.redirectTestOutputToFile=true
-
-after_failure:
-  - "for f in `find . -name build.log`; do travis-artifacts upload --path $f; done"
-
-env:
- global:
-   - "ARTIFACTS_AWS_REGION=us-east-1"
-   - "ARTIFACTS_S3_BUCKET=temp.springsource.com/spring-boot"
-   - secure: "JCQ1uz/rfrtMiUAvxeMznVB2wTX/f7lrCBa6oOsskDPt1dMzxD4aEuOfq3QlROLPDhYyu3dnWh1+ABla3Dx4+dCVA9ASgFCq5ivO5Vkxr4c6g8tb7hp14EitGEnWfEpdn64K6mZ7e7a/yjaXU3Ry4AisvPSk7wCcbHisBbj1LzE="
-   - secure: "Dcya9JSXSa9qXDBXUihYxfCBL8VKCoIj5SQARMshYGLrs1zN2C4EcO4lcMkePTHWrGjpSqNdgnChUeg9YphWqODCcy2XhaMlSxwBYBDTye3hLGwKNdMKnrl/4yE+GoBg6Zaj9bB46Ua/GwLgZpOgM/b/VuCqnp6JC+hYOZKBhdg="
+install: mvn install -U -DskipTests=true -P spring-snapshot
+script: mvn install -nsu -P '!integration'
