@@ -36,7 +36,7 @@ public abstract class TestUtils {
 			int index = pair.indexOf(":");
 			String key = pair.substring(0, index > 0 ? index : pair.length());
 			String value = index > 0 ? pair.substring(index + 1) : "";
-			map.put(key, value);
+			map.put(key.trim(), value.trim());
 		}
 		context.getEnvironment().getPropertySources()
 				.addFirst(new MapPropertySource("test", map));
