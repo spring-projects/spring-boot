@@ -29,10 +29,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.env.PropertySource;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -90,16 +90,8 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void testOverrideConfigLocation() {
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new PropertySource<String>("manual") {
-					@Override
-					public Object getProperty(String name) {
-						if ("logging.config".equals(name)) {
-							return "classpath:logback-nondefault.xml";
-						}
-						return null;
-					}
-				});
+		TestUtils.addEnviroment(this.context,
+				"logging.config: classpath:logback-nondefault.xml");
 		this.initializer.initialize(this.context);
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
@@ -110,35 +102,16 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void testOverrideConfigDoesNotExist() throws Exception {
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new PropertySource<String>("manual") {
-					@Override
-					public Object getProperty(String name) {
-						if ("logging.config".equals(name)) {
-							return "doesnotexist.xml";
-						}
-						return null;
-					}
-				});
+		TestUtils.addEnviroment(this.context, "logging.config: doesnotexist.xml");
 		this.initializer.initialize(this.context);
 		// Should not throw
 	}
 
 	@Test
 	public void testAddLogFileProperty() {
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new PropertySource<String>("manual") {
-					@Override
-					public Object getProperty(String name) {
-						if ("logging.config".equals(name)) {
-							return "classpath:logback-nondefault.xml";
-						}
-						if ("logging.file".equals(name)) {
-							return "foo.log";
-						}
-						return null;
-					}
-				});
+		TestUtils.addEnviroment(this.context,
+				"logging.config: classpath:logback-nondefault.xml",
+				"logging.file: foo.log");
 		this.initializer.initialize(this.context);
 		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
@@ -148,19 +121,8 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void testAddLogPathProperty() {
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new PropertySource<String>("manual") {
-					@Override
-					public Object getProperty(String name) {
-						if ("logging.config".equals(name)) {
-							return "classpath:logback-nondefault.xml";
-						}
-						if ("logging.path".equals(name)) {
-							return "foo/";
-						}
-						return null;
-					}
-				});
+		TestUtils.addEnviroment(this.context,
+				"logging.config: classpath:logback-nondefault.xml", "logging.path: foo/");
 		this.initializer.initialize(this.context);
 		Log logger = LogFactory.getLog(LoggingApplicationContextInitializerTests.class);
 		logger.info("Hello world");
