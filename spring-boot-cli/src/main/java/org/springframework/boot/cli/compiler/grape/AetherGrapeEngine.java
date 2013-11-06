@@ -90,7 +90,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 		session.setLocalRepositoryManager(localRepositoryManager);
 		this.session = session;
 		this.repositories = getRemoteRepositories();
-		this.progressReporter = new ProgressReporter(session);
+		this.progressReporter = getProgressReporter(session);
 	}
 
 	private ServiceLocator createServiceLocator() {
@@ -130,6 +130,15 @@ public class AetherGrapeEngine implements GrapeEngine {
 	private void addRemoteRepository(List<RemoteRepository> repositories, String id,
 			String url) {
 		repositories.add(new RemoteRepository.Builder(id, "default", url).build());
+	}
+
+	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session) {
+		if (Boolean.getBoolean("groovy.grape.report.downloads")) {
+			return new DetailedProgressReporter(session, System.out);
+		}
+		else {
+			return new SummaryProgressReporter(session, System.out);
+		}
 	}
 
 	@Override
