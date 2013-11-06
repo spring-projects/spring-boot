@@ -12,6 +12,39 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
+	<profiles>
+		<profile>
+			<id>integration</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-invoker-plugin</artifactId>
+						<configuration>
+							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+							<settingsFile>src/it/settings.xml</settingsFile>
+							<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+							<postBuildHookScript>verify</postBuildHookScript>
+							<addTestClassPath>true</addTestClassPath>
+							<skipInvocation>${skipTests}</skipInvocation>
+							<streamLogs>true</streamLogs>
+						</configuration>
+						<executions>
+							<execution>
+								<id>integration-test</id>
+								<goals>
+									<goal>install</goal>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
@@ -99,27 +132,6 @@
 							<goal>helpmojo</goal>
 						</goals>
 						<phase>process-classes</phase>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-invoker-plugin</artifactId>
-				<configuration>
-					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-					<settingsFile>src/it/settings.xml</settingsFile>
-					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-					<postBuildHookScript>verify</postBuildHookScript>
-					<addTestClassPath>true</addTestClassPath>
-					<skipInvocation>${skipTests}</skipInvocation>
-					<streamLogs>true</streamLogs>
-				</configuration>
-				<executions>
-					<execution>
-						<id>integration-test</id>
-						<goals>
-							<goal>install</goal>
-							<goal>run</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>

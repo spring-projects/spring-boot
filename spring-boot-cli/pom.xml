@@ -13,7 +13,19 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 		<start-class>org.springframework.boot.cli.SpringCli</start-class>
+		<spring.profiles.active>default</spring.profiles.active>
 	</properties>
+	<profiles>
+		<profile>
+			<id>integration</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<spring.profiles.active>integration</spring.profiles.active>
+			</properties>
+		</profile>
+	</profiles>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -152,9 +164,12 @@
 					<additionalClasspathElements>
 						<additionalClasspathElement>${project.build.directory}/generated-resources</additionalClasspathElement>
 					</additionalClasspathElements>
+					<systemPropertyVariables>
+						<spring.profiles.active>${spring.profiles.active}</spring.profiles.active>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
-			<!-- Build an executable JAR manually since we can't easily depend on
+			<!-- Build an executable JAR manually since we can't easily depend on 
 				a maven plugin that is part of the reactor -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -263,7 +278,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>

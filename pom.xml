@@ -37,6 +37,14 @@
 				<module>spring-boot-actuator</module>
 				<module>spring-boot-starters</module>
 				<module>spring-boot-cli</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>integration</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
 				<module>spring-boot-integration-tests</module>
 			</modules>
 		</profile>
