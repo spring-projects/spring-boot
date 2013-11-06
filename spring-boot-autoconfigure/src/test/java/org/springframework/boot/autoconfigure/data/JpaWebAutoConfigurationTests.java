@@ -16,27 +16,28 @@
 
 package org.springframework.boot.autoconfigure.data;
 
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.ComponentScanDetector;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.City;
 import org.springframework.boot.autoconfigure.data.jpa.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.repository.support.DomainClassConverter;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dave Syer
  */
-@Ignore
-// FIXME until spring data commons 1.6.0, jpa 1.5.0 available
 public class JpaWebAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
@@ -46,17 +47,23 @@ public class JpaWebAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class, HibernateJpaAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(DomainClassConverter.class));
+		assertNotNull(this.context.getBean(PageableHandlerMethodArgumentResolver.class));
+		assertTrue(this.context.getBean(FormattingConversionService.class).canConvert(
+				Long.class, City.class));
 	}
 
 	@Configuration
-	// @EnableSpringDataWebSupport
 	@ComponentScan(basePackageClasses = City.class)
+	// These is usually added by @EnableAutoConfiguration but have to be added as
+	// annotations if not using that feature
+	@Import(ComponentScanDetector.class)
+	@EnableWebMvc
 	protected static class TestConfiguration {
 
 	}
