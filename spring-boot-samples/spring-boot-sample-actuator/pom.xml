@@ -34,7 +34,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-starter-shell-crsh</artifactId>
+			<artifactId>spring-boot-starter-shell-remote</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
