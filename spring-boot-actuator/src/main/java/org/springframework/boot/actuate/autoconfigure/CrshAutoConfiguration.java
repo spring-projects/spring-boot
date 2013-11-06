@@ -324,18 +324,19 @@ public class CrshAutoConfiguration {
 		protected boolean shouldFilter(CRaSHPlugin<?> plugin) {
 			Assert.notNull(plugin);
 
+			if (this.disabledPlugins == null || this.disabledPlugins.length == 0) {
+				return false;
+			}
+
 			Set<Class> classes = ClassUtils.getAllInterfacesAsSet(plugin);
 			classes.add(plugin.getClass());
 
 			for (Class<?> clazz : classes) {
-				if (this.disabledPlugins != null && this.disabledPlugins.length > 0) {
-					for (String disabledPlugin : this.disabledPlugins) {
-						if (ClassUtils.getShortName(clazz).equalsIgnoreCase(
-								disabledPlugin)
-								|| ClassUtils.getQualifiedName(clazz).equalsIgnoreCase(
-										disabledPlugin)) {
-							return true;
-						}
+				for (String disabledPlugin : this.disabledPlugins) {
+					if (ClassUtils.getShortName(clazz).equalsIgnoreCase(disabledPlugin)
+							|| ClassUtils.getQualifiedName(clazz).equalsIgnoreCase(
+									disabledPlugin)) {
+						return true;
 					}
 				}
 			}
