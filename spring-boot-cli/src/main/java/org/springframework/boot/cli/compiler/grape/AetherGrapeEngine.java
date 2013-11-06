@@ -217,6 +217,14 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	@Override
+	public void addResolver(Map<String, Object> args) {
+		String name = (String) args.get("name");
+		String root = (String) args.get("root");
+
+		addRemoteRepository(this.repositories, name, root);
+	}
+
+	@Override
 	public Map<String, Map<String, List<String>>> enumerateGrapes() {
 		throw new UnsupportedOperationException("Grape enumeration is not supported");
 	}
@@ -234,11 +242,6 @@ public class AetherGrapeEngine implements GrapeEngine {
 	@Override
 	public Map[] listDependencies(ClassLoader classLoader) {
 		throw new UnsupportedOperationException("Listing dependencies is not supported");
-	}
-
-	@Override
-	public void addResolver(Map<String, Object> args) {
-		throw new UnsupportedOperationException("Adding a resolver is not supported");
 	}
 
 	@Override
