@@ -35,6 +35,7 @@
 
 	<logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>
 	<logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
+	<logger name="org.crsh.plugin" level="WARN"/>
 	<logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
 	<logger name="org.apache.catalina.startup.DigesterFactory" level="ERROR"/>
 
