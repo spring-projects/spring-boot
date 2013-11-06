@@ -92,7 +92,11 @@ public class AetherGrapeEngineTests {
 		Map<String, Object> args = new HashMap<String, Object>();
 		System.setProperty("disableSpringSnapshotRepos", "true");
 		try {
-			new AetherGrapeEngine(this.groovyClassLoader).grab(args,
+			AetherGrapeEngine aetherGrapeEngine = new AetherGrapeEngine(
+					this.groovyClassLoader);
+			aetherGrapeEngine.addResolver(createResolver("restlet.org",
+					"http://maven.restlet.org"));
+			aetherGrapeEngine.grab(args,
 					createDependency("org.springframework", "spring-jdbc", "3.2.0.M1"));
 		}
 		finally {
