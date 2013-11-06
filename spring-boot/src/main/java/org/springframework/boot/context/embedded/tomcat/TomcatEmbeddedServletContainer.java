@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.logging.Log;
@@ -75,6 +76,10 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			};
 			awaitThread.setDaemon(false);
 			awaitThread.start();
+			if (LifecycleState.FAILED.equals(this.tomcat.getConnector().getState())) {
+				this.tomcat.stop();
+				throw new IllegalStateException("Tomcat connector in failed state");
+			}
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
