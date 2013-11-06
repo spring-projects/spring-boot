@@ -7,7 +7,7 @@
 		<artifactId>spring-boot-starters</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-starter-shell-crsh</artifactId>
+	<artifactId>spring-boot-starter-shell-remote</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
