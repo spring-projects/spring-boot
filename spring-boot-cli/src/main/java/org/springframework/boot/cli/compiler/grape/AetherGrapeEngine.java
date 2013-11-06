@@ -25,8 +25,10 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -78,7 +80,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private final RepositorySystem repositorySystem;
 
-	private final List<RemoteRepository> repositories;
+	private final Set<RemoteRepository> repositories;
 
 	public AetherGrapeEngine(GroovyClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -115,19 +117,13 @@ public class AetherGrapeEngine implements GrapeEngine {
 		return new File(System.getProperty("user.home"), ".m2");
 	}
 
-	private List<RemoteRepository> getRemoteRepositories() {
-		List<RemoteRepository> repositories = new ArrayList<RemoteRepository>();
+	private Set<RemoteRepository> getRemoteRepositories() {
+		LinkedHashSet<RemoteRepository> repositories = new LinkedHashSet<RemoteRepository>();
 		addRemoteRepository(repositories, "central", "http://repo1.maven.org/maven2/");
-		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
-			addRemoteRepository(repositories, "spring-snapshot",
-					"http://repo.spring.io/snapshot");
-			addRemoteRepository(repositories, "spring-milestone",
-					"http://repo.spring.io/milestone");
-		}
 		return repositories;
 	}
 
-	private void addRemoteRepository(List<RemoteRepository> repositories, String id,
+	private void addRemoteRepository(Set<RemoteRepository> repositories, String id,
 			String url) {
 		repositories.add(new RemoteRepository.Builder(id, "default", url).build());
 	}
@@ -221,7 +217,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 			throws ArtifactResolutionException {
 		try {
 			CollectRequest collectRequest = new CollectRequest((Dependency) null,
-					dependencies, this.repositories);
+					dependencies, new ArrayList<RemoteRepository>(this.repositories));
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
 					DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE));
 			DependencyResult dependencyResult = this.repositorySystem

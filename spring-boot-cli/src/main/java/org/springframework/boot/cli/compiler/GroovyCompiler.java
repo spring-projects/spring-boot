@@ -44,6 +44,7 @@ import org.codehaus.groovy.transform.ASTTransformationVisitor;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.compiler.transformation.DependencyAutoConfigurationTransformation;
+import org.springframework.boot.cli.compiler.transformation.GrabResolversAutoConfigurationTransformation;
 import org.springframework.boot.cli.compiler.transformation.ResolveDependencyCoordinatesTransformation;
 
 /**
@@ -95,6 +96,7 @@ public class GroovyCompiler {
 				CompilerAutoConfiguration.class, GroovyCompiler.class.getClassLoader());
 
 		this.transformations = new ArrayList<ASTTransformation>();
+		this.transformations.add(new GrabResolversAutoConfigurationTransformation());
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
 				this.loader, this.coordinatesResolver, this.compilerAutoConfigurations));
 		if (this.configuration.isGuessDependencies()) {
