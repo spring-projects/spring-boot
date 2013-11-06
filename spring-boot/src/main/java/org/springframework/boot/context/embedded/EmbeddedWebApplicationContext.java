@@ -131,7 +131,13 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	protected void onRefresh() {
 		super.onRefresh();
 		registerShutdownHook();
-		createEmbeddedServletContainer();
+		try {
+			createEmbeddedServletContainer();
+		}
+		catch (Throwable ex) {
+			throw new ApplicationContextException("Unable to start embedded container",
+					ex);
+		}
 	}
 
 	@Override
