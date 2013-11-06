@@ -85,6 +85,16 @@ public class AetherGrapeEngineTests {
 		}
 	}
 
+	@Test
+	public void resolutionWithCustomResolver() {
+		Map<String, Object> args = new HashMap<String, Object>();
+		this.grapeEngine.addResolver(createResolver("restlet.org",
+				"http://maven.restlet.org"));
+		this.grapeEngine.grab(args,
+				createDependency("org.restlet", "org.restlet", "1.1.6"));
+		assertEquals(1, this.groovyClassLoader.getURLs().length);
+	}
+
 	private Map<String, Object> createDependency(String group, String module,
 			String version) {
 		Map<String, Object> dependency = new HashMap<String, Object>();
@@ -99,5 +109,12 @@ public class AetherGrapeEngineTests {
 		Map<String, Object> dependency = createDependency(group, module, version);
 		dependency.put("transitive", transitive);
 		return dependency;
+	}
+
+	private Map<String, Object> createResolver(String name, String url) {
+		Map<String, Object> resolver = new HashMap<String, Object>();
+		resolver.put("name", name);
+		resolver.put("root", url);
+		return resolver;
 	}
 }
