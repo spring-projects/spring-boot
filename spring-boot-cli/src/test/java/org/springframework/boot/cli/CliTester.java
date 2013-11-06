@@ -106,6 +106,8 @@ public class CliTester implements TestRule {
 
 	@Override
 	public Statement apply(final Statement base, final Description description) {
+		final Statement statement = CliTester.this.outputCapture.apply(
+				new RunLauncherStatement(base), description);
 		return new Statement() {
 
 			@Override
@@ -114,8 +116,7 @@ public class CliTester implements TestRule {
 						"Not running sample integration tests because integration profile not active",
 						System.getProperty("spring.profiles.active", "integration")
 								.contains("integration"));
-				CliTester.this.outputCapture.apply(new RunLauncherStatement(base),
-						description);
+				statement.evaluate();
 			}
 		};
 	}
