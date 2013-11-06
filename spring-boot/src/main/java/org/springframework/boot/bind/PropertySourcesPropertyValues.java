@@ -55,7 +55,13 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				if (enumerable.getPropertyNames().length > 0) {
 					for (String propertyName : enumerable.getPropertyNames()) {
-						Object value = resolver.getProperty(propertyName);
+						Object value = source.getProperty(propertyName);
+						try {
+							value = resolver.getProperty(propertyName);
+						}
+						catch (RuntimeException e) {
+							// Probably could not resolve placeholders, ignore it here
+						}
 						this.propertyValues.put(propertyName, new PropertyValue(
 								propertyName, value));
 					}
