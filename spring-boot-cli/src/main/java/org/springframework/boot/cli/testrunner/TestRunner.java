@@ -32,8 +32,6 @@ import org.springframework.boot.groovy.DelegateTestRunner;
  */
 public class TestRunner {
 
-	private static final String DELEGATE_RUNNER = DelegateTestRunner.class.getName();
-
 	private static final String JUNIT_TEST_ANNOTATION = "org.junit.Test";
 
 	private final File[] files;
