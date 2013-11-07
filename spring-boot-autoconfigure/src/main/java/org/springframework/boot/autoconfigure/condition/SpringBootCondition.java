@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
+import org.springframework.boot.autoconfigure.AutoConfigurationReport;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -40,51 +40,48 @@ public abstract class SpringBootCondition implements Condition {
 
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		ConditionOutcome result = getMatchOutcome(context, metadata);
-		StringBuilder message = getMessage(metadata, result);
-
-		if (!result.isMatch()) {
-			// Log non-matching conditions at debug
-			if (this.logger.isDebugEnabled()) {
-				this.logger.debug(message);
-			}
-			AutoConfigurationReport.registerDecision(context, message.toString(), getClassOrMethodName(metadata), result);
-			return false;
-		}
-
-		// Log matching conditions at trace
-		if (this.logger.isTraceEnabled()) {
-			this.logger.trace(message);
-		}
-		AutoConfigurationReport.registerDecision(context, message.toString(), getClassOrMethodName(metadata), result);
-		return true;
+		String classOrMethodName = getClassOrMethodName(metadata);
+		ConditionOutcome outcome = getMatchOutcome(context, metadata);
+		logOutcome(classOrMethodName, outcome);
+		recordInAutoConfigurationReport(context, classOrMethodName, outcome);
+		return outcome.isMatch();
 	}
 
-	private StringBuilder getMessage(AnnotatedTypeMetadata metadata, ConditionOutcome result) {
-		StringBuilder message = new StringBuilder();
-		message.append("Condition ");
-		message.append(ClassUtils.getShortName(getClass()));
-		message.append(" on ");
-		message.append(getClassOrMethodName(metadata));
-		message.append(result.isMatch() ? " matched" : " did not match");
-		if (StringUtils.hasLength(result.getMessage())) {
-			message.append(" due to ");
-			message.append(result.getMessage());
-		}
-		return message;
-	}
-
-	private String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
+	private static String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
 		if (metadata instanceof ClassMetadata) {
 			ClassMetadata classMetadata = (ClassMetadata) metadata;
 			return classMetadata.getClassName();
 		}
-		else if (metadata instanceof MethodMetadata) {
-			MethodMetadata methodMetadata = (MethodMetadata) metadata;
-			return methodMetadata.getDeclaringClassName() + "#" + methodMetadata.getMethodName();
+		MethodMetadata methodMetadata = (MethodMetadata) metadata;
+		return methodMetadata.getDeclaringClassName() + "#"
+				+ methodMetadata.getMethodName();
+	}
+
+	private void logOutcome(String classOrMethodName, ConditionOutcome outcome) {
+		if (this.logger.isTraceEnabled()) {
+			this.logger.trace(getLogMessage(classOrMethodName, outcome));
 		}
-		else {
-			return "";
+	}
+
+	private StringBuilder getLogMessage(String classOrMethodName, ConditionOutcome outcome) {
+		StringBuilder message = new StringBuilder();
+		message.append("Condition ");
+		message.append(ClassUtils.getShortName(getClass()));
+		message.append(" on ");
+		message.append(classOrMethodName);
+		message.append(outcome.isMatch() ? " matched" : " did not match");
+		if (StringUtils.hasLength(outcome.getMessage())) {
+			message.append(" due to ");
+			message.append(outcome.getMessage());
+		}
+		return message;
+	}
+
+	private void recordInAutoConfigurationReport(ConditionContext context,
+			String classOrMethodName, ConditionOutcome outcome) {
+		if (context.getBeanFactory() != null) {
+			AutoConfigurationReport.get(context.getBeanFactory())
+					.recordConditionEvaluation(classOrMethodName, this, outcome);
 		}
 	}
 
@@ -94,6 +91,13 @@ public abstract class SpringBootCondition implements Condition {
 	public abstract ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata);
 
+	/**
+	 * Return true if any of the specified conditions match.
+	 * @param context the context
+	 * @param metadata the annotation meta-data
+	 * @param conditions conditions to test
+	 * @return {@code true} if any condition matches.
+	 */
 	protected final boolean anyMatches(ConditionContext context,
 			AnnotatedTypeMetadata metadata, Condition... conditions) {
 		for (Condition condition : conditions) {
@@ -104,6 +108,13 @@ public abstract class SpringBootCondition implements Condition {
 		return false;
 	}
 
+	/**
+	 * Return true if any of the specified condition matches.
+	 * @param context the context
+	 * @param metadata the annotation meta-data
+	 * @param condition condition to test
+	 * @return {@code true} if the condition matches.
+	 */
 	protected final boolean matches(ConditionContext context,
 			AnnotatedTypeMetadata metadata, Condition condition) {
 		if (condition instanceof SpringBootCondition) {

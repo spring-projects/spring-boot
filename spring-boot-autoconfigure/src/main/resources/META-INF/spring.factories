@@ -20,5 +20,6 @@ org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration
+
 org.springframework.context.ApplicationContextInitializer=\
-org.springframework.boot.autoconfigure.report.AutoConfigurationReportApplicationContextInitializer
+org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer
