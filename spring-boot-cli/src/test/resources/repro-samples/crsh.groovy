@@ -7,7 +7,7 @@ class SampleController {
 
 	@RequestMapping("/")
 	public def hello() {
-		[message: "Hello World!"]
+		[message: "Hello World"]
 	}
 }
 
