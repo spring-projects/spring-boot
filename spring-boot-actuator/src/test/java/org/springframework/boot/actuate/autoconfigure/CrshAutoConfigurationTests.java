@@ -194,7 +194,7 @@ public class CrshAutoConfigurationTests {
 		this.context.register(SecurityConfiguration.class);
 		this.context.register(CrshAutoConfiguration.class);
 		this.context.refresh();
-		
+
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertEquals(lifeCycle.getConfig().get("crash.auth"), "simple");
 	}
