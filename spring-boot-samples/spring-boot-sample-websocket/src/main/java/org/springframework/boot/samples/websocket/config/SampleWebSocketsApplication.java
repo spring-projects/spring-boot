@@ -36,8 +36,8 @@ import org.springframework.web.socket.support.PerConnectionWebSocketHandler;
 public class SampleWebSocketsApplication extends SpringBootServletInitializer {
 
 	@Override
-	protected void configure(SpringApplicationBuilder application) {
-        application.sources(SampleWebSocketsApplication.class);
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(SampleWebSocketsApplication.class);
     }
 
 	public static void main(String[] args) {

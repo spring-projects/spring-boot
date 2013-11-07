@@ -86,7 +86,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		application.initializers(new ServletContextApplicationContextInitializer(
 				servletContext));
 		application.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
-		configure(application);
+		application = configure(application);
 		return (WebApplicationContext) application.run();
 	}
 
@@ -99,7 +99,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 * @param application a builder for the application context
 	 * @see SpringApplicationBuilder
 	 */
-	protected void configure(SpringApplicationBuilder application) {
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application;
 	}
 
 }
