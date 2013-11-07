@@ -16,38 +16,62 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
+import javax.annotation.PostConstruct;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
+import org.springframework.boot.autoconfigure.AutoConfigurationReport;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Configuration;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigurationReportEndpoint}.
  * 
  * @author Greg Turnquist
+ * @author Phillip Webb
  */
 public class AutoConfigurationReportEndpointTests extends
 		AbstractEndpointTests<AutoConfigurationReportEndpoint> {
 
 	public AutoConfigurationReportEndpointTests() {
-		super(Config.class, AutoConfigurationReportEndpoint.class, "/auto", true,
-				"endpoints.autoconfigurationreport");
+		super(Config.class, AutoConfigurationReportEndpoint.class,
+				"/autoconfigurationreport", true, "endpoints.autoconfigurationreport");
+	}
+
+	@Test
+	public void invoke() throws Exception {
+		Report report = getEndpointBean().invoke();
+		assertTrue(report.getPositiveMatches().isEmpty());
+		assertTrue(report.getNegativeMatches().containsKey("a"));
 	}
 
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Config {
 
-		@Bean
-		public AutoConfigurationReport autoConfigurationReport() {
-			return new AutoConfigurationReport();
+		@Autowired
+		private ConfigurableApplicationContext context;
+
+		@PostConstruct
+		public void setupAutoConfigurationReport() {
+			AutoConfigurationReport report = AutoConfigurationReport.get(this.context
+					.getBeanFactory());
+			report.recordConditionEvaluation("a", mock(Condition.class),
+					mock(ConditionOutcome.class));
 		}
 
 		@Bean
 		public AutoConfigurationReportEndpoint endpoint() {
 			return new AutoConfigurationReportEndpoint();
 		}
-
 	}
 
 }

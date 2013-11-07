@@ -40,11 +40,11 @@ import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.MetricRepository;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
+import org.springframework.boot.autoconfigure.AutoConfigurationReport;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +57,7 @@ import org.springframework.http.MediaType;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
  * {@link Endpoint}s.
- *
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist

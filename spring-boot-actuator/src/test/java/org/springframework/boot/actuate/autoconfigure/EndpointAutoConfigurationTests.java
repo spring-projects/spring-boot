@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
@@ -29,7 +28,7 @@ import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
+import org.springframework.boot.autoconfigure.AutoConfigurationReport;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -64,11 +63,6 @@ public class EndpointAutoConfigurationTests {
 		assertNotNull(this.context.getBean(MetricsEndpoint.class));
 		assertNotNull(this.context.getBean(ShutdownEndpoint.class));
 		assertNotNull(this.context.getBean(TraceEndpoint.class));
-	}
-
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void noAutoConfigurationAuditEndpointByDefault() {
-		this.context.getBean(AutoConfigurationReportEndpoint.class);
 	}
 
 	@Test

@@ -16,180 +16,134 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.JmsTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReport;
-import org.springframework.boot.autoconfigure.report.AutoConfigurationReportApplicationContextInitializer;
-import org.springframework.boot.autoconfigure.report.CreatedBeanInfo;
-import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
+import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.Import;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link AutoConfigurationReport}.
  * 
  * @author Greg Turnquist
+ * @author Phillip Webb
  */
 public class AutoConfigurationReportTests {
 
-	private AnnotationConfigApplicationContext context;
+	private DefaultListableBeanFactory beanFactory;
 
-	@Test
-	public void simpleReportTestCase() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		new AutoConfigurationReportApplicationContextInitializer()
-				.initialize(this.context);
-		this.context.refresh();
-		AutoConfigurationReport autoconfigSettings = this.context
-				.getBean(AutoConfigurationReport.class);
+	private AutoConfigurationReport report;
 
-		Set<CreatedBeanInfo> beansBootCreated = autoconfigSettings.getBeansCreated();
-		Set<String> beanNamesBootCreated = autoconfigSettings.getBeanNamesCreated();
-		Set<Class<?>> beanTypesBootCreated = autoconfigSettings.getBeanTypesCreated();
+	@Mock
+	private Condition condition1;
 
-		assertEquals(1, beansBootCreated.size());
-		assertEquals(1, beanNamesBootCreated.size());
-		assertEquals(1, beanTypesBootCreated.size());
+	@Mock
+	private Condition condition2;
 
-		assertTrue(beanNamesBootCreated.contains("propertySourcesPlaceholderConfigurer"));
-		assertTrue(beanTypesBootCreated
-				.contains(PropertySourcesPlaceholderConfigurer.class));
+	@Mock
+	private Condition condition3;
 
-		boolean foundPropertySourcesPlaceHolderConfigurer = false;
-		int totalDecisions = 0;
-		for (CreatedBeanInfo item : beansBootCreated) {
-			for (String decision : item.getDecisions()) {
-				totalDecisions += 1;
-				if (decision.contains("propertySourcesPlaceholderConfigurer matched")) {
-					foundPropertySourcesPlaceHolderConfigurer = true;
-				}
-			}
-		}
-		assertEquals(1, totalDecisions);
-		assertTrue(foundPropertySourcesPlaceHolderConfigurer);
+	@Mock
+	private ConditionOutcome outcome1;
+
+	@Mock
+	private ConditionOutcome outcome2;
+
+	@Mock
+	private ConditionOutcome outcome3;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		this.beanFactory = new DefaultListableBeanFactory();
+		this.report = AutoConfigurationReport.get(this.beanFactory);
 	}
 
 	@Test
-	public void rabbitReportTest() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class,
-				AutoConfigurationReport.class);
-		this.context.refresh();
-		AutoConfigurationReport autoconfigSettings = this.context
-				.getBean(AutoConfigurationReport.class);
-
-		Set<CreatedBeanInfo> beansBootCreated = autoconfigSettings.getBeansCreated();
-		Set<String> beanNamesBootCreated = autoconfigSettings.getBeanNamesCreated();
-		Set<Class<?>> beanTypesBootCreated = autoconfigSettings.getBeanTypesCreated();
-
-		assertEquals(3, beansBootCreated.size());
-		assertEquals(3, beanNamesBootCreated.size());
-		assertEquals(3, beanTypesBootCreated.size());
-
-		assertTrue(beanNamesBootCreated.contains("amqpAdmin"));
-		assertTrue(beanNamesBootCreated.contains("rabbitConnectionFactory"));
-		assertTrue(beanNamesBootCreated.contains("rabbitTemplate"));
-
-		assertTrue(beanTypesBootCreated.contains(RabbitAdmin.class));
-		assertTrue(beanTypesBootCreated.contains(ConnectionFactory.class));
-		assertTrue(beanTypesBootCreated.contains(RabbitTemplate.class));
-
-		boolean foundRabbitConnectionFactory = false;
-		boolean foundAmqpAdminExpressionCondition = false;
-		boolean foundAmqpAdminBeanCondition = false;
-		boolean foundRabbitTemplateCondition = false;
-		int totalDecisions = 0;
-		for (CreatedBeanInfo item : beansBootCreated) {
-			for (String decision : item.getDecisions()) {
-				totalDecisions += 1;
-				if (decision.contains("RabbitConnectionFactoryCreator matched")) {
-					foundRabbitConnectionFactory = true;
-				}
-				else if (decision.contains("OnExpressionCondition")
-						&& decision.contains("amqpAdmin matched due to SpEL expression")) {
-					foundAmqpAdminExpressionCondition = true;
-				}
-				else if (decision.contains("OnBeanCondition")
-						&& decision.contains("amqpAdmin matched")) {
-					foundAmqpAdminBeanCondition = true;
-				}
-				else if (decision.contains("rabbitTemplate matched")) {
-					foundRabbitTemplateCondition = true;
-				}
-			}
-		}
-		assertEquals(4, totalDecisions);
-		assertTrue(foundRabbitConnectionFactory);
-		assertTrue(foundAmqpAdminExpressionCondition);
-		assertTrue(foundAmqpAdminBeanCondition);
-		assertTrue(foundRabbitTemplateCondition);
+	public void get() throws Exception {
+		assertThat(this.report, not(nullValue()));
+		assertThat(this.report,
+				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
 	}
 
 	@Test
-	public void verifyItGathersNegativeMatches() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration2.class,
-				JmsTemplateAutoConfiguration.class, MultipartAutoConfiguration.class,
-				AutoConfigurationReport.class);
-		this.context.refresh();
-		AutoConfigurationReport autoconfigSettings = this.context
-				.getBean(AutoConfigurationReport.class);
+	public void recordConditionEvaluations() throws Exception {
+		this.report.recordConditionEvaluation("a", this.condition1, this.outcome1);
+		this.report.recordConditionEvaluation("a", this.condition2, this.outcome2);
+		this.report.recordConditionEvaluation("b", this.condition3, this.outcome3);
 
-		Map<String, List<String>> negatives = autoconfigSettings.getNegativeDecisions();
-
-		boolean foundMyOwnJmsTemplateAndBackedOff = false;
-		boolean didNotFindMultipartConfigElement = false;
-		int totalNegativeDecisions = 0;
-		for (String key : negatives.keySet()) {
-			for (String decision : negatives.get(key)) {
-				totalNegativeDecisions += 1;
-				if (decision
-						.contains("JmsTemplateAutoConfiguration#jmsTemplate did not match")
-						&& decision.contains("found the following [myOwnJmsTemplate]")) {
-					foundMyOwnJmsTemplateAndBackedOff = true;
-				}
-				else if (decision.contains("MultipartAutoConfiguration did not match")
-						&& decision
-								.contains("list['javax.servlet.MultipartConfigElement']")
-						&& decision.contains("found no beans")) {
-					didNotFindMultipartConfigElement = true;
-				}
-			}
-		}
-		// varying situations might cause multi-conditional beans to evaluate in different
-		// orders
-		assertTrue(totalNegativeDecisions >= 2);
-		assertTrue(foundMyOwnJmsTemplateAndBackedOff);
-		assertTrue(didNotFindMultipartConfigElement);
-
+		Map<String, ConditionAndOutcomes> map = this.report
+				.getConditionAndOutcomesBySource();
+		assertThat(map.size(), equalTo(2));
+		Iterator<ConditionAndOutcome> iterator = map.get("a").iterator();
+		ConditionAndOutcome conditionAndOutcome = iterator.next();
+		assertThat(conditionAndOutcome.getCondition(), equalTo(this.condition1));
+		assertThat(conditionAndOutcome.getOutcome(), equalTo(this.outcome1));
+		conditionAndOutcome = iterator.next();
+		assertThat(conditionAndOutcome.getCondition(), equalTo(this.condition2));
+		assertThat(conditionAndOutcome.getOutcome(), equalTo(this.outcome2));
+		assertThat(iterator.hasNext(), equalTo(false));
+		iterator = map.get("b").iterator();
+		conditionAndOutcome = iterator.next();
+		assertThat(conditionAndOutcome.getCondition(), equalTo(this.condition3));
+		assertThat(conditionAndOutcome.getOutcome(), equalTo(this.outcome3));
+		assertThat(iterator.hasNext(), equalTo(false));
 	}
 
-	@Configuration
-	public static class TestConfiguration {
+	@Test
+	public void fullMatch() throws Exception {
+		prepareMatches(true, true, true);
+		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch(),
+				equalTo(true));
 	}
 
-	@Configuration
-	public static class TestConfiguration2 {
-		@Bean
-		JmsTemplate myOwnJmsTemplate(javax.jms.ConnectionFactory connectionFactory) {
-			return new JmsTemplate(connectionFactory);
-		}
+	@Test
+	public void notFullMatch() throws Exception {
+		prepareMatches(true, false, true);
+		assertThat(this.report.getConditionAndOutcomesBySource().get("a").isFullMatch(),
+				equalTo(false));
+	}
+
+	private void prepareMatches(boolean m1, boolean m2, boolean m3) {
+		given(this.outcome1.isMatch()).willReturn(m1);
+		given(this.outcome2.isMatch()).willReturn(m2);
+		given(this.outcome3.isMatch()).willReturn(m3);
+		this.report.recordConditionEvaluation("a", this.condition1, this.outcome1);
+		this.report.recordConditionEvaluation("a", this.condition2, this.outcome2);
+		this.report.recordConditionEvaluation("a", this.condition3, this.outcome3);
+	}
+
+	@Test
+	@SuppressWarnings("resource")
+	public void springBootConditionPopulatesReport() throws Exception {
+		AutoConfigurationReport report = AutoConfigurationReport
+				.get(new AnnotationConfigApplicationContext(Config.class)
+						.getBeanFactory());
+		assertThat(report.getConditionAndOutcomesBySource().size(), not(equalTo(0)));
+	}
+
+	@Configurable
+	@Import(WebMvcAutoConfiguration.class)
+	static class Config {
+
 	}
 
 }
