@@ -186,6 +186,20 @@ public class CrshAutoConfigurationTests {
 	}
 
 	@Test
+	public void testDefaultAuthenticationProvider() {
+		MockEnvironment env = new MockEnvironment();
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(SecurityConfiguration.class);
+		this.context.register(CrshAutoConfiguration.class);
+		this.context.refresh();
+		
+		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
+		assertEquals(lifeCycle.getConfig().get("crash.auth"), "simple");
+	}
+
+	@Test
 	public void testJaasAuthenticationProvider() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.auth", "jaas");

@@ -51,7 +51,7 @@ public class CrshProperties {
 	private String auth = "simple";
 
 	@Autowired(required = false)
-	private AuthenticationProperties authenticationProperties;
+	private AuthenticationProperties authenticationProperties = new SimpleAuthenticationProperties();
 
 	private int commandRefreshInterval = -1;
 
@@ -207,6 +207,7 @@ public class CrshProperties {
 	}
 
 	public interface PropertiesProvider {
+
 		Properties mergeProperties(Properties properties);
 	}
 
@@ -232,7 +233,8 @@ public class CrshProperties {
 			properties.put(CRASH_AUTH_SIMPLE_USERNAME, this.username);
 			properties.put(CRASH_AUTH_SIMPLE_PASSWORD, this.password);
 			if (this.defaultPassword) {
-				logger.info("Using default password for shell access: " + this.password);
+				logger.info("\n\nUsing default password for shell access: "
+						+ this.password + "\n\n");
 			}
 			return properties;
 		}
