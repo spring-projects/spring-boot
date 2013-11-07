@@ -39,4 +39,20 @@ public class ReproIntegrationTests {
 				containsString("{\"message\":\"Hello World\"}"));
 	}
 
+	// Security depends on old versions of Spring so if the dependencies aren't pinned
+	// this will fail
+	@Test
+	public void securityDependencies() throws Exception {
+		this.cli.run("secure.groovy");
+		assertThat(this.cli.getHttpOutput(),
+				containsString("{\"message\":\"Hello World\"}"));
+	}
+
+	@Test
+	public void shellDependencies() throws Exception {
+		this.cli.run("crsh.groovy");
+		assertThat(this.cli.getHttpOutput(),
+				containsString("{\"message\":\"Hello World\"}"));
+	}
+
 }
