@@ -114,11 +114,24 @@ public class AetherGrapeEngine implements GrapeEngine {
 		if (StringUtils.hasLength(grapeRoot)) {
 			return new File(grapeRoot);
 		}
+		return getDefaultM2HomeDirectory();
+	}
+
+	private File getDefaultM2HomeDirectory() {
+		String mavenRoot = System.getProperty("maven.home");
+		if (StringUtils.hasLength(mavenRoot)) {
+			return new File(mavenRoot);
+		}
 		return new File(System.getProperty("user.home"), ".m2");
 	}
 
 	private Set<RemoteRepository> getRemoteRepositories() {
 		LinkedHashSet<RemoteRepository> repositories = new LinkedHashSet<RemoteRepository>();
+		String grapeRoot = System.getProperty("grape.root");
+		if (StringUtils.hasLength(grapeRoot)) {
+			addRemoteRepository(repositories, "local", new File(
+					getDefaultM2HomeDirectory(), "repository").toURI().toASCIIString());
+		}
 		addRemoteRepository(repositories, "central", "http://repo1.maven.org/maven2/");
 		return repositories;
 	}
