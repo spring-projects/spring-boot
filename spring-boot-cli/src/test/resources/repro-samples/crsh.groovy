@@ -1,6 +1,6 @@
 package org.test
 
-@Grab("spring-boot-starter-actuator")
+@Grab("spring-boot-starter-shell-remote")
 
 @RestController
 class SampleController {
@@ -10,3 +10,5 @@ class SampleController {
 		[message: "Hello World!"]
 	}
 }
+
+

@@ -1,6 +1,7 @@
 package org.test
 
-@Grab("spring-boot-starter-actuator")
+// No security features added just a test that the dependencies are resolved
+@Grab("spring-boot-starter-security")
 
 @RestController
 class SampleController {
@@ -10,3 +11,5 @@ class SampleController {
 		[message: "Hello World!"]
 	}
 }
+
+
