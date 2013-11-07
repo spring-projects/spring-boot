@@ -108,37 +108,31 @@ public class CrshAutoConfiguration {
 	private CrshProperties properties;
 
 	@Bean
-	@ConditionalOnExpression("#{environment['shell.auth'] == 'jaas'}")
+	@ConditionalOnExpression("'${shell.auth:simple}' == 'jaas'")
 	@ConditionalOnMissingBean({ AuthenticationProperties.class })
 	public AuthenticationProperties jaasAuthenticationProperties() {
 		return new JaasAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnExpression("#{environment['shell.auth'] == 'key'}")
+	@ConditionalOnExpression("'${shell.auth:simple}' == 'key'")
 	@ConditionalOnMissingBean({ AuthenticationProperties.class })
 	public AuthenticationProperties keyAuthenticationProperties() {
 		return new KeyAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnExpression("#{environment['shell.auth'] == 'simple'}")
+	@ConditionalOnExpression("'${shell.auth:simple}' == 'simple'")
 	@ConditionalOnMissingBean({ AuthenticationProperties.class })
 	public AuthenticationProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
 
 	@Bean
-	@ConditionalOnExpression("#{environment['shell.auth'] == 'spring'}")
+	@ConditionalOnExpression("'${shell.auth:simple}' == 'spring'")
 	@ConditionalOnMissingBean({ AuthenticationProperties.class })
 	public AuthenticationProperties SpringAuthenticationProperties() {
 		return new SpringAuthenticationProperties();
-	}
-
-	@Bean
-	@ConditionalOnBean({ AuthenticationManager.class })
-	public CRaSHPlugin<?> shellAuthenticationManager() {
-		return new AuthenticationManagerAdapter();
 	}
 
 	@Bean
@@ -147,6 +141,17 @@ public class CrshAutoConfiguration {
 		CrshBootstrap bs = new CrshBootstrap();
 		bs.setConfig(this.properties.mergeProperties(new Properties()));
 		return bs;
+	}
+
+	@Configuration
+	@ConditionalOnBean({ AuthenticationManager.class })
+	public static class ShellAuthenticationManager {
+
+		@Bean
+		public CRaSHPlugin<?> shellAuthenticationManager() {
+			return new AuthenticationManagerAdapter();
+		}
+
 	}
 
 	public static class CrshBootstrap extends PluginLifeCycle {
