@@ -40,15 +40,21 @@ class OnClassCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
+		StringBuffer matchMessage = new StringBuffer();
+
 		MultiValueMap<String, Object> onClasses = getAttributes(metadata,
 				ConditionalOnClass.class);
 		if (onClasses != null) {
 			List<String> missing = getMatchingClasses(onClasses, MatchType.MISSING,
 					context);
 			if (!missing.isEmpty()) {
-				return ConditionOutcome.noMatch("required @ConditionalOnClass classes not found: "
-						+ StringUtils.collectionToCommaDelimitedString(missing));
+				return ConditionOutcome
+						.noMatch("required @ConditionalOnClass classes not found: "
+								+ StringUtils.collectionToCommaDelimitedString(missing));
 			}
+			matchMessage.append("@ConditionalOnClass classes found: "
+					+ StringUtils.collectionToCommaDelimitedString(getMatchingClasses(
+							onClasses, MatchType.PRESENT, context)));
 		}
 
 		MultiValueMap<String, Object> onMissingClasses = getAttributes(metadata,
@@ -57,12 +63,17 @@ class OnClassCondition extends SpringBootCondition {
 			List<String> present = getMatchingClasses(onMissingClasses,
 					MatchType.PRESENT, context);
 			if (!present.isEmpty()) {
-				return ConditionOutcome.noMatch("required @ConditionalOnMissing classes found: "
-						+ StringUtils.collectionToCommaDelimitedString(present));
+				return ConditionOutcome
+						.noMatch("required @ConditionalOnMissing classes found: "
+								+ StringUtils.collectionToCommaDelimitedString(present));
 			}
+			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
+			matchMessage.append("@ConditionalOnMissing classes not found: "
+					+ StringUtils.collectionToCommaDelimitedString(getMatchingClasses(
+							onMissingClasses, MatchType.MISSING, context)));
 		}
 
-		return ConditionOutcome.match();
+		return ConditionOutcome.match(matchMessage.toString());
 	}
 
 	private MultiValueMap<String, Object> getAttributes(AnnotatedTypeMetadata metadata,

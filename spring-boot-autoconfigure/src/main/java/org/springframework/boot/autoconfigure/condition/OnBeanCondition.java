@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
-import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
@@ -59,13 +58,18 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
+		StringBuffer matchMessage = new StringBuffer();
+
 		if (metadata.isAnnotated(ConditionalOnBean.class.getName())) {
 			BeanSearchSpec spec = new BeanSearchSpec(context, metadata,
 					ConditionalOnBean.class);
 			List<String> matching = getMatchingBeans(context, spec);
 			if (matching.isEmpty()) {
-				return ConditionOutcome.noMatch("@ConditionalOnBean " + spec + " found no beans");
+				return ConditionOutcome.noMatch("@ConditionalOnBean " + spec
+						+ " found no beans");
 			}
+			matchMessage.append("@ConditionalOnBean " + spec + " found the following "
+					+ matching);
 		}
 
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
@@ -76,9 +80,11 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 				return ConditionOutcome.noMatch("@ConditionalOnMissingBean " + spec
 						+ " found the following " + matching);
 			}
+			matchMessage.append(matchMessage.length() == 0 ? "" : " ");
+			matchMessage.append("@ConditionalOnMissingBean " + spec + " found no beans");
 		}
 
-		return ConditionOutcome.match();
+		return ConditionOutcome.match(matchMessage.toString());
 	}
 
 	private List<String> getMatchingBeans(ConditionContext context, BeanSearchSpec beans) {
@@ -177,8 +183,11 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 	private static class BeanSearchSpec {
 
 		private List<String> names = new ArrayList<String>();
+
 		private List<String> types = new ArrayList<String>();
+
 		private List<String> annotations = new ArrayList<String>();
+
 		private SearchStrategy strategy;
 
 		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
@@ -257,9 +266,23 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 		@Override
 		public String toString() {
-			return new ToStringCreator(this).append("names", this.names)
-					.append("types", this.types).append("strategy", this.strategy)
-					.toString();
+			StringBuilder string = new StringBuilder();
+			string.append("(");
+			if (!this.names.isEmpty()) {
+				string.append("names: ");
+				string.append(StringUtils.collectionToCommaDelimitedString(this.names));
+				if (!this.types.isEmpty()) {
+					string.append("; ");
+				}
+			}
+			if (!this.types.isEmpty()) {
+				string.append("types: ");
+				string.append(StringUtils.collectionToCommaDelimitedString(this.types));
+			}
+			string.append("; SearchStrategy: ");
+			string.append(this.strategy.toString().toLowerCase());
+			string.append(")");
+			return string.toString();
 		}
 	}
 }
