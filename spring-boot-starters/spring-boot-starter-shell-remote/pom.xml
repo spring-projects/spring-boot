@@ -19,6 +19,10 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.crashub</groupId>
 			<artifactId>crash.cli</artifactId>
 		</dependency>
@@ -48,6 +52,12 @@
 		<dependency>
 			<groupId>org.crashub</groupId>
 			<artifactId>crash.embed.spring</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>spring-web</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.crashub</groupId>
