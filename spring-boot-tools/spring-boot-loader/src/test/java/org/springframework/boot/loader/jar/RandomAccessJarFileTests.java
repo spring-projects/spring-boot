@@ -20,11 +20,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
@@ -33,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
@@ -42,12 +41,13 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link RandomAccessJarFile}.
+ * Tests for {@link JarFile}.
  * 
  * @author Phillip Webb
  */
@@ -61,27 +61,18 @@ public class RandomAccessJarFileTests {
 
 	private File rootJarFile;
 
-	private RandomAccessJarFile jarFile;
+	private JarFile jarFile;
 
 	@Before
 	public void setup() throws Exception {
 		this.rootJarFile = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(this.rootJarFile);
-		this.jarFile = new RandomAccessJarFile(this.rootJarFile);
+		this.jarFile = new JarFile(this.rootJarFile);
 	}
 
 	@Test
 	public void createFromFile() throws Exception {
-		RandomAccessJarFile jarFile = new RandomAccessJarFile(this.rootJarFile);
-		assertThat(jarFile.getName(), notNullValue(String.class));
-		jarFile.close();
-	}
-
-	@Test
-	public void createFromRandomAccessDataFile() throws Exception {
-		RandomAccessDataFile randomAccessDataFile = new RandomAccessDataFile(
-				this.rootJarFile, 1);
-		RandomAccessJarFile jarFile = new RandomAccessJarFile(randomAccessDataFile);
+		JarFile jarFile = new JarFile(this.rootJarFile);
 		assertThat(jarFile.getName(), notNullValue(String.class));
 		jarFile.close();
 	}
@@ -101,7 +92,7 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getEntries() throws Exception {
-		Enumeration<JarEntry> entries = this.jarFile.entries();
+		Enumeration<java.util.jar.JarEntry> entries = this.jarFile.entries();
 		assertThat(entries.nextElement().getName(), equalTo("META-INF/"));
 		assertThat(entries.nextElement().getName(), equalTo("META-INF/MANIFEST.MF"));
 		assertThat(entries.nextElement().getName(), equalTo("1.dat"));
@@ -114,7 +105,7 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getJarEntry() throws Exception {
-		JarEntry entry = this.jarFile.getJarEntry("1.dat");
+		java.util.jar.JarEntry entry = this.jarFile.getJarEntry("1.dat");
 		assertThat(entry, notNullValue(ZipEntry.class));
 		assertThat(entry.getName(), equalTo("1.dat"));
 	}
@@ -143,7 +134,7 @@ public class RandomAccessJarFileTests {
 	public void close() throws Exception {
 		RandomAccessDataFile randomAccessDataFile = spy(new RandomAccessDataFile(
 				this.rootJarFile, 1));
-		RandomAccessJarFile jarFile = new RandomAccessJarFile(randomAccessDataFile);
+		JarFile jarFile = new JarFile(randomAccessDataFile);
 		jarFile.close();
 		verify(randomAccessDataFile).close();
 	}
@@ -154,7 +145,7 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/"));
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile(), sameInstance((JarFile) this.jarFile));
+		assertThat(jarURLConnection.getJarFile(), sameInstance(this.jarFile));
 		assertThat(jarURLConnection.getJarEntry(), nullValue());
 		assertThat(jarURLConnection.getContentLength(), greaterThan(1));
 		assertThat(jarURLConnection.getContent(), sameInstance((Object) this.jarFile));
@@ -167,7 +158,7 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/1.dat"));
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile(), sameInstance((JarFile) this.jarFile));
+		assertThat(jarURLConnection.getJarFile(), sameInstance(this.jarFile));
 		assertThat(jarURLConnection.getJarEntry(),
 				sameInstance(this.jarFile.getJarEntry("1.dat")));
 		assertThat(jarURLConnection.getContentLength(), equalTo(1));
@@ -203,10 +194,10 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getNestedJarFile() throws Exception {
-		RandomAccessJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
+		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
 				.getEntry("nested.jar"));
 
-		Enumeration<JarEntry> entries = nestedJarFile.entries();
+		Enumeration<java.util.jar.JarEntry> entries = nestedJarFile.entries();
 		assertThat(entries.nextElement().getName(), equalTo("META-INF/"));
 		assertThat(entries.nextElement().getName(), equalTo("META-INF/MANIFEST.MF"));
 		assertThat(entries.nextElement().getName(), equalTo("3.dat"));
@@ -222,15 +213,15 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/nested.jar!/"));
 		assertThat(((JarURLConnection) url.openConnection()).getJarFile(),
-				sameInstance((JarFile) nestedJarFile));
+				sameInstance(nestedJarFile));
 	}
 
 	@Test
 	public void getNestedJarDirectory() throws Exception {
-		RandomAccessJarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
-				.getEntry("d/"));
+		JarFile nestedJarFile = this.jarFile
+				.getNestedJarFile(this.jarFile.getEntry("d/"));
 
-		Enumeration<JarEntry> entries = nestedJarFile.entries();
+		Enumeration<java.util.jar.JarEntry> entries = nestedJarFile.entries();
 		assertThat(entries.nextElement().getName(), equalTo("9.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 
@@ -243,7 +234,7 @@ public class RandomAccessJarFileTests {
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/d!/"));
 		assertThat(((JarURLConnection) url.openConnection()).getJarFile(),
-				sameInstance((JarFile) nestedJarFile));
+				sameInstance(nestedJarFile));
 	}
 
 	@Test
@@ -263,17 +254,16 @@ public class RandomAccessJarFileTests {
 
 	@Test
 	public void getFilteredJarFile() throws Exception {
-		RandomAccessJarFile filteredJarFile = this.jarFile
-				.getFilteredJarFile(new JarEntryFilter() {
-					@Override
-					public String apply(String entryName, JarEntry entry) {
-						if (entryName.equals("1.dat")) {
-							return "x.dat";
-						}
-						return null;
-					}
-				});
-		Enumeration<JarEntry> entries = filteredJarFile.entries();
+		JarFile filteredJarFile = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
+			@Override
+			public AsciiBytes apply(AsciiBytes entryName, JarEntryData entry) {
+				if (entryName.toString().equals("1.dat")) {
+					return new AsciiBytes("x.dat");
+				}
+				return null;
+			}
+		});
+		Enumeration<java.util.jar.JarEntry> entries = filteredJarFile.entries();
 		assertThat(entries.nextElement().getName(), equalTo("x.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 
@@ -288,5 +278,32 @@ public class RandomAccessJarFileTests {
 		assertThat(this.jarFile.toString(), equalTo(this.rootJarFile.getPath()));
 		assertThat(this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))
 				.toString(), equalTo(this.rootJarFile.getPath() + "!/nested.jar"));
+	}
+
+	@Test
+	public void verifySignedJar() throws Exception {
+		String classpath = System.getProperty("java.class.path");
+		String[] entries = classpath.split(System.getProperty("path.separator"));
+		String signedJarFile = null;
+		for (String entry : entries) {
+			if (entry.contains("bcprov")) {
+				signedJarFile = entry;
+			}
+		}
+		assertNotNull(signedJarFile);
+		java.util.jar.JarFile jarFile = new JarFile(new File(signedJarFile));
+		jarFile.getManifest();
+		Enumeration<JarEntry> jarEntries = jarFile.entries();
+		while (jarEntries.hasMoreElements()) {
+			JarEntry jarEntry = jarEntries.nextElement();
+			InputStream inputStream = jarFile.getInputStream(jarEntry);
+			inputStream.skip(Long.MAX_VALUE);
+			inputStream.close();
+			if (!jarEntry.getName().startsWith("META-INF") && !jarEntry.isDirectory()
+					&& !jarEntry.getName().endsWith("TigerDigest.class")) {
+				assertNotNull("Missing cert " + jarEntry.getName(),
+						jarEntry.getCertificates());
+			}
+		}
 	}
 }

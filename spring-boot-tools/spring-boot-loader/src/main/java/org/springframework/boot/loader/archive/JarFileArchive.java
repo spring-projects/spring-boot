@@ -23,35 +23,35 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.AsciiBytes;
+import org.springframework.boot.loader.jar.JarEntryData;
 import org.springframework.boot.loader.jar.JarEntryFilter;
-import org.springframework.boot.loader.jar.RandomAccessJarFile;
+import org.springframework.boot.loader.jar.JarFile;
 
 /**
- * {@link Archive} implementation backed by a {@link RandomAccessJarFile}.
+ * {@link Archive} implementation backed by a {@link JarFile}.
  * 
  * @author Phillip Webb
  */
 public class JarFileArchive extends Archive {
 
-	private final RandomAccessJarFile jarFile;
+	private final JarFile jarFile;
 
 	private final List<Entry> entries;
 
 	public JarFileArchive(File file) throws IOException {
-		this(new RandomAccessJarFile(file));
+		this(new JarFile(file));
 	}
 
-	public JarFileArchive(RandomAccessJarFile jarFile) {
+	public JarFileArchive(JarFile jarFile) {
 		this.jarFile = jarFile;
 		ArrayList<Entry> jarFileEntries = new ArrayList<Entry>();
-		Enumeration<JarEntry> entries = jarFile.entries();
-		while (entries.hasMoreElements()) {
-			jarFileEntries.add(new JarFileEntry(entries.nextElement()));
+		for (JarEntryData data : jarFile) {
+			jarFileEntries.add(new JarFileEntry(data));
 		}
 		this.entries = Collections.unmodifiableList(jarFileEntries);
 	}
@@ -83,20 +83,19 @@ public class JarFileArchive extends Archive {
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
-		JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
-		RandomAccessJarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
+		JarEntryData data = ((JarFileEntry) entry).getJarEntryData();
+		JarFile jarFile = this.jarFile.getNestedJarFile(data);
 		return new JarFileArchive(jarFile);
 	}
 
 	@Override
 	public Archive getFilteredArchive(final EntryRenameFilter filter) throws IOException {
-		RandomAccessJarFile filteredJar = this.jarFile
-				.getFilteredJarFile(new JarEntryFilter() {
-					@Override
-					public String apply(String name, JarEntry entry) {
-						return filter.apply(name, new JarFileEntry(entry));
-					}
-				});
+		JarFile filteredJar = this.jarFile.getFilteredJarFile(new JarEntryFilter() {
+			@Override
+			public AsciiBytes apply(AsciiBytes name, JarEntryData entryData) {
+				return filter.apply(name, new JarFileEntry(entryData));
+			}
+		});
 		return new JarFileArchive(filteredJar);
 	}
 
@@ -105,24 +104,24 @@ public class JarFileArchive extends Archive {
 	 */
 	private static class JarFileEntry implements Entry {
 
-		private final JarEntry jarEntry;
+		private final JarEntryData entryData;
 
-		public JarFileEntry(JarEntry jarEntry) {
-			this.jarEntry = jarEntry;
+		public JarFileEntry(JarEntryData entryData) {
+			this.entryData = entryData;
 		}
 
-		public JarEntry getJarEntry() {
-			return this.jarEntry;
+		public JarEntryData getJarEntryData() {
+			return this.entryData;
 		}
 
 		@Override
 		public boolean isDirectory() {
-			return this.jarEntry.isDirectory();
+			return this.entryData.isDirectory();
 		}
 
 		@Override
-		public String getName() {
-			return this.jarEntry.getName();
+		public AsciiBytes getName() {
+			return this.entryData.getName();
 		}
 
 	}

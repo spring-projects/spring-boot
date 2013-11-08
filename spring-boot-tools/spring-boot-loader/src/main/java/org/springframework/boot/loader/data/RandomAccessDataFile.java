@@ -33,7 +33,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 	private static final int DEFAULT_CONCURRENT_READS = 4;
 
-	private File file;
+	private final File file;
 
 	private final FilePool filePool;
 
@@ -78,7 +78,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 * @param offset the offset of the section
 	 * @param length the length of the section
 	 */
-	private RandomAccessDataFile(FilePool pool, long offset, long length) {
+	private RandomAccessDataFile(File file, FilePool pool, long offset, long length) {
+		this.file = file;
 		this.filePool = pool;
 		this.offset = offset;
 		this.length = length;
@@ -93,8 +94,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 	}
 
 	@Override
-	public InputStream getInputStream() {
-		return new DataInputStream();
+	public InputStream getInputStream(ResourceAccess access) throws IOException {
+		return new DataInputStream(access);
 	}
 
 	@Override
@@ -102,7 +103,8 @@ public class RandomAccessDataFile implements RandomAccessData {
 		if (offset < 0 || length < 0 || offset + length > this.length) {
 			throw new IndexOutOfBoundsException();
 		}
-		return new RandomAccessDataFile(this.filePool, this.offset + offset, length);
+		return new RandomAccessDataFile(this.file, this.filePool, this.offset + offset,
+				length);
 	}
 
 	@Override
@@ -120,7 +122,16 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 */
 	private class DataInputStream extends InputStream {
 
-		private long position;
+		private RandomAccessFile file;
+
+		private int position;
+
+		public DataInputStream(ResourceAccess access) throws IOException {
+			if (access == ResourceAccess.ONCE) {
+				this.file = new RandomAccessFile(RandomAccessDataFile.this.file, "r");
+				this.file.seek(RandomAccessDataFile.this.offset);
+			}
+		}
 
 		@Override
 		public int read() throws IOException {
@@ -153,23 +164,29 @@ public class RandomAccessDataFile implements RandomAccessData {
 			if (len == 0) {
 				return 0;
 			}
-			if (cap(len) <= 0) {
+			int cappedLen = cap(len);
+			if (cappedLen <= 0) {
 				return -1;
 			}
-			RandomAccessFile file = RandomAccessDataFile.this.filePool.acquire();
-			try {
+			RandomAccessFile file = this.file;
+			if (file == null) {
+				file = RandomAccessDataFile.this.filePool.acquire();
 				file.seek(RandomAccessDataFile.this.offset + this.position);
+			}
+			try {
 				if (b == null) {
 					int rtn = file.read();
 					moveOn(rtn == -1 ? 0 : 1);
 					return rtn;
 				}
 				else {
-					return (int) moveOn(file.read(b, off, (int) cap(len)));
+					return (int) moveOn(file.read(b, off, cappedLen));
 				}
 			}
 			finally {
-				RandomAccessDataFile.this.filePool.release(file);
+				if (this.file == null) {
+					RandomAccessDataFile.this.filePool.release(file);
+				}
 			}
 		}
 
@@ -178,14 +195,21 @@ public class RandomAccessDataFile implements RandomAccessData {
 			return (n <= 0 ? 0 : moveOn(cap(n)));
 		}
 
+		@Override
+		public void close() throws IOException {
+			if (this.file != null) {
+				this.file.close();
+			}
+		}
+
 		/**
 		 * Cap the specified value such that it cannot exceed the number of bytes
 		 * remaining.
 		 * @param n the value to cap
 		 * @return the capped value
 		 */
-		private long cap(long n) {
-			return Math.min(RandomAccessDataFile.this.length - this.position, n);
+		private int cap(long n) {
+			return (int) Math.min(RandomAccessDataFile.this.length - this.position, n);
 		}
 
 		/**
@@ -193,7 +217,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 		 * @param amount the amount to move
 		 * @return the amount moved
 		 */
-		private long moveOn(long amount) {
+		private long moveOn(int amount) {
 			this.position += amount;
 			return amount;
 		}
@@ -237,16 +261,16 @@ public class RandomAccessDataFile implements RandomAccessData {
 
 		public void close() throws IOException {
 			try {
-				this.available.acquire(size);
+				this.available.acquire(this.size);
 				try {
-					RandomAccessFile file = files.poll();
+					RandomAccessFile file = this.files.poll();
 					while (file != null) {
 						file.close();
-						file = files.poll();
+						file = this.files.poll();
 					}
 				}
 				finally {
-					this.available.release(size);
+					this.available.release(this.size);
 				}
 			}
 			catch (InterruptedException ex) {

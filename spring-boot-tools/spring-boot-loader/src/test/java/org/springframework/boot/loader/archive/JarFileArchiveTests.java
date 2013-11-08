@@ -25,9 +25,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.TestJarCreator;
-import org.springframework.boot.loader.archive.Archive;
-import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.archive.Archive.Entry;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -86,8 +85,8 @@ public class JarFileArchiveTests {
 		Archive filteredArchive = this.archive
 				.getFilteredArchive(new Archive.EntryRenameFilter() {
 					@Override
-					public String apply(String entryName, Entry entry) {
-						if (entryName.equals("1.dat")) {
+					public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
+						if (entryName.toString().equals("1.dat")) {
 							return entryName;
 						}
 						return null;
@@ -100,7 +99,7 @@ public class JarFileArchiveTests {
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
 		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
 		for (Archive.Entry entry : archive.getEntries()) {
-			entries.put(entry.getName(), entry);
+			entries.put(entry.getName().toString(), entry);
 		}
 		return entries;
 	}

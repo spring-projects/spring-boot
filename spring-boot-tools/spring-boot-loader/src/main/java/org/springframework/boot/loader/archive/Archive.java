@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.Launcher;
 
 /**
@@ -115,7 +116,7 @@ public abstract class Archive {
 		 * Returns the name of the entry
 		 * @return the name of the entry
 		 */
-		String getName();
+		AsciiBytes getName();
 
 	}
 
@@ -146,7 +147,7 @@ public abstract class Archive {
 		 * @return the new name of the entry or {@code null} if the entry should not be
 		 * included.
 		 */
-		String apply(String entryName, Entry entry);
+		AsciiBytes apply(AsciiBytes entryName, Entry entry);
 
 	}
 

@@ -33,10 +33,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.TestJarCreator;
-import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
-import org.springframework.boot.loader.archive.ExplodedArchive;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -131,8 +130,8 @@ public class ExplodedArchiveTests {
 		Archive filteredArchive = this.archive
 				.getFilteredArchive(new Archive.EntryRenameFilter() {
 					@Override
-					public String apply(String entryName, Entry entry) {
-						if (entryName.equals("1.dat")) {
+					public AsciiBytes apply(AsciiBytes entryName, Entry entry) {
+						if (entryName.toString().equals("1.dat")) {
 							return entryName;
 						}
 						return null;
@@ -149,7 +148,7 @@ public class ExplodedArchiveTests {
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
 		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
 		for (Archive.Entry entry : archive.getEntries()) {
-			entries.put(entry.getName(), entry);
+			entries.put(entry.getName().toString(), entry);
 		}
 		return entries;
 	}

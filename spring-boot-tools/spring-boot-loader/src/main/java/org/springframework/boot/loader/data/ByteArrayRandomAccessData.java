@@ -43,7 +43,7 @@ public class ByteArrayRandomAccessData implements RandomAccessData {
 	}
 
 	@Override
-	public InputStream getInputStream() {
+	public InputStream getInputStream(ResourceAccess access) {
 		return new ByteArrayInputStream(this.bytes, (int) this.offset, (int) this.length);
 	}
 

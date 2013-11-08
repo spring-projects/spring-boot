@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.data;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -29,9 +30,11 @@ public interface RandomAccessData {
 	/**
 	 * Returns an {@link InputStream} that can be used to read the underling data. The
 	 * caller is responsible close the underlying stream.
+	 * @param access hint indicating how the underlying data should be accessed
 	 * @return a new input stream that can be used to read the underlying data.
+	 * @throws IOException
 	 */
-	InputStream getInputStream();
+	InputStream getInputStream(ResourceAccess access) throws IOException;
 
 	/**
 	 * Returns a new {@link RandomAccessData} for a specific subsection of this data.
@@ -47,4 +50,20 @@ public interface RandomAccessData {
 	 */
 	long getSize();
 
+	/**
+	 * Lock modes for accessing the underlying resource.
+	 */
+	public static enum ResourceAccess {
+
+		/**
+		 * Obtain access to the underlying resource once and keep it until the stream is
+		 * closed.
+		 */
+		ONCE,
+
+		/**
+		 * Obtain access to the underlying resource on each read, releasing it when done.
+		 */
+		PER_READ
+	}
 }

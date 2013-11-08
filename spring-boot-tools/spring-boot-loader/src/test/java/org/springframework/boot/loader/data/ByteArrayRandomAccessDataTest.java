@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.data;
 
 import org.junit.Test;
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -33,7 +34,8 @@ public class ByteArrayRandomAccessDataTest {
 	public void testGetInputStream() throws Exception {
 		byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5 };
 		RandomAccessData data = new ByteArrayRandomAccessData(bytes);
-		assertThat(FileCopyUtils.copyToByteArray(data.getInputStream()), equalTo(bytes));
+		assertThat(FileCopyUtils.copyToByteArray(data
+				.getInputStream(ResourceAccess.PER_READ)), equalTo(bytes));
 		assertThat(data.getSize(), equalTo((long) bytes.length));
 	}
 
@@ -42,8 +44,8 @@ public class ByteArrayRandomAccessDataTest {
 		byte[] bytes = new byte[] { 0, 1, 2, 3, 4, 5 };
 		RandomAccessData data = new ByteArrayRandomAccessData(bytes);
 		data = data.getSubsection(1, 4).getSubsection(1, 2);
-		assertThat(FileCopyUtils.copyToByteArray(data.getInputStream()),
-				equalTo(new byte[] { 2, 3 }));
+		assertThat(FileCopyUtils.copyToByteArray(data
+				.getInputStream(ResourceAccess.PER_READ)), equalTo(new byte[] { 2, 3 }));
 		assertThat(data.getSize(), equalTo(2L));
 	}
 }

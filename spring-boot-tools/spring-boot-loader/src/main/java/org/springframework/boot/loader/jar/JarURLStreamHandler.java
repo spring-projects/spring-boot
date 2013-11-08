@@ -16,34 +16,26 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.util.jar.JarEntry;
-
-import org.springframework.boot.loader.data.RandomAccessData;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
 /**
- * A {@link JarEntry} returned from a {@link RandomAccessDataJarInputStream}.
+ * {@link URLStreamHandler} used to support {@link JarFile#getUrl()}.
  * 
  * @author Phillip Webb
  */
-public class RandomAccessDataJarEntry extends JarEntry {
+class JarURLStreamHandler extends URLStreamHandler {
 
-	private RandomAccessData data;
+	private JarFile jarFile;
 
-	/**
-	 * Create new {@link RandomAccessDataJarEntry} instance.
-	 * @param entry the underlying {@link JarEntry}
-	 * @param data the entry data
-	 */
-	public RandomAccessDataJarEntry(JarEntry entry, RandomAccessData data) {
-		super(entry);
-		this.data = data;
+	public JarURLStreamHandler(JarFile jarFile) {
+		this.jarFile = jarFile;
 	}
 
-	/**
-	 * Returns the {@link RandomAccessData} for this entry.
-	 * @return the entry data
-	 */
-	public RandomAccessData getData() {
-		return this.data;
+	@Override
+	protected URLConnection openConnection(URL url) throws IOException {
+		return new JarURLConnection(url, this.jarFile);
 	}
 }

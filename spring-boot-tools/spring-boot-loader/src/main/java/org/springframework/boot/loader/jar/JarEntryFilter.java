@@ -16,7 +16,7 @@
 
 package org.springframework.boot.loader.jar;
 
-import java.util.jar.JarEntry;
+import org.springframework.boot.loader.AsciiBytes;
 
 /**
  * Interface that can be used to filter and optionally rename jar entries.
@@ -27,12 +27,12 @@ public interface JarEntryFilter {
 
 	/**
 	 * Apply the jar entry filter.
-	 * @param entryName the current entry name. This may be different that the original
-	 * entry name if a previous filter has been applied
-	 * @param entry the entry to filter
+	 * @param name the current entry name. This may be different that the original entry
+	 * name if a previous filter has been applied
+	 * @param entryData the entry data to filter
 	 * @return the new name of the entry or {@code null} if the entry should not be
 	 * included.
 	 */
-	String apply(String entryName, JarEntry entry);
+	AsciiBytes apply(AsciiBytes name, JarEntryData entryData);
 
 }
