@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.AsciiBytes;
+
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
  * 
@@ -45,11 +47,12 @@ public class ExplodedArchive extends Archive {
 	private static final Set<String> SKIPPED_NAMES = new HashSet<String>(Arrays.asList(
 			".", ".."));
 
-	private static final Object MANIFEST_ENTRY_NAME = "META-INF/MANIFEST.MF";
+	private static final AsciiBytes MANIFEST_ENTRY_NAME = new AsciiBytes(
+			"META-INF/MANIFEST.MF");
 
 	private File root;
 
-	private Map<String, Entry> entries = new LinkedHashMap<String, Entry>();
+	private Map<AsciiBytes, Entry> entries = new LinkedHashMap<AsciiBytes, Entry>();
 
 	private Manifest manifest;
 
@@ -62,7 +65,7 @@ public class ExplodedArchive extends Archive {
 		this.entries = Collections.unmodifiableMap(this.entries);
 	}
 
-	private ExplodedArchive(File root, Map<String, Entry> entries) {
+	private ExplodedArchive(File root, Map<AsciiBytes, Entry> entries) {
 		this.root = root;
 		this.entries = Collections.unmodifiableMap(entries);
 	}
@@ -74,7 +77,8 @@ public class ExplodedArchive extends Archive {
 			if (file.isDirectory()) {
 				name += "/";
 			}
-			this.entries.put(name, new FileEntry(name, file));
+			FileEntry entry = new FileEntry(new AsciiBytes(name), file);
+			this.entries.put(entry.getName(), entry);
 		}
 		if (file.isDirectory()) {
 			for (File child : file.listFiles()) {
@@ -129,9 +133,9 @@ public class ExplodedArchive extends Archive {
 
 	@Override
 	public Archive getFilteredArchive(EntryRenameFilter filter) throws IOException {
-		Map<String, Entry> filteredEntries = new LinkedHashMap<String, Archive.Entry>();
-		for (Map.Entry<String, Entry> entry : this.entries.entrySet()) {
-			String filteredName = filter.apply(entry.getKey(), entry.getValue());
+		Map<AsciiBytes, Entry> filteredEntries = new LinkedHashMap<AsciiBytes, Archive.Entry>();
+		for (Map.Entry<AsciiBytes, Entry> entry : this.entries.entrySet()) {
+			AsciiBytes filteredName = filter.apply(entry.getKey(), entry.getValue());
 			if (filteredName != null) {
 				filteredEntries.put(filteredName, new FileEntry(filteredName,
 						((FileEntry) entry.getValue()).getFile()));
@@ -142,10 +146,11 @@ public class ExplodedArchive extends Archive {
 
 	private class FileEntry implements Entry {
 
-		private final String name;
+		private final AsciiBytes name;
+
 		private final File file;
 
-		public FileEntry(String name, File file) {
+		public FileEntry(AsciiBytes name, File file) {
 			this.name = name;
 			this.file = file;
 		}
@@ -160,7 +165,7 @@ public class ExplodedArchive extends Archive {
 		}
 
 		@Override
-		public String getName() {
+		public AsciiBytes getName() {
 			return this.name;
 		}
 	}
@@ -177,7 +182,7 @@ public class ExplodedArchive extends Archive {
 		protected URLConnection openConnection(URL url) throws IOException {
 			String name = url.getPath().substring(
 					ExplodedArchive.this.root.getAbsolutePath().length() + 1);
-			if (ExplodedArchive.this.entries.containsKey(name)) {
+			if (ExplodedArchive.this.entries.containsKey(new AsciiBytes(name))) {
 				return new URL(url.toString()).openConnection();
 			}
 			return new FileNotFoundURLConnection(url, name);
