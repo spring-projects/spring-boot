@@ -42,7 +42,8 @@ fi
 echo "...copying source files"
 rm -fr docs
 mkdir docs
-rsync -avm --include '*/' --include '**/*.md' --exclude '*' code/ docs/ 
+rm -rf code/_site docs/_site
+rsync -avm --include '*/' --include '**/*.md' --exclude '*' --exclude '_site/*' code/ docs/
 
 echo "...converting"
 for file in `find docs`

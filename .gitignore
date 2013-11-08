@@ -1,7 +1,7 @@
 #*
 .#*
 *~
-_site
+_site/
 .idea
 *.sw?
 .project
