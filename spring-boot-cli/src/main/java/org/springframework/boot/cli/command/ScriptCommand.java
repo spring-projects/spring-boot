@@ -26,11 +26,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
 
 import joptsimple.OptionParser;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.OptionHelp;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
@@ -67,6 +70,11 @@ public class ScriptCommand implements Command {
 	}
 
 	@Override
+	public boolean isOptionCommand() {
+		return false;
+	}
+
+	@Override
 	public String getDescription() {
 		if (getMain() instanceof Command) {
 			return ((Command) getMain()).getDescription();
@@ -83,6 +91,17 @@ public class ScriptCommand implements Command {
 			return ((Command) getMain()).getHelp();
 		}
 		return null;
+	}
+
+	@Override
+	public Collection<OptionHelp> getOptionsHelp() {
+		if (getMain() instanceof OptionHandler) {
+			return ((OptionHandler) getMain()).getOptionsHelp();
+		}
+		if (getMain() instanceof Command) {
+			return ((Command) getMain()).getOptionsHelp();
+		}
+		return Collections.emptyList();
 	}
 
 	@Override

@@ -38,6 +38,11 @@ public class TestCommand extends OptionParsingCommand {
 		super("test", "Run a spring groovy script test", new TestOptionHandler());
 	}
 
+	@Override
+	public String getUsageHelp() {
+		return "[options] <files> [--] [args]";
+	}
+
 	private static class TestOptionHandler extends OptionHandler {
 
 		private OptionSpec<Void> noGuessImportsOption;
