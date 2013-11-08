@@ -16,7 +16,11 @@
 
 package org.springframework.boot.cli.command;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.OptionHelp;
 
 /**
  * Abstract {@link Command} implementation.
@@ -26,23 +30,41 @@ import org.springframework.boot.cli.Command;
  */
 public abstract class AbstractCommand implements Command {
 
-	private String name;
+	private final String name;
 
-	private String description;
+	private final String description;
+
+	private final boolean optionCommand;
 
 	/**
 	 * Create a new {@link AbstractCommand} instance.
 	 * @param name the name of the command
 	 * @param description the command description
 	 */
-	public AbstractCommand(String name, String description) {
+	protected AbstractCommand(String name, String description) {
+		this(name, description, false);
+	}
+
+	/**
+	 * Create a new {@link AbstractCommand} instance.
+	 * @param name the name of the command
+	 * @param description the command description
+	 * @param optionCommand if this command is an option command
+	 */
+	protected AbstractCommand(String name, String description, boolean optionCommand) {
 		this.name = name;
 		this.description = description;
+		this.optionCommand = optionCommand;
 	}
 
 	@Override
 	public String getName() {
 		return this.name;
+	}
+
+	@Override
+	public boolean isOptionCommand() {
+		return this.optionCommand;
 	}
 
 	@Override
@@ -58,6 +80,11 @@ public abstract class AbstractCommand implements Command {
 	@Override
 	public String getHelp() {
 		return null;
+	}
+
+	@Override
+	public Collection<OptionHelp> getOptionsHelp() {
+		return Collections.emptyList();
 	}
 
 }

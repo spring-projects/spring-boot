@@ -18,10 +18,14 @@ package org.springframework.boot.cli;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import org.springframework.boot.cli.command.AbstractCommand;
 
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
@@ -61,6 +65,7 @@ public class SpringCli {
 			}
 		}
 		this.commands.add(0, new HelpCommand());
+		this.commands.add(new HintCommand());
 	}
 
 	/**
@@ -71,6 +76,7 @@ public class SpringCli {
 	public void setCommands(List<? extends Command> commands) {
 		this.commands = new ArrayList<Command>(commands);
 		this.commands.add(0, new HelpCommand());
+		this.commands.add(new HintCommand());
 	}
 
 	/**
@@ -122,41 +128,50 @@ public class SpringCli {
 		}
 		String commandName = args[0];
 		String[] commandArguments = Arrays.copyOfRange(args, 1, args.length);
-		find(commandName).run(commandArguments);
+		Command command = find(commandName);
+		if (command == null) {
+			throw new NoSuchCommandException(commandName);
+		}
+		command.run(commandArguments);
 	}
 
-	private Command find(String name) {
-		if (name.startsWith("--")) {
-			name = name.substring("--".length());
-		}
+	protected final Command find(String name) {
 		for (Command candidate : this.commands) {
-			if (candidate.getName().equals(name)) {
+			if (candidate.getName().equals(name)
+					|| (candidate.isOptionCommand() && ("--" + candidate.getName())
+							.equals(name))) {
 				return candidate;
 			}
 		}
-		throw new NoSuchCommandException(name);
+		return null;
 	}
 
 	protected void showUsage() {
-		Log.info("usage: " + CLI_APP + " ");
+		Log.infoPrint("usage: " + CLI_APP + " ");
+		for (Command command : this.commands) {
+			if (command.isOptionCommand()) {
+				Log.infoPrint("[--" + command.getName() + "] ");
+			}
+		}
 		Log.info("");
 		Log.info("       <command> [<args>]");
 		Log.info("");
 		Log.info("Available commands are:");
 		for (Command command : this.commands) {
-			String usageHelp = command.getUsageHelp();
-			String description = command.getDescription();
-			String name = command.getName();
-			if (!name.startsWith("--")) {
-				name = "--" + name + ", " + name;
+			if (!command.isOptionCommand() && !(command instanceof HintCommand)) {
+				String usageHelp = command.getUsageHelp();
+				String description = command.getDescription();
+				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
+						(usageHelp == null ? "" : usageHelp), (description == null ? ""
+								: description)));
 			}
-			Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", name,
-					(usageHelp == null ? "" : usageHelp), (description == null ? ""
-							: description)));
 		}
+		Log.info("");
+		Log.info("Common options:");
 		Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", "-d, --debug",
 				"Verbose mode",
 				"Print additional status information for the command you are running"));
+		Log.info("");
 		Log.info("");
 		Log.info("See '" + CLI_APP
 				+ " help <command>' for more information on a specific command.");
@@ -185,7 +200,44 @@ public class SpringCli {
 	/**
 	 * Internal {@link Command} used for 'help' requests.
 	 */
-	private class HelpCommand implements Command {
+	private class HelpCommand extends AbstractCommand {
+
+		public HelpCommand() {
+			super("help", "Get help on commands", true);
+		}
+
+		@Override
+		public String getUsageHelp() {
+			return "command";
+		}
+
+		@Override
+		public String getHelp() {
+			return null;
+		}
+
+		@Override
+		public Collection<OptionHelp> getOptionsHelp() {
+			List<OptionHelp> help = new ArrayList<OptionHelp>();
+			for (final Command command : SpringCli.this.commands) {
+				if (!(command instanceof HelpCommand)
+						&& !(command instanceof HintCommand)) {
+					help.add(new OptionHelp() {
+
+						@Override
+						public Set<String> getOptions() {
+							return Collections.singleton(command.getName());
+						}
+
+						@Override
+						public String getUsageHelp() {
+							return "";
+						}
+					});
+				}
+			}
+			return help;
+		}
 
 		@Override
 		public void run(String... args) throws Exception {
@@ -212,26 +264,78 @@ public class SpringCli {
 			throw new NoSuchCommandException(commandName);
 		}
 
-		@Override
-		public String getName() {
-			return "help";
+	}
+
+	/**
+	 * Provides hints for shell auto-completion. Expects to be called with the current
+	 * index followed by a list of arguments already typed.
+	 */
+	private class HintCommand extends AbstractCommand {
+
+		public HintCommand() {
+			super("hint", "Provides hints for shell auto-completion");
 		}
 
 		@Override
-		public String getDescription() {
-			return "Get help on commands";
+		public void run(String... args) throws Exception {
+			try {
+				int index = (args.length == 0 ? 0 : Integer.valueOf(args[0]) - 1);
+				List<String> arguments = new ArrayList<String>(args.length);
+				for (int i = 2; i < args.length; i++) {
+					arguments.add(args[i]);
+				}
+				String starting = "";
+				if (index < arguments.size()) {
+					starting = arguments.remove(index);
+				}
+				if (index == 0) {
+					showCommandHints(starting);
+				}
+				else if ((arguments.size() > 0) && (starting.length() > 0)) {
+					String command = arguments.remove(0);
+					showCommandOptionHints(command,
+							Collections.unmodifiableList(arguments), starting);
+				}
+			}
+			catch (Exception ex) {
+				// Swallow and provide no hints
+			}
 		}
 
-		@Override
-		public String getUsageHelp() {
-			return "command";
+		private void showCommandHints(String starting) {
+			for (Command command : SpringCli.this.commands) {
+				if (command.getName().startsWith(starting)
+						|| (command.isOptionCommand() && ("--" + command.getName())
+								.startsWith(starting))) {
+					Log.info(command.getName() + " " + command.getDescription());
+				}
+			}
 		}
 
-		@Override
-		public String getHelp() {
-			return null;
+		private void showCommandOptionHints(String commandName,
+				List<String> specifiedArguments, String starting) {
+			Command command = find(commandName);
+			if (command != null) {
+				for (OptionHelp help : command.getOptionsHelp()) {
+					if (!alreadyUsed(help, specifiedArguments)) {
+						for (String option : help.getOptions()) {
+							if (option.startsWith(starting)) {
+								Log.info(option + " " + help.getUsageHelp());
+							}
+						}
+					}
+				}
+			}
 		}
 
+		private boolean alreadyUsed(OptionHelp help, List<String> specifiedArguments) {
+			for (String argument : specifiedArguments) {
+				if (help.getOptions().contains(argument)) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 	static class NoHelpCommandArgumentsException extends SpringCliException {

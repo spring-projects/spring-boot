@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.Log;
+import java.util.Set;
 
 /**
- * {@link Command} to display the 'version' number.
+ * Help for a specific option.
  * 
  * @author Phillip Webb
  */
-public class VersionCommand extends AbstractCommand {
+public interface OptionHelp {
 
-	public VersionCommand() {
-		super("version", "Show the version", true);
-	}
+	/**
+	 * Returns the set of options that are mutually synonymous.
+	 */
+	Set<String> getOptions();
 
-	@Override
-	public void run(String... args) {
-		Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
-	}
+	/**
+	 * Returns usage help for the option.
+	 */
+	String getUsageHelp();
 
 }

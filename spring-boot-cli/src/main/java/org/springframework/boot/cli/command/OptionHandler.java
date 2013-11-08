@@ -21,11 +21,24 @@ import groovy.lang.Closure;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
+import joptsimple.BuiltinHelpFormatter;
+import joptsimple.HelpFormatter;
+import joptsimple.OptionDescriptor;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
+
+import org.springframework.boot.cli.OptionHelp;
 
 /**
  * Delegate used by {@link OptionParsingCommand} to parse options and run the command.
@@ -39,6 +52,10 @@ public class OptionHandler {
 	private OptionParser parser;
 
 	private Closure<Void> closure;
+
+	private String help;
+
+	private Collection<OptionHelp> optionHelp;
 
 	public OptionSpecBuilder option(String name, String description) {
 		return getParser().accepts(name, description);
@@ -80,14 +97,87 @@ public class OptionHandler {
 	}
 
 	public String getHelp() {
-		OutputStream out = new ByteArrayOutputStream();
-		try {
-			getParser().printHelpOn(out);
+		if (this.help == null) {
+			getParser().formatHelpWith(new BuiltinHelpFormatter(80, 2));
+			OutputStream out = new ByteArrayOutputStream();
+			try {
+				getParser().printHelpOn(out);
+			}
+			catch (IOException ex) {
+				return "Help not available";
+			}
+			this.help = out.toString();
 		}
-		catch (IOException ex) {
-			return "Help not available";
-		}
-		return out.toString();
+		return this.help;
 	}
 
+	public Collection<OptionHelp> getOptionsHelp() {
+		if (this.optionHelp == null) {
+			OptionHelpFormatter formatter = new OptionHelpFormatter();
+			getParser().formatHelpWith(formatter);
+			try {
+				getParser().printHelpOn(new ByteArrayOutputStream());
+			}
+			catch (Exception ex) {
+				// Ignore and provide no hints
+			}
+			this.optionHelp = formatter.getOptionHelp();
+		}
+		return this.optionHelp;
+	}
+
+	private static class OptionHelpFormatter implements HelpFormatter {
+
+		private final List<OptionHelp> help = new ArrayList<OptionHelp>();
+
+		@Override
+		public String format(Map<String, ? extends OptionDescriptor> options) {
+			Comparator<OptionDescriptor> comparator = new Comparator<OptionDescriptor>() {
+				public int compare(OptionDescriptor first, OptionDescriptor second) {
+					return first.options().iterator().next()
+							.compareTo(second.options().iterator().next());
+				}
+			};
+
+			Set<OptionDescriptor> sorted = new TreeSet<OptionDescriptor>(comparator);
+			sorted.addAll(options.values());
+
+			for (OptionDescriptor descriptor : sorted) {
+				if (!descriptor.representsNonOptions()) {
+					this.help.add(new OptionHelpAdapter(descriptor));
+				}
+			}
+			return "";
+		}
+
+		public Collection<OptionHelp> getOptionHelp() {
+			return Collections.unmodifiableList(this.help);
+		}
+
+	}
+
+	private static class OptionHelpAdapter implements OptionHelp {
+
+		private final LinkedHashSet<String> options;
+
+		private final String description;
+
+		public OptionHelpAdapter(OptionDescriptor descriptor) {
+			this.options = new LinkedHashSet<String>();
+			for (String option : descriptor.options()) {
+				this.options.add((option.length() == 1 ? "-" : "--") + option);
+			}
+			this.description = descriptor.description();
+		}
+
+		@Override
+		public Set<String> getOptions() {
+			return this.options;
+		}
+
+		@Override
+		public String getUsageHelp() {
+			return this.description;
+		}
+	}
 }

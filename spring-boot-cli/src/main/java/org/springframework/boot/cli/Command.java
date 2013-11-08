@@ -16,6 +16,8 @@
 
 package org.springframework.boot.cli;
 
+import java.util.Collection;
+
 /**
  * A single command that can be run from the CLI.
  * 
@@ -36,6 +38,13 @@ public interface Command {
 	String getDescription();
 
 	/**
+	 * Returns {@code true} if this is an 'option command'. An option command is a special
+	 * type of command that usually makes more sense to present as if it is an option. For
+	 * example '--version'.
+	 */
+	boolean isOptionCommand();
+
+	/**
 	 * Returns usage help for the command. This should be a simple one-line string
 	 * describing basic usage. e.g. '[options] &lt;file&gt;'. Do not include the name of
 	 * the command in this string.
@@ -47,6 +56,11 @@ public interface Command {
 	 * option.
 	 */
 	String getHelp();
+
+	/**
+	 * Returns help for each supported option.
+	 */
+	Collection<OptionHelp> getOptionsHelp();
 
 	/**
 	 * Run the command.

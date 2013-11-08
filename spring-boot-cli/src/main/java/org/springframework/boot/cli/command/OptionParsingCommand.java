@@ -16,7 +16,10 @@
 
 package org.springframework.boot.cli.command;
 
+import java.util.Collection;
+
 import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.OptionHelp;
 
 /**
  * Base class for a {@link Command} that parse options using an {@link OptionHandler}.
@@ -29,14 +32,24 @@ public abstract class OptionParsingCommand extends AbstractCommand {
 
 	private OptionHandler handler;
 
-	public OptionParsingCommand(String name, String description, OptionHandler handler) {
-		super(name, description);
+	protected OptionParsingCommand(String name, String description, OptionHandler handler) {
+		this(name, description, false, handler);
+	}
+
+	protected OptionParsingCommand(String name, String description,
+			boolean optionCommand, OptionHandler handler) {
+		super(name, description, optionCommand);
 		this.handler = handler;
 	}
 
 	@Override
 	public String getHelp() {
 		return this.handler.getHelp();
+	}
+
+	@Override
+	public Collection<OptionHelp> getOptionsHelp() {
+		return this.handler.getOptionsHelp();
 	}
 
 	@Override
