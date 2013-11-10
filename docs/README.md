@@ -43,8 +43,8 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.M5-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M5/spring-boot-cli-0.5.0.M5-bin.zip)
-* [spring-boot-cli-0.5.0.M5-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M5/spring-boot-cli-0.5.0.M5-bin.tar.gz)
+* [spring-boot-cli-0.5.0.M6-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M6/spring-boot-cli-0.5.0.M6-bin.zip)
+* [spring-boot-cli-0.5.0.M6-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M6/spring-boot-cli-0.5.0.M6-bin.tar.gz)
 
 Cutting edge [snapshot distributions](http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
@@ -65,15 +65,15 @@ itself and the Spring Boot CLI. Get `gvm` from
 
     $ gvm install springboot
     $ spring --version
-    Spring Boot v0.5.0.M5
-    
+    Spring Boot v0.5.0.M6
+
 > **Note:** If you are developing features for the CLI and want easy access to the version you just built, follow these extra instructions.
 
     $ gvm install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin/spring-0.5.0.BUILD-SNAPSHOT/
    	$ gvm use springboot dev
    	$ spring --version
     Spring CLI v0.5.0.BUILD-SNAPSHOT
-   	
+
 This will install a local instance of `spring` called the `dev` instance inside your gvm repository. It points at your target build location, so every time you rebuild Spring Boot, `spring` will be up-to-date.
 
 You can see it by doing this:
@@ -84,8 +84,8 @@ You can see it by doing this:
 ================================================================================
 Available Springboot Versions
 ================================================================================
- > + dev                                                                           
-   * 0.5.0.M5                                                                      
+ > + dev
+   * 0.5.0.M6
 
 ================================================================================
 + - local version
@@ -99,7 +99,8 @@ If you are on a Mac and using [homebrew](http://brew.sh/), all you need to do to
 the Spring Boot CLI is:
 
 ```
-$ brew install http://repo.spring.io/install/springboot.rb
+$ brew tap pivotal/tap
+$ brew install springboot
 ```
 
 Homebrew will install `spring` to `/usr/local/bin`. Now you can jump right to a
@@ -161,7 +162,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>0.5.0.M5</version>
+		<version>0.5.0.M6</version>
 	</parent>
 
 	<!-- Add typical dependencies for a web application -->
@@ -212,6 +213,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 > **Note:** If you prefer [Gradle](http://www.gradle.org) as your build system, we provide
 > a [plugin](spring-boot-tools/spring-boot-gradle-plugin/README.html) that can help you
 > package an executable JAR.
+
 <span id="quick-start-java-example"></span>
 ### Quick start Java example
 Here is the main class for a simple web application (just save the content to
