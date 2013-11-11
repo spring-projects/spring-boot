@@ -17,14 +17,11 @@
 package org.springframework.boot.cli.command;
 
 import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.compiler.GroovyCompilerScope;
+import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.testrunner.TestRunner;
 import org.springframework.boot.cli.testrunner.TestRunnerConfiguration;
-
-import static java.util.Arrays.asList;
 
 /**
  * {@link Command} to run a groovy test script or scripts.
@@ -43,31 +40,15 @@ public class TestCommand extends OptionParsingCommand {
 		return "[options] <files> [--] [args]";
 	}
 
-	private static class TestOptionHandler extends OptionHandler {
-
-		private OptionSpec<Void> noGuessImportsOption;
-
-		private OptionSpec<Void> noGuessDependenciesOption;
-
-		private OptionSpec<String> classpathOption;
+	private static class TestOptionHandler extends CompilerOptionHandler {
 
 		private TestRunner runner;
-
-		@Override
-		protected void options() {
-			this.noGuessImportsOption = option("no-guess-imports",
-					"Do not attempt to guess imports");
-			this.noGuessDependenciesOption = option("no-guess-dependencies",
-					"Do not attempt to guess dependencies");
-			this.classpathOption = option(asList("classpath", "cp"),
-					"Additional classpath entries").withRequiredArg();
-		}
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
 			FileOptions fileOptions = new FileOptions(options);
 			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
-					options);
+					options, this);
 			this.runner = new TestRunner(configuration, fileOptions.getFilesArray(),
 					fileOptions.getArgsArray());
 			this.runner.compileAndRunTests();
@@ -77,39 +58,13 @@ public class TestCommand extends OptionParsingCommand {
 		 * Simple adapter class to present the {@link OptionSet} as a
 		 * {@link TestRunnerConfiguration}.
 		 */
-		private class TestRunnerConfigurationAdapter implements TestRunnerConfiguration {
+		private class TestRunnerConfigurationAdapter extends
+				GroovyCompilerConfigurationAdapter implements TestRunnerConfiguration {
 
-			private OptionSet options;
-
-			public TestRunnerConfigurationAdapter(OptionSet options) {
-				this.options = options;
+			public TestRunnerConfigurationAdapter(OptionSet options,
+					CompilerOptionHandler optionHandler) {
+				super(options, optionHandler);
 			}
-
-			@Override
-			public GroovyCompilerScope getScope() {
-				return GroovyCompilerScope.DEFAULT;
-			}
-
-			@Override
-			public boolean isGuessImports() {
-				return !this.options.has(TestOptionHandler.this.noGuessImportsOption);
-			}
-
-			@Override
-			public boolean isGuessDependencies() {
-				return !this.options
-						.has(TestOptionHandler.this.noGuessDependenciesOption);
-			}
-
-			@Override
-			public String[] getClasspath() {
-				if (this.options.has(TestOptionHandler.this.classpathOption)) {
-					return this.options.valueOf(TestOptionHandler.this.classpathOption)
-							.split(":");
-				}
-				return NO_CLASSPATH;
-			}
-
 		}
 	}
 }

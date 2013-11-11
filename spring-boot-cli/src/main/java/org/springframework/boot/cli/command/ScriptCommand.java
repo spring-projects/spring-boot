@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import joptsimple.OptionParser;
 
@@ -37,6 +38,8 @@ import org.springframework.boot.cli.OptionHelp;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
+import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
+import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -269,6 +272,11 @@ public class ScriptCommand implements Command {
 		@Override
 		public String[] getClasspath() {
 			return NO_CLASSPATH;
+		}
+
+		@Override
+		public List<RepositoryConfiguration> getRepositoryConfiguration() {
+			return RepositoryConfigurationFactory.createDefaultRepositoryConfiguration();
 		}
 
 	}

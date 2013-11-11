@@ -16,15 +16,20 @@
 
 package org.springframework.boot.cli.compiler;
 
+import java.util.List;
+
+import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+
 /**
  * Configuration for the {@link GroovyCompiler}.
  * 
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public interface GroovyCompilerConfiguration {
 
 	/**
-	 * Constant to be used when there is not {@link #getClasspath() classpath}.
+	 * Constant to be used when there is no {@link #getClasspath() classpath}.
 	 */
 	public static final String[] NO_CLASSPATH = {};
 
@@ -47,5 +52,11 @@ public interface GroovyCompilerConfiguration {
 	 * @return a path for local resources
 	 */
 	String[] getClasspath();
+
+	/**
+	 * @return the configuration for the repositories that will be used by the compiler to
+	 * resolve dependencies.
+	 */
+	List<RepositoryConfiguration> getRepositoryConfiguration();
 
 }
