@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -36,7 +37,8 @@ public class AetherGrapeEngineTests {
 	private final GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
 	private final AetherGrapeEngine grapeEngine = new AetherGrapeEngine(
-			this.groovyClassLoader);
+			this.groovyClassLoader, Arrays.asList(new RemoteRepository.Builder("central",
+					"default", "http://repo1.maven.org/maven2/").build()));
 
 	@Test
 	public void dependencyResolution() {

@@ -25,10 +25,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
@@ -80,9 +78,10 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private final RepositorySystem repositorySystem;
 
-	private final Set<RemoteRepository> repositories;
+	private final List<RemoteRepository> repositories;
 
-	public AetherGrapeEngine(GroovyClassLoader classLoader) {
+	public AetherGrapeEngine(GroovyClassLoader classLoader,
+			List<RemoteRepository> remoteRepositories) {
 		this.classLoader = classLoader;
 		this.repositorySystem = createServiceLocator().getService(RepositorySystem.class);
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
@@ -91,7 +90,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 				.newLocalRepositoryManager(session, localRepository);
 		session.setLocalRepositoryManager(localRepositoryManager);
 		this.session = session;
-		this.repositories = getRemoteRepositories();
+		this.repositories = new ArrayList<RemoteRepository>(remoteRepositories);
 		this.progressReporter = getProgressReporter(session);
 	}
 
@@ -123,22 +122,6 @@ public class AetherGrapeEngine implements GrapeEngine {
 			return new File(mavenRoot);
 		}
 		return new File(System.getProperty("user.home"), ".m2");
-	}
-
-	private Set<RemoteRepository> getRemoteRepositories() {
-		LinkedHashSet<RemoteRepository> repositories = new LinkedHashSet<RemoteRepository>();
-		String grapeRoot = System.getProperty("grape.root");
-		if (StringUtils.hasLength(grapeRoot)) {
-			addRemoteRepository(repositories, "local", new File(
-					getDefaultM2HomeDirectory(), "repository").toURI().toASCIIString());
-		}
-		addRemoteRepository(repositories, "central", "http://repo1.maven.org/maven2/");
-		return repositories;
-	}
-
-	private void addRemoteRepository(Set<RemoteRepository> repositories, String id,
-			String url) {
-		repositories.add(new RemoteRepository.Builder(id, "default", url).build());
 	}
 
 	private ProgressReporter getProgressReporter(DefaultRepositorySystemSession session) {
@@ -263,7 +246,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 		String name = (String) args.get("name");
 		String root = (String) args.get("root");
 
-		addRemoteRepository(this.repositories, name, root);
+		this.repositories
+				.add(new RemoteRepository.Builder(name, "default", root).build());
 	}
 
 	@Override

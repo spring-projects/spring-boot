@@ -41,8 +41,11 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
+import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.compiler.transformation.DependencyAutoConfigurationTransformation;
 import org.springframework.boot.cli.compiler.transformation.GrabResolversAutoConfigurationTransformation;
 import org.springframework.boot.cli.compiler.transformation.ResolveDependencyCoordinatesTransformation;
@@ -88,7 +91,8 @@ public class GroovyCompiler {
 		this.loader = createLoader(configuration);
 
 		this.coordinatesResolver = new PropertiesArtifactCoordinatesResolver(this.loader);
-		GrapeEngineInstaller.install(new AetherGrapeEngine(this.loader));
+		GrapeEngineInstaller.install(new AetherGrapeEngine(this.loader,
+				createRepositories(configuration.getRepositoryConfiguration())));
 
 		this.loader.getConfiguration().addCompilationCustomizers(
 				new CompilerAutoConfigureCustomizer());
@@ -113,6 +117,26 @@ public class GroovyCompiler {
 			loader.addClasspath(classpath);
 		}
 		return loader;
+	}
+
+	private List<RemoteRepository> createRepositories(
+			List<RepositoryConfiguration> repositoryConfigurations) {
+		List<RemoteRepository> repositories = new ArrayList<RemoteRepository>(
+				repositoryConfigurations.size());
+		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
+			RemoteRepository.Builder builder = new RemoteRepository.Builder(
+					repositoryConfiguration.getName(), "default", repositoryConfiguration
+							.getUri().toASCIIString());
+
+			if (!repositoryConfiguration.getSnapshotsEnabled()) {
+				builder.setSnapshotPolicy(new RepositoryPolicy(false,
+						RepositoryPolicy.UPDATE_POLICY_NEVER,
+						RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
+			}
+
+			repositories.add(builder.build());
+		}
+		return repositories;
 	}
 
 	public void addCompilationCustomizers(CompilationCustomizer... customizers) {

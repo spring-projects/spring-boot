@@ -37,10 +37,4 @@ public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConf
 	 * Returns the logging level to use.
 	 */
 	Level getLogLevel();
-
-	/**
-	 * Returns {@code true} if the dependencies should be cached locally
-	 */
-	boolean isLocal();
-
 }

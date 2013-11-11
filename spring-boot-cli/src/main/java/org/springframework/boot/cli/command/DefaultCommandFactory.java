@@ -30,9 +30,9 @@ import org.springframework.boot.cli.CommandFactory;
  */
 public class DefaultCommandFactory implements CommandFactory {
 
-	private static final List<Command> DEFAULT_COMMANDS = Arrays
-			.<Command> asList(new VersionCommand(), new RunCommand(), new CleanCommand(),
-					new TestCommand());
+	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command> asList(
+			new VersionCommand(), new RunCommand(), new CleanCommand(),
+			new TestCommand(), new GrabCommand());
 
 	@Override
 	public Collection<Command> getCommands() {

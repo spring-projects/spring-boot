@@ -17,13 +17,18 @@
 package org.springframework.boot.cli.command;
 
 import java.awt.Desktop;
+import java.io.File;
+import java.util.List;
 import java.util.logging.Level;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
+import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
+import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.runner.SpringApplicationRunner;
 import org.springframework.boot.cli.runner.SpringApplicationRunnerConfiguration;
 
@@ -53,41 +58,25 @@ public class RunCommand extends OptionParsingCommand {
 		}
 	}
 
-	private static class RunOptionHandler extends OptionHandler {
+	private static class RunOptionHandler extends CompilerOptionHandler {
 
 		private OptionSpec<Void> watchOption;
 
 		private OptionSpec<Void> editOption;
 
-		private OptionSpec<Void> noGuessImportsOption;
-
-		private OptionSpec<Void> noGuessDependenciesOption;
-
 		private OptionSpec<Void> verboseOption;
 
 		private OptionSpec<Void> quietOption;
 
-		private OptionSpec<Void> localOption;
-
-		private OptionSpec<String> classpathOption;
-
 		private SpringApplicationRunner runner;
 
 		@Override
-		protected void options() {
+		protected void doOptions() {
 			this.watchOption = option("watch", "Watch the specified file for changes");
-			this.localOption = option("local",
-					"Accumulate the dependencies in a local folder (./repository)");
 			this.editOption = option(asList("edit", "e"),
 					"Open the file with the default system editor");
-			this.noGuessImportsOption = option("no-guess-imports",
-					"Do not attempt to guess imports");
-			this.noGuessDependenciesOption = option("no-guess-dependencies",
-					"Do not attempt to guess dependencies");
 			this.verboseOption = option(asList("verbose", "v"), "Verbose logging");
 			this.quietOption = option(asList("quiet", "q"), "Quiet logging");
-			this.classpathOption = option(asList("classpath", "cp"),
-					"Additional classpath entries").withRequiredArg();
 		}
 
 		@Override
@@ -98,11 +87,14 @@ public class RunCommand extends OptionParsingCommand {
 				Desktop.getDesktop().edit(fileOptions.getFiles().get(0));
 			}
 
+			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
+					.createDefaultRepositoryConfiguration();
+			repositoryConfiguration.add(0, new RepositoryConfiguration("local", new File(
+					"repository").toURI(), true));
+
 			SpringApplicationRunnerConfiguration configuration = new SpringApplicationRunnerConfigurationAdapter(
-					options);
-			if (configuration.isLocal() && System.getProperty("grape.root") == null) {
-				System.setProperty("grape.root", ".");
-			}
+					options, this, repositoryConfiguration);
+
 			this.runner = new SpringApplicationRunner(configuration,
 					fileOptions.getFilesArray(), fileOptions.getArgsArray());
 			this.runner.compileAndRun();
@@ -112,13 +104,14 @@ public class RunCommand extends OptionParsingCommand {
 		 * Simple adapter class to present the {@link OptionSet} as a
 		 * {@link SpringApplicationRunnerConfiguration}.
 		 */
-		private class SpringApplicationRunnerConfigurationAdapter implements
+		private class SpringApplicationRunnerConfigurationAdapter extends
+				GroovyCompilerConfigurationAdapter implements
 				SpringApplicationRunnerConfiguration {
 
-			private OptionSet options;
-
-			public SpringApplicationRunnerConfigurationAdapter(OptionSet options) {
-				this.options = options;
+			public SpringApplicationRunnerConfigurationAdapter(OptionSet options,
+					CompilerOptionHandler optionHandler,
+					List<RepositoryConfiguration> repositoryConfiguration) {
+				super(options, optionHandler, repositoryConfiguration);
 			}
 
 			@Override
@@ -128,44 +121,19 @@ public class RunCommand extends OptionParsingCommand {
 
 			@Override
 			public boolean isWatchForFileChanges() {
-				return this.options.has(RunOptionHandler.this.watchOption);
-			}
-
-			@Override
-			public boolean isGuessImports() {
-				return !this.options.has(RunOptionHandler.this.noGuessImportsOption);
-			}
-
-			@Override
-			public boolean isGuessDependencies() {
-				return !this.options.has(RunOptionHandler.this.noGuessDependenciesOption);
-			}
-
-			@Override
-			public boolean isLocal() {
-				return this.options.has(RunOptionHandler.this.localOption);
+				return getOptions().has(RunOptionHandler.this.watchOption);
 			}
 
 			@Override
 			public Level getLogLevel() {
-				if (this.options.has(RunOptionHandler.this.verboseOption)) {
+				if (getOptions().has(RunOptionHandler.this.verboseOption)) {
 					return Level.FINEST;
 				}
-				if (this.options.has(RunOptionHandler.this.quietOption)) {
+				if (getOptions().has(RunOptionHandler.this.quietOption)) {
 					return Level.OFF;
 				}
 				return Level.INFO;
 			}
-
-			@Override
-			public String[] getClasspath() {
-				if (this.options.has(RunOptionHandler.this.classpathOption)) {
-					return this.options.valueOf(RunOptionHandler.this.classpathOption)
-							.split(":");
-				}
-				return NO_CLASSPATH;
-			}
-
 		}
 	}
 

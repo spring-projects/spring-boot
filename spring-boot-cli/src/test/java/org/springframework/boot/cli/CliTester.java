@@ -34,6 +34,8 @@ import org.junit.runners.model.Statement;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.CleanCommand;
+import org.springframework.boot.cli.command.GrabCommand;
+import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.RunCommand;
 import org.springframework.boot.cli.command.TestCommand;
 
@@ -42,6 +44,7 @@ import org.springframework.boot.cli.command.TestCommand;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class CliTester implements TestRule {
 
@@ -62,33 +65,33 @@ public class CliTester implements TestRule {
 	}
 
 	public String run(String... args) throws Exception {
-		final String[] sources = getSources(args);
-		Future<RunCommand> future = Executors.newSingleThreadExecutor().submit(
-				new Callable<RunCommand>() {
-					@Override
-					public RunCommand call() throws Exception {
-						RunCommand command = new RunCommand();
-						command.run(sources);
-						return command;
-					}
-				});
+		Future<RunCommand> future = submitCommand(new RunCommand(), args);
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}
 
 	public String test(String... args) throws Exception {
-		final String[] sources = getSources(args);
-		Future<TestCommand> future = Executors.newSingleThreadExecutor().submit(
-				new Callable<TestCommand>() {
-					@Override
-					public TestCommand call() throws Exception {
-						TestCommand command = new TestCommand();
-						command.run(sources);
-						return command;
-					}
-				});
+		Future<TestCommand> future = submitCommand(new TestCommand(), args);
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
+	}
+
+	public String grab(String... args) throws Exception {
+		Future<GrabCommand> future = submitCommand(new GrabCommand(), args);
+		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
+		return getOutput();
+	}
+
+	private <T extends OptionParsingCommand> Future<T> submitCommand(final T command,
+			String... args) {
+		final String[] sources = getSources(args);
+		return Executors.newSingleThreadExecutor().submit(new Callable<T>() {
+			@Override
+			public T call() throws Exception {
+				command.run(sources);
+				return command;
+			}
+		});
 	}
 
 	protected String[] getSources(String... args) {
