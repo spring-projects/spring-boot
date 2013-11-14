@@ -33,12 +33,22 @@ import org.springframework.util.Assert;
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	private final Server server;
+	private boolean autoStart;
 
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
 	 * @param server the underlying Jetty server
 	 */
 	public JettyEmbeddedServletContainer(Server server) {
+		this(server, true);
+	}
+
+	/**
+	 * Create a new {@link JettyEmbeddedServletContainer} instance.
+	 * @param server the underlying Jetty server
+	 */
+	public JettyEmbeddedServletContainer(Server server, boolean autoStart) {
+		this.autoStart = autoStart;
 		Assert.notNull(server, "Jetty Server must not be null");
 		this.server = server;
 		initialize();
@@ -63,6 +73,9 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
+		if (!this.autoStart) {
+			return;
+		}
 		try {
 			this.server.start();
 			Connector[] connectors = this.server.getConnectors();

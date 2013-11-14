@@ -43,11 +43,22 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private final Tomcat tomcat;
 
+	private boolean autoStart;
+
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainer} instance.
 	 * @param tomcat the underlying Tomcat server
 	 */
 	public TomcatEmbeddedServletContainer(Tomcat tomcat) {
+		this(tomcat, true);
+	}
+
+	/**
+	 * Create a new {@link TomcatEmbeddedServletContainer} instance.
+	 * @param tomcat the underlying Tomcat server
+	 */
+	public TomcatEmbeddedServletContainer(Tomcat tomcat, boolean autoStart) {
+		this.autoStart = autoStart;
 		Assert.notNull(tomcat, "Tomcat Server must not be null");
 		this.tomcat = tomcat;
 		initialize();
@@ -90,7 +101,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
 		Connector connector = this.tomcat.getConnector();
-		if (connector != null) {
+		if (connector != null && this.autoStart) {
 			try {
 				connector.getProtocolHandler().start();
 			}

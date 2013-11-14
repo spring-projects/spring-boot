@@ -97,9 +97,6 @@ public class JettyEmbeddedServletContainerFactory extends
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		WebAppContext context = new WebAppContext();
-		if (getPort() == 0) {
-			return EmbeddedServletContainer.NONE;
-		}
 		Server server = new Server(new InetSocketAddress(getAddress(), getPort()));
 
 		if (this.resourceLoader != null) {
@@ -243,7 +240,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	 * @return a new {@link JettyEmbeddedServletContainer} instance
 	 */
 	protected JettyEmbeddedServletContainer getJettyEmbeddedServletContainer(Server server) {
-		return new JettyEmbeddedServletContainer(server);
+		return new JettyEmbeddedServletContainer(server, getPort() > 0);
 	}
 
 	@Override

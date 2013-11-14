@@ -123,9 +123,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 		Connector connector;
 		Tomcat tomcat = new Tomcat();
 
-		if (getPort() == 0) {
-			return EmbeddedServletContainer.NONE;
-		}
 		File baseDir = (this.baseDirectory != null ? this.baseDirectory
 				: createTempDir("tomcat"));
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
@@ -195,7 +192,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		connector.setPort(getPort());
+		if (getPort() > 0) {
+			connector.setPort(getPort());
+		}
+		else {
+			connector.setPort(8080);
+		}
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
 				((AbstractProtocol) connector.getProtocolHandler())
@@ -256,7 +258,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	protected TomcatEmbeddedServletContainer getTomcatEmbeddedServletContainer(
 			Tomcat tomcat) {
-		return new TomcatEmbeddedServletContainer(tomcat);
+		return new TomcatEmbeddedServletContainer(tomcat, getPort() > 0);
 	}
 
 	private File createTempDir(String prefix) {
