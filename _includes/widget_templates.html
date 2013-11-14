@@ -62,11 +62,11 @@
 </script>
 
 
+{% if site.custom_pom_template %}
 {% capture maven_pom_template %}
 {% include pom.xml %}
 {% endcapture %}
-
-{%if maven_pom_template contains 'not found in _includes directory' %}
+{% else %}
 {% capture maven_pom_template %}
 <dependencies>
     <dependency>
@@ -99,11 +99,11 @@
 {% endhighlight %}
 </script>
 
+{% if site.custom_gradle_template %}
 {% capture gradle_template %}
 {% include build.gradle %}
 {% endcapture %}
-
-{%if gradle_template contains 'not found in _includes directory' %}
+{% else %}
 {% capture gradle_template %}
 dependencies {
     compile '{@= groupId @}:{@= artifactId @}:{@= version @}'
