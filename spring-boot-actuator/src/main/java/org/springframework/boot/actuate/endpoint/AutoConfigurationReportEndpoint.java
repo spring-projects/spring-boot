@@ -40,14 +40,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author Greg Turnquist
  * @author Phillip Webb
  */
-@ConfigurationProperties(name = "endpoints.autoconfigurationreport", ignoreUnknownFields = false)
+@ConfigurationProperties(name = "endpoints.autoconfig", ignoreUnknownFields = false)
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 	@Autowired
 	private AutoConfigurationReport autoConfigurationReport;
 
 	public AutoConfigurationReportEndpoint() {
-		super("/autoconfigurationreport");
+		super("/autoconfig");
 	}
 
 	@Override
