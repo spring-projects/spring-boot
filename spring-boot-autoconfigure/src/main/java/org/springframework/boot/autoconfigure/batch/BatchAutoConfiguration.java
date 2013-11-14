@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
 public class BatchAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(BatchDatabaseInitializer.class)
 	public BatchDatabaseInitializer batchDatabaseInitializer() {
 		return new BatchDatabaseInitializer();
 	}
