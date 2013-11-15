@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -87,7 +88,9 @@ class StartupInfoLogger {
 		message.append(getApplicationName());
 		message.append(" in ");
 		message.append(stopWatch.getTotalTimeSeconds());
-		message.append(" seconds");
+		message.append(" seconds (JVM running for ");
+		message.append(ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0);
+		message.append(")");
 		return message;
 	}
 
