@@ -107,6 +107,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			}
 			catch (Exception ex) {
 				this.logger.error("Cannot start connector: ", ex);
+				throw new EmbeddedServletContainerException(
+						"Unable to start embdedded Tomcat connectors", ex);
 			}
 		}
 	}
