@@ -46,8 +46,7 @@ public class SampleIntegrationApplicationTests {
 
 	@BeforeClass
 	public static void start() throws Exception {
-		context = (ConfigurableApplicationContext) SpringApplication
-				.run(SampleIntegrationApplication.class);
+		context = SpringApplication.run(SampleIntegrationApplication.class);
 	}
 
 	@AfterClass

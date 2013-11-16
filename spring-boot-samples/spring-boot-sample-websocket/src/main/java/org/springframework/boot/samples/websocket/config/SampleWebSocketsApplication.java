@@ -37,8 +37,8 @@ public class SampleWebSocketsApplication extends SpringBootServletInitializer {
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(SampleWebSocketsApplication.class);
-    }
+		return application.sources(SampleWebSocketsApplication.class);
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleWebSocketsApplication.class, args);

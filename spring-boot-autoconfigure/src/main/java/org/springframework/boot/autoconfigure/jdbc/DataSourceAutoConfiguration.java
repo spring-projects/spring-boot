@@ -281,7 +281,8 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			if (anyMatches(context, metadata, this.tomcatCondition, this.dbcpCondition)) {
-				return ConditionOutcome.noMatch("existing non-embedded database detected");
+				return ConditionOutcome
+						.noMatch("existing non-embedded database detected");
 			}
 			EmbeddedDatabaseType type = EmbeddedDatabaseConnection.get(
 					context.getClassLoader()).getType();
@@ -311,7 +312,8 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					context.getBeanFactory(), DataSource.class, true, false).length > 0) {
-				return ConditionOutcome.match("Existing bean configured database detected");
+				return ConditionOutcome
+						.match("Existing bean configured database detected");
 			}
 
 			return ConditionOutcome.noMatch("no existing bean configured database");

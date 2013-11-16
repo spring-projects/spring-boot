@@ -157,6 +157,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	private void definePackageForFindClass(final String name, final String packageName) {
 		try {
 			AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+				@Override
 				public Object run() throws ClassNotFoundException {
 					String path = name.replace('.', '/').concat(".class");
 					for (URL url : getURLs()) {

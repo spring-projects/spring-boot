@@ -52,7 +52,7 @@ public class SampleTraditionalApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
+								return SpringApplication
 										.run(SampleTraditionalApplication.class);
 							}
 						});

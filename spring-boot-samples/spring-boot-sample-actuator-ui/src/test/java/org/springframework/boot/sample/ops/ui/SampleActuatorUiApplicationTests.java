@@ -58,7 +58,7 @@ public class SampleActuatorUiApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
+								return SpringApplication
 										.run(SampleActuatorUiApplication.class);
 							}
 						});
@@ -112,8 +112,10 @@ public class SampleActuatorUiApplicationTests {
 				.contains("<html>"));
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
 				.contains("<body>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("Please contact the operator with the above information"));
+		assertTrue(
+				"Wrong body:\n" + entity.getBody(),
+				entity.getBody().contains(
+						"Please contact the operator with the above information"));
 	}
 
 	private RestTemplate getRestTemplate() {

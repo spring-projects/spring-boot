@@ -21,8 +21,7 @@ public class LiquibaseServiceLocatorInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
 		SpringApplicationInitializer {
 
-	static final Log logger = LogFactory
-			.getLog(LiquibaseServiceLocatorInitializer.class);
+	static final Log logger = LogFactory.getLog(LiquibaseServiceLocatorInitializer.class);
 
 	@Override
 	public void initialize(SpringApplication springApplication, String[] args) {
@@ -39,12 +38,12 @@ public class LiquibaseServiceLocatorInitializer implements
 	 * Inner class to prevent class not found issues
 	 */
 	private static class LiquibasePresent {
-		
+
 		public void replaceServiceLocator() {
 			ServiceLocator.setInstance(new CustomResolverServiceLocator(
 					new SpringPackageScanClassResolver()));
 		}
-		
+
 	}
-	
+
 }

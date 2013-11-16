@@ -29,7 +29,7 @@ import org.gradle.process.internal.ExecAction;
 
 /**
  * Run Jar task. Run the built jar file from Gradle.
- *
+ * 
  * @author Dave Noel
  */
 public class RunJar extends DefaultTask {
@@ -40,6 +40,7 @@ public class RunJar extends DefaultTask {
 	public void runJar() {
 		Project project = getProject();
 		project.getTasks().withType(Jar.class, new Action<Jar>() {
+
 			@Override
 			public void execute(Jar archive) {
 				file = archive.getArchivePath();

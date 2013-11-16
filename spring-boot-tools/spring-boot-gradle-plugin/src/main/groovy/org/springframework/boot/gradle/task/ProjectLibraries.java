@@ -1,3 +1,4 @@
+
 package org.springframework.boot.gradle.task;
 
 import java.io.File;
@@ -23,6 +24,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
+	 * 
 	 * @param project the gradle project
 	 */
 	public ProjectLibraries(Project project) {
@@ -31,6 +33,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Set the name of the provided configuration. Defaults to 'providedRuntime'.
+	 * 
 	 * @param providedConfigurationName the providedConfigurationName to set
 	 */
 	public void setProvidedConfigurationName(String providedConfigurationName) {

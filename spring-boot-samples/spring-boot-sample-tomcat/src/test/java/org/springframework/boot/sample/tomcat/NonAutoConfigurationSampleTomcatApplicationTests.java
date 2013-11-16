@@ -73,7 +73,7 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
+								return SpringApplication
 										.run(NonAutoConfigurationSampleTomcatApplication.class);
 							}
 						});

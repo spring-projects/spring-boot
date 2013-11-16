@@ -44,7 +44,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SampleDataJpaApplication.class, loader=SpringApplicationContextLoader.class)
+@ContextConfiguration(classes = SampleDataJpaApplication.class, loader = SpringApplicationContextLoader.class)
 public class HotelRepositoryIntegrationTests {
 
 	@Autowired

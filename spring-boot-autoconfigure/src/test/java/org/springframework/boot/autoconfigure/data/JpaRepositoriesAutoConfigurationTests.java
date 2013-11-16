@@ -34,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JpaRepositoriesAutoConfiguration}.
- *
+ * 
  * @author Dave Syer
  */
 public class JpaRepositoriesAutoConfigurationTests {
@@ -46,7 +46,8 @@ public class JpaRepositoriesAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
 				ComponentScanDetectorConfiguration.class,
-				EmbeddedDataSourceConfiguration.class, HibernateJpaAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

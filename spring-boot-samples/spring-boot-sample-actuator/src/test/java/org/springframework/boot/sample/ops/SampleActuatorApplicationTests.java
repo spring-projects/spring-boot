@@ -69,7 +69,7 @@ public class SampleActuatorApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
+								return SpringApplication
 										.run(SampleActuatorApplication.class);
 							}
 						});
@@ -145,8 +145,7 @@ public class SampleActuatorApplicationTests {
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		String body = entity.getBody();
 		assertNotNull(body);
-		assertTrue("Wrong body: " + body,
-				body.contains("\"error\":"));
+		assertTrue("Wrong body: " + body, body.contains("\"error\":"));
 	}
 
 	@Test
@@ -171,7 +170,7 @@ public class SampleActuatorApplicationTests {
 				.getForEntity("http://localhost:8080/trace", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> list = (List<Map<String, Object>>) entity.getBody();
+		List<Map<String, Object>> list = entity.getBody();
 		Map<String, Object> trace = list.get(list.size() - 1);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> map = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) trace

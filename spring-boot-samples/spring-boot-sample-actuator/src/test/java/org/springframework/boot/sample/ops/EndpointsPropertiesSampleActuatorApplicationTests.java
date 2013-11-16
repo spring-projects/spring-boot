@@ -59,8 +59,7 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
-										.run(configuration, args);
+								return SpringApplication.run(configuration, args);
 							}
 						});
 		this.context = future.get(60, TimeUnit.SECONDS);

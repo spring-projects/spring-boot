@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 
 /**
  * Basic integration tests for JSP application.
- *
+ * 
  * @author Phillip Webb
  */
 public class SampleWebJspApplicationTests {
@@ -35,7 +35,7 @@ public class SampleWebJspApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
+								return SpringApplication
 										.run(SampleWebJspApplication.class);
 							}
 						});
@@ -54,8 +54,8 @@ public class SampleWebJspApplicationTests {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
 				"http://localhost:8080", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity
-				.getBody().contains("/resources/text.txt"));
+		assertTrue("Wrong body:\n" + entity.getBody(),
+				entity.getBody().contains("/resources/text.txt"));
 	}
 
 	private RestTemplate getRestTemplate() {
