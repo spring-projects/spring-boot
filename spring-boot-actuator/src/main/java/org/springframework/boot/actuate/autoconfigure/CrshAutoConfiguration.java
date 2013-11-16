@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -42,14 +41,15 @@ import org.crsh.plugin.PropertyDescriptor;
 import org.crsh.plugin.ServiceLoaderDiscovery;
 import org.crsh.vfs.FS;
 import org.crsh.vfs.spi.AbstractFSDriver;
+import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.properties.CrshProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.AuthenticationProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.JaasAuthenticationProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.KeyAuthenticationProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.SimpleAuthenticationProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.SpringAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.AuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.JaasAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.KeyAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.SimpleAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.SpringAuthenticationProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -71,6 +71,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -100,12 +101,12 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass({ PluginLifeCycle.class })
-@EnableConfigurationProperties({ CrshProperties.class })
+@EnableConfigurationProperties({ ShellProperties.class })
 @AutoConfigureAfter(SecurityAutoConfiguration.class)
 public class CrshAutoConfiguration {
 
 	@Autowired
-	private CrshProperties properties;
+	private ShellProperties properties;
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'jaas'")
@@ -138,9 +139,9 @@ public class CrshAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean({ PluginLifeCycle.class })
 	public PluginLifeCycle shellBootstrap() {
-		CrshBootstrap bs = new CrshBootstrap();
-		bs.setConfig(this.properties.mergeProperties(new Properties()));
-		return bs;
+		CrshBootstrapBean bootstrapBean = new CrshBootstrapBean();
+		bootstrapBean.setConfig(this.properties.asCrashShellConfig());
+		return bootstrapBean;
 	}
 
 	@Configuration
@@ -154,13 +155,16 @@ public class CrshAutoConfiguration {
 
 	}
 
-	public static class CrshBootstrap extends PluginLifeCycle {
+	/**
+	 * Spring Bean used to bootstrap the CRaSH shell.
+	 */
+	public static class CrshBootstrapBean extends PluginLifeCycle {
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
 		@Autowired
-		private CrshProperties properties;
+		private ShellProperties properties;
 
 		@Autowired
 		private ResourcePatternResolver resourceLoader;
@@ -174,15 +178,16 @@ public class CrshAutoConfiguration {
 		public void init() throws Exception {
 			FS commandFileSystem = createFileSystem(this.properties
 					.getCommandPathPatterns());
-			FS confFileSystem = createFileSystem(this.properties.getConfigPathPatterns());
+			FS configurationFileSystem = createFileSystem(this.properties
+					.getConfigPathPatterns());
 
 			PluginDiscovery discovery = new BeanFactoryFilteringPluginDiscovery(
 					this.resourceLoader.getClassLoader(), this.beanFactory,
 					this.properties.getDisabledPlugins());
 
 			PluginContext context = new PluginContext(discovery,
-					createPluginContextAttributes(), commandFileSystem, confFileSystem,
-					this.resourceLoader.getClassLoader());
+					createPluginContextAttributes(), commandFileSystem,
+					configurationFileSystem, this.resourceLoader.getClassLoader());
 
 			context.refresh();
 			start(context);
@@ -190,13 +195,13 @@ public class CrshAutoConfiguration {
 
 		protected FS createFileSystem(String[] pathPatterns) throws IOException,
 				URISyntaxException {
-			Assert.notNull(pathPatterns);
-			FS cmdFS = new FS();
+			Assert.notNull(pathPatterns, "PathPatterns must not be null");
+			FS fileSystem = new FS();
 			for (String pathPattern : pathPatterns) {
-				cmdFS.mount(new SimpleFileSystemDriver(new DirectoryHandle(pathPattern,
-						this.resourceLoader)));
+				fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
+						pathPattern, this.resourceLoader)));
 			}
-			return cmdFS;
+			return fileSystem;
 		}
 
 		protected Map<String, Object> createPluginContextAttributes() {
@@ -215,6 +220,9 @@ public class CrshAutoConfiguration {
 
 	}
 
+	/**
+	 * Adapts a Spring Security {@link AuthenticationManager} for use with CRaSH.
+	 */
 	@SuppressWarnings("rawtypes")
 	private static class AuthenticationManagerAdapter extends
 			CRaSHPlugin<AuthenticationPlugin> implements AuthenticationPlugin<String> {
@@ -223,20 +231,20 @@ public class CrshAutoConfiguration {
 				.create("auth.spring.roles", "ADMIN",
 						"Comma separated list of roles required to access the shell");
 
-		@Autowired(required = false)
-		private AccessDecisionManager accessDecisionManager;
-
 		@Autowired
 		private AuthenticationManager authenticationManager;
+
+		@Autowired(required = false)
+		private AccessDecisionManager accessDecisionManager;
 
 		private String[] roles = new String[] { "ROLE_ADMIN" };
 
 		@Override
 		public boolean authenticate(String username, String password) throws Exception {
-			// Authenticate first to make credentials are valid
 			Authentication token = new UsernamePasswordAuthenticationToken(username,
 					password);
 			try {
+				// Authenticate first to make credentials are valid
 				token = this.authenticationManager.authenticate(token);
 			}
 			catch (AuthenticationException ex) {
@@ -288,6 +296,10 @@ public class CrshAutoConfiguration {
 
 	}
 
+	/**
+	 * {@link ServiceLoaderDiscovery} to expose {@link CRaSHPlugin} Beans from Spring and
+	 * deal with filtering disabled plugins.
+	 */
 	private static class BeanFactoryFilteringPluginDiscovery extends
 			ServiceLoaderDiscovery {
 
@@ -314,11 +326,11 @@ public class CrshAutoConfiguration {
 				}
 			}
 
-			Collection<CRaSHPlugin> springPlugins = this.beanFactory.getBeansOfType(
+			Collection<CRaSHPlugin> pluginBeans = this.beanFactory.getBeansOfType(
 					CRaSHPlugin.class).values();
-			for (CRaSHPlugin<?> p : springPlugins) {
-				if (!shouldFilter(p)) {
-					plugins.add(p);
+			for (CRaSHPlugin<?> pluginBean : pluginBeans) {
+				if (!shouldFilter(pluginBean)) {
+					plugins.add(pluginBean);
 				}
 			}
 
@@ -329,27 +341,36 @@ public class CrshAutoConfiguration {
 		protected boolean shouldFilter(CRaSHPlugin<?> plugin) {
 			Assert.notNull(plugin);
 
-			if (this.disabledPlugins == null || this.disabledPlugins.length == 0) {
+			if (ObjectUtils.isEmpty(this.disabledPlugins)) {
 				return false;
 			}
 
-			Set<Class> classes = ClassUtils.getAllInterfacesAsSet(plugin);
-			classes.add(plugin.getClass());
+			Set<Class> pluginClasses = ClassUtils.getAllInterfacesAsSet(plugin);
+			pluginClasses.add(plugin.getClass());
 
-			for (Class<?> clazz : classes) {
-				for (String disabledPlugin : this.disabledPlugins) {
-					if (ClassUtils.getShortName(clazz).equalsIgnoreCase(disabledPlugin)
-							|| ClassUtils.getQualifiedName(clazz).equalsIgnoreCase(
-									disabledPlugin)) {
-						return true;
-					}
+			for (Class<?> pluginClass : pluginClasses) {
+				if (isDisabled(pluginClass)) {
+					return true;
 				}
 			}
 			return false;
 		}
 
+		private boolean isDisabled(Class<?> pluginClass) {
+			for (String disabledPlugin : this.disabledPlugins) {
+				if (ClassUtils.getShortName(pluginClass).equalsIgnoreCase(disabledPlugin)
+						|| ClassUtils.getQualifiedName(pluginClass).equalsIgnoreCase(
+								disabledPlugin)) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
+	/**
+	 * {@link FSDriver} to expose Spring {@link Resource}s to CRaSH.
+	 */
 	private static class SimpleFileSystemDriver extends AbstractFSDriver<ResourceHandle> {
 
 		private ResourceHandle root;
@@ -401,6 +422,26 @@ public class CrshAutoConfiguration {
 
 	}
 
+	/**
+	 * Base for handles to Spring {@link Resource}s.
+	 */
+	private abstract static class ResourceHandle {
+
+		private String name;
+
+		public ResourceHandle(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+	}
+
+	/**
+	 * {@link ResourceHandle} for a directory.
+	 */
 	private static class DirectoryHandle extends ResourceHandle {
 
 		private ResourcePatternResolver resourceLoader;
@@ -423,6 +464,9 @@ public class CrshAutoConfiguration {
 
 	}
 
+	/**
+	 * {@link ResourceHandle} for a file.
+	 */
 	private static class FileHandle extends ResourceHandle {
 
 		private Resource resource;
@@ -441,22 +485,8 @@ public class CrshAutoConfiguration {
 				return this.resource.lastModified();
 			}
 			catch (IOException ex) {
+				return -1;
 			}
-			return -1;
-		}
-
-	}
-
-	private abstract static class ResourceHandle {
-
-		private String name;
-
-		public ResourceHandle(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
 		}
 
 	}

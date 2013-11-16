@@ -24,10 +24,10 @@ import java.util.Properties;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.boot.actuate.properties.CrshProperties.JaasAuthenticationProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.KeyAuthenticationProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.SimpleAuthenticationProperties;
-import org.springframework.boot.actuate.properties.CrshProperties.SpringAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.JaasAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.KeyAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.SimpleAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.SpringAuthenticationProperties;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.core.convert.support.DefaultConversionService;
 
@@ -38,15 +38,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link CrshProperties}.
+ * Tests for {@link ShellProperties}.
  * 
  * @author Christian Dupuis
  */
-public class CrshPropertiesTests {
+public class ShellPropertiesTests {
 
 	@Test
 	public void testBindingAuth() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.bind(new MutablePropertyValues(Collections.singletonMap("shell.auth",
 				"spring")));
@@ -56,7 +56,7 @@ public class CrshPropertiesTests {
 
 	@Test
 	public void testBindingAuthIfEmpty() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.bind(new MutablePropertyValues(Collections.singletonMap("shell.auth", "")));
 		assertTrue(binder.getBindingResult().hasErrors());
@@ -65,7 +65,7 @@ public class CrshPropertiesTests {
 
 	@Test
 	public void testBindingCommandRefreshInterval() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
@@ -76,7 +76,7 @@ public class CrshPropertiesTests {
 
 	@Test
 	public void testBindingCommandPathPatterns() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
@@ -89,7 +89,7 @@ public class CrshPropertiesTests {
 
 	@Test
 	public void testBindingConfigPathPatterns() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
@@ -102,7 +102,7 @@ public class CrshPropertiesTests {
 
 	@Test
 	public void testBindingDisabledPlugins() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
@@ -115,7 +115,7 @@ public class CrshPropertiesTests {
 
 	@Test
 	public void testBindingSsh() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		Map<String, String> map = new HashMap<String, String>();
@@ -125,16 +125,15 @@ public class CrshPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		Properties p = props.asCrashShellConfig();
 
-		assertEquals("2222", p.get(CrshProperties.CRASH_SSH_PORT));
-		assertEquals("~/.ssh/test.pem", p.get(CrshProperties.CRASH_SSH_KEYPATH));
+		assertEquals("2222", p.get("crash.ssh.port"));
+		assertEquals("~/.ssh/test.pem", p.get("crash.ssh.keypath"));
 	}
 
 	@Test
 	public void testBindingSshIgnored() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		Map<String, String> map = new HashMap<String, String>();
@@ -144,16 +143,15 @@ public class CrshPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		Properties p = props.asCrashShellConfig();
 
-		assertNull(p.get(CrshProperties.CRASH_SSH_PORT));
-		assertNull(p.get(CrshProperties.CRASH_SSH_KEYPATH));
+		assertNull(p.get("crash.ssh.port"));
+		assertNull(p.get("crash.ssh.keypath"));
 	}
 
 	@Test
 	public void testBindingTelnet() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		Map<String, String> map = new HashMap<String, String>();
@@ -162,15 +160,14 @@ public class CrshPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		Properties p = props.asCrashShellConfig();
 
-		assertEquals("2222", p.get(CrshProperties.CRASH_TELNET_PORT));
+		assertEquals("2222", p.get("crash.telnet.port"));
 	}
 
 	@Test
 	public void testBindingTelnetIgnored() {
-		CrshProperties props = new CrshProperties();
+		ShellProperties props = new ShellProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell");
 		binder.setConversionService(new DefaultConversionService());
 		Map<String, String> map = new HashMap<String, String>();
@@ -179,10 +176,9 @@ public class CrshPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		Properties p = props.asCrashShellConfig();
 
-		assertNull(p.get(CrshProperties.CRASH_TELNET_PORT));
+		assertNull(p.get("crash.telnet.port"));
 	}
 
 	@Test
@@ -196,9 +192,9 @@ public class CrshPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		props.applyToCrashShellConfig(p);
 
-		assertEquals("my-test-domain", p.get(CrshProperties.CRASH_AUTH_JAAS_DOMAIN));
+		assertEquals("my-test-domain", p.get("crash.auth.jaas.domain"));
 	}
 
 	@Test
@@ -212,9 +208,9 @@ public class CrshPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		props.applyToCrashShellConfig(p);
 
-		assertEquals("~/.ssh/test.pem", p.get(CrshProperties.CRASH_AUTH_KEY_PATH));
+		assertEquals("~/.ssh/test.pem", p.get("crash.auth.key.path"));
 	}
 
 	@Test
@@ -227,9 +223,9 @@ public class CrshPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		props.applyToCrashShellConfig(p);
 
-		assertNull(p.get(CrshProperties.CRASH_AUTH_KEY_PATH));
+		assertNull(p.get("crash.auth.key.path"));
 	}
 
 	@Test
@@ -244,10 +240,10 @@ public class CrshPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		props.applyToCrashShellConfig(p);
 
-		assertEquals("username123", p.get(CrshProperties.CRASH_AUTH_SIMPLE_USERNAME));
-		assertEquals("password123", p.get(CrshProperties.CRASH_AUTH_SIMPLE_PASSWORD));
+		assertEquals("username123", p.get("crash.auth.simple.username"));
+		assertEquals("password123", p.get("crash.auth.simple.password"));
 	}
 
 	@Test
@@ -279,9 +275,9 @@ public class CrshPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		p = props.mergeProperties(p);
+		props.applyToCrashShellConfig(p);
 
-		assertEquals("role1, role2", p.get(CrshProperties.CRASH_AUTH_SPRING_ROLES));
+		assertEquals("role1, role2", p.get("crash.auth.spring.roles"));
 	}
 
 }
