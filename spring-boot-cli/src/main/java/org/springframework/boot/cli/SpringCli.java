@@ -304,12 +304,19 @@ public class SpringCli {
 
 		private void showCommandHints(String starting) {
 			for (Command command : SpringCli.this.commands) {
-				if (command.getName().startsWith(starting)
-						|| (command.isOptionCommand() && ("--" + command.getName())
-								.startsWith(starting))) {
+				if (isHintMatch(command, starting)) {
 					Log.info(command.getName() + " " + command.getDescription());
 				}
 			}
+		}
+
+		private boolean isHintMatch(Command command, String starting) {
+			if (command instanceof HintCommand) {
+				return false;
+			}
+			return command.getName().startsWith(starting)
+					|| (command.isOptionCommand() && ("--" + command.getName())
+							.startsWith(starting));
 		}
 
 		private void showCommandOptionHints(String commandName,
