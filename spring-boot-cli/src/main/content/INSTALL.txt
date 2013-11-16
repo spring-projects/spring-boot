@@ -26,6 +26,15 @@ set SPRING_HOME to point to a specific installation.  You should also add SPRING
 to your PATH environment variable.
 
 
+Shell Completion
+----------------
+Shell auto-completion scripts are provided for BASH and ZSH. Add symlinks to the appropriate
+location for your environment. For example, something like:
+
+  ln -s ./shell-completion/bash/spring /etc/bash_completion.d/spring
+  ln -s ./shell-completion/zsh/_spring /usr/local/share/zsh/site-functions/_spring
+
+
 Checking Your Installation
 --------------------------
 To test if you have successfully install the CLI you can run the following command:
