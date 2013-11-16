@@ -60,8 +60,8 @@ public class WebApplicationInitializersConfiguration extends AbstractConfigurati
 						initializer.onStartup(sce.getServletContext());
 					}
 				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
+				catch (Exception ex) {
+					throw new RuntimeException(ex);
 				}
 			}
 

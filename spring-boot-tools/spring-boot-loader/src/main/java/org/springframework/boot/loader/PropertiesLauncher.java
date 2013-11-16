@@ -308,7 +308,7 @@ public class PropertiesLauncher extends Launcher {
 			this.logger.info("Main class from home directory manifest: " + mainClass);
 			return mainClass;
 		}
-		catch (IllegalStateException e) {
+		catch (IllegalStateException ex) {
 			// Otherwise try the parent archive
 			String mainClass = createArchive().getMainClass();
 			this.logger.info("Main class from archive manifest: " + mainClass);

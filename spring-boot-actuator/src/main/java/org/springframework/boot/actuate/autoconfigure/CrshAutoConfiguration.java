@@ -239,7 +239,7 @@ public class CrshAutoConfiguration {
 			try {
 				token = this.authenticationManager.authenticate(token);
 			}
-			catch (AuthenticationException ae) {
+			catch (AuthenticationException ex) {
 				return false;
 			}
 
@@ -250,7 +250,7 @@ public class CrshAutoConfiguration {
 					this.accessDecisionManager.decide(token, this,
 							SecurityConfig.createList(this.roles));
 				}
-				catch (AccessDeniedException e) {
+				catch (AccessDeniedException ex) {
 					return false;
 				}
 			}
@@ -440,7 +440,7 @@ public class CrshAutoConfiguration {
 			try {
 				return this.resource.lastModified();
 			}
-			catch (IOException e) {
+			catch (IOException ex) {
 			}
 			return -1;
 		}

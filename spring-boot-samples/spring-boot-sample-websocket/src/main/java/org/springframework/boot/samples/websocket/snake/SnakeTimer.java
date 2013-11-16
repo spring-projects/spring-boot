@@ -94,8 +94,8 @@ public class SnakeTimer {
 				try {
 					tick();
 				}
-				catch (Throwable e) {
-					log.error("Caught to prevent timer from shutting down", e);
+				catch (Throwable ex) {
+					log.error("Caught to prevent timer from shutting down", ex);
 				}
 			}
 		}, TICK_DELAY, TICK_DELAY);

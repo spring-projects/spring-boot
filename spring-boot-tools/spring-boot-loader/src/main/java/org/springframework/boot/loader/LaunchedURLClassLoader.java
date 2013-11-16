@@ -173,14 +173,16 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 							}
 						}
-						catch (IOException e) {
+						catch (IOException ex) {
+							// Ignore
 						}
 					}
 					return null;
 				}
 			}, AccessController.getContext());
 		}
-		catch (java.security.PrivilegedActionException pae) {
+		catch (java.security.PrivilegedActionException ex) {
+			// Ignore
 		}
 	}
 }

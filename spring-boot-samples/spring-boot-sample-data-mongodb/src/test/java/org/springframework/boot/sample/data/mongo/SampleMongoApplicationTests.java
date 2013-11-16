@@ -39,8 +39,8 @@ public class SampleMongoApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		try {
 			SampleMongoApplication.main(new String[0]);
-		} catch (IllegalStateException e) {
-			if (serverNotRunning(e)) {
+		} catch (IllegalStateException ex) {
+			if (serverNotRunning(ex)) {
 				return;
 			}
 		}

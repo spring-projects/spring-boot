@@ -16,12 +16,15 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +32,6 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link RabbitAutoConfiguration}.
@@ -39,6 +41,9 @@ import static org.junit.Assert.fail;
 public class RabbitAutoconfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void testDefaultRabbitTemplate() {
@@ -123,12 +128,11 @@ public class RabbitAutoconfigurationTests {
 		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "spring.rabbitmq.dynamic:false");
 		this.context.refresh();
-		try {
-			this.context.getBean(AmqpAdmin.class);
-			fail("There should NOT be an AmqpAdmin bean when dynamic is switch to false");
-		}
-		catch (Exception e) {
-		}
+		// There should NOT be an AmqpAdmin bean when dynamic is switch to false
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.thrown.expectMessage("No qualifying bean of type "
+				+ "[org.springframework.amqp.core.AmqpAdmin] is defined");
+		this.context.getBean(AmqpAdmin.class);
 	}
 
 	@Configuration

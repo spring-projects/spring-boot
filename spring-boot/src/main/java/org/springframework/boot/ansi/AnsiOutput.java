@@ -116,7 +116,7 @@ public abstract class AnsiOutput {
 			}
 			return !(OPERATING_SYSTEM_NAME.indexOf("win") >= 0);
 		}
-		catch (Throwable e) {
+		catch (Throwable ex) {
 			return false;
 		}
 	}

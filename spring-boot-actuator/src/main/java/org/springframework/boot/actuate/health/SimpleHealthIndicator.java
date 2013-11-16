@@ -50,18 +50,18 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 				map.put("database", this.dataSource.getConnection().getMetaData()
 						.getDatabaseProductName());
 			}
-			catch (SQLException e) {
+			catch (SQLException ex) {
 				map.put("status", "error");
-				map.put("error", e.getClass().getName() + ": " + e.getMessage());
+				map.put("error", ex.getClass().getName() + ": " + ex.getMessage());
 			}
 			if (StringUtils.hasText(this.query)) {
 				try {
 					map.put("hello",
 							this.jdbcTemplate.queryForObject(this.query, String.class));
 				}
-				catch (Exception e) {
+				catch (Exception ex) {
 					map.put("status", "error");
-					map.put("error", e.getClass().getName() + ": " + e.getMessage());
+					map.put("error", ex.getClass().getName() + ": " + ex.getMessage());
 				}
 			}
 		}

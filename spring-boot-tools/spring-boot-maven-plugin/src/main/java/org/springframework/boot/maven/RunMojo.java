@@ -44,7 +44,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author Phillip Webb
  */
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
-@Execute(phase=LifecyclePhase.TEST_COMPILE)
+@Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractMojo {
 
 	/**
@@ -179,7 +179,7 @@ public class RunMojo extends AbstractMojo {
 						hasNonDaemonThreads = true;
 						thread.join();
 					}
-					catch (InterruptedException e) {
+					catch (InterruptedException ex) {
 						Thread.currentThread().interrupt();
 					}
 				}
@@ -249,8 +249,8 @@ public class RunMojo extends AbstractMojo {
 								+ "main method with appropriate signature.", ex);
 				thread.getThreadGroup().uncaughtException(thread, wrappedEx);
 			}
-			catch (Exception e) {
-				thread.getThreadGroup().uncaughtException(thread, e);
+			catch (Exception ex) {
+				thread.getThreadGroup().uncaughtException(thread, ex);
 			}
 		}
 	}
