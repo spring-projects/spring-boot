@@ -28,11 +28,11 @@ import org.springframework.boot.actuate.web.BasicErrorController;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.DefaultTemplateResolverConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -103,7 +103,8 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 					context.getClassLoader())) {
 				if (DefaultTemplateResolverConfiguration.templateExists(
 						context.getEnvironment(), context.getResourceLoader(), "error")) {
-					return ConditionOutcome.noMatch("Thymeleaf template found for error view");
+					return ConditionOutcome
+							.noMatch("Thymeleaf template found for error view");
 				}
 			}
 			// FIXME: add matcher for JSP view if Jasper detected
@@ -128,6 +129,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			this.context.addPropertyAccessor(new MapAccessor());
 			this.helper = new PropertyPlaceholderHelper("${", "}");
 			this.resolver = new PlaceholderResolver() {
+				@Override
 				public String resolvePlaceholder(String name) {
 					Expression expression = SpelView.this.parser.parseExpression(name);
 					Object value = expression.getValue(SpelView.this.context);
@@ -136,10 +138,12 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			};
 		}
 
+		@Override
 		public String getContentType() {
 			return "text/html";
 		}
 
+		@Override
 		public void render(Map<String, ?> model, HttpServletRequest request,
 				HttpServletResponse response) throws Exception {
 			if (response.getContentType() == null) {

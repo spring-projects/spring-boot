@@ -54,9 +54,9 @@ public class UnsecureSampleActuatorApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
-										.run(SampleActuatorApplication.class,
-												"--security.basic.enabled=false");
+								return SpringApplication.run(
+										SampleActuatorApplication.class,
+										"--security.basic.enabled=false");
 							}
 						});
 		context = future.get(60, TimeUnit.SECONDS);

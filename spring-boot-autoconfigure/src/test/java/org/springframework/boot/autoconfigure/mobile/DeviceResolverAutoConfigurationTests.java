@@ -39,7 +39,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 /**
  * Tests for {@link DeviceResolverAutoConfiguration}.
- *
+ * 
  * @author Roy Clarkson
  */
 public class DeviceResolverAutoConfigurationTests {

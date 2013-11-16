@@ -55,7 +55,10 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(((ActiveMQConnectionFactory)jmsTemplate.getConnectionFactory()).getBrokerURL(), "vm://localhost");
+		assertEquals(
+				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+						.getBrokerURL(),
+				"vm://localhost");
 	}
 
 	@Test
@@ -109,7 +112,7 @@ public class JmsTemplateAutoConfigurationTests {
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertFalse(jmsTemplate.isPubSubDomain());
 	}
-	
+
 	@Test
 	public void testJmsTemplateOverridden() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -139,7 +142,9 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(((ActiveMQConnectionFactory)jmsTemplate.getConnectionFactory()).getBrokerURL(), 
+		assertEquals(
+				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+						.getBrokerURL(),
 				"tcp://localhost:61616");
 	}
 
@@ -157,7 +162,9 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(((ActiveMQConnectionFactory)jmsTemplate.getConnectionFactory()).getBrokerURL(), 
+		assertEquals(
+				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+						.getBrokerURL(),
 				"tcp://remote-host:10000");
 	}
 
@@ -174,7 +181,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(pool);
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
-		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool.getConnectionFactory();
+		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
+				.getConnectionFactory();
 		assertEquals("vm://localhost", factory.getBrokerURL());
 	}
 
@@ -192,7 +200,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(pool);
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
-		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool.getConnectionFactory();
+		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
+				.getConnectionFactory();
 		assertEquals("tcp://localhost:61616", factory.getBrokerURL());
 	}
 
@@ -202,7 +211,8 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "spring.activemq.pooled:true",
-				"spring.activemq.inMemory:false", "spring.activemq.brokerURL:tcp://remote-host:10000");
+				"spring.activemq.inMemory:false",
+				"spring.activemq.brokerURL:tcp://remote-host:10000");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
@@ -210,7 +220,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(pool);
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
-		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool.getConnectionFactory();
+		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
+				.getConnectionFactory();
 		assertEquals("tcp://remote-host:10000", factory.getBrokerURL());
 	}
 

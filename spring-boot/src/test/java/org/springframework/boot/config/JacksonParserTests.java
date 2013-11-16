@@ -16,7 +16,6 @@
 
 package org.springframework.boot.config;
 
-
 /**
  * Tests for {@link JsonParser}.
  * 

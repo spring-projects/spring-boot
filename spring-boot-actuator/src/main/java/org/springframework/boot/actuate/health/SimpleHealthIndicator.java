@@ -72,6 +72,7 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 		return map;
 	}
 
+	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
 	}

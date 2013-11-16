@@ -65,8 +65,8 @@ public class NoManagementSampleActuatorApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
-										.run(SampleActuatorApplication.class, args);
+								return SpringApplication.run(
+										SampleActuatorApplication.class, args);
 							}
 						});
 		context = future.get(60, TimeUnit.SECONDS);

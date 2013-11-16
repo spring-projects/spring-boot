@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SampleSimpleApplication.class, loader=SpringApplicationContextLoader.class)
+@ContextConfiguration(classes = SampleSimpleApplication.class, loader = SpringApplicationContextLoader.class)
 public class SpringTestSampleSimpleApplicationTests {
 
 	@Test

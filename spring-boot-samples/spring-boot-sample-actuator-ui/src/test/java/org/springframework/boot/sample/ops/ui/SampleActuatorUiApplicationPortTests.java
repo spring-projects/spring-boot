@@ -58,8 +58,8 @@ public class SampleActuatorUiApplicationPortTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
-										.run(SampleActuatorUiApplication.class, args);
+								return SpringApplication.run(
+										SampleActuatorUiApplication.class, args);
 							}
 						});
 		context = future.get(60, TimeUnit.SECONDS);

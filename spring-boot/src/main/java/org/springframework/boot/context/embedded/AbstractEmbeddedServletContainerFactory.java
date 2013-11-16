@@ -142,6 +142,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	/**
 	 * Returns the port that the embedded servlet container should listen on.
 	 */
+	@Override
 	public int getPort() {
 		return this.port;
 	}
@@ -158,10 +159,12 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		return this.address;
 	}
 
+	@Override
 	public void setSessionTimeout(int sessionTimeout) {
 		this.sessionTimeout = sessionTimeout;
 	}
 
+	@Override
 	public void setSessionTimeout(int sessionTimeout, TimeUnit timeUnit) {
 		Assert.notNull(timeUnit, "TimeUnit must not be null");
 		this.sessionTimeout = (int) timeUnit.toSeconds(sessionTimeout);

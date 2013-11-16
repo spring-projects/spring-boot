@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
- *
+ * 
  * @author Dave Syer
  */
 public class SampleWebUiApplicationTests {
@@ -40,7 +40,7 @@ public class SampleWebUiApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
+								return SpringApplication
 										.run(SampleWebUiApplication.class);
 							}
 						});

@@ -35,6 +35,7 @@ public interface EmbeddedServletContainer {
 	 */
 	public static final EmbeddedServletContainer NONE = new EmbeddedServletContainer() {
 
+		@Override
 		public void start() throws EmbeddedServletContainerException {
 			// Do nothing
 		};

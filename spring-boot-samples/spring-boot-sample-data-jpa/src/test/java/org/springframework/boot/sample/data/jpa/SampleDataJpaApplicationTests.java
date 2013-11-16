@@ -23,9 +23,10 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SampleDataJpaApplication.class, loader=SpringApplicationContextLoader.class)
+@ContextConfiguration(classes = SampleDataJpaApplication.class, loader = SpringApplicationContextLoader.class)
 @WebAppConfiguration
-@ActiveProfiles("scratch") // Separate profile for web tests to avoid clashing databases
+@ActiveProfiles("scratch")
+// Separate profile for web tests to avoid clashing databases
 public class SampleDataJpaApplicationTests {
 
 	@Autowired

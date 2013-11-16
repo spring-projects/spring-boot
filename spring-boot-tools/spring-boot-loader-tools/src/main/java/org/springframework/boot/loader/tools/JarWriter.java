@@ -200,6 +200,7 @@ class JarWriter {
 			this.close = close;
 		}
 
+		@Override
 		public void write(OutputStream outputStream) throws IOException {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead = -1;

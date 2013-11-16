@@ -26,7 +26,7 @@ import org.springframework.boot.gradle.task.RunJar;
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
- *
+ * 
  * @author Phillip Webb
  */
 public class SpringBootPlugin implements Plugin<Project> {
@@ -53,12 +53,14 @@ public class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	private Repackage addRepackageTask(Project project) {
-		Repackage packageTask = project.getTasks().create(REPACKAGE_TASK_NAME, Repackage.class);
+		Repackage packageTask = project.getTasks().create(REPACKAGE_TASK_NAME,
+				Repackage.class);
 		packageTask.setDescription("Repackage existing JAR and WAR "
-				+ "archives so that they can be executed from the command " + "line using 'java -jar'");
+				+ "archives so that they can be executed from the command "
+				+ "line using 'java -jar'");
 		packageTask.setGroup(BasePlugin.BUILD_GROUP);
-		packageTask.dependsOn(project.getConfigurations().getByName(Dependency.ARCHIVES_CONFIGURATION)
-				.getAllArtifacts().getBuildDependencies());
+		packageTask.dependsOn(project.getConfigurations().getByName(
+				Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts().getBuildDependencies());
 		return packageTask;
 	}
 

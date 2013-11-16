@@ -29,7 +29,7 @@ import org.springframework.boot.loader.tools.Repackager;
 
 /**
  * Repackage task.
- *
+ * 
  * @author Phillip Webb
  */
 public class Repackage extends DefaultTask {
@@ -44,6 +44,7 @@ public class Repackage extends DefaultTask {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
 		project.getTasks().withType(Jar.class, new Action<Jar>() {
+
 			@Override
 			public void execute(Jar archive) {
 				if ("".equals(archive.getClassifier())) {

@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigurationReportLoggingInitializer}.
- *
+ * 
  * @author Phillip Webb
  */
 public class AutoConfigurationReportLoggingInitializerTests {

@@ -41,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
- *
+ * 
  * @author Dave Syer
  */
 public class UnsecureManagementSampleActuatorApplicationTests {
@@ -55,9 +55,9 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return (ConfigurableApplicationContext) SpringApplication
-										.run(SampleActuatorApplication.class,
-												"--security.management.enabled=false");
+								return SpringApplication.run(
+										SampleActuatorApplication.class,
+										"--security.management.enabled=false");
 							}
 						});
 		context = future.get(60, TimeUnit.SECONDS);
@@ -87,7 +87,8 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 	public void testMetrics() throws Exception {
 		try {
 			testHomeIsSecure(); // makes sure some requests have been made
-		} catch (AssertionError ex) {
+		}
+		catch (AssertionError ex) {
 			// ignore;
 		}
 		@SuppressWarnings("rawtypes")

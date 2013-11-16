@@ -27,7 +27,7 @@ import org.springframework.core.NestedCheckedException;
 
 /**
  * Tests for {@link SampleMongoApplication}.
- *
+ * 
  * @author Dave Syer
  */
 public class SampleMongoApplicationTests {
@@ -39,13 +39,15 @@ public class SampleMongoApplicationTests {
 	public void testDefaultSettings() throws Exception {
 		try {
 			SampleMongoApplication.main(new String[0]);
-		} catch (IllegalStateException ex) {
+		}
+		catch (IllegalStateException ex) {
 			if (serverNotRunning(ex)) {
 				return;
 			}
 		}
 		String output = this.outputCapture.toString();
-		assertTrue("Wrong output: " + output, output.contains("firstName='Alice', lastName='Smith'"));
+		assertTrue("Wrong output: " + output,
+				output.contains("firstName='Alice', lastName='Smith'"));
 	}
 
 	private boolean serverNotRunning(IllegalStateException e) {
