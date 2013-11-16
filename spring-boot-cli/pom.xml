@@ -169,7 +169,7 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
-			<!-- Build an executable JAR manually since we can't easily depend on 
+			<!-- Build an executable JAR manually since we can't easily depend on
 				a maven plugin that is part of the reactor -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -245,8 +245,35 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+					<dependency>
+						<groupId>foundrylogic.vpp</groupId>
+						<artifactId>vpp</artifactId>
+						<version>2.2.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+					<dependency>
+						<groupId>org.tigris.antelope</groupId>
+						<artifactId>antelopetasks</artifactId>
+						<version>3.2.10</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
 						<id>generate-cli-properties</id>
@@ -266,19 +293,49 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>homebrew</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<target>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+								<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+								<var name="version" value="${project.version}" />
+								<var name="version-type" value="${project.version}" />
+								<propertyregex property="version-type" override="true"
+									input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+								<propertyregex property="version-type" override="true"
+									input="${version-type}" regexp="(M)\d+" replace="\1ILESTONE" />
+								<propertyregex property="version-type" override="true"
+									input="${version-type}" regexp="BUILD-(.*)" replace="\1" />
+								<stringutil string="${version-type}" property="repo">
+									<lowercase />
+								</stringutil>
+								<checksum
+									file="${project.build.directory}/spring-boot-cli-${version}-bin.tar.gz"
+									property="checksum" />
+								<echo
+									message="Customizing homebrew for ${version} with checksum ${checksum} in ${repo} repo" />
+								<copy file="${basedir}/src/main/homebrew/springboot.rb"
+									tofile="${project.build.directory}/springboot.rb" overwrite="true">
+									<filterchain>
+										<expandproperties />
+									</filterchain>
+								</copy>
+								<attachartifact file="${project.build.directory}/springboot.rb" classifier="homebrew" type="rb"/>
+							</target>
+						</configuration>
+					</execution>
 				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>foundrylogic.vpp</groupId>
-						<artifactId>vpp</artifactId>
-						<version>2.2.1</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
+				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
