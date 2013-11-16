@@ -65,7 +65,7 @@ public abstract class Archive {
 		try {
 			return getUrl().toString();
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			return "archive";
 		}
 	}

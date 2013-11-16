@@ -85,7 +85,7 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 		try {
 			return Class.forName(name, false, this.parent);
 		}
-		catch (ClassNotFoundException e) {
+		catch (ClassNotFoundException ex) {
 			return null;
 		}
 	}
@@ -94,7 +94,7 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 		try {
 			return findClass(name);
 		}
-		catch (ClassNotFoundException e) {
+		catch (ClassNotFoundException ex) {
 			return null;
 		}
 	}
@@ -105,9 +105,9 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 				this.securityManager.checkPackageAccess(name.substring(0,
 						name.lastIndexOf('.')));
 			}
-			catch (SecurityException se) {
+			catch (SecurityException ex) {
 				throw new ClassNotFoundException("Security Violation, attempt to use "
-						+ "Restricted Class: " + name, se);
+						+ "Restricted Class: " + name, ex);
 			}
 		}
 	}

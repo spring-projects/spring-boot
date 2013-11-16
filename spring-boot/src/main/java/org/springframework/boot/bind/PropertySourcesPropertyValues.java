@@ -59,7 +59,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 						try {
 							value = resolver.getProperty(propertyName);
 						}
-						catch (RuntimeException e) {
+						catch (RuntimeException ex) {
 							// Probably could not resolve placeholders, ignore it here
 						}
 						this.propertyValues.put(propertyName, new PropertyValue(

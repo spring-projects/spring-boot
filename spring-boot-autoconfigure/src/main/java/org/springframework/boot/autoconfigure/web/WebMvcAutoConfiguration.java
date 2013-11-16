@@ -197,7 +197,8 @@ public class WebMvcAutoConfiguration {
 						logger.info("Adding welcome page: "
 								+ this.resourceLoader.getResource(resource).getURL());
 					}
-					catch (IOException e) {
+					catch (IOException ex) {
+						// Ignore
 					}
 					registry.addViewController("/").setViewName("/index.html");
 					return;

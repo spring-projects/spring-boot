@@ -454,9 +454,9 @@ public class TomcatEmbeddedServletContainerFactory extends
 					}
 				}
 			}
-			catch (ClassNotFoundException e) {
+			catch (ClassNotFoundException ex) {
 			}
-			catch (LinkageError e) {
+			catch (LinkageError ex) {
 			}
 			return nativePage;
 		}

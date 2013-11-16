@@ -77,7 +77,7 @@ public class OutputCapture implements TestRule {
 			this.captureOut.flush();
 			this.captureErr.flush();
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			// ignore
 		}
 	}
@@ -144,7 +144,7 @@ public class OutputCapture implements TestRule {
 				Class.forName("org.springframework.boot.ansi.AnsiOutput");
 				return new AnsiPresentOutputControl();
 			}
-			catch (ClassNotFoundException e) {
+			catch (ClassNotFoundException ex) {
 				return new AnsiOutputControl();
 			}
 		}

@@ -54,7 +54,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link CrshAutoConfiguration}.
@@ -235,7 +234,7 @@ public class CrshAutoConfigurationTests {
 	}
 
 	@Test
-	public void testSimpleAuthenticationProvider() {
+	public void testSimpleAuthenticationProvider() throws Exception {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.auth", "simple");
 		env.setProperty("shell.auth.simple.username", "user");
@@ -261,24 +260,13 @@ public class CrshAutoConfigurationTests {
 			}
 		}
 		assertNotNull(authenticationPlugin);
-		try {
-			assertTrue(authenticationPlugin.authenticate("user", "password"));
-		}
-		catch (Exception e) {
-			fail();
-		}
-
-		try {
-			assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
-					"password"));
-		}
-		catch (Exception e) {
-			fail();
-		}
+		assertTrue(authenticationPlugin.authenticate("user", "password"));
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+				"password"));
 	}
 
 	@Test
-	public void testSpringAuthenticationProvider() {
+	public void testSpringAuthenticationProvider() throws Exception {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.auth", "spring");
 		this.context = new AnnotationConfigWebApplicationContext();
@@ -300,22 +288,11 @@ public class CrshAutoConfigurationTests {
 				break;
 			}
 		}
-		assertNotNull(authenticationPlugin);
-		try {
-			assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
-					SecurityConfiguration.PASSWORD));
-		}
-		catch (Exception e) {
-			fail();
-		}
+		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
+				SecurityConfiguration.PASSWORD));
 
-		try {
-			assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
-					SecurityConfiguration.PASSWORD));
-		}
-		catch (Exception e) {
-			fail();
-		}
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+				SecurityConfiguration.PASSWORD));
 	}
 
 	@Configuration

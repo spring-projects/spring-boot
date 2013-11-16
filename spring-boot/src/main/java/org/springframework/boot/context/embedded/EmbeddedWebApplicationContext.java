@@ -121,9 +121,9 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		try {
 			super.refresh();
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException ex) {
 			stopAndReleaseEmbeddedServletContainer();
-			throw e;
+			throw ex;
 		}
 	}
 
@@ -340,11 +340,11 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
 			throw ex;
 		}
-		catch (Error err) {
-			logger.error("Context initialization failed", err);
+		catch (Error ex) {
+			logger.error("Context initialization failed", ex);
 			servletContext.setAttribute(
-					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, err);
-			throw err;
+					WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, ex);
+			throw ex;
 		}
 	}
 

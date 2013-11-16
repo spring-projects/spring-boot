@@ -74,8 +74,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 				Connector connector = this.tomcat.getConnector();
 				connector.getProtocolHandler().stop();
 			}
-			catch (Exception e) {
-				this.logger.error("Cannot pause connector: ", e);
+			catch (Exception ex) {
+				this.logger.error("Cannot pause connector: ", ex);
 			}
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 			// blocking non-daemon to stop immediate shutdown
@@ -105,8 +105,8 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			try {
 				connector.getProtocolHandler().start();
 			}
-			catch (Exception e) {
-				this.logger.error("Cannot start connector: ", e);
+			catch (Exception ex) {
+				this.logger.error("Cannot start connector: ", ex);
 			}
 		}
 	}

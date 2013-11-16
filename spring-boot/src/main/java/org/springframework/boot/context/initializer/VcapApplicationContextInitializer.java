@@ -160,8 +160,8 @@ public class VcapApplicationContextInitializer implements
 				properties.putAll(map);
 			}
 		}
-		catch (Exception e) {
-			logger.error("Could not parse VCAP_APPLICATION", e);
+		catch (Exception ex) {
+			logger.error("Could not parse VCAP_APPLICATION", ex);
 		}
 		return properties;
 	}
@@ -187,8 +187,8 @@ public class VcapApplicationContextInitializer implements
 				}
 			}
 		}
-		catch (Exception e) {
-			logger.error("Could not parse VCAP_APPLICATION", e);
+		catch (Exception ex) {
+			logger.error("Could not parse VCAP_APPLICATION", ex);
 		}
 		return properties;
 	}
