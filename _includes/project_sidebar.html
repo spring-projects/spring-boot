@@ -1,11 +1,9 @@
 {% include documentation.html %}
-{%unless badges contains 'not found in _includes directory' %}
 <div class="right-pane-widget--container no-top-border">
     <div class="project-sub-link--wrapper">
         {% include badges.html %}
     </div>
 </div>
-{%endunless%}
 <div class="right-pane-widget--container no-top-border project-sidebar-resource--wrapper">
     {{ related_resources | markdownify }}
 </div>
