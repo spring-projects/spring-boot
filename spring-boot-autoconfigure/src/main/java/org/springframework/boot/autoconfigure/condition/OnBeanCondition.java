@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -154,8 +153,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			@SuppressWarnings("unchecked")
 			Class<? extends Annotation> typeClass = (Class<? extends Annotation>) ClassUtils
 					.forName(type, classLoader);
-			Map<String, Object> annotated = beanFactory.getBeansWithAnnotation(typeClass);
-			result = annotated.keySet().toArray(new String[annotated.size()]);
+			result = beanFactory.getBeanNamesForAnnotation(typeClass);
 			if (considerHierarchy) {
 				if (beanFactory.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
 					String[] parentResult = getBeanNamesForAnnotation(

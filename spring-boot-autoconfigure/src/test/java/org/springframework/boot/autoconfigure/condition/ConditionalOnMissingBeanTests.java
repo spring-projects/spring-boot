@@ -17,10 +17,14 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.Test;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.util.Assert;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -93,6 +97,18 @@ public class ConditionalOnMissingBeanTests {
 		assertEquals("foo", this.context.getBean("foo"));
 	}
 
+	// Rigorous test for SPR-11069
+	@Test
+	public void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
+		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class,
+				ConfigurationWithFactoryBean.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertFalse(this.context.containsBean("bar"));
+		assertTrue(this.context.containsBean("example"));
+		assertEquals("foo", this.context.getBean("foo"));
+	}
+
 	@Configuration
 	@ConditionalOnMissingBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
@@ -109,6 +125,11 @@ public class ConditionalOnMissingBeanTests {
 		public String bar() {
 			return "bar";
 		}
+	}
+
+	@Configuration
+	@ImportResource("org/springframework/boot/autoconfigure/condition/factorybean.xml")
+	protected static class ConfigurationWithFactoryBean {
 	}
 
 	@Configuration
@@ -158,5 +179,28 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	public static class ExampleBean {
+	}
+
+	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
+
+		public ExampleFactoryBean(String value) {
+			Assert.state(!value.contains("$"));
+		}
+
+		@Override
+		public ExampleBean getObject() throws Exception {
+			return new ExampleBean();
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ExampleBean.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return false;
+		}
+
 	}
 }
