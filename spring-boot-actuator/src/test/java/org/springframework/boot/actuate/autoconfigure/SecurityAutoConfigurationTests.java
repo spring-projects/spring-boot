@@ -21,7 +21,6 @@ import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
@@ -46,7 +45,7 @@ public class SecurityAutoConfigurationTests {
 	public void testWebConfiguration() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityConfiguration.class,
+		this.context.register(SecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -61,7 +60,7 @@ public class SecurityAutoConfigurationTests {
 	public void testDisableIgnoredStaticApplicationPaths() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityConfiguration.class,
+		this.context.register(SecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -76,7 +75,7 @@ public class SecurityAutoConfigurationTests {
 	public void testDisableBasicAuthOnApplicationPaths() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityConfiguration.class,
+		this.context.register(SecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -98,12 +97,6 @@ public class SecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
-	}
-
-	// Use this while SPR-11069 prevents us from checking OnMissingBean by annotation
-	@Configuration
-	@Import(SecurityAutoConfiguration.class)
-	protected static class SecurityConfiguration {
 	}
 
 	@Configuration

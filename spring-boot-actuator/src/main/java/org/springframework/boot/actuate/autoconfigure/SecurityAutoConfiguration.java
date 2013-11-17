@@ -96,9 +96,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
  */
 @Configuration
 @ConditionalOnClass({ EnableWebSecurity.class })
-// TODO: re-enable this when SPR-11069 is fixed
-// @ConditionalOnMissingBean(annotation = EnableWebSecurity.class)
-@ConditionalOnMissingBean(SecurityAutoConfiguration.class)
+@ConditionalOnMissingBean(annotation = EnableWebSecurity.class)
 @EnableConfigurationProperties
 public class SecurityAutoConfiguration {
 
