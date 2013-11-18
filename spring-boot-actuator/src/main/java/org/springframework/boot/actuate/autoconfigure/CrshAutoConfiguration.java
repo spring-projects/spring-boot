@@ -45,7 +45,7 @@ import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.properties.ShellProperties;
-import org.springframework.boot.actuate.properties.ShellProperties.CrshShellProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.CrshShellAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.JaasAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.KeyAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.SimpleAuthenticationProperties;
@@ -110,25 +110,29 @@ public class CrshAutoConfiguration {
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'jaas'")
-	public CrshShellProperties jaasAuthenticationProperties() {
+	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
+	public CrshShellAuthenticationProperties jaasAuthenticationProperties() {
 		return new JaasAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'key'")
-	public CrshShellProperties keyAuthenticationProperties() {
+	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
+	public CrshShellAuthenticationProperties keyAuthenticationProperties() {
 		return new KeyAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'simple'")
-	public CrshShellProperties simpleAuthenticationProperties() {
+	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
+	public CrshShellAuthenticationProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'spring'")
-	public CrshShellProperties SpringAuthenticationProperties() {
+	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
+	public CrshShellAuthenticationProperties SpringAuthenticationProperties() {
 		return new SpringAuthenticationProperties();
 	}
 
@@ -142,7 +146,7 @@ public class CrshAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean({ AuthenticationManager.class })
-	public static class ShellAuthenticationManager {
+	public static class AuthenticationManagerAdapterAutoConfiguration {
 
 		@Bean
 		public CRaSHPlugin<?> shellAuthenticationManager() {
