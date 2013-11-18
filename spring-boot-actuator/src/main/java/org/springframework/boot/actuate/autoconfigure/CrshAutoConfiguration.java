@@ -84,8 +84,7 @@ import org.springframework.util.StringUtils;
  * This configuration will auto detect the existence of a Spring Security
  * {@link AuthenticationManager} and will delegate authentication requests for shell
  * access to this detected instance if <code>shell.auth: spring</code> is set in the
- * application properties. Even in case Spring Security is detected, simple authentication
- * is default.
+ * application properties.
  * 
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
