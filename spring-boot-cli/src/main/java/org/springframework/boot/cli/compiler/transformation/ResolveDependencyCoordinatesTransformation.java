@@ -21,6 +21,7 @@ import groovy.lang.Grab;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.codehaus.groovy.ast.ASTNode;
@@ -60,9 +61,24 @@ public class ResolveDependencyCoordinatesTransformation implements ASTTransforma
 		for (ASTNode node : nodes) {
 			if (node instanceof ModuleNode) {
 				ModuleNode module = (ModuleNode) node;
+
+				visitAnnotatedNode(module.getPackage());
+
 				for (ImportNode importNode : module.getImports()) {
 					visitAnnotatedNode(importNode);
 				}
+				for (ImportNode importNode : module.getStarImports()) {
+					visitAnnotatedNode(importNode);
+				}
+				for (Map.Entry<String, ImportNode> entry : module.getStaticImports()
+						.entrySet()) {
+					visitAnnotatedNode(entry.getValue());
+				}
+				for (Map.Entry<String, ImportNode> entry : module.getStaticStarImports()
+						.entrySet()) {
+					visitAnnotatedNode(entry.getValue());
+				}
+
 				for (ClassNode classNode : module.getClasses()) {
 					visitAnnotatedNode(classNode);
 					classNode.visitContents(classVisitor);
@@ -72,9 +88,12 @@ public class ResolveDependencyCoordinatesTransformation implements ASTTransforma
 	}
 
 	private void visitAnnotatedNode(AnnotatedNode annotatedNode) {
-		for (AnnotationNode annotationNode : annotatedNode.getAnnotations()) {
-			if (GRAB_ANNOTATION_NAMES.contains(annotationNode.getClassNode().getName())) {
-				transformGrabAnnotation(annotationNode);
+		if (annotatedNode != null) {
+			for (AnnotationNode annotationNode : annotatedNode.getAnnotations()) {
+				if (GRAB_ANNOTATION_NAMES.contains(annotationNode.getClassNode()
+						.getName())) {
+					transformGrabAnnotation(annotationNode);
+				}
 			}
 		}
 	}
@@ -138,5 +157,6 @@ public class ResolveDependencyCoordinatesTransformation implements ASTTransforma
 		public void visitAnnotations(AnnotatedNode node) {
 			visitAnnotatedNode(node);
 		}
+
 	}
 }
