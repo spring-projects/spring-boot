@@ -26,6 +26,7 @@
 		<module>spring-boot-starter-mobile</module>
 		<module>spring-boot-starter-actuator</module>
 		<module>spring-boot-starter-parent</module>
+		<module>spring-boot-starter-redis</module>
 		<module>spring-boot-starter-security</module>
 		<module>spring-boot-starter-shell-remote</module>
 		<module>spring-boot-starter-test</module>

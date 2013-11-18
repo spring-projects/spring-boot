@@ -24,6 +24,7 @@
 		<joda-time.version>2.3</joda-time.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.11</junit.version>
+		<lettuce.version>2.3.3</lettuce.version>
 		<liquibase.version>3.0.2</liquibase.version>
 		<log4j.version>1.2.17</log4j.version>
 		<logback.version>1.0.13</logback.version>
@@ -40,6 +41,7 @@
 		<spring-batch.version>2.2.2.RELEASE</spring-batch.version>
 		<spring-data-jpa.version>1.4.2.RELEASE</spring-data-jpa.version>
 		<spring-data-mongo.version>1.3.2.RELEASE</spring-data-mongo.version>
+		<spring-data-redis.version>1.1.0.RELEASE</spring-data-redis.version>
 		<spring-rabbit.version>1.2.0.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.0.RELEASE</spring-mobile.version>
 		<spring-security.version>3.2.0.RC2</spring-security.version>
@@ -80,6 +82,11 @@
 				<groupId>commons-httpclient</groupId>
 				<artifactId>commons-httpclient</artifactId>
 				<version>${commons-httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.lambdaworks</groupId>
+				<artifactId>lettuce</artifactId>
+				<version>${lettuce.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -396,6 +403,11 @@
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-mongodb</artifactId>
 				<version>${spring-data-mongo.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-redis</artifactId>
+				<version>${spring-data-redis.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
