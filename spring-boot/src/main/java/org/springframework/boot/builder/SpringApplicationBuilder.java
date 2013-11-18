@@ -481,7 +481,8 @@ public class SpringApplicationBuilder {
 			target.addAll(Arrays.asList(initializers));
 		}
 		this.initializers = target;
-		this.application.setInitializers(target);
+		this.application.addInitializers(target
+				.toArray(new ApplicationContextInitializer[0]));
 	}
 
 }

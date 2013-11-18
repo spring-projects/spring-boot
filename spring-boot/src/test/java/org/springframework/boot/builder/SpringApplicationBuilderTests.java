@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -176,6 +177,20 @@ public class SpringApplicationBuilderTests {
 				ExampleConfig.class).web(false);
 		this.context = application.run();
 		assertEquals(7, application.application().getInitializers().size());
+	}
+
+	@Test
+	public void initializersIncludeDefaults() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ExampleConfig.class).web(false).initializers(
+				new ApplicationContextInitializer<ConfigurableApplicationContext>() {
+					@Override
+					public void initialize(
+							ConfigurableApplicationContext applicationContext) {
+					}
+				});
+		this.context = application.run();
+		assertEquals(8, application.application().getInitializers().size());
 	}
 
 	@Configuration
