@@ -314,8 +314,8 @@ public class CrshAutoConfigurationTests {
 						authentication = new UsernamePasswordAuthenticationToken(
 								authentication.getPrincipal(),
 								authentication.getCredentials(),
-								Collections.singleton(new SimpleGrantedAuthority(
-										"ROLE_ADMIN")));
+								Collections
+										.singleton(new SimpleGrantedAuthority("ADMIN")));
 					}
 					else {
 						throw new BadCredentialsException("Invalid username and password");
@@ -328,7 +328,9 @@ public class CrshAutoConfigurationTests {
 		@Bean
 		public AccessDecisionManager accessDecisionManager() {
 			List<AccessDecisionVoter> voters = new ArrayList<AccessDecisionVoter>();
-			voters.add(new RoleVoter());
+			RoleVoter voter = new RoleVoter();
+			voter.setRolePrefix("");
+			voters.add(voter);
 			AccessDecisionManager result = new UnanimousBased(voters);
 			return result;
 		}

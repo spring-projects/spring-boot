@@ -337,14 +337,12 @@ public class ShellProperties {
 	public static class SpringAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 
-		private String[] roles = new String[] { "ROLE_ADMIN" };
+		private String[] roles = new String[] { "ADMIN" };
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
-			if (this.roles != null) {
-				config.put("crash.auth.spring.roles",
-						StringUtils.arrayToCommaDelimitedString(this.roles));
-			}
+			config.put("crash.auth.spring.roles",
+					StringUtils.arrayToCommaDelimitedString(this.roles));
 		}
 
 		public void setRoles(String[] roles) {

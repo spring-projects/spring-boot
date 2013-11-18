@@ -133,7 +133,7 @@ public class CrshAutoConfiguration {
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'spring'")
 	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties SpringAuthenticationProperties() {
+	public CrshShellAuthenticationProperties springAuthenticationProperties() {
 		return new SpringAuthenticationProperties();
 	}
 
@@ -370,7 +370,7 @@ public class CrshAutoConfiguration {
 	}
 
 	/**
-	 * {@link FSDriver} to expose Spring {@link Resource}s to CRaSH.
+	 * {@link FSDriver} to wrap Spring's {@link Resource} abstraction to CRaSH.
 	 */
 	private static class SimpleFileSystemDriver extends AbstractFSDriver<ResourceHandle> {
 
@@ -466,7 +466,7 @@ public class CrshAutoConfiguration {
 	}
 
 	/**
-	 * {@link ResourceHandle} for a file.
+	 * {@link ResourceHandle} for a file backed by a Spring {@link Resource}.
 	 */
 	private static class FileHandle extends ResourceHandle {
 
