@@ -20,16 +20,25 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
+import org.crsh.plugin.PluginLifeCycle;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration;
+import org.springframework.boot.actuate.properties.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.JaasAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.KeyAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.SimpleAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.SpringAuthenticationProperties;
 import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.mock.env.MockEnvironment;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -125,7 +134,7 @@ public class ShellPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = props.asCrashShellConfig();
+		Properties p = props.asCrshShellConfig();
 
 		assertEquals("2222", p.get("crash.ssh.port"));
 		assertEquals("~/.ssh/test.pem", p.get("crash.ssh.keypath"));
@@ -143,7 +152,7 @@ public class ShellPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = props.asCrashShellConfig();
+		Properties p = props.asCrshShellConfig();
 
 		assertNull(p.get("crash.ssh.port"));
 		assertNull(p.get("crash.ssh.keypath"));
@@ -160,7 +169,7 @@ public class ShellPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = props.asCrashShellConfig();
+		Properties p = props.asCrshShellConfig();
 
 		assertEquals("2222", p.get("crash.telnet.port"));
 	}
@@ -176,7 +185,7 @@ public class ShellPropertiesTests {
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
-		Properties p = props.asCrashShellConfig();
+		Properties p = props.asCrshShellConfig();
 
 		assertNull(p.get("crash.telnet.port"));
 	}
@@ -192,7 +201,7 @@ public class ShellPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		props.applyToCrashShellConfig(p);
+		props.applyToCrshShellConfig(p);
 
 		assertEquals("my-test-domain", p.get("crash.auth.jaas.domain"));
 	}
@@ -208,7 +217,7 @@ public class ShellPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		props.applyToCrashShellConfig(p);
+		props.applyToCrshShellConfig(p);
 
 		assertEquals("~/.ssh/test.pem", p.get("crash.auth.key.path"));
 	}
@@ -223,7 +232,7 @@ public class ShellPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		props.applyToCrashShellConfig(p);
+		props.applyToCrshShellConfig(p);
 
 		assertNull(p.get("crash.auth.key.path"));
 	}
@@ -240,7 +249,7 @@ public class ShellPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		props.applyToCrashShellConfig(p);
+		props.applyToCrshShellConfig(p);
 
 		assertEquals("username123", p.get("crash.auth.simple.username"));
 		assertEquals("password123", p.get("crash.auth.simple.password"));
@@ -275,9 +284,41 @@ public class ShellPropertiesTests {
 		assertFalse(binder.getBindingResult().hasErrors());
 
 		Properties p = new Properties();
-		props.applyToCrashShellConfig(p);
+		props.applyToCrshShellConfig(p);
 
 		assertEquals("role1, role2", p.get("crash.auth.spring.roles"));
 	}
 
+	@Test
+	public void testCustomShellProperties() throws Exception {
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("shell.auth", "simple");
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.setEnvironment(env);
+		context.setServletContext(new MockServletContext());
+		context.register(TestShellConfiguration.class);
+		context.register(CrshAutoConfiguration.class);
+		context.refresh();
+
+		PluginLifeCycle lifeCycle = context.getBean(PluginLifeCycle.class);
+		String uuid = lifeCycle.getConfig().getProperty("test.uuid");
+		assertEquals(TestShellConfiguration.uuid, uuid);
+	}
+
+	@Configuration
+	public static class TestShellConfiguration {
+
+		public static String uuid = UUID.randomUUID().toString();
+
+		@Bean
+		public CrshShellProperties testProperties() {
+			return new CrshShellProperties() {
+
+				@Override
+				protected void applyToCrshShellConfig(Properties config) {
+					config.put("test.uuid", uuid);
+				}
+			};
+		}
+	}
 }

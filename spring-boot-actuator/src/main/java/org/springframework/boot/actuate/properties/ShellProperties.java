@@ -41,7 +41,7 @@ public class ShellProperties {
 	private String auth = "simple";
 
 	@Autowired(required = false)
-	private AuthenticationProperties authenticationProperties = new SimpleAuthenticationProperties();
+	private CrshShellProperties[] additionalProperties = new CrshShellProperties[] { new SimpleAuthenticationProperties() };
 
 	private int commandRefreshInterval = -1;
 
@@ -65,15 +65,13 @@ public class ShellProperties {
 		return this.auth;
 	}
 
-	public void setAuthenticationProperties(
-			AuthenticationProperties authenticationProperties) {
-		Assert.notNull(authenticationProperties,
-				"AuthenticationProperties must not be null");
-		this.authenticationProperties = authenticationProperties;
+	public void setAdditionalProperties(CrshShellProperties[] additionalProperties) {
+		Assert.notNull(additionalProperties, "additionalProperties must not be null");
+		this.additionalProperties = additionalProperties;
 	}
 
-	public AuthenticationProperties getAuthenticationProperties() {
-		return this.authenticationProperties;
+	public CrshShellProperties[] getAdditionalProperties() {
+		return this.additionalProperties;
 	}
 
 	public void setCommandRefreshInterval(int commandRefreshInterval) {
@@ -123,16 +121,15 @@ public class ShellProperties {
 	 * Return a properties file configured from these settings that can be applied to a
 	 * CRaSH shell instance.
 	 */
-	public Properties asCrashShellConfig() {
+	public Properties asCrshShellConfig() {
 		Properties properties = new Properties();
-		this.ssh.applyToCrashShellConfig(properties);
-		this.telnet.applyToCrashShellConfig(properties);
+		this.ssh.applyToCrshShellConfig(properties);
+		this.telnet.applyToCrshShellConfig(properties);
 
 		properties.put("crash.auth", this.auth);
-		if (this.authenticationProperties != null) {
-			this.authenticationProperties.applyToCrashShellConfig(properties);
+		for (CrshShellProperties shellProperties : this.additionalProperties) {
+			shellProperties.applyToCrshShellConfig(properties);
 		}
-
 		if (this.commandRefreshInterval > 0) {
 			properties.put("crash.vfs.refresh_period",
 					String.valueOf(this.commandRefreshInterval));
@@ -152,9 +149,21 @@ public class ShellProperties {
 	}
 
 	/**
+	 * Base class for Auth specific properties.
+	 */
+	public static abstract class CrshShellProperties {
+
+		/**
+		 * Apply the properties to a CRaSH configuration.
+		 */
+		protected abstract void applyToCrshShellConfig(Properties config);
+
+	}
+
+	/**
 	 * SSH properties
 	 */
-	public static class Ssh {
+	public static class Ssh extends CrshShellProperties {
 
 		private boolean enabled = true;
 
@@ -162,7 +171,8 @@ public class ShellProperties {
 
 		private String port = "2000";
 
-		protected void applyToCrashShellConfig(Properties config) {
+		@Override
+		protected void applyToCrshShellConfig(Properties config) {
 			if (this.enabled) {
 				config.put("crash.ssh.port", this.port);
 				if (this.keyPath != null) {
@@ -180,12 +190,12 @@ public class ShellProperties {
 		}
 
 		public void setKeyPath(String keyPath) {
-			Assert.hasText(keyPath);
+			Assert.hasText(keyPath, "keyPath must have text");
 			this.keyPath = keyPath;
 		}
 
 		public void setPort(Integer port) {
-			Assert.notNull(port);
+			Assert.notNull(port, "port must not be null");
 			this.port = port.toString();
 		}
 
@@ -194,13 +204,14 @@ public class ShellProperties {
 	/**
 	 * Telnet properties
 	 */
-	public static class Telnet {
+	public static class Telnet extends CrshShellProperties {
 
 		private boolean enabled = false;
 
 		private String port = "5000";
 
-		protected void applyToCrashShellConfig(Properties config) {
+		@Override
+		protected void applyToCrshShellConfig(Properties config) {
 			if (this.enabled) {
 				config.put("crash.telnet.port", this.port);
 			}
@@ -215,21 +226,9 @@ public class ShellProperties {
 		}
 
 		public void setPort(Integer port) {
-			Assert.notNull(port);
+			Assert.notNull(port, "port must not be null");
 			this.port = port.toString();
 		}
-
-	}
-
-	/**
-	 * Base class for Auth specific properties.
-	 */
-	public static abstract class AuthenticationProperties {
-
-		/**
-		 * Apply the settings to a CRaSH configuration.
-		 */
-		protected abstract void applyToCrashShellConfig(Properties config);
 
 	}
 
@@ -237,17 +236,17 @@ public class ShellProperties {
 	 * Auth specific properties for JAAS authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.jaas", ignoreUnknownFields = false)
-	public static class JaasAuthenticationProperties extends AuthenticationProperties {
+	public static class JaasAuthenticationProperties extends CrshShellProperties {
 
 		private String domain = "my-domain";
 
 		@Override
-		protected void applyToCrashShellConfig(Properties config) {
+		protected void applyToCrshShellConfig(Properties config) {
 			config.put("crash.auth.jaas.domain", this.domain);
 		}
 
 		public void setDomain(String domain) {
-			Assert.hasText(domain);
+			Assert.hasText(domain, "domain must have text");
 			this.domain = domain;
 		}
 
@@ -257,19 +256,19 @@ public class ShellProperties {
 	 * Auth specific properties for key authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.key", ignoreUnknownFields = false)
-	public static class KeyAuthenticationProperties extends AuthenticationProperties {
+	public static class KeyAuthenticationProperties extends CrshShellProperties {
 
 		private String path;
 
 		@Override
-		protected void applyToCrashShellConfig(Properties config) {
+		protected void applyToCrshShellConfig(Properties config) {
 			if (this.path != null) {
 				config.put("crash.auth.key.path", this.path);
 			}
 		}
 
 		public void setPath(String path) {
-			Assert.hasText(path);
+			Assert.hasText(path, "path must have text");
 			this.path = path;
 		}
 
@@ -279,7 +278,7 @@ public class ShellProperties {
 	 * Auth specific properties for simple authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.simple", ignoreUnknownFields = false)
-	public static class SimpleAuthenticationProperties extends AuthenticationProperties {
+	public static class SimpleAuthenticationProperties extends CrshShellProperties {
 
 		private static Log logger = LogFactory
 				.getLog(SimpleAuthenticationProperties.class);
@@ -291,7 +290,7 @@ public class ShellProperties {
 		private boolean defaultPassword = true;
 
 		@Override
-		protected void applyToCrashShellConfig(Properties config) {
+		protected void applyToCrshShellConfig(Properties config) {
 			config.put("crash.auth.simple.username", this.username);
 			config.put("crash.auth.simple.password", this.password);
 			if (this.defaultPassword) {
@@ -305,7 +304,7 @@ public class ShellProperties {
 		}
 
 		public void setUsername(String username) {
-			Assert.hasLength(username);
+			Assert.hasLength(username, "username must have text");
 			this.username = username;
 		}
 
@@ -324,12 +323,12 @@ public class ShellProperties {
 	 * Auth specific properties for Spring authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.spring", ignoreUnknownFields = false)
-	public static class SpringAuthenticationProperties extends AuthenticationProperties {
+	public static class SpringAuthenticationProperties extends CrshShellProperties {
 
 		private String[] roles = new String[] { "ROLE_ADMIN" };
 
 		@Override
-		protected void applyToCrashShellConfig(Properties config) {
+		protected void applyToCrshShellConfig(Properties config) {
 			if (this.roles != null) {
 				config.put("crash.auth.spring.roles",
 						StringUtils.arrayToCommaDelimitedString(this.roles));
@@ -337,7 +336,9 @@ public class ShellProperties {
 		}
 
 		public void setRoles(String[] roles) {
-			Assert.notNull(roles);
+			// 'roles' can be empty. This means no special to access right to connect to
+			// shell is required.
+			Assert.notNull(roles, "roles must not be null");
 			this.roles = roles;
 		}
 
