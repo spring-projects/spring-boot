@@ -149,7 +149,7 @@ public class ShellProperties {
 	}
 
 	/**
-	 * Base class for Auth specific properties.
+	 * Base class for CRaSH properties.
 	 */
 	public static abstract class CrshShellProperties {
 
@@ -157,6 +157,14 @@ public class ShellProperties {
 		 * Apply the properties to a CRaSH configuration.
 		 */
 		protected abstract void applyToCrshShellConfig(Properties config);
+
+	}
+
+	/**
+	 * Base class for Auth specific properties.
+	 */
+	public static abstract class CrshShellAuthenticationProperties extends
+			CrshShellProperties {
 
 	}
 
@@ -236,7 +244,8 @@ public class ShellProperties {
 	 * Auth specific properties for JAAS authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.jaas", ignoreUnknownFields = false)
-	public static class JaasAuthenticationProperties extends CrshShellProperties {
+	public static class JaasAuthenticationProperties extends
+			CrshShellAuthenticationProperties {
 
 		private String domain = "my-domain";
 
@@ -256,7 +265,8 @@ public class ShellProperties {
 	 * Auth specific properties for key authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.key", ignoreUnknownFields = false)
-	public static class KeyAuthenticationProperties extends CrshShellProperties {
+	public static class KeyAuthenticationProperties extends
+			CrshShellAuthenticationProperties {
 
 		private String path;
 
@@ -278,7 +288,8 @@ public class ShellProperties {
 	 * Auth specific properties for simple authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.simple", ignoreUnknownFields = false)
-	public static class SimpleAuthenticationProperties extends CrshShellProperties {
+	public static class SimpleAuthenticationProperties extends
+			CrshShellAuthenticationProperties {
 
 		private static Log logger = LogFactory
 				.getLog(SimpleAuthenticationProperties.class);
@@ -323,7 +334,8 @@ public class ShellProperties {
 	 * Auth specific properties for Spring authentication
 	 */
 	@ConfigurationProperties(name = "shell.auth.spring", ignoreUnknownFields = false)
-	public static class SpringAuthenticationProperties extends CrshShellProperties {
+	public static class SpringAuthenticationProperties extends
+			CrshShellAuthenticationProperties {
 
 		private String[] roles = new String[] { "ROLE_ADMIN" };
 
