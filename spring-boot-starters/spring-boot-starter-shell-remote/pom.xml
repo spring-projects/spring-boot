@@ -61,6 +61,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.crashub</groupId>
+			<artifactId>crash.plugins.cron</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.crashub</groupId>
+			<artifactId>crash.plugins.mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.crashub</groupId>
 			<artifactId>crash.shell</artifactId>
 			<exclusions>
 				<exclusion>
