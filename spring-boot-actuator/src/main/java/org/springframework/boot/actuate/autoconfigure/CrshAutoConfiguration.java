@@ -45,7 +45,7 @@ import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.properties.ShellProperties;
-import org.springframework.boot.actuate.properties.ShellProperties.AuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.JaasAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.KeyAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.SimpleAuthenticationProperties;
@@ -110,29 +110,25 @@ public class CrshAutoConfiguration {
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'jaas'")
-	@ConditionalOnMissingBean({ AuthenticationProperties.class })
-	public AuthenticationProperties jaasAuthenticationProperties() {
+	public CrshShellProperties jaasAuthenticationProperties() {
 		return new JaasAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'key'")
-	@ConditionalOnMissingBean({ AuthenticationProperties.class })
-	public AuthenticationProperties keyAuthenticationProperties() {
+	public CrshShellProperties keyAuthenticationProperties() {
 		return new KeyAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'simple'")
-	@ConditionalOnMissingBean({ AuthenticationProperties.class })
-	public AuthenticationProperties simpleAuthenticationProperties() {
+	public CrshShellProperties simpleAuthenticationProperties() {
 		return new SimpleAuthenticationProperties();
 	}
 
 	@Bean
 	@ConditionalOnExpression("'${shell.auth:simple}' == 'spring'")
-	@ConditionalOnMissingBean({ AuthenticationProperties.class })
-	public AuthenticationProperties SpringAuthenticationProperties() {
+	public CrshShellProperties SpringAuthenticationProperties() {
 		return new SpringAuthenticationProperties();
 	}
 
@@ -140,7 +136,7 @@ public class CrshAutoConfiguration {
 	@ConditionalOnMissingBean({ PluginLifeCycle.class })
 	public PluginLifeCycle shellBootstrap() {
 		CrshBootstrapBean bootstrapBean = new CrshBootstrapBean();
-		bootstrapBean.setConfig(this.properties.asCrashShellConfig());
+		bootstrapBean.setConfig(this.properties.asCrshShellConfig());
 		return bootstrapBean;
 	}
 
@@ -244,7 +240,7 @@ public class CrshAutoConfiguration {
 			Authentication token = new UsernamePasswordAuthenticationToken(username,
 					password);
 			try {
-				// Authenticate first to make credentials are valid
+				// Authenticate first to make sure credentials are valid
 				token = this.authenticationManager.authenticate(token);
 			}
 			catch (AuthenticationException ex) {
@@ -321,7 +317,7 @@ public class CrshAutoConfiguration {
 			List<CRaSHPlugin<?>> plugins = new ArrayList<CRaSHPlugin<?>>();
 
 			for (CRaSHPlugin<?> p : super.getPlugins()) {
-				if (!shouldFilter(p)) {
+				if (isEnabled(p)) {
 					plugins.add(p);
 				}
 			}
@@ -329,7 +325,7 @@ public class CrshAutoConfiguration {
 			Collection<CRaSHPlugin> pluginBeans = this.beanFactory.getBeansOfType(
 					CRaSHPlugin.class).values();
 			for (CRaSHPlugin<?> pluginBean : pluginBeans) {
-				if (!shouldFilter(pluginBean)) {
+				if (isEnabled(pluginBean)) {
 					plugins.add(pluginBean);
 				}
 			}
@@ -338,33 +334,33 @@ public class CrshAutoConfiguration {
 		}
 
 		@SuppressWarnings("rawtypes")
-		protected boolean shouldFilter(CRaSHPlugin<?> plugin) {
-			Assert.notNull(plugin);
+		protected boolean isEnabled(CRaSHPlugin<?> plugin) {
+			Assert.notNull(plugin, "Plugin must not be null");
 
 			if (ObjectUtils.isEmpty(this.disabledPlugins)) {
-				return false;
+				return true;
 			}
 
 			Set<Class> pluginClasses = ClassUtils.getAllInterfacesAsSet(plugin);
 			pluginClasses.add(plugin.getClass());
 
 			for (Class<?> pluginClass : pluginClasses) {
-				if (isDisabled(pluginClass)) {
+				if (isEnabled(pluginClass)) {
 					return true;
 				}
 			}
 			return false;
 		}
 
-		private boolean isDisabled(Class<?> pluginClass) {
+		private boolean isEnabled(Class<?> pluginClass) {
 			for (String disabledPlugin : this.disabledPlugins) {
 				if (ClassUtils.getShortName(pluginClass).equalsIgnoreCase(disabledPlugin)
 						|| ClassUtils.getQualifiedName(pluginClass).equalsIgnoreCase(
 								disabledPlugin)) {
-					return true;
+					return false;
 				}
 			}
-			return false;
+			return true;
 		}
 	}
 
