@@ -20,6 +20,7 @@ import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -38,6 +39,9 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 
 	private ClassLoader classLoader;
 
+	@Value("${spring.datasource.name:testdb}")
+	private String name = "testdb";
+
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -47,7 +51,7 @@ public class EmbeddedDataSourceConfiguration implements BeanClassLoaderAware {
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder()
 				.setType(EmbeddedDatabaseConnection.get(this.classLoader).getType());
-		this.database = builder.build();
+		this.database = builder.setName(this.name).build();
 		return this.database;
 	}
 

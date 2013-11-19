@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 
 import org.springframework.batch.support.DatabaseType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -45,6 +46,9 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
+	@Value("${spring.batch.initializer.enabled:true}")
+	private boolean enabled = true;
+
 	private RelaxedPropertyResolver environment;
 
 	@Override
@@ -54,20 +58,22 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 
 	@PostConstruct
 	protected void initialize() throws Exception {
-		String platform = DatabaseType.fromMetaData(this.dataSource).toString()
-				.toLowerCase();
-		if ("hsql".equals(platform)) {
-			platform = "hsqldb";
+		if (this.enabled) {
+			String platform = DatabaseType.fromMetaData(this.dataSource).toString()
+					.toLowerCase();
+			if ("hsql".equals(platform)) {
+				platform = "hsqldb";
+			}
+			if ("postgres".equals(platform)) {
+				platform = "postgresql";
+			}
+			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+			String schemaLocation = this.environment.getProperty("schema",
+					DEFAULT_SCHEMA_LOCATION);
+			schemaLocation = schemaLocation.replace("@@platform@@", platform);
+			populator.addScript(this.resourceLoader.getResource(schemaLocation));
+			populator.setContinueOnError(true);
+			DatabasePopulatorUtils.execute(populator, this.dataSource);
 		}
-		if ("postgres".equals(platform)) {
-			platform = "postgresql";
-		}
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		String schemaLocation = this.environment.getProperty("schema",
-				DEFAULT_SCHEMA_LOCATION);
-		schemaLocation = schemaLocation.replace("@@platform@@", platform);
-		populator.addScript(this.resourceLoader.getResource(schemaLocation));
-		populator.setContinueOnError(true);
-		DatabasePopulatorUtils.execute(populator, this.dataSource);
 	}
 }

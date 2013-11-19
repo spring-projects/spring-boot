@@ -111,7 +111,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 		List<String> basePackages = AutoConfigurationUtils
 				.getBasePackages(this.beanFactory);
 		if (basePackages.isEmpty()) {
-			logger.warn("Unable to find repository base packages.  If you need Repositories please define "
+			logger.info("Unable to find repository base packages.  If you need Repositories please define "
 					+ "a @ComponentScan annotation or else disable *RepositoriesAutoConfiguration");
 		}
 		return basePackages;
