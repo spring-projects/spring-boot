@@ -19,7 +19,12 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.sql.DataSource;
+
+import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -31,13 +36,15 @@ import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
-import org.springframework.boot.autoconfigure.batch.JobLauncherCommandLineRunner;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -49,6 +56,16 @@ public class BatchAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void testDefaultContext() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
@@ -57,6 +74,8 @@ public class BatchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
+		assertEquals(0, new JdbcTemplate(this.context.getBean(DataSource.class))
+				.queryForList("select * from BATCH_JOB_EXECUTION").size());
 	}
 
 	@Test
@@ -70,6 +89,21 @@ public class BatchAutoConfigurationTests {
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
 		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
 				"job", new JobParameters()));
+	}
+
+	@Test
+	public void testDisableSchemaLoader() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		TestUtils.addEnviroment(this.context, "spring.datasource.name:batchtest",
+				"spring.batch.initializer.enabled:false");
+		this.context.register(TestConfiguration.class, BatchAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(JobLauncher.class));
+		this.expected.expect(BadSqlGrammarException.class);
+		new JdbcTemplate(this.context.getBean(DataSource.class))
+				.queryForList("select * from BATCH_JOB_EXECUTION");
 	}
 
 	@EnableBatchProcessing
