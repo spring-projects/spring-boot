@@ -83,6 +83,7 @@
 		<spring.version>4.0.3.RELEASE</spring.version>
 		<spring-integration.version>3.0.2.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.6.RELEASE</spring-batch.version>
+		<spring-data-couchbase.version>1.0.0.RELEASE</spring-data-couchbase.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-releasetrain.version>Codd-SR2</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
@@ -517,6 +518,11 @@
 				<version>${spring-data-releasetrain.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-couchbase</artifactId>
+				<version>${spring-data-couchbase.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
