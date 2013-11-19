@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationErrorHandler;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
@@ -57,8 +58,10 @@ public class AutoConfigurationReportLoggingInitializer implements
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		this.loggerBean = new AutoConfigurationReportLogger(applicationContext);
-		applicationContext.getBeanFactory().registerSingleton(LOGGER_BEAN,
-				this.loggerBean);
+		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+		if (!beanFactory.containsBean(LOGGER_BEAN)) {
+			beanFactory.registerSingleton(LOGGER_BEAN, this.loggerBean);
+		}
 	}
 
 	@Override
