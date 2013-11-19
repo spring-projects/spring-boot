@@ -111,7 +111,12 @@
 			<artifactId>spring-data-mongodb</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-couchbase</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
 			<optional>true</optional>
