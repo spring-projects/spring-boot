@@ -44,8 +44,11 @@ import org.crsh.vfs.spi.AbstractFSDriver;
 import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.properties.SecurityProperties;
+import org.springframework.boot.actuate.properties.SecurityProperties.Management;
 import org.springframework.boot.actuate.properties.ShellProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.CrshShellAuthenticationProperties;
+import org.springframework.boot.actuate.properties.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.JaasAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.KeyAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.SimpleAuthenticationProperties;
@@ -76,20 +79,32 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding an extensible shell
- * into a Spring Boot enabled application. By default a SSH daemon is started on port 2000
- * with a default username <code>user</code> and password (default password is logged
- * during application startup).
+ * into a Spring Boot enabled application. By default a SSH daemon is started on port
+ * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet deamon will be
+ * launched on port 5000.
  * 
  * <p>
- * This configuration will auto detect the existence of a Spring Security
- * {@link AuthenticationManager} and will delegate authentication requests for shell
- * access to this detected instance if <code>shell.auth: spring</code> is set in the
- * application properties.
+ * The default shell authentication method uses a username and password combination. If no
+ * configuration is provided the default username is 'user' and the password will be
+ * printed to console during application startup. Those default values can be overridden
+ * by using <code>shell.auth.simple.username</code> and
+ * <code>shell.auth.simple.password</code>.
+ * 
+ * <p>
+ * If a Spring Security {@link AuthenticationManager} is detected, this configuration will
+ * create a {@link CRaSHPlugin} to forward shell authentication requests to Spring
+ * Security. This authentication method will get enabled if <code>shell.auth</code> is set
+ * to <code>spring</code> or if no explicit <code>shell.auth</code> is provided and a
+ * {@link AuthenticationManager} is available. In the latter case shell access will be
+ * restricted to users having roles that match those configured in {@link Management}.
+ * Required roles can be overridden by <code>shell.auth.spring.roles</code>.
  * 
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
  * the application context. Those beans will get auto detected during startup and
- * registered with the underlying shell infrastructure.
+ * registered with the underlying shell infrastructure. To configure plugins and the CRaSH
+ * infrastructure add beans of type {@link CrshShellProperties} to the application
+ * context.
  * 
  * <p>
  * Additional shell commands can be implemented using the guide and documentation at <a
@@ -99,6 +114,7 @@ import org.springframework.util.StringUtils;
  * <code>shell.command_path_patterns</code> in your application configuration.
  * 
  * @author Christian Dupuis
+ * @see ShellProperties
  */
 @Configuration
 @ConditionalOnClass({ PluginLifeCycle.class })
@@ -145,13 +161,34 @@ public class CrshAutoConfiguration {
 		return bootstrapBean;
 	}
 
+	/**
+	 * Class to configure CRaSH to authenticate against Spring Security.
+	 */
 	@Configuration
 	@ConditionalOnBean({ AuthenticationManager.class })
+	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
+
+		@Autowired(required = false)
+		private SecurityProperties securityProperties;
 
 		@Bean
 		public CRaSHPlugin<?> shellAuthenticationManager() {
 			return new AuthenticationManagerAdapter();
+		}
+
+		@Bean
+		@ConditionalOnExpression("'${shell.auth:default_spring}' == 'default_spring'")
+		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
+		public CrshShellAuthenticationProperties springAuthenticationProperties() {
+			// In case no shell.auth property is provided fall back to Spring Security
+			// based authentication and get role to access shell from SecurityProperties.
+			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
+			if (this.securityProperties != null) {
+				authenticationProperties.setRoles(new String[] { this.securityProperties
+						.getManagement().getRole() });
+			}
+			return authenticationProperties;
 		}
 
 	}
@@ -238,7 +275,7 @@ public class CrshAutoConfiguration {
 		@Autowired(required = false)
 		private AccessDecisionManager accessDecisionManager;
 
-		private String[] roles = new String[] { "ROLE_ADMIN" };
+		private String[] roles = new String[] { "ADMIN" };
 
 		@Override
 		public boolean authenticate(String username, String password) throws Exception {
