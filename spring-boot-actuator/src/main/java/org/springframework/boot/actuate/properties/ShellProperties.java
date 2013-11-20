@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -175,7 +176,7 @@ public class ShellProperties {
 
 		private boolean enabled = true;
 
-		private String keyPath = null;
+		private String keyPath;
 
 		private String port = "2000";
 
@@ -214,7 +215,8 @@ public class ShellProperties {
 	 */
 	public static class Telnet extends CrshShellProperties {
 
-		private boolean enabled = false;
+		private boolean enabled = ClassUtils.isPresent("org.crsh.telnet.TelnetPlugin",
+				ClassUtils.getDefaultClassLoader());
 
 		private String port = "5000";
 
@@ -251,6 +253,7 @@ public class ShellProperties {
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
+			config.put("crash.auth", "jaas");
 			config.put("crash.auth.jaas.domain", this.domain);
 		}
 
@@ -272,6 +275,7 @@ public class ShellProperties {
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
+			config.put("crash.auth", "key");
 			if (this.path != null) {
 				config.put("crash.auth.key.path", this.path);
 			}
@@ -302,6 +306,7 @@ public class ShellProperties {
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
+			config.put("crash.auth", "simple");
 			config.put("crash.auth.simple.username", this.username);
 			config.put("crash.auth.simple.password", this.password);
 			if (this.defaultPassword) {
@@ -341,6 +346,7 @@ public class ShellProperties {
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
+			config.put("crash.auth", "spring");
 			config.put("crash.auth.spring.roles",
 					StringUtils.arrayToCommaDelimitedString(this.roles));
 		}
