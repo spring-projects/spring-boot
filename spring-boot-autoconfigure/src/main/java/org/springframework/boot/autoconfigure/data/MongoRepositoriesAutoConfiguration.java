@@ -55,16 +55,20 @@ public class MongoRepositoriesAutoConfiguration {
 
 		@Autowired
 		private MongoProperties config;
+		private Mongo mongo;
 
 		@PreDestroy
 		public void close() throws UnknownHostException {
-			mongo().close();
+			if (this.mongo != null) {
+				this.mongo.close();
+			}
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(Mongo.class)
 		Mongo mongo() throws UnknownHostException {
-			return this.config.mongo();
+			this.mongo = this.config.mongo();
+			return this.mongo;
 		}
 
 		@Bean
