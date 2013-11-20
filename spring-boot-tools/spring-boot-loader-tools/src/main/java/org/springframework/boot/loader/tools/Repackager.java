@@ -172,12 +172,18 @@ public class Repackager {
 			startClass = MainClassFinder.findMainClass(source,
 					this.layout.getClassesLocation());
 		}
-		if (startClass == null) {
-			throw new IllegalStateException("Unable to find main class");
+		String launcherClassName = this.layout.getLauncherClassName();
+		if (launcherClassName != null) {
+			manifest.getMainAttributes()
+					.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
+			if (startClass == null) {
+				throw new IllegalStateException("Unable to find main class");
+			}
+			manifest.getMainAttributes().putValue(START_CLASS_ATTRIBUTE, startClass);
 		}
-		manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE,
-				this.layout.getLauncherClassName());
-		manifest.getMainAttributes().putValue(START_CLASS_ATTRIBUTE, startClass);
+		else if (startClass != null) {
+			manifest.getMainAttributes().putValue(MAIN_CLASS_ATTRIBUTE, startClass);
+		}
 
 		String bootVersion = getClass().getPackage().getImplementationVersion();
 		manifest.getMainAttributes().putValue(BOOT_VERSION_ATTRIBUTE, bootVersion);
