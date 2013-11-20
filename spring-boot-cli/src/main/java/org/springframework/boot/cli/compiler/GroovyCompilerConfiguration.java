@@ -49,6 +49,11 @@ public interface GroovyCompilerConfiguration {
 	boolean isGuessDependencies();
 
 	/**
+	 * Returns true if autoconfiguration transformations should be applied.
+	 */
+	boolean isAutoconfigure();
+
+	/**
 	 * @return a path for local resources
 	 */
 	String[] getClasspath();

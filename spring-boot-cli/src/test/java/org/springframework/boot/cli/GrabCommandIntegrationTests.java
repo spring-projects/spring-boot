@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
  * Integration tests for {@link GrabCommand}
  * 
  * @author Andy Wilkinson
+ * @author Dave Syer
  */
 public class GrabCommandIntegrationTests {
 
@@ -41,22 +42,21 @@ public class GrabCommandIntegrationTests {
 	@After
 	public void deleteLocalRepository() {
 		FileSystemUtils.deleteRecursively(new File("target/repository"));
+		System.clearProperty("grape.root");
+		System.clearProperty("groovy.grape.report.downloads");
 	}
 
 	@Test
 	public void grab() throws Exception {
+
 		System.setProperty("grape.root", "target");
 		System.setProperty("groovy.grape.report.downloads", "true");
 
-		try {
-			String output = this.cli.grab("grab.groovy");
-			assertTrue(output.contains("Downloading: file:"));
-			assertTrue(new File("target/repository/org/springframework/spring-jdbc")
-					.isDirectory());
-		}
-		finally {
-			System.clearProperty("grape.root");
-			System.clearProperty("groovy.grape.report.downloads");
-		}
+		// Use --autoconfigure=false to limit the amount of downloaded dependencies
+		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
+		assertTrue(output.contains("Downloading: file:"));
+		assertTrue(new File("target/repository/net/sf/jopt-simple/jopt-simple")
+				.isDirectory());
+
 	}
 }

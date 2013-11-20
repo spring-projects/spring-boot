@@ -24,6 +24,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
 /**
  * @author Andy Wilkinson
+ * @author Dave Syer
  */
 public final class RepositoryConfigurationFactory {
 
@@ -51,4 +52,5 @@ public final class RepositoryConfigurationFactory {
 
 		return repositoryConfiguration;
 	}
+
 }

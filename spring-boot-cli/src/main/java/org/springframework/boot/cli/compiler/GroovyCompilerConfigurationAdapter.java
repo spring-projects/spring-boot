@@ -72,6 +72,11 @@ public class GroovyCompilerConfigurationAdapter implements GroovyCompilerConfigu
 	}
 
 	@Override
+	public boolean isAutoconfigure() {
+		return this.optionHandler.getAutoconfigureOption().value(this.options);
+	}
+
+	@Override
 	public String[] getClasspath() {
 		OptionSpec<String> classpathOption = this.optionHandler.getClasspathOption();
 		if (this.options.has(classpathOption)) {
