@@ -1,0 +1,1 @@
+provides: logback-classic,jcl-over-slf4j,jul-to-slf4j
