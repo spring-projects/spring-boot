@@ -132,7 +132,7 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void parseDebugArg() throws Exception {
-		this.initializer.initialize(this.springApplication, new String[] { "--debug" });
+		TestUtils.addEnviroment(this.context, "debug");
 		this.initializer.initialize(this.context);
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");
@@ -142,8 +142,7 @@ public class LoggingApplicationContextInitializerTests {
 
 	@Test
 	public void parseTraceArg() throws Exception {
-		this.context = new GenericApplicationContext();
-		this.initializer.initialize(this.springApplication, new String[] { "--trace" });
+		TestUtils.addEnviroment(this.context, "trace");
 		this.initializer.initialize(this.context);
 		this.logger.debug("testatdebug");
 		this.logger.trace("testattrace");

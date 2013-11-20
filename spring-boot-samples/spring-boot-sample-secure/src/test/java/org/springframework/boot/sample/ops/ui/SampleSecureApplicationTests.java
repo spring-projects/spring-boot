@@ -16,9 +16,11 @@
 
 package org.springframework.boot.sample.ops.ui;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,9 +40,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
@@ -90,30 +89,6 @@ public class SampleSecureApplicationTests {
 				"http://localhost:8080/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
-	}
-
-	@Test
-	public void testMetrics() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/metrics", Map.class);
-		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-	}
-
-	@Test
-	public void testError() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = getRestTemplate().exchange(
-				"http://localhost:8080/error", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<html>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("<body>"));
-		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
-				.contains("Please contact the operator with the above information"));
 	}
 
 	private RestTemplate getRestTemplate() {

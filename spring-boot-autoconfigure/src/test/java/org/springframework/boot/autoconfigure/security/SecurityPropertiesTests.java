@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.properties;
+package org.springframework.boot.autoconfigure.security;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.core.convert.support.DefaultConversionService;
 

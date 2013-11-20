@@ -44,8 +44,7 @@ public class ReproIntegrationTests {
 	@Test
 	public void securityDependencies() throws Exception {
 		this.cli.run("secure.groovy");
-		assertThat(this.cli.getHttpOutput(),
-				containsString("{\"message\":\"Hello World\"}"));
+		assertThat(this.cli.getOutput(), containsString("Hello World"));
 	}
 
 	@Test

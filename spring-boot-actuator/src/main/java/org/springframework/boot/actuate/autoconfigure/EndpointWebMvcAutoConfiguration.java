@@ -52,7 +52,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -182,7 +181,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			if (DISABLED_PORT.equals(managementServerProperties.getPort())) {
 				return DISABLE;
 			}
-			if (!(beanFactory instanceof GenericWebApplicationContext)) {
+			if (!(beanFactory instanceof WebApplicationContext)) {
 				// Current context is no a a webapp
 				return DIFFERENT;
 			}

@@ -32,10 +32,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -108,17 +106,6 @@ public class LoggingApplicationContextInitializer implements
 		LoggingSystem loggingSystem = LoggingSystem.get(springApplication.getClass()
 				.getClassLoader());
 		loggingSystem.beforeInitialize();
-		if (this.parseArgs && this.springBootLogging == null
-				&& !ObjectUtils.isEmpty(args)) {
-			SimpleCommandLinePropertySource parsedArgs = new SimpleCommandLinePropertySource(
-					args);
-			if (parsedArgs.containsProperty("debug")) {
-				this.springBootLogging = LogLevel.DEBUG;
-			}
-			if (parsedArgs.containsProperty("trace")) {
-				this.springBootLogging = LogLevel.TRACE;
-			}
-		}
 	}
 
 	/**
@@ -129,6 +116,15 @@ public class LoggingApplicationContextInitializer implements
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 
 		ConfigurableEnvironment environment = applicationContext.getEnvironment();
+
+		if (this.parseArgs && this.springBootLogging == null) {
+			if (environment.containsProperty("debug")) {
+				this.springBootLogging = LogLevel.DEBUG;
+			}
+			if (environment.containsProperty("trace")) {
+				this.springBootLogging = LogLevel.TRACE;
+			}
+		}
 
 		for (Map.Entry<String, String> mapping : ENVIRONMENT_SYSTEM_PROPERTY_MAPPING
 				.entrySet()) {

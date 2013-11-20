@@ -20,8 +20,11 @@ import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
 import org.springframework.boot.context.embedded.properties.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.util.ClassUtils;
 
 /**
  * Properties for the management server (e.g. port and path settings).
@@ -30,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @see ServerProperties
  */
 @ConfigurationProperties(name = "management", ignoreUnknownFields = false)
-public class ManagementServerProperties {
+public class ManagementServerProperties implements SecurityPrequisite {
 
 	private Integer port;
 
@@ -40,6 +43,8 @@ public class ManagementServerProperties {
 	private String contextPath = "";
 
 	private boolean allowShutdown = false;
+
+	private Security security = maybeCreateSecurity();
 
 	public boolean isAllowShutdown() {
 		return this.allowShutdown;
@@ -80,6 +85,52 @@ public class ManagementServerProperties {
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
+	}
+
+	public Security getSecurity() {
+		return this.security;
+	}
+
+	public static class Security {
+
+		private boolean enabled = true;
+
+		private String role = "ADMIN";
+
+		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
+
+		public SessionCreationPolicy getSessions() {
+			return this.sessions;
+		}
+
+		public void setSessions(SessionCreationPolicy sessions) {
+			this.sessions = sessions;
+		}
+
+		public void setRole(String role) {
+			this.role = role;
+		}
+
+		public String getRole() {
+			return this.role;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+	}
+
+	private static Security maybeCreateSecurity() {
+		if (ClassUtils
+				.isPresent("org.springframework.security.core.Authentication", null)) {
+			return new Security();
+		}
+		return null;
 	}
 
 }
