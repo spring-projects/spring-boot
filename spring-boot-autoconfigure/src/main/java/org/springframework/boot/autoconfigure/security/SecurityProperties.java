@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.properties;
+package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "security", ignoreUnknownFields = false)
-public class SecurityProperties {
+public class SecurityProperties implements SecurityPrequisite {
 
 	private boolean requireSsl;
 
@@ -45,8 +46,6 @@ public class SecurityProperties {
 
 	private List<String> ignored = new ArrayList<String>();
 
-	private Management management = new Management();
-
 	private User user = new User();
 
 	public Headers getHeaders() {
@@ -55,10 +54,6 @@ public class SecurityProperties {
 
 	public User getUser() {
 		return this.user;
-	}
-
-	public Management getManagement() {
-		return this.management;
 	}
 
 	public SessionCreationPolicy getSessions() {
@@ -193,47 +188,13 @@ public class SecurityProperties {
 
 	}
 
-	public static class Management {
-
-		private boolean enabled = true;
-
-		private String role = "ADMIN";
-
-		private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
-
-		public SessionCreationPolicy getSessions() {
-			return this.sessions;
-		}
-
-		public void setSessions(SessionCreationPolicy sessions) {
-			this.sessions = sessions;
-		}
-
-		public void setRole(String role) {
-			this.role = role;
-		}
-
-		public String getRole() {
-			return this.role;
-		}
-
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-	}
-
 	public static class User {
 
 		private String name = "user";
 
 		private String password = UUID.randomUUID().toString();
 
-		private String role = "USER";
+		private List<String> role = new ArrayList<String>(Arrays.asList("USER"));
 
 		private boolean defaultPassword = true;
 
@@ -258,12 +219,8 @@ public class SecurityProperties {
 			this.password = password;
 		}
 
-		public String getRole() {
+		public List<String> getRole() {
 			return this.role;
-		}
-
-		public void setRole(String role) {
-			this.role = role;
 		}
 
 		public boolean isDefaultPassword() {

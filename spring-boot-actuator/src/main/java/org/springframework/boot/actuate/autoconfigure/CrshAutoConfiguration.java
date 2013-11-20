@@ -44,8 +44,7 @@ import org.crsh.vfs.spi.AbstractFSDriver;
 import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.properties.SecurityProperties;
-import org.springframework.boot.actuate.properties.SecurityProperties.Management;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.actuate.properties.ShellProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.CrshShellAuthenticationProperties;
 import org.springframework.boot.actuate.properties.ShellProperties.CrshShellProperties;
@@ -96,8 +95,9 @@ import org.springframework.util.StringUtils;
  * Security. This authentication method will get enabled if <code>shell.auth</code> is set
  * to <code>spring</code> or if no explicit <code>shell.auth</code> is provided and a
  * {@link AuthenticationManager} is available. In the latter case shell access will be
- * restricted to users having roles that match those configured in {@link Management}.
- * Required roles can be overridden by <code>shell.auth.spring.roles</code>.
+ * restricted to users having roles that match those configured in
+ * {@link ManagementServerProperties}. Required roles can be overridden by
+ * <code>shell.auth.spring.roles</code>.
  * 
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
@@ -119,7 +119,7 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass({ PluginLifeCycle.class })
 @EnableConfigurationProperties({ ShellProperties.class })
-@AutoConfigureAfter(SecurityAutoConfiguration.class)
+@AutoConfigureAfter(ManagementSecurityAutoConfiguration.class)
 public class CrshAutoConfiguration {
 
 	@Autowired
@@ -170,7 +170,7 @@ public class CrshAutoConfiguration {
 	public static class AuthenticationManagerAdapterAutoConfiguration {
 
 		@Autowired(required = false)
-		private SecurityProperties securityProperties;
+		private ManagementServerProperties management;
 
 		@Bean
 		public CRaSHPlugin<?> shellAuthenticationManager() {
@@ -184,9 +184,9 @@ public class CrshAutoConfiguration {
 			// In case no shell.auth property is provided fall back to Spring Security
 			// based authentication and get role to access shell from SecurityProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
-			if (this.securityProperties != null) {
-				authenticationProperties.setRoles(new String[] { this.securityProperties
-						.getManagement().getRole() });
+			if (this.management != null) {
+				authenticationProperties.setRoles(new String[] { this.management
+						.getSecurity().getRole() });
 			}
 			return authenticationProperties;
 		}

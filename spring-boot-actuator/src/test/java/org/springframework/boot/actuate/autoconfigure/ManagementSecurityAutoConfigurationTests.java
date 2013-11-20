@@ -18,26 +18,37 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
+import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link SecurityAutoConfiguration}.
+ * Tests for {@link ManagementSecurityAutoConfiguration}.
  * 
  * @author Dave Syer
  */
-public class SecurityAutoConfigurationTests {
+public class ManagementSecurityAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
 
@@ -46,14 +57,42 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+				ManagementSecurityAutoConfiguration.class,
+				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManager.class));
-		// 4 for static resources, one for management endpoints and one for the rest
-		assertEquals(6, this.context.getBean(FilterChainProxy.class).getFilterChains()
+		// 6 for static resources, one for management endpoints and one for the rest
+		assertEquals(8, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
+	}
+
+	@Test
+	public void testWebConfigurationWithExtraRole() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(EndpointAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				SecurityAutoConfiguration.class,
+				ManagementSecurityAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		debugRefresh(this.context);
+		UserDetails user = getUser();
+		assertTrue(user.getAuthorities().containsAll(
+				AuthorityUtils
+						.commaSeparatedStringToAuthorityList("ROLE_USER,ROLE_ADMIN")));
+	}
+
+	private UserDetails getUser() {
+		ProviderManager manager = this.context.getBean(ProviderManager.class);
+		DaoAuthenticationProvider provider = (DaoAuthenticationProvider) manager
+				.getProviders().get(0);
+		UserDetailsService service = (UserDetailsService) ReflectionTestUtils.getField(
+				provider, "userDetailsService");
+		UserDetails user = service.loadUserByUsername("user");
+		return user;
 	}
 
 	@Test
@@ -61,6 +100,7 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
+				ManagementSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -76,13 +116,14 @@ public class SecurityAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
-				EndpointAutoConfiguration.class,
+				ManagementSecurityAutoConfiguration.class,
+				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		TestUtils.addEnviroment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
-		// Just the management endpoints and default ignores now
-		assertEquals(5, this.context.getBean(FilterChainProxy.class).getFilterChains()
+		// Just the management endpoints (one filter) and ignores now
+		assertEquals(7, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
 	}
 
@@ -90,13 +131,27 @@ public class SecurityAutoConfigurationTests {
 	public void testOverrideAuthenticationManager() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
+		this.context.register(TestConfiguration.class,
+
+		SecurityAutoConfiguration.class, ManagementSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
+	}
+
+	private static AnnotationConfigWebApplicationContext debugRefresh(
+			AnnotationConfigWebApplicationContext context) {
+		TestUtils.addEnviroment(context, "debug:true");
+		LoggingApplicationContextInitializer logging = new LoggingApplicationContextInitializer();
+		logging.initialize(context);
+		AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
+		initializer.initialize(context);
+		context.refresh();
+		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
+		return context;
 	}
 
 	@Configuration

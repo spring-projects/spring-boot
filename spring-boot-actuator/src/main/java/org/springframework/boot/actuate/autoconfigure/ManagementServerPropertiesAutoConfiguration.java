@@ -38,7 +38,7 @@ public class ManagementServerPropertiesAutoConfiguration {
 
 	@Bean(name = "org.springframework.actuate.properties.ManagementServerProperties")
 	@ConditionalOnMissingBean
-	public ManagementServerProperties serverProperties() {
+	public ManagementServerProperties managementServerProperties() {
 		return new ManagementServerProperties();
 	}
 

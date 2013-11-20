@@ -57,7 +57,7 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 							public ConfigurableApplicationContext call() throws Exception {
 								return SpringApplication.run(
 										SampleActuatorApplication.class,
-										"--security.management.enabled=false");
+										"--management.security.enabled=false");
 							}
 						});
 		context = future.get(60, TimeUnit.SECONDS);
