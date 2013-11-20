@@ -59,7 +59,7 @@ public class ConditionalOnResourceTests {
 	}
 
 	@Configuration
-	@ConditionalOnResource(resources = "schemq.sqlt")
+	@ConditionalOnResource(resources = "schema.sql")
 	protected static class BasicConfiguration {
 		@Bean
 		public String foo() {
