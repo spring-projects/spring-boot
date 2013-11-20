@@ -149,6 +149,33 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testAllowedFields() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		RelaxedDataBinder binder = getBinder(target, null);
+		binder.setAllowedFields("foo");
+		binder.setIgnoreUnknownFields(false);
+		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
+				+ "bar: spam");
+		assertEquals(0, target.getValue());
+		assertEquals("bar", target.getFoo());
+		assertEquals(0, result.getErrorCount());
+	}
+
+	@Test
+	public void testDisallowedFields() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		RelaxedDataBinder binder = getBinder(target, null);
+		// Disallowed fields are not unknown...
+		binder.setDisallowedFields("foo", "bar");
+		binder.setIgnoreUnknownFields(false);
+		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
+				+ "bar: spam");
+		assertEquals(123, target.getValue());
+		assertEquals(null, target.getFoo());
+		assertEquals(0, result.getErrorCount());
+	}
+
+	@Test
 	public void testBindNested() throws Exception {
 		TargetWithNestedObject target = new TargetWithNestedObject();
 		bind(target, "nested.foo: bar\n" + "nested.value: 123");
@@ -309,20 +336,29 @@ public class RelaxedDataBinderTests {
 		return bind(target, values, null);
 	}
 
-	private BindingResult bind(Object target, String values, String namePrefix)
+	private BindingResult bind(DataBinder binder, Object target, String values)
 			throws Exception {
 		Properties properties = PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes()));
-		DataBinder binder = new RelaxedDataBinder(target, namePrefix);
+		binder.bind(new MutablePropertyValues(properties));
+		binder.validate();
+
+		return binder.getBindingResult();
+	}
+
+	private BindingResult bind(Object target, String values, String namePrefix)
+			throws Exception {
+		return bind(getBinder(target, namePrefix), target, values);
+	}
+
+	private RelaxedDataBinder getBinder(Object target, String namePrefix) {
+		RelaxedDataBinder binder = new RelaxedDataBinder(target, namePrefix);
 		binder.setIgnoreUnknownFields(false);
 		LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
 		validatorFactoryBean.afterPropertiesSet();
 		binder.setValidator(validatorFactoryBean);
 		binder.setConversionService(this.conversionService);
-		binder.bind(new MutablePropertyValues(properties));
-		binder.validate();
-
-		return binder.getBindingResult();
+		return binder;
 	}
 
 	@Documented
