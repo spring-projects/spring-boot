@@ -59,7 +59,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		this.loggerBean = new AutoConfigurationReportLogger(applicationContext);
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
-		if (!beanFactory.containsBean(LOGGER_BEAN)) {
+		if (!beanFactory.containsSingleton(LOGGER_BEAN)) {
 			beanFactory.registerSingleton(LOGGER_BEAN, this.loggerBean);
 		}
 	}
