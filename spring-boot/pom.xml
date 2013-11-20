@@ -130,6 +130,13 @@
 						<goals>
 							<goal>test-jar</goal>
 						</goals>
+						<configuration>
+							<excludes>
+								<exclude>*.properties</exclude>
+								<exclude>logback*.xml</exclude>
+								<exclude>*.yml</exclude>
+							</excludes>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
