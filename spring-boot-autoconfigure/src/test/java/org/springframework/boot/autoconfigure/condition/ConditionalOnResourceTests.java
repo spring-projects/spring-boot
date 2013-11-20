@@ -59,7 +59,7 @@ public class ConditionalOnResourceTests {
 	}
 
 	@Configuration
-	@ConditionalOnResource(resources = "logback-test.xml")
+	@ConditionalOnResource(resources = "schemq.sqlt")
 	protected static class BasicConfiguration {
 		@Bean
 		public String foo() {
