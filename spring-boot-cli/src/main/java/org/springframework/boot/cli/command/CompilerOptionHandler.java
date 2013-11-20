@@ -25,12 +25,15 @@ import static java.util.Arrays.asList;
  * Groovy scripts
  * 
  * @author Andy Wilkinson
+ * @author Dave Syer
  */
 public class CompilerOptionHandler extends OptionHandler {
 
 	private OptionSpec<Void> noGuessImportsOption;
 
 	private OptionSpec<Void> noGuessDependenciesOption;
+
+	private OptionSpec<Boolean> autoconfigureOption;
 
 	private OptionSpec<String> classpathOption;
 
@@ -40,6 +43,9 @@ public class CompilerOptionHandler extends OptionHandler {
 				"Do not attempt to guess imports");
 		this.noGuessDependenciesOption = option("no-guess-dependencies",
 				"Do not attempt to guess dependencies");
+		this.autoconfigureOption = option("autoconfigure",
+				"Add autoconfigure compiler transformations").withOptionalArg()
+				.ofType(Boolean.class).defaultsTo(true);
 		this.classpathOption = option(asList("classpath", "cp"),
 				"Additional classpath entries").withRequiredArg();
 		doOptions();
@@ -58,6 +64,10 @@ public class CompilerOptionHandler extends OptionHandler {
 
 	public OptionSpec<String> getClasspathOption() {
 		return this.classpathOption;
+	}
+
+	public OptionSpec<Boolean> getAutoconfigureOption() {
+		return this.autoconfigureOption;
 	}
 
 }

@@ -1,4 +1,4 @@
-@Grab('spring-jdbc')
+@Grab('jopt-simple')
 class GrabTest {
 	
 }

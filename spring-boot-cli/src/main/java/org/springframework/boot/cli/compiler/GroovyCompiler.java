@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -77,7 +78,7 @@ public class GroovyCompiler {
 
 	private final ExtendedGroovyClassLoader loader;
 
-	private final ServiceLoader<CompilerAutoConfiguration> compilerAutoConfigurations;
+	private final Iterable<CompilerAutoConfiguration> compilerAutoConfigurations;
 
 	private final List<ASTTransformation> transformations;
 
@@ -96,8 +97,14 @@ public class GroovyCompiler {
 
 		this.loader.getConfiguration().addCompilationCustomizers(
 				new CompilerAutoConfigureCustomizer());
-		this.compilerAutoConfigurations = ServiceLoader.load(
-				CompilerAutoConfiguration.class, GroovyCompiler.class.getClassLoader());
+		if (configuration.isAutoconfigure()) {
+			this.compilerAutoConfigurations = ServiceLoader.load(
+					CompilerAutoConfiguration.class,
+					GroovyCompiler.class.getClassLoader());
+		}
+		else {
+			this.compilerAutoConfigurations = Collections.emptySet();
+		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
 		this.transformations.add(new GrabResolversAutoConfigurationTransformation());

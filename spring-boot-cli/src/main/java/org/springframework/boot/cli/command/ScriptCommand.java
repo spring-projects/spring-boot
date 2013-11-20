@@ -265,6 +265,11 @@ public class ScriptCommand implements Command {
 		}
 
 		@Override
+		public boolean isAutoconfigure() {
+			return true;
+		}
+
+		@Override
 		public boolean isGuessDependencies() {
 			return true;
 		}

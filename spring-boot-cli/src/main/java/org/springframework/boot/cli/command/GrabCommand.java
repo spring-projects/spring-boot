@@ -49,8 +49,6 @@ public class GrabCommand extends OptionParsingCommand {
 
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-			repositoryConfiguration.add(0, new RepositoryConfiguration("local", new File(
-					getM2HomeDirectory(), "repository").toURI(), true));
 
 			GroovyCompilerConfiguration configuration = new GroovyCompilerConfigurationAdapter(
 					options, this, repositoryConfiguration);
@@ -59,16 +57,33 @@ public class GrabCommand extends OptionParsingCommand {
 				System.setProperty("grape.root", ".");
 			}
 
+			if (!new File(System.getProperty("grape.root")).equals(getM2HomeDirectory())) {
+				GrabCommand.addDefaultCacheAsRespository(repositoryConfiguration);
+			}
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
 			groovyCompiler.compile(fileOptions.getFilesArray());
 		}
 
-		private File getM2HomeDirectory() {
-			String mavenRoot = System.getProperty("maven.home");
-			if (StringUtils.hasLength(mavenRoot)) {
-				return new File(mavenRoot);
-			}
-			return new File(System.getProperty("user.home"), ".m2");
-		}
 	}
+
+	/**
+	 * Add the default local M2 cache directory as a remote repository. Only do this if
+	 * the local cache location has been changed from the default.
+	 * 
+	 * @param repositoryConfiguration
+	 */
+	public static void addDefaultCacheAsRespository(
+			List<RepositoryConfiguration> repositoryConfiguration) {
+		repositoryConfiguration.add(0, new RepositoryConfiguration("local", new File(
+				getM2HomeDirectory(), "repository").toURI(), true));
+	}
+
+	private static File getM2HomeDirectory() {
+		String mavenRoot = System.getProperty("maven.home");
+		if (StringUtils.hasLength(mavenRoot)) {
+			return new File(mavenRoot);
+		}
+		return new File(System.getProperty("user.home"), ".m2");
+	}
+
 }
