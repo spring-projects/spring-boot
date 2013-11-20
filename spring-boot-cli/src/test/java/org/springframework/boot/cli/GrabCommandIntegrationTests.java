@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 public class GrabCommandIntegrationTests {
 
 	@Rule
-	public CliTester cli = new CliTester("grab-samples/");
+	public CliTester cli = new CliTester("src/test/resources/grab-samples/");
 
 	@Before
 	@After
