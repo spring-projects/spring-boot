@@ -36,7 +36,9 @@ import org.springframework.boot.loader.tools.Repackager;
 
 /**
  * MOJO that can can be used to repackage existing JAR and WAR archives so that they can
- * be executed from the command line using {@literal java -jar}.
+ * be executed from the command line using {@literal java -jar}. With
+ * <code>layout=NONE</code> can also be used simply to package a JAR with nested
+ * dependencies (and no main class, so not executable).
  * 
  * @author Phillip Webb
  * @author Dave Syer
@@ -84,7 +86,7 @@ public class RepackageMojo extends AbstractMojo {
 	private String mainClass;
 
 	/**
-	 * The layout to use (JAR, WAR, ZIP, DIR) in case it cannot be inferred.
+	 * The layout to use (JAR, WAR, ZIP, DIR, NONE) in case it cannot be inferred.
 	 */
 	@Parameter
 	private LayoutType layout;
@@ -126,7 +128,7 @@ public class RepackageMojo extends AbstractMojo {
 
 	public static enum LayoutType {
 		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(
-				new Layouts.Expanded());
+				new Layouts.Expanded()), NONE(new Layouts.None());
 		private Layout layout;
 
 		public Layout layout() {

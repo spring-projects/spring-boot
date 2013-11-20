@@ -25,6 +25,7 @@ import java.util.Map;
  * Common {@link Layout}s.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class Layouts {
 
@@ -80,6 +81,17 @@ public class Layouts {
 			return "org.springframework.boot.loader.PropertiesLauncher";
 		}
 
+	}
+
+	/**
+	 * Executable expanded archive layout.
+	 */
+	public static class None extends Jar {
+
+		@Override
+		public String getLauncherClassName() {
+			return null;
+		}
 	}
 
 	/**
