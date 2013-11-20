@@ -49,15 +49,22 @@ import org.springframework.util.StringUtils;
 public class ContextIdApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	private String name;
+	/**
+	 * Placeholder pattern to resolve for application name
+	 */
+	private static final String NAME_PATTERN = "${vcap.application.name:${spring.application.name:${spring.config.name:application}}}";
 
-	private int index = -1;
+	/**
+	 * Placeholder pattern to resolve for application index
+	 */
+	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
+
+	private String name;
 
 	private int order = Integer.MAX_VALUE - 10;
 
 	public ContextIdApplicationContextInitializer() {
-		this("${spring.application.name:${vcap.application.name:"
-				+ "${spring.config.name:application}}}");
+		this(NAME_PATTERN);
 	}
 
 	/**
@@ -83,11 +90,8 @@ public class ContextIdApplicationContextInitializer implements
 
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.resolvePlaceholders(this.name);
-		int index = environment.getProperty("PORT", Integer.class, this.index);
-		index = environment.getProperty("vcap.application.instance_index", Integer.class,
-				index);
-		index = environment.getProperty("spring.application.index", Integer.class, index);
-		if (index >= 0) {
+		String index = environment.resolvePlaceholders(INDEX_PATTERN);
+		if (!"null".equals(index)) {
 			return name + ":" + index;
 		}
 

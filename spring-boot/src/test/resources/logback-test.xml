@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property name="LOG_PATTERN" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] spring - ${PID:-????} %5p [%t] --- %c{1}: %m%n"/>
+	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-/tmp/logs/service.log}}"/>
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+	<logger name="org.springframework.boot.context.annotation" level="TRACE" />
+	<logger name="org.springframework.boot.context.initializer" level="TRACE" />
+	<logger name="org.springframework.boot.config" level="TRACE" />
+	<logger name="org.thymeleaf" level="TRACE" />
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>

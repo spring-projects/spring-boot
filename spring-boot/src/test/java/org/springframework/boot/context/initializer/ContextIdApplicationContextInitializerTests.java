@@ -18,7 +18,6 @@ package org.springframework.boot.context.initializer;
 
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
-import org.springframework.boot.context.initializer.ContextIdApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -70,11 +69,10 @@ public class ContextIdApplicationContextInitializerTests {
 	public void testExplicitName() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 		TestUtils.addEnviroment(context, "spring.application.name:spam",
-				"spring.config.name:foo", "PORT:8080",
-				"vcap.application.application_name:bar",
+				"spring.config.name:foo", "PORT:8080", "vcap.application.name:bar",
 				"vcap.application.instance_index:2");
 		this.initializer.initialize(context);
-		assertEquals("spam:2", context.getId());
+		assertEquals("bar:2", context.getId());
 	}
 
 }
