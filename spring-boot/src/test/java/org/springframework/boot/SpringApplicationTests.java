@@ -33,11 +33,13 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -150,6 +152,30 @@ public class SpringApplicationTests {
 								reference.set(context);
 							}
 						}));
+		this.context = application.run("--foo=bar");
+		assertThat(this.context, sameInstance(reference.get()));
+		// Custom initializers do not switch off the defaults
+		assertThat(getEnvironment().getProperty("foo"), equalTo("bar"));
+	}
+
+	@Test
+	public void contextRefreshedEventListener() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		final AtomicReference<ApplicationContext> reference = new AtomicReference<ApplicationContext>();
+		class InitalizerListener implements
+				ApplicationContextInitializer<ConfigurableApplicationContext>,
+				ApplicationListener<ContextRefreshedEvent> {
+			@Override
+			public void onApplicationEvent(ContextRefreshedEvent event) {
+				reference.set(event.getApplicationContext());
+			}
+
+			@Override
+			public void initialize(ConfigurableApplicationContext applicationContext) {
+			}
+		}
+		application.setInitializers(Arrays.asList(new InitalizerListener()));
 		this.context = application.run("--foo=bar");
 		assertThat(this.context, sameInstance(reference.get()));
 		// Custom initializers do not switch off the defaults
