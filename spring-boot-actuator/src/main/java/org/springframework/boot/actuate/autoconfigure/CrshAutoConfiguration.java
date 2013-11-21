@@ -58,6 +58,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -119,7 +120,8 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass({ PluginLifeCycle.class })
 @EnableConfigurationProperties({ ShellProperties.class })
-@AutoConfigureAfter(ManagementSecurityAutoConfiguration.class)
+@AutoConfigureAfter({ SecurityAutoConfiguration.class,
+		ManagementSecurityAutoConfiguration.class })
 public class CrshAutoConfiguration {
 
 	@Autowired
@@ -182,7 +184,8 @@ public class CrshAutoConfiguration {
 		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
 		public CrshShellAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
-			// based authentication and get role to access shell from SecurityProperties.
+			// based authentication and get role to access shell from
+			// ManagementServerProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
 			if (this.management != null) {
 				authenticationProperties.setRoles(new String[] { this.management
