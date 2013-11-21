@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationErrorHandler;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
@@ -30,6 +29,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -49,18 +49,21 @@ import org.springframework.util.StringUtils;
  */
 public class AutoConfigurationReportLoggingInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		SpringApplicationErrorHandler {
+		SpringApplicationErrorHandler, ApplicationListener<ContextRefreshedEvent> {
 
-	private static final String LOGGER_BEAN = "autoConfigurationReportLogger";
+	private final Log logger = LogFactory.getLog(getClass());
 
-	private AutoConfigurationReportLogger loggerBean;
+	private ConfigurableApplicationContext applicationContext;
+
+	private AutoConfigurationReport report;
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		this.loggerBean = new AutoConfigurationReportLogger(applicationContext);
-		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
-		if (!beanFactory.containsSingleton(LOGGER_BEAN)) {
-			beanFactory.registerSingleton(LOGGER_BEAN, this.loggerBean);
+		this.applicationContext = applicationContext;
+		if (applicationContext instanceof GenericApplicationContext) {
+			// Get the report early in case the context fails to load
+			this.report = AutoConfigurationReport.get(this.applicationContext
+					.getBeanFactory());
 		}
 	}
 
@@ -68,99 +71,80 @@ public class AutoConfigurationReportLoggingInitializer implements
 	public void handleError(SpringApplication application,
 			ConfigurableApplicationContext applicationContext, String[] args,
 			Throwable exception) {
-		if (this.loggerBean != null) {
-			this.loggerBean.logAutoConfigurationReport(true);
+		logAutoConfigurationReport(true);
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		if (event.getApplicationContext() == this.applicationContext) {
+			logAutoConfigurationReport();
 		}
 	}
 
-	/**
-	 * Spring bean to actually perform the logging.
-	 */
-	public static class AutoConfigurationReportLogger implements
-			ApplicationListener<ContextRefreshedEvent> {
+	private void logAutoConfigurationReport() {
+		logAutoConfigurationReport(!this.applicationContext.isActive());
+	}
 
-		private final Log logger = LogFactory.getLog(getClass());
-
-		private final ConfigurableApplicationContext applicationContext;
-
-		private final AutoConfigurationReport report;
-
-		public AutoConfigurationReportLogger(
-				ConfigurableApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-			// Get the report early in case the context fails to load
+	void logAutoConfigurationReport(boolean isCrashReport) {
+		if (this.report == null) {
 			this.report = AutoConfigurationReport.get(this.applicationContext
 					.getBeanFactory());
-
 		}
-
-		@Override
-		public void onApplicationEvent(ContextRefreshedEvent event) {
-			if (event.getApplicationContext() == this.applicationContext) {
-				logAutoConfigurationReport();
+		if (this.report.getConditionAndOutcomesBySource().size() > 0) {
+			if (isCrashReport && this.logger.isInfoEnabled()) {
+				this.logger.info(getLogMessage(this.report
+						.getConditionAndOutcomesBySource()));
+			}
+			else if (!isCrashReport && this.logger.isDebugEnabled()) {
+				this.logger.debug(getLogMessage(this.report
+						.getConditionAndOutcomesBySource()));
 			}
 		}
+	}
 
-		private void logAutoConfigurationReport() {
-			logAutoConfigurationReport(!this.applicationContext.isActive());
-		}
-
-		void logAutoConfigurationReport(boolean isCrashReport) {
-			if (this.report.getConditionAndOutcomesBySource().size() > 0) {
-				if (isCrashReport && this.logger.isInfoEnabled()) {
-					this.logger.info(getLogMessage(this.report
-							.getConditionAndOutcomesBySource()));
-				}
-				else if (!isCrashReport && this.logger.isDebugEnabled()) {
-					this.logger.debug(getLogMessage(this.report
-							.getConditionAndOutcomesBySource()));
-				}
+	private StringBuilder getLogMessage(Map<String, ConditionAndOutcomes> outcomes) {
+		StringBuilder message = new StringBuilder();
+		message.append("\n\n\n");
+		message.append("=========================\n");
+		message.append("AUTO-CONFIGURATION REPORT\n");
+		message.append("=========================\n\n\n");
+		message.append("Positive matches:\n");
+		message.append("-----------------\n");
+		for (Map.Entry<String, ConditionAndOutcomes> entry : outcomes.entrySet()) {
+			if (entry.getValue().isFullMatch()) {
+				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
-
-		private StringBuilder getLogMessage(Map<String, ConditionAndOutcomes> outcomes) {
-			StringBuilder message = new StringBuilder();
-			message.append("\n\n\n");
-			message.append("=========================\n");
-			message.append("AUTO-CONFIGURATION REPORT\n");
-			message.append("=========================\n\n\n");
-			message.append("Positive matches:\n");
-			message.append("-----------------\n");
-			for (Map.Entry<String, ConditionAndOutcomes> entry : outcomes.entrySet()) {
-				if (entry.getValue().isFullMatch()) {
-					addLogMessage(message, entry.getKey(), entry.getValue());
-				}
-			}
-			message.append("\n\n");
-			message.append("Negative matches:\n");
-			message.append("-----------------\n");
-			for (Map.Entry<String, ConditionAndOutcomes> entry : outcomes.entrySet()) {
-				if (!entry.getValue().isFullMatch()) {
-					addLogMessage(message, entry.getKey(), entry.getValue());
-				}
-			}
-			message.append("\n\n");
-			return message;
-		}
-
-		private void addLogMessage(StringBuilder message, String source,
-				ConditionAndOutcomes conditionAndOutcomes) {
-			message.append("\n   " + ClassUtils.getShortName(source) + "\n");
-			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				message.append("      - ");
-				if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {
-					message.append(conditionAndOutcome.getOutcome().getMessage());
-				}
-				else {
-					message.append(conditionAndOutcome.getOutcome().isMatch() ? "matched"
-							: "did not match");
-				}
-				message.append(" (");
-				message.append(ClassUtils.getShortName(conditionAndOutcome.getCondition()
-						.getClass()));
-				message.append(")\n");
+		message.append("\n\n");
+		message.append("Negative matches:\n");
+		message.append("-----------------\n");
+		for (Map.Entry<String, ConditionAndOutcomes> entry : outcomes.entrySet()) {
+			if (!entry.getValue().isFullMatch()) {
+				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
 		}
+		message.append("\n\n");
+		return message;
+	}
+
+	private void addLogMessage(StringBuilder message, String source,
+			ConditionAndOutcomes conditionAndOutcomes) {
+		message.append("\n   " + ClassUtils.getShortName(source) + "\n");
+		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
+			message.append("      - ");
+			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {
+				message.append(conditionAndOutcome.getOutcome().getMessage());
+			}
+			else {
+				message.append(conditionAndOutcome.getOutcome().isMatch() ? "matched"
+						: "did not match");
+			}
+			message.append(" (");
+			message.append(ClassUtils.getShortName(conditionAndOutcome.getCondition()
+					.getClass()));
+			message.append(")\n");
+		}
+
 	}
 
 }

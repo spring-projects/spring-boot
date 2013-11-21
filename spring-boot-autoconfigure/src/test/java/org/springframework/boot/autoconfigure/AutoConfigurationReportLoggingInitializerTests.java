@@ -29,16 +29,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer.AutoConfigurationReportLogger;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
@@ -104,6 +107,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		this.initializer.initialize(context);
 		context.register(Config.class);
 		context.refresh();
+		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		assertThat(this.debugLog.size(), not(equalTo(0)));
 	}
 
@@ -130,6 +134,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		this.initializer.initialize(context);
 		context.register(Config.class);
 		context.refresh();
+		this.initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		for (String message : this.debugLog) {
 			System.out.println(message);
 		}
@@ -138,10 +143,29 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		assertThat(l, containsString("not a web application (OnWebApplicationCondition)"));
 	}
 
+	@Test
+	public void canBeUsedInApplicationContext() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(Config.class);
+		new AutoConfigurationReportLoggingInitializer().initialize(context);
+		context.refresh();
+		assertNotNull(context.getBean(AutoConfigurationReport.class));
+	}
+
+	@Test
+	public void canBeUsedInNonGenericApplicationContext() throws Exception {
+		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+		context.setServletContext(new MockServletContext());
+		context.register(Config.class);
+		new AutoConfigurationReportLoggingInitializer().initialize(context);
+		context.refresh();
+		assertNotNull(context.getBean(AutoConfigurationReport.class));
+	}
+
 	public static class MockLogFactory extends LogFactoryImpl {
 		@Override
 		public Log getInstance(String name) throws LogConfigurationException {
-			if (AutoConfigurationReportLogger.class.getName().equals(name)) {
+			if (AutoConfigurationReportLoggingInitializer.class.getName().equals(name)) {
 				return logThreadLocal.get();
 			}
 			return new NoOpLog();

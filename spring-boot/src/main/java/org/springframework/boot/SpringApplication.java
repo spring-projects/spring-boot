@@ -36,12 +36,16 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.context.event.ApplicationEventMulticaster;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
@@ -298,7 +302,7 @@ public class SpringApplication {
 						getApplicationLog(), stopWatch);
 			}
 
-			runCommandLineRunners(context, args);
+			afterRefresh(context, args);
 			return context;
 		}
 		catch (RuntimeException ex) {
@@ -310,6 +314,19 @@ public class SpringApplication {
 			throw ex;
 		}
 
+	}
+
+	private void afterRefresh(ConfigurableApplicationContext context, String[] args) {
+		ApplicationEventMulticaster multicaster = new SimpleApplicationEventMulticaster();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
+				getInitializers());
+		for (ApplicationContextInitializer<?> initializer : initializers) {
+			if (initializer instanceof ApplicationListener) {
+				multicaster.addApplicationListener((ApplicationListener<?>) initializer);
+			}
+		}
+		multicaster.multicastEvent(new ContextRefreshedEvent(context));
+		runCommandLineRunners(context, args);
 	}
 
 	private void handleError(ConfigurableApplicationContext context, String[] args,
