@@ -65,7 +65,7 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
-			<optional>true</optional>
+			<optional>true</optional> 
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
@@ -77,6 +77,11 @@
 			<artifactId>crash.embed.spring</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.jolokia</groupId>
+  			<artifactId>jolokia-core</artifactId>
+			<optional>true</optional>
+		</dependency> 
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework</groupId>
