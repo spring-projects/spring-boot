@@ -80,6 +80,15 @@ public class ServerPropertiesTests {
 		assertTrue(factory.getPort() > 1000);
 	}
 
+	@Test
+	public void testPortScanFromHigher() throws Exception {
+		this.properties.setScan(true);
+		this.properties.setPort(5678);
+		ConfigurableEmbeddedServletContainerFactory factory = new MockEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+		assertTrue(factory.getPort() < 6000);
+	}
+
 	// FIXME test customize
 
 }
