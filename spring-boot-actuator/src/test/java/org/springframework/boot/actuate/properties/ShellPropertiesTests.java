@@ -243,8 +243,8 @@ public class ShellPropertiesTests {
 		RelaxedDataBinder binder = new RelaxedDataBinder(props, "shell.auth.simple");
 		binder.setConversionService(new DefaultConversionService());
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("shell.auth.simple.username", "username123");
-		map.put("shell.auth.simple.password", "password123");
+		map.put("shell.auth.simple.user.name", "username123");
+		map.put("shell.auth.simple.user.password", "password123");
 		binder.bind(new MutablePropertyValues(map));
 		assertFalse(binder.getBindingResult().hasErrors());
 
@@ -260,9 +260,9 @@ public class ShellPropertiesTests {
 		SimpleAuthenticationProperties security = new SimpleAuthenticationProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.auth.simple.password", "${ADMIN_PASSWORD}")));
+				"shell.auth.simple.user.password", "${ADMIN_PASSWORD}")));
 		assertFalse(binder.getBindingResult().hasErrors());
-		assertTrue(security.isDefaultPassword());
+		assertTrue(security.getUser().isDefaultPassword());
 	}
 
 	@Test
@@ -270,9 +270,9 @@ public class ShellPropertiesTests {
 		SimpleAuthenticationProperties security = new SimpleAuthenticationProperties();
 		RelaxedDataBinder binder = new RelaxedDataBinder(security, "security");
 		binder.bind(new MutablePropertyValues(Collections.singletonMap(
-				"shell.auth.simple.password", "")));
+				"shell.auth.simple.user.password", "")));
 		assertFalse(binder.getBindingResult().hasErrors());
-		assertTrue(security.isDefaultPassword());
+		assertTrue(security.getUser().isDefaultPassword());
 	}
 
 	@Test
