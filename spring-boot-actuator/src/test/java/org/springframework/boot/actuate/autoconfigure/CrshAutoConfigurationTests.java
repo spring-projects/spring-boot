@@ -236,8 +236,8 @@ public class CrshAutoConfigurationTests {
 	public void testSimpleAuthenticationProvider() throws Exception {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("shell.auth", "simple");
-		env.setProperty("shell.auth.simple.username", "user");
-		env.setProperty("shell.auth.simple.password", "password");
+		env.setProperty("shell.auth.simple.user.name", "user");
+		env.setProperty("shell.auth.simple.user.password", "password");
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setEnvironment(env);
 		this.context.setServletContext(new MockServletContext());

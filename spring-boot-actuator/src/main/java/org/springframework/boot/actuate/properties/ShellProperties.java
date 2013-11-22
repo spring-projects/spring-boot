@@ -298,39 +298,61 @@ public class ShellProperties {
 		private static Log logger = LogFactory
 				.getLog(SimpleAuthenticationProperties.class);
 
-		private String username = "user";
-
-		private String password = UUID.randomUUID().toString();
-
-		private boolean defaultPassword = true;
+		private User user = new User();
 
 		@Override
 		protected void applyToCrshShellConfig(Properties config) {
 			config.put("crash.auth", "simple");
-			config.put("crash.auth.simple.username", this.username);
-			config.put("crash.auth.simple.password", this.password);
-			if (this.defaultPassword) {
+			config.put("crash.auth.simple.username", this.user.getName());
+			config.put("crash.auth.simple.password", this.user.getPassword());
+			if (this.user.isDefaultPassword()) {
 				logger.info("\n\nUsing default password for shell access: "
-						+ this.password + "\n\n");
+						+ this.user.getPassword() + "\n\n");
 			}
 		}
 
-		boolean isDefaultPassword() {
-			return this.defaultPassword;
+		public User getUser() {
+			return this.user;
 		}
 
-		public void setUsername(String username) {
-			Assert.hasLength(username, "username must have text");
-			this.username = username;
+		public void setUser(User user) {
+			this.user = user;
 		}
 
-		public void setPassword(String password) {
-			if (password.startsWith("${") && password.endsWith("}")
-					|| !StringUtils.hasLength(password)) {
-				return;
+		public static class User {
+
+			private String name = "user";
+
+			private String password = UUID.randomUUID().toString();
+
+			private boolean defaultPassword = true;
+
+			boolean isDefaultPassword() {
+				return this.defaultPassword;
 			}
-			this.password = password;
-			this.defaultPassword = false;
+
+			public String getName() {
+				return this.name;
+			}
+
+			public String getPassword() {
+				return this.password;
+			}
+
+			public void setName(String name) {
+				Assert.hasLength(name, "name must have text");
+				this.name = name;
+			}
+
+			public void setPassword(String password) {
+				if (password.startsWith("${") && password.endsWith("}")
+						|| !StringUtils.hasLength(password)) {
+					return;
+				}
+				this.password = password;
+				this.defaultPassword = false;
+			}
+
 		}
 
 	}
