@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
@@ -51,6 +52,13 @@ import static org.junit.Assert.assertTrue;
 public class ManagementSecurityAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	public void testWebConfiguration() throws Exception {

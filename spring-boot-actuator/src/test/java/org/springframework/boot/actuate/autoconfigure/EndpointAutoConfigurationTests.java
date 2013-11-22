@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
@@ -51,6 +52,13 @@ public class EndpointAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();
+	}
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
 	}
 
 	@Test
