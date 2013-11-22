@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
 /**
@@ -24,6 +25,7 @@ import org.springframework.http.MediaType;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Christian Dupuis
  */
 public interface Endpoint<T> {
 
@@ -42,7 +44,12 @@ public interface Endpoint<T> {
 	/**
 	 * Returns the {@link MediaType}s that this endpoint produces or {@code null}.
 	 */
-	MediaType[] getProduces();
+	MediaType[] produces();
+
+	/**
+	 * Returns the {@link HttpMethod}s that this endpoint supports.
+	 */
+	HttpMethod[] methods();
 
 	/**
 	 * Called to invoke the endpoint.

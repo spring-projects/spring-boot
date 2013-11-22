@@ -25,10 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.actuate.endpoint.ActionEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerExecutionChain;
@@ -37,10 +37,9 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 /**
  * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getPath()}.
- * Standard {@link Endpoint}s are mapped to GET requests, {@link ActionEndpoint}s are
- * mapped to POST requests.
  * 
  * @author Phillip Webb
+ * @author Christian Dupuis
  * @see EndpointHandlerAdapter
  */
 public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
@@ -94,8 +93,9 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 		if (handler != null) {
 			Object endpoint = (handler instanceof HandlerExecutionChain ? ((HandlerExecutionChain) handler)
 					.getHandler() : handler);
-			String method = (endpoint instanceof ActionEndpoint<?> ? "POST" : "GET");
-			if (request.getMethod().equals(method)) {
+			HttpMethod method = HttpMethod.valueOf(request.getMethod());
+			if (endpoint instanceof Endpoint
+					&& supportsMethod(((Endpoint<?>) endpoint).methods(), method)) {
 				return endpoint;
 			}
 		}
@@ -130,5 +130,17 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 	 */
 	public List<Endpoint<?>> getEndpoints() {
 		return Collections.unmodifiableList(this.endpoints);
+	}
+
+	private boolean supportsMethod(HttpMethod[] supportedMethods,
+			HttpMethod requestedMethod) {
+		Assert.notNull(supportedMethods, "SupportMethods must not be null");
+		Assert.notNull(supportedMethods, "RequestedMethod must not be null");
+		for (HttpMethod supportedMethod : supportedMethods) {
+			if (supportedMethod.equals(requestedMethod)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -51,7 +51,7 @@ public class BeansEndpoint extends AbstractEndpoint<String> implements
 	}
 
 	@Override
-	public MediaType[] getProduces() {
+	public MediaType[] produces() {
 		return new MediaType[] { MediaType.APPLICATION_JSON };
 	}
 
