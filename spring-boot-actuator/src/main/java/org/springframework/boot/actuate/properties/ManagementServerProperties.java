@@ -21,7 +21,7 @@ import java.net.InetAddress;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
-import org.springframework.boot.context.embedded.properties.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.util.ClassUtils;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded.properties;
+package org.springframework.boot.autoconfigure.web;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -24,9 +24,12 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ServerProperties}.
@@ -66,6 +69,15 @@ public class ServerPropertiesTests {
 		assertEquals("Remote-Ip", this.properties.getTomcat().getRemoteIpHeader());
 		assertEquals("X-Forwarded-Protocol", this.properties.getTomcat()
 				.getProtocolHeader());
+	}
+
+	@Test
+	public void testPortScan() throws Exception {
+		this.properties.setScan(true);
+		this.properties.setPort(1000);
+		ConfigurableEmbeddedServletContainerFactory factory = new MockEmbeddedServletContainerFactory();
+		this.properties.customize(factory);
+		assertTrue(factory.getPort() > 1000);
 	}
 
 	// FIXME test customize

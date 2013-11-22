@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.properties.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -44,7 +43,7 @@ public class ServerPropertiesAutoConfiguration implements ApplicationContextAwar
 
 	private ApplicationContext applicationContext;
 
-	@Bean(name = "org.springframework.boot.context.embedded.properties.ServerProperties")
+	@Bean(name = "org.springframework.boot.autoconfigure.web.ServerProperties")
 	@ConditionalOnMissingBean
 	public ServerProperties serverProperties() {
 		return new ServerProperties();

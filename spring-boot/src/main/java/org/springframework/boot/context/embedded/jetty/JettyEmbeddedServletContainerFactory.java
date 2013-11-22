@@ -123,6 +123,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		postProcessWebAppContext(context);
 
 		server.setHandler(context);
+		this.logger.info("Server initialized with port: " + getPort());
 		return getJettyEmbeddedServletContainer(server);
 	}
 
