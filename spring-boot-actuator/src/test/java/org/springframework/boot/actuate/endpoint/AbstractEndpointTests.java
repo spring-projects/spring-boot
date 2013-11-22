@@ -77,7 +77,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	@Test
 	public void producesMediaType() {
-		assertThat(getEndpointBean().getProduces(), equalTo(this.produces));
+		assertThat(getEndpointBean().produces(), equalTo(this.produces));
 	}
 
 	@Test
