@@ -26,15 +26,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.HttpMethod;
 
 /**
- * {@link ActionEndpoint} to shutdown the {@link ApplicationContext}.
+ * {@link Endpoint} to shutdown the {@link ApplicationContext}.
  * 
  * @author Dave Syer
+ * @author Christian Dupuis
  */
 @ConfigurationProperties(name = "endpoints.shutdown", ignoreUnknownFields = false)
 public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> implements
-		ApplicationContextAware, ActionEndpoint<Map<String, Object>> {
+		ApplicationContextAware {
 
 	private ConfigurableApplicationContext context;
 
@@ -78,6 +80,11 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 		if (context instanceof ConfigurableApplicationContext) {
 			this.context = (ConfigurableApplicationContext) context;
 		}
+	}
+
+	@Override
+	public HttpMethod[] methods() {
+		return POST_HTTP_METHOD;
 	}
 
 }

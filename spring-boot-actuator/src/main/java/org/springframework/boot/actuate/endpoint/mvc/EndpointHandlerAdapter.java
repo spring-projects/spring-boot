@@ -150,7 +150,7 @@ public final class EndpointHandlerAdapter implements HandlerAdapter {
 
 	private List<MediaType> getProducibleMediaTypes(Endpoint<?> endpoint,
 			Class<?> returnValueClass) {
-		MediaType[] mediaTypes = endpoint.getProduces();
+		MediaType[] mediaTypes = endpoint.produces();
 		if (mediaTypes != null && mediaTypes.length != 0) {
 			return Arrays.asList(mediaTypes);
 		}
