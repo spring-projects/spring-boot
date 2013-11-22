@@ -67,10 +67,9 @@ public class CrshAutoConfigurationTests {
 	private AnnotationConfigWebApplicationContext context;
 
 	@After
-	public void tearDown() {
+	public void close() {
 		if (this.context != null) {
 			this.context.close();
-			this.context = null;
 		}
 	}
 

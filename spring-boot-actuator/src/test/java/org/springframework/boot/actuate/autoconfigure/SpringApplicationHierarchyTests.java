@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -34,6 +35,10 @@ public class SpringApplicationHierarchyTests {
 	@After
 	public void after() {
 		if (this.context != null) {
+			ApplicationContext parentContext = this.context.getParent();
+			if (parentContext instanceof ConfigurableApplicationContext) {
+				((ConfigurableApplicationContext) parentContext).close();
+			}
 			this.context.close();
 		}
 	}
@@ -55,7 +60,8 @@ public class SpringApplicationHierarchyTests {
 	public static class Child {
 	}
 
-	@EnableAutoConfiguration(exclude = { ServerPropertiesAutoConfiguration.class })
+	@EnableAutoConfiguration(exclude = { ServerPropertiesAutoConfiguration.class,
+			JolokiaAutoConfiguration.class })
 	public static class Parent {
 	}
 
