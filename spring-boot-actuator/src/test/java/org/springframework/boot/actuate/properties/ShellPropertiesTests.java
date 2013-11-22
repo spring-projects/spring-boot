@@ -303,6 +303,7 @@ public class ShellPropertiesTests {
 		PluginLifeCycle lifeCycle = context.getBean(PluginLifeCycle.class);
 		String uuid = lifeCycle.getConfig().getProperty("test.uuid");
 		assertEquals(TestShellConfiguration.uuid, uuid);
+		context.close();
 	}
 
 	@Configuration
