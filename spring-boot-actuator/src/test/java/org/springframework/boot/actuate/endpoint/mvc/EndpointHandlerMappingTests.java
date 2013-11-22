@@ -20,8 +20,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.boot.actuate.endpoint.ActionEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -112,11 +111,15 @@ public class EndpointHandlerMappingTests {
 
 	}
 
-	private static class TestActionEndpoint extends TestEndpoint implements
-			ActionEndpoint<Object> {
+	private static class TestActionEndpoint extends TestEndpoint {
 
 		public TestActionEndpoint(String path) {
 			super(path);
+		}
+
+		@Override
+		public HttpMethod[] methods() {
+			return POST_HTTP_METHOD;
 		}
 	}
 
