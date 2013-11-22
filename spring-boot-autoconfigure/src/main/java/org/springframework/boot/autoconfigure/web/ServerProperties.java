@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.embedded.properties;
+package org.springframework.boot.autoconfigure.web;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -35,6 +35,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomize
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.SocketUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -52,6 +53,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	private InetAddress address;
 
 	private Integer sessionTimeout;
+
+	private boolean scan = false;
 
 	@NotNull
 	private String contextPath = "";
@@ -78,6 +81,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.port = port;
 	}
 
+	public boolean getScan() {
+		return this.scan;
+	}
+
+	public void setScan(boolean scan) {
+		this.scan = scan;
+	}
+
 	public InetAddress getAddress() {
 		return this.address;
 	}
@@ -100,8 +111,12 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-		if (getPort() != null) {
-			factory.setPort(getPort());
+		Integer port = getPort();
+		if (this.scan) {
+			port = SocketUtils.findAvailableTcpPort(port != null ? 8080 : port);
+		}
+		if (port != null) {
+			factory.setPort(port);
 		}
 		if (getAddress() != null) {
 			factory.setAddress(getAddress());

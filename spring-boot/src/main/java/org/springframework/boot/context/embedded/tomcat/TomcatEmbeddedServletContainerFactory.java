@@ -134,6 +134,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		tomcat.getEngine().setBackgroundProcessorDelay(-1);
 
 		prepareContext(tomcat.getHost(), initializers);
+		this.logger.info("Server initialized with port: " + getPort());
 		return getTomcatEmbeddedServletContainer(tomcat);
 	}
 
