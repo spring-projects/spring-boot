@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.embedded.jetty;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -28,9 +30,12 @@ import org.springframework.util.Assert;
  * {@link JettyEmbeddedServletContainerFactory} and not directly.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  * @see JettyEmbeddedServletContainerFactory
  */
 public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
+
+	private final Log logger = LogFactory.getLog(JettyEmbeddedServletContainer.class);
 
 	private final Server server;
 	private boolean autoStart;
@@ -81,6 +86,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
 				connector.start();
+				this.logger.info("Jetty started on port: " + connector.getLocalPort());
 			}
 		}
 		catch (Exception ex) {
