@@ -35,7 +35,6 @@ import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomize
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.SocketUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -53,8 +52,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	private InetAddress address;
 
 	private Integer sessionTimeout;
-
-	private boolean scan = false;
 
 	@NotNull
 	private String contextPath = "";
@@ -81,14 +78,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.port = port;
 	}
 
-	public boolean getScan() {
-		return this.scan;
-	}
-
-	public void setScan(boolean scan) {
-		this.scan = scan;
-	}
-
 	public InetAddress getAddress() {
 		return this.address;
 	}
@@ -112,9 +101,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
 		Integer port = getPort();
-		if (this.scan) {
-			port = scanForPort(port);
-		}
 		if (port != null) {
 			factory.setPort(port);
 		}
@@ -130,26 +116,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		if (factory instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat().customizeTomcat((TomcatEmbeddedServletContainerFactory) factory);
 		}
-	}
-
-	private Integer scanForPort(Integer port) {
-		boolean found = false;
-		int delta = 1;
-		port = port == null ? 8080 : port;
-		while (!found) {
-			try {
-				port = SocketUtils.findAvailableTcpPort(port, port + delta);
-				found = true;
-			}
-			catch (IllegalStateException e) {
-				if (delta > 65536) {
-					throw e;
-				}
-				delta = delta > 5 ? delta > 100 ? delta * 4 : delta * 3 : delta * 2;
-			}
-			port = port + delta;
-		}
-		return port;
 	}
 
 	public static class Tomcat {

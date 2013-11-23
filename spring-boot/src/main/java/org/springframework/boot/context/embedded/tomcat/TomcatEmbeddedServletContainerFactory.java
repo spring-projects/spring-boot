@@ -193,12 +193,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		if (getPort() > 0) {
-			connector.setPort(getPort());
-		}
-		else {
-			connector.setPort(8080);
-		}
+		int port = getPort() >= 0 ? getPort() : 0;
+		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
 				((AbstractProtocol) connector.getProtocolHandler())
@@ -259,7 +255,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	protected TomcatEmbeddedServletContainer getTomcatEmbeddedServletContainer(
 			Tomcat tomcat) {
-		return new TomcatEmbeddedServletContainer(tomcat, getPort() > 0);
+		return new TomcatEmbeddedServletContainer(tomcat, getPort() >= 0);
 	}
 
 	private File createTempDir(String prefix) {

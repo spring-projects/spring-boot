@@ -50,7 +50,7 @@
 							<execution>
 								<id>aggregate-javadocs</id>
 								<goals>
-									<goal>jar</goal>
+									<goal>aggregate-jar</goal>
 								</goals>
 								<configuration>
 									<includeDependencySources>true</includeDependencySources>

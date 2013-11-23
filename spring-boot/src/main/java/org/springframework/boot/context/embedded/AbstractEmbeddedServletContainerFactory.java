@@ -82,7 +82,6 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 * @param port the port number for the embedded servlet container
 	 */
 	public AbstractEmbeddedServletContainerFactory(int port) {
-		checkPort(port);
 		this.port = port;
 	}
 
@@ -94,7 +93,6 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	 */
 	public AbstractEmbeddedServletContainerFactory(String contextPath, int port) {
 		checkContextPath(contextPath);
-		checkPort(port);
 		this.contextPath = contextPath;
 		this.port = port;
 	}
@@ -129,14 +127,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 
 	@Override
 	public void setPort(int port) {
-		checkPort(port);
 		this.port = port;
-	}
-
-	private void checkPort(int port) {
-		if (port < 0 || port > 65535) {
-			throw new IllegalArgumentException("Port must be between 1 and 65535");
-		}
 	}
 
 	/**
