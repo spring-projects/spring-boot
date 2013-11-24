@@ -39,7 +39,7 @@
 	</dependencies>
 	<profiles>
 		<profile>
-			<id>full</id>
+			<id>full-disabled</id>
 			<build>
 				<plugins>
 					<plugin>
