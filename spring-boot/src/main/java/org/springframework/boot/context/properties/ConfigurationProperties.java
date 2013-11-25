@@ -59,6 +59,13 @@ public @interface ConfigurationProperties {
 	boolean ignoreInvalidFields() default false;
 
 	/**
+	 * Flag to indicate that when binding to this object fields with periods in their
+	 * names should be ignored.
+	 * @return the flag value (default false)
+	 */
+	boolean ignoreNestedProperties() default false;
+
+	/**
 	 * Flag to indicate that when binding to this object unknown fields should be ignored.
 	 * An unknown field could be a sign of a mistake in the Properties.
 	 * @return the flag value (default true)

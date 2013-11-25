@@ -43,6 +43,8 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private String namePrefix;
 
+	private boolean ignoreNestedProperties = false;
+
 	/**
 	 * @param target the target into which properties are bound
 	 */
@@ -67,6 +69,17 @@ public class RelaxedDataBinder extends DataBinder {
 		super(wrapTarget(target), (StringUtils.hasLength(namePrefix) ? namePrefix
 				: DEFAULT_OBJECT_NAME));
 		this.namePrefix = (StringUtils.hasLength(namePrefix) ? namePrefix + "." : null);
+	}
+
+	/**
+	 * Flag to disable binding of nested properties (i.e. those with period separators in
+	 * their paths). Can be useful to disable this if the name prefix is empty and you
+	 * don't want to ignore unknown fields.
+	 * 
+	 * @param ignoreNestedProperties the flag to set (default false)
+	 */
+	public void setIgnoreNestedProperties(boolean ignoreNestedProperties) {
+		this.ignoreNestedProperties = ignoreNestedProperties;
 	}
 
 	@Override
@@ -115,16 +128,26 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private MutablePropertyValues getProperyValuesForNamePrefix(
 			MutablePropertyValues propertyValues) {
-		if (this.namePrefix == null) {
+		if (!StringUtils.hasText(this.namePrefix) && !this.ignoreNestedProperties) {
 			return propertyValues;
 		}
+		int prefixLength = StringUtils.hasText(this.namePrefix) ? this.namePrefix
+				.length() : 0;
 		MutablePropertyValues rtn = new MutablePropertyValues();
 		for (PropertyValue pv : propertyValues.getPropertyValues()) {
 			String name = pv.getName();
-			for (String candidate : new RelaxedNames(this.namePrefix)) {
-				if (name.startsWith(candidate)) {
-					name = name.substring(candidate.length());
+			if (this.ignoreNestedProperties) {
+				name = name.substring(prefixLength);
+				if (!name.contains(".")) {
 					rtn.add(name, pv.getValue());
+				}
+			}
+			else {
+				for (String candidate : new RelaxedNames(this.namePrefix)) {
+					if (name.startsWith(candidate)) {
+						name = name.substring(candidate.length());
+						rtn.add(name, pv.getValue());
+					}
 				}
 			}
 		}

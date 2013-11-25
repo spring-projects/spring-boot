@@ -16,6 +16,7 @@
 
 package org.springframework.boot.bind;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,7 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -48,10 +50,14 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
 		this.propertySources = propertySources;
+		Collection<String> nonEnumerables = Arrays.asList(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
 		for (PropertySource<?> source : propertySources) {
-			if (source instanceof EnumerablePropertySource) {
+			if (source instanceof EnumerablePropertySource
+					&& !nonEnumerables.contains(source.getName())) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				if (enumerable.getPropertyNames().length > 0) {
 					for (String propertyName : enumerable.getPropertyNames()) {
