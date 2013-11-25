@@ -67,6 +67,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	private boolean hasBeenBound = false;
 
+	private boolean ignoreNestedProperties = false;
+
 	private String targetName;
 
 	private ConversionService conversionService;
@@ -88,6 +90,17 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 	public PropertiesConfigurationFactory(Class<?> type) {
 		Assert.notNull(type);
 		this.target = (T) BeanUtils.instantiate(type);
+	}
+
+	/**
+	 * Flag to disable binding of nested properties (i.e. those with period separators in
+	 * their paths). Can be useful to disable this if the name prefix is empty and you
+	 * don't want to ignore unknown fields.
+	 * 
+	 * @param ignoreNestedProperties the flag to set (default false)
+	 */
+	public void setIgnoreNestedProperties(boolean ignoreNestedProperties) {
+		this.ignoreNestedProperties = ignoreNestedProperties;
 	}
 
 	/**
@@ -222,6 +235,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		if (this.conversionService != null) {
 			dataBinder.setConversionService(this.conversionService);
 		}
+		dataBinder.setIgnoreNestedProperties(this.ignoreNestedProperties);
 		dataBinder.setIgnoreInvalidFields(this.ignoreInvalidFields);
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		customizeBinder(dataBinder);

@@ -53,6 +53,26 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testStrictPropertiesBinding() {
+		this.context.register(StrictTestConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(StrictTestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
+	public void testIgnoreNestedPropertiesBinding() {
+		this.context.register(IgnoreNestedTestConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo", "nested.name:bar");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(IgnoreNestedTestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
 	public void testNestedPropertiesBinding() {
 		this.context.register(NestedConfiguration.class);
 		TestUtils.addEnviroment(this.context, "name:foo", "nested.name:bar");
@@ -196,6 +216,16 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(StrictTestProperties.class)
+	protected static class StrictTestConfiguration {
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
+	protected static class IgnoreNestedTestConfiguration {
+	}
+
+	@Configuration
 	@EnableConfigurationProperties(DerivedProperties.class)
 	protected static class DerivedConfiguration {
 	}
@@ -298,6 +328,16 @@ public class EnableConfigurationPropertiesTests {
 		public List<Integer> getList() {
 			return this.list;
 		}
+	}
+
+	@ConfigurationProperties(ignoreUnknownFields = false)
+	protected static class StrictTestProperties extends TestProperties {
+
+	}
+
+	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
+	protected static class IgnoreNestedTestProperties extends TestProperties {
+
 	}
 
 	protected static class MoreProperties {
