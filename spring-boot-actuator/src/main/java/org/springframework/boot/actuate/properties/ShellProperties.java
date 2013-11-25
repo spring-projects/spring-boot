@@ -39,7 +39,11 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(name = "shell", ignoreUnknownFields = true)
 public class ShellProperties {
 
+	private static Log logger = LogFactory.getLog(ShellProperties.class);
+
 	private String auth = "simple";
+
+	private boolean defaultAuth = true;
 
 	@Autowired(required = false)
 	private CrshShellProperties[] additionalProperties = new CrshShellProperties[] { new SimpleAuthenticationProperties() };
@@ -60,6 +64,7 @@ public class ShellProperties {
 	public void setAuth(String auth) {
 		Assert.hasLength(auth, "Auth must not be empty");
 		this.auth = auth;
+		this.defaultAuth = false;
 	}
 
 	public String getAuth() {
@@ -127,10 +132,10 @@ public class ShellProperties {
 		this.ssh.applyToCrshShellConfig(properties);
 		this.telnet.applyToCrshShellConfig(properties);
 
-		properties.put("crash.auth", this.auth);
 		for (CrshShellProperties shellProperties : this.additionalProperties) {
 			shellProperties.applyToCrshShellConfig(properties);
 		}
+
 		if (this.commandRefreshInterval > 0) {
 			properties.put("crash.vfs.refresh_period",
 					String.valueOf(this.commandRefreshInterval));
@@ -146,7 +151,22 @@ public class ShellProperties {
 		}
 		this.disabledPlugins = dp.toArray(new String[dp.size()]);
 
+		validateCrshShellConfig(properties);
+
 		return properties;
+	}
+
+	/**
+	 * Basic validation of applied CRaSH shell configuration.
+	 */
+	protected void validateCrshShellConfig(Properties properties) {
+		String finalAuth = properties.getProperty("crash.auth");
+		if (!this.defaultAuth && !this.auth.equals(finalAuth)) {
+			logger.warn(String.format(
+					"Shell authentication fell back to method '%s' opposed to "
+							+ "configured method '%s'. Please check your classpath.",
+					finalAuth, this.auth));
+		}
 	}
 
 	/**

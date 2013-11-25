@@ -149,13 +149,6 @@ public class CrshAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnExpression("'${shell.auth:simple}' == 'spring'")
-	@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
-	public CrshShellAuthenticationProperties springAuthenticationProperties() {
-		return new SpringAuthenticationProperties();
-	}
-
-	@Bean
 	@ConditionalOnMissingBean({ PluginLifeCycle.class })
 	public PluginLifeCycle shellBootstrap() {
 		CrshBootstrapBean bootstrapBean = new CrshBootstrapBean();
@@ -180,12 +173,15 @@ public class CrshAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnExpression("'${shell.auth:default_spring}' == 'default_spring'")
+		@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
 		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
 		public CrshShellAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
 			// based authentication and get role to access shell from
 			// ManagementServerProperties.
+			// In case shell.auth is set to spring and roles are configured using
+			// shell.auth.spring.roles the below default role will be overridden by
+			// ConfigurationProperties.
 			SpringAuthenticationProperties authenticationProperties = new SpringAuthenticationProperties();
 			if (this.management != null) {
 				authenticationProperties.setRoles(new String[] { this.management
