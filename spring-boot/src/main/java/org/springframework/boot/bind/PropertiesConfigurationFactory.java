@@ -16,8 +16,11 @@
 
 package org.springframework.boot.bind;
 
+import java.beans.PropertyDescriptor;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -240,9 +243,23 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		dataBinder.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		customizeBinder(dataBinder);
 
+		Set<String> names = new HashSet<String>();
+		if (this.target != null) {
+			PropertyDescriptor[] descriptors = BeanUtils
+					.getPropertyDescriptors(this.target.getClass());
+			for (PropertyDescriptor descriptor : descriptors) {
+				String name = descriptor.getName();
+				if (!name.equals("class")) {
+					names.add(name);
+					names.add(name + ".*");
+					names.add(name + "_*");
+				}
+			}
+		}
+
 		PropertyValues propertyValues = (this.properties != null ? new MutablePropertyValues(
-				this.properties)
-				: new PropertySourcesPropertyValues(this.propertySources));
+				this.properties) : new PropertySourcesPropertyValues(
+				this.propertySources, names));
 		dataBinder.bind(propertyValues);
 
 		if (this.validator != null) {

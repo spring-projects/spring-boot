@@ -29,6 +29,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.PatternMatchUtils;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -44,23 +45,40 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private PropertySources propertySources;
 
+	private Collection<String> NON_ENUMERABLES = Arrays.asList(
+			StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+			StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);;
+
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
+		this(propertySources, null);
+	}
+
+	/**
+	 * Create a new PropertyValues from the given PropertySources
+	 * @param propertySources a PropertySources instance
+	 * @param systemPropertyNames property names to include from system properties and
+	 * environment variables
+	 */
+	public PropertySourcesPropertyValues(PropertySources propertySources,
+			Collection<String> systemPropertyNames) {
 		this.propertySources = propertySources;
-		Collection<String> nonEnumerables = Arrays.asList(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
+		String[] includes = systemPropertyNames == null ? new String[0]
+				: systemPropertyNames.toArray(new String[0]);
 		for (PropertySource<?> source : propertySources) {
-			if (source instanceof EnumerablePropertySource
-					&& !nonEnumerables.contains(source.getName())) {
+			if (source instanceof EnumerablePropertySource) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				if (enumerable.getPropertyNames().length > 0) {
 					for (String propertyName : enumerable.getPropertyNames()) {
+						if (this.NON_ENUMERABLES.contains(source.getName())
+								&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
+							continue;
+						}
 						Object value = source.getProperty(propertyName);
 						try {
 							value = resolver.getProperty(propertyName);

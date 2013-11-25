@@ -102,7 +102,7 @@ public class RelaxedDataBinder extends DataBinder {
 	private MutablePropertyValues modifyProperties(MutablePropertyValues propertyValues,
 			Object target) {
 
-		propertyValues = getProperyValuesForNamePrefix(propertyValues);
+		propertyValues = getPropertyValuesForNamePrefix(propertyValues);
 
 		if (target instanceof MapHolder) {
 			propertyValues = addMapPrefix(propertyValues);
@@ -126,26 +126,18 @@ public class RelaxedDataBinder extends DataBinder {
 		return rtn;
 	}
 
-	private MutablePropertyValues getProperyValuesForNamePrefix(
+	private MutablePropertyValues getPropertyValuesForNamePrefix(
 			MutablePropertyValues propertyValues) {
 		if (!StringUtils.hasText(this.namePrefix) && !this.ignoreNestedProperties) {
 			return propertyValues;
 		}
-		int prefixLength = StringUtils.hasText(this.namePrefix) ? this.namePrefix
-				.length() : 0;
 		MutablePropertyValues rtn = new MutablePropertyValues();
 		for (PropertyValue pv : propertyValues.getPropertyValues()) {
 			String name = pv.getName();
-			if (this.ignoreNestedProperties) {
-				name = name.substring(prefixLength);
-				if (!name.contains(".")) {
-					rtn.add(name, pv.getValue());
-				}
-			}
-			else {
-				for (String candidate : new RelaxedNames(this.namePrefix)) {
-					if (name.startsWith(candidate)) {
-						name = name.substring(candidate.length());
+			for (String candidate : new RelaxedNames(this.namePrefix)) {
+				if (name.startsWith(candidate)) {
+					name = name.substring(candidate.length());
+					if (!(this.ignoreNestedProperties && name.contains("."))) {
 						rtn.add(name, pv.getValue());
 					}
 				}

@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.TestUtils;
@@ -43,6 +44,13 @@ public class EnableConfigurationPropertiesTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
+	@After
+	public void close() {
+		System.clearProperty("name");
+		System.clearProperty("nested.name");
+		System.clearProperty("nested_name");
+	}
+
 	@Test
 	public void testBasicPropertiesBinding() {
 		this.context.register(TestConfiguration.class);
@@ -50,6 +58,37 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
 		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
+	public void testSystemPropertiesBinding() {
+		this.context.register(TestConfiguration.class);
+		System.setProperty("name", "foo");
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
+	public void testNestedSystemPropertiesBinding() {
+		this.context.register(NestedConfiguration.class);
+		System.setProperty("name", "foo");
+		System.setProperty("nested.name", "bar");
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
+		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
+		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+	}
+
+	@Test
+	public void testNestedSystemPropertiesBindingWithUnderscore() {
+		this.context.register(NestedConfiguration.class);
+		System.setProperty("name", "foo");
+		System.setProperty("nested_name", "bar");
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
+		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
+		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
 	}
 
 	@Test
