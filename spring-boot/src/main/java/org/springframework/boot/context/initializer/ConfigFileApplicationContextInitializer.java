@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.PropertyValues;
@@ -40,10 +41,12 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -106,6 +109,9 @@ public class ConfigFileApplicationContextInitializer implements
 		if (this.environment instanceof ConfigurableEnvironment) {
 			ConfigurableEnvironment environment = (ConfigurableEnvironment) this.environment;
 			load(environment, new DefaultResourceLoader());
+			environment.getPropertySources().addAfter(
+					StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+					new RandomValuePropertySource("random"));
 			// Set bean properties from the early environment
 			PropertyValues propertyValues = new PropertySourcesPropertyValues(
 					environment.getPropertySources());
@@ -249,6 +255,30 @@ public class ConfigFileApplicationContextInitializer implements
 	 */
 	public void setSearchLocations(String[] searchLocations) {
 		this.searchLocations = (searchLocations == null ? null : searchLocations.clone());
+	}
+
+	private static class RandomValuePropertySource extends PropertySource<Random> {
+
+		public RandomValuePropertySource(String name) {
+			super(name, new Random());
+		}
+
+		@Override
+		public Object getProperty(String name) {
+			if (!name.startsWith("random.")) {
+				return null;
+			}
+			if (name.endsWith("int")) {
+				return getSource().nextInt();
+			}
+			if (name.endsWith("long")) {
+				return getSource().nextLong();
+			}
+			byte[] bytes = new byte[32];
+			getSource().nextBytes(bytes);
+			return DigestUtils.md5DigestAsHex(bytes);
+		}
+
 	}
 
 }
