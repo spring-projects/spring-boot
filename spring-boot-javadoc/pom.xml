@@ -39,23 +39,23 @@
 	</dependencies>
 	<profiles>
 		<profile>
-			<id>full-disabled</id>
+			<id>full</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
+						<version>2.9</version>
 						<executions>
 							<execution>
 								<id>aggregate-javadocs</id>
 								<goals>
-									<goal>aggregate-jar</goal>
+									<goal>jar</goal>
 								</goals>
 								<configuration>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
-										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
+										<dependencySourceInclude>${project.groupId}:*:javadoc:*</dependencySourceInclude>
 									</dependencySourceIncludes>
 								</configuration>
 							</execution>
