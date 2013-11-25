@@ -43,7 +43,7 @@ public final class RelaxedNames implements Iterable<String> {
 	 * using dashed notation (e.g. {@literal my-property-name}
 	 */
 	public RelaxedNames(String name) {
-		this.name = name;
+		this.name = name == null ? "" : name;
 		initialize(RelaxedNames.this.name, this.values);
 	}
 
@@ -101,6 +101,12 @@ public final class RelaxedNames implements Iterable<String> {
 			@Override
 			public String apply(String value) {
 				return value.replace("-", "_");
+			}
+		},
+		UNDERSCORE_TO_PERIOD {
+			@Override
+			public String apply(String value) {
+				return value.replace("_", ".");
 			}
 		},
 		PERIOD_TO_UNDERSCORE {

@@ -110,6 +110,13 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindUnderscoreToCamelCase() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "foo_baz: bar");
+		assertEquals("bar", target.getFooBaz());
+	}
+
+	@Test
 	public void testBindHyphen() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "foo-baz: bar");
@@ -119,7 +126,7 @@ public class RelaxedDataBinderTests {
 	@Test
 	public void testBindCamelCase() throws Exception {
 		VanillaTarget target = new VanillaTarget();
-		bind(target, "foo-baz: bar");
+		bind(target, "fooBaz: bar");
 		assertEquals("bar", target.getFooBaz());
 	}
 
@@ -179,6 +186,13 @@ public class RelaxedDataBinderTests {
 	public void testBindNested() throws Exception {
 		TargetWithNestedObject target = new TargetWithNestedObject();
 		bind(target, "nested.foo: bar\n" + "nested.value: 123");
+		assertEquals(123, target.getNested().getValue());
+	}
+
+	@Test
+	public void testBindNestedWithEnviromentStyle() throws Exception {
+		TargetWithNestedObject target = new TargetWithNestedObject();
+		bind(target, "nested_foo: bar\n" + "nested_value: 123");
 		assertEquals(123, target.getNested().getValue());
 	}
 
