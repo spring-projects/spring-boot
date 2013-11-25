@@ -94,7 +94,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to start embdedded Tomcat", ex);
+					"Unable to start embedded Tomcat", ex);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			catch (Exception ex) {
 				this.logger.error("Cannot start connector: ", ex);
 				throw new EmbeddedServletContainerException(
-						"Unable to start embdedded Tomcat connectors", ex);
+						"Unable to start embedded Tomcat connectors", ex);
 			}
 		}
 	}
@@ -127,7 +127,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
-					"Unable to stop embdedded Tomcat", ex);
+					"Unable to stop embedded Tomcat", ex);
 		}
 	}
 
