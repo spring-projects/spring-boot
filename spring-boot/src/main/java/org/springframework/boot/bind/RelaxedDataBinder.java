@@ -75,7 +75,6 @@ public class RelaxedDataBinder extends DataBinder {
 	 * Flag to disable binding of nested properties (i.e. those with period separators in
 	 * their paths). Can be useful to disable this if the name prefix is empty and you
 	 * don't want to ignore unknown fields.
-	 * 
 	 * @param ignoreNestedProperties the flag to set (default false)
 	 */
 	public void setIgnoreNestedProperties(boolean ignoreNestedProperties) {

@@ -97,7 +97,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
 		WebAppContext context = new WebAppContext();
-		int port = getPort() >= 0 ? getPort() : 0;
+		int port = (getPort() >= 0 ? getPort() : 0);
 		Server server = new Server(new InetSocketAddress(getAddress(), port));
 
 		if (this.resourceLoader != null) {

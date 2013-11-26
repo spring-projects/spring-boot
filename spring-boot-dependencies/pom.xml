@@ -531,10 +531,10 @@
 				<version>${crashub.version}</version>
 			</dependency>
 			<dependency>
-			<groupId>org.jolokia</groupId>
-  			<artifactId>jolokia-core</artifactId>
-  			<version>${jolokia.version}</version>
-		</dependency>
+				<groupId>org.jolokia</groupId>
+				<artifactId>jolokia-core</artifactId>
+				<version>${jolokia.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>

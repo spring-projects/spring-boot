@@ -43,7 +43,7 @@ public final class RelaxedNames implements Iterable<String> {
 	 * using dashed notation (e.g. {@literal my-property-name}
 	 */
 	public RelaxedNames(String name) {
-		this.name = name == null ? "" : name;
+		this.name = (name == null ? "" : name);
 		initialize(RelaxedNames.this.name, this.values);
 	}
 

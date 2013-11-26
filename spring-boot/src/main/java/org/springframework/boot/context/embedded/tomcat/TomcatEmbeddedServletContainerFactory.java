@@ -193,7 +193,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		int port = getPort() >= 0 ? getPort() : 0;
+		int port = (getPort() >= 0 ? getPort() : 0);
 		connector.setPort(port);
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
