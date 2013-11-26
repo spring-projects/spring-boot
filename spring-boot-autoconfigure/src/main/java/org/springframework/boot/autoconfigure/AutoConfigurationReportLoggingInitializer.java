@@ -85,7 +85,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 		logAutoConfigurationReport(!this.applicationContext.isActive());
 	}
 
-	void logAutoConfigurationReport(boolean isCrashReport) {
+	public void logAutoConfigurationReport(boolean isCrashReport) {
 		if (this.report == null) {
 			this.report = AutoConfigurationReport.get(this.applicationContext
 					.getBeanFactory());
