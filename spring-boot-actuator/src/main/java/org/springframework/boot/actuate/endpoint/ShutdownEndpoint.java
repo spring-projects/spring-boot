@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -40,8 +38,7 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 
 	private ConfigurableApplicationContext context;
 
-	@Autowired(required = false)
-	private ManagementServerProperties configuration = new ManagementServerProperties();
+	private boolean enabled = false;
 
 	/**
 	 * Create a new {@link ShutdownEndpoint} instance.
@@ -52,10 +49,15 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 
 	@Override
 	public Map<String, Object> invoke() {
-		if (this.configuration == null || !this.configuration.isAllowShutdown()
-				|| this.context == null) {
+
+		if (!this.enabled) {
 			return Collections.<String, Object> singletonMap("message",
 					"Shutdown not enabled, sorry.");
+		}
+
+		if (this.context == null) {
+			return Collections.<String, Object> singletonMap("message",
+					"No context to shutdown.");
 		}
 
 		new Thread(new Runnable() {
@@ -87,4 +89,11 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 		return POST_HTTP_METHOD;
 	}
 
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }
