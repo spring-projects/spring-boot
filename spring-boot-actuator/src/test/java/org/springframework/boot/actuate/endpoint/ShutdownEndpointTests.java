@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
-import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +30,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link ShutdownEndpoint}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoint> {
 
@@ -54,15 +53,10 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 	public static class Config {
 
 		@Bean
-		public ManagementServerProperties managementServerProperties() {
-			ManagementServerProperties properties = new ManagementServerProperties();
-			properties.setAllowShutdown(true);
-			return properties;
-		}
-
-		@Bean
 		public ShutdownEndpoint endpoint() {
-			return new ShutdownEndpoint();
+			ShutdownEndpoint endpoint = new ShutdownEndpoint();
+			endpoint.setEnabled(true);
+			return endpoint;
 		}
 
 	}

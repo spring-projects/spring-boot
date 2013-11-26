@@ -42,17 +42,7 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	@NotNull
 	private String contextPath = "";
 
-	private boolean allowShutdown = false;
-
 	private Security security = maybeCreateSecurity();
-
-	public boolean isAllowShutdown() {
-		return this.allowShutdown;
-	}
-
-	public void setAllowShutdown(boolean allowShutdown) {
-		this.allowShutdown = allowShutdown;
-	}
 
 	/**
 	 * Returns the management port or {@code null} if the
