@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -43,6 +44,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -58,6 +60,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -248,10 +251,37 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
+		application.run("--foo=bar");
+		assertTrue(hasPropertySource(environment, CommandLinePropertySource.class,
+				"commandLineArgs"));
+	}
+
+	@Test
+	public void commandLinePropertySourceEnhancesEnvironment() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		environment.getPropertySources().addFirst(
+				new MapPropertySource("commandLineArgs", Collections
+						.<String, Object> singletonMap("foo", "original")));
+		application.setEnvironment(environment);
+		application.run("--foo=bar", "--bar=foo");
+		assertTrue(hasPropertySource(environment, CompositePropertySource.class,
+				"commandLineArgs"));
+		assertEquals("foo", environment.getProperty("bar"));
+		// New command line properties take precedence
+		assertEquals("bar", environment.getProperty("foo"));
+	}
+
+	@Test
+	public void emptyCommandLinePropertySourceNotAdded() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		application.setEnvironment(environment);
 		application.run();
-		assertThat(
-				hasPropertySource(environment, CommandLinePropertySource.class,
-						"commandLineArgs"), equalTo(true));
+		assertFalse(hasPropertySource(environment, PropertySource.class,
+				"commandLineArgs"));
 	}
 
 	@Test
@@ -261,10 +291,9 @@ public class SpringApplicationTests {
 		application.setAddCommandLineProperties(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run();
-		assertThat(
-				hasPropertySource(environment, MapPropertySource.class, "commandLineArgs"),
-				equalTo(false));
+		application.run("--foo=bar");
+		assertFalse(hasPropertySource(environment, PropertySource.class,
+				"commandLineArgs"));
 	}
 
 	@Test

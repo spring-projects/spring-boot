@@ -51,9 +51,11 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -375,13 +377,24 @@ public class SpringApplication {
 	 * @param args run arguments
 	 */
 	protected void addPropertySources(ConfigurableEnvironment environment, String[] args) {
+		MutablePropertySources sources = environment.getPropertySources();
 		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
-			environment.getPropertySources().addLast(
-					new MapPropertySource("defaultProperties", this.defaultProperties));
+			sources.addLast(new MapPropertySource("defaultProperties",
+					this.defaultProperties));
 		}
-		if (this.addCommandLineProperties) {
-			environment.getPropertySources().addFirst(
-					new SimpleCommandLinePropertySource(args));
+		if (this.addCommandLineProperties && args.length > 0) {
+			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
+			if (sources.contains(name)) {
+				PropertySource<?> source = sources.get(name);
+				CompositePropertySource composite = new CompositePropertySource(name);
+				composite.addPropertySource(new SimpleCommandLinePropertySource(name
+						+ "-" + args.hashCode(), args));
+				composite.addPropertySource(source);
+				sources.replace(name, composite);
+			}
+			else {
+				sources.addFirst(new SimpleCommandLinePropertySource(args));
+			}
 		}
 	}
 
