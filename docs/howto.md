@@ -7,9 +7,74 @@ the gaps later.
 
 ## Configure Tomcat
 
+## Configure Jetty
+
+## Test a Spring Boot Application
+
+A Spring Boot application is just a Spring `ApplicationContext` so
+nothing very special has to be done to test it beyond what you would
+normally do with a vanilla Spring context. One thing to watch out for
+though is that the external properties, logging and other features of
+Spring Boot are only installed in the context by default if you use
+`SpringApplication` to create it. Spring Boot has a special Spring
+`TestContextLoader` which makes this job easy. For example (from the
+JPA Sample):
+
+```java
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = SampleDataJpaApplication.class, 
+        loader = SpringApplicationContextLoader.class)
+public class CityRepositoryIntegrationTests {
+
+	@Autowired
+	CityRepository repository;
+
+...
+```
+
+To use the `SpringApplicationContextLoader` you need the test jar on
+your classpath (recommended Maven co-ordinates
+"org.springframework.boot:spring-boot-starter-test"). The context
+loader guesses whether you want to test a web application or not
+(e.g. with `MockMVC`) by looking for the `@WebAppConfiguration`
+annotation (`MockMVC` and `@WebAppConfiguration` are from the Spring
+Test support library).
+
+<span id="main.properties"/>
+## Externalize the Configuration of SpringApplication
+
+A `SpringApplication` has bean properties (mainly setters) so you can
+use its Java API as you create the application to modify its
+behaviour. Or you can externalize the configuration using properties
+in `spring.main.*`. E.g. in `application.properties` you might have
+
+```properties
+spring.main.web_environment: false
+spring.main.show_banner: false
+```
+
+and then the Spring Boot banner will not be printed on startup, and
+the application will not be a web application.
+
 ## Create a Non-Web Application
 
-## Create a Deployable WAR File?
+Not all Spring applications have to be web applications (or web
+services). If you want to execute some code in a `main` method, but
+also bootstrap a Spring application to set up the infrastructure to
+use, then it's easy with the `SpringApplication` features of Spring
+Boot. A `SpringApplication` changes its `ApplicationContext` class
+depending on whether it thinks it needs a web application or not. The
+first thing you can do to help it is to just leave the web
+depdendencies off the classpath. If you can't do that (e.g. you are
+running 2 applications from the same code base) then you can
+explicitly call `SpringApplication.setWebEnvironment(false)`, or set
+the `applicationContextClass` property (through the Java API or with
+[external properties](#main.properties)). Application code that you
+want to run as your business logic can be implemented as a
+`CommandLineRunner` and dropped into the context as a `@Bean`
+definition.
+
+## Create a Deployable WAR File
 
 Use the `SpringBootServletInitializer` base class, which is picked up
 by Spring's Servlet 3.0 support on deployment. Add an extension of
@@ -27,7 +92,7 @@ Maven example
 
 [gs-war]: http://spring.io/guides/gs/convert-jar-to-war
 
-## Create a Deployable WAR File for older Servlet Containers?
+## Create a Deployable WAR File for older Servlet Containers
 
 Older Servlet containers don't have support for the
 `ServletContextInitializer` bootstrap process used in Servlet 3.0. You
