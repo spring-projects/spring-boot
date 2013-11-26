@@ -29,6 +29,8 @@ import org.springframework.util.StringUtils;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link PropertyPlaceholderAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class PropertyPlaceholderAutoConfigurationTests {

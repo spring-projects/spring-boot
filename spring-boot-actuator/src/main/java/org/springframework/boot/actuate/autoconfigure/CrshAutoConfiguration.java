@@ -374,7 +374,6 @@ public class CrshAutoConfiguration {
 			return plugins;
 		}
 
-		@SuppressWarnings("rawtypes")
 		protected boolean isEnabled(CRaSHPlugin<?> plugin) {
 			Assert.notNull(plugin, "Plugin must not be null");
 

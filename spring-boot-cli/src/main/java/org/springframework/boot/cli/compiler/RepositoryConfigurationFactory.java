@@ -23,6 +23,8 @@ import java.util.List;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
 /**
+ * Factory used to create {@link RepositoryConfiguration}s.
+ * 
  * @author Andy Wilkinson
  * @author Dave Syer
  */
