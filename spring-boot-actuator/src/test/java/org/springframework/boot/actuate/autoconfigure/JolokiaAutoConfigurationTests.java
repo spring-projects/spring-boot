@@ -22,12 +22,14 @@ import javax.servlet.ServletRegistration;
 import org.jolokia.http.AgentServlet;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory.RegisteredServlet;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -63,6 +65,16 @@ public class JolokiaAutoConfigurationTests {
 	}
 
 	@Test
+	public void agentDisabled() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		TestUtils.addEnviroment(this.context, "endpoints.jolokia.enabled:false");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				JolokiaAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(AgentServlet.class).length);
+	}
+
+	@Test
 	public void agentServletRegisteredWithServletContainer() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
@@ -83,6 +95,7 @@ public class JolokiaAutoConfigurationTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties
 	protected static class Config {
 
 		protected static MockEmbeddedServletContainerFactory containerFactory = null;

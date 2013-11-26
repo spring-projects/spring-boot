@@ -28,6 +28,8 @@ import org.springframework.http.HttpMethod;
 @ConfigurationProperties(name = "endpoints.jolokia", ignoreUnknownFields = false)
 public class JolokiaEndpoint extends AbstractEndpoint<String> {
 
+	private boolean enabled = true;
+
 	public JolokiaEndpoint() {
 		super("/jolokia");
 	}
@@ -40,5 +42,13 @@ public class JolokiaEndpoint extends AbstractEndpoint<String> {
 	@Override
 	public HttpMethod[] methods() {
 		return NO_HTTP_METHOD;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }
