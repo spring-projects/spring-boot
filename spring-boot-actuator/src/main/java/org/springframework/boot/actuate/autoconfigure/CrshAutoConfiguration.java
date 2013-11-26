@@ -382,7 +382,7 @@ public class CrshAutoConfiguration {
 				return true;
 			}
 
-			Set<Class> pluginClasses = ClassUtils.getAllInterfacesAsSet(plugin);
+			Set<Class<?>> pluginClasses = ClassUtils.getAllInterfacesAsSet(plugin);
 			pluginClasses.add(plugin.getClass());
 
 			for (Class<?> pluginClass : pluginClasses) {
