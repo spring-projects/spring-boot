@@ -109,6 +109,16 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		}
 	}
 
+	@Override
+	public int getPort() {
+		Connector[] connectors = this.server.getConnectors();
+		for (Connector connector : connectors) {
+			// Probably only one...
+			return connector.getLocalPort();
+		}
+		return 0;
+	}
+
 	/**
 	 * Returns access to the underlying Jetty Server.
 	 */

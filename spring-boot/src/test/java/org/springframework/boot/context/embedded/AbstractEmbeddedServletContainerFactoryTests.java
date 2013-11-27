@@ -47,6 +47,7 @@ import org.springframework.util.StreamUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
@@ -172,6 +173,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
 		assertThat(getResponse("http://localhost:8081/hello"), equalTo("Hello World"));
+		assertEquals(8081, this.container.getPort());
 	}
 
 	@Test
