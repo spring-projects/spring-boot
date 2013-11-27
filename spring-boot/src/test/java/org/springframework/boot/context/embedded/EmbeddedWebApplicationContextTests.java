@@ -22,6 +22,7 @@ import java.util.Properties;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextListener;
 
 import org.junit.After;
 import org.junit.Before;
@@ -262,6 +263,18 @@ public class EmbeddedWebApplicationContextTests {
 		InOrder ordered = inOrder(initializer1, initializer2);
 		ordered.verify(initializer1).onStartup(servletContext);
 		ordered.verify(initializer2).onStartup(servletContext);
+	}
+
+	@Test
+	public void servletContextListenerBeans() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		ServletContextListener initializer = mock(ServletContextListener.class);
+		this.context.registerBeanDefinition("initializerBean",
+				beanDefinition(initializer));
+		this.context.refresh();
+		ServletContext servletContext = getEmbeddedServletContainerFactory()
+				.getServletContext();
+		verify(servletContext).addListener(initializer);
 	}
 
 	@Test
