@@ -126,9 +126,18 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			this.tomcat.destroy();
 		}
 		catch (Exception ex) {
-			throw new EmbeddedServletContainerException(
-					"Unable to stop embedded Tomcat", ex);
+			throw new EmbeddedServletContainerException("Unable to stop embedded Tomcat",
+					ex);
 		}
+	}
+
+	@Override
+	public int getPort() {
+		Connector connector = this.tomcat.getConnector();
+		if (connector != null) {
+			return connector.getLocalPort();
+		}
+		return 0;
 	}
 
 	/**

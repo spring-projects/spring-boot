@@ -44,6 +44,10 @@ public interface EmbeddedServletContainer {
 		public void stop() throws EmbeddedServletContainerException {
 			// Do nothing
 		}
+
+		public int getPort() {
+			return 0;
+		}
 	};
 
 	/**
@@ -59,5 +63,10 @@ public interface EmbeddedServletContainer {
 	 * @throws EmbeddedServletContainerException of the container cannot be stopped
 	 */
 	void stop() throws EmbeddedServletContainerException;
+
+	/**
+	 * @return the port this server is listening on (or zero if none)
+	 */
+	int getPort();
 
 }
