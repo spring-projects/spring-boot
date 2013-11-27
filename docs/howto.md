@@ -5,9 +5,233 @@ HOWTO guides. If you want to add a placeholder for a question without
 an answer, put it at the top (at header level 2) and we can fill in
 the gaps later.
 
+There is a really useful `AutoConfigurationReport` available in any
+Spring Boot `ApplicationContext`. You will see it automatically if a
+context fails to start, and also if you enable DEBUG logging for
+Spring Boot. If you use the Actuator there is also an endpoint
+`/autoconfig` that renders the report in JSON. Use that to debug the
+application and see what features have been added (and which not) by
+Spring Boot at runtime.
+
+Many more questions can be answered by looking at the source code and
+Javadocs. Some rules of thumb:
+
+* Look for classes called `*AutoConfiguration` and read their sources,
+  in particular the `@Conditional*` annotations to find out what
+  features they enable and when. In those clases...
+  
+* Look for classes that are `@ConfigurationProperties`
+  (e.g. [`ServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c))
+  and read from there the available external configuration
+  options. The `@ConfigurationProperties` has a `name` attribute which
+  acts as a prefix to external properties, thus `ServerProperties` has
+  `name="server"` and its configuration properties are `server.port`,
+  `server.address` etc.
+  
+* Look for use of `RelaxedEnvironment` to pull configuration values
+  explicitly out of the `Environment`. It often is used with a prefix.
+  
+* Look for `@Value` annotations that bind directly to the
+  `Environment`. This is less flexible than the `RelaxedEnvironment`
+  approach, but does allow some relaxed binding, specifically for OS
+  environment variables (so `CAPITALS_AND_UNDERSCORES` are synonyms
+  for `period.separated`).
+  
+* Look for `@ConditionalOnExpression` annotations that switch features
+  on and off in response to SpEL expressions, normally evaluated with
+  placeholders resolved from the `Environment`.
+
 ## Configure Tomcat
 
 ## Configure Jetty
+
+<span id="build.hierarchy"/>
+## Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
+
+The
+[`SpringApplicationBuilder`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot/src/main/java/org/springframework/boot/builder/SpringApplicationBuilder.java)
+has methods specifically designed for the purpose of building a
+hierarchy, e.g.
+
+```java
+SpringApplicationBuilder application = new SpringApplicationBuilder();
+application.sources(Parent.class).child(Application.class).run(args);
+```
+
+There are some restrictions, e.g. the parent aplication context is
+*not* a `WebApplicationContext`.  Both parent and child are executed
+with the same `Environment` constructed in the usual way to include
+command line arguments.  Any `ServletContextAware` components all have
+to go in the child context, otherwise there is no way for Spring Boot
+to create the `ServletContext` in time.
+
+## Convert an Existing Application to Spring Boot
+
+For a non-web application it should be easy (throw away the code that
+creates your `ApplicationContext` and replace it with calls to
+`SpringApplication` or `SpringApplicationBuilder`). Spring MVC web
+applications are generally amenable to first creating a deployable WAR
+application, and then migrating it later to an executable WAR and/or
+JAR.  Useful reading is in the
+[Getting Started Guide on Converting a JAR to a WAR](http://spring.io/guides/gs/convert-jar-to-war/).
+
+Create a deployable WAR by extending `SpringBootServletInitializer`
+(e.g. in a class called `Application`), and add the Spring Boot
+`@EnableAutoConfiguration` annotation. Example:
+
+```
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan
+public class Application extends SpringBootServletInitializer {
+	
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(Application.class);
+	}
+
+}
+```
+
+Remember that whatever you put in the "sources" is just a Spring
+`ApplicationContext` and normally anything that already works should
+work here. There might be some beans you can remove later and let
+Spring Boot provide its own defaults for them, but it should be
+possible to get something working first.
+
+Static resources can be moved to `/public` (or `/static` or
+`/resources` or `/META-INFO/resources`) in the classpath root. Same
+for `messages.properties` (Spring Boot detects this automatically in
+the root of the classpath).
+
+Vanilla usage of Spring `DispatcherServlet` and Spring Security should
+require no further changes. If you have other features in your
+application, using other servlets or filters, for instance then you
+may need to add some configuration to your `Application` context,
+replacing those elements from the `web.xml` as follows:
+
+* A `@Bean` of type `Servlet` or `ServletRegistrationBean` installs
+  that bean in the container as if it was a `<servlet/>` and
+  `<servlet-mapping/>` in `web.xml`
+
+* A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves
+  similarly (like a `<filter/>` and `<filter-mapping/>`.
+
+* An `ApplicationContext` in an XML file can be added to an `@Import`
+  in your `Application`. Or simple cases where annotation
+  configuration is heavily used already can be recreated in a few
+  lines as `@Bean` definitions.
+
+Once the WAR is working we make it executable by adding a `main`
+method to our `Application`, e.g.
+
+```java
+public static void main(String[] args) {
+	SpringApplication.run(Application.class, args);
+}
+```
+
+Applications can fall into more than one category:
+
+* Servlet 3.0 applications with no `web.xml`
+* Applications with a `web.xml`
+* Applications with a context hierarchy and 
+* Those without a context hierarchy
+
+All of these should be amenable to translation, but each might require
+slightly different tricks.
+
+Servlet 3.0 applications might translate pretty easily if they already
+use the Spring Servlet 3.0 initializer support classes. Normally all
+the code from an existing `WebApplicationInitializer` can be moved
+into a `SpringBootServletInitializer`. If your existing application
+has more than one `ApplicationContext` (e.g. if it uses
+`AbstractDispatcherServletInitializer`) then you might be able to
+squish all your context sources into a single `SpringApplication`. The
+main complication you might encounter is if that doesn't work and you
+need to maintain the context hierarchy. See the
+[entry on building a hierarchy](#build.hierarchy) for examples. An
+existing parent context that contains web-specific features will
+usually need to be broken up so that all the `ServletContextAware`
+components are in the child context.
+
+Applications that are not already Spring applications might be
+convertible to a Spring Boot application, and the guidance above might
+help, but your mileage may vary.
+
+
+## Serve Static Content
+
+Spring Boot by default will serve static content from a folder called
+`/static` (or `/public` or or `/resources` or `/META-INF/resources`)
+in the classpath or from the root of the `ServeltContext`.  It uses
+the `ResourceHttpRequestHandler` from Spring MVC so you can modify
+that behaviour by adding your own `WebMvcConfigurerAdapter` and
+overriding the `addResourceHandlers` method.
+
+By default in a standalone web application the default servlet from
+the container is also enabled, and acts as a fallback, serving content
+from the root of the `ServletContext` if Spring decides not to handle
+it. Most of the time this will not happen unless you modify the
+deafult MVC configuration because Spring will always be able to handle
+requests through the `DispatcherServlet`.
+
+In addition to the 'standard' static resource locations above, a
+special case is made for
+[Webjars content](http://www.webjars.org/). Any resources with a path
+in `/webjars/**` will be served from jar files if they are packaged in
+the Webjars format.
+
+For more detail look at the
+[`WebMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/WebMvcAutoConfiguration.java?source=c)
+source code.
+
+## Change the HTTP Port
+
+In a standalone application the main HTTP port defaults to 8080, but
+can be set with `server.port` (e.g. in `application.properties` or as
+a System property). Thanks to relaxed binding of `Environment` values
+you can also use `SERVER_PORT` (e.g. as an OS environment variable).
+
+To scan for a free port (using OS natives to prevent clashes) use
+`server.port=0`. To switch off the HTTP endpoints completely, but
+still create a `WebApplicationContext`, use `server.port=-1` (this is
+sometimes useful for testing).
+
+For more detail look at the
+[`ServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c)
+source code.
+
+## Change the HTTP Port or Address of the Actuator Endpoints
+
+In a standalone application the Actuator HTTP port defaults to the
+same as the main HTTP port. To make the application listen on a
+different port set the external property `management.port`. To listen
+on a completely different network address (e.g. if you have an
+internal network for management and an external one for user
+applications) you can also set `management.address` to a valid IP
+address that the server is able to bind to.
+
+For more detail look at the
+[`ManagementServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/properties/ManagementServerProperties.java?source=c)
+source code.
+
+## Use 'Short' Command Line Arguments
+
+Some people like to use (for example) `--port=9000` instead of
+`--server.port=9000` to set configuration properties on the command
+line. You can easily enable this by using placeholders in
+`application.properties`, e.g.
+
+```properties
+server.port: ${port:8080}
+```
+
+> Note that in this specific case the port binding will work in a PaaS
+> environment like Heroku and Cloud Foundry, since in those two
+> platforms the `PORT` environment variable is set automatically and
+> Spring can bind to capitalized synonyms for `Environment`
+> properties.
 
 ## Test a Spring Boot Application
 
