@@ -21,8 +21,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -167,10 +169,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 						"Cannot initialize servlet context", ex);
 			}
 		}
-		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
-				getServletContext());
-		WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
-				getServletContext());
 		initPropertySources();
 	}
 
@@ -209,6 +207,10 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			@Override
 			public void onStartup(ServletContext servletContext) throws ServletException {
 				prepareEmbeddedWebApplicationContext(servletContext);
+				WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory(),
+						getServletContext());
+				WebApplicationContextUtils.registerEnvironmentBeans(getBeanFactory(),
+						getServletContext());
 				for (ServletContextInitializer beans : getServletContextInitializerBeans()) {
 					beans.onStartup(servletContext);
 				}
@@ -357,7 +359,12 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 						o2.getValue());
 			}
 		};
-		beans.addAll(getBeanFactory().getBeansOfType(type, true, true).entrySet());
+		String[] names = getBeanFactory().getBeanNamesForType(type, true, false);
+		Map<String, T> map = new LinkedHashMap<String, T>();
+		for (String name : names) {
+			map.put(name, getBeanFactory().getBean(name, type));
+		}
+		beans.addAll(map.entrySet());
 		Collections.sort(beans, comparator);
 		return beans;
 	}

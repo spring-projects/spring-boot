@@ -16,13 +16,23 @@
 
 package org.springframework.boot.context.embedded;
 
+import java.io.IOException;
+
+import javax.servlet.GenericServlet;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.config.ExampleEmbeddedWebApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -44,6 +54,23 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ExampleEmbeddedWebApplicationConfiguration.class.getPackage().getName());
 		verifyContext();
+	}
+
+	@Test
+	public void sessionScopeAvailable() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				ExampleEmbeddedWebApplicationConfiguration.class,
+				SessionScopedComponent.class);
+		verifyContext();
+	}
+
+	@Test
+	public void sessionScopeAvailableToServlet() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				ExampleEmbeddedWebApplicationConfiguration.class,
+				ExampleServletWithAutowired.class, SessionScopedComponent.class);
+		Servlet servlet = this.context.getBean(ExampleServletWithAutowired.class);
+		assertNotNull(servlet);
 	}
 
 	@Test
@@ -100,6 +127,26 @@ public class AnnotationConfigEmbeddedWebApplicationContextTests {
 				.getBean(MockEmbeddedServletContainerFactory.class);
 		Servlet servlet = this.context.getBean(Servlet.class);
 		verify(containerFactory.getServletContext()).addServlet("servlet", servlet);
+	}
+
+	@Component
+	protected static class ExampleServletWithAutowired extends GenericServlet {
+
+		@Autowired
+		private SessionScopedComponent component;
+
+		@Override
+		public void service(ServletRequest req, ServletResponse res)
+				throws ServletException, IOException {
+			assertNotNull(this.component);
+		}
+
+	}
+
+	@Component
+	@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	protected static class SessionScopedComponent {
+
 	}
 
 	@Configuration
