@@ -47,6 +47,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
@@ -132,6 +133,12 @@ public class WebMvcAutoConfiguration {
 			resolver.setPrefix(this.prefix);
 			resolver.setSuffix(this.suffix);
 			return resolver;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(RequestContextListener.class)
+		public RequestContextListener requestContextListener() {
+			return new RequestContextListener();
 		}
 
 		@Bean

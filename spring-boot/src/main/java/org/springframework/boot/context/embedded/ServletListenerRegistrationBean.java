@@ -118,4 +118,11 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends
 		return false;
 	}
 
+	/**
+	 * @return the supportedTypes for this registration
+	 */
+	public static Set<Class<?>> getSupportedTypes() {
+		return SUPPORTED_TYPES;
+	}
+
 }
