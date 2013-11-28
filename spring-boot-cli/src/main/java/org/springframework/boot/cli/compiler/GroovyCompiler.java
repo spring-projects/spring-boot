@@ -140,7 +140,8 @@ public class GroovyCompiler {
 						RepositoryPolicy.UPDATE_POLICY_NEVER,
 						RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
 			}
-
+			builder.setProxy(AetherGrapeEngine.defaultProxy(repositoryConfiguration
+					.getUri().getScheme()));
 			repositories.add(builder.build());
 		}
 		return repositories;
