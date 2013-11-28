@@ -274,6 +274,16 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void proprtiesFileEnhancesEnvironment() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		application.setEnvironment(environment);
+		application.run();
+		assertEquals("bucket", environment.getProperty("foo"));
+	}
+
+	@Test
 	public void emptyCommandLinePropertySourceNotAdded() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
@@ -403,8 +413,6 @@ public class SpringApplicationTests {
 	}
 
 	// FIXME test initializers
-
-	// FIXME test config files?
 
 	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
 

@@ -19,6 +19,8 @@ package org.springframework.boot.config;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -31,6 +33,8 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  */
 public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 
+	private static Log logger = LogFactory.getLog(PropertiesPropertySourceLoader.class);
+
 	@Override
 	public boolean supports(Resource resource) {
 		return resource.getFilename().endsWith(".properties");
@@ -40,6 +44,11 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	public PropertySource<?> load(Resource resource) {
 		try {
 			Properties properties = loadProperties(resource);
+			// N.B. this is off by default unless user has supplied logback config in
+			// standard location
+			if (logger.isDebugEnabled()) {
+				logger.debug("Properties loaded from " + resource + ": " + properties);
+			}
 			return new PropertiesPropertySource(resource.getDescription(), properties);
 		}
 		catch (IOException ex) {

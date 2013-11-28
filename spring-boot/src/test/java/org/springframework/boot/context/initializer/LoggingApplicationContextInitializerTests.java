@@ -153,7 +153,7 @@ public class LoggingApplicationContextInitializerTests {
 	@Test
 	public void parseArgsDisabled() throws Exception {
 		this.initializer.setParseArgs(false);
-		this.initializer.initialize(this.springApplication, new String[] { "--debug" });
+		TestUtils.addEnviroment(this.context, "debug");
 		this.initializer.initialize(this.context);
 		this.logger.debug("testatdebug");
 		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
