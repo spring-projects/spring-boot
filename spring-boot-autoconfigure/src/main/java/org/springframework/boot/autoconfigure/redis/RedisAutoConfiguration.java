@@ -82,7 +82,7 @@ public class RedisAutoConfiguration {
 
 	}
 
-	@ConfigurationProperties(name = "spring.data.redis")
+	@ConfigurationProperties(name = "spring.redis")
 	public static class RedisProperties {
 
 		private String host = "localhost";
