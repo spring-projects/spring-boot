@@ -59,7 +59,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	}
 
 	public LogbackLoggingSystem(ClassLoader classLoader) {
-		super(classLoader, "logback.xml");
+		super(classLoader, "logback-test.groovy", "logback-test.xml", "logback.groovy",
+				"logback.xml");
 	}
 
 	@Override

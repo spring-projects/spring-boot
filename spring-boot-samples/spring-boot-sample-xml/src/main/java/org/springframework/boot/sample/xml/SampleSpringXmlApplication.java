@@ -32,7 +32,6 @@ public class SampleSpringXmlApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// TODO: to make this a pure XML example, will need <boot:auto-configure/>
 		SpringApplication.run("classpath:/META-INF/application-context.xml", args);
 	}
 }
