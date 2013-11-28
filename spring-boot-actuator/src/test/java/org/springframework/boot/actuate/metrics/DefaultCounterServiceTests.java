@@ -16,23 +16,33 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.boot.actuate.metrics.DefaultCounterService;
+import java.util.Date;
 
-import static org.junit.Assert.fail;
+import org.junit.Test;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultCounterService}.
  */
-@Ignore
 public class DefaultCounterServiceTests {
 
-	// FIXME
+	private MetricRepository repository = mock(MetricRepository.class);
+
+	private DefaultCounterService service = new DefaultCounterService(this.repository);
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void incrementPrependsCounter() {
+		this.service.increment("foo");
+		verify(this.repository).increment(eq("counter.foo"), eq(1), any(Date.class));
 	}
 
+	@Test
+	public void decrementPrependsCounter() {
+		this.service.decrement("foo");
+		verify(this.repository).increment(eq("counter.foo"), eq(-1), any(Date.class));
+	}
 }

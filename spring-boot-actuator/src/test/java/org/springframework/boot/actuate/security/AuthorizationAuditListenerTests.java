@@ -16,23 +16,44 @@
 
 package org.springframework.boot.actuate.security;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.boot.actuate.security.AuthenticationAuditListener;
+import java.util.Arrays;
 
-import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.access.event.AuthorizationFailureEvent;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link AuthenticationAuditListener}.
  */
-@Ignore
 public class AuthorizationAuditListenerTests {
 
-	// FIXME
+	private AuthorizationAuditListener listener = new AuthorizationAuditListener();
+
+	private ApplicationEventPublisher publisher = Mockito
+			.mock(ApplicationEventPublisher.class);
+
+	@Before
+	public void init() {
+		this.listener.setApplicationEventPublisher(this.publisher);
+	}
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testAuthenticationSuccess() {
+		this.listener.onApplicationEvent(new AuthorizationFailureEvent(this, Arrays
+				.<ConfigAttribute> asList(new SecurityConfig("USER")),
+				new UsernamePasswordAuthenticationToken("user", "password"),
+				new AccessDeniedException("Bad user")));
+		verify(this.publisher).publishEvent((ApplicationEvent) anyObject());
 	}
 
 }
