@@ -38,6 +38,7 @@ public class OnExpressionCondition extends SpringBootCondition {
 
 		String expression = (String) metadata.getAnnotationAttributes(
 				ConditionalOnExpression.class.getName()).get("value");
+		String rawExpression = expression;
 		if (!expression.startsWith("#{")) {
 			// For convenience allow user to provide bare expression with no #{} wrapper
 			expression = "#{" + expression + "}";
@@ -58,7 +59,7 @@ public class OnExpressionCondition extends SpringBootCondition {
 		if (metadata instanceof ClassMetadata) {
 			message.append(" on " + ((ClassMetadata) metadata).getClassName());
 		}
-		message.append(": " + expression);
+		message.append(": " + rawExpression);
 		return new ConditionOutcome(result, message.toString());
 	}
 
