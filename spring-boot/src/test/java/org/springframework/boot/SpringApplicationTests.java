@@ -412,8 +412,6 @@ public class SpringApplicationTests {
 		return false;
 	}
 
-	// FIXME test initializers
-
 	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
 
 		ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
