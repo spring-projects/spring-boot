@@ -27,6 +27,8 @@ import java.util.Date;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -39,6 +41,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -263,7 +266,19 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		response.close();
 	}
 
-	// FIXME test error page
+	@Test
+	@Ignore
+	// FIXME: how to test an error response (maybe java.net.HttpUrlConnection isn't going
+	// to cut it)
+	public void errorPage() throws Exception {
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
+		factory.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/hello"));
+		this.container = factory.getEmbeddedServletContainer(
+				exampleServletRegistration(), errorServletRegistration());
+		this.container.start();
+		assertThat(getResponse("http://localhost:8080/hello"), equalTo("Hello World"));
+		assertThat(getResponse("http://localhost:8080/bang"), equalTo("Hello World"));
+	}
 
 	protected String getResponse(String url) throws IOException, URISyntaxException {
 		ClientHttpResponse response = getClientResponse(url);
@@ -288,5 +303,17 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	private ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean(new ExampleServlet(), "/hello");
+	}
+
+	private ServletContextInitializer errorServletRegistration() {
+		ServletRegistrationBean bean = new ServletRegistrationBean(new ExampleServlet() {
+			@Override
+			public void service(ServletRequest request, ServletResponse response)
+					throws ServletException, IOException {
+				throw new RuntimeException("Planned");
+			}
+		}, "/bang");
+		bean.setName("error");
+		return bean;
 	}
 }
