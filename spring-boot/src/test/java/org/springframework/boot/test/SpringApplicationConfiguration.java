@@ -39,11 +39,6 @@ import org.springframework.test.context.ContextConfiguration;
 public @interface SpringApplicationConfiguration {
 
 	/**
-	 * @see ContextConfiguration#value()
-	 */
-	String[] value() default {};
-
-	/**
 	 * @see ContextConfiguration#locations()
 	 */
 	String[] locations() default {};
