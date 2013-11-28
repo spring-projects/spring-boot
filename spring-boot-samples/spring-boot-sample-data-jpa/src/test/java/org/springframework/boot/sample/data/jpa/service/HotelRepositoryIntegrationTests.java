@@ -15,9 +15,9 @@
  */
 package org.springframework.boot.sample.data.jpa.service;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -31,11 +31,10 @@ import org.springframework.boot.sample.data.jpa.domain.Hotel;
 import org.springframework.boot.sample.data.jpa.domain.HotelSummary;
 import org.springframework.boot.sample.data.jpa.domain.Rating;
 import org.springframework.boot.sample.data.jpa.domain.RatingCount;
-import org.springframework.boot.test.SpringApplicationContextLoader;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -44,7 +43,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SampleDataJpaApplication.class, loader = SpringApplicationContextLoader.class)
+@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
 public class HotelRepositoryIntegrationTests {
 
 	@Autowired

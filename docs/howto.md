@@ -241,13 +241,12 @@ normally do with a vanilla Spring context. One thing to watch out for
 though is that the external properties, logging and other features of
 Spring Boot are only installed in the context by default if you use
 `SpringApplication` to create it. Spring Boot has a special Spring
-`TestContextLoader` which makes this job easy. For example (from the
-JPA Sample):
+`@ContextConfiguration` annotation, so you can use this for example
+(from the JPA Sample):
 
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SampleDataJpaApplication.class, 
-        loader = SpringApplicationContextLoader.class)
+@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
 public class CityRepositoryIntegrationTests {
 
 	@Autowired
@@ -256,12 +255,12 @@ public class CityRepositoryIntegrationTests {
 ...
 ```
 
-To use the `SpringApplicationContextLoader` you need the test jar on
+To use the `@SpringApplicationConfiguration` you need the test jar on
 your classpath (recommended Maven co-ordinates
 "org.springframework.boot:spring-boot-starter-test"). The context
 loader guesses whether you want to test a web application or not
 (e.g. with `MockMVC`) by looking for the `@WebAppConfiguration`
-annotation (`MockMVC` and `@WebAppConfiguration` are from the Spring
+annotation.  (`MockMVC` and `@WebAppConfiguration` are from the Spring
 Test support library).
 
 <span id="main.properties"/>
