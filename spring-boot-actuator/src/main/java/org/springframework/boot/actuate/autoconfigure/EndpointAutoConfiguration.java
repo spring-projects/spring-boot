@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -35,6 +37,7 @@ import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.SimpleHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.MetricRepository;
@@ -45,6 +48,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -67,7 +71,10 @@ import org.springframework.http.MediaType;
 public class EndpointAutoConfiguration {
 
 	@Autowired(required = false)
-	private HealthIndicator<? extends Object> healthIndicator = new VanillaHealthIndicator();
+	private HealthIndicator<? extends Object> healthIndicator;
+
+	@Autowired(required = false)
+	private DataSource dataSource;
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
@@ -90,6 +97,16 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint<Object> healthEndpoint() {
+		if (this.healthIndicator == null) {
+			if (this.dataSource == null) {
+				this.healthIndicator = new VanillaHealthIndicator();
+			}
+			else {
+				SimpleHealthIndicator healthIndicator = new SimpleHealthIndicator();
+				healthIndicator.setDataSource(this.dataSource);
+				this.healthIndicator = healthIndicator;
+			}
+		}
 		return new HealthEndpoint<Object>(this.healthIndicator);
 	}
 
@@ -134,7 +151,7 @@ public class EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(AutoConfigurationReport.class)
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public AutoConfigurationReportEndpoint autoConfigurationAuditEndpoint() {
 		return new AutoConfigurationReportEndpoint();
 	}

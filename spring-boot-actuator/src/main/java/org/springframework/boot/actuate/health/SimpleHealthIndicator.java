@@ -22,18 +22,13 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 /**
  * @author Dave Syer
  */
-public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object>>,
-		EnvironmentAware {
-
-	private Environment environment;
+public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object>> {
 
 	private DataSource dataSource;
 
@@ -65,16 +60,7 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 				}
 			}
 		}
-		if (this.environment != null) {
-			map.put("spring.profiles.active", StringUtils
-					.arrayToCommaDelimitedString(this.environment.getActiveProfiles()));
-		}
 		return map;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
 	}
 
 	public void setDataSource(DataSource dataSource) {
