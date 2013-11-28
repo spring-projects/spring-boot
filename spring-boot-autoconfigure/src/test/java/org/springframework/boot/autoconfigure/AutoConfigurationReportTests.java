@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
@@ -82,6 +83,17 @@ public class AutoConfigurationReportTests {
 		assertThat(this.report, not(nullValue()));
 		assertThat(this.report,
 				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
+	}
+
+	@Test
+	public void parent() throws Exception {
+		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
+		AutoConfigurationReport.get((ConfigurableListableBeanFactory) this.beanFactory
+				.getParentBeanFactory());
+		assertThat(this.report,
+				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
+		assertThat(this.report, not(nullValue()));
+		assertThat(this.report.getParent(), not(nullValue()));
 	}
 
 	@Test
