@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +32,13 @@ import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
@@ -71,6 +75,21 @@ public class EndpointAutoConfigurationTests {
 		assertNotNull(this.context.getBean(MetricsEndpoint.class));
 		assertNotNull(this.context.getBean(ShutdownEndpoint.class));
 		assertNotNull(this.context.getBean(TraceEndpoint.class));
+	}
+
+	@Test
+	public void healthEndpoint() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EndpointAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class);
+		this.context.refresh();
+		HealthEndpoint<?> bean = this.context.getBean(HealthEndpoint.class);
+		assertNotNull(bean);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> result = (Map<String, Object>) bean.invoke();
+		assertNotNull(result);
+		assertTrue("Wrong result: " + result, result.containsKey("status"));
+		assertTrue("Wrong result: " + result, result.containsKey("database"));
 	}
 
 	@Test

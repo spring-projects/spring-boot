@@ -42,6 +42,7 @@ import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.expression.Expression;
@@ -52,6 +53,7 @@ import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.BeanNameViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
@@ -80,19 +82,34 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 		factory.addErrorPages(new ErrorPage(this.errorPath));
 	}
 
-	private SpelView defaultErrorView = new SpelView(
-			"<html><body><h1>Whitelabel Error Page</h1>"
-					+ "<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>"
-					+ "<div id='created'>${timestamp}</div>"
-					+ "<div>There was an unexpected error (type=${error}, status=${status}).</div>"
-					+ "<div>${message}</div>" + "</body></html>");
-
-	@Bean(name = "error")
-	@ConditionalOnMissingBean(name = "error")
+	@Configuration
 	@ConditionalOnExpression("${error.whitelabel.enabled:true}")
 	@Conditional(ErrorTemplateMissingCondition.class)
-	public View defaultErrorView() {
-		return this.defaultErrorView;
+	protected static class WhitelabelErrorViewConfiguration {
+
+		private SpelView defaultErrorView = new SpelView(
+				"<html><body><h1>Whitelabel Error Page</h1>"
+						+ "<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>"
+						+ "<div id='created'>${timestamp}</div>"
+						+ "<div>There was an unexpected error (type=${error}, status=${status}).</div>"
+						+ "<div>${message}</div>" + "</body></html>");
+
+		@Bean(name = "error")
+		@ConditionalOnMissingBean(name = "error")
+		public View defaultErrorView() {
+			return this.defaultErrorView;
+		}
+
+		// If the user adds @EnableWebMvc then the bean name view resolver from
+		// WebMvcAutoConfiguration disappears, so add it back in to avoid disappointment.
+		@Bean
+		@ConditionalOnMissingBean(BeanNameViewResolver.class)
+		public BeanNameViewResolver beanNameViewResolver() {
+			BeanNameViewResolver resolver = new BeanNameViewResolver();
+			resolver.setOrder(0);
+			return resolver;
+		}
+
 	}
 
 	private static class ErrorTemplateMissingCondition extends SpringBootCondition {
