@@ -17,11 +17,14 @@
 package org.springframework.boot.autoconfigure.redis;
 
 import org.junit.Test;
+import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -39,6 +42,17 @@ public class RedisAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean("redisTemplate", RedisOperations.class));
 		assertNotNull(this.context.getBean(StringRedisTemplate.class));
+	}
+
+	@Test
+	public void testOverrideRedisConfiguration() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		TestUtils.addEnviroment(this.context, "spring.redis.host:foo");
+		this.context.register(RedisAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getBean(LettuceConnectionFactory.class)
+				.getHostName());
 	}
 
 }
