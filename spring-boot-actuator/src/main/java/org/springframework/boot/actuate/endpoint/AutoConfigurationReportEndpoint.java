@@ -39,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * 
  * @author Greg Turnquist
  * @author Phillip Webb
+ * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.autoconfig", ignoreUnknownFields = false)
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
@@ -65,6 +66,8 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		private MultiValueMap<String, MessageAndCondition> negativeMatches;
 
+		private Report parent;
+
 		public Report(AutoConfigurationReport report) {
 			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
 			this.negativeMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
@@ -74,7 +77,9 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 						: this.negativeMatches, entry.getKey(), entry.getValue());
 
 			}
-
+			if (report.getParent() != null) {
+				this.parent = new Report(report.getParent());
+			}
 		}
 
 		private void dunno(MultiValueMap<String, MessageAndCondition> map, String source,
@@ -91,6 +96,10 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		public Map<String, List<MessageAndCondition>> getNegativeMatches() {
 			return this.negativeMatches;
+		}
+
+		public Report getParent() {
+			return this.parent;
 		}
 
 	}
