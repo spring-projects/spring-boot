@@ -16,23 +16,28 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.boot.actuate.metrics.DefaultGaugeService;
+import java.util.Date;
 
-import static org.junit.Assert.fail;
+import org.junit.Test;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DefaultGaugeService}.
  */
-@Ignore
 public class DefaultGaugeServiceTests {
 
-	// FIXME
+	private MetricRepository repository = mock(MetricRepository.class);
+
+	private DefaultGaugeService service = new DefaultGaugeService(this.repository);
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void setPrependsGuager() {
+		this.service.set("foo", 2.3);
+		verify(this.repository).set(eq("gauge.foo"), eq(2.3), any(Date.class));
 	}
 
 }
