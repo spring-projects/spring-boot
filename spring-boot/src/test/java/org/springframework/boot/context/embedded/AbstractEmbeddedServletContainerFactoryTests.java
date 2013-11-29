@@ -24,17 +24,14 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,9 +41,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -115,25 +114,26 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
-	@Ignore
 	public void restartWithKeepAlive() throws Exception {
 		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-		HttpClient client = new HttpClient(connectionManager);
-		GetMethod get1 = new GetMethod("http://localhost:8080/hello");
-		assertThat(client.executeMethod(get1), equalTo(200));
-		get1.releaseConnection();
+		HttpComponentsAsyncClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsAsyncClientHttpRequestFactory();
+		ListenableFuture<ClientHttpResponse> response1 = clientHttpRequestFactory
+				.createAsyncRequest(new URI("http://localhost:8080/hello"),
+						HttpMethod.GET).executeAsync();
+		assertThat(response1.get(10, TimeUnit.SECONDS).getRawStatusCode(), equalTo(200));
 
 		this.container.stop();
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
+		this.container.start();
 
-		GetMethod get2 = new GetMethod("http://localhost:8080/hello");
-		assertThat(client.executeMethod(get2), equalTo(200));
-		get2.releaseConnection();
+		ListenableFuture<ClientHttpResponse> response2 = clientHttpRequestFactory
+				.createAsyncRequest(new URI("http://localhost:8080/hello"),
+						HttpMethod.GET).executeAsync();
+		assertThat(response2.get(10, TimeUnit.SECONDS).getRawStatusCode(), equalTo(200));
 	}
 
 	@Test
@@ -267,9 +267,6 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	}
 
 	@Test
-	@Ignore
-	// FIXME: how to test an error response (maybe java.net.HttpUrlConnection isn't going
-	// to cut it)
 	public void errorPage() throws Exception {
 		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
 		factory.addErrorPages(new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/hello"));
@@ -292,7 +289,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected ClientHttpResponse getClientResponse(String url) throws IOException,
 			URISyntaxException {
-		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+		HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(url),
 				HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
