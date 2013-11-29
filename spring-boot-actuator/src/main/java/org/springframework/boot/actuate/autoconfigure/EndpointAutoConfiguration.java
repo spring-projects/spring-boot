@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
+import org.springframework.boot.actuate.endpoint.ConfigurationPropertiesReportEndpoint;
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
@@ -160,6 +161,12 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
+		return new ConfigurationPropertiesReportEndpoint();
 	}
 
 	@Configuration
