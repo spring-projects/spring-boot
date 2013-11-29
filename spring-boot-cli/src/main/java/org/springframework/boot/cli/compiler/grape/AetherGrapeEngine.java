@@ -42,7 +42,7 @@ import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
-import org.eclipse.aether.repository.Proxy;
+import org.eclipse.aether.repository.ProxySelector;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -81,6 +81,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private final List<RemoteRepository> repositories;
 
+	private ProxySelector proxySelector = new JreProxySelector();
+
 	public AetherGrapeEngine(GroovyClassLoader classLoader,
 			List<RemoteRepository> remoteRepositories) {
 		this.classLoader = classLoader;
@@ -90,36 +92,13 @@ public class AetherGrapeEngine implements GrapeEngine {
 		LocalRepositoryManager localRepositoryManager = this.repositorySystem
 				.newLocalRepositoryManager(session, localRepository);
 		session.setLocalRepositoryManager(localRepositoryManager);
+		session.setProxySelector(this.proxySelector);
 		this.session = session;
-		this.repositories = new ArrayList<RemoteRepository>(remoteRepositories);
+		this.repositories = new ArrayList<RemoteRepository>();
+		for (RemoteRepository repository : remoteRepositories) {
+			addRepository(repository);
+		}
 		this.progressReporter = getProgressReporter(session);
-	}
-
-	public static Proxy defaultProxy(String protocol) {
-		// TODO: proxy authentication
-		if ("http".equals(protocol) || "dav".equals(protocol)) {
-			String proxyHost = System.getProperty("http.proxyHost");
-			if (proxyHost != null) {
-				// Use defaults from normal JVM proxy handler
-				return new Proxy("http", proxyHost, new Integer(System.getProperty(
-						"http.proxyPort", "80")));
-			}
-		}
-		else if ("https".equals(protocol) || "davs".equals(protocol)) {
-			String secureProxyHost = System.getProperty("https.proxyHost");
-			if (secureProxyHost != null) {
-				return new Proxy("https", secureProxyHost, new Integer(
-						System.getProperty("https.proxyPort", "443")));
-			}
-		}
-		else if ("ftp".equals(protocol)) {
-			String secureProxyHost = System.getProperty("ftp.proxyHost");
-			if (secureProxyHost != null) {
-				return new Proxy("ftp", secureProxyHost, new Integer(System.getProperty(
-						"ftp.proxyPort", "443")));
-			}
-		}
-		return null;
 	}
 
 	private ServiceLocator createServiceLocator() {
@@ -275,11 +254,17 @@ public class AetherGrapeEngine implements GrapeEngine {
 		String root = (String) args.get("root");
 		RemoteRepository.Builder builder = new RemoteRepository.Builder(name, "default",
 				root);
-		String protocol = root.contains(":") ? root.substring(0, root.indexOf(":"))
-				: "none";
-		builder.setProxy(AetherGrapeEngine.defaultProxy(protocol));
+		RemoteRepository repository = builder.build();
+		addRepository(repository);
+	}
 
-		this.repositories.add(builder.build());
+	protected void addRepository(RemoteRepository repository) {
+		if (repository.getProxy() == null) {
+			RemoteRepository.Builder builder = new RemoteRepository.Builder(repository);
+			builder.setProxy(this.proxySelector.getProxy(repository));
+			repository = builder.build();
+		}
+		this.repositories.add(repository);
 	}
 
 	@Override
