@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.junit.Test;
@@ -30,9 +31,11 @@ import org.springframework.boot.context.embedded.AbstractEmbeddedServletContaine
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TomcatEmbeddedServletContainerFactory} and
@@ -111,6 +114,15 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		assertTimeout(factory, 60);
 	}
 
+	@Test
+	public void valve() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		Valve valve = mock(Valve.class);
+		factory.addContextValves(valve);
+		this.container = factory.getEmbeddedServletContainer();
+		verify(valve).setNext(any(Valve.class));
+	}
+
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
 		this.container = factory.getEmbeddedServletContainer();
 		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
@@ -118,5 +130,4 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		assertThat(context.getSessionTimeout(), equalTo(expected));
 	}
 
-	// FIXME test valve
 }
