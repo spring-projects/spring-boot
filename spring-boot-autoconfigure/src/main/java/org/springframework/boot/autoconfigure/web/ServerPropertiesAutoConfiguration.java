@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -38,13 +40,14 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @EnableConfigurationProperties
+@ConditionalOnWebApplication
 public class ServerPropertiesAutoConfiguration implements ApplicationContextAware,
 		EmbeddedServletContainerCustomizer {
 
 	private ApplicationContext applicationContext;
 
 	@Bean(name = "org.springframework.boot.autoconfigure.web.ServerProperties")
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public ServerProperties serverProperties() {
 		return new ServerProperties();
 	}

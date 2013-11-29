@@ -20,7 +20,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -78,8 +77,7 @@ public class BasicErrorControllerSpecialIntegrationTests {
 	}
 
 	@Configuration
-	// TODO: fix this so it doesn't need to be excluded
-	@EnableAutoConfiguration(exclude = ServerPropertiesAutoConfiguration.class)
+	@EnableAutoConfiguration
 	protected static class ParentConfiguration {
 
 	}
