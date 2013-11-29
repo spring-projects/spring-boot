@@ -47,13 +47,24 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
 	private boolean sensitive;
 
+	private boolean enabled = true;
+
 	public AbstractEndpoint(String path) {
-		this(path, true);
+		this(path, true, true);
 	}
 
-	public AbstractEndpoint(String path, boolean sensitive) {
+	public AbstractEndpoint(String path, boolean sensitive, boolean enabled) {
 		this.path = path;
 		this.sensitive = sensitive;
+		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override
@@ -83,4 +94,14 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 	public HttpMethod[] methods() {
 		return GET_HTTP_METHOD;
 	}
+
+	@Override
+	public final T invoke() {
+		if (this.enabled) {
+			return doInvoke();
+		}
+		throw new EndpointDisabledException();
+	}
+
+	protected abstract T doInvoke();
 }

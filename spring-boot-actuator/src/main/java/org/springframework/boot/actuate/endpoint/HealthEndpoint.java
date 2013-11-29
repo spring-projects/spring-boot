@@ -36,13 +36,13 @@ public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 	 * @param indicator the health indicator
 	 */
 	public HealthEndpoint(HealthIndicator<? extends T> indicator) {
-		super("/health", false);
+		super("/health", false, true);
 		Assert.notNull(indicator, "Indicator must not be null");
 		this.indicator = indicator;
 	}
 
 	@Override
-	public T invoke() {
+	protected T doInvoke() {
 		return this.indicator.health();
 	}
 

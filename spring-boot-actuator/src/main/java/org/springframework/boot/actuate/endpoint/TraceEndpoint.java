@@ -45,7 +45,7 @@ public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 	}
 
 	@Override
-	public List<Trace> invoke() {
+	protected List<Trace> doInvoke() {
 		return this.repository.findAll();
 	}
 }

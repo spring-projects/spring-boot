@@ -52,7 +52,7 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	}
 
 	@Override
-	public Report invoke() {
+	protected Report doInvoke() {
 		return new Report(this.autoConfigurationReport);
 	}
 

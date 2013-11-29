@@ -39,13 +39,13 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * @param info the info to expose
 	 */
 	public InfoEndpoint(Map<String, ? extends Object> info) {
-		super("/info", false);
+		super("/info", false, true);
 		Assert.notNull(info, "Info must not be null");
 		this.info = info;
 	}
 
 	@Override
-	public Map<String, Object> invoke() {
+	protected Map<String, Object> doInvoke() {
 		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
 		info.putAll(getAdditionalInfo());
 		return info;

@@ -56,7 +56,7 @@ public class BeansEndpoint extends AbstractEndpoint<String> implements
 	}
 
 	@Override
-	public String invoke() {
+	protected String doInvoke() {
 		return this.liveBeansView.getSnapshotAsJson();
 	}
 }

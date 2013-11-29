@@ -105,7 +105,7 @@ public class EndpointHandlerMappingTests {
 		}
 
 		@Override
-		public Object invoke() {
+		public Object doInvoke() {
 			return null;
 		}
 
