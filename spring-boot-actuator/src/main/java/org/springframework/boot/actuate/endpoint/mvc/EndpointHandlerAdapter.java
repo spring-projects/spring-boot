@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EndpointDisabledException;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -40,6 +41,7 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor;
+import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -88,7 +90,15 @@ public final class EndpointHandlerAdapter implements HandlerAdapter {
 	private void handle(HttpServletRequest request, HttpServletResponse response,
 			Endpoint<?> endpoint) throws Exception {
 
-		Object result = endpoint.invoke();
+		Object result = null;
+		try {
+			result = endpoint.invoke();
+		}
+		catch (EndpointDisabledException e) {
+			// Disabled endpoints should get mapped to a HTTP 404
+			throw new NoSuchRequestHandlingMethodException(request);
+		}
+
 		Class<?> resultClass = result.getClass();
 
 		List<MediaType> mediaTypes = getMediaTypes(request, endpoint, resultClass);

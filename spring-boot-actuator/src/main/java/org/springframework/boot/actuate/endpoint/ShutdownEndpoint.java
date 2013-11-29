@@ -38,22 +38,15 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 
 	private ConfigurableApplicationContext context;
 
-	private boolean enabled = false;
-
 	/**
 	 * Create a new {@link ShutdownEndpoint} instance.
 	 */
 	public ShutdownEndpoint() {
-		super("/shutdown");
+		super("/shutdown", true, false);
 	}
 
 	@Override
-	public Map<String, Object> invoke() {
-
-		if (!this.enabled) {
-			return Collections.<String, Object> singletonMap("message",
-					"Shutdown not enabled, sorry.");
-		}
+	protected Map<String, Object> doInvoke() {
 
 		if (this.context == null) {
 			return Collections.<String, Object> singletonMap("message",
@@ -89,11 +82,4 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 		return POST_HTTP_METHOD;
 	}
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
 }

@@ -47,7 +47,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	}
 
 	@Override
-	public Map<String, Object> invoke() {
+	protected Map<String, Object> doInvoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		result.put("profiles", this.environment.getActiveProfiles());
 		for (PropertySource<?> source : getPropertySources()) {
