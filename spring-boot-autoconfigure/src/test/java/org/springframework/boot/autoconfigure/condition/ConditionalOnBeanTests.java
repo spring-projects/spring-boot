@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.Date;
+
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +45,19 @@ public class ConditionalOnBeanTests {
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
 		assertEquals("bar", this.context.getBean("bar"));
+	}
+
+	@Test
+	public void testNameAndTypeOnBeanCondition() {
+		this.context.register(FooConfiguration.class,
+				OnBeanNameAndTypeConfiguration.class);
+		this.context.refresh();
+		/*
+		 * Arguably this should be true, but as things are implemented the conditions
+		 * specified in the different attributes of @ConditionalOnBean are combined with
+		 * logical OR (not AND) so if any of them match the condition is true.
+		 */
+		assertFalse(this.context.containsBean("bar"));
 	}
 
 	@Test
@@ -88,6 +103,15 @@ public class ConditionalOnBeanTests {
 	@Configuration
 	@ConditionalOnBean(name = "foo")
 	protected static class OnBeanNameConfiguration {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(name = "foo", value = Date.class)
+	protected static class OnBeanNameAndTypeConfiguration {
 		@Bean
 		public String bar() {
 			return "bar";
