@@ -95,13 +95,13 @@ public class ConditionalOnClassTests {
 	}
 
 	@Configuration
-	@ImportResource("org/springframework/boot/context/foo.xml")
+	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class XmlConfiguration {
 	}
 
 	@Configuration
 	@Import(BasicConfiguration.class)
-	@ImportResource("org/springframework/boot/context/foo.xml")
+	@ImportResource("org/springframework/boot/autoconfigure/condition/foo.xml")
 	protected static class CombinedXmlConfiguration {
 	}
 }
