@@ -40,6 +40,22 @@ Javadocs. Some rules of thumb:
 * Look for `@ConditionalOnExpression` annotations that switch features
   on and off in response to SpEL expressions, normally evaluated with
   placeholders resolved from the `Environment`.
+  
+## Add a Servlet, Filter or ServletContextListener to an Application
+
+`Servlet`, `Filter`, `ServletContextListener` and the other listeners
+supported by the Servlet spec can be added to your application as
+`@Bean` definitions. Be very careful that they don't cause eager
+initialization of too many other beans because they have to be
+installed in th container very early in the application lifecycle
+(e.g. it's not a good idea to have them depend on your `DataSource` or
+JPA configuration). You can work around restrictions like that by
+initializing them lazily when first used instead of on initialization.
+
+In the case of `Filters` and `Servlets` you can also add mappings and
+init parameters by adding a `FilterRegistrationBean` or
+`ServletRegistrationBean` instead of or as well as the underlying
+component.
 
 ## Configure Tomcat
 
@@ -61,6 +77,45 @@ are quite rich so once you have access to the
 `JettyEmbeddedServletContainerFactory` you can modify it in a number
 of ways. Or the nuclear option is to add your own
 `JettyEmbeddedServletContainerFactory`.
+
+## Terminate SSL in Tomcat
+
+Add a `EmbeddedServletContainerCustomizer` and in that add a
+`TomcatConnectorCustomizer` that sets up the connector to be secure:
+
+```java
+@Bean
+public EmbeddedServletContainerCustomizer containerCustomizer(){
+    return new EmbeddedServletContainerCustomizer() {
+        @Override
+        public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+            if(factory instanceof TomcatEmbeddedServletContainerFactory){
+                TomcatEmbeddedServletContainerFactory containerFactory = (TomcatEmbeddedServletContainerFactory) factory;
+                containerFactory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+                
+                    @Override
+                    public void customize(Connector connector) {
+
+                        connector.setPort(serverPort);
+                        connector.setSecure(true);
+                        connector.setScheme("https");
+                        connector.setAttribute("keyAlias", "tomcat");
+                        connector.setAttribute("keystorePass", "password");
+                        try {
+                            connector.setAttribute("keystoreFile", ResourceUtils.getFile("src/ssl/tomcat.keystore").getAbsolutePath());
+                        } catch (FileNotFoundException e) {
+                            throw new IllegalStateException("Cannot load keystore", e);
+                        }
+                        connector.setAttribute("clientAuth", "false");
+                        connector.setAttribute("sslProtocol", "TLS");
+                        connector.setAttribute("SSLEnabled", true);
+                
+                });
+            }
+        }
+    };
+}
+```
 
 ## Reload Static Content (E.g. Thymeleaf Templates) Without Restarting the Container
 
@@ -195,7 +250,6 @@ Applications that are not already Spring applications might be
 convertible to a Spring Boot application, and the guidance above might
 help, but your mileage may vary.
 
-
 ## Serve Static Content
 
 Spring Boot by default will serve static content from a folder called
@@ -251,6 +305,23 @@ address that the server is able to bind to.
 For more detail look at the
 [`ManagementServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/properties/ManagementServerProperties.java?source=c)
 source code.
+
+## Customize "Whitelabel" Error Page
+
+The Actuator installs a "whitelabel" error page that you will see in
+browser client if you encounter a server error (machine clients
+consuming JSON and other media types should see a sensible response
+with the right error code). To switch it off you can set
+`error.whitelabel.enabled=false`, but normally in addition or
+alternatively to that you will want to add your own error page
+replacing the whitelabel one. If you are using Thymeleaf you can do
+this by adding an "error.html" template. In general what you need is a
+`View` that resolves with a name of "error", and/or a `@Controller`
+that handles the "/error" path. Unless you replaced some of the
+default configuration you should find a `BeanNameViewResolver` in your
+`ApplicationContext` so a `@Bean` with id "error" would be a simple
+way of doing that.  Look at `ErrorMvcAutoConfiguration` for more
+options.
 
 ## Use 'Short' Command Line Arguments
 
@@ -360,6 +431,89 @@ going to need to add a `web.xml` to your application and configure it
 to load an `ApplicationContext` via a `DispatcherServlet`.
 
 TODO: add some detail.
+
+## Configure a DataSource
+
+Spring Boot will create a `DataSource` for you if you have
+`spring-jdbc` and some other things on the classpath. Here's the
+algorithm for choosing a specific implementation.
+
+* We prefer the Tomcat pooling `DataSource` for its performance and
+  concurrency, so if that is available we always choose it.
+* If commons-dbcp is available we will use that, but we don't
+  recommend it in production.
+* If neither of those is available but an embedded database is then we
+  create one of those for you (preference order is h2, then Apache
+  Derby, then hsqldb).
+  
+The pooling `DataSource` option is controlled by external
+configuration properties in `spring.datasource.*` for example:
+
+```properties
+spring.datasource.url: jdbc:mysql://localhost/test
+spring.datasource.username: root
+spring.datasource.password:
+spring.datasource.driverClassName: com.mysql.jdbc.Driver
+```
+
+The `@ConfigurationProperties` for `spring.datasource` are defined in
+`AbstractDataSourceConfiguration` (so see there for more options).
+
+For a pooling `DataSource` to be created we need to be able to verify
+that a valid `Driver` class is available, so we check for that before
+doing anything. I.e. if you set
+`spring.datasource.driverClassName=com.mysql.jdbc.Driver` then that
+class has to be loadable.
+
+To override the default settings just define a `@Bean` of your own of
+type `DataSource`. See
+[`DataSourceAutoConfiguration`]((https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java))
+for more details.
+
+## Use Spring Data Repositories
+
+Spring Data can create implementations for you of `@Repository`
+interfaces of various flavours. Spring Boot will handle all of that
+for you as long as those `@Repositories` are included in a
+`@ComponentScan`.
+
+For many applications all you will need is to put the right Spring
+Data dependencies on your classpath (there is a
+"spring-boot-starter-data-jpa" for JPA and for Mongodb you only nee
+dto add "spring-datamongodb"), create some repository interfaces to
+handle your `@Entity` objects, and then add a `@ComponentScan` that
+covers those packages. Examples are in the
+[JPA sample](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-jpa)
+or the
+[Mongodb sample](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-mongodb).
+
+## Configure JPA Properties
+
+Spring JPA already provides some vendor-independent configuration
+options (e.g. for SQL logging) and Spring Boot exposes those, and a
+few more for hibernate as external configuration properties. The most
+common options to set are
+
+```properties
+spring.jpa.hibernate.ddl-auto: create-drop
+spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
+spring.jpa.database: H2
+spring.jpa.show-sql: true
+```
+
+(Because of relaxed data binding hyphens or underscores should work
+equally well as property keys.)  The `ddl-auto` setting is a special
+case in that it has different defaults depending on whether you are
+using an embedded database ("create-drop") or not ("none"). In
+addition all properties in `spring.jpa.properties.*` are passed
+through as normal JPA properties (with the prefix stripped) when the
+local `EntityManagerFactory` is created.
+
+See
+[`HibernateJpaAutoConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/HibernateJpaAutoConfiguration.java)
+and
+[`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)
+for more details.
 
 <span id="discover.options"/>
 ## Discover Built-in Options for External Properties
