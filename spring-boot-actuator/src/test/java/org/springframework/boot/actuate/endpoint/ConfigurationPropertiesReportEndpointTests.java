@@ -16,15 +16,17 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Map;
+
 import org.junit.Test;
-import org.springframework.boot.actuate.properties.ManagementServerProperties;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class ConfigurationPropertiesReportEndpointTests extends
@@ -36,8 +38,34 @@ public class ConfigurationPropertiesReportEndpointTests extends
 	}
 
 	@Test
-	public void invoke() throws Exception {
+	public void testInvoke() throws Exception {
 		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testDefaultKeySanitization() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		// report.setKeysToSanitize(new String[] {});
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties
+				.get("testProperties");
+		assertNotNull(nestedProperties);
+		assertEquals("******", nestedProperties.get("dbPassword"));
+		assertEquals("654321", nestedProperties.get("myTestProperty"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testKeySanitization() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		report.setKeysToSanitize(new String[] { "property" });
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) properties
+				.get("testProperties");
+		assertNotNull(nestedProperties);
+		assertEquals("123456", nestedProperties.get("dbPassword"));
+		assertEquals("******", nestedProperties.get("myTestProperty"));
 	}
 
 	@Configuration
@@ -50,18 +78,33 @@ public class ConfigurationPropertiesReportEndpointTests extends
 		}
 
 		@Bean
-		public ServerProperties serverProperties() {
-			return new ServerProperties();
+		public TestProperties testProperties() {
+			return new TestProperties();
 		}
 
-		@Bean
-		public ManagementServerProperties managementServerProperties() {
-			return new ManagementServerProperties();
-		}
+		@ConfigurationProperties(name = "test")
+		public static class TestProperties {
 
-		@Bean
-		public SecurityProperties securityProperties() {
-			return new SecurityProperties();
+			private String dbPassword = "123456";
+
+			private String myTestProperty = "654321";
+
+			public String getDbPassword() {
+				return this.dbPassword;
+			}
+
+			public void setDbPassword(String dbPassword) {
+				this.dbPassword = dbPassword;
+			}
+
+			public String getMyTestProperty() {
+				return this.myTestProperty;
+			}
+
+			public void setMyTestProperty(String myTestProperty) {
+				this.myTestProperty = myTestProperty;
+			}
+
 		}
 	}
 }
