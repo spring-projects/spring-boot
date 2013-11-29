@@ -43,7 +43,43 @@ Javadocs. Some rules of thumb:
 
 ## Configure Tomcat
 
+Generally you can follow the advice [here](#discover.options) about
+`@ConfigurationProperties` (`ServerProperties` is the main one here),
+but also look at `EmbeddedServletContainerCustomizer` and various
+Tomcat specific `*Customizers` that you can add in one of those. The
+Tomcat APIs are quite rich so once you have access to the
+`TomcatEmbeddedServletContainerFactory` you can modify it in a number
+of ways. Or the nuclear option is to add your own
+`TomcatEmbeddedServletContainerFactory`.
+
 ## Configure Jetty
+
+Generally you can follow the advice [here](#discover.options) about
+`@ConfigurationProperties` (`ServerProperties` is the main one here),
+but also look at `EmbeddedServletContainerCustomizer`. The Jetty APIs
+are quite rich so once you have access to the
+`JettyEmbeddedServletContainerFactory` you can modify it in a number
+of ways. Or the nuclear option is to add your own
+`JettyEmbeddedServletContainerFactory`.
+
+## Reload Static Content (E.g. Thymeleaf Templates) Without Restarting the Container
+
+If you are using Thymeleaf, then set
+`spring.thymeleaf.cache=false`. See `ThymeleafAutoConfiguration` for
+other template customization options.
+
+# Reload Java Classes Without Restarting the Container
+
+Modern IDEs (Eclipse, IDEA etc.) all support hot swapping of bytecode,
+so if you make a change that doesn't affect class or method signatures
+it should reload cleanly with no side effects.
+
+[Spring Loaded](https://github.com/spring-projects/spring-loaded) goes
+a little further in that it can reload class definitions with changes
+in the method signatures. With some customization it can force an
+`ApplicationContext` to refresh itself (but there is no general
+mechanism to ensure that would be safe for a running application
+anyway, so it would only ever be a development time trick probably).
 
 <span id="build.hierarchy"/>
 ## Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
@@ -325,6 +361,7 @@ to load an `ApplicationContext` via a `DispatcherServlet`.
 
 TODO: add some detail.
 
+<span id="discover.options"/>
 ## Discover Built-in Options for External Properties
 
 Spring Boot binds external properties from `application.properties`
