@@ -145,7 +145,9 @@ public class Repackager {
 					}
 				}
 			});
-			writer.writeLoaderClasses();
+			if (!(this.layout instanceof Layouts.None)) {
+				writer.writeLoaderClasses();
+			}
 		}
 		finally {
 			try {
