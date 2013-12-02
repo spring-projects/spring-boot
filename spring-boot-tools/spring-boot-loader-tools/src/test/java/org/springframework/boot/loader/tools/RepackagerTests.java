@@ -148,6 +148,7 @@ public class RepackagerTests {
 		Manifest actualManifest = getManifest(file);
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"),
 				equalTo("a.b.C"));
+		assertThat(hasLauncherClasses(file), equalTo(false));
 	}
 
 	@Test
@@ -160,6 +161,7 @@ public class RepackagerTests {
 		Manifest actualManifest = getManifest(file);
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"),
 				equalTo(null));
+		assertThat(hasLauncherClasses(file), equalTo(false));
 	}
 
 	@Test
