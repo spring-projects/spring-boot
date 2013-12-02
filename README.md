@@ -264,9 +264,19 @@ latest and greatest, Spring Boot can be
 > **NOTE:** You may need to increase the amount of memory available to Maven by setting
 > a `MAVEN_OPTS` environment variable with the value `-Xmx512m -XX:MaxPermSize=128m`
 
-_Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit pull requests._
+_Also see [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to submit
+pull requests, and in particular please fill out the
+[Contributor's Agreement](https://support.springsource.com/spring_committer_signup)
+before your first change however trivial. (Or if you filed such an
+agreement already for another project just mention that in your pull
+request.)_
 
 ## Further Reading
+
+A good place to start might be the
+[compendium of micro HOWTO guides](docs/howto.md) covering many common
+use cases.
+
 There are a number of modules in Spring Boot, if you want learn more about each one
 please refer to the appropriate README.md file:
 
