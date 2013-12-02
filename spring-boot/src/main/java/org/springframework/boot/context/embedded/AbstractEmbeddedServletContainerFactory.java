@@ -162,7 +162,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	}
 
 	/**
-	 * @return the session timeout in minutes
+	 * @return the session timeout in seconds
 	 */
 	public int getSessionTimeout() {
 		return this.sessionTimeout;
