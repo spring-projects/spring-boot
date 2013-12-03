@@ -37,7 +37,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
-import org.springframework.web.socket.client.endpoint.StandardWebSocketClient;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import static org.junit.Assert.assertEquals;
 
