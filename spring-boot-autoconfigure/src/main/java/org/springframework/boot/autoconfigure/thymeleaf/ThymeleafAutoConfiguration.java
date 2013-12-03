@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.thymeleaf;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -39,11 +37,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
-import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
-import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.spring3.SpringTemplateEngine;
+import org.thymeleaf.spring3.resourceresolver.SpringResourceResourceResolver;
 import org.thymeleaf.spring3.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
@@ -79,25 +76,7 @@ public class ThymeleafAutoConfiguration {
 		@Bean
 		public ITemplateResolver defaultTemplateResolver() {
 			TemplateResolver resolver = new TemplateResolver();
-			resolver.setResourceResolver(new IResourceResolver() {
-				@Override
-				public InputStream getResourceAsStream(
-						TemplateProcessingParameters templateProcessingParameters,
-						String resourceName) {
-					try {
-						return DefaultTemplateResolverConfiguration.this.resourceLoader
-								.getResource(resourceName).getInputStream();
-					}
-					catch (IOException ex) {
-						return null;
-					}
-				}
-
-				@Override
-				public String getName() {
-					return "SPRING";
-				}
-			});
+			resolver.setResourceResolver(thymeleafResourceResolver());
 			resolver.setPrefix(this.environment.getProperty("prefix", DEFAULT_PREFIX));
 			resolver.setSuffix(this.environment.getProperty("suffix", DEFAULT_SUFFIX));
 			resolver.setTemplateMode(this.environment.getProperty("mode", "HTML5"));
@@ -106,6 +85,11 @@ public class ThymeleafAutoConfiguration {
 			resolver.setCacheable(this.environment.getProperty("cache", Boolean.class,
 					true));
 			return resolver;
+		}
+
+		@Bean
+		protected SpringResourceResourceResolver thymeleafResourceResolver() {
+			return new SpringResourceResourceResolver();
 		}
 
 		public static boolean templateExists(Environment environment,
