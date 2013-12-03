@@ -39,17 +39,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.server.config.EnableWebSocket;
-import org.springframework.web.socket.server.config.WebSocketConfigurer;
-import org.springframework.web.socket.server.config.WebSocketHandlerRegistry;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.sockjs.transport.handler.DefaultSockJsService;
 
 /**
- * Auto configuration for websockets (and sockjs in particular). Users should be able to
- * just define beans of type {@link WebSocketHandler}. If <code>spring-websocket</code> is
- * detected on the classpath then we add a {@link DefaultSockJsService} and an MVC handler
- * mapping to <code>/&lt;beanName&gt;/**</code> for all of the
- * <code>WebSocketHandler</code> beans that have a bean name beginning with "/".
+ * Auto configuration for websocket server (and sockjs in particular). Users should be
+ * able to just define beans of type {@link WebSocketHandler}. If
+ * <code>spring-websocket</code> is detected on the classpath then we add a
+ * {@link DefaultSockJsService} and an MVC handler mapping to
+ * <code>/&lt;beanName&gt;/**</code> for all of the <code>WebSocketHandler</code> beans
+ * that have a bean name beginning with "/".
  * 
  * @author Dave Syer
  */
