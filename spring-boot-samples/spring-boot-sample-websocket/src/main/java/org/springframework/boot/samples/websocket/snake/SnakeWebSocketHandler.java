@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.adapter.TextWebSocketHandlerAdapter;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-public class SnakeWebSocketHandler extends TextWebSocketHandlerAdapter {
+public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
 	public static final int PLAYFIELD_WIDTH = 640;
 	public static final int PLAYFIELD_HEIGHT = 480;
