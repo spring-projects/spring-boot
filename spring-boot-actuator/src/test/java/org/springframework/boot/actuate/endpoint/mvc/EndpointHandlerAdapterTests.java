@@ -16,10 +16,16 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
+import java.util.Collections;
+import java.util.Map;
 
+import org.junit.Test;
+import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -32,6 +38,8 @@ import static org.mockito.Mockito.mock;
 public class EndpointHandlerAdapterTests {
 
 	private EndpointHandlerAdapter adapter = new EndpointHandlerAdapter();
+	private MockHttpServletRequest request = new MockHttpServletRequest();
+	private MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
 	public void onlySupportsEndpoints() throws Exception {
@@ -39,6 +47,28 @@ public class EndpointHandlerAdapterTests {
 		assertFalse(this.adapter.supports(mock(Object.class)));
 	}
 
-	// FIXME tests
+	@Test
+	public void rendersJson() throws Exception {
+		this.adapter.handle(this.request, this.response,
+				new AbstractEndpoint<Map<String, String>>("/foo") {
+					@Override
+					protected Map<String, String> doInvoke() {
+						return Collections.singletonMap("hello", "world");
+					}
+				});
+		assertEquals("{\"hello\":\"world\"}", this.response.getContentAsString());
+	}
 
+	@Test
+	public void rendersString() throws Exception {
+		this.request.addHeader("Accept", "text/plain");
+		this.adapter.handle(this.request, this.response, new AbstractEndpoint<String>(
+				"/foo") {
+			@Override
+			protected String doInvoke() {
+				return "hello world";
+			}
+		});
+		assertEquals("hello world", this.response.getContentAsString());
+	}
 }
