@@ -50,6 +50,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * {@link AbstractMessageConverterMethodProcessor} but not tied to annotated methods.
  * 
  * @author Phillip Webb
+ * 
  * @see EndpointHandlerMapping
  */
 public final class EndpointHandlerAdapter implements HandlerAdapter {
