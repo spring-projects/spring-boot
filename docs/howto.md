@@ -123,7 +123,7 @@ If you are using Thymeleaf, then set
 `spring.thymeleaf.cache=false`. See `ThymeleafAutoConfiguration` for
 other template customization options.
 
-# Reload Java Classes Without Restarting the Container
+## Reload Java Classes Without Restarting the Container
 
 Modern IDEs (Eclipse, IDEA etc.) all support hot swapping of bytecode,
 so if you make a change that doesn't affect class or method signatures
