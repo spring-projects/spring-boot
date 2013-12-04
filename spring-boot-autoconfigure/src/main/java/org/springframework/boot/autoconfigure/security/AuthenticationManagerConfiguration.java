@@ -56,7 +56,6 @@ public class AuthenticationManagerConfiguration {
 					+ user.getPassword() + "\n\n");
 		}
 
-		// TODO: Add the management role...
 		Set<String> roles = new LinkedHashSet<String>(user.getRole());
 
 		builder.withUser(user.getName()).password(user.getPassword())
