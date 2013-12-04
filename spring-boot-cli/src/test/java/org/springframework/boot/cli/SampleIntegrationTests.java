@@ -17,6 +17,7 @@
 package org.springframework.boot.cli;
 
 import java.io.File;
+import java.net.URI;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.BeforeClass;
@@ -48,7 +49,9 @@ public class SampleIntegrationTests {
 	@Test
 	public void appSample() throws Exception {
 		String output = this.cli.run("app.groovy");
-		assertTrue("Wrong output: " + output, output.contains("Hello World"));
+		URI scriptUri = new File("samples/app.groovy").toURI();
+		assertTrue("Wrong output: " + output,
+				output.contains("Hello World! From " + scriptUri));
 	}
 
 	@Test
