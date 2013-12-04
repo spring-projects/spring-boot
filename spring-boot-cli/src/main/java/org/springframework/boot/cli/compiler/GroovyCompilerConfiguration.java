@@ -31,7 +31,7 @@ public interface GroovyCompilerConfiguration {
 	/**
 	 * Constant to be used when there is no {@link #getClasspath() classpath}.
 	 */
-	public static final String[] NO_CLASSPATH = {};
+	public static final String[] DEFAULT_CLASSPATH = { "." };
 
 	/**
 	 * Returns the scope in which the compiler operates.

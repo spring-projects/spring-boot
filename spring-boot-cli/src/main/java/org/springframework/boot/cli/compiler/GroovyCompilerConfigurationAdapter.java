@@ -82,7 +82,7 @@ public class GroovyCompilerConfigurationAdapter implements GroovyCompilerConfigu
 		if (this.options.has(classpathOption)) {
 			return this.options.valueOf(classpathOption).split(":");
 		}
-		return NO_CLASSPATH;
+		return DEFAULT_CLASSPATH;
 	}
 
 	@Override

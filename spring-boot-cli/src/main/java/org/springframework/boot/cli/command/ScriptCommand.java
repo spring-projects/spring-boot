@@ -276,7 +276,7 @@ public class ScriptCommand implements Command {
 
 		@Override
 		public String[] getClasspath() {
-			return NO_CLASSPATH;
+			return DEFAULT_CLASSPATH;
 		}
 
 		@Override
