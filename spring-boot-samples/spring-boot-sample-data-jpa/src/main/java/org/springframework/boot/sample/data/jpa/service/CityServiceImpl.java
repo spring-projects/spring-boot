@@ -30,8 +30,6 @@ import org.springframework.util.StringUtils;
 @Transactional
 class CityServiceImpl implements CityService {
 
-	// FIXME deal with null repository return values
-
 	private final CityRepository cityRepository;
 
 	private final HotelRepository hotelRepository;

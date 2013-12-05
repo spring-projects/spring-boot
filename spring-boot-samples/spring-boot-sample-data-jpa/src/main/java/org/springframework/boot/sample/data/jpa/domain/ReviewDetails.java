@@ -19,8 +19,6 @@ package org.springframework.boot.sample.data.jpa.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-//FIXME Hibernate bug HHH-5792 prevents this being embedded
-
 public class ReviewDetails implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -36,12 +34,6 @@ public class ReviewDetails implements Serializable {
 	private String details;
 
 	public ReviewDetails() {
-	}
-
-	@Deprecated
-	public ReviewDetails(String title, Rating rating) {
-		this.title = title;
-		this.rating = rating;
 	}
 
 	public Rating getRating() {
