@@ -37,8 +37,6 @@ import org.springframework.util.Assert;
 @Transactional
 class HotelServiceImpl implements HotelService {
 
-	// FIXME deal with null repository return values
-
 	private final HotelRepository hotelRepository;
 
 	private final ReviewRepository reviewRepository;
@@ -71,9 +69,8 @@ class HotelServiceImpl implements HotelService {
 
 	@Override
 	public Review addReview(Hotel hotel, ReviewDetails details) {
-		// FIXME
-		System.out.println(details.getTitle());
-		return new Review(hotel, 1, details);
+		Review review = new Review(hotel, 1, details);
+		return reviewRepository.save(review);
 	}
 
 	@Override
