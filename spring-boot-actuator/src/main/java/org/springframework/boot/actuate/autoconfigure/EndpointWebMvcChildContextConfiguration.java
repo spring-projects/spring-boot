@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Map;
+
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -23,18 +25,25 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
+import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -51,6 +60,9 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Configuration
 	protected static class ServerCustomization implements
 			EmbeddedServletContainerCustomizer {
+
+		@Value("${error.path:/error}")
+		private String errorPath = "/error";
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -69,6 +81,7 @@ public class EndpointWebMvcChildContextConfiguration {
 			factory.setPort(this.managementServerProperties.getPort());
 			factory.setAddress(this.managementServerProperties.getAddress());
 			factory.setContextPath(this.managementServerProperties.getContextPath());
+			factory.addErrorPages(new ErrorPage(this.errorPath));
 		}
 
 	}
@@ -94,6 +107,24 @@ public class EndpointWebMvcChildContextConfiguration {
 	@Bean
 	public HandlerAdapter handlerAdapter() {
 		return new EndpointHandlerAdapter();
+	}
+
+	/*
+	 * The error controller is present but not mapped as an endpoint in this context
+	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
+	 * disabled. So this tiny shim exposes the same feature but only for machine
+	 * endpoints.
+	 */
+	@Bean
+	public Endpoint<Map<String, Object>> errorEndpoint(final ErrorController controller) {
+		return new AbstractEndpoint<Map<String, Object>>("/error", false, true) {
+			@Override
+			protected Map<String, Object> doInvoke() {
+				RequestAttributes attributes = RequestContextHolder
+						.currentRequestAttributes();
+				return controller.extract(attributes, false);
+			}
+		};
 	}
 
 	@Configuration

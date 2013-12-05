@@ -16,6 +16,8 @@
 
 package org.springframework.boot.sample.ops.ui;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -25,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -34,8 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -80,9 +79,7 @@ public class SampleActuatorUiApplicationPortTests {
 	}
 
 	@Test
-	@Ignore
 	public void testMetrics() throws Exception {
-		// FIXME broken since error page is not rendered
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
 				"http://localhost:" + managementPort + "/metrics", Map.class);

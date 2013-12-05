@@ -16,6 +16,8 @@
 
 package org.springframework.boot.sample.ops;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -43,8 +44,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -93,9 +92,7 @@ public class ManagementAddressSampleActuatorApplicationTests {
 	}
 
 	@Test
-	@Ignore
 	public void testMetrics() throws Exception {
-		// FIXME broken because error page is no longer exposed on management port
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
@@ -104,9 +101,7 @@ public class ManagementAddressSampleActuatorApplicationTests {
 	}
 
 	@Test
-	@Ignore
 	public void testHealth() throws Exception {
-		// FIXME broken because error page is no longer exposed on management port
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
 				"http://localhost:" + managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
@@ -114,9 +109,7 @@ public class ManagementAddressSampleActuatorApplicationTests {
 	}
 
 	@Test
-	@Ignore
 	public void testErrorPage() throws Exception {
-		// FIXME broken because error page is no longer exposed on management port
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
 				"http://localhost:" + managementPort + "/error", Map.class);
