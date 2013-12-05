@@ -302,6 +302,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		if (annotation != null) {
 			factory.setIgnoreInvalidFields(annotation.ignoreInvalidFields());
 			factory.setIgnoreUnknownFields(annotation.ignoreUnknownFields());
+			factory.setExceptionIfInvalid(annotation.exceptionIfInvalid());
 			factory.setIgnoreNestedProperties(annotation.ignoreNestedProperties());
 			String targetName = (StringUtils.hasLength(annotation.value()) ? annotation
 					.value() : annotation.name());

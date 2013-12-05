@@ -173,6 +173,12 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		this.validator = validator;
 	}
 
+	/**
+	 * Flag to indicate that an exception should be raised if a Validator is available and
+	 * validation fails.
+	 * 
+	 * @param exceptionIfInvalid the flag to set
+	 */
 	public void setExceptionIfInvalid(boolean exceptionIfInvalid) {
 		this.exceptionIfInvalid = exceptionIfInvalid;
 	}

@@ -21,9 +21,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.NotNull;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.TestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -31,6 +35,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -43,6 +48,9 @@ import static org.junit.Assert.assertNotNull;
 public class EnableConfigurationPropertiesTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
 
 	@After
 	public void close() {
@@ -108,6 +116,26 @@ public class EnableConfigurationPropertiesTests {
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(IgnoreNestedTestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
+	public void testExceptionOnValidation() {
+		this.context.register(ExceptionIfInvalidTestConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo");
+		this.expected.expectCause(Matchers.<Throwable> instanceOf(BindException.class));
+		this.context.refresh();
+	}
+
+	@Test
+	public void testNoExceptionOnValidation() {
+		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
+		TestUtils.addEnviroment(this.context, "name:foo");
+		this.context.refresh();
+		assertEquals(
+				1,
+				this.context
+						.getBeanNamesForType(NoExceptionIfInvalidTestProperties.class).length);
 		assertEquals("foo", this.context.getBean(TestProperties.class).name);
 	}
 
@@ -265,6 +293,16 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Configuration
+	@EnableConfigurationProperties(ExceptionIfInvalidTestProperties.class)
+	protected static class ExceptionIfInvalidTestConfiguration {
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(NoExceptionIfInvalidTestProperties.class)
+	protected static class NoExceptionIfInvalidTestConfiguration {
+	}
+
+	@Configuration
 	@EnableConfigurationProperties(DerivedProperties.class)
 	protected static class DerivedConfiguration {
 	}
@@ -376,6 +414,38 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
 	protected static class IgnoreNestedTestProperties extends TestProperties {
+
+	}
+
+	@ConfigurationProperties
+	protected static class ExceptionIfInvalidTestProperties extends TestProperties {
+
+		@NotNull
+		private String description;
+
+		public String getDescription() {
+			return this.description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+	}
+
+	@ConfigurationProperties(exceptionIfInvalid = false)
+	protected static class NoExceptionIfInvalidTestProperties extends TestProperties {
+
+		@NotNull
+		private String description;
+
+		public String getDescription() {
+			return this.description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
 
 	}
 
