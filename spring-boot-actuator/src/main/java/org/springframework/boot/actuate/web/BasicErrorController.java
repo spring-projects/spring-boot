@@ -33,6 +33,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -61,19 +63,27 @@ public class BasicErrorController implements ErrorController {
 
 	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
-		Map<String, Object> map = error(request);
+		Map<String, Object> map = extract(new ServletRequestAttributes(request), false);
 		return new ModelAndView(ERROR_KEY, map);
 	}
 
 	@RequestMapping(value = "${error.path:/error}")
 	@ResponseBody
 	public Map<String, Object> error(HttpServletRequest request) {
+		ServletRequestAttributes attributes = new ServletRequestAttributes(request);
+		String trace = request.getParameter("trace");
+		return extract(attributes, trace != null && !"false".equals(trace.toLowerCase()));
+	}
+
+	@Override
+	public Map<String, Object> extract(RequestAttributes attributes, boolean trace) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put("timestamp", new Date());
 		try {
-			Throwable error = (Throwable) request
-					.getAttribute("javax.servlet.error.exception");
-			Object obj = request.getAttribute("javax.servlet.error.status_code");
+			Throwable error = (Throwable) attributes.getAttribute(
+					"javax.servlet.error.exception", RequestAttributes.SCOPE_REQUEST);
+			Object obj = attributes.getAttribute("javax.servlet.error.status_code",
+					RequestAttributes.SCOPE_REQUEST);
 			int status = 999;
 			if (obj != null) {
 				status = (Integer) obj;
@@ -89,8 +99,7 @@ public class BasicErrorController implements ErrorController {
 				}
 				map.put("exception", error.getClass().getName());
 				map.put("message", error.getMessage());
-				String trace = request.getParameter("trace");
-				if (trace != null && !"false".equals(trace.toLowerCase())) {
+				if (trace) {
 					StringWriter stackTrace = new StringWriter();
 					error.printStackTrace(new PrintWriter(stackTrace));
 					stackTrace.flush();
@@ -99,7 +108,8 @@ public class BasicErrorController implements ErrorController {
 				this.logger.error(error);
 			}
 			else {
-				Object message = request.getAttribute("javax.servlet.error.message");
+				Object message = attributes.getAttribute("javax.servlet.error.message",
+						RequestAttributes.SCOPE_REQUEST);
 				map.put("message", message == null ? "No message available" : message);
 			}
 			return map;
