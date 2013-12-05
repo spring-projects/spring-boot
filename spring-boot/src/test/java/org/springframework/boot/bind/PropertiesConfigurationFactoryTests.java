@@ -16,6 +16,8 @@
 
 package org.springframework.boot.bind;
 
+import java.io.IOException;
+
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
@@ -86,6 +88,15 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	@Test
+	public void testValidationErrorCanBeSuppressed() throws Exception {
+		this.validator = new SpringValidatorAdapter(Validation
+				.buildDefaultValidatorFactory().getValidator());
+		setupFactory();
+		this.factory.setExceptionIfInvalid(false);
+		bindFoo("bar: blah");
+	}
+
+	@Test
 	public void testBindToNamedTarget() throws Exception {
 		this.targetName = "foo";
 		Foo foo = createFoo("hi: hello\nfoo.name: foo\nfoo.bar: blah");
@@ -93,15 +104,23 @@ public class PropertiesConfigurationFactoryTests {
 	}
 
 	private Foo createFoo(final String values) throws Exception {
-		this.factory = new PropertiesConfigurationFactory<Foo>(Foo.class);
+		setupFactory();
+		return bindFoo(values);
+	}
+
+	private Foo bindFoo(final String values) throws Exception {
 		this.factory.setProperties(PropertiesLoaderUtils
 				.loadProperties(new ByteArrayResource(values.getBytes())));
+		this.factory.afterPropertiesSet();
+		return this.factory.getObject();
+	}
+
+	private void setupFactory() throws IOException {
+		this.factory = new PropertiesConfigurationFactory<Foo>(Foo.class);
 		this.factory.setValidator(this.validator);
 		this.factory.setTargetName(this.targetName);
 		this.factory.setIgnoreUnknownFields(this.ignoreUnknownFields);
 		this.factory.setMessageSource(new StaticMessageSource());
-		this.factory.afterPropertiesSet();
-		return this.factory.getObject();
 	}
 
 	// Foo needs to be public and to have setters for all properties

@@ -73,6 +73,13 @@ public @interface ConfigurationProperties {
 	boolean ignoreUnknownFields() default true;
 
 	/**
+	 * Flag to indicate that validation errors can be swallowed. If set they will be
+	 * logged, but not propagate to the caller.
+	 * @return the flag value (default true)
+	 */
+	boolean exceptionIfInvalid() default true;
+
+	/**
 	 * Optionally provide an explicit resource path to bind to instead of using the
 	 * default environment.
 	 * @return the path (or paths) of resources to bind to
