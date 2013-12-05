@@ -87,6 +87,10 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	public void logAutoConfigurationReport(boolean isCrashReport) {
 		if (this.report == null) {
+			if (this.applicationContext == null) {
+				this.logger.info("Nothing to report: ApplicationContext not available");
+				return;
+			}
 			this.report = AutoConfigurationReport.get(this.applicationContext
 					.getBeanFactory());
 		}

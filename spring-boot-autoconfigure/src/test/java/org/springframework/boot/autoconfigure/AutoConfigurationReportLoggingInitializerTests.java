@@ -162,6 +162,13 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		assertNotNull(context.getBean(AutoConfigurationReport.class));
 	}
 
+	@Test
+	public void noErrorIfNotInitialized() throws Exception {
+		this.initializer.handleError(null, null, new String[0], new RuntimeException(
+				"Planned"));
+		assertThat(this.infoLog.get(0), containsString("Nothing to report"));
+	}
+
 	public static class MockLogFactory extends LogFactoryImpl {
 		@Override
 		public Log getInstance(String name) throws LogConfigurationException {
