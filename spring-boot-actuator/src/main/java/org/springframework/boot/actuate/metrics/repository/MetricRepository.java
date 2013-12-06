@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.metrics.repository;
 
-import java.util.Collection;
-import java.util.Date;
+import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 /**
- * A Repository used to manage {@link Metric}s.
+ * Convenient combination of reader and writer concerns.
  * 
  * @author Dave Syer
  */
-public interface MetricRepository {
-
-	void increment(String metricName, int amount, Date timestamp);
-
-	void set(String metricName, double value, Date timestamp);
-
-	void delete(String metricName);
-
-	Metric findOne(String metricName);
-
-	Collection<Metric> findAll();
+public interface MetricRepository extends MetricReader, MetricWriter {
 
 }

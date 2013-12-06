@@ -41,7 +41,7 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) 0.5));
+		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) 0.5f));
 	}
 
 	@Configuration
@@ -50,11 +50,11 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 
 		@Bean
 		public MetricsEndpoint endpoint() {
-			final Metric metric = new Metric("a", 0.5f);
+			final Metric<Float> metric = new Metric<Float>("a", 0.5f);
 			PublicMetrics metrics = new PublicMetrics() {
 				@Override
-				public Collection<Metric> metrics() {
-					return Collections.singleton(metric);
+				public Collection<Metric<?>> metrics() {
+					return Collections.<Metric<?>> singleton(metric);
 				}
 			};
 			return new MetricsEndpoint(metrics);

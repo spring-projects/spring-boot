@@ -99,7 +99,7 @@ public class MetricFilterAutoConfiguration {
 			finally {
 				stopWatch.stop();
 				String gaugeKey = getKey("response" + suffix);
-				MetricFilterAutoConfiguration.this.gaugeService.set(gaugeKey,
+				MetricFilterAutoConfiguration.this.gaugeService.submit(gaugeKey,
 						stopWatch.getTotalTimeMillis());
 				String counterKey = getKey("status." + getStatus(response) + suffix);
 				MetricFilterAutoConfiguration.this.counterService.increment(counterKey);

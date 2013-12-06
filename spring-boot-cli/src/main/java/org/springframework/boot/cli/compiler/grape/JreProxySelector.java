@@ -35,6 +35,8 @@ import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * (Copied from aether source code - not available yet in Maven repo.)
+ * 
+ * @author Dave Syer
  */
 public final class JreProxySelector implements ProxySelector {
 

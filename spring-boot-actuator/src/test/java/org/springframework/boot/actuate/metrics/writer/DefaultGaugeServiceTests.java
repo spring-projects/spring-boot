@@ -14,35 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
-
-import java.util.Date;
+package org.springframework.boot.actuate.metrics.writer;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.boot.actuate.metrics.Metric;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link DefaultCounterService}.
+ * Tests for {@link DefaultGaugeService}.
  */
-public class DefaultCounterServiceTests {
+public class DefaultGaugeServiceTests {
 
-	private MetricRepository repository = mock(MetricRepository.class);
+	private MetricWriter repository = mock(MetricWriter.class);
 
-	private DefaultCounterService service = new DefaultCounterService(this.repository);
-
-	@Test
-	public void incrementPrependsCounter() {
-		this.service.increment("foo");
-		verify(this.repository).increment(eq("counter.foo"), eq(1), any(Date.class));
-	}
+	private DefaultGaugeService service = new DefaultGaugeService(this.repository);
 
 	@Test
-	public void decrementPrependsCounter() {
-		this.service.decrement("foo");
-		verify(this.repository).increment(eq("counter.foo"), eq(-1), any(Date.class));
+	public void setPrependsGauge() {
+		this.service.submit("foo", 2.3);
+		@SuppressWarnings("rawtypes")
+		ArgumentCaptor<Metric> captor = ArgumentCaptor.forClass(Metric.class);
+		verify(this.repository).set(captor.capture());
+		assertEquals("gauge.foo", captor.getValue().getName());
+		assertEquals(2.3, captor.getValue().getValue());
 	}
+
 }

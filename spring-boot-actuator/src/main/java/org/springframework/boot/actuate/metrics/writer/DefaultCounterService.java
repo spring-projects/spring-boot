@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
+package org.springframework.boot.actuate.metrics.writer;
 
-import java.util.Date;
+import org.springframework.boot.actuate.metrics.CounterService;
 
 /**
  * Default implementation of {@link CounterService}.
@@ -25,34 +25,33 @@ import java.util.Date;
  */
 public class DefaultCounterService implements CounterService {
 
-	private MetricRepository repository;
+	private final MetricWriter writer;
 
 	/**
 	 * Create a {@link DefaultCounterService} instance.
-	 * @param repository the underlying repository used to manage metrics
+	 * @param writer the underlying writer used to manage metrics
 	 */
-	public DefaultCounterService(MetricRepository repository) {
-		super();
-		this.repository = repository;
+	public DefaultCounterService(MetricWriter writer) {
+		this.writer = writer;
 	}
 
 	@Override
 	public void increment(String metricName) {
-		this.repository.increment(wrap(metricName), 1, new Date());
+		this.writer.increment(new Delta<Long>(wrap(metricName), 1L));
 	}
 
 	@Override
 	public void decrement(String metricName) {
-		this.repository.increment(wrap(metricName), -1, new Date());
+		this.writer.increment(new Delta<Long>(wrap(metricName), -1L));
 	}
 
 	@Override
 	public void reset(String metricName) {
-		this.repository.set(wrap(metricName), 0, new Date());
+		this.writer.increment(new Delta<Long>(wrap(metricName), 0L));
 	}
 
 	private String wrap(String metricName) {
-		if (metricName.startsWith("counter")) {
+		if (metricName.startsWith("counter") || metricName.startsWith("meter")) {
 			return metricName;
 		}
 		else {

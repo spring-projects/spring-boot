@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.metrics.writer;
 
-import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
 /**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * A value object representing an increment in a metric value (usually a counter).
  * 
  * @author Dave Syer
- * @see VanillaPublicMetrics
  */
-public interface PublicMetrics {
+public class Delta<T extends Number> extends Metric<T> {
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+	public Delta(String name, T value, Date timestamp) {
+		super(name, value, timestamp);
+	}
+
+	public Delta(String name, T value) {
+		super(name, value);
+	}
 
 }

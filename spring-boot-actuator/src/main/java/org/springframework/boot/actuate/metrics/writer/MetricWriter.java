@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
-
-import java.util.Collection;
+package org.springframework.boot.actuate.metrics.writer;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
 /**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * Basic strategy for write operations on {@link Metric} data.
  * 
  * @author Dave Syer
- * @see VanillaPublicMetrics
  */
-public interface PublicMetrics {
+public interface MetricWriter {
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+	void increment(Delta<?> delta);
+
+	void set(Metric<?> value);
+
+	void reset(String metricName);
 
 }

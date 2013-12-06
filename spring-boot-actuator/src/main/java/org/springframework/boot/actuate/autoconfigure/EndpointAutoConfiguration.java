@@ -40,8 +40,8 @@ import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.SimpleHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
-import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
-import org.springframework.boot.actuate.metrics.MetricRepository;
+import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport;
@@ -78,7 +78,7 @@ public class EndpointAutoConfiguration {
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
-	private MetricRepository metricRepository = new InMemoryMetricRepository();
+	private MetricReader metricRepository = new InMemoryMetricRepository();
 
 	@Autowired(required = false)
 	private PublicMetrics metrics;

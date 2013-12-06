@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
-
-import java.util.Collection;
+package org.springframework.boot.actuate.metrics.reader;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
 /**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * A simple reader interface used to interrogate {@link Metric}s.
  * 
  * @author Dave Syer
- * @see VanillaPublicMetrics
  */
-public interface PublicMetrics {
+public interface MetricReader {
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+	Metric<?> findOne(String metricName);
+
+	Iterable<Metric<?>> findAll();
+
+	long count();
 
 }

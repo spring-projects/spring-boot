@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.metrics.repository;
 
 import java.util.Collection;
 
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
 
 /**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * A repository for metrics that allows efficient storage and retrieval of groups of
+ * metrics with a common name prefix (their group name).
  * 
  * @author Dave Syer
- * @see VanillaPublicMetrics
  */
-public interface PublicMetrics {
+public interface MultiMetricRepository extends PrefixMetricReader {
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+	void save(String group, Collection<Metric<?>> values);
+
+	void reset(String group);
+
+	Iterable<String> groups();
+
+	long count();
 
 }

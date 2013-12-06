@@ -16,34 +16,79 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.concurrent.Executor;
+
 import org.junit.Test;
-import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
 import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.boot.actuate.metrics.DefaultCounterService;
-import org.springframework.boot.actuate.metrics.DefaultGaugeService;
 import org.springframework.boot.actuate.metrics.GaugeService;
+import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.reader.MetricReader;
+import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
+import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
+import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SyncTaskExecutor;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricRepositoryAutoConfiguration}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class MetricRepositoryAutoConfigurationTests {
 
 	@Test
-	public void createServices() {
+	public void createServices() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				SyncTaskExecutorConfiguration.class,
 				MetricRepositoryAutoConfiguration.class);
-		assertNotNull(context.getBean(DefaultGaugeService.class));
+		DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
+		assertNotNull(gaugeService);
 		assertNotNull(context.getBean(DefaultCounterService.class));
+		gaugeService.submit("foo", 2.7);
+		assertEquals(2.7, context.getBean(MetricReader.class).findOne("gauge.foo")
+				.getValue());
+		context.close();
+	}
+
+	@Test
+	public void provideAdditionalWriter() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				SyncTaskExecutorConfiguration.class, WriterConfig.class,
+				MetricRepositoryAutoConfiguration.class);
+		DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
+		assertNotNull(gaugeService);
+		gaugeService.submit("foo", 2.7);
+		MetricWriter writer = context.getBean("writer", MetricWriter.class);
+		verify(writer).set(any(Metric.class));
+		context.close();
+	}
+
+	@Test
+	public void codahaleInstalledIfPresent() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				SyncTaskExecutorConfiguration.class, WriterConfig.class,
+				MetricRepositoryAutoConfiguration.class);
+		DefaultGaugeService gaugeService = context.getBean(DefaultGaugeService.class);
+		assertNotNull(gaugeService);
+		gaugeService.submit("foo", 2.7);
+		MetricRegistry registry = context.getBean(MetricRegistry.class);
+		@SuppressWarnings("unchecked")
+		Gauge<Double> gauge = (Gauge<Double>) registry.getMetrics().get("gauge.foo");
+		assertEquals(new Double(2.7), gauge.getValue());
 		context.close();
 	}
 
@@ -54,6 +99,26 @@ public class MetricRepositoryAutoConfigurationTests {
 		assertThat(context.getBeansOfType(DefaultGaugeService.class).size(), equalTo(0));
 		assertThat(context.getBeansOfType(DefaultCounterService.class).size(), equalTo(0));
 		context.close();
+	}
+
+	@Configuration
+	public static class SyncTaskExecutorConfiguration {
+
+		@Bean
+		public Executor metricsExecutor() {
+			return new SyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration
+	public static class WriterConfig {
+
+		@Bean
+		public MetricWriter writer() {
+			return mock(MetricWriter.class);
+		}
+
 	}
 
 	@Configuration

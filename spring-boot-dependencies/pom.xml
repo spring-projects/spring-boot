@@ -9,6 +9,7 @@
 	<properties>
 		<activemq.version>5.7.0</activemq.version>
 		<aspectj.version>1.7.4</aspectj.version>
+		<codahale-metrics.version>3.0.1</codahale-metrics.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<gradle.version>1.6</gradle.version>
@@ -59,6 +60,26 @@
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.codahale.metrics</groupId>
+				<artifactId>metrics-graphite</artifactId>
+				<version>${codahale-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.codahale.metrics</groupId>
+				<artifactId>metrics-ganglia</artifactId>
+				<version>${codahale-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.codahale.metrics</groupId>
+				<artifactId>metrics-core</artifactId>
+				<version>${codahale-metrics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.codahale.metrics</groupId>
+				<artifactId>metrics-servlets</artifactId>
+				<version>${codahale-metrics.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>

@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
-
-import java.util.Collection;
-
-import org.springframework.boot.actuate.metrics.Metric;
+package org.springframework.boot.actuate.metrics.export;
 
 /**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * Generic interface for metric exports. As you scale up metric collection you will often
+ * need to buffer metric data locally and export it periodically (e.g. for aggregation
+ * across a cluster), so this is the marker interface for those operations. The trigger of
+ * an export operation might be periodic or even driven, but it remains outside the scope
+ * of this interface. You might for instance create an instance of an Exporter and trigger
+ * it using a <code>@Scheduled</code> annotation in a Spring ApplicationContext.
  * 
  * @author Dave Syer
- * @see VanillaPublicMetrics
  */
-public interface PublicMetrics {
+public interface Exporter {
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+	void export();
 
 }
