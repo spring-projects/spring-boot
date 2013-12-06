@@ -14,30 +14,37 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics;
-
-import java.util.Date;
+package org.springframework.boot.actuate.metrics.writer;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link DefaultGaugeService}.
+ * @author Dave Syer
  */
-public class DefaultGaugeServiceTests {
+public class MessageChannelMetricWriterTests {
 
-	private MetricRepository repository = mock(MetricRepository.class);
+	private MessageChannel channel = mock(MessageChannel.class);
 
-	private DefaultGaugeService service = new DefaultGaugeService(this.repository);
+	private MessageChannelMetricWriter observer = new MessageChannelMetricWriter(
+			this.channel);
 
 	@Test
-	public void setPrependsGuager() {
-		this.service.set("foo", 2.3);
-		verify(this.repository).set(eq("gauge.foo"), eq(2.3), any(Date.class));
+	public void messageSentOnAdd() {
+		this.observer.increment(new Delta<Integer>("foo", 1));
+		verify(this.channel).send(any(Message.class));
+	}
+
+	@Test
+	public void messageSentOnSet() {
+		this.observer.set(new Metric<Double>("foo", 1d));
+		verify(this.channel).send(any(Message.class));
 	}
 
 }

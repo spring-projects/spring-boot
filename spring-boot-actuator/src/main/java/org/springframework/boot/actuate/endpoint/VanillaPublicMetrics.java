@@ -20,32 +20,36 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.MetricRepository;
+import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.util.Assert;
 
 /**
- * Default implementation of {@link PublicMetrics} that exposes all metrics from the
- * {@link MetricRepository} along with memory information.
+ * Default implementation of {@link PublicMetrics} that exposes all metrics from a
+ * {@link MetricReader} along with memory information.
  * 
  * @author Dave Syer
  */
 public class VanillaPublicMetrics implements PublicMetrics {
 
-	private MetricRepository metricRepository;
+	private MetricReader reader;
 
-	public VanillaPublicMetrics(MetricRepository metricRepository) {
-		Assert.notNull(metricRepository, "MetricRepository must not be null");
-		this.metricRepository = metricRepository;
+	public VanillaPublicMetrics(MetricReader reader) {
+		Assert.notNull(reader, "MetricReader must not be null");
+		this.reader = reader;
 	}
 
 	@Override
-	public Collection<Metric> metrics() {
-		Collection<Metric> result = new LinkedHashSet<Metric>(
-				this.metricRepository.findAll());
-		result.add(new Metric("mem", new Long(Runtime.getRuntime().totalMemory()) / 1024));
-		result.add(new Metric("mem.free",
-				new Long(Runtime.getRuntime().freeMemory()) / 1024));
-		result.add(new Metric("processors", Runtime.getRuntime().availableProcessors()));
+	public Collection<Metric<?>> metrics() {
+		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
+		for (Metric<?> metric : this.reader.findAll()) {
+			result.add(metric);
+		}
+		result.add(new Metric<Long>("mem",
+				new Long(Runtime.getRuntime().totalMemory()) / 1024));
+		result.add(new Metric<Long>("mem.free", new Long(Runtime.getRuntime()
+				.freeMemory()) / 1024));
+		result.add(new Metric<Integer>("processors", Runtime.getRuntime()
+				.availableProcessors()));
 		return result;
 	}
 

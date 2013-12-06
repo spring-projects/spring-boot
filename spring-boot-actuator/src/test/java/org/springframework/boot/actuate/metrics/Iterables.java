@@ -16,38 +16,23 @@
 
 package org.springframework.boot.actuate.metrics;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Default implementation of {@link GaugeService}.
- * 
  * @author Dave Syer
  */
-public class DefaultGaugeService implements GaugeService {
+public abstract class Iterables {
 
-	private MetricRepository metricRepository;
-
-	/**
-	 * Create a new {@link DefaultGaugeService} instance.
-	 * @param counterRepository
-	 */
-	public DefaultGaugeService(MetricRepository counterRepository) {
-		super();
-		this.metricRepository = counterRepository;
-	}
-
-	@Override
-	public void set(String metricName, double value) {
-		this.metricRepository.set(wrap(metricName), value, new Date());
-	}
-
-	private String wrap(String metricName) {
-		if (metricName.startsWith("gauge")) {
-			return metricName;
+	public static <T> Collection<T> collection(Iterable<T> iterable) {
+		if (iterable instanceof Collection) {
+			return (Collection<T>) iterable;
 		}
-		else {
-			return "gauge." + metricName;
+		ArrayList<T> list = new ArrayList<T>();
+		for (T t : iterable) {
+			list.add(t);
 		}
+		return list;
 	}
 
 }

@@ -16,41 +16,159 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.boot.actuate.metrics.DefaultCounterService;
-import org.springframework.boot.actuate.metrics.DefaultGaugeService;
 import org.springframework.boot.actuate.metrics.GaugeService;
-import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
-import org.springframework.boot.actuate.metrics.MetricRepository;
+import org.springframework.boot.actuate.metrics.export.Exporter;
+import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
+import org.springframework.boot.actuate.metrics.repository.MetricRepository;
+import org.springframework.boot.actuate.metrics.writer.CodahaleMetricWriter;
+import org.springframework.boot.actuate.metrics.writer.CompositeMetricWriter;
+import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
+import org.springframework.boot.actuate.metrics.writer.DefaultGaugeService;
+import org.springframework.boot.actuate.metrics.writer.MessageChannelMetricWriter;
+import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.boot.actuate.metrics.writer.MetricWriterMessageHandler;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.SubscribableChannel;
+import org.springframework.messaging.support.ExecutorSubscribableChannel;
+
+import com.codahale.metrics.MetricRegistry;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for metrics services.
+ * <p>
+ * {@link EnableAutoConfiguration Auto-configuration} for metrics services. Creates
+ * user-facing {@link GaugeService} and {@link CounterService} instances, and also back
+ * end repositories to catch the data pumped into them.
+ * </p>
+ * <p>
+ * An {@link InMemoryMetricRepository} is always created unless another
+ * {@link MetricRepository} is already provided by the user. In general, even if metric
+ * data needs to be stored and analysed remotely, it is recommended to use an in-memory
+ * repository to buffer metric updates locally. The values can be exported (e.g. on a
+ * periodic basis) using an {@link Exporter}, most implementations of which have
+ * optimizations for sending data to remote repositories.
+ * </p>
+ * <p>
+ * If Spring Messaging is on the classpath a {@link MessageChannel} called
+ * "metricsChannel" is also created (unless one already exists) and all metric update
+ * events are published additionally as messages on that channel. Additional analysis or
+ * actions can be taken by clients subscribing to that channel.
+ * </p>
+ * <p>
+ * In addition if Codahale's metrics library is on the classpath a {@link MetricRegistry}
+ * will be created and wired up to the counter and gauge services in addition to the basic
+ * repository. Users can create Codahale metrics by prefixing their metric names with the
+ * appropriate type (e.g. "histogram.*", "meter.*").
+ * </p>
+ * <p>
+ * By default all metric updates go to all {@link MetricWriter} instances in the
+ * application context. To change this behaviour define your own metric writer bean called
+ * "primaryMetricWriter", mark it <code>@Primary</code>, and this one will receive all
+ * updates from the default counter and gauge services. ALternatively you can provide your
+ * own counter and gauge services and wire them to whichever writer you choose.
+ * </p>
+ * 
+ * @see GaugeService
+ * @see CounterService
+ * @see MetricWriter
+ * @see InMemoryMetricRepository
+ * @see CodahaleMetricWriter
+ * @see Exporter
  * 
  * @author Dave Syer
  */
 @Configuration
 public class MetricRepositoryAutoConfiguration {
 
+	@Autowired
+	private MetricWriter writer;
+
 	@Bean
 	@ConditionalOnMissingBean
 	public CounterService counterService() {
-		return new DefaultCounterService(metricRepository());
+		return new DefaultCounterService(this.writer);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public GaugeService gaugeService() {
-		return new DefaultGaugeService(metricRepository());
+		return new DefaultGaugeService(this.writer);
 	}
 
-	@Bean
-	@ConditionalOnMissingBean
-	protected MetricRepository metricRepository() {
-		return new InMemoryMetricRepository();
+	@Configuration
+	@ConditionalOnMissingBean(MetricRepository.class)
+	static class MetricRepositoryConfiguration {
+
+		@Bean
+		public InMemoryMetricRepository metricRepository() {
+			return new InMemoryMetricRepository();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(MessageChannel.class)
+	static class MetricsChannelConfiguration {
+
+		@Autowired(required = false)
+		@Qualifier("metricsExecutor")
+		private Executor executor = Executors.newSingleThreadExecutor();
+
+		@Bean
+		@ConditionalOnMissingBean(name = "metricsChannel")
+		public SubscribableChannel metricsChannel() {
+			return new ExecutorSubscribableChannel(this.executor);
+		}
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean(name = "primaryMetricWriter")
+		public MetricWriter primaryMetricWriter(
+				@Qualifier("metricsChannel") SubscribableChannel channel,
+				List<MetricWriter> writers) {
+			final MetricWriter observer = new CompositeMetricWriter(writers);
+			channel.subscribe(new MetricWriterMessageHandler(observer));
+			return new MessageChannelMetricWriter(channel);
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(MetricRegistry.class)
+	static class CodahaleMetricRegistryConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public MetricRegistry metricRegistry() {
+			return new MetricRegistry();
+		}
+
+		@Bean
+		public CodahaleMetricWriter codahaleMetricWriter(MetricRegistry metricRegistry) {
+			return new CodahaleMetricWriter(metricRegistry);
+		}
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingClass(name = "org.springframework.messaging.MessageChannel")
+		@ConditionalOnMissingBean(name = "primaryMetricWriter")
+		public MetricWriter primaryMetricWriter(List<MetricWriter> writers) {
+			return new CompositeMetricWriter(writers);
+		}
+
 	}
 
 }

@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.metrics.rich;
 
-import java.util.Collection;
-
+import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 
-/**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
- * 
- * @author Dave Syer
- * @see VanillaPublicMetrics
- */
-public interface PublicMetrics {
+import static org.junit.Assert.assertEquals;
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+/**
+ * @author Dave Syer
+ */
+public class InMemoryRichGaugeRepositoryTests {
+
+	private InMemoryRichGaugeRepository repository = new InMemoryRichGaugeRepository();
+
+	@Test
+	public void writeAndRead() {
+		this.repository.set(new Metric<Double>("foo", 1d));
+		this.repository.set(new Metric<Double>("foo", 2d));
+		assertEquals(2L, this.repository.findOne("foo").getCount());
+		assertEquals(2d, this.repository.findOne("foo").getValue(), 0.01);
+	}
 
 }

@@ -47,7 +47,7 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	@Override
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
-		for (Metric metric : this.metrics.metrics()) {
+		for (Metric<?> metric : this.metrics.metrics()) {
 			result.put(metric.getName(), metric.getValue());
 		}
 		return result;

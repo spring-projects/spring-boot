@@ -16,33 +16,45 @@
 
 package org.springframework.boot.actuate.metrics;
 
+import java.util.Date;
+
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 /**
- * Immutable class that can be used to hold any arbitrary system measurement value. For
- * example a metric might record the number of active connections.
+ * Immutable class that can be used to hold any arbitrary system measurement value (a
+ * named numeric value with a timestamp). For example a metric might record the number of
+ * active connections to a server, or the temperature of a meeting room.
  * 
  * @author Dave Syer
- * @see MetricRepository
- * @see CounterService
  */
-public final class Metric {
+public class Metric<T extends Number> {
 
 	private final String name;
 
-	private final double value;
+	private final T value;
+
+	private Date timestamp;
+
+	/**
+	 * Create a new {@link Metric} instance for the current time.
+	 * @param name the name of the metric
+	 * @param value the value of the metric
+	 */
+	public Metric(String name, T value) {
+		this(name, value, new Date());
+	}
 
 	/**
 	 * Create a new {@link Metric} instance.
 	 * @param name the name of the metric
 	 * @param value the value of the metric
+	 * @param timestamp the timestamp for the metric
 	 */
-	public Metric(String name, double value) {
-		super();
+	public Metric(String name, T value, Date timestamp) {
 		Assert.notNull(name, "Name must not be null");
 		this.name = name;
 		this.value = value;
+		this.timestamp = timestamp;
 	}
 
 	/**
@@ -55,8 +67,18 @@ public final class Metric {
 	/**
 	 * Returns the value of the metric.
 	 */
-	public double getValue() {
+	public T getValue() {
 		return this.value;
+	}
+
+	public Date getTimestamp() {
+		return this.timestamp;
+	}
+
+	@Override
+	public String toString() {
+		return "Metric [name=" + this.name + ", value=" + this.value + ", timestamp="
+				+ this.timestamp + "]";
 	}
 
 	/**
@@ -64,8 +86,9 @@ public final class Metric {
 	 * @param amount the amount that the new metric will differ from this one
 	 * @return a new {@link Metric} instance
 	 */
-	public Metric increment(int amount) {
-		return new Metric(this.name, new Double(((int) this.value) + amount));
+	public Metric<Long> increment(int amount) {
+		return new Metric<Long>(this.getName(), new Long(this.getValue().longValue()
+				+ amount));
 	}
 
 	/**
@@ -73,41 +96,49 @@ public final class Metric {
 	 * @param value the value of the new metric
 	 * @return a new {@link Metric} instance
 	 */
-	public Metric set(double value) {
-		return new Metric(this.name, value);
-	}
-
-	@Override
-	public String toString() {
-		return "Metric [name=" + this.name + ", value=" + this.value + "]";
+	public <S extends Number> Metric<S> set(S value) {
+		return new Metric<S>(this.getName(), value);
 	}
 
 	@Override
 	public int hashCode() {
-		int valueHashCode = ObjectUtils.hashCode(this.value);
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
-		result = prime * result + (valueHashCode ^ (valueHashCode >>> 32));
+		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result
+				+ ((this.timestamp == null) ? 0 : this.timestamp.hashCode());
+		result = prime * result + ((this.value == null) ? 0 : this.value.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Metric<?> other = (Metric<?>) obj;
+		if (this.name == null) {
+			if (other.name != null)
+				return false;
 		}
-		if (getClass() == obj.getClass()) {
-			Metric other = (Metric) obj;
-			boolean result = ObjectUtils.nullSafeEquals(this.name, other.name);
-			result &= Double.doubleToLongBits(this.value) == Double
-					.doubleToLongBits(other.value);
-			return result;
+		else if (!this.name.equals(other.name))
+			return false;
+		if (this.timestamp == null) {
+			if (other.timestamp != null)
+				return false;
 		}
-		return super.equals(obj);
+		else if (!this.timestamp.equals(other.timestamp))
+			return false;
+		if (this.value == null) {
+			if (other.value != null)
+				return false;
+		}
+		else if (!this.value.equals(other.value))
+			return false;
+		return true;
 	}
 
 }

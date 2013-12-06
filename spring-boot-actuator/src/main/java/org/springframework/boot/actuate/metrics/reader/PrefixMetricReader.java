@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
-
-import java.util.Collection;
+package org.springframework.boot.actuate.metrics.reader;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
 /**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * Interface for extracting metrics as a group whose name starts with a prefix.
  * 
  * @author Dave Syer
- * @see VanillaPublicMetrics
  */
-public interface PublicMetrics {
+public interface PrefixMetricReader {
 
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+	Iterable<Metric<?>> findAll(String prefix);
 
 }

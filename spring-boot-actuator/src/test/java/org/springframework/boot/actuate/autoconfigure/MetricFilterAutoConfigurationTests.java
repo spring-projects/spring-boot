@@ -64,7 +64,7 @@ public class MetricFilterAutoConfigurationTests {
 		}).given(chain).doFilter(request, response);
 		filter.doFilter(request, response, chain);
 		verify(context.getBean(CounterService.class)).increment("status.200.test.path");
-		verify(context.getBean(GaugeService.class)).set(eq("response.test.path"),
+		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
 				anyDouble());
 		context.close();
 	}

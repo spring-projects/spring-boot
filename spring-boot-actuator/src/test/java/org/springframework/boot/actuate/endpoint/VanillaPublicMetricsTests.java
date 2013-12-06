@@ -21,9 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
-import org.springframework.boot.actuate.metrics.InMemoryMetricRepository;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -39,14 +38,14 @@ public class VanillaPublicMetricsTests {
 	@Test
 	public void testMetrics() throws Exception {
 		InMemoryMetricRepository repository = new InMemoryMetricRepository();
-		repository.set("a", 0.5, new Date());
+		repository.set(new Metric<Double>("a", 0.5, new Date()));
 		VanillaPublicMetrics publicMetrics = new VanillaPublicMetrics(repository);
-		Map<String, Metric> results = new HashMap<String, Metric>();
-		for (Metric metric : publicMetrics.metrics()) {
+		Map<String, Metric<?>> results = new HashMap<String, Metric<?>>();
+		for (Metric<?> metric : publicMetrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}
 		assertTrue(results.containsKey("mem"));
 		assertTrue(results.containsKey("mem.free"));
-		assertThat(results.get("a").getValue(), equalTo(0.5));
+		assertThat(results.get("a").getValue().doubleValue(), equalTo(0.5));
 	}
 }

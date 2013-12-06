@@ -17,27 +17,27 @@
 package org.springframework.boot.actuate.metrics;
 
 /**
- * A service that can be used to increment, decrement and reset a {@link Metric}.
+ * A service that can be used to increment, decrement and reset a named counter value.
  * 
  * @author Dave Syer
  */
 public interface CounterService {
 
 	/**
-	 * Increment the specified metric by 1.
-	 * @param metricName the name of the metric
+	 * Increment the specified counter by 1.
+	 * @param metricName the name of the counter
 	 */
 	void increment(String metricName);
 
 	/**
-	 * Decrement the specified metric by 1.
-	 * @param metricName the name of the metric
+	 * Decrement the specified counter by 1.
+	 * @param metricName the name of the counter
 	 */
 	void decrement(String metricName);
 
 	/**
-	 * Reset the specified metric to 0.
-	 * @param metricName the name of the metric
+	 * Reset the specified counter.
+	 * @param metricName the name of the counter
 	 */
 	void reset(String metricName);
 

@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.metrics.rich;
 
-import java.util.Collection;
-
-import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 /**
- * Interface to expose specific {@link Metric}s via a {@link MetricsEndpoint}.
+ * Convenient combination of reader and writer concerns for {@link RichGauge} instances.
  * 
  * @author Dave Syer
- * @see VanillaPublicMetrics
  */
-public interface PublicMetrics {
-
-	/**
-	 * @return an indication of current state through metrics
-	 */
-	Collection<Metric<?>> metrics();
+public interface RichGaugeRepository extends RichGaugeReader, MetricWriter {
 
 }
