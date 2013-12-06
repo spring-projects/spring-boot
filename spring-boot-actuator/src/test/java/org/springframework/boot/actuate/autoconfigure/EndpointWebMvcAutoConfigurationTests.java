@@ -88,7 +88,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
 		assertContent("/endpoint", 8080, null);
@@ -125,7 +125,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 				ServerPropertiesAutoConfiguration.class,
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 7070, "controlleroutput");
 		assertContent("/endpoint", 7070, null);
