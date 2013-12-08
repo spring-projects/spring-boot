@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
+import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
@@ -31,6 +32,8 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -42,6 +45,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.autoconfig", ignoreUnknownFields = false)
+@FrameworkEndpoint
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 	@Autowired
@@ -52,7 +56,9 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	}
 
 	@Override
-	protected Report doInvoke() {
+	@RequestMapping
+	@ResponseBody
+	public Report invoke() {
 		return new Report(this.autoConfigurationReport);
 	}
 

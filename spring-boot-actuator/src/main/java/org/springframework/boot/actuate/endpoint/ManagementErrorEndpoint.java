@@ -16,49 +16,39 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
+import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * {@link Endpoint} to expose arbitrary application information.
+ * Special endpoint for handling "/error" path when the management servlet is in a child
+ * context. The regular {@link ErrorController} should be available there but because of
+ * the way the handler mappings are set up it will not be detected.
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "endpoints.info", ignoreUnknownFields = false)
 @FrameworkEndpoint
-public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
+@ConfigurationProperties(name = "error")
+public class ManagementErrorEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private Map<String, ? extends Object> info;
+	private final ErrorController controller;
 
-	/**
-	 * Create a new {@link InfoEndpoint} instance.
-	 * 
-	 * @param info the info to expose
-	 */
-	public InfoEndpoint(Map<String, ? extends Object> info) {
-		super("/info", false, true);
-		Assert.notNull(info, "Info must not be null");
-		this.info = info;
+	public ManagementErrorEndpoint(String path, ErrorController controller) {
+		super(path, false, true);
+		this.controller = controller;
 	}
 
 	@Override
 	@RequestMapping
 	@ResponseBody
 	public Map<String, Object> invoke() {
-		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
-		info.putAll(getAdditionalInfo());
-		return info;
+		RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
+		return this.controller.extract(attributes, false);
 	}
-
-	protected Map<String, Object> getAdditionalInfo() {
-		return Collections.emptyMap();
-	}
-
 }

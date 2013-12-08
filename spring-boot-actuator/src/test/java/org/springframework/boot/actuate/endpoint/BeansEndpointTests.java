@@ -17,11 +17,9 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -34,8 +32,7 @@ import static org.junit.Assert.assertThat;
 public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
 
 	public BeansEndpointTests() {
-		super(Config.class, BeansEndpoint.class, "/beans", true, "endpoints.beans",
-				MediaType.APPLICATION_JSON);
+		super(Config.class, BeansEndpoint.class, "/beans", true, "endpoints.beans");
 	}
 
 	@Test

@@ -29,7 +29,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -40,7 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -89,15 +87,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		mapping.setDisabled(ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME);
 		mapping.setPrefix(this.managementServerProperties.getContextPath());
 		return mapping;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointHandlerAdapter endpointHandlerAdapter(
-			final HttpMessageConverters messageConverters) {
-		EndpointHandlerAdapter adapter = new EndpointHandlerAdapter();
-		adapter.setMessageConverters(messageConverters.getConverters());
-		return adapter;
 	}
 
 	@Override
