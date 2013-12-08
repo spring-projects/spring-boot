@@ -19,9 +19,15 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * {@link Endpoint} to expose {@link PublicMetrics}.
@@ -29,6 +35,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.metrics", ignoreUnknownFields = false)
+@FrameworkEndpoint
 public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private PublicMetrics metrics;
@@ -45,7 +52,9 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	@Override
-	protected Map<String, Object> doInvoke() {
+	@RequestMapping
+	@ResponseBody
+	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		for (Metric metric : this.metrics.metrics()) {
 			result.put(metric.getName(), metric.getValue());
@@ -53,4 +62,22 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 		return result;
 	}
 
+	@RequestMapping("/{name:.*}")
+	@ResponseBody
+	public Object value(@PathVariable String name) {
+		Object value = invoke().get(name);
+		if (value == null) {
+			throw new NoSuchMetricException("No such metric: " + name);
+		}
+		return value;
+	}
+
+	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such metric")
+	public static class NoSuchMetricException extends RuntimeException {
+
+		public NoSuchMetricException(String string) {
+			super(string);
+		}
+
+	}
 }

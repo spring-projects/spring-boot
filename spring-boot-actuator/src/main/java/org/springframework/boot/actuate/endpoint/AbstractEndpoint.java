@@ -19,27 +19,14 @@ package org.springframework.boot.actuate.endpoint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-
 /**
  * Abstract base for {@link Endpoint} implementations.
  * <p>
- * {@link Endpoint}s that support other {@link HttpMethod}s than {@link HttpMethod#GET}
- * should override {@link #methods()} and provide a list of supported methods.
  * 
  * @author Phillip Webb
  * @author Christian Dupuis
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T> {
-
-	private static final MediaType[] NO_MEDIA_TYPES = new MediaType[0];
-
-	protected static final HttpMethod[] NO_HTTP_METHOD = new HttpMethod[0];
-
-	protected static final HttpMethod[] GET_HTTP_METHOD = new HttpMethod[] { HttpMethod.GET };
-
-	protected static final HttpMethod[] POST_HTTP_METHOD = new HttpMethod[] { HttpMethod.POST };
 
 	@NotNull
 	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
@@ -85,23 +72,4 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 		this.sensitive = sensitive;
 	}
 
-	@Override
-	public MediaType[] produces() {
-		return NO_MEDIA_TYPES;
-	}
-
-	@Override
-	public HttpMethod[] methods() {
-		return GET_HTTP_METHOD;
-	}
-
-	@Override
-	public final T invoke() {
-		if (this.enabled) {
-			return doInvoke();
-		}
-		throw new EndpointDisabledException();
-	}
-
-	protected abstract T doInvoke();
 }

@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.HttpMethod;
 
 /**
  * {@link Endpoint} implementation to register the Jolokia infrastructure with the Boot
@@ -33,13 +32,8 @@ public class JolokiaEndpoint extends AbstractEndpoint<String> {
 	}
 
 	@Override
-	protected String doInvoke() {
+	public String invoke() {
 		return null;
-	}
-
-	@Override
-	public HttpMethod[] methods() {
-		return NO_HTTP_METHOD;
 	}
 
 }

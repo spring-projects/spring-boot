@@ -17,12 +17,15 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Exposes JSON view of Spring beans. If the {@link Environment} contains a key setting
@@ -33,6 +36,7 @@ import org.springframework.http.MediaType;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.beans", ignoreUnknownFields = false)
+@FrameworkEndpoint
 public class BeansEndpoint extends AbstractEndpoint<String> implements
 		ApplicationContextAware {
 
@@ -51,12 +55,9 @@ public class BeansEndpoint extends AbstractEndpoint<String> implements
 	}
 
 	@Override
-	public MediaType[] produces() {
-		return new MediaType[] { MediaType.APPLICATION_JSON };
-	}
-
-	@Override
-	protected String doInvoke() {
+	@RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String invoke() {
 		return this.liveBeansView.getSnapshotAsJson();
 	}
 }

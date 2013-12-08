@@ -63,7 +63,7 @@ public class BasicErrorController implements ErrorController {
 
 	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
-		Map<String, Object> map = extract(new ServletRequestAttributes(request), false);
+		Map<String, Object> map = error(request);
 		return new ModelAndView(ERROR_KEY, map);
 	}
 

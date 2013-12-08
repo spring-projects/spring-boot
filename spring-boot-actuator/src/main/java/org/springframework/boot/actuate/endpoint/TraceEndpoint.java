@@ -18,10 +18,13 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * {@link Endpoint} to expose {@link Trace} information.
@@ -29,6 +32,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.trace", ignoreUnknownFields = false)
+@FrameworkEndpoint
 public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 
 	private TraceRepository repository;
@@ -45,7 +49,9 @@ public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 	}
 
 	@Override
-	protected List<Trace> doInvoke() {
+	@RequestMapping
+	@ResponseBody
+	public List<Trace> invoke() {
 		return this.repository.findAll();
 	}
 }

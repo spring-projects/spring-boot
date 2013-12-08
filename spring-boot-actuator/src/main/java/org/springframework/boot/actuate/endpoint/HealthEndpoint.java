@@ -16,9 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * {@link Endpoint} to expose application health.
@@ -26,6 +29,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.health", ignoreUnknownFields = false)
+@FrameworkEndpoint
 public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 
 	private HealthIndicator<? extends T> indicator;
@@ -41,8 +45,14 @@ public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 		this.indicator = indicator;
 	}
 
+	HealthEndpoint() {
+		super("/health", false, true);
+	}
+
 	@Override
-	protected T doInvoke() {
+	@RequestMapping
+	@ResponseBody
+	public T invoke() {
 		return this.indicator.health();
 	}
 

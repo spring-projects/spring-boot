@@ -21,7 +21,10 @@ import java.lang.management.ThreadInfo;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * {@link Endpoint} to expose thread info.
@@ -29,6 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.dump", ignoreUnknownFields = false)
+@FrameworkEndpoint
 public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 
 	/**
@@ -39,7 +43,9 @@ public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 	}
 
 	@Override
-	protected List<ThreadInfo> doInvoke() {
+	@RequestMapping
+	@ResponseBody
+	public List<ThreadInfo> invoke() {
 		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
 				true));
 	}
