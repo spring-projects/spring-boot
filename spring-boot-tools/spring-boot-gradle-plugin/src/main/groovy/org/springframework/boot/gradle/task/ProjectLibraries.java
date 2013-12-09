@@ -1,4 +1,3 @@
-
 package org.springframework.boot.gradle.task;
 
 import java.io.File;
@@ -21,6 +20,7 @@ class ProjectLibraries implements Libraries {
 	private final Project project;
 
 	private String providedConfigurationName = "providedRuntime";
+	private String customConfigurationName = null;
 
 	/**
 	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
@@ -40,24 +40,39 @@ class ProjectLibraries implements Libraries {
 		this.providedConfigurationName = providedConfigurationName;
 	}
 
+	public void setCustomConfigurationName(String customConfigurationName) {
+		this.customConfigurationName = customConfigurationName;
+	}
+
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
 
-		FileCollection compile = this.project.getConfigurations().getByName("compile");
+		FileCollection custom = this.customConfigurationName != null ? this.project
+				.getConfigurations().findByName(this.customConfigurationName) : null;
 
-		FileCollection runtime = this.project.getConfigurations().getByName("runtime");
-		runtime = runtime.minus(compile);
+		if (custom != null) {
+			libraries(LibraryScope.CUSTOM, custom, callback);
+		}
+		else {
+			FileCollection compile = this.project.getConfigurations()
+					.getByName("compile");
 
-		FileCollection provided = this.project.getConfigurations().findByName(
-				this.providedConfigurationName);
-		if (provided != null) {
-			compile = compile.minus(provided);
-			runtime = runtime.minus(provided);
+			FileCollection runtime = this.project.getConfigurations()
+					.getByName("runtime");
+			runtime = runtime.minus(compile);
+
+			FileCollection provided = this.project.getConfigurations().findByName(
+					this.providedConfigurationName);
+			if (provided != null) {
+				compile = compile.minus(provided);
+				runtime = runtime.minus(provided);
+			}
+
+			libraries(LibraryScope.COMPILE, compile, callback);
+			libraries(LibraryScope.RUNTIME, runtime, callback);
+			libraries(LibraryScope.PROVIDED, provided, callback);
 		}
 
-		libraries(LibraryScope.COMPILE, compile, callback);
-		libraries(LibraryScope.RUNTIME, runtime, callback);
-		libraries(LibraryScope.PROVIDED, provided, callback);
 	}
 
 	private void libraries(LibraryScope scope, FileCollection files,
