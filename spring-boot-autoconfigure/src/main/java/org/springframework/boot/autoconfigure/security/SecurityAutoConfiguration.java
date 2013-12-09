@@ -43,6 +43,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -80,7 +81,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 @Configuration
 @EnableConfigurationProperties
 @ConditionalOnClass({ EnableWebSecurity.class })
-@ConditionalOnMissingBean(annotation = EnableWebSecurity.class)
+@ConditionalOnMissingBean(WebSecurityConfiguration.class)
 public class SecurityAutoConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
