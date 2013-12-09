@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.ops;
+package org.springframework.boot.sample.actuator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,9 +25,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.sample.actuator.SampleActuatorApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -39,54 +42,66 @@ import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
 
 /**
- * Integration tests for endpoints configuration.
+ * Integration tests for switching off management endpoints.
  * 
  * @author Dave Syer
  */
-public class EndpointsPropertiesSampleActuatorApplicationTests {
+public class NoManagementSampleActuatorApplicationTests {
 
-	private ConfigurableApplicationContext context;
+	private static ConfigurableApplicationContext context;
 
-	private void start(final Class<?> configuration, final String... args)
-			throws Exception {
+	private static int managementPort = 0;
+
+	@BeforeClass
+	public static void start() throws Exception {
+		final String[] args = new String[] { "--management.port=" + managementPort };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication.run(configuration, args);
+								return SpringApplication.run(
+										SampleActuatorApplication.class, args);
 							}
 						});
-		this.context = future.get(60, TimeUnit.SECONDS);
+		context = future.get(60, TimeUnit.SECONDS);
 	}
 
-	@After
-	public void stop() {
-		if (this.context != null) {
-			this.context.close();
+	@AfterClass
+	public static void stop() {
+		if (context != null) {
+			context.close();
 		}
 	}
 
 	@Test
-	public void testCustomErrorPath() throws Exception {
-		start(SampleActuatorApplication.class, "--error.path=/oops");
-		testError();
-	}
-
-	private void testError() {
+	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
-				"http://localhost:8080/oops", Map.class);
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
+				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("None", body.get("error"));
-		assertEquals(999, body.get("status"));
+		assertEquals("Hello Phil", body.get("message"));
+	}
+
+	@Test(expected = ResourceAccessException.class)
+	public void testMetricsNotAvailable() throws Exception {
+		testHome(); // makes sure some requests have been made
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
+				"http://localhost:" + managementPort + "/metrics", Map.class);
+		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
+	}
+
+	private String getPassword() {
+		return context.getBean(SecurityProperties.class).getUser().getPassword();
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {

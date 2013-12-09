@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.ops.ui;
+package org.springframework.boot.sample.actuator;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -29,10 +31,18 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.sample.actuator.SampleActuatorApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.InterceptingClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,7 +51,7 @@ import org.springframework.web.client.RestTemplate;
  * 
  * @author Dave Syer
  */
-public class SampleActuatorUiApplicationPortTests {
+public class ManagementAddressSampleActuatorApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 
@@ -51,14 +61,14 @@ public class SampleActuatorUiApplicationPortTests {
 	@BeforeClass
 	public static void start() throws Exception {
 		final String[] args = new String[] { "--server.port=" + port,
-				"--management.port=" + managementPort, "--management.address=127.0.0.1" };
+				"--management.port=" + managementPort };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
 								return SpringApplication.run(
-										SampleActuatorUiApplication.class, args);
+										SampleActuatorApplication.class, args);
 							}
 						});
 		context = future.get(60, TimeUnit.SECONDS);
@@ -73,13 +83,18 @@ public class SampleActuatorUiApplicationPortTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + port, String.class);
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
+				"http://localhost:" + port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertEquals("Hello Phil", body.get("message"));
 	}
 
 	@Test
 	public void testMetrics() throws Exception {
+		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
 				"http://localhost:" + managementPort + "/metrics", Map.class);
@@ -94,9 +109,50 @@ public class SampleActuatorUiApplicationPortTests {
 		assertEquals("ok", entity.getBody());
 	}
 
-	private RestTemplate getRestTemplate() {
+	@Test
+	public void testErrorPage() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/error", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertEquals(999, body.get("status"));
+	}
 
-		RestTemplate restTemplate = new RestTemplate();
+	private String getPassword() {
+		return context.getBean(SecurityProperties.class).getUser().getPassword();
+	}
+
+	private RestTemplate getRestTemplate() {
+		return getRestTemplate(null, null);
+	}
+
+	private RestTemplate getRestTemplate(final String username, final String password) {
+
+		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+
+		if (username != null) {
+
+			interceptors.add(new ClientHttpRequestInterceptor() {
+
+				@Override
+				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+						ClientHttpRequestExecution execution) throws IOException {
+					request.getHeaders().add(
+							"Authorization",
+							"Basic "
+									+ new String(Base64
+											.encode((username + ":" + password)
+													.getBytes())));
+					return execution.execute(request, body);
+				}
+			});
+		}
+
+		RestTemplate restTemplate = new RestTemplate(
+				new InterceptingClientHttpRequestFactory(
+						new SimpleClientHttpRequestFactory(), interceptors));
 		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			public void handleError(ClientHttpResponse response) throws IOException {

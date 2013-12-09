@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.ops;
+package org.springframework.boot.sample.actuator;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,11 +25,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.sample.actuator.SampleActuatorApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
@@ -44,63 +43,51 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
- * Integration tests for separate management and main service ports.
+ * Integration tests for endpoints configuration.
  * 
  * @author Dave Syer
  */
-public class ShutdownSampleActuatorApplicationTests {
+public class EndpointsPropertiesSampleActuatorApplicationTests {
 
-	private static ConfigurableApplicationContext context;
+	private ConfigurableApplicationContext context;
 
-	@BeforeClass
-	public static void start() throws Exception {
+	private void start(final Class<?> configuration, final String... args)
+			throws Exception {
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(SampleActuatorApplication.class);
+								return SpringApplication.run(configuration, args);
 							}
 						});
-		context = future.get(60, TimeUnit.SECONDS);
+		this.context = future.get(60, TimeUnit.SECONDS);
 	}
 
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
+	@After
+	public void stop() {
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
 	@Test
-	public void testHome() throws Exception {
+	public void testCustomErrorPath() throws Exception {
+		start(SampleActuatorApplication.class, "--error.path=/oops");
+		testError();
+	}
+
+	private void testError() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080", Map.class);
+		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+				"http://localhost:8080/oops", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
-		assertEquals("Hello Phil", body.get("message"));
-	}
-
-	@Test
-	public void testShutdown() throws Exception {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword())
-				.postForEntity("http://localhost:8080/shutdown", null, Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body,
-				((String) body.get("message")).contains("Shutting down"));
-	}
-
-	private String getPassword() {
-		return context.getBean(SecurityProperties.class).getUser().getPassword();
+		assertEquals("None", body.get("error"));
+		assertEquals(999, body.get("status"));
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {

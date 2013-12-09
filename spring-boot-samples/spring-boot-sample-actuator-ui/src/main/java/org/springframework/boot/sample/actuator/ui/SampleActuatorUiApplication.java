@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.ops.ui;
+package org.springframework.boot.sample.actuator.ui;
 
 import java.util.Date;
 import java.util.Map;
