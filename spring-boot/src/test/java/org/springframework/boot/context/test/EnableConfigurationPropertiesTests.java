@@ -48,8 +48,9 @@ public class EnableConfigurationPropertiesTests {
 				.getEnvironment()
 				.getPropertySources()
 				.addFirst(
-						new PropertiesPropertySource("props",
-								getProperties("external.name=foo\nanother.name=bar")));
+						new PropertiesPropertySource(
+								"props",
+								getProperties("external.name=foo\nanother.name=bar\nspring_test_external_val=baz")));
 	}
 
 	@After
@@ -57,6 +58,13 @@ public class EnableConfigurationPropertiesTests {
 		if (this.context != null) {
 			this.context.close();
 		}
+	}
+
+	@Test
+	public void testUnderscoresInPrefix() throws Exception {
+		this.context.register(SystemExampleConfig.class);
+		this.context.refresh();
+		assertEquals("baz", this.context.getBean(SystemEnvVar.class).getVal());
 	}
 
 	@Test
@@ -105,6 +113,11 @@ public class EnableConfigurationPropertiesTests {
 	public static class FurtherExampleConfig {
 	}
 
+	@EnableConfigurationProperties({ SystemEnvVar.class })
+	@Configuration
+	public static class SystemExampleConfig {
+	}
+
 	@ConfigurationProperties(name = "external")
 	public static class External {
 
@@ -131,5 +144,19 @@ public class EnableConfigurationPropertiesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+	}
+
+	@ConfigurationProperties(name = "spring_test_external")
+	public static class SystemEnvVar {
+		public String getVal() {
+			return this.val;
+		}
+
+		public void setVal(String val) {
+			this.val = val;
+		}
+
+		private String val;
+
 	}
 }
