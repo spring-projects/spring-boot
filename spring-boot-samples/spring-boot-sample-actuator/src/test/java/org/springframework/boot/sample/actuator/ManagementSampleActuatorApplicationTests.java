@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.ops;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+package org.springframework.boot.sample.actuator;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,6 +27,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.sample.actuator.SampleActuatorApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,26 +35,31 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.Assert.assertEquals;
+
 /**
- * Integration tests for unsecured service endpoints (even with Spring Security on
- * classpath).
+ * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  */
-public class UnsecureManagementSampleActuatorApplicationTests {
+public class ManagementSampleActuatorApplicationTests {
 
 	private static ConfigurableApplicationContext context;
 
+	private static int port = 9010;
+	private static int managementPort = 9011;
+
 	@BeforeClass
 	public static void start() throws Exception {
+		final String[] args = new String[] { "--server.port=" + port,
+				"--management.port=" + managementPort, "--management.address=127.0.0.1" };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
 							@Override
 							public ConfigurableApplicationContext call() throws Exception {
 								return SpringApplication.run(
-										SampleActuatorApplication.class,
-										"--management.security.enabled=false");
+										SampleActuatorApplication.class, args);
 							}
 						});
 		context = future.get(60, TimeUnit.SECONDS);
@@ -71,36 +73,23 @@ public class UnsecureManagementSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testHomeIsSecure() throws Exception {
+	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080", Map.class);
+				"http://localhost:" + port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertEquals("Wrong body: " + body, "Unauthorized", body.get("error"));
-		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
-				.containsKey("Set-Cookie"));
 	}
 
 	@Test
-	public void testMetrics() throws Exception {
-		try {
-			testHomeIsSecure(); // makes sure some requests have been made
-		}
-		catch (AssertionError ex) {
-			// ignore;
-		}
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:8080/metrics", Map.class);
+	public void testHealth() throws Exception {
+		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertTrue("Wrong body: " + body, body.containsKey("counter.status.401.root"));
+		assertEquals("ok", entity.getBody());
 	}
 
 	private RestTemplate getRestTemplate() {
+
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
 			@Override

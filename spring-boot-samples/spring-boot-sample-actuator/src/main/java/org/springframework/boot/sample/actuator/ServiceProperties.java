@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.ops;
+package org.springframework.boot.sample.actuator;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@EnableAutoConfiguration
-@EnableConfigurationProperties
-@ComponentScan
-public class SampleActuatorApplication {
+@ConfigurationProperties(name = "service", ignoreUnknownFields = false)
+@Component
+public class ServiceProperties {
 
-	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleActuatorApplication.class, args);
+	private String name = "World";
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

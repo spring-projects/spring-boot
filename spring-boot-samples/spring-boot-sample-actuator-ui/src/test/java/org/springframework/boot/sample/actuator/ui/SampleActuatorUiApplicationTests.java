@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.sample.ops.ui;
+package org.springframework.boot.sample.actuator.ui;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,6 +28,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.sample.actuator.ui.SampleActuatorUiApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
