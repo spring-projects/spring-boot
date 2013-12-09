@@ -60,6 +60,11 @@ public class SpringBootPluginExtension {
 	String providedConfiguration
 
 	/**
+	 * The name of the custom configuration to use.
+	 */
+	String customConfiguration
+
+	/**
 	 * If the original source archive should be backed-up before being repackaged.
 	 */
 	boolean backupSource = true;
