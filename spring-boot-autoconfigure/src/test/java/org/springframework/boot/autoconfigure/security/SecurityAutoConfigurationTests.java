@@ -19,12 +19,19 @@ package org.springframework.boot.autoconfigure.security;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
+import org.springframework.boot.autoconfigure.ComponentScanDetector;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -93,6 +100,20 @@ public class SecurityAutoConfigurationTests {
 				this.context.getBean(AuthenticationManager.class));
 	}
 
+	@Test
+	public void testJpaCoexistsHappily() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(EntityConfiguration.class, TestConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
+				SecurityAutoConfiguration.class);
+		// This can fail if security @Conditionals force early instantiation of the
+		// HibernateJpaAutoConfiguration
+		this.context.refresh();
+		assertNotNull(this.context.getBean(JpaTransactionManager.class));
+	}
+
 	private static AnnotationConfigWebApplicationContext debugRefresh(
 			AnnotationConfigWebApplicationContext context) {
 		TestUtils.addEnviroment(context, "debug:true");
@@ -103,6 +124,13 @@ public class SecurityAutoConfigurationTests {
 		context.refresh();
 		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		return context;
+	}
+
+	@Configuration
+	@ComponentScan(basePackageClasses = { City.class })
+	@Import(ComponentScanDetector.class)
+	protected static class EntityConfiguration {
+
 	}
 
 	@Configuration
