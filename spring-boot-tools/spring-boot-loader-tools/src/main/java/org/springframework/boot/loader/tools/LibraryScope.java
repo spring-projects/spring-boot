@@ -55,4 +55,14 @@ public interface LibraryScope {
 		};
 	};
 
+	/**
+	 * Marker for custom scope when custom configuration is used.
+	 */
+	public static final LibraryScope CUSTOM = new LibraryScope() {
+		@Override
+		public String toString() {
+			return "custom";
+		};
+	};
+
 }
