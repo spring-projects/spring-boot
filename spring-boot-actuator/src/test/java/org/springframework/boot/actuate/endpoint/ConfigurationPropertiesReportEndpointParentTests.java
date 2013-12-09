@@ -18,54 +18,47 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public class ConfigurationPropertiesReportEndpointTests extends
-		AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
+public class ConfigurationPropertiesReportEndpointParentTests {
 
-	public ConfigurationPropertiesReportEndpointTests() {
-		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "/configprops",
-				true, "endpoints.configprops");
+	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+			if (this.context.getParent() != null) {
+				((ConfigurableApplicationContext) this.context.getParent()).close();
+			}
+		}
 	}
 
 	@Test
 	public void testInvoke() throws Exception {
-		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testDefaultKeySanitization() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		// report.setKeysToSanitize(new String[] {});
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("testProperties");
-		assertNotNull(nestedProperties);
-		assertEquals("******", nestedProperties.get("dbPassword"));
-		assertEquals("654321", nestedProperties.get("myTestProperty"));
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testKeySanitization() throws Exception {
-		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		report.setKeysToSanitize(new String[] { "property" });
-		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("testProperties");
-		assertNotNull(nestedProperties);
-		assertEquals("123456", nestedProperties.get("dbPassword"));
-		assertEquals("******", nestedProperties.get("myTestProperty"));
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.register(Parent.class);
+		parent.refresh();
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(Config.class);
+		this.context.refresh();
+		ConfigurationPropertiesReportEndpoint endpoint = this.context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+		Map<String, Object> result = endpoint.invoke();
+		assertTrue(result.containsKey("parent"));
+		assertEquals(3, result.size()); // the endpoint, the test props and the parent
+		// System.err.println(result);
 	}
 
 	@Configuration
@@ -96,17 +89,7 @@ public class ConfigurationPropertiesReportEndpointTests extends
 	@ConfigurationProperties(name = "test")
 	public static class TestProperties {
 
-		private String dbPassword = "123456";
-
 		private String myTestProperty = "654321";
-
-		public String getDbPassword() {
-			return this.dbPassword;
-		}
-
-		public void setDbPassword(String dbPassword) {
-			this.dbPassword = dbPassword;
-		}
 
 		public String getMyTestProperty() {
 			return this.myTestProperty;
