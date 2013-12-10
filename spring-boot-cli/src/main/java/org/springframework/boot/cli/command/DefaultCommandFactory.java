@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.CommandFactory;
+import org.springframework.boot.cli.SpringCli;
 
 /**
  * Default implementation of {@link CommandFactory}.
@@ -35,7 +36,7 @@ public class DefaultCommandFactory implements CommandFactory {
 			new TestCommand(), new GrabCommand());
 
 	@Override
-	public Collection<Command> getCommands() {
+	public Collection<Command> getCommands(SpringCli cli) {
 		return DEFAULT_COMMANDS;
 	}
 

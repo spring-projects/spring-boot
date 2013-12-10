@@ -60,7 +60,7 @@ public class SpringCli {
 	private void setCommands(Iterable<CommandFactory> iterable) {
 		this.commands = new ArrayList<Command>();
 		for (CommandFactory factory : iterable) {
-			for (Command command : factory.getCommands()) {
+			for (Command command : factory.getCommands(this)) {
 				this.commands.add(command);
 			}
 		}
