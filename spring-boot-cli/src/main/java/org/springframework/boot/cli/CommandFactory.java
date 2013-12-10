@@ -31,6 +31,6 @@ public interface CommandFactory {
 	 * Returns the CLI {@link Command}s.
 	 * @return The commands
 	 */
-	Collection<Command> getCommands();
+	Collection<Command> getCommands(SpringCli cli);
 
 }
