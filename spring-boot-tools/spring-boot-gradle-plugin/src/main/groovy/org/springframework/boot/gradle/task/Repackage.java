@@ -34,6 +34,18 @@ import org.springframework.boot.loader.tools.Repackager;
  */
 public class Repackage extends DefaultTask {
 
+	private String customConfiguration;
+
+	private Object withJarTask;
+
+	public void setCustomConfiguration(String customConfiguration) {
+		this.customConfiguration = customConfiguration;
+	}
+
+	public void setWithJarTask(Object withJarTask) {
+		this.withJarTask = withJarTask;
+	}
+
 	@TaskAction
 	public void repackage() {
 		Project project = getProject();
@@ -43,10 +55,23 @@ public class Repackage extends DefaultTask {
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
+		if (this.customConfiguration != null) {
+			libraries.setCustomConfigurationName(this.customConfiguration);
+		}
+		else if (extension.getCustomConfiguration() != null) {
+			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
+		}
 		project.getTasks().withType(Jar.class, new Action<Jar>() {
 
 			@Override
 			public void execute(Jar archive) {
+				// if withJarTask is set, compare tasks
+				// and bail out if we didn't match
+				if (Repackage.this.withJarTask != null
+						&& !archive.equals(Repackage.this.withJarTask)) {
+					return;
+				}
+
 				if ("".equals(archive.getClassifier())) {
 					File file = archive.getArchivePath();
 					if (file.exists()) {

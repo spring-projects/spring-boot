@@ -31,7 +31,7 @@ import org.springframework.boot.gradle.task.RunJar;
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
-	private static final String REPACKAGE_TASK_NAME = "repackage";
+	private static final String REPACKAGE_TASK_NAME = "bootRepackage";
 
 	private static final String RUN_JAR_TASK_NAME = "runJar";
 
@@ -40,6 +40,11 @@ public class SpringBootPlugin implements Plugin<Project> {
 		project.getPlugins().apply(BasePlugin.class);
 		project.getPlugins().apply(JavaPlugin.class);
 		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
+
+		// register BootRepackage so that we can use
+		// task foo(type: BootRepackage) {}
+		project.getExtensions().getExtraProperties()
+				.set("BootRepackage", Repackage.class);
 		Repackage packageTask = addRepackageTask(project);
 		ensureTaskRunsOnAssembly(project, packageTask);
 		addRunJarTask(project);
