@@ -23,7 +23,7 @@ request but before a merge.
 * Make sure all new .java files to have a simple Javadoc class comment with at least an @author tag identifying you, and
   preferably at least a paragraph on what the class is for.
 * Add the ASF license header comment to all new .java files (copy from existing files in the project)
-* Add yourself as an @author to the .java files that you modify substantially (moew than cosmetic changes).
+* Add yourself as an @author to the .java files that you modify substantially (more than cosmetic changes).
 * Add some Javadocs and, if you change the namespace, some XSD doc elements.
 * A few unit tests would help a lot as well - someone has to do it.
 * If no-one else is using your branch, please rebase it against the current master (or other target branch in the main project).
@@ -40,7 +40,7 @@ To build the source you will need to install
 [Apache Maven](http://maven.apache.org/run-maven/index.html) v3.0 or above.
 
 #### Default build
-The project can be build from the root directory using the standard maven command:
+The project can be built from the root directory using the standard maven command:
 
 	$ mvn clean install
 
