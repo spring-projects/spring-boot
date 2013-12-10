@@ -54,6 +54,10 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implemen
 
 	private ClassLoader classLoader;
 
+	public HibernateJpaAutoConfiguration() {
+		this.environment = null;
+	}
+
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;

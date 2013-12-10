@@ -82,6 +82,7 @@ import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 @EnableConfigurationProperties
 @ConditionalOnClass({ EnableWebSecurity.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
+// @ConditionalOnMissingBean(annotation = EnableWebSecurity.class)
 public class SecurityAutoConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
@@ -101,7 +102,8 @@ public class SecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
-	@ConditionalOnBean(annotation = EnableWebSecurity.class)
+	// @ConditionalOnBean(annotation = EnableWebSecurity.class)
+	@ConditionalOnBean(WebSecurityConfiguration.class)
 	public SecurityConfigurer<Filter, WebSecurity> ignoredPathsWebSecurityConfigurerAdapter() {
 		return new IgnoredPathsWebSecurityConfigurerAdapter();
 	}
