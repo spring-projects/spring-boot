@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+    	mavenLocal()
+        maven { url "http://repo.springsource.org/libs-snapshot" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.BUILD-SNAPSHOT")
+    }
+}
+
+ext {
+	springBootVersion = '0.5.0.BUILD-SNAPSHOT'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+jar {
+    baseName = 'spring-boot-sample-actuator'
+    version =  '0.5.0'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.springsource.org/libs-snapshot" }
+}
+
+dependencies {
+	configurations {
+		insecure.exclude module: 'spring-boot-starter-security'
+	}
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
+    testCompile("junit:junit:4.11")
+    insecure configurations.runtime
+}
+
+// Slightly odd requirement (package a jar file as an insecure app, exlcuding Spring Security)
+// just to demonstrate the "customConfiguration" feature of the Boot gradle plugin.
+springBoot {
+	customConfiguration = "insecure"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}

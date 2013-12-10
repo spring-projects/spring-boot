@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+    	mavenLocal()
+        maven { url "http://repo.springsource.org/libs-snapshot" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.BUILD-SNAPSHOT")
+    }
+}
+
+ext {
+	springBootVersion = '0.5.0.BUILD-SNAPSHOT'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+jar {
+    baseName = 'spring-boot-sample-simple'
+    version =  '0.5.0'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "http://repo.springsource.org/libs-snapshot" }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
+    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}

@@ -25,7 +25,7 @@ import org.springframework.boot.gradle.task.Repackage;
 import org.springframework.boot.gradle.task.RunJar;
 
 /**
- * Gradle 'Spring Boot' {@link Plugin}.
+ * Gradle 'Spring Boot' {@link Plugin}. Provides 2 tasks (bootRepackge and bootRun).
  * 
  * @author Phillip Webb
  */
@@ -33,7 +33,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	private static final String REPACKAGE_TASK_NAME = "bootRepackage";
 
-	private static final String RUN_JAR_TASK_NAME = "runJar";
+	private static final String RUN_JAR_TASK_NAME = "bootRun";
 
 	@Override
 	public void apply(Project project) {
