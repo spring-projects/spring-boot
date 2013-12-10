@@ -44,6 +44,13 @@ $ gradle build
 $ java -jar build/libs/mymodule-0.0.1-SNAPSHOT.jar
 ```
 
+### Running a Project in Place
+
+To run a project in place without building a jar first you can use the "bootRun" task:
+
+```
+$ gradle bootRun
+```
 
 ### Repackage configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
