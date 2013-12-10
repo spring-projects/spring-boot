@@ -350,7 +350,7 @@ Groovy samples for use with the command line application are available in
 `spring run <sample>.groovy` from samples directory.
 
 Java samples are available in [spring-boot-samples](spring-boot-samples) and should
-be build with maven and run use `java -jar target/<sample>.jar`. The following java
+be built with maven and run by invoking `java -jar target/<sample>.jar`. The following java
 samples are provided:
 
 * [spring-boot-sample-simple](spring-boot-samples/spring-boot-sample-simple) -
