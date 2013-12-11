@@ -16,6 +16,9 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
@@ -39,7 +42,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private final Log logger = LogFactory.getLog(TomcatEmbeddedServletContainer.class);
 
-	private static int containerCounter = 0;
+	private static AtomicInteger containerCounter = new AtomicInteger(-1);
 
 	private final Tomcat tomcat;
 
@@ -66,6 +69,11 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private synchronized void initialize() throws EmbeddedServletContainerException {
 		try {
+			int instanceId = containerCounter.incrementAndGet();
+			if (instanceId > 0) {
+				Engine engine = this.tomcat.getEngine();
+				engine.setName(engine.getName() + "-" + instanceId);
+			}
 			this.tomcat.start();
 			try {
 				// Allow the server to start so the ServletContext is available, but stop
@@ -79,7 +87,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 			}
 			// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 			// blocking non-daemon to stop immediate shutdown
-			Thread awaitThread = new Thread("container-" + (containerCounter++)) {
+			Thread awaitThread = new Thread("container-" + (containerCounter.get())) {
 				@Override
 				public void run() {
 					TomcatEmbeddedServletContainer.this.tomcat.getServer().await();
@@ -128,6 +136,9 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException("Unable to stop embedded Tomcat",
 					ex);
+		}
+		finally {
+			containerCounter.decrementAndGet();
 		}
 	}
 

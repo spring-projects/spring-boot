@@ -30,6 +30,7 @@ import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
@@ -50,6 +51,20 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	@Override
 	protected TomcatEmbeddedServletContainerFactory getFactory() {
 		return new TomcatEmbeddedServletContainerFactory();
+	}
+
+	// JMX MBean names clash if you get more than one Engine with the same name...
+	@Test
+	public void tomcatEngineNames() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.container = factory.getEmbeddedServletContainer();
+		factory.setPort(8081);
+		TomcatEmbeddedServletContainer container2 = (TomcatEmbeddedServletContainer) factory
+				.getEmbeddedServletContainer();
+		assertEquals("Tomcat", ((TomcatEmbeddedServletContainer) this.container)
+				.getTomcat().getEngine().getName());
+		assertEquals("Tomcat-1", container2.getTomcat().getEngine().getName());
+		container2.stop();
 	}
 
 	@Test
