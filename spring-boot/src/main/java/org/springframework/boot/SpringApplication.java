@@ -292,7 +292,7 @@ public class SpringApplication {
 			postProcessApplicationContext(context);
 			applyInitializers(context);
 			if (this.logStartupInfo) {
-				logStartupInfo();
+				logStartupInfo(context.getParent() == null);
 			}
 
 			load(context, sources.toArray(new Object[sources.size()]));
@@ -437,9 +437,14 @@ public class SpringApplication {
 	/**
 	 * Called to log startup information, subclasses may override to add additional
 	 * logging.
+	 * 
+	 * @param isRoot true if this application is the root of a context hierarchy
 	 */
-	protected void logStartupInfo() {
-		new StartupInfoLogger(this.mainApplicationClass).logStarting(getApplicationLog());
+	protected void logStartupInfo(boolean isRoot) {
+		if (isRoot) {
+			new StartupInfoLogger(this.mainApplicationClass)
+					.logStarting(getApplicationLog());
+		}
 	}
 
 	/**
