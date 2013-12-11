@@ -36,6 +36,7 @@ import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -89,6 +90,18 @@ public class BatchAutoConfigurationTests {
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
 		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
 				"job", new JobParameters()));
+	}
+
+	@Test
+	public void testDisableLaunchesJob() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		TestUtils.addEnviroment(this.context, "spring.batch.job.enabled:false");
+		this.context.register(JobConfiguration.class, BatchAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(JobLauncher.class));
+		assertEquals(0, this.context.getBeanNamesForType(CommandLineRunner.class).length);
 	}
 
 	@Test

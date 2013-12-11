@@ -17,23 +17,31 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. By default all
+ * jobs in the context will be executed on startup (disable this behaviour with
+ * <code>spring.boot.exec.enabled=false</code>). User can supply a job name to execute on
+ * startup with <code>spring.batch.exec.name=...</code>.
  * 
  * @author Dave Syer
  */
 @Configuration
 @ConditionalOnClass({ JobLauncher.class })
 public class BatchAutoConfiguration {
+
+	@Value("${spring.batch.job.name:}")
+	private String jobName;
 
 	@Bean
 	@ConditionalOnMissingBean(BatchDatabaseInitializer.class)
@@ -42,10 +50,15 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(CommandLineRunner.class)
+	@ConditionalOnMissingBean(JobLauncherCommandLineRunner.class)
 	@ConditionalOnBean(JobLauncher.class)
+	@ConditionalOnExpression("${spring.batch.job.enabled:true}")
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner() {
-		return new JobLauncherCommandLineRunner();
+		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner();
+		if (StringUtils.hasText(this.jobName)) {
+			runner.setJobName(this.jobName);
+		}
+		return runner;
 	}
 
 	@Bean
