@@ -127,10 +127,12 @@ public class TomcatEmbeddedServletContainerFactory extends
 				: createTempDir("tomcat"));
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
 		connector = new Connector(this.protocol);
+		long id = System.identityHashCode(tomcat);
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
 		tomcat.getHost().setAutoDeploy(false);
+		tomcat.getEngine().setName(tomcat.getEngine().getName()+"-"+id);
 		tomcat.getEngine().setBackgroundProcessorDelay(-1);
 
 		prepareContext(tomcat.getHost(), initializers);
