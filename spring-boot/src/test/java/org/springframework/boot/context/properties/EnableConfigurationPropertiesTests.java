@@ -110,6 +110,17 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testPropertiesEmbeddedBinding() {
+		this.context.register(EmbeddedTestConfiguration.class);
+		TestUtils.addEnviroment(this.context, "spring_foo_name:foo");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+	
+	
+	@Test
 	public void testIgnoreNestedPropertiesBinding() {
 		this.context.register(IgnoreNestedTestConfiguration.class);
 		TestUtils.addEnviroment(this.context, "name:foo", "nested.name:bar");
@@ -286,7 +297,11 @@ public class EnableConfigurationPropertiesTests {
 	@EnableConfigurationProperties(StrictTestProperties.class)
 	protected static class StrictTestConfiguration {
 	}
-
+	
+	@Configuration
+	@EnableConfigurationProperties(EmbeddedTestProperties.class)
+	protected static class EmbeddedTestConfiguration {
+	}
 	@Configuration
 	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
 	protected static class IgnoreNestedTestConfiguration {
@@ -411,7 +426,11 @@ public class EnableConfigurationPropertiesTests {
 	protected static class StrictTestProperties extends TestProperties {
 
 	}
+	@ConfigurationProperties(name = "spring.foo")
+	protected static class EmbeddedTestProperties extends TestProperties {
 
+	}
+	
 	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
 	protected static class IgnoreNestedTestProperties extends TestProperties {
 

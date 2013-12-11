@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.test;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Properties;
 
 import org.junit.After;
@@ -30,8 +32,6 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Tests for {@link EnableConfigurationProperties}.
  * 
@@ -43,6 +43,8 @@ public class EnableConfigurationPropertiesTests {
 
 	@Before
 	public void open() throws Exception {
+		System.setProperty("spring_test_external_val", "baz");
+		
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.getEnvironment()
@@ -59,6 +61,14 @@ public class EnableConfigurationPropertiesTests {
 		}
 	}
 
+	@Test
+	public void testSystemConfig() throws Exception {
+		this.context.register(SystemExampleConfig.class);
+		this.context.refresh();
+		assertEquals("baz", this.context.getBean(SystemEnvVar.class).getVal());
+	}
+
+	
 	@Test
 	public void testSimpleAutoConfig() throws Exception {
 		this.context.register(ExampleConfig.class);
@@ -104,6 +114,11 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	public static class FurtherExampleConfig {
 	}
+	
+	@EnableConfigurationProperties({ SystemEnvVar.class})
+	@Configuration
+	public static class SystemExampleConfig {
+	}
 
 	@ConfigurationProperties(name = "external")
 	public static class External {
@@ -131,5 +146,18 @@ public class EnableConfigurationPropertiesTests {
 		public void setName(String name) {
 			this.name = name;
 		}
+	}
+	@ConfigurationProperties(name = "spring_test_external")
+	public static class SystemEnvVar{
+		public String getVal() {
+			return val;
+		}
+
+		public void setVal(String val) {
+			this.val = val;
+		}
+
+		private String val;
+
 	}
 }

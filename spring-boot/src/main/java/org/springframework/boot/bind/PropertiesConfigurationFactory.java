@@ -258,6 +258,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 					names.add(name);
 					names.add(name + ".*");
 					names.add(name + "_*");
+					names.add("*_"+name);
 				}
 			}
 		}
