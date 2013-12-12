@@ -20,7 +20,7 @@
 		<httpclient.version>4.3.1</httpclient.version>
 		<httpasyncclient.version>4.0</httpasyncclient.version>
 		<hsqldb.version>2.2.9</hsqldb.version>
-		<jackson.version>2.2.2</jackson.version>
+		<jackson.version>2.2.3</jackson.version>
 		<jetty.version>8.1.9.v20130131</jetty.version>
 		<joda-time.version>2.3</joda-time.version>
 		<jstl.version>1.2</jstl.version>
