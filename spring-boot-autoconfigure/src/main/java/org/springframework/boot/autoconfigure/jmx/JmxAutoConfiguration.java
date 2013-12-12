@@ -36,7 +36,7 @@ import org.springframework.jmx.export.MBeanExporter;
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })
 @ConditionalOnMissingBean({ MBeanExporter.class })
-@ConditionalOnExpression("${spring.jmx.enabled:false}")
+@ConditionalOnExpression("${spring.jmx.enabled:true}")
 public class JmxAutoConfiguration {
 
 	@Configuration
