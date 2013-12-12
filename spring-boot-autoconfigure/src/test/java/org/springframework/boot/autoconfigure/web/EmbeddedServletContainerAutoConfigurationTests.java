@@ -179,7 +179,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	public static class NonSpringServletConfiguration {
 
 		@Bean
-		public Servlet dispatcherServlet() {
+		public FrameworkServlet dispatcherServlet() {
 			return new FrameworkServlet() {
 				@Override
 				protected void doService(HttpServletRequest request,

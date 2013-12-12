@@ -276,6 +276,22 @@ For more detail look at the
 [`WebMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/WebMvcAutoConfiguration.java?source=c)
 source code.
 
+## Switch off the Spring DispatcherServlet
+
+Spring Boot wants to serve all content from the root of your
+application "/" down. If you would rather map your own servlet to that
+URL you can do it, but of course you may lose some of the other Boot
+MVC features. To add your own servlet and map it to the root resource
+just declare a `@Bean` of type `Servlet` and give it the special bean
+name "dispatcherServlet". (You can also create a bean of a different
+type with that name if you want to switch it off and not replace it.)
+
+## Switch off the Default MVC Configuration
+
+The easiest way to take complete control over MVC configuration is to
+provide your own `@Configuration` with the `@EnableWebMvc`
+annotation. This will leave all MVC configuration in your hands.
+
 ## Change the HTTP Port
 
 In a standalone application the main HTTP port defaults to 8080, but
