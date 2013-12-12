@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.web;
 
 import javax.servlet.Servlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Test;
 import org.springframework.beans.BeansException;
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.FrameworkServlet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -73,6 +76,27 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 				DispatcherServletAutoConfiguration.class);
 		verifyContext();
 		assertEquals(2, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+	}
+
+	@Test
+	public void contextAlreadyHasNonDispatcherServlet() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				NonSpringServletConfiguration.class,
+				EmbeddedContainerConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		verifyContext(); // the non default servlet is still registered
+		assertEquals(0, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+	}
+
+	@Test
+	public void contextAlreadyHasNonServlet() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
+				NonServletConfiguration.class, EmbeddedContainerConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		assertEquals(0, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+		assertEquals(0, this.context.getBeanNamesForType(Servlet.class).length);
 	}
 
 	@Test
@@ -147,6 +171,31 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		@Bean
 		public DispatcherServlet springServlet() {
 			return new DispatcherServlet();
+		}
+
+	}
+
+	@Configuration
+	public static class NonSpringServletConfiguration {
+
+		@Bean
+		public Servlet dispatcherServlet() {
+			return new FrameworkServlet() {
+				@Override
+				protected void doService(HttpServletRequest request,
+						HttpServletResponse response) throws Exception {
+				}
+			};
+		}
+
+	}
+
+	@Configuration
+	public static class NonServletConfiguration {
+
+		@Bean
+		public String dispatcherServlet() {
+			return "foo";
 		}
 
 	}
