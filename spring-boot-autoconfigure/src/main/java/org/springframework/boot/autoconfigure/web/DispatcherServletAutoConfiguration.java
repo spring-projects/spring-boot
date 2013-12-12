@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -72,13 +73,24 @@ public class DispatcherServletAutoConfiguration {
 				AnnotatedTypeMetadata metadata) {
 
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-			String[] beans = beanFactory.getBeanNamesForType(DispatcherServlet.class,
-					false, false);
-			if (beans.length == 0) {
+			List<String> servlets = Arrays.asList(beanFactory.getBeanNamesForType(
+					DispatcherServlet.class, false, false));
+			boolean containsDispatcherBean = beanFactory
+					.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			if (servlets.isEmpty()) {
+				if (containsDispatcherBean) {
+					return ConditionOutcome
+							.noMatch("found no DispatcherServlet but a non-DispatcherServlet named "
+									+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+				}
 				return ConditionOutcome.match("no DispatcherServlet found");
 			}
-			if (Arrays.asList(beans).contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+			if (servlets.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
 				return ConditionOutcome.noMatch("found DispatcherServlet named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			}
+			if (containsDispatcherBean) {
+				return ConditionOutcome.noMatch("found non-DispatcherServlet named "
 						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			}
 			return ConditionOutcome
