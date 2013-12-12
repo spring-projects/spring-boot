@@ -20,6 +20,7 @@ import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,13 @@ public class ManagementServerPropertiesAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ManagementServerProperties managementServerProperties() {
 		return new ManagementServerProperties();
+	}
+
+	// In case security auto configuration hasn't been included
+	@Bean(name = "org.springframework.autoconfigure.security.SecurityProperties")
+	@ConditionalOnMissingBean
+	public SecurityProperties securityProperties() {
+		return new SecurityProperties();
 	}
 
 }
