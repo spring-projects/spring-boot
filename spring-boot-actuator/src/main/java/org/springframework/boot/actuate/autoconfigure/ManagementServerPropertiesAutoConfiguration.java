@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
@@ -48,7 +47,7 @@ public class ManagementServerPropertiesAutoConfiguration {
 	// In case security auto configuration hasn't been included
 	@Bean(name = "org.springframework.autoconfigure.security.SecurityProperties")
 	@ConditionalOnMissingBean
-	@ConditionalOnClass(EnableWebSecurity.class)
+	@ConditionalOnClass(name = "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
 	public SecurityProperties securityProperties() {
 		return new SecurityProperties();
 	}
