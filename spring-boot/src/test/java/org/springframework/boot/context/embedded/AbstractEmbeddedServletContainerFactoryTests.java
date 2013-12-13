@@ -18,7 +18,6 @@ package org.springframework.boot.context.embedded;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -99,7 +98,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		this.thrown.expect(SocketException.class);
+		this.thrown.expect(IOException.class);
 		getResponse("http://localhost:8080/hello");
 	}
 
@@ -110,7 +109,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
 		this.container.stop();
-		this.thrown.expect(SocketException.class);
+		this.thrown.expect(IOException.class);
 		getResponse("http://localhost:8080/hello");
 	}
 
