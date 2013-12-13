@@ -47,14 +47,13 @@ public class JmxAutoConfigurationTests {
 		}
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
+	@Test
 	public void testDefaultMBeanExport() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
 
-		this.context.getBean(MBeanExporter.class);
-		fail();
+		assertNotNull(this.context.getBean(MBeanExporter.class));
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
