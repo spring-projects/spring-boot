@@ -29,7 +29,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link JmxAutoConfiguration}
@@ -66,7 +65,6 @@ public class JmxAutoConfigurationTests {
 		this.context.refresh();
 
 		this.context.getBean(MBeanExporter.class);
-		fail();
 	}
 
 	@Test

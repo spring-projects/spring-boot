@@ -40,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.MessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -92,8 +93,11 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	@Bean
 	@ConditionalOnMissingBean
-	public EndpointHandlerAdapter endpointHandlerAdapter() {
-		return new EndpointHandlerAdapter();
+	public EndpointHandlerAdapter endpointHandlerAdapter(
+			final MessageConverters messageConverters) {
+		EndpointHandlerAdapter adapter = new EndpointHandlerAdapter();
+		adapter.setMessageConverters(messageConverters.getMessageConverters());
+		return adapter;
 	}
 
 	@Override
