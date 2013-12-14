@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,14 +29,17 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -43,12 +47,26 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -86,6 +104,8 @@ public class WebMvcAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
+		assertFalse(this.context.getBean(RequestMappingHandlerAdapter.class)
+				.getMessageConverters().isEmpty());
 	}
 
 	@Test
@@ -121,6 +141,46 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(mappingLocations.get("/**").size(), equalTo(1));
 		assertThat(mappingLocations.get("/**").get(0),
 				equalTo((Resource) new ClassPathResource("/foo/")));
+	}
+
+	@Test
+	public void customJacksonConverter() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(JacksonConfig.class, Config.class,
+				WebMvcAutoConfiguration.class);
+		this.context.refresh();
+		MappingJackson2HttpMessageConverter converter = this.context
+				.getBean(MappingJackson2HttpMessageConverter.class);
+		assertEquals(this.context.getBean(ObjectMapper.class),
+				converter.getObjectMapper());
+		MessageConverters converters = this.context.getBean(MessageConverters.class);
+		assertTrue(converters.getMessageConverters().contains(converter));
+		assertEquals(converters.getMessageConverters(),
+				this.context.getBean(RequestMappingHandlerAdapter.class)
+						.getMessageConverters());
+	}
+
+	@Test
+	public void customJacksonModules() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(ModulesConfig.class, Config.class,
+				WebMvcAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+
+		@SuppressWarnings({ "unchecked", "unused" })
+		ObjectMapper result = verify(mapper).registerModules(
+				(Iterable<Module>) argThat(hasItem(this.context.getBean(Module.class))));
+	}
+
+	@Test
+	public void doubleModuleRegistration() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(DoubleModulesConfig.class, Config.class,
+				WebMvcAutoConfiguration.class);
+		this.context.refresh();
+		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
+		assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new Foo()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,6 +236,91 @@ public class WebMvcAutoConfigurationTests {
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/**").addResourceLocations("classpath:/foo/");
+		}
+
+	}
+
+	@Configuration
+	protected static class ModulesConfig {
+
+		@Bean
+		public Module jacksonModule() {
+			return new SimpleModule();
+		}
+
+		@Bean
+		@Primary
+		public ObjectMapper objectMapper() {
+			return Mockito.mock(ObjectMapper.class);
+		}
+
+	}
+
+	@Configuration
+	protected static class DoubleModulesConfig {
+
+		@Bean
+		public Module jacksonModule() {
+			SimpleModule module = new SimpleModule();
+			module.addSerializer(Foo.class, new JsonSerializer<Foo>() {
+
+				@Override
+				public void serialize(Foo value, JsonGenerator jgen,
+						SerializerProvider provider) throws IOException,
+						JsonProcessingException {
+					jgen.writeStartObject();
+					jgen.writeStringField("foo", "bar");
+					jgen.writeEndObject();
+				}
+			});
+			return module;
+		}
+
+		@Bean
+		@Primary
+		public ObjectMapper objectMapper() {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.registerModule(jacksonModule());
+			return mapper;
+		}
+
+	}
+
+	protected static class Foo {
+
+		private String name;
+
+		private Foo() {
+
+		}
+
+		static Foo create() {
+			return new Foo();
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+	}
+
+	@Configuration
+	protected static class JacksonConfig {
+
+		@Bean
+		public MappingJackson2HttpMessageConverter jacksonMessaegConverter() {
+			MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+			converter.setObjectMapper(objectMapper());
+			return converter;
+		}
+
+		@Bean
+		public ObjectMapper objectMapper() {
+			return new ObjectMapper();
 		}
 
 	}

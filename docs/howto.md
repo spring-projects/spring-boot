@@ -40,7 +40,88 @@ Javadocs. Some rules of thumb:
 * Look for `@ConditionalOnExpression` annotations that switch features
   on and off in response to SpEL expressions, normally evaluated with
   placeholders resolved from the `Environment`.
+
+
+## Write a JSON REST Service
+
+Any Spring `@RestController` in a Spring Boot application should
+render JSON response by default as long as Jackson2 is on the
+classpath. For example:
+
+```java
+@RestController
+public class MyController {
+
+    @RequestMapping("/thing")
+    public MyThing thing() {
+        return new MyThing();
+    }
+
+}
+```
+
+As long as `MyThing` can be serialized by Jackson2 (e.g. a normal POJO
+or Groovy object) then `http://localhost:8080/thing` will serve a JSON
+representation of it by default. Sometimes in a browser you might see
+XML responses (but by default only if `MyThing` was a JAXB object)
+because browsers tend to send accept headers that prefer XML.
+
+## Customize the Jackson ObjectMapper
+
+Spring MVC (client and server side) uses `HttpMessageConverters` to
+negotiate content conversion in an HTTP exchange. If Jackson is on the
+classpath you already get a default converter with a vanilla
+`ObjectMapper`. Spring Boot has some features to make it easier to
+customize this behaviour.
+
+The smallest change that might work is to just add beans of type
+`Module` to your context. They will be registered with the default
+`ObjectMapper` and then injected into the default message
+converter. To replace the default `ObjectMapper` completely, define a
+`@Bean` of that type and mark it as `@Primary`.
+
+In addition, if your context contains any beans of type `ObjectMapper`
+then all of the `Module` beans will be registered with all of the
+mappers. So there is a global mechanism for contributing custom
+modules when you add new features to your application.
   
+Finally, if you provide any `@Beans` of type
+`MappingJackson2HttpMessageConverter` then they will replace the
+default value in the MVC configuration. Also, a convenience bean is
+provided of type `MessageConverters` (always available if you use the
+default MVC configuration) which has some useful methods to access the
+default and user-enhanced message converters.
+
+See also the [section on `HttpMessageConverters`](#message.converters)
+and the `WebMvcAutoConfiguration` source code for more details.
+
+<span id="message.converters"/>
+## Customize the @ResponseBody Rendering
+
+Spring uses `HttpMessageConverters` to render `@ResponseBody` (or
+responses from `@RestControllers`). You can contribute additional
+converters by simply adding beans of that type in a Spring Boot
+context. If a bean you add is of a type that would have been included
+by default anyway (like `MappingJackson2HttpMessageConverter` for JSON
+conversions) then it will replace the default value. A convenience
+bean is provided of type `MessageConverters` (always available if you
+use the default MVC configuration) which has some useful methods to
+access the default and user-enhanced message converters (useful, for
+example if you want to manually inject them into a custom
+`RestTemplate`).
+
+As in normal MVC usage, any `WebMvcConfigurerAdapter` beans that you
+provide can also contribute converters by overriding the
+`configureMessageConverters` method, but unlike with normal MVC, you
+can supply only additional converters that you need (because Spring
+Boot uses the same mechanism to contribute its defaults). Finally, if
+you opt out of the Spring Boot default MVC configuration by providing
+your own `@EnableWebMvc` configuration, then you can take control
+completely and do everything manually using `getMessageConverters`
+from `WebMvcConfigurationSupport`.
+
+See the `WebMvcAutoConfiguration` source code for more details.
+
 ## Add a Servlet, Filter or ServletContextListener to an Application
 
 `Servlet`, `Filter`, `ServletContextListener` and the other listeners
