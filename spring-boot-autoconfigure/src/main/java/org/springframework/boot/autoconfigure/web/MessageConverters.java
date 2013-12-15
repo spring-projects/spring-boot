@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.springframework.http.converter.HttpMessageConverter;
@@ -54,23 +55,27 @@ public class MessageConverters {
 		if (this.converters == null) {
 			synchronized (this.lock) {
 				if (this.converters == null) {
-					this.converters = new ArrayList<HttpMessageConverter<?>>();
 					getDefaultMessageConverters(); // ensure they are available
+					Collection<HttpMessageConverter<?>> fallbacks = new LinkedHashSet<HttpMessageConverter<?>>();
 					for (HttpMessageConverter<?> fallback : this.defaults) {
 						boolean overridden = false;
 						for (HttpMessageConverter<?> converter : this.overrides) {
 							if (fallback.getClass()
 									.isAssignableFrom(converter.getClass())) {
-								if (!this.converters.contains(converter)) {
-									this.converters.add(converter);
+								if (!fallbacks.contains(converter)) {
+									fallbacks.add(converter);
 									overridden = true;
 								}
 							}
 						}
 						if (!overridden) {
-							this.converters.add(fallback);
+							fallbacks.add(fallback);
 						}
 					}
+					Collection<HttpMessageConverter<?>> converters = new LinkedHashSet<HttpMessageConverter<?>>(
+							this.overrides);
+					converters.addAll(fallbacks);
+					this.converters = new ArrayList<HttpMessageConverter<?>>(converters);
 				}
 			}
 		}
