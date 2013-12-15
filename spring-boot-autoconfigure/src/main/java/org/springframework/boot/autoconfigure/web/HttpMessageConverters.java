@@ -33,7 +33,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * 
  * @author Dave Syer
  */
-public class MessageConverters {
+public class HttpMessageConverters {
 
 	private List<HttpMessageConverter<?>> defaults;
 
@@ -43,11 +43,11 @@ public class MessageConverters {
 
 	private List<HttpMessageConverter<?>> converters;
 
-	public MessageConverters() {
+	public HttpMessageConverters() {
 		this(Collections.<HttpMessageConverter<?>> emptyList());
 	}
 
-	public MessageConverters(Collection<HttpMessageConverter<?>> overrides) {
+	public HttpMessageConverters(Collection<HttpMessageConverter<?>> overrides) {
 		this.overrides = new ArrayList<HttpMessageConverter<?>>(overrides);
 	}
 

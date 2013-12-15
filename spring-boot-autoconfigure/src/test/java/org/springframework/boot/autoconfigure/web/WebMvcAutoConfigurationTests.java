@@ -153,7 +153,7 @@ public class WebMvcAutoConfigurationTests {
 				.getBean(MappingJackson2HttpMessageConverter.class);
 		assertEquals(this.context.getBean(ObjectMapper.class),
 				converter.getObjectMapper());
-		MessageConverters converters = this.context.getBean(MessageConverters.class);
+		HttpMessageConverters converters = this.context.getBean(HttpMessageConverters.class);
 		assertTrue(converters.getMessageConverters().contains(converter));
 		assertEquals(converters.getMessageConverters(),
 				this.context.getBean(RequestMappingHandlerAdapter.class)
