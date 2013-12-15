@@ -30,18 +30,18 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Dave Syer
  */
-public class MessageConvertersTests {
+public class HttpMessageConvertersTests {
 
 	@Test
 	public void defaultsCreated() {
-		MessageConverters messageConverters = new MessageConverters();
+		HttpMessageConverters messageConverters = new HttpMessageConverters();
 		assertFalse(messageConverters.getDefaultMessageConverters().isEmpty());
 	}
 
 	@Test
 	public void overrideExistingConverter() {
 		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-		MessageConverters messageConverters = new MessageConverters(
+		HttpMessageConverters messageConverters = new HttpMessageConverters(
 				Arrays.<HttpMessageConverter<?>> asList(converter));
 		assertTrue(messageConverters.getMessageConverters().contains(converter));
 	}
@@ -49,7 +49,7 @@ public class MessageConvertersTests {
 	@Test
 	public void addNewOne() {
 		HttpMessageConverter<?> converter = Mockito.mock(HttpMessageConverter.class);
-		MessageConverters messageConverters = new MessageConverters(
+		HttpMessageConverters messageConverters = new HttpMessageConverters(
 				Arrays.<HttpMessageConverter<?>> asList(converter));
 		assertTrue(messageConverters.getMessageConverters().contains(converter));
 		assertEquals(converter, messageConverters.getMessageConverters().get(0));

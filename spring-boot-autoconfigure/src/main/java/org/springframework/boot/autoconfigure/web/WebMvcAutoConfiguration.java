@@ -116,10 +116,10 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MessageConverters messageConverters() {
+	public HttpMessageConverters messageConverters() {
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(
 				this.converters);
-		return new MessageConverters(converters);
+		return new HttpMessageConverters(converters);
 	}
 
 	@Bean
@@ -148,7 +148,7 @@ public class WebMvcAutoConfiguration {
 		private ResourceLoader resourceLoader;
 
 		@Autowired
-		private MessageConverters messageConverters;
+		private HttpMessageConverters messageConverters;
 
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {

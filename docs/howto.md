@@ -88,9 +88,9 @@ modules when you add new features to your application.
 Finally, if you provide any `@Beans` of type
 `MappingJackson2HttpMessageConverter` then they will replace the
 default value in the MVC configuration. Also, a convenience bean is
-provided of type `MessageConverters` (always available if you use the
-default MVC configuration) which has some useful methods to access the
-default and user-enhanced message converters.
+provided of type `HttpMessageConverters` (always available if you use
+the default MVC configuration) which has some useful methods to access
+the default and user-enhanced message converters.
 
 See also the [section on `HttpMessageConverters`](#message.converters)
 and the `WebMvcAutoConfiguration` source code for more details.
@@ -104,7 +104,7 @@ converters by simply adding beans of that type in a Spring Boot
 context. If a bean you add is of a type that would have been included
 by default anyway (like `MappingJackson2HttpMessageConverter` for JSON
 conversions) then it will replace the default value. A convenience
-bean is provided of type `MessageConverters` (always available if you
+bean is provided of type `HttpMessageConverters` (always available if you
 use the default MVC configuration) which has some useful methods to
 access the default and user-enhanced message converters (useful, for
 example if you want to manually inject them into a custom
