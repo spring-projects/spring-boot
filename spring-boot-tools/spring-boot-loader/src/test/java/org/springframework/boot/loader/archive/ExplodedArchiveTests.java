@@ -103,7 +103,7 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(url, equalTo(this.rootFolder.toURI().toURL()));
+		assertThat(new File(url.toURI()), equalTo(new File(this.rootFolder.toURI())));
 	}
 
 	@Test
