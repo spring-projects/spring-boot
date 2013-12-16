@@ -437,6 +437,90 @@ server.port: ${port:8080}
 > Spring can bind to capitalized synonyms for `Environment`
 > properties.
 
+## Configure Logback for Logging
+
+Spring Boot has no mandatory logging dependence, except for the
+`commons-logging` API, of which there are many implementations to
+choose from. To use [Logback](http://logback.qos.ch) you need to
+include it, and some bindings for `commons-logging` on the classpath.
+The simplest way to do that is through the starter poms which all
+depend on `spring-boot-start-logging`.  For a web application you only
+need the web starter since it depends transitively on the logging
+starter. E.g. in Maven:
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+Spring Boot has a `LoggingSystem` abstraction that attempts to select
+a system depending on the contents of the classpath. If Logback is
+available it is the first choice. So if you put a `logback.xml` in the
+root of your classpath it will be picked up from there. Spring Boot
+provides a default base configuration that you can include if you just
+want to set levels, e.g.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>	
+	<logger name="org.springframework.web" level="DEBUG"/>
+</configuration>
+```
+
+If you look at the default `logback.xml` in the spring-boot JAR you
+will see that it uses some useful System properties which the
+`LoggingSystem` takes care of creating for you. These are:
+
+* `${PID}` the current process ID
+* `${LOG_FILE}` if `logging.file` was set in Boot's external configuration
+* `${LOG_PATH` if `logging.path` was set (representing a directory for
+  log files to live in)
+  
+Spring Boot also provides some nice ANSI colour terminal output on a
+console (but not in a log file) using a custom Logback converter. See
+the default `base.xml` configuration for details.
+
+If Groovy is on the classpath you should be able to configure Logback
+with `logback.groovy` as well (it will be given preference if
+present).
+
+## Configure Log4j for Logging
+
+Spring Boot supports [Log4j](http://logging.apache.org/log4j/1.x/) for
+logging configuration, but it has to be on the classpath. If you are
+using the starter poms for assembling dependencies that means you have
+to exclude logback and then include log4j back. If you aren't using
+the starter poms then you need to provide `commons-logging` (at least)
+in addition to Log4j.
+
+The simplest path to using Log4j is probably through the starter poms,
+even though it requires some jiggling with excludes, e.g. in Maven:
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-log4j</artifactId>
+</dependency>
+```
+
+Note the use of the log4j starter to gather together the dependencies
+for common logging requirements (e.g. including having Tomcat use
+`java.util.logging` but configure the output using Log4j). See the
+[Actuator Log4j Sample]() for more detail and to see it in action.
+
 ## Test a Spring Boot Application
 
 A Spring Boot application is just a Spring `ApplicationContext` so
