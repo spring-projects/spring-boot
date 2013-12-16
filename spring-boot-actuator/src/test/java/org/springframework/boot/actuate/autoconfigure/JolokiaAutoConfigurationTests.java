@@ -23,6 +23,7 @@ import org.jolokia.http.AgentServlet;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
@@ -59,7 +60,7 @@ public class JolokiaAutoConfigurationTests {
 	public void agentServletRegisteredWithAppContext() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				JolokiaAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class, JolokiaAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(AgentServlet.class).length);
 	}
@@ -69,7 +70,7 @@ public class JolokiaAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		TestUtils.addEnviroment(this.context, "endpoints.jolokia.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				JolokiaAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class, JolokiaAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(AgentServlet.class).length);
 	}
@@ -78,7 +79,7 @@ public class JolokiaAutoConfigurationTests {
 	public void agentServletRegisteredWithServletContainer() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				JolokiaAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class, JolokiaAutoConfiguration.class);
 		this.context.refresh();
 
 		Servlet servlet = null;
