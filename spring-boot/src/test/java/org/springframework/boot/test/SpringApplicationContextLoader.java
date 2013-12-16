@@ -58,27 +58,15 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig)
 			throws Exception {
 
-		Set<Object> sources = new LinkedHashSet<Object>();
-		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
-		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
 		SpringApplication application = new SpringApplication();
-		application.setSources(sources);
-
-		Map<String, Object> args = new LinkedHashMap<String, Object>();
+		application.setSources(getSources(mergedConfig));
 		if (!ObjectUtils.isEmpty(mergedConfig.getActiveProfiles())) {
 			application.setAdditionalProfiles(Arrays.asList(mergedConfig
 					.getActiveProfiles()));
 		}
-		// Not running an embedded server, just setting up web context
-		args.put("server.port", "0");
-		args.put("management.port", "0");
-		application.setDefaultProperties(args);
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
-				application.getInitializers());
-		for (Class<? extends ApplicationContextInitializer<?>> type : mergedConfig
-				.getContextInitializerClasses()) {
-			initializers.add(BeanUtils.instantiate(type));
-		}
+		application.setDefaultProperties(getArgs(mergedConfig));
+		List<ApplicationContextInitializer<?>> initializers = getInitializers(
+				mergedConfig, application);
 		if (mergedConfig instanceof WebMergedContextConfiguration) {
 			new WebConfigurer().setup(mergedConfig, application, initializers);
 		}
@@ -86,7 +74,34 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			application.setWebEnvironment(false);
 		}
 		application.setInitializers(initializers);
+
 		return application.run();
+	}
+
+	private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
+		Set<Object> sources = new LinkedHashSet<Object>();
+		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
+		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
+		return sources;
+	}
+
+	private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
+		Map<String, Object> args = new LinkedHashMap<String, Object>();
+		// Not running an embedded server, just setting up web context
+		args.put("server.port", "0");
+		args.put("management.port", "0");
+		return args;
+	}
+
+	private List<ApplicationContextInitializer<?>> getInitializers(
+			MergedContextConfiguration mergedConfig, SpringApplication application) {
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		initializers.addAll(application.getInitializers());
+		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
+				.getContextInitializerClasses()) {
+			initializers.add(BeanUtils.instantiate(initializerClass));
+		}
+		return initializers;
 	}
 
 	@Override

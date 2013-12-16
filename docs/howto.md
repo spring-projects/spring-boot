@@ -19,7 +19,7 @@ Javadocs. Some rules of thumb:
 * Look for classes called `*AutoConfiguration` and read their sources,
   in particular the `@Conditional*` annotations to find out what
   features they enable and when. In those clases...
-  
+
 * Look for classes that are `@ConfigurationProperties`
   (e.g. [`ServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c))
   and read from there the available external configuration
@@ -27,16 +27,16 @@ Javadocs. Some rules of thumb:
   acts as a prefix to external properties, thus `ServerProperties` has
   `name="server"` and its configuration properties are `server.port`,
   `server.address` etc.
-  
+
 * Look for use of `RelaxedEnvironment` to pull configuration values
   explicitly out of the `Environment`. It often is used with a prefix.
-  
+
 * Look for `@Value` annotations that bind directly to the
   `Environment`. This is less flexible than the `RelaxedEnvironment`
   approach, but does allow some relaxed binding, specifically for OS
   environment variables (so `CAPITALS_AND_UNDERSCORES` are synonyms
   for `period.separated`).
-  
+
 * Look for `@ConditionalOnExpression` annotations that switch features
   on and off in response to SpEL expressions, normally evaluated with
   placeholders resolved from the `Environment`.
@@ -84,7 +84,7 @@ In addition, if your context contains any beans of type `ObjectMapper`
 then all of the `Module` beans will be registered with all of the
 mappers. So there is a global mechanism for contributing custom
 modules when you add new features to your application.
-  
+
 Finally, if you provide any `@Beans` of type
 `MappingJackson2HttpMessageConverter` then they will replace the
 default value in the MVC configuration. Also, a convenience bean is
@@ -173,7 +173,7 @@ public EmbeddedServletContainerCustomizer containerCustomizer(){
             if(factory instanceof TomcatEmbeddedServletContainerFactory){
                 TomcatEmbeddedServletContainerFactory containerFactory = (TomcatEmbeddedServletContainerFactory) factory;
                 containerFactory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-                
+
                     @Override
                     public void customize(Connector connector) {
 
@@ -190,7 +190,7 @@ public EmbeddedServletContainerCustomizer containerCustomizer(){
                         connector.setAttribute("clientAuth", "false");
                         connector.setAttribute("sslProtocol", "TLS");
                         connector.setAttribute("SSLEnabled", true);
-                
+
                 });
             }
         }
@@ -256,7 +256,7 @@ Create a deployable WAR by extending `SpringBootServletInitializer`
 @EnableAutoConfiguration
 @ComponentScan
 public class Application extends SpringBootServletInitializer {
-	
+
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(Application.class);
@@ -307,7 +307,7 @@ Applications can fall into more than one category:
 
 * Servlet 3.0 applications with no `web.xml`
 * Applications with a `web.xml`
-* Applications with a context hierarchy and 
+* Applications with a context hierarchy and
 * Those without a context hierarchy
 
 All of these should be amenable to translation, but each might require
@@ -465,7 +465,7 @@ want to set levels, e.g.
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<include resource="org/springframework/boot/logging/logback/base.xml"/>	
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
 	<logger name="org.springframework.web" level="DEBUG"/>
 </configuration>
 ```
@@ -478,7 +478,7 @@ will see that it uses some useful System properties which the
 * `${LOG_FILE}` if `logging.file` was set in Boot's external configuration
 * `${LOG_PATH` if `logging.path` was set (representing a directory for
   log files to live in)
-  
+
 Spring Boot also provides some nice ANSI colour terminal output on a
 console (but not in a log file) using a custom Logback converter. See
 the default `base.xml` configuration for details.
@@ -626,7 +626,7 @@ algorithm for choosing a specific implementation.
 * If neither of those is available but an embedded database is then we
   create one of those for you (preference order is h2, then Apache
   Derby, then hsqldb).
-  
+
 The pooling `DataSource` option is controlled by external
 configuration properties in `spring.datasource.*` for example:
 
@@ -742,7 +742,7 @@ Properties from different sources are added to the Spring
 `Environment` in a defined order, and the precedence for resolution is
 1) commandline, 2) filesystem (current working directory)
 `application.properties`, 3) classpath `application.properties`. To
-modify this you can provide System properties (or environment variables) 
+modify this you can provide System properties (or environment variables)
 
 * `config.name` (`CONFIG_NAME`), defaults to `application` as the root
   of the file name

@@ -70,7 +70,7 @@ is intended to be run as it is you need to have all dependencies in it, however
 if a plan is to explode a jar file and run main class manually you may already
 have some of the libraries available via `CLASSPATH`. This is a situation where
 you can repackage boot jar with a different set of dependencies. Using a custom
-configuration will automatically disable dependency resolving from 
+configuration will automatically disable dependency resolving from
 `compile`, `runtime` and `provided` scopes. Custom configuration can be either
 defined globally inside `springBoot` or per task.
 
@@ -131,7 +131,7 @@ sources jars are automatically skipped).
 
 Because on default every repackage task execution will find all
 created jar artifacts, the order of Gradle task execution is
-important. This is not going to be an issue if you have a normal 
+important. This is not going to be an issue if you have a normal
 project setup where only one jar file is created. However if you are
 planning to create more complex project setup with custom Jar and
 BootRepackage tasks, there are few tweaks to consider.
@@ -149,7 +149,7 @@ out from your project. You could also just disable default
 bootRepackage.withJarTask = jar
 ```
 Above example simply instructs default `bootRepackage` task to only
-work with a default `jar` task. 
+work with a default `jar` task.
 
 
 ```groovy
@@ -165,6 +165,6 @@ create dependency to your build so that `bootJars` task would
 be run after the default `bootRepackage` task is executed.
 
 All the above tweaks are usually used to avoid situation where
-already created boot jar is repackaged again. Repackaging 
+already created boot jar is repackaged again. Repackaging
 an existing boot jar will not break anything but you may
 get unnecessary dependencies in it.

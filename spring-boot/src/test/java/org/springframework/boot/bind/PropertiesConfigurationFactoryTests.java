@@ -68,14 +68,13 @@ public class PropertiesConfigurationFactoryTests {
 		assertEquals("blah", foo.name);
 	}
 
-	
 	@Test
 	public void testUnderscore() throws Exception {
 		Foo foo = createFoo("spring_foo_baz: blah\nname: blah");
 		assertEquals("blah", foo.spring_foo_baz);
 		assertEquals("blah", foo.name);
 	}
-	
+
 	@Test
 	public void testUnknownPropertyOkByDefault() throws Exception {
 		Foo foo = createFoo("hi: hello\nname: foo\nbar: blah");
@@ -137,11 +136,11 @@ public class PropertiesConfigurationFactoryTests {
 		private String name;
 
 		private String bar;
-		
+
 		private String spring_foo_baz;
 
 		public String getSpringFooBaz() {
-			return spring_foo_baz;
+			return this.spring_foo_baz;
 		}
 
 		public void setSpringFooBaz(String spring_foo_baz) {
