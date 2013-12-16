@@ -16,8 +16,6 @@
 
 package org.springframework.boot.sample.actuator.log4j;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -35,6 +33,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for service demo application.
@@ -76,7 +76,6 @@ public class SampleActuatorApplicationTests {
 		Map<String, Object> body = entity.getBody();
 		assertEquals("Hello Phil", body.get("message"));
 	}
-
 
 	private RestTemplate getRestTemplate() {
 		RestTemplate restTemplate = new RestTemplate();

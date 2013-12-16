@@ -57,7 +57,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 		return this.keysToSanitize;
 	}
 
-	public void setKeysToSanitize(String[] keysToSanitize) {
+	public void setKeysToSanitize(String... keysToSanitize) {
 		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
 		this.keysToSanitize = keysToSanitize;
 	}
@@ -69,10 +69,10 @@ public class ConfigurationPropertiesReportEndpoint extends
 				.getBeansWithAnnotation(ConfigurationProperties.class);
 
 		// Serialize beans into map structure and sanitize values
+		ObjectMapper mapper = new ObjectMapper();
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
-			ObjectMapper m = new ObjectMapper();
-			beans.put(entry.getKey(),
-					sanitize(m.convertValue(entry.getValue(), Map.class)));
+			Map<String, Object> value = mapper.convertValue(entry.getValue(), Map.class);
+			beans.put(entry.getKey(), sanitize(value));
 		}
 
 		return beans;
@@ -94,7 +94,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	private Object sanitize(String name, Object object) {
 		for (String keyToSanitize : this.keysToSanitize) {
 			if (name.toLowerCase().endsWith(keyToSanitize)) {
-				return object == null ? null : "******";
+				return (object == null ? null : "******");
 			}
 		}
 		return object;

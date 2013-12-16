@@ -39,6 +39,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 /**
+ * Tests for {@link HttpMessageConverters}.
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  */

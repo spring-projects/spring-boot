@@ -28,9 +28,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
+ * Class-level annotation that is used to determine how to load and configure an
+ * ApplicationContext for integration tests. Similar to the standard
+ * {@link ContextConfiguration} but uses Spring Boot's
+ * {@link SpringApplicationContextLoader}.
+ * 
  * @author Dave Syer
+ * @see SpringApplicationContextLoader
  */
-
 @ContextConfiguration(loader = SpringApplicationContextLoader.class)
 @Documented
 @Inherited
