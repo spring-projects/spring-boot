@@ -133,7 +133,7 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-			converters.addAll(this.messageConverters.getMessageConverters());
+			converters.addAll(this.messageConverters.getConverters());
 		}
 
 		@Bean

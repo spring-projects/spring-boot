@@ -42,6 +42,8 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
 
 /**
+ * Tests for {@link HttpMessageConvertersAutoConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class HttpMessageConvertersAutoConfigurationTests {
@@ -67,7 +69,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 				converter.getObjectMapper());
 		HttpMessageConverters converters = this.context
 				.getBean(HttpMessageConverters.class);
-		assertTrue(converters.getMessageConverters().contains(converter));
+		assertTrue(converters.getConverters().contains(converter));
 	}
 
 	@Test
