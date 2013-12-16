@@ -34,6 +34,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 
@@ -101,6 +102,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testStrictPropertiesBinding() {
+		removeSystemProperties();
 		this.context.register(StrictTestConfiguration.class);
 		TestUtils.addEnviroment(this.context, "name:foo");
 		this.context.refresh();
@@ -118,10 +120,10 @@ public class EnableConfigurationPropertiesTests {
 				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
 		assertEquals("foo", this.context.getBean(TestProperties.class).name);
 	}
-	
-	
+
 	@Test
 	public void testIgnoreNestedPropertiesBinding() {
+		removeSystemProperties();
 		this.context.register(IgnoreNestedTestConfiguration.class);
 		TestUtils.addEnviroment(this.context, "name:foo", "nested.name:bar");
 		this.context.refresh();
@@ -288,6 +290,17 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("foo", this.context.getBean(TestConsumer.class).getName());
 	}
 
+	/**
+	 * Strict tests need a known set of properties so we remove system items which may be
+	 * environment specific.
+	 */
+	private void removeSystemProperties() {
+		MutablePropertySources sources = this.context.getEnvironment()
+				.getPropertySources();
+		sources.remove("systemProperties");
+		sources.remove("systemEnvironment");
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(TestProperties.class)
 	protected static class TestConfiguration {
@@ -297,11 +310,12 @@ public class EnableConfigurationPropertiesTests {
 	@EnableConfigurationProperties(StrictTestProperties.class)
 	protected static class StrictTestConfiguration {
 	}
-	
+
 	@Configuration
 	@EnableConfigurationProperties(EmbeddedTestProperties.class)
 	protected static class EmbeddedTestConfiguration {
 	}
+
 	@Configuration
 	@EnableConfigurationProperties(IgnoreNestedTestProperties.class)
 	protected static class IgnoreNestedTestConfiguration {
@@ -424,13 +438,13 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
 	protected static class StrictTestProperties extends TestProperties {
-
 	}
+
 	@ConfigurationProperties(name = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
 
 	}
-	
+
 	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
 	protected static class IgnoreNestedTestProperties extends TestProperties {
 
