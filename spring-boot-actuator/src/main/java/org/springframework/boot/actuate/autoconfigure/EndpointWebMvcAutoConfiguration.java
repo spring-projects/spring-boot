@@ -96,7 +96,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	public EndpointHandlerAdapter endpointHandlerAdapter(
 			final HttpMessageConverters messageConverters) {
 		EndpointHandlerAdapter adapter = new EndpointHandlerAdapter();
-		adapter.setMessageConverters(messageConverters.getMessageConverters());
+		adapter.setMessageConverters(messageConverters.getConverters());
 		return adapter;
 	}
 
