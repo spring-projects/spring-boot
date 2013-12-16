@@ -15,6 +15,7 @@
 	</properties>
 	<modules>
 		<module>spring-boot-sample-actuator</module>
+		<module>spring-boot-sample-actuator-log4j</module>
 		<module>spring-boot-sample-actuator-ui</module>
 		<module>spring-boot-sample-amqp</module>
 		<module>spring-boot-sample-aop</module>
