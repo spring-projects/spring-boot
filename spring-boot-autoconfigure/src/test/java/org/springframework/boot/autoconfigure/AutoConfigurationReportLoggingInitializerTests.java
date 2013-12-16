@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -180,7 +181,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	}
 
 	@Configuration
-	@Import(WebMvcAutoConfiguration.class)
+	@Import({ WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
 	static class Config {
 
 	}

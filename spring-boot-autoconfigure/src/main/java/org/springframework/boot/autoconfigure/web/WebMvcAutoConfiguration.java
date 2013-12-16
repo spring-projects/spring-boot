@@ -17,19 +17,16 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +38,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
@@ -52,7 +48,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -68,9 +63,6 @@ import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
-
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
@@ -111,17 +103,6 @@ public class WebMvcAutoConfiguration {
 		}
 	}
 
-	@Autowired(required = false)
-	private List<HttpMessageConverter<?>> converters = Collections.emptyList();
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HttpMessageConverters messageConverters() {
-		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(
-				this.converters);
-		return new HttpMessageConverters(converters);
-	}
-
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
@@ -153,45 +134,6 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			converters.addAll(this.messageConverters.getMessageConverters());
-		}
-
-		@Configuration
-		@ConditionalOnBean(ObjectMapper.class)
-		@ConditionalOnClass(ObjectMapper.class)
-		protected static class ObjectMappers {
-
-			@Autowired
-			private ListableBeanFactory beanFactory;
-
-			@PostConstruct
-			public void init() {
-				Collection<ObjectMapper> mappers = BeanFactoryUtils
-						.beansOfTypeIncludingAncestors(this.beanFactory,
-								ObjectMapper.class).values();
-				Collection<Module> modules = BeanFactoryUtils
-						.beansOfTypeIncludingAncestors(this.beanFactory, Module.class)
-						.values();
-				for (ObjectMapper mapper : mappers) {
-					mapper.registerModules(modules);
-				}
-			}
-
-			@Bean
-			@ConditionalOnMissingBean
-			@Primary
-			public ObjectMapper jacksonObjectMapper() {
-				return new ObjectMapper();
-			}
-
-			@Bean
-			@ConditionalOnMissingBean
-			public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(
-					ObjectMapper objectMapper) {
-				MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-				converter.setObjectMapper(objectMapper);
-				return converter;
-			}
-
 		}
 
 		@Bean

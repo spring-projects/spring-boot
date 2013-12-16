@@ -16,14 +16,12 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.lang.reflect.Field;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
@@ -36,6 +34,9 @@ import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link DeviceResolverAutoConfiguration}.
@@ -76,6 +77,7 @@ public class DeviceResolverAutoConfigurationTests {
 	public void deviceResolverHandlerInterceptorRegistered() throws Exception {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
 				DeviceResolverAutoConfiguration.class);
 		context.refresh();
 		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
