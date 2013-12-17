@@ -290,6 +290,39 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("foo", this.context.getBean(TestConsumer.class).getName());
 	}
 
+	@Test
+	public void testUnderscoresInPrefix() throws Exception {
+		TestUtils.addEnviroment(this.context, "spring_test_external_val:baz");
+		this.context.register(SystemExampleConfig.class);
+		this.context.refresh();
+		assertEquals("baz", this.context.getBean(SystemEnvVar.class).getVal());
+	}
+
+	@Test
+	public void testSimpleAutoConfig() throws Exception {
+		TestUtils.addEnviroment(this.context, "external.name:foo");
+		this.context.register(ExampleConfig.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getBean(External.class).getName());
+	}
+
+	@Test
+	public void testExplicitType() throws Exception {
+		TestUtils.addEnviroment(this.context, "external.name:foo");
+		this.context.register(AnotherExampleConfig.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getBean(External.class).getName());
+	}
+
+	@Test
+	public void testMultipleExplicitTypes() throws Exception {
+		TestUtils.addEnviroment(this.context, "external.name:foo", "another.name:bar");
+		this.context.register(FurtherExampleConfig.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getBean(External.class).getName());
+		assertEquals("bar", this.context.getBean(Another.class).getName());
+	}
+
 	/**
 	 * Strict tests need a known set of properties so we remove system items which may be
 	 * environment specific.
@@ -354,6 +387,72 @@ public class EnableConfigurationPropertiesTests {
 	@Configuration
 	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
 	protected static class DefaultXmlConfiguration {
+	}
+
+	@EnableConfigurationProperties
+	@Configuration
+	public static class ExampleConfig {
+		@Bean
+		public External external() {
+			return new External();
+		}
+	}
+
+	@EnableConfigurationProperties(External.class)
+	@Configuration
+	public static class AnotherExampleConfig {
+	}
+
+	@EnableConfigurationProperties({ External.class, Another.class })
+	@Configuration
+	public static class FurtherExampleConfig {
+	}
+
+	@EnableConfigurationProperties({ SystemEnvVar.class })
+	@Configuration
+	public static class SystemExampleConfig {
+	}
+
+	@ConfigurationProperties(name = "external")
+	public static class External {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
+	@ConfigurationProperties(name = "another")
+	public static class Another {
+
+		private String name;
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
+
+	@ConfigurationProperties(name = "spring_test_external")
+	public static class SystemEnvVar {
+		public String getVal() {
+			return this.val;
+		}
+
+		public void setVal(String val) {
+			this.val = val;
+		}
+
+		private String val;
+
 	}
 
 	@Component
