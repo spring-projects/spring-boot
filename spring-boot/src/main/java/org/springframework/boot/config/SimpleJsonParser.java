@@ -110,12 +110,7 @@ public class SimpleJsonParser implements JsonParser {
 			if (values.length > 0) {
 				String string = trimLeadingCharacter(
 						trimTrailingCharacter(values[1], '"'), '"');
-				if (string.startsWith("{") && string.endsWith("}")) {
-					value = parseInternal(string);
-				}
-				else {
-					value = string;
-				}
+				value = parseInternal(string);
 			}
 			map.put(key, value);
 		}
@@ -126,6 +121,7 @@ public class SimpleJsonParser implements JsonParser {
 		List<String> list = new ArrayList<String>();
 		int index = 0;
 		int inObject = 0;
+		int inList = 0;
 		StringBuilder build = new StringBuilder();
 		while (index < json.length()) {
 			char current = json.charAt(index);
@@ -135,7 +131,13 @@ public class SimpleJsonParser implements JsonParser {
 			if (current == '}') {
 				inObject--;
 			}
-			if (current == ',' && inObject == 0) {
+			if (current == '[') {
+				inList++;
+			}
+			if (current == ']') {
+				inList--;
+			}
+			if (current == ',' && inObject == 0 && inList == 0) {
 				list.add(build.toString());
 				build.setLength(0);
 			}
