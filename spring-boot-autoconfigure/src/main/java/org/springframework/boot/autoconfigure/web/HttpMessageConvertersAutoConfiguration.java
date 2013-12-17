@@ -23,11 +23,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +38,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
@@ -60,7 +61,17 @@ public class HttpMessageConvertersAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnBean(ObjectMapper.class)
+	@ConditionalOnClass({ JodaModule.class, DateTime.class })
+	protected static class JodaModuleConfiguration {
+
+		@Bean
+		public JodaModule jodaModule() {
+			return new JodaModule();
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
 	protected static class ObjectMappers {
 

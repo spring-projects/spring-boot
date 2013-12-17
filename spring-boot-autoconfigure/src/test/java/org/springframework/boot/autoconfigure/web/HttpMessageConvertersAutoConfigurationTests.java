@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -73,6 +74,14 @@ public class HttpMessageConvertersAutoConfigurationTests {
 	}
 
 	@Test
+	public void defaultJacksonModules() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(HttpMessageConvertersAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean("jodaModule", Module.class));
+	}
+
+	@Test
 	public void customJacksonModules() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(ModulesConfig.class,
@@ -82,7 +91,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 		@SuppressWarnings({ "unchecked", "unused" })
 		ObjectMapper result = verify(mapper).registerModules(
-				(Iterable<Module>) argThat(hasItem(this.context.getBean(Module.class))));
+				(Iterable<Module>) argThat(hasItem(this.context.getBean("jacksonModule",
+						Module.class))));
 	}
 
 	@Test
