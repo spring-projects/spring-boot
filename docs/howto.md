@@ -5,6 +5,8 @@ HOWTO guides. If you want to add a placeholder for a question without
 an answer, put it at the top (at header level 2) and we can fill in
 the gaps later.
 
+### General Advice and Other Sources of Information
+
 There is a really useful `AutoConfigurationReport` available in any
 Spring Boot `ApplicationContext`. You will see it automatically if a
 context fails to start, and also if you enable DEBUG logging for
