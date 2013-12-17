@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -46,10 +47,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.web.servlet.support.RequestDataValueProcessor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for security of a web application or
@@ -129,10 +132,30 @@ public class SecurityAutoConfiguration {
 
 	}
 
-	@ConditionalOnMissingBean({ ApplicationWebSecurityConfigurerAdapter.class })
+	// Pull in @EnableWebMvcSecurity if Spring MVC is available and no-one defined a
+	// RequestDataValueProcessor
+	@ConditionalOnClass(RequestDataValueProcessor.class)
+	@ConditionalOnMissingBean(RequestDataValueProcessor.class)
+	@ConditionalOnExpression("${security.basic.enabled:true}")
+	@Configuration
+	protected static class WebMvcSecurityConfigurationConditions {
+		@Configuration
+		@EnableWebMvcSecurity
+		protected static class DefaultWebMvcSecurityConfiguration {
+		}
+	}
+
+	// Pull in a plain @EnableWebSecurity if Spring MVC is not available
+	@ConditionalOnMissingBean(WebMvcSecurityConfigurationConditions.class)
+	@ConditionalOnMissingClass(name = "org.springframework.web.servlet.support.RequestDataValueProcessor")
 	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
 	@EnableWebSecurity
+	protected static class DefaultWebSecurityConfiguration {
+	}
+
+	@ConditionalOnExpression("${security.basic.enabled:true}")
+	@Configuration
 	@Order(Ordered.LOWEST_PRECEDENCE - 5)
 	protected static class ApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
