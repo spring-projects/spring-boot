@@ -23,10 +23,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
-import org.springframework.util.Assert;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 /**
@@ -47,14 +45,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * @see #HttpMessageConverters(HttpMessageConverter...)
  * @see #HttpMessageConverters(Collection)
  * @see #getConverters()
- * @see #setConverters(List)
  */
-public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>>,
-		InitializingBean {
+public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> {
 
 	private List<HttpMessageConverter<?>> converters;
-
-	private boolean initialized;
 
 	/**
 	 * Create a new {@link HttpMessageConverters} instance with the specified additional
@@ -77,18 +71,19 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>>,
 	 * converter manipulation.
 	 */
 	public HttpMessageConverters(Collection<HttpMessageConverter<?>> additionalConverters) {
-		this.converters = new ArrayList<HttpMessageConverter<?>>();
+		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
 		List<HttpMessageConverter<?>> defaultConverters = getDefaultConverters();
 		for (HttpMessageConverter<?> converter : additionalConverters) {
 			int defaultConverterIndex = indexOfItemClass(defaultConverters, converter);
 			if (defaultConverterIndex == -1) {
-				this.converters.add(converter);
+				converters.add(converter);
 			}
 			else {
 				defaultConverters.set(defaultConverterIndex, converter);
 			}
 		}
-		this.converters.addAll(defaultConverters);
+		converters.addAll(defaultConverters);
+		this.converters = Collections.unmodifiableList(converters);
 	}
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
@@ -139,19 +134,4 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>>,
 		return this.converters;
 	}
 
-	/**
-	 * Set the converters to use, replacing any existing values. This method can only be
-	 * called before the bean has been initialized.
-	 * @param converters the converters to set
-	 */
-	public void setConverters(List<HttpMessageConverter<?>> converters) {
-		Assert.state(!this.initialized, "Unable to set converters once initialized");
-		this.converters = converters;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.initialized = true;
-		this.converters = Collections.unmodifiableList(this.converters);
-	}
 }

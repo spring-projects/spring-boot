@@ -65,37 +65,6 @@ public class HttpMessageConvertersTests {
 	}
 
 	@Test
-	public void canModifyBeforeInitialize() throws Exception {
-		HttpMessageConverters converters = new HttpMessageConverters();
-		HttpMessageConverter<?> converter = mock(HttpMessageConverter.class);
-		converters.getConverters().add(converter);
-		assertThat(converters.getConverters().contains(converter), equalTo(true));
-	}
-
-	@Test
-	public void cannotModifyAfterInitialize() throws Exception {
-		HttpMessageConverters converters = new HttpMessageConverters();
-		converters.afterPropertiesSet();
-		this.thrown.expect(UnsupportedOperationException.class);
-		converters.getConverters().add(mock(HttpMessageConverter.class));
-	}
-
-	@Test
-	public void canSetBeforeInitialize() throws Exception {
-		HttpMessageConverters converters = new HttpMessageConverters();
-		converters.setConverters(new ArrayList<HttpMessageConverter<?>>());
-		assertThat(converters.getConverters().size(), equalTo(0));
-	}
-
-	@Test
-	public void cannotSetAfterInitailzie() throws Exception {
-		HttpMessageConverters converters = new HttpMessageConverters();
-		converters.afterPropertiesSet();
-		this.thrown.expect(IllegalStateException.class);
-		converters.setConverters(new ArrayList<HttpMessageConverter<?>>());
-	}
-
-	@Test
 	public void overrideExistingConverter() {
 		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter);
