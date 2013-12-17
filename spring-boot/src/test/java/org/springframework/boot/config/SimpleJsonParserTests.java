@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.config.JsonParser;
-import org.springframework.boot.config.SimpleJsonParser;
 
 import static org.junit.Assert.assertEquals;
 
@@ -72,6 +70,15 @@ public class SimpleJsonParserTests {
 				.parseList("[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]");
 		assertEquals(2, list.size());
 		assertEquals(2, ((Map<String, Object>) list.get(1)).size());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testMapOfLists() {
+		Map<String, Object> map = this.parser
+				.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
+		assertEquals(1, map.size());
+		assertEquals(2, ((List<Object>) map.get("foo")).size());
 	}
 
 }
