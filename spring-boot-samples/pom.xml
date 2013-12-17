@@ -26,6 +26,7 @@
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-secure</module>
+		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-traditional</module>
