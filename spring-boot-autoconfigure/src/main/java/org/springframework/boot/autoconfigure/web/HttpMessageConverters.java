@@ -25,6 +25,8 @@ import java.util.List;
 
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 /**
@@ -88,11 +90,19 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		converters.addAll(new WebMvcConfigurationSupport() {
-			public List<HttpMessageConverter<?>> defaultMessageConverters() {
-				return super.getMessageConverters();
-			}
-		}.defaultMessageConverters());
+		if (ClassUtils
+				.isPresent(
+						"org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport",
+						null)) {
+			converters.addAll(new WebMvcConfigurationSupport() {
+				public List<HttpMessageConverter<?>> defaultMessageConverters() {
+					return super.getMessageConverters();
+				}
+			}.defaultMessageConverters());
+		}
+		else {
+			converters.addAll(new RestTemplate().getMessageConverters());
+		}
 		reorderXmlConvertersToEnd(converters);
 		return converters;
 	}
