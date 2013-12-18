@@ -56,10 +56,6 @@ class EndpointMBeanExportAutoConfiguration {
 		if (StringUtils.hasText(domainName)) {
 			mbeanExporter.setDomainName(domainName);
 		}
-		String key = this.environment.getProperty("endpoints.jmx.key");
-		if (StringUtils.hasText(key)) {
-			mbeanExporter.setKey(key);
-		}
 		return mbeanExporter;
 	}
 }
