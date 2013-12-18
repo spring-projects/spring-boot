@@ -2,6 +2,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.actuate.autoconfigure.AuditAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.ErrorMvcAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration,\
