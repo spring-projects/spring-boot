@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,22 +34,27 @@ import org.springframework.web.context.request.RequestContextHolder;
  * 
  * @author Dave Syer
  */
-@FrameworkEndpoint
 @ConfigurationProperties(name = "error")
-public class ManagementErrorEndpoint extends AbstractEndpoint<Map<String, Object>> {
+@FrameworkEndpoint
+public class ManagementErrorEndpoint implements MvcEndpoint {
 
 	private final ErrorController controller;
+	private String path;
 
 	public ManagementErrorEndpoint(String path, ErrorController controller) {
-		super(path, false, true);
+		this.path = path;
 		this.controller = controller;
 	}
 
-	@Override
 	@RequestMapping
 	@ResponseBody
 	public Map<String, Object> invoke() {
 		RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
 		return this.controller.extract(attributes, false);
+	}
+
+	@Override
+	public String getPath() {
+		return this.path;
 	}
 }

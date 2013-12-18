@@ -20,11 +20,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * {@link Endpoint} to expose arbitrary application information.
@@ -32,7 +29,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.info", ignoreUnknownFields = false)
-@FrameworkEndpoint
 public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	private Map<String, ? extends Object> info;
@@ -49,8 +45,6 @@ public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	}
 
 	@Override
-	@RequestMapping
-	@ResponseBody
 	public Map<String, Object> invoke() {
 		Map<String, Object> info = new LinkedHashMap<String, Object>(this.info);
 		info.putAll(getAdditionalInfo());

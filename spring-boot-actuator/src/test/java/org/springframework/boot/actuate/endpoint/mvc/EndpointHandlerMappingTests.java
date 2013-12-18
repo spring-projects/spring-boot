@@ -52,13 +52,13 @@ public class EndpointHandlerMappingTests {
 		this.context.getDefaultListableBeanFactory().registerSingleton("mapping",
 				this.mapping);
 		this.mapping.setApplicationContext(this.context);
-		this.method = ReflectionUtils.findMethod(TestEndpoint.class, "invoke");
+		this.method = ReflectionUtils.findMethod(TestMvcEndpoint.class, "invoke");
 	}
 
 	@Test
 	public void withoutPrefix() throws Exception {
-		TestEndpoint endpointA = new TestEndpoint("/a");
-		TestEndpoint endpointB = new TestEndpoint("/b");
+		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
+		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
 		this.context.getDefaultListableBeanFactory().registerSingleton(
 				endpointA.getPath(), endpointA);
 		this.context.getDefaultListableBeanFactory().registerSingleton(
@@ -76,8 +76,8 @@ public class EndpointHandlerMappingTests {
 
 	@Test
 	public void withPrefix() throws Exception {
-		TestEndpoint endpointA = new TestEndpoint("/a");
-		TestEndpoint endpointB = new TestEndpoint("/b");
+		TestMvcEndpoint endpointA = new TestMvcEndpoint(new TestEndpoint("/a"));
+		TestMvcEndpoint endpointB = new TestMvcEndpoint(new TestEndpoint("/b"));
 		this.context.getDefaultListableBeanFactory().registerSingleton(
 				endpointA.getPath(), endpointA);
 		this.context.getDefaultListableBeanFactory().registerSingleton(
@@ -96,7 +96,7 @@ public class EndpointHandlerMappingTests {
 
 	@Test(expected = HttpRequestMethodNotSupportedException.class)
 	public void onlyGetHttpMethodForNonActionEndpoints() throws Exception {
-		TestEndpoint endpoint = new TestEndpoint("/a");
+		TestMvcEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
 		this.context.getDefaultListableBeanFactory().registerSingleton(
 				endpoint.getPath(), endpoint);
 		this.mapping.afterPropertiesSet();
@@ -106,7 +106,7 @@ public class EndpointHandlerMappingTests {
 
 	@Test
 	public void postHttpMethodForActionEndpoints() throws Exception {
-		TestEndpoint endpoint = new TestActionEndpoint("/a");
+		TestMvcEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
 		this.context.getDefaultListableBeanFactory().registerSingleton(
 				endpoint.getPath(), endpoint);
 		this.mapping.afterPropertiesSet();
@@ -115,7 +115,7 @@ public class EndpointHandlerMappingTests {
 
 	@Test(expected = HttpRequestMethodNotSupportedException.class)
 	public void onlyPostHttpMethodForActionEndpoints() throws Exception {
-		TestEndpoint endpoint = new TestActionEndpoint("/a");
+		TestMvcEndpoint endpoint = new TestActionEndpoint(new TestEndpoint("/a"));
 		this.context.getDefaultListableBeanFactory().registerSingleton(
 				endpoint.getPath(), endpoint);
 		this.mapping.afterPropertiesSet();
@@ -125,7 +125,7 @@ public class EndpointHandlerMappingTests {
 
 	@Test
 	public void disabled() throws Exception {
-		TestEndpoint endpoint = new TestEndpoint("/a");
+		TestMvcEndpoint endpoint = new TestMvcEndpoint(new TestEndpoint("/a"));
 		this.context.getDefaultListableBeanFactory().registerSingleton(
 				endpoint.getPath(), endpoint);
 		this.mapping.setDisabled(true);
@@ -134,7 +134,6 @@ public class EndpointHandlerMappingTests {
 				nullValue());
 	}
 
-	@FrameworkEndpoint
 	private static class TestEndpoint extends AbstractEndpoint<Object> {
 
 		public TestEndpoint(String path) {
@@ -150,10 +149,19 @@ public class EndpointHandlerMappingTests {
 	}
 
 	@FrameworkEndpoint
-	private static class TestActionEndpoint extends TestEndpoint {
+	private static class TestMvcEndpoint extends GenericMvcEndpoint {
 
-		public TestActionEndpoint(String path) {
-			super(path);
+		public TestMvcEndpoint(TestEndpoint delegate) {
+			super(delegate);
+		}
+
+	}
+
+	@FrameworkEndpoint
+	private static class TestActionEndpoint extends TestMvcEndpoint {
+
+		public TestActionEndpoint(TestEndpoint delegate) {
+			super(delegate);
 		}
 
 		@Override

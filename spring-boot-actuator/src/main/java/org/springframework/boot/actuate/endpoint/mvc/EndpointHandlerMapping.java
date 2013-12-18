@@ -117,8 +117,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 		if (bean instanceof String) {
 			bean = getApplicationContext().getBean((String) handler);
 		}
-		if (bean instanceof Endpoint) {
-			Endpoint<?> endpoint = (Endpoint<?>) bean;
+		if (bean instanceof MvcEndpoint) {
+			MvcEndpoint endpoint = (MvcEndpoint) bean;
 			path = endpoint.getPath();
 		}
 
