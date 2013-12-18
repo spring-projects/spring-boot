@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +33,6 @@ import org.springframework.web.context.request.RequestContextHolder;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "error")
-@FrameworkEndpoint
 public class ManagementErrorEndpoint implements MvcEndpoint {
 
 	private final ErrorController controller;
@@ -56,5 +53,15 @@ public class ManagementErrorEndpoint implements MvcEndpoint {
 	@Override
 	public String getPath() {
 		return this.path;
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return false;
+	}
+
+	@Override
+	public Class<?> getEndpointType() {
+		return null;
 	}
 }

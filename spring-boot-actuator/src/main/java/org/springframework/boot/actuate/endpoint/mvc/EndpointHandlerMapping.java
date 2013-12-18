@@ -17,17 +17,13 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
@@ -56,9 +52,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * 
  */
 public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
-		InitializingBean, ApplicationContextAware {
+		ApplicationContextAware {
 
-	private List<Endpoint<?>> endpoints;
+	private Set<? extends MvcEndpoint> endpoints;
 
 	private String prefix = "";
 
@@ -67,8 +63,10 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	/**
 	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
 	 * detected from the {@link ApplicationContext}.
+	 * @param endpoints
 	 */
-	public EndpointHandlerMapping() {
+	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
+		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
 		setOrder(LOWEST_PRECEDENCE - 2);
 	}
@@ -76,28 +74,20 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-		if (this.endpoints == null) {
-			this.endpoints = findEndpointBeans();
+		if (!this.disabled) {
+			for (MvcEndpoint endpoint : this.endpoints) {
+				detectHandlerMethods(endpoint);
+			}
 		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List<Endpoint<?>> findEndpointBeans() {
-		return new ArrayList(BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				getApplicationContext(), Endpoint.class).values());
 	}
 
 	/**
-	 * Detects &#64;FrameworkEndpoint annotations in handler beans.
-	 * 
-	 * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#isHandler(java.lang.Class)
+	 * Since all handler beans are passed into the constructor there is no need to detect
+	 * anything here
 	 */
 	@Override
 	protected boolean isHandler(Class<?> beanType) {
-		if (this.disabled) {
-			return false;
-		}
-		return AnnotationUtils.findAnnotation(beanType, FrameworkEndpoint.class) != null;
+		return false;
 	}
 
 	@Override
@@ -169,7 +159,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	/**
 	 * Return the endpoints
 	 */
-	public List<Endpoint<?>> getEndpoints() {
-		return Collections.unmodifiableList(this.endpoints);
+	public Set<? extends Endpoint<?>> getEndpoints() {
+		return this.endpoints;
 	}
 }

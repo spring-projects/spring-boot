@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

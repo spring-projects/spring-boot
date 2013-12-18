@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -24,13 +27,16 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.endpoint.ManagementErrorEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -38,7 +44,6 @@ import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -99,16 +104,19 @@ public class EndpointWebMvcChildContextConfiguration {
 	}
 
 	@Bean
-	public HandlerAdapter handlerAdapter() {
+	public HandlerAdapter handlerAdapter(HttpMessageConverters converters) {
 		// TODO: maybe this needs more configuration for non-basic response use cases
 		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
-		adapter.setMessageConverters(new RestTemplate().getMessageConverters());
+		adapter.setMessageConverters(converters.getConverters());
 		return adapter;
 	}
 
 	@Bean
-	public HandlerMapping handlerMapping() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping();
+	public HandlerMapping handlerMapping(MvcEndpoints endpoints,
+			ListableBeanFactory beanFactory) {
+		Set<MvcEndpoint> set = new HashSet<MvcEndpoint>(endpoints.getEndpoints());
+		set.addAll(beanFactory.getBeansOfType(MvcEndpoint.class).values());
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(set);
 		// In a child context we definitely want to see the parent endpoints
 		mapping.setDetectHandlerMethodsInAncestorContexts(true);
 		return mapping;
