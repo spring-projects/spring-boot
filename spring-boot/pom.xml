@@ -50,6 +50,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
 			<optional>true</optional>

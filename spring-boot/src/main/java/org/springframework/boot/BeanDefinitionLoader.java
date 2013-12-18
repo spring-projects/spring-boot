@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
@@ -57,6 +59,8 @@ class BeanDefinitionLoader {
 
 	private XmlBeanDefinitionReader xmlReader;
 
+	private GroovyBeanDefinitionReader groovyReader;
+
 	private ClassPathBeanDefinitionScanner scanner;
 
 	private ResourceLoader resourceLoader;
@@ -73,6 +77,9 @@ class BeanDefinitionLoader {
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
+		if (ClassUtils.isPresent("groovy.lang.MetaClass", null)) {
+			this.groovyReader = new GroovyBeanDefinitionReader(this.xmlReader);
+		}
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
 	}
@@ -145,6 +152,13 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(Resource source) {
+		if (source.getFilename().endsWith(".groovy")) {
+			if (this.groovyReader == null) {
+				throw new BeanDefinitionStoreException(
+						"Cannot load Groovy beans without Groovy on classpath");
+			}
+			return this.groovyReader.loadBeanDefinitions(source);
+		}
 		return this.xmlReader.loadBeanDefinitions(source);
 	}
 
@@ -169,7 +183,7 @@ class BeanDefinitionLoader {
 		}
 
 		// Attempt as resources
-		Resource[] resources = loadResources(resolvedSource);
+		Resource[] resources = findResources(resolvedSource);
 		int loadCount = 0;
 		boolean atLeastOneResourceExists = false;
 		for (Resource resource : resources) {
@@ -191,7 +205,7 @@ class BeanDefinitionLoader {
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
 	}
 
-	private Resource[] loadResources(String source) {
+	private Resource[] findResources(String source) {
 		ResourceLoader loader = this.resourceLoader != null ? this.resourceLoader
 				: DEFAULT_RESOURCE_LOADER;
 		try {
