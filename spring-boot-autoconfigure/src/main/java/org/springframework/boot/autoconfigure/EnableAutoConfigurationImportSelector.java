@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -53,10 +54,10 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 					.getAnnotationAttributes(EnableAutoConfiguration.class.getName(),
 							true));
 
-			// Find all possible auto configuration classes
-			List<String> factories = new ArrayList<String>(
+			// Find all possible auto configuration classes, filtering duplicates
+			List<String> factories = new ArrayList<String>(new LinkedHashSet<String>(
 					SpringFactoriesLoader.loadFactoryNames(EnableAutoConfiguration.class,
-							this.beanClassLoader));
+							this.beanClassLoader)));
 
 			// Remove those specifically disabled
 			factories.removeAll(Arrays.asList(attributes.getStringArray("exclude")));
