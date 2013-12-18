@@ -27,7 +27,11 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
  * 
  * @author Dave Syer
  */
-public interface MvcEndpoint extends Endpoint<Object> {
+public interface MvcEndpoint {
+
+	String getPath();
+
+	boolean isSensitive();
 
 	Class<?> getEndpointType();
 
