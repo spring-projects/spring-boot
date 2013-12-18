@@ -77,7 +77,7 @@
 			<dependency>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.1</version>
+				<version>2.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven.plugin-tools</groupId>
@@ -102,12 +102,12 @@
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-archiver</artifactId>
-				<version>2.4.1</version>
+				<version>2.4.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-utils</artifactId>
-				<version>3.0.10</version>
+				<version>3.0.15</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.aether</groupId>
@@ -167,7 +167,7 @@
 			<dependency>
 				<groupId>org.zeroturnaround</groupId>
 				<artifactId>zt-zip</artifactId>
-				<version>1.6</version>
+				<version>1.7</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -235,7 +235,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>2.0</version>
+					<version>2.2</version>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
