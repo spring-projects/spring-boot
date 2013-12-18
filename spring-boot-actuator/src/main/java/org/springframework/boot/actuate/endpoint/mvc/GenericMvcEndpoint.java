@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * @author Dave Syer
  */
-@FrameworkEndpoint
 public class GenericMvcEndpoint implements MvcEndpoint {
 
 	private Endpoint<?> delegate;
@@ -42,6 +41,19 @@ public class GenericMvcEndpoint implements MvcEndpoint {
 	@Override
 	public String getPath() {
 		return this.delegate.getPath();
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return this.delegate.isSensitive();
+	}
+
+	@Override
+	public Class<?> getEndpointType() {
+		@SuppressWarnings("unchecked")
+		Class<? extends Endpoint<?>> type = (Class<? extends Endpoint<?>>) this.delegate
+				.getClass();
+		return type;
 	}
 
 }

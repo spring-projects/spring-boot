@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * @author Dave Syer
  */
-@FrameworkEndpoint
 public class ShutdownMvcEndpoint extends GenericMvcEndpoint {
 
 	public ShutdownMvcEndpoint(ShutdownEndpoint delegate) {

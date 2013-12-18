@@ -24,8 +24,8 @@ import java.nio.charset.Charset;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
-import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
+import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
@@ -240,18 +240,27 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	}
 
-	@FrameworkEndpoint
-	public static class TestEndpoint extends AbstractEndpoint<String> {
+	public static class TestEndpoint implements MvcEndpoint {
 
-		public TestEndpoint() {
-			super("/endpoint", false, true);
-		}
-
-		@Override
 		@RequestMapping
 		@ResponseBody
 		public String invoke() {
 			return "endpointoutput";
+		}
+
+		@Override
+		public String getPath() {
+			return "/endpoint";
+		}
+
+		@Override
+		public boolean isSensitive() {
+			return true;
+		}
+
+		@Override
+		public Class<?> getEndpointType() {
+			return Endpoint.class;
 		}
 
 	}

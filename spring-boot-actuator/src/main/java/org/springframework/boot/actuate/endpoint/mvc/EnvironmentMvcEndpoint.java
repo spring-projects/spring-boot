@@ -22,13 +22,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author Dave Syer
  */
-@FrameworkEndpoint
 public class EnvironmentMvcEndpoint extends GenericMvcEndpoint implements
 		EnvironmentAware {
 
@@ -38,7 +38,7 @@ public class EnvironmentMvcEndpoint extends GenericMvcEndpoint implements
 		super(delegate);
 	}
 
-	@RequestMapping("/{name:.*}")
+	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
 	@ResponseBody
 	public Object value(@PathVariable String name) {
 		String result = this.environment.getProperty(name);

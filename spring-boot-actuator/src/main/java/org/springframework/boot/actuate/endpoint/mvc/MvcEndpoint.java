@@ -16,11 +16,19 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import org.springframework.boot.actuate.endpoint.Endpoint;
+
 /**
+ * A strategy for the MVC layer on top of an {@link Endpoint}. Implementations are allowed
+ * to use <code>@RequestMapping</code> and the full Spring MVC machinery, but should not
+ * use <code>@Controller</code> or <code>@RequestMapping</code> at the type level (since
+ * that would lead to a double mapping of paths, once by the regular MVC handler mappings
+ * and once by the {@link EndpointHandlerMapping}).
+ * 
  * @author Dave Syer
  */
-public interface MvcEndpoint {
+public interface MvcEndpoint extends Endpoint<Object> {
 
-	String getPath();
+	Class<?> getEndpointType();
 
 }

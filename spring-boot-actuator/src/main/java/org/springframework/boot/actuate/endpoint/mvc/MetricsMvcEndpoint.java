@@ -20,13 +20,13 @@ import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author Dave Syer
  */
-@FrameworkEndpoint
 public class MetricsMvcEndpoint extends GenericMvcEndpoint {
 
 	private MetricsEndpoint delegate;
@@ -36,7 +36,7 @@ public class MetricsMvcEndpoint extends GenericMvcEndpoint {
 		this.delegate = delegate;
 	}
 
-	@RequestMapping("/{name:.*}")
+	@RequestMapping(value = "/{name:.*}", method = RequestMethod.GET)
 	@ResponseBody
 	public Object value(@PathVariable String name) {
 		Object value = this.delegate.invoke().get(name);
