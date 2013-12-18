@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.mvc;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -25,14 +29,48 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christian Dupuis
  */
 @ConfigurationProperties(name = "endpoints.jolokia", ignoreUnknownFields = false)
-public class JolokiaEndpoint extends AbstractEndpoint<String> {
+public class JolokiaMvcEndpoint implements MvcEndpoint {
 
-	public JolokiaEndpoint() {
-		super("/jolokia");
+	@NotNull
+	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
+	private String path;
+
+	private boolean sensitive;
+
+	private boolean enabled = true;
+
+	public JolokiaMvcEndpoint() {
+		this.path = "/jolokia";
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override
-	public String invoke() {
+	public String getPath() {
+		return this.path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return this.sensitive;
+	}
+
+	public void setSensitive(boolean sensitive) {
+		this.sensitive = sensitive;
+	}
+
+	@Override
+	public Class<?> getEndpointType() {
 		return null;
 	}
 

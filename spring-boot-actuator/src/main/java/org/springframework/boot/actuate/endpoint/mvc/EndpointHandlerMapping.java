@@ -159,7 +159,7 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	/**
 	 * Return the endpoints
 	 */
-	public Set<? extends Endpoint<?>> getEndpoints() {
+	public Set<? extends MvcEndpoint> getEndpoints() {
 		return this.endpoints;
 	}
 }
