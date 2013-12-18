@@ -16,20 +16,31 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jmx.export.MBeanExporter;
 
+/**
+ * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
+ * {@link Endpoint}s.
+ * 
+ * @author Christian Dupuis
+ */
 @Configuration
 @ConditionalOnBean({ MBeanExporter.class })
 @AutoConfigureAfter({ EndpointAutoConfiguration.class })
+@ConditionalOnExpression("${endpoints.jmx.enabled:true}")
 class EndpointMBeanExportAutoConfiguration {
 
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter() {
+		// TODO add configuration for domain name
 		return new EndpointMBeanExporter();
 	}
 
