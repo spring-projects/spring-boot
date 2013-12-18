@@ -62,6 +62,17 @@ public class BeanDefinitionLoaderTests {
 	}
 
 	@Test
+	public void loadGroovyResource() throws Exception {
+		ClassPathResource resource = new ClassPathResource("sample-beans.groovy",
+				getClass());
+		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry, resource);
+		int loaded = loader.load();
+		assertThat(loaded, equalTo(1));
+		assertTrue(this.registry.containsBean("myGroovyComponent"));
+
+	}
+
+	@Test
 	public void loadPackage() throws Exception {
 		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
 				MyComponent.class.getPackage());
@@ -86,6 +97,15 @@ public class BeanDefinitionLoaderTests {
 		int loaded = loader.load();
 		assertThat(loaded, equalTo(1));
 		assertTrue(this.registry.containsBean("myXmlComponent"));
+	}
+
+	@Test
+	public void loadGroovyName() throws Exception {
+		BeanDefinitionLoader loader = new BeanDefinitionLoader(this.registry,
+				"classpath:org/springframework/boot/sample-beans.groovy");
+		int loaded = loader.load();
+		assertThat(loaded, equalTo(1));
+		assertTrue(this.registry.containsBean("myGroovyComponent"));
 	}
 
 	@Test
