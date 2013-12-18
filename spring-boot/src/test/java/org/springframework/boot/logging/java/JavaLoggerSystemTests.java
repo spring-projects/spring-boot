@@ -61,6 +61,7 @@ public class JavaLoggerSystemTests {
 
 	@Test
 	public void testCustomFormatter() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize();
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
@@ -71,6 +72,7 @@ public class JavaLoggerSystemTests {
 	@Test
 	public void testSystemPropertyInitializesFormat() throws Exception {
 		System.setProperty("PID", "1234");
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize("classpath:"
 				+ ClassUtils.addResourcePathToPackagePath(getClass(),
 						"logging.properties"));
@@ -83,6 +85,7 @@ public class JavaLoggerSystemTests {
 
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize("classpath:logging-nondefault.properties");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
@@ -91,16 +94,19 @@ public class JavaLoggerSystemTests {
 
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize("classpath:logging-nonexistent.properties");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null);
 	}
 
 	@Test
 	public void setLevel() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize();
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
