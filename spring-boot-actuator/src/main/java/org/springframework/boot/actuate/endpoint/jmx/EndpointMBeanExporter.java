@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
@@ -24,13 +28,16 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.jmx.export.MBeanExportException;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.jmx.support.JmxUtils;
 import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -42,7 +49,7 @@ import org.springframework.util.ClassUtils;
  * 
  * @author Christian Dupuis
  */
-public class EndpointMBeanExporter implements ApplicationListener<ContextRefreshedEvent> {
+public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContextAware {
 
 	private static final String DEFAULT_DOMAIN_NAME = ClassUtils
 			.getPackageName(Endpoint.class);
@@ -51,24 +58,34 @@ public class EndpointMBeanExporter implements ApplicationListener<ContextRefresh
 
 	private String domainName = DEFAULT_DOMAIN_NAME;
 
-	private String key = "bean";
+	private Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
+
+	private volatile boolean autoStartup = true;
+
+	private volatile int phase = 0;
+
+	private volatile boolean running = false;
+
+	private final ReentrantLock lifecycleLock = new ReentrantLock();
+
+	private ApplicationContext applicationContext;
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 
 	public void setDomainName(String domainName) {
 		Assert.notNull(domainName, "DomainName should not be null");
 		this.domainName = domainName;
 	}
 
-	public void setKey(String key) {
-		Assert.notNull(key, "Key should not be null");
-		this.key = key;
-	}
-
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		ApplicationContext applicationContext = event.getApplicationContext();
+	protected void doStart() {
 		try {
-			MBeanExporter mbeanExporter = applicationContext.getBean(MBeanExporter.class);
-			locateAndRegisterEndpoints(applicationContext, mbeanExporter);
+			MBeanExporter mbeanExporter = this.applicationContext
+					.getBean(MBeanExporter.class);
+			locateAndRegisterEndpoints(mbeanExporter);
 		}
 		catch (NoSuchBeanDefinitionException nsbde) {
 			if (logger.isDebugEnabled()) {
@@ -78,14 +95,16 @@ public class EndpointMBeanExporter implements ApplicationListener<ContextRefresh
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	protected void locateAndRegisterEndpoints(ApplicationContext applicationContext,
-			MBeanExporter mbeanExporter) {
-		Assert.notNull(applicationContext, "ApplicationContext should not be null");
-		Map<String, Endpoint> endpoints = applicationContext
+	protected void locateAndRegisterEndpoints(MBeanExporter mbeanExporter) {
+		Assert.notNull(mbeanExporter, "MBeanExporter should not be null");
+		Map<String, Endpoint> endpoints = this.applicationContext
 				.getBeansOfType(Endpoint.class);
 		for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
-			registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue(),
-					mbeanExporter);
+			if (!this.registeredEndpoints.contains(endpointEntry.getValue())) {
+				registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue(),
+						mbeanExporter);
+				this.registeredEndpoints.add(endpointEntry.getValue());
+			}
 		}
 	}
 
@@ -105,7 +124,68 @@ public class EndpointMBeanExporter implements ApplicationListener<ContextRefresh
 
 	protected ObjectName getObjectName(String beanKey, Endpoint<?> endpoint)
 			throws MalformedObjectNameException {
-		return ObjectNameManager.getInstance(this.domainName, this.key, beanKey);
+		// We have to be super careful to not create name clashes as multiple Boot
+		// applications can potentially run in the same VM or MBeanServer. Therefore
+		// append the object identity to the ObjectName.
+		Hashtable<String, String> properties = new Hashtable<String, String>();
+		properties.put("bean", beanKey);
+		return JmxUtils.appendIdentityToObjectName(
+				ObjectNameManager.getInstance(this.domainName, properties), endpoint);
 	}
 
+	// SmartLifeCycle implementation
+
+	public final int getPhase() {
+		return this.phase;
+	}
+
+	public final boolean isAutoStartup() {
+		return this.autoStartup;
+	}
+
+	public final boolean isRunning() {
+		this.lifecycleLock.lock();
+		try {
+			return this.running;
+		}
+		finally {
+			this.lifecycleLock.unlock();
+		}
+	}
+
+	public final void start() {
+		this.lifecycleLock.lock();
+		try {
+			if (!this.running) {
+				this.doStart();
+				this.running = true;
+			}
+		}
+		finally {
+			this.lifecycleLock.unlock();
+		}
+	}
+
+	public final void stop() {
+		this.lifecycleLock.lock();
+		try {
+			if (this.running) {
+				this.running = false;
+			}
+		}
+		finally {
+			this.lifecycleLock.unlock();
+		}
+	}
+
+	public final void stop(Runnable callback) {
+		this.lifecycleLock.lock();
+		try {
+			this.stop();
+			callback.run();
+		}
+		finally {
+			this.lifecycleLock.unlock();
+		}
+	}
 }
