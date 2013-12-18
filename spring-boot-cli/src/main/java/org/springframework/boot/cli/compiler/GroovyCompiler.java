@@ -49,6 +49,7 @@ import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.compiler.transformation.DependencyAutoConfigurationTransformation;
 import org.springframework.boot.cli.compiler.transformation.GrabResolversAutoConfigurationTransformation;
+import org.springframework.boot.cli.compiler.transformation.GroovyBeansTransformation;
 import org.springframework.boot.cli.compiler.transformation.ResolveDependencyCoordinatesTransformation;
 
 /**
@@ -110,6 +111,7 @@ public class GroovyCompiler {
 		this.transformations.add(new GrabResolversAutoConfigurationTransformation());
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
 				this.loader, this.coordinatesResolver, this.compilerAutoConfigurations));
+		this.transformations.add(new GroovyBeansTransformation());
 		if (this.configuration.isGuessDependencies()) {
 			this.transformations.add(new ResolveDependencyCoordinatesTransformation(
 					this.coordinatesResolver));

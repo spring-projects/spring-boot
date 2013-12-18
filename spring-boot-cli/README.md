@@ -81,11 +81,10 @@ Homebrew will install `spring` to `/usr/local/bin`. Now you can jump right to a
 Here's a really simple web application. Create a file called `app.groovy`:
 
 ```groovy
-@Controller
+@RestController
 class ThisWillActuallyRun {
 
 	@RequestMapping("/")
-	@ResponseBody
 	String home() {
 		return "Hello World!"
 	}
@@ -148,6 +147,41 @@ the main application code, if that's what you prefer, e.g.
 ```
 $ spring test app/*.groovy test/*.groovy
 ```
+
+## Beans DSL
+
+Spring has native support for a `beans{}` DSL (borrowed from
+[Grails](http://grails.org)), and you can embedd bean definitions in
+your Groovy application scripts using the same format. This is
+sometimes a good way to include external features like middleware
+declarations. E.g.
+
+```groovy
+@Configuration
+class Application implements CommandLineRunner {
+
+  @Autowired
+  SharedService service
+  
+  @Override
+  void run(String... args) {
+    println service.message
+  }
+
+}
+
+import my.company.SharedService
+
+beans {
+    service(SharedService) {
+        message "Hello World"
+    }
+}
+```
+
+You can mix class declarations with `beans{}` in the same file as long
+as they stay at the top level, or you can put the beans DSL in a
+separate file if you prefer.
 
 ## Commandline Completion
 

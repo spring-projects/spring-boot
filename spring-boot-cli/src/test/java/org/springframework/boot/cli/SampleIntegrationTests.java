@@ -55,6 +55,13 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void beansSample() throws Exception {
+		this.cli.run("beans.groovy");
+		String output = this.cli.getHttpOutput();
+		assertTrue("Wrong output: " + output, output.contains("Hello World!"));
+	}
+
+	@Test
 	public void templateSample() throws Exception {
 		String output = this.cli.run("template.groovy");
 		assertTrue("Wrong output: " + output, output.contains("Hello World!"));

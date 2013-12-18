@@ -16,10 +16,13 @@
 
 package org.springframework.boot;
 
+import groovy.lang.Closure;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -77,7 +80,7 @@ class BeanDefinitionLoader {
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
-		if (ClassUtils.isPresent("groovy.lang.MetaClass", null)) {
+		if (isGroovyPresent()) {
 			this.groovyReader = new GroovyBeanDefinitionReader(this.xmlReader);
 		}
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
@@ -144,11 +147,26 @@ class BeanDefinitionLoader {
 	}
 
 	private int load(Class<?> source) {
+		if (isGroovyPresent()) {
+			// Any GroovyLoaders added in beans{} DSL can contribute beans here
+			if (GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
+				GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source,
+						GroovyBeanDefinitionSource.class);
+				load(loader);
+			}
+		}
 		if (isComponent(source)) {
 			this.annotatedReader.register(source);
 			return 1;
 		}
 		return 0;
+	}
+
+	private int load(GroovyBeanDefinitionSource source) {
+		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
+		this.groovyReader.beans(source.getBeans());
+		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
+		return after - before;
 	}
 
 	private int load(Resource source) {
@@ -203,6 +221,10 @@ class BeanDefinitionLoader {
 		}
 
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
+	}
+
+	private boolean isGroovyPresent() {
+		return ClassUtils.isPresent("groovy.lang.MetaClass", null);
 	}
 
 	private Resource[] findResources(String source) {
@@ -279,6 +301,10 @@ class BeanDefinitionLoader {
 		protected boolean matchClassName(String className) {
 			return this.classNames.contains(className);
 		}
+	}
+
+	protected interface GroovyBeanDefinitionSource {
+		Closure<?> getBeans();
 	}
 
 }
