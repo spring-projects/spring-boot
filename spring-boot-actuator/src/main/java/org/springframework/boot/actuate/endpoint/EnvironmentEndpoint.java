@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -27,11 +26,6 @@ import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * {@link Endpoint} to expose {@link ConfigurableEnvironment environment} information.
@@ -40,7 +34,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Phillip Webb
  */
 @ConfigurationProperties(name = "endpoints.env", ignoreUnknownFields = false)
-@FrameworkEndpoint
 public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> implements
 		EnvironmentAware {
 
@@ -54,8 +47,6 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	}
 
 	@Override
-	@RequestMapping
-	@ResponseBody
 	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		result.put("profiles", this.environment.getActiveProfiles());
@@ -72,16 +63,6 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 		return result;
 	}
 
-	@RequestMapping("/{name:.*}")
-	@ResponseBody
-	public Object value(@PathVariable String name) {
-		String result = this.environment.getProperty(name);
-		if (result == null) {
-			throw new NoSuchPropertyException("No such property: " + name);
-		}
-		return sanitize(name, result);
-	}
-
 	private Iterable<PropertySource<?>> getPropertySources() {
 		if (this.environment != null
 				&& this.environment instanceof ConfigurableEnvironment) {
@@ -90,7 +71,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 		return new StandardEnvironment().getPropertySources();
 	}
 
-	private Object sanitize(String name, Object object) {
+	public static Object sanitize(String name, Object object) {
 		if (name.toLowerCase().endsWith("password")
 				|| name.toLowerCase().endsWith("secret")) {
 			return object == null ? null : "******";
@@ -101,15 +82,6 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = environment;
-	}
-
-	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "No such property")
-	public static class NoSuchPropertyException extends RuntimeException {
-
-		public NoSuchPropertyException(String string) {
-			super(string);
-		}
-
 	}
 
 }

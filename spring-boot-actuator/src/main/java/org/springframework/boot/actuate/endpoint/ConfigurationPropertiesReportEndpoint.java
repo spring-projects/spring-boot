@@ -19,13 +19,10 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,7 +38,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Christian Dupuis
  */
 @ConfigurationProperties(name = "endpoints.configprops", ignoreUnknownFields = false)
-@FrameworkEndpoint
 public class ConfigurationPropertiesReportEndpoint extends
 		AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
@@ -67,8 +63,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 		this.keysToSanitize = keysToSanitize;
 	}
 
-	@RequestMapping
-	@ResponseBody
+	@Override
 	public Map<String, Object> invoke() {
 		Map<String, Object> beans = extract(this.context);
 		return beans;

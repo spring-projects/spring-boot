@@ -20,14 +20,10 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.actuate.endpoint.mvc.FrameworkEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * {@link Endpoint} to shutdown the {@link ApplicationContext}.
@@ -36,7 +32,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author Christian Dupuis
  */
 @ConfigurationProperties(name = "endpoints.shutdown", ignoreUnknownFields = false)
-@FrameworkEndpoint
 public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> implements
 		ApplicationContextAware {
 
@@ -50,8 +45,6 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 	}
 
 	@Override
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
 	public Map<String, Object> invoke() {
 
 		if (this.context == null) {
@@ -59,21 +52,26 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 					"No context to shutdown.");
 		}
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(500L);
-				}
-				catch (InterruptedException ex) {
-					// Swallow exception and continue
-				}
-				ShutdownEndpoint.this.context.close();
-			}
-		}).start();
+		try {
+			return Collections.<String, Object> singletonMap("message",
+					"Shutting down, bye...");
+		}
+		finally {
 
-		return Collections.<String, Object> singletonMap("message",
-				"Shutting down, bye...");
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(500L);
+					}
+					catch (InterruptedException ex) {
+						// Swallow exception and continue
+					}
+					ShutdownEndpoint.this.context.close();
+				}
+			}).start();
+
+		}
 	}
 
 	@Override

@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,8 +30,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.GenericMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -50,6 +63,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -117,6 +131,50 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				filterChain.doFilter(request, response);
 			}
 		};
+	}
+
+	@Component
+	protected static class GenericEndpointPostProcessor implements
+			BeanDefinitionRegistryPostProcessor {
+
+		private BeanDefinitionRegistry registry;
+
+		private Map<Class<? extends Endpoint<?>>, Class<?>> endpointTypes = new HashMap<Class<? extends Endpoint<?>>, Class<?>>();
+
+		public GenericEndpointPostProcessor() {
+			this.endpointTypes.put(EnvironmentEndpoint.class,
+					EnvironmentMvcEndpoint.class);
+			this.endpointTypes.put(MetricsEndpoint.class, MetricsMvcEndpoint.class);
+			this.endpointTypes.put(ShutdownEndpoint.class, ShutdownMvcEndpoint.class);
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+			for (String name : beanFactory.getBeanNamesForType(Endpoint.class)) {
+				Class<?> type = getTypeForEndpoint(beanFactory.getType(name));
+				BeanDefinitionBuilder bean = BeanDefinitionBuilder
+						.genericBeanDefinition(type);
+				bean.addConstructorArgReference(name);
+				this.registry.registerBeanDefinition("mvc." + name,
+						bean.getBeanDefinition());
+			}
+		}
+
+		protected Class<?> getTypeForEndpoint(Class<?> endpoint) {
+			Class<?> type = GenericMvcEndpoint.class;
+			if (this.endpointTypes.containsKey(endpoint)) {
+				type = this.endpointTypes.get(endpoint);
+			}
+			return type;
+		}
+
+		@Override
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
+				throws BeansException {
+			this.registry = registry;
+		}
+
 	}
 
 	private void createChildManagementContext() {
