@@ -59,6 +59,7 @@ public class LogbackLoggingSystemTests {
 
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize("classpath:logback-nondefault.xml");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
@@ -68,16 +69,19 @@ public class LogbackLoggingSystemTests {
 
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize("classpath:logback-nonexistent.xml");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null);
 	}
 
 	@Test
 	public void setLevel() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize();
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);

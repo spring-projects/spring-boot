@@ -42,6 +42,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 
 	@Override
 	public void beforeInitialize() {
+		initializeWithSensibleDefaults();
 	}
 
 	@Override
@@ -53,7 +54,6 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 				return;
 			}
 		}
-		initializeWithSensibleDefaults();
 	}
 
 	protected void initializeWithSensibleDefaults() {

@@ -58,6 +58,7 @@ public class Log4JLoggingSystemTests {
 
 	@Test
 	public void testNonDefaultConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize("classpath:log4j-nondefault.properties");
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
@@ -67,16 +68,19 @@ public class Log4JLoggingSystemTests {
 
 	@Test(expected = IllegalStateException.class)
 	public void testNonexistentConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize("classpath:log4j-nonexistent.xml");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(null);
 	}
 
 	@Test
 	public void setLevel() throws Exception {
+		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize();
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
