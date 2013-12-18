@@ -49,6 +49,7 @@ import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.OrderComparator;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
@@ -232,11 +233,32 @@ public class SpringApplication {
 	 * {@link SpringFactoriesLoader}. Subclasses can override this method to modify
 	 * default initializers if necessary.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected Collection<ApplicationContextInitializer<?>> getSpringFactoriesApplicationContextInitializers() {
-		return (Collection) SpringFactoriesLoader.loadFactories(
-				ApplicationContextInitializer.class,
-				SpringApplication.class.getClassLoader());
+		ClassLoader classLoader = SpringApplication.class.getClassLoader();
+
+		// Use names and ensure unique to protect against duplicates
+		Set<String> names = new LinkedHashSet<String>(
+				SpringFactoriesLoader.loadFactoryNames(
+						ApplicationContextInitializer.class, classLoader));
+		List<ApplicationContextInitializer<?>> factories = new ArrayList<ApplicationContextInitializer<?>>(
+				names.size());
+
+		// Create instances from the names
+		for (String name : names) {
+			try {
+				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
+				Assert.isAssignable(ApplicationContextInitializer.class, instanceClass);
+				factories.add((ApplicationContextInitializer<?>) instanceClass
+						.newInstance());
+			}
+			catch (Throwable ex) {
+				throw new IllegalArgumentException(
+						"Cannot instantiate ApplicationContextInitializer : " + name, ex);
+			}
+		}
+
+		OrderComparator.sort(factories);
+		return factories;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
