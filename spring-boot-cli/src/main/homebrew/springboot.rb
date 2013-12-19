@@ -9,7 +9,7 @@ class Springboot < Formula
 	def install
 		bin.install 'bin/spring'
 		lib.install 'lib/spring-boot-cli-${version}.jar'
-		bash_completion.install 'shell-completion.d/bash/spring'
-		zsh_completion.install 'shell-completion.d/zsh/_spring'
+		bash_completion.install 'shell-completion/bash/spring'
+		zsh_completion.install 'shell-completion/zsh/_spring'
 	end
 end
