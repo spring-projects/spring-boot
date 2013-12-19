@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.endpoint;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<String>> {
 
 	public HealthEndpointTests() {
-		super(Config.class, HealthEndpoint.class, "/health", false, "endpoints.health");
+		super(Config.class, HealthEndpoint.class, "health", false, "endpoints.health");
 	}
 
 	@Test

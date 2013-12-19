@@ -39,13 +39,13 @@ public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 	 * @param repository the trace repository
 	 */
 	public TraceEndpoint(TraceRepository repository) {
-		super("/trace");
+		super("trace");
 		Assert.notNull(repository, "Repository must not be null");
 		this.repository = repository;
 	}
 
 	@Override
-	protected List<Trace> doInvoke() {
+	public List<Trace> invoke() {
 		return this.repository.findAll();
 	}
 }

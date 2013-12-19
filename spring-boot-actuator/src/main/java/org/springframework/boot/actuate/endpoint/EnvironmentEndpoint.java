@@ -43,11 +43,11 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	 * Create a new {@link EnvironmentEndpoint} instance.
 	 */
 	public EnvironmentEndpoint() {
-		super("/env");
+		super("env");
 	}
 
 	@Override
-	protected Map<String, Object> doInvoke() {
+	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		result.put("profiles", this.environment.getActiveProfiles());
 		for (PropertySource<?> source : getPropertySources()) {
@@ -71,7 +71,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 		return new StandardEnvironment().getPropertySources();
 	}
 
-	private Object sanitize(String name, Object object) {
+	public static Object sanitize(String name, Object object) {
 		if (name.toLowerCase().endsWith("password")
 				|| name.toLowerCase().endsWith("secret")) {
 			return object == null ? null : "******";

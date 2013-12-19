@@ -42,7 +42,7 @@ public class AutoConfigurationReportEndpointTests extends
 		AbstractEndpointTests<AutoConfigurationReportEndpoint> {
 
 	public AutoConfigurationReportEndpointTests() {
-		super(Config.class, AutoConfigurationReportEndpoint.class, "/autoconfig", true,
+		super(Config.class, AutoConfigurationReportEndpoint.class, "autoconfig", true,
 				"endpoints.autoconfig");
 	}
 

@@ -19,44 +19,40 @@ package org.springframework.boot.actuate.endpoint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-
 /**
  * Abstract base for {@link Endpoint} implementations.
  * <p>
- * {@link Endpoint}s that support other {@link HttpMethod}s than {@link HttpMethod#GET}
- * should override {@link #methods()} and provide a list of supported methods.
  * 
  * @author Phillip Webb
  * @author Christian Dupuis
  */
 public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
-	private static final MediaType[] NO_MEDIA_TYPES = new MediaType[0];
-
-	protected static final HttpMethod[] NO_HTTP_METHOD = new HttpMethod[0];
-
-	protected static final HttpMethod[] GET_HTTP_METHOD = new HttpMethod[] { HttpMethod.GET };
-
-	protected static final HttpMethod[] POST_HTTP_METHOD = new HttpMethod[] { HttpMethod.POST };
-
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
-	private String path;
+	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
+	private String id;
 
 	private boolean sensitive;
 
 	private boolean enabled = true;
 
-	public AbstractEndpoint(String path) {
-		this(path, true, true);
+	public AbstractEndpoint(String id) {
+		this(id, true, true);
 	}
 
-	public AbstractEndpoint(String path, boolean sensitive, boolean enabled) {
-		this.path = path;
+	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
+		this.id = id;
 		this.sensitive = sensitive;
 		this.enabled = enabled;
+	}
+
+	@Override
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public boolean isEnabled() {
@@ -68,15 +64,6 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 	}
 
 	@Override
-	public String getPath() {
-		return this.path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	@Override
 	public boolean isSensitive() {
 		return this.sensitive;
 	}
@@ -85,23 +72,4 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 		this.sensitive = sensitive;
 	}
 
-	@Override
-	public MediaType[] produces() {
-		return NO_MEDIA_TYPES;
-	}
-
-	@Override
-	public HttpMethod[] methods() {
-		return GET_HTTP_METHOD;
-	}
-
-	@Override
-	public final T invoke() {
-		if (this.enabled) {
-			return doInvoke();
-		}
-		throw new EndpointDisabledException();
-	}
-
-	protected abstract T doInvoke();
 }
