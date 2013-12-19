@@ -76,7 +76,7 @@
 											destfile="${project.build.directory}/${project.name}-${project.version}.zip">
 											<zipfileset
 												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
-												includes="**/*.html" prefix="api" />
+												prefix="api" />
 										</zip>
 
 									</target>
