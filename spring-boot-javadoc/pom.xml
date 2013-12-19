@@ -45,17 +45,16 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.9.1</version>
 						<executions>
 							<execution>
 								<id>aggregate-javadocs</id>
 								<goals>
-									<goal>aggregate-jar</goal>
+									<goal>jar</goal>
 								</goals>
 								<configuration>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
-										<dependencySourceInclude>${project.groupId}:*:javadoc:*</dependencySourceInclude>
+										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
 									</dependencySourceIncludes>
 								</configuration>
 							</execution>
