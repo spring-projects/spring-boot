@@ -33,18 +33,15 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 /**
  * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getId()}.
- * Only endpoints that are annotated as <code>@FrameworkEndpoint</code> will be mapped,
- * and within that class only those methods with <code>@RequestMapping</code> will be
- * exposed. The semantics of <code>@RequestMapping</code> should be identical to a normal
- * <code>@Controller</code>, but the endpoints should not be annotated as
- * <code>@Controller</code> (otherwise they will be mapped by the normal MVC mechanisms).
+ * The semantics of {@code @RequestMapping} should be identical to a normal
+ * {@code @Controller}, but the endpoints should not be annotated as {@code @Controller}
+ * (otherwise they will be mapped by the normal MVC mechanisms).
  * 
  * <p>
  * One of the aims of the mapping is to support endpoints that work as HTTP endpoints but
  * can still provide useful service interfaces when there is no HTTP server (and no Spring
  * MVC on the classpath). Note that any endpoints having method signaturess will break in
  * a non-servlet environment.
- * </p>
  * 
  * @author Phillip Webb
  * @author Christian Dupuis
