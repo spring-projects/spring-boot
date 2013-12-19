@@ -9,7 +9,7 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-javadoc</artifactId>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -43,13 +43,23 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.jfrog.buildinfo</groupId>
+						<artifactId>artifactory-maven-plugin</artifactId>
+						<configuration>
+							<deployProperties>
+								<zip.type>docs</zip.type>
+								<zip.deployed>false</zip.deployed>
+							</deployProperties>
+						</configuration>
+					</plugin>
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>aggregate-javadocs</id>
+								<id>attach-javadocs</id>
 								<goals>
-									<goal>aggregate-jar</goal>
+									<goal>jar</goal>
 								</goals>
 								<configuration>
 									<includeDependencySources>true</includeDependencySources>
