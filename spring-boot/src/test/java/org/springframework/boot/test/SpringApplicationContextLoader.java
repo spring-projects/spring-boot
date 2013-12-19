@@ -88,8 +88,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
 		Map<String, Object> args = new LinkedHashMap<String, Object>();
 		// Not running an embedded server, just setting up web context
-		args.put("server.port", "0");
-		args.put("management.port", "0");
+		args.put("server.port", "-1");
 		return args;
 	}
 

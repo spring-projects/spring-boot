@@ -16,26 +16,21 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import javax.servlet.Servlet;
-import javax.servlet.ServletRegistration;
-
-import org.jolokia.http.AgentServlet;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.TestUtils;
+import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory.RegisteredServlet;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JolokiaAutoConfiguration}.
@@ -64,7 +59,7 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(1, this.context.getBeanNamesForType(AgentServlet.class).length);
+		assertEquals(1, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
 	}
 
 	@Test
@@ -76,29 +71,7 @@ public class JolokiaAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
 		this.context.refresh();
-		assertEquals(0, this.context.getBeanNamesForType(AgentServlet.class).length);
-	}
-
-	@Test
-	public void agentServletRegisteredWithServletContainer() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				JolokiaAutoConfiguration.class);
-		this.context.refresh();
-
-		Servlet servlet = null;
-		ServletRegistration.Dynamic registration = null;
-		for (RegisteredServlet registeredServlet : Config.containerFactory.getContainer()
-				.getRegisteredServlets()) {
-			if (registeredServlet.getServlet() instanceof AgentServlet) {
-				servlet = registeredServlet.getServlet();
-				registration = registeredServlet.getRegistration();
-			}
-		}
-		assertNotNull(servlet);
-		assertNotNull(registration);
+		assertEquals(0, this.context.getBeanNamesForType(JolokiaMvcEndpoint.class).length);
 	}
 
 	@Configuration

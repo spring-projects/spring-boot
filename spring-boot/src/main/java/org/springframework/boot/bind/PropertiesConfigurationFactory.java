@@ -249,23 +249,30 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		customizeBinder(dataBinder);
 
 		Set<String> names = new HashSet<String>();
+		Set<String> patterns = new HashSet<String>();
 		if (this.target != null) {
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
+			String[] prefixes = this.targetName != null ? new String[] {
+					this.targetName + ".", this.targetName + "_" } : new String[] { "" };
+			String[] suffixes = new String[] { ".*", "_*" };
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
 				if (!name.equals("class")) {
-					names.add(name);
-					names.add(name + ".*");
-					names.add(name + "_*");
-					names.add("*_"+name);
+					for (String prefix : prefixes) {
+						names.add(prefix + name);
+						patterns.add(prefix + name);
+						for (String suffix : suffixes) {
+							patterns.add(prefix + name + suffix);
+						}
+					}
 				}
 			}
 		}
 
 		PropertyValues propertyValues = (this.properties != null ? new MutablePropertyValues(
 				this.properties) : new PropertySourcesPropertyValues(
-				this.propertySources, names));
+				this.propertySources, patterns, names));
 		dataBinder.bind(propertyValues);
 
 		if (this.validator != null) {

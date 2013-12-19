@@ -112,7 +112,6 @@ public class BasicErrorControllerSpecialIntegrationTests {
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
 			ManagementSecurityAutoConfiguration.class })
 	protected static class ChildConfiguration {
-
 		// For manual testing
 		public static void main(String[] args) {
 			new SpringApplicationBuilder(ParentConfiguration.class).child(

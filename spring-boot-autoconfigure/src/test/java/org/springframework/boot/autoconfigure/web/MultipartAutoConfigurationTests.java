@@ -139,12 +139,13 @@ public class MultipartAutoConfigurationTests {
 	}
 
 	@Test
-	public void containerWithAutomatedMultipartTomcatConfiguration() {
+	public void containerWithAutomatedMultipartTomcatConfiguration() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				ContainerWithEverythingTomcat.class,
 				EmbeddedServletContainerAutoConfiguration.class,
 				DispatcherServletAutoConfiguration.class,
 				MultipartAutoConfiguration.class);
+		new RestTemplate().getForObject("http://localhost:8080/", String.class);
 		this.context.getBean(MultipartConfigElement.class);
 		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
 				this.context.getBean(StandardServletMultipartResolver.class));

@@ -52,7 +52,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 
 	private Set<String> urlMappings = new LinkedHashSet<String>();
 
-	private int loadOnStartup = 1;
+	private int loadOnStartup = -1;
 
 	private MultipartConfigElement multipartConfig;
 
