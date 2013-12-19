@@ -43,16 +43,6 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.jfrog.buildinfo</groupId>
-						<artifactId>artifactory-maven-plugin</artifactId>
-						<configuration>
-							<deployProperties>
-								<zip.type>docs</zip.type>
-								<zip.deployed>false</zip.deployed>
-							</deployProperties>
-						</configuration>
-					</plugin>
-					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<executions>
@@ -84,7 +74,7 @@
 									<artifacts>
 										<artifact>
 											<file>${project.build.directory}/${project.name}-${project.version}-javadoc.jar</file>
-											<type>zip</type>
+											<type>zip;zip.type=docs;zip.deployed=false</type>
 										</artifact>
 									</artifacts>
 								</configuration>
