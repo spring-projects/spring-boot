@@ -17,14 +17,11 @@
 package org.springframework.boot.actuate.endpoint.jmx;
 
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,10 +34,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.jmx.export.MBeanExportException;
 import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.jmx.support.JmxUtils;
-import org.springframework.jmx.support.ObjectNameManager;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link ApplicationListener} that registers all known {@link Endpoint}s with an
@@ -51,12 +45,7 @@ import org.springframework.util.ClassUtils;
  */
 public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContextAware {
 
-	private static final String DEFAULT_DOMAIN_NAME = ClassUtils
-			.getPackageName(Endpoint.class);
-
 	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
-
-	private String domainName = DEFAULT_DOMAIN_NAME;
 
 	private Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
 
@@ -74,11 +63,6 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.applicationContext = applicationContext;
-	}
-
-	public void setDomainName(String domainName) {
-		Assert.notNull(domainName, "DomainName must not be null");
-		this.domainName = domainName;
 	}
 
 	protected void doStart() {
@@ -108,29 +92,14 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 		}
 	}
 
-	protected void registerEndpoint(String beanKey, Endpoint<?> endpoint,
+	protected void registerEndpoint(String beanName, Endpoint<?> endpoint,
 			MBeanExporter mbeanExporter) {
 		try {
-			mbeanExporter.registerManagedResource(new EndpointMBean(endpoint),
-					getObjectName(beanKey, endpoint));
+			mbeanExporter.registerManagedResource(new EndpointMBean(beanName, endpoint));
 		}
 		catch (MBeanExportException ex) {
-			logger.error("Could not register MBean for endpoint [" + beanKey + "]", ex);
+			logger.error("Could not register MBean for endpoint [" + beanName + "]", ex);
 		}
-		catch (MalformedObjectNameException ex) {
-			logger.error("Could not register MBean for endpoint [" + beanKey + "]", ex);
-		}
-	}
-
-	protected ObjectName getObjectName(String beanKey, Endpoint<?> endpoint)
-			throws MalformedObjectNameException {
-		// We have to be super careful to not create name clashes as multiple Boot
-		// applications can potentially run in the same VM or MBeanServer. Therefore
-		// append the object identity to the ObjectName.
-		Hashtable<String, String> properties = new Hashtable<String, String>();
-		properties.put("bean", beanKey);
-		return JmxUtils.appendIdentityToObjectName(
-				ObjectNameManager.getInstance(this.domainName, properties), endpoint);
 	}
 
 	// SmartLifeCycle implementation
