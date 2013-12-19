@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.jmx;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +39,9 @@ import static org.junit.Assert.assertNotNull;
  */
 public class JmxAutoConfigurationTests {
 
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	private AnnotationConfigApplicationContext context;
 
 	@After
@@ -49,6 +54,18 @@ public class JmxAutoConfigurationTests {
 	@Test
 	public void testDefaultMBeanExport() {
 		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(JmxAutoConfiguration.class);
+		this.context.refresh();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
+		this.context.getBean(MBeanExporter.class);
+	}
+
+	@Test
+	public void testEnabledMBeanExport() {
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("spring.jmx.enabled", "true");
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setEnvironment(env);
 		this.context.register(JmxAutoConfiguration.class);
 		this.context.refresh();
 
