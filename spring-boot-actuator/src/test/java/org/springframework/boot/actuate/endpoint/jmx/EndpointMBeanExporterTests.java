@@ -167,11 +167,11 @@ public class EndpointMBeanExporterTests {
 	public static class TestEndpoint extends AbstractEndpoint<String> {
 
 		public TestEndpoint() {
-			super("/test");
+			super("test");
 		}
 
 		@Override
-		protected String doInvoke() {
+		public String invoke() {
 			return "hello world";
 		}
 	}

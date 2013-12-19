@@ -32,7 +32,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getPath()}.
+ * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getId()}.
  * Only endpoints that are annotated as <code>@FrameworkEndpoint</code> will be mapped,
  * and within that class only those methods with <code>@RequestMapping</code> will be
  * exposed. The semantics of <code>@RequestMapping</code> should be identical to a normal

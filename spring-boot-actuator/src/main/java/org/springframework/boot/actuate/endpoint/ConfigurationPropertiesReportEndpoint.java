@@ -46,7 +46,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	private ApplicationContext context;
 
 	public ConfigurationPropertiesReportEndpoint() {
-		super("/configprops");
+		super("configprops");
 	}
 
 	@Override

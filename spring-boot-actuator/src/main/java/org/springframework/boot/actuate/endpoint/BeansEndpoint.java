@@ -44,7 +44,7 @@ public class BeansEndpoint extends AbstractEndpoint<List<Object>> implements
 	private JsonParser parser = JsonParserFactory.getJsonParser();
 
 	public BeansEndpoint() {
-		super("/beans");
+		super("beans");
 	}
 
 	@Override

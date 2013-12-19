@@ -43,7 +43,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	 * Create a new {@link EnvironmentEndpoint} instance.
 	 */
 	public EnvironmentEndpoint() {
-		super("/env");
+		super("env");
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * @param metrics the metrics to expose
 	 */
 	public MetricsEndpoint(PublicMetrics metrics) {
-		super("/metrics");
+		super("metrics");
 		Assert.notNull(metrics, "Metrics must not be null");
 		this.metrics = metrics;
 	}
