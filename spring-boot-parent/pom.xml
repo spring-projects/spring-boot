@@ -412,6 +412,15 @@
 		<profile>
 			<id>full</id>
 			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.jfrog.buildinfo</groupId>
+							<artifactId>artifactory-maven-plugin</artifactId>
+							<version>2.2.2</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
 				<plugins>
 					<plugin>
 						<artifactId>maven-javadoc-plugin</artifactId>
@@ -443,6 +452,14 @@
 					<id>objectstyle</id>
 					<name>ObjectStyle.org Repository</name>
 					<url>http://objectstyle.org/maven2/</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>jfrog</id>
+					<name>JFrog Repository</name>
+					<url>http://dl.bintray.com/jfrog/jfrog-jars/</url>
 					<snapshots>
 						<enabled>false</enabled>
 					</snapshots>
