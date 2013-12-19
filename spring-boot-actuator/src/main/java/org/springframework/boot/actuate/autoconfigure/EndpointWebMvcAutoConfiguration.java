@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -85,8 +86,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 	private ApplicationContext applicationContext;
 
-	@Autowired(required = false)
-	private ManagementServerProperties managementServerProperties = new ManagementServerProperties();
+	@Autowired
+	private ManagementServerProperties managementServerProperties;
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -99,12 +106,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-
-	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		if (event.getApplicationContext() == this.applicationContext) {
 			if (ManagementServerPort.get(this.applicationContext) == ManagementServerPort.DIFFERENT
@@ -114,18 +115,23 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		}
 	}
 
-	@Bean
-	public Filter applicationContextIdFilter(ApplicationContext context) {
-		final String id = context.getId();
-		return new OncePerRequestFilter() {
-			@Override
-			protected void doFilterInternal(HttpServletRequest request,
-					HttpServletResponse response, FilterChain filterChain)
-					throws ServletException, IOException {
-				response.addHeader("X-Application-Context", id);
-				filterChain.doFilter(request, response);
-			}
-		};
+	// Put Servlets and Filters in their own nested class so they don't force early
+	// instantiation of ManagementServerProperties.
+	@Configuration
+	protected static class ApplicationContextFilterConfiguration {
+		@Bean
+		public Filter applicationContextIdFilter(ApplicationContext context) {
+			final String id = context.getId();
+			return new OncePerRequestFilter() {
+				@Override
+				protected void doFilterInternal(HttpServletRequest request,
+						HttpServletResponse response, FilterChain filterChain)
+						throws ServletException, IOException {
+					response.addHeader("X-Application-Context", id);
+					filterChain.doFilter(request, response);
+				}
+			};
+		}
 	}
 
 	@Bean
@@ -181,11 +187,11 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		childContext.refresh();
 	}
 
-	private enum ManagementServerPort {
+	protected static enum ManagementServerPort {
 
 		DISABLE, SAME, DIFFERENT;
 
-		public static ManagementServerPort get(ApplicationContext beanFactory) {
+		public static ManagementServerPort get(BeanFactory beanFactory) {
 
 			ServerProperties serverProperties;
 			try {
@@ -208,7 +214,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				return DISABLE;
 			}
 			if (!(beanFactory instanceof WebApplicationContext)) {
-				// Current context is no a a webapp
+				// Current context is not a webapp
 				return DIFFERENT;
 			}
 			return managementServerProperties.getPort() == null

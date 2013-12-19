@@ -45,37 +45,39 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
 	private PropertySources propertySources;
 
-	private Collection<String> NON_ENUMERABLES = Arrays.asList(
+	private Collection<String> NON_ENUMERABLE_ENUMERABLES = Arrays.asList(
 			StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-			StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);;
+			StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources) {
-		this(propertySources, null);
+		this(propertySources, null, null);
 	}
 
 	/**
 	 * Create a new PropertyValues from the given PropertySources
 	 * @param propertySources a PropertySources instance
-	 * @param systemPropertyNames property names to include from system properties and
+	 * @param patterns property name patterns to include from system properties and
 	 * environment variables
+	 * @param names exact property names to include
 	 */
 	public PropertySourcesPropertyValues(PropertySources propertySources,
-			Collection<String> systemPropertyNames) {
+			Collection<String> patterns, Collection<String> names) {
 		this.propertySources = propertySources;
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
-		String[] includes = systemPropertyNames == null ? new String[0]
-				: systemPropertyNames.toArray(new String[0]);
+		String[] includes = patterns == null ? new String[0] : patterns
+				.toArray(new String[0]);
+		String[] exacts = names == null ? new String[0] : names.toArray(new String[0]);
 		for (PropertySource<?> source : propertySources) {
 			if (source instanceof EnumerablePropertySource) {
 				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
 				if (enumerable.getPropertyNames().length > 0) {
 					for (String propertyName : enumerable.getPropertyNames()) {
-						if (this.NON_ENUMERABLES.contains(source.getName())
+						if (this.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
 								&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
 							continue;
 						}
@@ -88,6 +90,25 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 						}
 						this.propertyValues.put(propertyName, new PropertyValue(
 								propertyName, value));
+					}
+				}
+			}
+			else {
+				// We can only do exact matches for non-enumerable property names, but
+				// that's better than nothing...
+				for (String propertyName : exacts) {
+					Object value;
+					value = source.getProperty(propertyName);
+					if (value != null) {
+						this.propertyValues.put(propertyName, new PropertyValue(
+								propertyName, value));
+						continue;
+					}
+					value = source.getProperty(propertyName.toUpperCase());
+					if (value != null) {
+						this.propertyValues.put(propertyName, new PropertyValue(
+								propertyName, value));
+						continue;
 					}
 				}
 			}

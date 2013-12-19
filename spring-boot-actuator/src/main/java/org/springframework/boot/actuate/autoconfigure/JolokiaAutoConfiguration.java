@@ -17,23 +17,20 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
-import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -54,11 +51,11 @@ import org.springframework.core.env.Environment;
  * supported configuration parameters.
  * 
  * @author Christian Dupuis
+ * @author Dave Syer
  */
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ AgentServlet.class })
-@ConditionalOnBean(EmbeddedServletContainerFactory.class)
 @AutoConfigureBefore(ManagementSecurityAutoConfiguration.class)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
 @ConditionalOnExpression("${endpoints.jolokia.enabled:true}")
@@ -67,39 +64,27 @@ public class JolokiaAutoConfiguration {
 	private RelaxedPropertyResolver environment;
 
 	@Autowired
-	private ManagementServerProperties management;
-
-	@Autowired
 	public void setEnvironment(Environment environment) {
 		this.environment = new RelaxedPropertyResolver(environment);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ AgentServlet.class })
-	public AgentServlet jolokiaServlet() {
-		return new AgentServlet();
-	}
-
-	@Bean
-	public ServletRegistrationBean jolokiaServletRegistration(AgentServlet servlet) {
-		ServletRegistrationBean registrationBean = new ServletRegistrationBean(servlet,
-				this.management.getContextPath() + jolokiaEndpoint().getPath() + "/*");
-		addInitParameters(registrationBean);
-		return registrationBean;
-	}
-
-	@Bean
 	@ConditionalOnMissingBean
 	public JolokiaMvcEndpoint jolokiaEndpoint() {
-		return new JolokiaMvcEndpoint();
+		JolokiaMvcEndpoint endpoint = new JolokiaMvcEndpoint();
+		endpoint.setInitParameters(getInitParameters());
+		return endpoint;
 	}
 
-	protected void addInitParameters(ServletRegistrationBean registrationBean) {
+	private Properties getInitParameters() {
+		Properties properties = new Properties();
 		Map<String, Object> configParameters = this.environment
 				.getSubProperties("jolokia.config.");
 		for (Map.Entry<String, Object> configParameter : configParameters.entrySet()) {
-			registrationBean.addInitParameter(configParameter.getKey(), configParameter
-					.getValue().toString());
+			properties.setProperty(configParameter.getKey(), configParameter.getValue()
+					.toString());
 		}
+		return properties;
 	}
+
 }

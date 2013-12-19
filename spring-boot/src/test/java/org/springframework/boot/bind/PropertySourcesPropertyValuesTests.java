@@ -91,6 +91,15 @@ public class PropertySourcesPropertyValuesTests {
 	}
 
 	@Test
+	public void testPlaceholdersBindingNonEnumerable() {
+		FooBean target = new FooBean();
+		DataBinder binder = new DataBinder(target);
+		binder.bind(new PropertySourcesPropertyValues(this.propertySources, null,
+				Collections.singleton("foo")));
+		assertEquals("bar", target.getFoo());
+	}
+
+	@Test
 	public void testPlaceholdersBindingWithError() {
 		TestBean target = new TestBean();
 		DataBinder binder = new DataBinder(target);
@@ -109,6 +118,18 @@ public class PropertySourcesPropertyValuesTests {
 
 		public void setName(String name) {
 			this.name = name;
+		}
+	}
+
+	public static class FooBean {
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
 		}
 	}
 

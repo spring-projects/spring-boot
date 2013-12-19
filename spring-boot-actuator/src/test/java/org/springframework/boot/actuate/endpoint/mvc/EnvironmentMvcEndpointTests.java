@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.actuate.autoconfigure.EndpointWebMvcAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpointTests.TestConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -73,7 +74,8 @@ public class EnvironmentMvcEndpointTests {
 				.andExpect(content().string(equalToIgnoringCase("bar")));
 	}
 
-	@Import(EndpointWebMvcAutoConfiguration.class)
+	@Import({ EndpointWebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class })
 	@EnableWebMvc
 	@Configuration
 	public static class TestConfiguration {

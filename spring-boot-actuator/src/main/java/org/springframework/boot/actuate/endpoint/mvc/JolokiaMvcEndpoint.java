@@ -16,11 +16,26 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Properties;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.jolokia.http.AgentServlet;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 /**
  * {@link Endpoint} implementation to register the Jolokia infrastructure with the Boot
@@ -29,7 +44,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christian Dupuis
  */
 @ConfigurationProperties(name = "endpoints.jolokia", ignoreUnknownFields = false)
-public class JolokiaMvcEndpoint implements MvcEndpoint {
+public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
+		ApplicationContextAware, ServletContextAware {
 
 	@NotNull
 	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
@@ -39,8 +55,30 @@ public class JolokiaMvcEndpoint implements MvcEndpoint {
 
 	private boolean enabled = true;
 
+	private ServletWrappingController controller = new ServletWrappingController();
+
 	public JolokiaMvcEndpoint() {
 		this.path = "/jolokia";
+		this.controller.setServletClass(AgentServlet.class);
+		this.controller.setServletName("jolokia");
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.controller.afterPropertiesSet();
+	}
+
+	public void setServletContext(ServletContext servletContext) {
+		this.controller.setServletContext(servletContext);
+	}
+
+	public void setInitParameters(Properties initParameters) {
+		this.controller.setInitParameters(initParameters);
+	}
+
+	public final void setApplicationContext(ApplicationContext context)
+			throws BeansException {
+		this.controller.setApplicationContext(context);
 	}
 
 	public boolean isEnabled() {
@@ -74,4 +112,37 @@ public class JolokiaMvcEndpoint implements MvcEndpoint {
 		return null;
 	}
 
+	@RequestMapping("/**")
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		return this.controller.handleRequest(new PathStripper(request, getPath()),
+				response);
+	}
+
+	private static class PathStripper extends HttpServletRequestWrapper {
+
+		private String path;
+
+		public PathStripper(HttpServletRequest request, String path) {
+			super(request);
+			this.path = path;
+		}
+
+		@Override
+		public String getPathInfo() {
+			String value = super.getRequestURI();
+			if (value.startsWith(this.path)) {
+				value = value.substring(this.path.length());
+			}
+			int index = value.indexOf("?");
+			if (index > 0) {
+				value = value.substring(0, index);
+			}
+			while (value.startsWith("/")) {
+				value = value.substring(1);
+			}
+			return value;
+		}
+
+	}
 }
