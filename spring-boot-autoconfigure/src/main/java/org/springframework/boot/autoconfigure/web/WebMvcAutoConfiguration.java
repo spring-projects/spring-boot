@@ -155,7 +155,7 @@ public class WebMvcAutoConfiguration {
 		@ConditionalOnBean(View.class)
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
-			resolver.setOrder(0);
+			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;
 		}
 
