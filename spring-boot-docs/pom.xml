@@ -8,8 +8,7 @@
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
-	<artifactId>spring-boot-javadoc</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>spring-boot-docs</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -62,18 +61,42 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>package-and-attach-docs-zip</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<zip
+											destfile="${project.build.directory}/${project.name}-${project.version}.zip">
+											<zipfileset
+												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
+												includes="**/*.html" prefix="api" />
+										</zip>
+
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>attach-javadoc-zip</id>
+								<id>attach-zip</id>
 								<goals>
 									<goal>attach-artifact</goal>
 								</goals>
 								<configuration>
 									<artifacts>
 										<artifact>
-											<file>${project.build.directory}/${project.name}-${project.version}-javadoc.jar</file>
+											<file>${project.build.directory}/${project.name}-${project.version}.zip</file>
 											<type>zip;zip.type=docs;zip.deployed=false</type>
 										</artifact>
 									</artifacts>
