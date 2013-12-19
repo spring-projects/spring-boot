@@ -45,6 +45,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.expression.MapAccessor;
+import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -107,7 +108,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 		@ConditionalOnMissingBean(BeanNameViewResolver.class)
 		public BeanNameViewResolver beanNameViewResolver() {
 			BeanNameViewResolver resolver = new BeanNameViewResolver();
-			resolver.setOrder(0);
+			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 10);
 			return resolver;
 		}
 
