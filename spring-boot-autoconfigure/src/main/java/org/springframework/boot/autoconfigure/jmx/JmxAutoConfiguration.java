@@ -25,18 +25,18 @@ import org.springframework.context.annotation.EnableMBeanExport;
 import org.springframework.jmx.export.MBeanExporter;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to enable/disiable Spring's
+ * {@link EnableAutoConfiguration Auto-configuration} to enable/disable Spring's
  * {@link EnableMBeanExport} mechanism based on configuration properties.
  * 
  * <p>
- * To enable auto export of annotation beans set <code>spring.jmx.enabled: true</code>.
+ * To disable auto export of annotation beans set <code>spring.jmx.enabled: false</code>.
  * 
  * @author Christian Dupuis
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })
 @ConditionalOnMissingBean({ MBeanExporter.class })
-@ConditionalOnExpression("${spring.jmx.enabled:false}")
+@ConditionalOnExpression("${spring.jmx.enabled:true}")
 public class JmxAutoConfiguration {
 
 	@Configuration
