@@ -315,7 +315,7 @@
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
-								<checksum
+								<checksum algorithm="sha-1"
 									file="${project.build.directory}/spring-boot-cli-${version}-bin.tar.gz"
 									property="checksum" />
 								<echo
@@ -326,7 +326,8 @@
 										<expandproperties />
 									</filterchain>
 								</copy>
-								<attachartifact file="${project.build.directory}/springboot.rb" classifier="homebrew" type="rb"/>
+								<attachartifact file="${project.build.directory}/springboot.rb"
+									classifier="homebrew" type="rb" />
 							</target>
 						</configuration>
 					</execution>
