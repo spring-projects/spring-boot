@@ -19,10 +19,16 @@ package org.springframework.boot.actuate.endpoint.jmx;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.jmx.export.naming.MetadataNamingStrategy;
+import org.springframework.jmx.export.naming.SelfNaming;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,14 +39,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Christian Dupuis
  */
 @ManagedResource
-public class EndpointMBean {
+public class EndpointMBean implements SelfNaming {
+
+	private AnnotationJmxAttributeSource annotationSource = new AnnotationJmxAttributeSource();
+
+	private MetadataNamingStrategy metadataNamingStrategy = new MetadataNamingStrategy(
+			this.annotationSource);
 
 	private Endpoint<?> endpoint;
 
+	private String beanName;
+
 	private ObjectMapper mapper = new ObjectMapper();
 
-	public EndpointMBean(Endpoint<?> endpoint) {
+	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
+		Assert.notNull(beanName, "BeanName must not be null");
+		Assert.notNull(endpoint, "Endpoint must not be null");
 		this.endpoint = endpoint;
+		this.beanName = beanName;
 	}
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
@@ -53,7 +69,7 @@ public class EndpointMBean {
 		return this.endpoint.isSensitive();
 	}
 
-	@ManagedOperation(description = "Invoke the underlying endpoint")
+	@ManagedAttribute(description = "Invoke the underlying endpoint")
 	public Object invoke() {
 		Object result = this.endpoint.invoke();
 		if (result == null) {
@@ -69,5 +85,10 @@ public class EndpointMBean {
 		}
 
 		return this.mapper.convertValue(result, Map.class);
+	}
+
+	@Override
+	public ObjectName getObjectName() throws MalformedObjectNameException {
+		return this.metadataNamingStrategy.getObjectName(this, this.beanName);
 	}
 }
