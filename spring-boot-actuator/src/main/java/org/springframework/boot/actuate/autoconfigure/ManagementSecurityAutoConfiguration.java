@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
@@ -26,6 +27,7 @@ import javax.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -210,9 +212,9 @@ public class ManagementSecurityAutoConfiguration {
 			return NO_PATHS;
 		}
 
-		List<Endpoint<?>> endpoints = endpointHandlerMapping.getEndpoints();
+		Set<? extends MvcEndpoint> endpoints = endpointHandlerMapping.getEndpoints();
 		List<String> paths = new ArrayList<String>(endpoints.size());
-		for (Endpoint<?> endpoint : endpoints) {
+		for (MvcEndpoint endpoint : endpoints) {
 			if (endpoint.isSensitive() == secure) {
 				paths.add(endpoint.getPath());
 			}

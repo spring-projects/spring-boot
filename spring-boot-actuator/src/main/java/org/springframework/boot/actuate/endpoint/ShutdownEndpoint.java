@@ -24,7 +24,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpMethod;
 
 /**
  * {@link Endpoint} to shutdown the {@link ApplicationContext}.
@@ -42,32 +41,37 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 	 * Create a new {@link ShutdownEndpoint} instance.
 	 */
 	public ShutdownEndpoint() {
-		super("/shutdown", true, false);
+		super("shutdown", true, false);
 	}
 
 	@Override
-	protected Map<String, Object> doInvoke() {
+	public Map<String, Object> invoke() {
 
 		if (this.context == null) {
 			return Collections.<String, Object> singletonMap("message",
 					"No context to shutdown.");
 		}
 
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(500L);
-				}
-				catch (InterruptedException ex) {
-					// Swallow exception and continue
-				}
-				ShutdownEndpoint.this.context.close();
-			}
-		}).start();
+		try {
+			return Collections.<String, Object> singletonMap("message",
+					"Shutting down, bye...");
+		}
+		finally {
 
-		return Collections.<String, Object> singletonMap("message",
-				"Shutting down, bye...");
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(500L);
+					}
+					catch (InterruptedException ex) {
+						// Swallow exception and continue
+					}
+					ShutdownEndpoint.this.context.close();
+				}
+			}).start();
+
+		}
 	}
 
 	@Override
@@ -75,11 +79,6 @@ public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> impl
 		if (context instanceof ConfigurableApplicationContext) {
 			this.context = (ConfigurableApplicationContext) context;
 		}
-	}
-
-	@Override
-	public HttpMethod[] methods() {
-		return POST_HTTP_METHOD;
 	}
 
 }

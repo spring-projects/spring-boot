@@ -33,7 +33,7 @@ public class ConfigurationPropertiesReportEndpointTests extends
 		AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
 
 	public ConfigurationPropertiesReportEndpointTests() {
-		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "/configprops",
+		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",
 				true, "endpoints.configprops");
 	}
 
@@ -70,6 +70,15 @@ public class ConfigurationPropertiesReportEndpointTests extends
 
 	@Configuration
 	@EnableConfigurationProperties
+	public static class Parent {
+		@Bean
+		public TestProperties testProperties() {
+			return new TestProperties();
+		}
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
 	public static class Config {
 
 		@Bean
@@ -82,29 +91,30 @@ public class ConfigurationPropertiesReportEndpointTests extends
 			return new TestProperties();
 		}
 
-		@ConfigurationProperties(name = "test")
-		public static class TestProperties {
+	}
 
-			private String dbPassword = "123456";
+	@ConfigurationProperties(name = "test")
+	public static class TestProperties {
 
-			private String myTestProperty = "654321";
+		private String dbPassword = "123456";
 
-			public String getDbPassword() {
-				return this.dbPassword;
-			}
+		private String myTestProperty = "654321";
 
-			public void setDbPassword(String dbPassword) {
-				this.dbPassword = dbPassword;
-			}
-
-			public String getMyTestProperty() {
-				return this.myTestProperty;
-			}
-
-			public void setMyTestProperty(String myTestProperty) {
-				this.myTestProperty = myTestProperty;
-			}
-
+		public String getDbPassword() {
+			return this.dbPassword;
 		}
+
+		public void setDbPassword(String dbPassword) {
+			this.dbPassword = dbPassword;
+		}
+
+		public String getMyTestProperty() {
+			return this.myTestProperty;
+		}
+
+		public void setMyTestProperty(String myTestProperty) {
+			this.myTestProperty = myTestProperty;
+		}
+
 	}
 }

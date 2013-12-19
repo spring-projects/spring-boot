@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
-import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +36,7 @@ import static org.junit.Assert.assertThat;
 public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint> {
 
 	public MetricsEndpointTests() {
-		super(Config.class, MetricsEndpoint.class, "/metrics", true, "endpoints.metrics");
+		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
 	}
 
 	@Test

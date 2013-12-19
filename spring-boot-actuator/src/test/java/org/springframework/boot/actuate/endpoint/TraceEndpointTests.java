@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
 import org.springframework.boot.actuate.trace.Trace;
 import org.springframework.boot.actuate.trace.TraceRepository;
@@ -38,7 +37,7 @@ import static org.junit.Assert.assertThat;
 public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {
 
 	public TraceEndpointTests() {
-		super(Config.class, TraceEndpoint.class, "/trace", true, "endpoints.trace");
+		super(Config.class, TraceEndpoint.class, "trace", true, "endpoints.trace");
 	}
 
 	@Test

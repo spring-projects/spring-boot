@@ -31,8 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * annotated classes.
  * 
  * <p>
- * To protect sensitive information from being exposed, configure property names by using
- * <code>endpoints.configprops.keys_to_sanitize</code>.
+ * To protect sensitive information from being exposed, certain property values are masked
+ * if their names end with a set of configurable values (default "password" and "secret").
+ * Configure property names by using {@link #setKeysToSanitize(String[])}.
  * 
  * @author Christian Dupuis
  */
@@ -45,7 +46,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	private ApplicationContext context;
 
 	public ConfigurationPropertiesReportEndpoint() {
-		super("/configprops");
+		super("configprops");
 	}
 
 	@Override
@@ -63,9 +64,15 @@ public class ConfigurationPropertiesReportEndpoint extends
 	}
 
 	@Override
+	public Map<String, Object> invoke() {
+		Map<String, Object> beans = extract(this.context);
+		return beans;
+	}
+
 	@SuppressWarnings("unchecked")
-	protected Map<String, Object> doInvoke() {
-		Map<String, Object> beans = this.context
+	private Map<String, Object> extract(ApplicationContext context) {
+
+		Map<String, Object> beans = context
 				.getBeansWithAnnotation(ConfigurationProperties.class);
 
 		// Serialize beans into map structure and sanitize values
@@ -73,6 +80,10 @@ public class ConfigurationPropertiesReportEndpoint extends
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			Map<String, Object> value = mapper.convertValue(entry.getValue(), Map.class);
 			beans.put(entry.getKey(), sanitize(value));
+		}
+
+		if (context.getParent() != null) {
+			beans.put("parent", extract(context.getParent()));
 		}
 
 		return beans;

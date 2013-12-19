@@ -20,7 +20,8 @@ import java.util.Map;
 
 import org.jolokia.http.AgentServlet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.endpoint.JolokiaEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
+import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -66,6 +67,9 @@ public class JolokiaAutoConfiguration {
 	private RelaxedPropertyResolver environment;
 
 	@Autowired
+	private ManagementServerProperties management;
+
+	@Autowired
 	public void setEnvironment(Environment environment) {
 		this.environment = new RelaxedPropertyResolver(environment);
 	}
@@ -77,19 +81,17 @@ public class JolokiaAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean()
-	public ServletRegistrationBean jolokiaServletRegistration() {
-		ServletRegistrationBean registrationBean = new ServletRegistrationBean(
-				jolokiaServlet(), this.environment.getProperty("endpoints.jolokia.path",
-						"/jolokia") + "/*");
+	public ServletRegistrationBean jolokiaServletRegistration(AgentServlet servlet) {
+		ServletRegistrationBean registrationBean = new ServletRegistrationBean(servlet,
+				this.management.getContextPath() + jolokiaEndpoint().getPath() + "/*");
 		addInitParameters(registrationBean);
 		return registrationBean;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public JolokiaEndpoint jolokiaEndpoint() {
-		return new JolokiaEndpoint();
+	public JolokiaMvcEndpoint jolokiaEndpoint() {
+		return new JolokiaMvcEndpoint();
 	}
 
 	protected void addInitParameters(ServletRegistrationBean registrationBean) {

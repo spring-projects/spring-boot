@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-
 /**
  * An endpoint that can be used to expose useful information to operations. Usually
  * exposed via Spring MVC but could also be exposed using some other technique.
@@ -30,26 +27,21 @@ import org.springframework.http.MediaType;
 public interface Endpoint<T> {
 
 	/**
-	 * Returns the path of the endpoint. Must start with '/' and should not include
-	 * wildcards.
+	 * The logical ID of the endpoint. Must only contain simple letters, numbers and '_'
+	 * characters (ie a {@literal "\w"} regex).
 	 */
-	String getPath();
+	String getId();
 
 	/**
-	 * Returns if the endpoint is sensitive, i.e. may return data that the average user
+	 * Return if the endpoint is enabled.
+	 */
+	boolean isEnabled();
+
+	/**
+	 * Return if the endpoint is sensitive, i.e. may return data that the average user
 	 * should not see. Mappings can use this as a security hint.
 	 */
 	boolean isSensitive();
-
-	/**
-	 * Returns the {@link MediaType}s that this endpoint produces or {@code null}.
-	 */
-	MediaType[] produces();
-
-	/**
-	 * Returns the {@link HttpMethod}s that this endpoint supports.
-	 */
-	HttpMethod[] methods();
 
 	/**
 	 * Called to invoke the endpoint.

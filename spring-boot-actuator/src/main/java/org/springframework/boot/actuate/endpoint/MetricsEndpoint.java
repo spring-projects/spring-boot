@@ -39,13 +39,13 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * @param metrics the metrics to expose
 	 */
 	public MetricsEndpoint(PublicMetrics metrics) {
-		super("/metrics");
+		super("metrics");
 		Assert.notNull(metrics, "Metrics must not be null");
 		this.metrics = metrics;
 	}
 
 	@Override
-	protected Map<String, Object> doInvoke() {
+	public Map<String, Object> invoke() {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		for (Metric metric : this.metrics.metrics()) {
 			result.put(metric.getName(), metric.getValue());

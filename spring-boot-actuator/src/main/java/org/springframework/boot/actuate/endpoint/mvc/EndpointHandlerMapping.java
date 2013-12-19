@@ -16,36 +16,42 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.ArrayList;
+import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getPath()}.
+ * {@link HandlerMapping} to map {@link Endpoint}s to URLs via {@link Endpoint#getId()}.
+ * The semantics of {@code @RequestMapping} should be identical to a normal
+ * {@code @Controller}, but the endpoints should not be annotated as {@code @Controller}
+ * (otherwise they will be mapped by the normal MVC mechanisms).
+ * 
+ * <p>
+ * One of the aims of the mapping is to support endpoints that work as HTTP endpoints but
+ * can still provide useful service interfaces when there is no HTTP server (and no Spring
+ * MVC on the classpath). Note that any endpoints having method signaturess will break in
+ * a non-servlet environment.
  * 
  * @author Phillip Webb
  * @author Christian Dupuis
- * @see EndpointHandlerAdapter
+ * @author Dave Syer
+ * 
  */
-public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
-		InitializingBean, ApplicationContextAware {
+public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
+		ApplicationContextAware {
 
-	private List<Endpoint<?>> endpoints;
+	private Set<? extends MvcEndpoint> endpoints;
 
 	private String prefix = "";
 
@@ -54,52 +60,74 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 	/**
 	 * Create a new {@link EndpointHandlerMapping} instance. All {@link Endpoint}s will be
 	 * detected from the {@link ApplicationContext}.
+	 * @param endpoints
 	 */
-	public EndpointHandlerMapping() {
-		setOrder(HIGHEST_PRECEDENCE);
+	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
+		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
+		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
+		setOrder(LOWEST_PRECEDENCE - 2);
+	}
+
+	@Override
+	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+		if (!this.disabled) {
+			for (MvcEndpoint endpoint : this.endpoints) {
+				detectHandlerMethods(endpoint);
+			}
+		}
 	}
 
 	/**
-	 * Create a new {@link EndpointHandlerMapping} with the specified endpoints.
-	 * @param endpoints the endpoints
+	 * Since all handler beans are passed into the constructor there is no need to detect
+	 * anything here
 	 */
-	public EndpointHandlerMapping(Collection<? extends Endpoint<?>> endpoints) {
-		Assert.notNull(endpoints, "Endpoints must not be null");
-		this.endpoints = new ArrayList<Endpoint<?>>(endpoints);
+	@Override
+	protected boolean isHandler(Class<?> beanType) {
+		return false;
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (this.endpoints == null) {
-			this.endpoints = findEndpointBeans();
+	protected void registerHandlerMethod(Object handler, Method method,
+			RequestMappingInfo mapping) {
+
+		if (mapping == null) {
+			return;
 		}
-		if (!this.disabled) {
-			for (Endpoint<?> endpoint : this.endpoints) {
-				registerHandler(this.prefix + endpoint.getPath(), endpoint);
+
+		Set<String> defaultPatterns = mapping.getPatternsCondition().getPatterns();
+		String[] patterns = new String[defaultPatterns.isEmpty() ? 1 : defaultPatterns
+				.size()];
+
+		String path = "";
+		Object bean = handler;
+		if (bean instanceof String) {
+			bean = getApplicationContext().getBean((String) handler);
+		}
+		if (bean instanceof MvcEndpoint) {
+			MvcEndpoint endpoint = (MvcEndpoint) bean;
+			path = endpoint.getPath();
+		}
+
+		int i = 0;
+		String prefix = StringUtils.hasText(this.prefix) ? this.prefix + path : path;
+		if (defaultPatterns.isEmpty()) {
+			patterns[0] = prefix;
+		}
+		else {
+			for (String pattern : defaultPatterns) {
+				patterns[i] = prefix + pattern;
+				i++;
 			}
 		}
-	}
+		PatternsRequestCondition patternsInfo = new PatternsRequestCondition(patterns);
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List<Endpoint<?>> findEndpointBeans() {
-		return new ArrayList(BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				getApplicationContext(), Endpoint.class).values());
-	}
+		RequestMappingInfo modified = new RequestMappingInfo(patternsInfo,
+				mapping.getMethodsCondition(), mapping.getParamsCondition(),
+				mapping.getHeadersCondition(), mapping.getConsumesCondition(),
+				mapping.getProducesCondition(), mapping.getCustomCondition());
 
-	@Override
-	protected Object lookupHandler(String urlPath, HttpServletRequest request)
-			throws Exception {
-		Object handler = super.lookupHandler(urlPath, request);
-		if (handler != null) {
-			Object endpoint = (handler instanceof HandlerExecutionChain ? ((HandlerExecutionChain) handler)
-					.getHandler() : handler);
-			HttpMethod method = HttpMethod.valueOf(request.getMethod());
-			if (endpoint instanceof Endpoint
-					&& supportsMethod(((Endpoint<?>) endpoint).methods(), method)) {
-				return endpoint;
-			}
-		}
-		return null;
+		super.registerHandlerMethod(handler, method, modified);
 	}
 
 	/**
@@ -128,19 +156,7 @@ public class EndpointHandlerMapping extends AbstractUrlHandlerMapping implements
 	/**
 	 * Return the endpoints
 	 */
-	public List<Endpoint<?>> getEndpoints() {
-		return Collections.unmodifiableList(this.endpoints);
-	}
-
-	private boolean supportsMethod(HttpMethod[] supportedMethods,
-			HttpMethod requestedMethod) {
-		Assert.notNull(supportedMethods, "SupportMethods must not be null");
-		Assert.notNull(supportedMethods, "RequestedMethod must not be null");
-		for (HttpMethod supportedMethod : supportedMethods) {
-			if (supportedMethod.equals(requestedMethod)) {
-				return true;
-			}
-		}
-		return false;
+	public Set<? extends MvcEndpoint> getEndpoints() {
+		return this.endpoints;
 	}
 }

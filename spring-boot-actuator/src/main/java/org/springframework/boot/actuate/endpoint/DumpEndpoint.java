@@ -35,11 +35,11 @@ public class DumpEndpoint extends AbstractEndpoint<List<ThreadInfo>> {
 	 * Create a new {@link DumpEndpoint} instance.
 	 */
 	public DumpEndpoint() {
-		super("/dump");
+		super("dump");
 	}
 
 	@Override
-	protected List<ThreadInfo> doInvoke() {
+	public List<ThreadInfo> invoke() {
 		return Arrays.asList(ManagementFactory.getThreadMXBean().dumpAllThreads(true,
 				true));
 	}

@@ -16,7 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.Filter;
 
@@ -26,15 +27,16 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.ManagementErrorEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -42,11 +44,10 @@ import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
@@ -56,6 +57,9 @@ import org.springframework.web.servlet.HandlerMapping;
  */
 @Configuration
 public class EndpointWebMvcChildContextConfiguration {
+
+	@Value("${error.path:/error}")
+	private String errorPath = "/error";
 
 	@Configuration
 	protected static class ServerCustomization implements
@@ -100,13 +104,22 @@ public class EndpointWebMvcChildContextConfiguration {
 	}
 
 	@Bean
-	public HandlerMapping handlerMapping() {
-		return new EndpointHandlerMapping();
+	public HandlerAdapter handlerAdapter(HttpMessageConverters converters) {
+		// TODO: maybe this needs more configuration for non-basic response use cases
+		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
+		adapter.setMessageConverters(converters.getConverters());
+		return adapter;
 	}
 
 	@Bean
-	public HandlerAdapter handlerAdapter() {
-		return new EndpointHandlerAdapter();
+	public HandlerMapping handlerMapping(MvcEndpoints endpoints,
+			ListableBeanFactory beanFactory) {
+		Set<MvcEndpoint> set = new HashSet<MvcEndpoint>(endpoints.getEndpoints());
+		set.addAll(beanFactory.getBeansOfType(MvcEndpoint.class).values());
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(set);
+		// In a child context we definitely want to see the parent endpoints
+		mapping.setDetectHandlerMethodsInAncestorContexts(true);
+		return mapping;
 	}
 
 	/*
@@ -116,15 +129,8 @@ public class EndpointWebMvcChildContextConfiguration {
 	 * endpoints.
 	 */
 	@Bean
-	public Endpoint<Map<String, Object>> errorEndpoint(final ErrorController controller) {
-		return new AbstractEndpoint<Map<String, Object>>("/error", false, true) {
-			@Override
-			protected Map<String, Object> doInvoke() {
-				RequestAttributes attributes = RequestContextHolder
-						.currentRequestAttributes();
-				return controller.extract(attributes, false);
-			}
-		};
+	public ManagementErrorEndpoint errorEndpoint(final ErrorController controller) {
+		return new ManagementErrorEndpoint(this.errorPath, controller);
 	}
 
 	@Configuration

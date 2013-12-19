@@ -16,13 +16,16 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.List;
+
 import org.springframework.beans.BeansException;
+import org.springframework.boot.config.JsonParser;
+import org.springframework.boot.config.JsonParserFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 
 /**
  * Exposes JSON view of Spring beans. If the {@link Environment} contains a key setting
@@ -33,13 +36,15 @@ import org.springframework.http.MediaType;
  * @author Dave Syer
  */
 @ConfigurationProperties(name = "endpoints.beans", ignoreUnknownFields = false)
-public class BeansEndpoint extends AbstractEndpoint<String> implements
+public class BeansEndpoint extends AbstractEndpoint<List<Object>> implements
 		ApplicationContextAware {
 
 	private LiveBeansView liveBeansView = new LiveBeansView();
 
+	private JsonParser parser = JsonParserFactory.getJsonParser();
+
 	public BeansEndpoint() {
-		super("/beans");
+		super("beans");
 	}
 
 	@Override
@@ -51,12 +56,7 @@ public class BeansEndpoint extends AbstractEndpoint<String> implements
 	}
 
 	@Override
-	public MediaType[] produces() {
-		return new MediaType[] { MediaType.APPLICATION_JSON };
-	}
-
-	@Override
-	protected String doInvoke() {
-		return this.liveBeansView.getSnapshotAsJson();
+	public List<Object> invoke() {
+		return this.parser.parseList(this.liveBeansView.getSnapshotAsJson());
 	}
 }

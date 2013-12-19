@@ -29,18 +29,24 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerAdapter;
+import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
+import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
+import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -85,19 +91,11 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping();
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(mvcEndpoints()
+				.getEndpoints());
 		mapping.setDisabled(ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME);
 		mapping.setPrefix(this.managementServerProperties.getContextPath());
 		return mapping;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public EndpointHandlerAdapter endpointHandlerAdapter(
-			final HttpMessageConverters messageConverters) {
-		EndpointHandlerAdapter adapter = new EndpointHandlerAdapter();
-		adapter.setMessageConverters(messageConverters.getConverters());
-		return adapter;
 	}
 
 	@Override
@@ -128,6 +126,30 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				filterChain.doFilter(request, response);
 			}
 		};
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public MvcEndpoints mvcEndpoints() {
+		return new MvcEndpoints();
+	}
+
+	@Bean
+	@ConditionalOnBean(EnvironmentEndpoint.class)
+	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
+		return new EnvironmentMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnBean(MetricsEndpoint.class)
+	public MetricsMvcEndpoint metricsMvcEndpoint(MetricsEndpoint delegate) {
+		return new MetricsMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnBean(ShutdownEndpoint.class)
+	public ShutdownMvcEndpoint shutdownMvcEndpoint(ShutdownEndpoint delegate) {
+		return new ShutdownMvcEndpoint(delegate);
 	}
 
 	private void createChildManagementContext() {

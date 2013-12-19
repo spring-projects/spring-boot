@@ -48,11 +48,11 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	private AutoConfigurationReport autoConfigurationReport;
 
 	public AutoConfigurationReportEndpoint() {
-		super("/autoconfig");
+		super("autoconfig");
 	}
 
 	@Override
-	protected Report doInvoke() {
+	public Report invoke() {
 		return new Report(this.autoConfigurationReport);
 	}
 
