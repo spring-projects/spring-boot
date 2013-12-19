@@ -77,7 +77,7 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 	}
 
 	public void setDomainName(String domainName) {
-		Assert.notNull(domainName, "DomainName should not be null");
+		Assert.notNull(domainName, "DomainName must not be null");
 		this.domainName = domainName;
 	}
 
@@ -96,7 +96,7 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 
 	@SuppressWarnings({ "rawtypes" })
 	protected void locateAndRegisterEndpoints(MBeanExporter mbeanExporter) {
-		Assert.notNull(mbeanExporter, "MBeanExporter should not be null");
+		Assert.notNull(mbeanExporter, "MBeanExporter must not be null");
 		Map<String, Endpoint> endpoints = this.applicationContext
 				.getBeansOfType(Endpoint.class);
 		for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
@@ -114,11 +114,11 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 			mbeanExporter.registerManagedResource(new EndpointMBean(endpoint),
 					getObjectName(beanKey, endpoint));
 		}
-		catch (MBeanExportException e) {
-			logger.error("Could not register MBean for endpoint [" + beanKey + "]", e);
+		catch (MBeanExportException ex) {
+			logger.error("Could not register MBean for endpoint [" + beanKey + "]", ex);
 		}
-		catch (MalformedObjectNameException e) {
-			logger.error("Could not register MBean for endpoint [" + beanKey + "]", e);
+		catch (MalformedObjectNameException ex) {
+			logger.error("Could not register MBean for endpoint [" + beanKey + "]", ex);
 		}
 	}
 

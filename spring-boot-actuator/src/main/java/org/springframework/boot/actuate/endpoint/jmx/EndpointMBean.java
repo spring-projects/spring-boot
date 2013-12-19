@@ -59,12 +59,15 @@ public class EndpointMBean {
 		if (result == null) {
 			return null;
 		}
-		else if (result instanceof String) {
+
+		if (result instanceof String) {
 			return result;
 		}
-		else if (result.getClass().isArray() || result instanceof List) {
+
+		if (result.getClass().isArray() || result instanceof List) {
 			return this.mapper.convertValue(result, List.class);
 		}
+
 		return this.mapper.convertValue(result, Map.class);
 	}
 }
