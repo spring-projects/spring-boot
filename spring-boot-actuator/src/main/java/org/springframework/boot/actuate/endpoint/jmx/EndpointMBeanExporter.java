@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -95,11 +96,18 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 	protected void registerEndpoint(String beanName, Endpoint<?> endpoint,
 			MBeanExporter mbeanExporter) {
 		try {
-			mbeanExporter.registerManagedResource(new EndpointMBean(beanName, endpoint));
+			mbeanExporter.registerManagedResource(getEndpointMBean(beanName, endpoint));
 		}
 		catch (MBeanExportException ex) {
 			logger.error("Could not register MBean for endpoint [" + beanName + "]", ex);
 		}
+	}
+
+	protected EndpointMBean getEndpointMBean(String beanName, Endpoint<?> endpoint) {
+		if (endpoint instanceof ShutdownEndpoint) {
+			return new ShutdownEndpointMBean(beanName, endpoint);
+		}
+		return new DataEndpointMBean(beanName, endpoint);
 	}
 
 	// SmartLifeCycle implementation

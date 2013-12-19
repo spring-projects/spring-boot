@@ -70,8 +70,8 @@ public class EndpointMBeanExporterTests {
 		MBeanInfo mbeanInfo = mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint1", this.context));
 		assertNotNull(mbeanInfo);
-		assertEquals(4, mbeanInfo.getOperations().length);
-		assertEquals(3, mbeanInfo.getAttributes().length);
+		assertEquals(5, mbeanInfo.getOperations().length);
+		assertEquals(5, mbeanInfo.getAttributes().length);
 	}
 
 	@Test
@@ -127,7 +127,7 @@ public class EndpointMBeanExporterTests {
 
 	private ObjectName getObjectName(String beanKey, ApplicationContext applicationContext)
 			throws MalformedObjectNameException {
-		return new EndpointMBean(beanKey,
+		return new DataEndpointMBean(beanKey,
 				(Endpoint<?>) applicationContext.getBean(beanKey)).getObjectName();
 	}
 

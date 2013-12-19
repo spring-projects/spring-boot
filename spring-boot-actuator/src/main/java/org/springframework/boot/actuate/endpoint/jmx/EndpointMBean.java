@@ -69,9 +69,16 @@ public class EndpointMBean implements SelfNaming {
 		return this.endpoint.isSensitive();
 	}
 
-	@ManagedAttribute(description = "Invoke the underlying endpoint")
-	public Object invoke() {
-		Object result = this.endpoint.invoke();
+	@Override
+	public ObjectName getObjectName() throws MalformedObjectNameException {
+		return this.metadataNamingStrategy.getObjectName(this, this.beanName);
+	}
+
+	public Endpoint<?> getEndpoint() {
+		return this.endpoint;
+	}
+
+	protected Object convert(Object result) {
 		if (result == null) {
 			return null;
 		}
@@ -87,8 +94,4 @@ public class EndpointMBean implements SelfNaming {
 		return this.mapper.convertValue(result, Map.class);
 	}
 
-	@Override
-	public ObjectName getObjectName() throws MalformedObjectNameException {
-		return this.metadataNamingStrategy.getObjectName(this, this.beanName);
-	}
 }
