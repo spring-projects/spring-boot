@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {
 
 	public BeansEndpointTests() {
-		super(Config.class, BeansEndpoint.class, "/beans", true, "endpoints.beans");
+		super(Config.class, BeansEndpoint.class, "beans", true, "endpoints.beans");
 	}
 
 	@Test

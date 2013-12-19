@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoint> {
 
 	public ShutdownEndpointTests() {
-		super(Config.class, ShutdownEndpoint.class, "/shutdown", true,
+		super(Config.class, ShutdownEndpoint.class, "shutdown", true,
 				"endpoints.shutdown");
 	}
 

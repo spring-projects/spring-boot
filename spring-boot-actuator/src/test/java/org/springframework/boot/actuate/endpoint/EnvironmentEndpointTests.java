@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentEndpoint> {
 
 	public EnvironmentEndpointTests() {
-		super(Config.class, EnvironmentEndpoint.class, "/env", true, "endpoints.env");
+		super(Config.class, EnvironmentEndpoint.class, "env", true, "endpoints.env");
 	}
 
 	@Test

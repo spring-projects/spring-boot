@@ -29,21 +29,30 @@ import javax.validation.constraints.Pattern;
 public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
 	@NotNull
-	@Pattern(regexp = "/[^/]*", message = "Path must start with /")
-	private String path;
+	@Pattern(regexp = "\\w+", message = "ID must only contains letters, numbers and '_'")
+	private String id;
 
 	private boolean sensitive;
 
 	private boolean enabled = true;
 
-	public AbstractEndpoint(String path) {
-		this(path, true, true);
+	public AbstractEndpoint(String id) {
+		this(id, true, true);
 	}
 
-	public AbstractEndpoint(String path, boolean sensitive, boolean enabled) {
-		this.path = path;
+	public AbstractEndpoint(String id, boolean sensitive, boolean enabled) {
+		this.id = id;
 		this.sensitive = sensitive;
 		this.enabled = enabled;
+	}
+
+	@Override
+	public String getId() {
+		return this.id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public boolean isEnabled() {
@@ -52,15 +61,6 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	@Override
-	public String getPath() {
-		return this.path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
 	}
 
 	@Override

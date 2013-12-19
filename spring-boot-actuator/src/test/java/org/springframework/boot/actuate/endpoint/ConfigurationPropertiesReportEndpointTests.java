@@ -33,7 +33,7 @@ public class ConfigurationPropertiesReportEndpointTests extends
 		AbstractEndpointTests<ConfigurationPropertiesReportEndpoint> {
 
 	public ConfigurationPropertiesReportEndpointTests() {
-		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "/configprops",
+		super(Config.class, ConfigurationPropertiesReportEndpoint.class, "configprops",
 				true, "endpoints.configprops");
 	}
 

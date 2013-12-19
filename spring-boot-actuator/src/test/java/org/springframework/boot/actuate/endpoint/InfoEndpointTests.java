@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 public class InfoEndpointTests extends AbstractEndpointTests<InfoEndpoint> {
 
 	public InfoEndpointTests() {
-		super(Config.class, InfoEndpoint.class, "/info", false, "endpoints.info");
+		super(Config.class, InfoEndpoint.class, "info", false, "endpoints.info");
 	}
 
 	@Test

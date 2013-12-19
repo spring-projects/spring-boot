@@ -42,17 +42,17 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 
 	private final Class<?> type;
 
-	private final String path;
+	private final String id;
 
 	private final boolean sensitive;
 
 	private final String property;
 
-	public AbstractEndpointTests(Class<?> configClass, Class<?> type, String path,
+	public AbstractEndpointTests(Class<?> configClass, Class<?> type, String id,
 			boolean sensitive, String property) {
 		this.configClass = configClass;
 		this.type = type;
-		this.path = path;
+		this.id = id;
 		this.sensitive = sensitive;
 		this.property = property;
 	}
@@ -72,8 +72,8 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	}
 
 	@Test
-	public void getPath() throws Exception {
-		assertThat(getEndpointBean().getPath(), equalTo(this.path));
+	public void getId() throws Exception {
+		assertThat(getEndpointBean().getId(), equalTo(this.id));
 	}
 
 	@Test
@@ -82,12 +82,12 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	}
 
 	@Test
-	public void pathOverride() throws Exception {
+	public void idOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(this.context, this.property + ".path:/mypath");
+		TestUtils.addEnviroment(this.context, this.property + ".id:myid");
 		this.context.register(this.configClass);
 		this.context.refresh();
-		assertThat(getEndpointBean().getPath(), equalTo("/mypath"));
+		assertThat(getEndpointBean().getId(), equalTo("myid"));
 	}
 
 	@Test

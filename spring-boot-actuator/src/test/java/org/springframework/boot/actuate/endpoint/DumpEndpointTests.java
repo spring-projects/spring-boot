@@ -20,7 +20,6 @@ import java.lang.management.ThreadInfo;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.endpoint.DumpEndpoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +35,7 @@ import static org.junit.Assert.assertThat;
 public class DumpEndpointTests extends AbstractEndpointTests<DumpEndpoint> {
 
 	public DumpEndpointTests() {
-		super(Config.class, DumpEndpoint.class, "/dump", true, "endpoints.dump");
+		super(Config.class, DumpEndpoint.class, "dump", true, "endpoints.dump");
 	}
 
 	@Test

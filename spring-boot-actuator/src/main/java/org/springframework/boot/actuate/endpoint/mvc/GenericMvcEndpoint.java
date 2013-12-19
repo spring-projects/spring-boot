@@ -40,7 +40,7 @@ public class GenericMvcEndpoint implements MvcEndpoint {
 
 	@Override
 	public String getPath() {
-		return this.delegate.getPath();
+		return "/" + this.delegate.getId();
 	}
 
 	@Override
