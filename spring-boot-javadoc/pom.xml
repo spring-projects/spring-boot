@@ -9,7 +9,7 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-javadoc</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -49,13 +49,34 @@
 							<execution>
 								<id>aggregate-javadocs</id>
 								<goals>
-									<goal>jar</goal>
+									<goal>aggregate-jar</goal>
 								</goals>
 								<configuration>
 									<includeDependencySources>true</includeDependencySources>
 									<dependencySourceIncludes>
 										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
 									</dependencySourceIncludes>
+									<attach>false</attach>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadoc-zip</id>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<artifacts>
+										<artifact>
+											<file>${project.build.directory}/${project.name}-${project.version}-javadoc.jar</file>
+											<type>zip</type>
+										</artifact>
+									</artifacts>
 								</configuration>
 							</execution>
 						</executions>
