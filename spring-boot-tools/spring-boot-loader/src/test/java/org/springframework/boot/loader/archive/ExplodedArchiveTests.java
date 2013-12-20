@@ -122,7 +122,7 @@ public class ExplodedArchiveTests {
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
 		assertThat(nestedEntries.size(), equalTo(1));
 		assertThat(nested.getUrl().toString(),
-				equalTo("file:" + this.rootFolder.getPath() + File.separator + "d/"));
+				equalTo("file:" + this.rootFolder.toURI().getPath() + "d/"));
 	}
 
 	@Test
