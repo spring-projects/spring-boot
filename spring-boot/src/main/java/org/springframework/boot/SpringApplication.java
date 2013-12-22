@@ -155,8 +155,6 @@ public class SpringApplication {
 
 	private Set<Object> sources = new LinkedHashSet<Object>();
 
-	private Set<Object> initialSources = new LinkedHashSet<Object>();
-
 	private Class<?> mainApplicationClass;
 
 	private boolean showBanner = true;
@@ -211,7 +209,7 @@ public class SpringApplication {
 
 	private void initialize(Object[] sources) {
 		if (sources != null && sources.length > 0) {
-			this.initialSources.addAll(Arrays.asList(sources));
+			this.sources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
 		this.initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
@@ -301,7 +299,7 @@ public class SpringApplication {
 
 			// Call all remaining initializers
 			callEnvironmentAwareSpringApplicationInitializers(args, environment);
-			Set<Object> sources = assembleSources();
+			Set<Object> sources = getSources();
 			Assert.notEmpty(sources, "Sources must not be empty");
 			if (this.showBanner) {
 				printBanner();
@@ -364,13 +362,6 @@ public class SpringApplication {
 						args, exception);
 			}
 		}
-	}
-
-	private Set<Object> assembleSources() {
-		LinkedHashSet<Object> sources = new LinkedHashSet<Object>();
-		sources.addAll(this.sources);
-		sources.addAll(this.initialSources);
-		return sources;
 	}
 
 	private void callNonEnvironmentAwareSpringApplicationInitializers(String[] args) {
@@ -727,7 +718,7 @@ public class SpringApplication {
 	 */
 	public void setSources(Set<Object> sources) {
 		Assert.notNull(sources, "Sources must not be null");
-		this.sources = new LinkedHashSet<Object>(sources);
+		this.sources.addAll(sources);
 	}
 
 	/**

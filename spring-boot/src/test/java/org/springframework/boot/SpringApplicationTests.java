@@ -52,7 +52,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -322,9 +321,7 @@ public class SpringApplicationTests {
 		application.setWebEnvironment(false);
 		application.setUseMockLoader(true);
 		application.run();
-		@SuppressWarnings("unchecked")
-		Set<Object> initialSources = (Set<Object>) ReflectionTestUtils.getField(
-				application, "initialSources");
+		Set<Object> initialSources = application.getSources();
 		assertThat(initialSources.toArray(), equalTo(sources));
 	}
 
