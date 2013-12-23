@@ -14,6 +14,7 @@
 		<main.basedir>${basedir}/..</main.basedir>
 		<start-class>org.springframework.boot.cli.SpringCli</start-class>
 		<spring.profiles.active>default</spring.profiles.active>
+		<jline.version>2.11</jline.version>
 	</properties>
 	<profiles>
 		<profile>
@@ -49,6 +50,11 @@
 	</dependencyManagement>
 	<dependencies>
 		<!-- Compile -->
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>${jline.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
