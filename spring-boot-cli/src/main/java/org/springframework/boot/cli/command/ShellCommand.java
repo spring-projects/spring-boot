@@ -44,6 +44,8 @@ public class ShellCommand extends AbstractCommand {
 		final PrintStream sysout = System.out;
 		final PrintStream syserr = System.err;
 
+		printBanner();
+
 		System.setIn(console.getInput());
 		PrintStream out = new PrintStream(new OutputStream() {
 			@Override
@@ -159,6 +161,13 @@ public class ShellCommand extends AbstractCommand {
 			console.shutdown();
 
 		}
+	}
+
+	private void printBanner() {
+		String version = ShellCommand.class.getPackage().getImplementationVersion();
+		version = (version == null ? "" : " (v" + version + ")");
+		System.out.println("Spring Boot CLI" + version);
+		System.out.println("Hit TAB to complete. Type 'help' and hit RETURN for help.");
 	}
 
 	public void pushPrompt(String prompt) {
