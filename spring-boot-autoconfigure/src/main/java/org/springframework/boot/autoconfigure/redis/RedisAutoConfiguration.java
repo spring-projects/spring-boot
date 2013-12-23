@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration.RedisProperties.Pool;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -100,7 +99,9 @@ public class RedisAutoConfiguration {
 
 		private PoolConfig poolConfig() {
 			PoolConfig pool = new PoolConfig();
-			Pool props = this.config.getPool();
+			// FQCN to avoid bizarre compiler error on command line build (!?)
+			org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration.RedisProperties.Pool props = this.config
+					.getPool();
 			if (props != null) {
 				pool.setMaxActive(props.getMaxActive());
 				pool.setMaxIdle(props.getMaxIdle());
