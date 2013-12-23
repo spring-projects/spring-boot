@@ -843,3 +843,47 @@ To do the same thing with properties files you can use
 `application-${profile}.properties` to specify profile-specific
 values.
 
+## Build An Executable Archive with Ant
+
+To build with Ant you need to grab dependencies and compile and then
+create a JAR or WAR archive as normal.  To make it executable:
+
+1. Use the appropriate launcher as a `Main-Class`,
+e.g. `org.springframework.boot.loader.JarLauncher` for a JAR file, and
+specify the other stuff it needs as manifest entries, principally a
+`Start-Class`.
+
+2. Add the runtime dependencies in a nested "lib" directory (for a
+JAR) and the "provided" (embedded container) dependencies in a nested
+"lib-provided" directory. Remember *not* to compress the entries in
+the archive.
+
+3. Add the `spring-boot-loader` classes at the root of the archive (so
+the `Main-Class` is available).
+
+Example
+
+	<target name="build" depends="compile">
+		<copy todir="target/classes/lib">
+			<fileset dir="lib/runtime" />
+		</copy>
+		<jar destfile="target/spring-boot-sample-actuator-${spring-boot.version}.jar" compress="false">
+			<fileset dir="target/classes" />
+			<fileset dir="src/main/resources" />
+			<zipfileset src="lib/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
+				<attribute name="Start-Class" value="${start-class}" />
+			</manifest>
+		</jar>
+	</target>
+
+The [Actuator Sample]() has a `build.xml` that should work if you run
+it with
+
+    $ ant -lib <path_to>/ivy-2.2.jar
+
+after which you can run the application with
+
+    $ java -jar target/*.jar
+ 
