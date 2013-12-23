@@ -51,7 +51,6 @@ public class SimpleHealthIndicatorTests {
 	@Test
 	public void database() {
 		this.indicator.setDataSource(this.dataSource);
-		this.indicator.setQuery("SELECT count(*) FROM INFORMATION_SCHEMA.SYSTEM_TABLES");
 		Map<String, Object> health = this.indicator.health();
 		assertNotNull(health.get("database"));
 		assertNotNull(health.get("hello"));

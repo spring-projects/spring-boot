@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,32 +38,44 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 
 	private JdbcTemplate jdbcTemplate;
 
-	private String query = "SELECT 'Hello'";
+	private static Map<String, String> queries = new HashMap<String, String>();
+
+	static {
+		queries.put("HSQL Database Engine",
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS");
+		queries.put("Oracle", "SELECT 'Hello' from DUAL");
+		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
+	}
+
+	private static String DEFAULT_QUERY = "SELECT 'Hello'";
+
+	private String query = null;
 
 	@Override
 	public Map<String, Object> health() {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put("status", "ok");
+		String product = "unknown";
 		if (this.dataSource != null) {
 			try {
-				String product = this.jdbcTemplate
-						.execute(new ConnectionCallback<String>() {
-							@Override
-							public String doInConnection(Connection connection)
-									throws SQLException, DataAccessException {
-								return connection.getMetaData().getDatabaseProductName();
-							}
-						});
+				product = this.jdbcTemplate.execute(new ConnectionCallback<String>() {
+					@Override
+					public String doInConnection(Connection connection)
+							throws SQLException, DataAccessException {
+						return connection.getMetaData().getDatabaseProductName();
+					}
+				});
 				map.put("database", product);
 			}
 			catch (DataAccessException ex) {
 				map.put("status", "error");
 				map.put("error", ex.getClass().getName() + ": " + ex.getMessage());
 			}
-			if (StringUtils.hasText(this.query)) {
+			String query = detectQuery(product);
+			if (StringUtils.hasText(query)) {
 				try {
 					map.put("hello",
-							this.jdbcTemplate.queryForObject(this.query, String.class));
+							this.jdbcTemplate.queryForObject(query, String.class));
 				}
 				catch (Exception ex) {
 					map.put("status", "error");
@@ -71,6 +84,17 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 			}
 		}
 		return map;
+	}
+
+	protected String detectQuery(String product) {
+		String query = this.query;
+		if (!StringUtils.hasText(query)) {
+			query = queries.get(product);
+		}
+		if (!StringUtils.hasText(query)) {
+			query = DEFAULT_QUERY;
+		}
+		return query;
 	}
 
 	public void setDataSource(DataSource dataSource) {
