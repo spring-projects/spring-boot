@@ -18,17 +18,23 @@ package org.springframework.boot.autoconfigure.redis;
 
 import java.net.UnknownHostException;
 
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration.RedisProperties.Pool;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.PoolConfig;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.DefaultLettucePool;
 import org.springframework.data.redis.connection.lettuce.LettuceConnection;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePool;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -43,14 +49,14 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 public class RedisAutoConfiguration {
 
 	@Configuration
-	@EnableConfigurationProperties(RedisProperties.class)
-	protected static class RedisConfiguration {
+	@ConditionalOnMissingClass(name = "org.apache.commons.pool.impl.GenericObjectPool")
+	protected static class RedisConnectionConfiguration {
 
 		@Autowired
 		private RedisProperties config;
 
 		@Bean
-		@ConditionalOnMissingBean(RedisConnectionFactory.class)
+		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
 			LettuceConnectionFactory factory = new LettuceConnectionFactory(
 					this.config.getHost(), this.config.getPort());
@@ -59,6 +65,58 @@ public class RedisAutoConfiguration {
 			}
 			return factory;
 		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(GenericObjectPool.class)
+	protected static class RedisPooledConnectionConfiguration {
+
+		@Autowired
+		private RedisProperties config;
+
+		@Bean
+		@ConditionalOnMissingBean
+		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
+			if (this.config.getPool() != null) {
+				LettuceConnectionFactory factory = new LettuceConnectionFactory(
+						lettucePool());
+				return factory;
+			}
+			LettuceConnectionFactory factory = new LettuceConnectionFactory(
+					this.config.getHost(), this.config.getPort());
+			if (this.config.getPassword() != null) {
+				factory.setPassword(this.config.getPassword());
+			}
+			return factory;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public LettucePool lettucePool() {
+			return new DefaultLettucePool(this.config.getHost(), this.config.getPort(),
+					poolConfig());
+		}
+
+		private PoolConfig poolConfig() {
+			PoolConfig pool = new PoolConfig();
+			Pool props = this.config.getPool();
+			if (props != null) {
+				pool.setMaxActive(props.getMaxActive());
+				pool.setMaxIdle(props.getMaxIdle());
+				pool.setMinIdle(props.getMinIdle());
+				pool.setMaxWait(props.getMaxWait());
+			}
+			return pool;
+		}
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(RedisProperties.class)
+	protected static class RedisConfiguration {
+
+		@Autowired
+		private RedisProperties config;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisTemplate")
@@ -91,6 +149,8 @@ public class RedisAutoConfiguration {
 
 		private int port = 6379;
 
+		private Pool pool;
+
 		public String getHost() {
 			return this.host;
 		}
@@ -113,6 +173,53 @@ public class RedisAutoConfiguration {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+		public Pool getPool() {
+			return this.pool;
+		}
+
+		public void setPool(Pool pool) {
+			this.pool = pool;
+		}
+
+		public static class Pool {
+			private int maxIdle = 8;
+			private int minIdle = 0;
+			private int maxActive = 8;
+			private int maxWait = -1;
+
+			public int getMaxIdle() {
+				return this.maxIdle;
+			}
+
+			public void setMaxIdle(int maxIdle) {
+				this.maxIdle = maxIdle;
+			}
+
+			public int getMinIdle() {
+				return this.minIdle;
+			}
+
+			public void setMinIdle(int minIdle) {
+				this.minIdle = minIdle;
+			}
+
+			public int getMaxActive() {
+				return this.maxActive;
+			}
+
+			public void setMaxActive(int maxActive) {
+				this.maxActive = maxActive;
+			}
+
+			public int getMaxWait() {
+				return this.maxWait;
+			}
+
+			public void setMaxWait(int maxWait) {
+				this.maxWait = maxWait;
+			}
 		}
 
 	}
