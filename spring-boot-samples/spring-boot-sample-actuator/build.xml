@@ -1,0 +1,48 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="spring-boot-sample-actuator" default="build">
+
+	<description>
+		Sample ANT build script for a Spring Boot executable JAR project. Uses ivy for dependency management so run with
+		'$ ant -lib ivy-2.2.jar' (substitute the location of your actual ivy jar). Run with '$ java -jar target/*.jar'. 
+	</description>
+
+	<property name="spring-boot.version" value="0.5.0.BUILD-SNAPSHOT" />
+	<property name="start-class" value="org.springframework.boot.sample.actuator.SampleActuatorApplication" />
+
+	<target name="resolve" description="--> retrieve dependencies with ivy">
+		<ivy:retrieve pattern="lib/[conf]/[artifact]-[type]-[revision].[ext]" />
+	</target>
+
+	<target name="classpaths" depends="resolve">
+		<path id="compile.classpath">
+			<fileset dir="lib/compile" includes="*.jar" />
+		</path>
+	</target>
+
+	<target name="init" depends="classpaths">
+		<mkdir dir="target/classes" />
+	</target>
+
+	<target name="compile" depends="init" description="compile">
+		<javac srcdir="src/main/java" destdir="target/classes" classpathref="compile.classpath" />
+	</target>
+
+	<target name="clean" description="cleans all class files">
+		<delete dir="target/classes" />
+	</target>
+
+	<target name="build" depends="compile">
+		<copy todir="target/classes/lib">
+			<fileset dir="lib/runtime" />
+		</copy>
+		<jar destfile="target/spring-boot-sample-actuator-${spring-boot.version}.jar" compress="false">
+			<fileset dir="target/classes" />
+			<fileset dir="src/main/resources" />
+			<zipfileset src="lib/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
+				<attribute name="Start-Class" value="${start-class}" />
+			</manifest>
+		</jar>
+	</target>
+
+</project>

@@ -10,6 +10,7 @@
 .settings
 bin
 build
+lib/
 target
 .springBeans
 dependency-reduced-pom.xml
