@@ -50,6 +50,8 @@ public class SpringCli {
 
 	private List<Command> commands;
 
+	private String displayName = CLI_APP + " ";
+
 	/**
 	 * Create a new {@link SpringCli} implementation with the default set of commands.
 	 */
@@ -118,6 +120,16 @@ public class SpringCli {
 	}
 
 	/**
+	 * The name of this tool when printed by the help command.
+	 * 
+	 * @param displayName the displayName to set
+	 */
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName == null || displayName.length() == 0
+				|| displayName.endsWith(" ") ? displayName : displayName + " ";
+	}
+
+	/**
 	 * Parse the arguments and run a suitable command.
 	 * @param args the arguments
 	 * @throws Exception
@@ -148,7 +160,7 @@ public class SpringCli {
 	}
 
 	protected void showUsage() {
-		Log.infoPrint("usage: " + CLI_APP + " ");
+		Log.infoPrint("usage: " + this.displayName);
 		for (Command command : this.commands) {
 			if (command.isOptionCommand()) {
 				Log.infoPrint("[--" + command.getName() + "] ");
@@ -174,8 +186,8 @@ public class SpringCli {
 				"Print additional status information for the command you are running"));
 		Log.info("");
 		Log.info("");
-		Log.info("See '" + CLI_APP
-				+ " help <command>' for more information on a specific command.");
+		Log.info("See '" + this.displayName
+				+ "help <command>' for more information on a specific command.");
 	}
 
 	protected void errorMessage(String message) {
@@ -248,12 +260,12 @@ public class SpringCli {
 			String commandName = args[0];
 			for (Command command : SpringCli.this.commands) {
 				if (command.getName().equals(commandName)) {
-					Log.info(CLI_APP + " " + command.getName() + " - "
+					Log.info(SpringCli.this.displayName + command.getName() + " - "
 							+ command.getDescription());
 					Log.info("");
 					if (command.getUsageHelp() != null) {
-						Log.info("usage: " + CLI_APP + " " + command.getName() + " "
-								+ command.getUsageHelp());
+						Log.info("usage: " + SpringCli.this.displayName
+								+ command.getName() + " " + command.getUsageHelp());
 						Log.info("");
 					}
 					if (command.getHelp() != null) {
