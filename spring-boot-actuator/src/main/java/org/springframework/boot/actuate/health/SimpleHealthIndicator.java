@@ -16,12 +16,15 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
@@ -42,10 +45,17 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 		map.put("status", "ok");
 		if (this.dataSource != null) {
 			try {
-				map.put("database", this.dataSource.getConnection().getMetaData()
-						.getDatabaseProductName());
+				String product = this.jdbcTemplate
+						.execute(new ConnectionCallback<String>() {
+							@Override
+							public String doInConnection(Connection connection)
+									throws SQLException, DataAccessException {
+								return connection.getMetaData().getDatabaseProductName();
+							}
+						});
+				map.put("database", product);
 			}
-			catch (SQLException ex) {
+			catch (DataAccessException ex) {
 				map.put("status", "error");
 				map.put("error", ex.getClass().getName() + ": " + ex.getMessage());
 			}
