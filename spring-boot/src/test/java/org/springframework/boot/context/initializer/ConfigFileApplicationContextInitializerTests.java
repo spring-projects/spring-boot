@@ -22,6 +22,9 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
@@ -30,6 +33,7 @@ import org.springframework.core.env.StandardEnvironment;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -167,7 +171,88 @@ public class ConfigFileApplicationContextInitializerTests {
 	}
 
 	@Test
+	public void propertySourceAnnotation() throws Exception {
+		SpringApplication application = new SpringApplication(WithPropertySource.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application.run();
+		String property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("fromspecificlocation"));
+		assertNotNull(context.getEnvironment().getPropertySources()
+				.get("classpath:/specificlocation.properties"));
+		context.close();
+	}
+
+	@Test
+	public void propertySourceAnnotationWithName() throws Exception {
+		SpringApplication application = new SpringApplication(
+				WithPropertySourceAndName.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application.run();
+		String property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("fromspecificlocation"));
+		// In this case "foo" should be the specificlocation.properties source, but Spring
+		// will have shifted it to the back of the line.
+		assertNotNull(context.getEnvironment().getPropertySources().get("boot.foo"));
+		context.close();
+	}
+
+	@Test
+	public void propertySourceAnnotationMultipleLocations() throws Exception {
+		SpringApplication application = new SpringApplication(
+				WithPropertySourceMultipleLocations.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application.run();
+		String property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("frommorepropertiesfile"));
+		assertNotNull(context.getEnvironment().getPropertySources()
+				.get("classpath:/specificlocation.properties"));
+		context.close();
+	}
+
+	@Test
+	public void propertySourceAnnotationMultipleLocationsAndName() throws Exception {
+		SpringApplication application = new SpringApplication(
+				WithPropertySourceMultipleLocationsAndName.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application.run();
+		String property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("frommorepropertiesfile"));
+		// foo is there but it is a dead rubber because the individual sources get higher
+		// priority (and are named after the resource locations)
+		assertNotNull(context.getEnvironment().getPropertySources().get("foo"));
+		assertNotNull(context.getEnvironment().getPropertySources()
+				.get("classpath:/specificlocation.properties"));
+		context.close();
+	}
+
+	@Test
 	public void defaultApplicationProperties() throws Exception {
+
+	}
+
+	@Configuration
+	@PropertySource("classpath:/specificlocation.properties")
+	protected static class WithPropertySource {
+
+	}
+
+	@Configuration
+	@PropertySource(value = "classpath:/specificlocation.properties", name = "foo")
+	protected static class WithPropertySourceAndName {
+
+	}
+
+	@Configuration
+	@PropertySource({ "classpath:/specificlocation.properties",
+			"classpath:/moreproperties.properties" })
+	protected static class WithPropertySourceMultipleLocations {
+
+	}
+
+	@Configuration
+	@PropertySource(value = { "classpath:/specificlocation.properties",
+			"classpath:/moreproperties.properties" }, name = "foo")
+	protected static class WithPropertySourceMultipleLocationsAndName {
 
 	}
 

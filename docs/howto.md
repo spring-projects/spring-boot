@@ -740,11 +740,23 @@ without changing the defaults.
 
 ## Change the Location of External Properties of an Application
 
-Properties from different sources are added to the Spring
+By default properties from different sources are added to the Spring
 `Environment` in a defined order, and the precedence for resolution is
 1) commandline, 2) filesystem (current working directory)
-`application.properties`, 3) classpath `application.properties`. To
-modify this you can provide System properties (or environment variables)
+`application.properties`, 3) classpath `application.properties`.
+
+A nice way to augment and modify this is to add `@PropertySource`
+annotations to your application sources. Classes passed to the
+`SpringApplication` static convenience methods, and those added using
+`setSources()` are inspected to see if they have `@PropertySources`
+and if they do those properties are added to the `Environment` early
+enough to be used in all phases of the `ApplicationContext`
+lifecycle. Properties added in this way have precendence over any
+added using the default locations, but have lower priority than system
+properties, environment variables or the command line.
+
+You can also provide System properties (or environment variables) to
+change the default behaviour:
 
 * `config.name` (`CONFIG_NAME`), defaults to `application` as the root
   of the file name
