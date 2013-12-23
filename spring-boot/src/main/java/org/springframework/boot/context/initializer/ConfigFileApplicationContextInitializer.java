@@ -28,6 +28,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.PropertyValues;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationInitializer;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
@@ -38,6 +39,7 @@ import org.springframework.boot.config.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -150,7 +152,7 @@ public class ConfigFileApplicationContextInitializer implements
 				for (AnnotationAttributes propertySource : attributesForRepeatable(
 						new StandardAnnotationMetadata(type), PropertySources.class,
 						org.springframework.context.annotation.PropertySource.class)) {
-					this.propertySourceAnnotations.add(
+					this.propertySourceAnnotations.add(type,
 							propertySource.getStringArray("value"),
 							propertySource.getBoolean("ignoreResourceNotFound"),
 							propertySource.getString("name"));
@@ -255,9 +257,14 @@ public class ConfigFileApplicationContextInitializer implements
 			ResourceLoader resourceLoader, String location, String profile) {
 		location = environment.resolvePlaceholders(location);
 		String suffix = "." + StringUtils.getFilenameExtension(location);
+		Class<?> type = this.propertySourceAnnotations.configuration(location);
 
 		if (StringUtils.hasLength(profile)) {
 			location = location.replace(suffix, "-" + profile + suffix);
+		}
+
+		if (isPropertySourceAnnotationOnExcludedType(profile, type, location)) {
+			return null;
 		}
 
 		List<PropertySourceLoader> loaders = new ArrayList<PropertySourceLoader>();
@@ -287,6 +294,30 @@ public class ConfigFileApplicationContextInitializer implements
 
 		}
 		return propertySource;
+	}
+
+	private boolean isPropertySourceAnnotationOnExcludedType(String profile,
+			Class<?> type, String location) {
+		if (type == null) {
+			// No configuration class to worry about, just a vanilla properties location
+			return false;
+		}
+		if (StringUtils.hasText(profile)
+				&& !this.propertySourceAnnotations.locations().contains(location)) {
+			// We are looking for profile specific properties and this one isn't
+			// explicitly asked for in propertySourceAnnotations
+			return true;
+		}
+		AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(
+				new DefaultListableBeanFactory(), this.environment);
+		int before = reader.getRegistry().getBeanDefinitionCount();
+		reader.register(type);
+		int after = reader.getRegistry().getBeanDefinitionCount();
+		if (after == before) {
+			// The configuration class was @Conditional and excluded
+			return true;
+		}
+		return false;
 	}
 
 	private PropertySource<?> getPropertySource(String name, Resource resource,
@@ -364,23 +395,31 @@ public class ConfigFileApplicationContextInitializer implements
 
 		private Map<String, String> names = new HashMap<String, String>();
 
+		private Map<String, Class<?>> configs = new HashMap<String, Class<?>>();
+
 		private Map<String, Boolean> ignores = new HashMap<String, Boolean>();
 
-		public void add(String[] locations, boolean ignoreResourceNotFound, String name) {
+		public void add(Class<?> source, String[] locations,
+				boolean ignoreResourceNotFound, String name) {
 			this.locations.addAll(Arrays.asList(locations));
 			if (StringUtils.hasText(name)) {
 				for (String location : locations) {
 					this.names.put(location, name);
 				}
-				for (String location : locations) {
-					boolean reallyIgnore = ignoreResourceNotFound;
-					if (this.ignores.containsKey(location)) {
-						// Only if they all ignore this location will it be ignored
-						reallyIgnore &= this.ignores.get(location);
-					}
-					this.ignores.put(location, reallyIgnore);
-				}
 			}
+			for (String location : locations) {
+				boolean reallyIgnore = ignoreResourceNotFound;
+				if (this.ignores.containsKey(location)) {
+					// Only if they all ignore this location will it be ignored
+					reallyIgnore &= this.ignores.get(location);
+				}
+				this.ignores.put(location, reallyIgnore);
+				this.configs.put(location, source);
+			}
+		}
+
+		public Class<?> configuration(String location) {
+			return this.configs.get(location);
 		}
 
 		public boolean ignoreResourceNotFound(String location) {

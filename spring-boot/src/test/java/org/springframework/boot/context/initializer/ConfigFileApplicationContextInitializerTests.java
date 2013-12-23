@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.MapPropertySource;
@@ -34,6 +35,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -197,6 +199,35 @@ public class ConfigFileApplicationContextInitializerTests {
 	}
 
 	@Test
+	public void propertySourceAnnotationInProfile() throws Exception {
+		SpringApplication application = new SpringApplication(
+				WithPropertySourceInProfile.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application
+				.run("--spring.profiles.active=myprofile");
+		String property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("frompropertiesfile"));
+		assertNotNull(context.getEnvironment().getPropertySources()
+				.get("classpath:/enableprofile.properties"));
+		assertNull(context.getEnvironment().getPropertySources()
+				.get("classpath:/enableprofile-myprofile.properties"));
+		context.close();
+	}
+
+	@Test
+	public void propertySourceAnnotationAndProfile() throws Exception {
+		SpringApplication application = new SpringApplication(
+				WithPropertySourceAndProfile.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application.run();
+		String property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo(null));
+		assertNull(context.getEnvironment().getPropertySources()
+				.get("classpath:/enableprofile-myprofile.properties"));
+		context.close();
+	}
+
+	@Test
 	public void propertySourceAnnotationMultipleLocations() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceMultipleLocations.class);
@@ -239,6 +270,19 @@ public class ConfigFileApplicationContextInitializerTests {
 	@Configuration
 	@PropertySource(value = "classpath:/specificlocation.properties", name = "foo")
 	protected static class WithPropertySourceAndName {
+
+	}
+
+	@Configuration
+	@PropertySource("classpath:/enableprofile.properties")
+	protected static class WithPropertySourceInProfile {
+
+	}
+
+	@Configuration
+	@PropertySource("classpath:/enableprofile-myprofile.properties")
+	@Profile("myprofile")
+	protected static class WithPropertySourceAndProfile {
 
 	}
 
