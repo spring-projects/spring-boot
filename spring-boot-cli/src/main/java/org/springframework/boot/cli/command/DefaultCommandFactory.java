@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cli.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -32,12 +33,21 @@ import org.springframework.boot.cli.SpringCli;
 public class DefaultCommandFactory implements CommandFactory {
 
 	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command> asList(
-			new VersionCommand(), new RunCommand(), new CleanCommand(),
-			new TestCommand(), new GrabCommand());
+			new VersionCommand(), new CleanCommand(), new TestCommand(),
+			new GrabCommand());
 
 	@Override
 	public Collection<Command> getCommands(SpringCli cli) {
-		return DEFAULT_COMMANDS;
+		Collection<Command> commands = new ArrayList<Command>(DEFAULT_COMMANDS);
+		RunCommand run = new RunCommand();
+		StopCommand stop = new StopCommand(run);
+		ShellCommand shell = new ShellCommand(cli);
+		PromptCommand prompt = new PromptCommand(shell);
+		commands.add(run);
+		commands.add(stop);
+		commands.add(shell);
+		commands.add(prompt);
+		return commands;
 	}
 
 }

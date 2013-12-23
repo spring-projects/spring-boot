@@ -123,11 +123,12 @@ public class SpringCli {
 	 * @throws Exception
 	 */
 	protected void run(String... args) throws Exception {
-		if (args.length == 0) {
-			throw new NoArgumentsException();
+		String commandName = "shell";
+		if (args.length > 0) {
+			commandName = args[0];
 		}
-		String commandName = args[0];
-		String[] commandArguments = Arrays.copyOfRange(args, 1, args.length);
+		String[] commandArguments = args.length > 1 ? Arrays.copyOfRange(args, 1,
+				args.length) : new String[0];
 		Command command = find(commandName);
 		if (command == null) {
 			throw new NoSuchCommandException(commandName);
