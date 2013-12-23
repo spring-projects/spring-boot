@@ -35,6 +35,8 @@ public class ShellCommand extends AbstractCommand {
 	@Override
 	public void run(String... args) throws Exception {
 
+		this.springCli.setDisplayName("");
+
 		final ConsoleReader console = new ConsoleReader();
 		console.addCompleter(new CommandCompleter(console, this.springCli));
 		console.setHistoryEnabled(true);
