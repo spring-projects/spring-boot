@@ -53,7 +53,7 @@ public class RunCommand extends OptionParsingCommand {
 
 	public void stop() {
 		if (this.getHandler() != null) {
-			((RunOptionHandler) this.getHandler()).runner.stop();
+			((RunOptionHandler) this.getHandler()).stop();
 		}
 	}
 
@@ -78,8 +78,21 @@ public class RunCommand extends OptionParsingCommand {
 			this.quietOption = option(asList("quiet", "q"), "Quiet logging");
 		}
 
+		public synchronized void stop() {
+			if (this.runner != null) {
+				this.runner.stop();
+			}
+			this.runner = null;
+		}
+
 		@Override
-		protected void run(OptionSet options) throws Exception {
+		protected synchronized void run(OptionSet options) throws Exception {
+
+			if (this.runner != null) {
+				throw new RuntimeException(
+						"Already running. Please stop the current application before running another.");
+			}
+
 			FileOptions fileOptions = new FileOptions(options);
 
 			if (options.has(this.editOption)) {
