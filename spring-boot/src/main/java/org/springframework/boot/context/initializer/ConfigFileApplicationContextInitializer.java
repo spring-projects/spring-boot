@@ -17,8 +17,11 @@
 package org.springframework.boot.context.initializer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -35,7 +38,9 @@ import org.springframework.boot.config.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -45,6 +50,8 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
@@ -97,6 +104,8 @@ public class ConfigFileApplicationContextInitializer implements
 
 	private ConversionService conversionService = new DefaultConversionService();
 
+	private PropertySourceAnnotations propertySourceAnnotations = new PropertySourceAnnotations();
+
 	/**
 	 * Binds the early {@link Environment} to the {@link SpringApplication}. This makes it
 	 * possible to set {@link SpringApplication} properties dynamically, like the sources
@@ -107,11 +116,13 @@ public class ConfigFileApplicationContextInitializer implements
 	@Override
 	public void initialize(SpringApplication springApplication, String[] args) {
 		if (this.environment instanceof ConfigurableEnvironment) {
+			extractPropertySources(springApplication.getSources());
 			ConfigurableEnvironment environment = (ConfigurableEnvironment) this.environment;
 			load(environment, new DefaultResourceLoader());
 			environment.getPropertySources().addAfter(
 					StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 					new RandomValuePropertySource("random"));
+			int before = springApplication.getSources().size();
 			// Set bean properties from the early environment
 			PropertyValues propertyValues = new PropertySourcesPropertyValues(
 					environment.getPropertySources());
@@ -119,6 +130,11 @@ public class ConfigFileApplicationContextInitializer implements
 					"spring.main");
 			binder.setConversionService(this.conversionService);
 			binder.bind(propertyValues);
+			int after = springApplication.getSources().size();
+			if (after > before) {
+				// Do it again in case there are new @PropertySources
+				initialize(springApplication, args);
+			}
 		}
 	}
 
@@ -127,9 +143,51 @@ public class ConfigFileApplicationContextInitializer implements
 		load(applicationContext.getEnvironment(), applicationContext);
 	}
 
+	private void extractPropertySources(Set<Object> sources) {
+		for (Object source : sources) {
+			if (source instanceof Class) {
+				Class<?> type = (Class<?>) source;
+				for (AnnotationAttributes propertySource : attributesForRepeatable(
+						new StandardAnnotationMetadata(type), PropertySources.class,
+						org.springframework.context.annotation.PropertySource.class)) {
+					this.propertySourceAnnotations.add(
+							propertySource.getStringArray("value"),
+							propertySource.getBoolean("ignoreResourceNotFound"),
+							propertySource.getString("name"));
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	static Set<AnnotationAttributes> attributesForRepeatable(AnnotationMetadata metadata,
+			Class<?> containerClass, Class<?> annotationClass) {
+		Set<AnnotationAttributes> result = new LinkedHashSet<AnnotationAttributes>();
+
+		addAttributesIfNotNull(result,
+				metadata.getAnnotationAttributes(annotationClass.getName(), false));
+
+		Map<String, Object> container = metadata.getAnnotationAttributes(
+				containerClass.getName(), false);
+		if (container != null && container.containsKey("value")) {
+			for (Map<String, Object> containedAttributes : (Map<String, Object>[]) container
+					.get("value")) {
+				addAttributesIfNotNull(result, containedAttributes);
+			}
+		}
+		return Collections.unmodifiableSet(result);
+	}
+
+	private static void addAttributesIfNotNull(Set<AnnotationAttributes> result,
+			Map<String, Object> attributes) {
+		if (attributes != null) {
+			result.add(AnnotationAttributes.fromMap(attributes));
+		}
+	}
+
 	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 
-		List<String> candidates = getCandidateLocations();
+		List<String> candidates = getCandidateLocations(resourceLoader);
 		Collections.reverse(candidates);
 		PropertySource<?> removed = environment.getPropertySources().remove(
 				"defaultProperties");
@@ -164,8 +222,8 @@ public class ConfigFileApplicationContextInitializer implements
 		}
 	}
 
-	private List<String> getCandidateLocations() {
-		List<String> candidates = new ArrayList<String>();
+	private List<String> getCandidateLocations(ResourceLoader resourceLoader) {
+		Set<String> candidates = new LinkedHashSet<String>();
 		for (String searchLocation : this.searchLocations) {
 			for (String extension : new String[] { ".properties", ".yml" }) {
 				for (String name : StringUtils
@@ -176,7 +234,21 @@ public class ConfigFileApplicationContextInitializer implements
 			}
 		}
 		candidates.add(LOCATION_VARIABLE);
-		return candidates;
+		/*
+		 * @PropertySource annotation locations go last here (eventually highest
+		 * priority). This unfortunately isn't the same semantics as @PropertySource in
+		 * Spring and it's hard to change that (so the property source gets added again in
+		 * last position by Spring later in the cycle).
+		 */
+		for (String location : this.propertySourceAnnotations.locations()) {
+			Resource resource = resourceLoader.getResource(location);
+			if (!this.propertySourceAnnotations.ignoreResourceNotFound(location)
+					&& !resource.exists()) {
+				throw new IllegalStateException("Resource not found: " + location);
+			}
+			candidates.add(location);
+		}
+		return new ArrayList<String>(candidates);
 	}
 
 	private PropertySource<?> load(ConfigurableEnvironment environment,
@@ -196,7 +268,12 @@ public class ConfigFileApplicationContextInitializer implements
 		}
 
 		Resource resource = resourceLoader.getResource(location);
-		PropertySource<?> propertySource = getPropertySource(resource, profile, loaders);
+		String name = this.propertySourceAnnotations.name(location);
+		if (name == null) {
+			name = location;
+		}
+		PropertySource<?> propertySource = getPropertySource(name, resource, profile,
+				loaders);
 		if (propertySource == null) {
 			return null;
 		}
@@ -212,15 +289,15 @@ public class ConfigFileApplicationContextInitializer implements
 		return propertySource;
 	}
 
-	private PropertySource<?> getPropertySource(Resource resource, String profile,
-			List<PropertySourceLoader> loaders) {
+	private PropertySource<?> getPropertySource(String name, Resource resource,
+			String profile, List<PropertySourceLoader> loaders) {
 		String key = resource.getDescription() + (profile == null ? "" : "#" + profile);
 		if (this.cached.containsKey(key)) {
 			return this.cached.get(key);
 		}
 		for (PropertySourceLoader loader : loaders) {
 			if (resource != null && resource.exists() && loader.supports(resource)) {
-				PropertySource<?> propertySource = loader.load(resource);
+				PropertySource<?> propertySource = loader.load(name, resource);
 				this.cached.put(key, propertySource);
 				return propertySource;
 			}
@@ -279,6 +356,50 @@ public class ConfigFileApplicationContextInitializer implements
 			return DigestUtils.md5DigestAsHex(bytes);
 		}
 
+	}
+
+	private static class PropertySourceAnnotations {
+
+		private Collection<String> locations = new LinkedHashSet<String>();
+
+		private Map<String, String> names = new HashMap<String, String>();
+
+		private Map<String, Boolean> ignores = new HashMap<String, Boolean>();
+
+		public void add(String[] locations, boolean ignoreResourceNotFound, String name) {
+			this.locations.addAll(Arrays.asList(locations));
+			if (StringUtils.hasText(name)) {
+				for (String location : locations) {
+					this.names.put(location, name);
+				}
+				for (String location : locations) {
+					boolean reallyIgnore = ignoreResourceNotFound;
+					if (this.ignores.containsKey(location)) {
+						// Only if they all ignore this location will it be ignored
+						reallyIgnore &= this.ignores.get(location);
+					}
+					this.ignores.put(location, reallyIgnore);
+				}
+			}
+		}
+
+		public boolean ignoreResourceNotFound(String location) {
+			return this.ignores.containsKey(location) ? this.ignores.get(location)
+					: false;
+		}
+
+		public String name(String location) {
+			String name = this.names.get(location);
+			if (name == null || Collections.frequency(this.names.values(), name) > 1) {
+				return null;
+			}
+			// Only if there is a unique name for this location
+			return "boot." + name;
+		}
+
+		public Collection<String> locations() {
+			return this.locations;
+		}
 	}
 
 }

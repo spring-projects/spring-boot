@@ -41,7 +41,7 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	}
 
 	@Override
-	public PropertySource<?> load(Resource resource) {
+	public PropertySource<?> load(String name, Resource resource) {
 		try {
 			Properties properties = loadProperties(resource);
 			// N.B. this is off by default unless user has supplied logback config in
@@ -49,7 +49,7 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Properties loaded from " + resource + ": " + properties);
 			}
-			return new PropertiesPropertySource(resource.getDescription(), properties);
+			return new PropertiesPropertySource(name, properties);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Could not load properties from " + resource,
