@@ -170,6 +170,8 @@ public class ConfigFileApplicationContextInitializerTests {
 		this.initializer.initialize(this.context);
 		String property = this.context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
+		// The default property source is still there
+		assertThat(this.context.getEnvironment().getProperty("foo"), equalTo("bucket"));
 	}
 
 	@Test
