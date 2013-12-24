@@ -17,6 +17,10 @@ diverge from the defaults
 (e.g. embedded servers, security, metrics, health checks, externalized configuration)
 * Absolutely no code generation and no requirement for XML configuration
 
+A good place for further reading is the
+[compendium of micro HOWTO guides](docs/howto.md) covering many common
+use cases.
+
 ## Spring Boot CLI
 The Spring Boot CLI is a command line tool that can be used if you want to quickly
 prototype with Spring. It allows you to run [Groovy](http://groovy.codehaus.org/) scripts,
@@ -271,11 +275,7 @@ before your first change however trivial. (Or if you filed such an
 agreement already for another project just mention that in your pull
 request.)_
 
-## Further Reading
-
-A good place to start might be the
-[compendium of micro HOWTO guides](docs/howto.md) covering many common
-use cases.
+## Modules
 
 There are a number of modules in Spring Boot, if you want learn more about each one
 please refer to the appropriate README.md file:
@@ -386,11 +386,14 @@ generally recommend using Java `@Configuration` whenever possible)
 ## Guides
 
 The [spring.io](http://spring.io/) site contains several guides that show how to use Spring Boot step-by-step:
+
 * [Building an Application with Spring
 Boot](http://spring.io/guides/gs/spring-boot/) is a very basic guide
 that shows you how to create a simple application, run it and add some
 management services.
+
 * [Building a RESTful Web Service with Spring Boot Actuator](http://spring.io/guides/gs/actuator-service/)
 is a guide to creating a REST web service and also shows how the server can be configured.
+
 * [Converting a Spring Boot JAR Application to a WAR](http://spring.io/guides/gs/convert-jar-to-war/) shows you how to run applications in a
 web server as a WAR file.
