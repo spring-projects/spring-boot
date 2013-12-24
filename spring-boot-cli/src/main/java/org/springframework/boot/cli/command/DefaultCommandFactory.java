@@ -36,18 +36,22 @@ public class DefaultCommandFactory implements CommandFactory {
 			new VersionCommand(), new CleanCommand(), new TestCommand(),
 			new GrabCommand());
 
+	private Collection<Command> commands;
+
 	@Override
 	public Collection<Command> getCommands(SpringCli cli) {
-		Collection<Command> commands = new ArrayList<Command>(DEFAULT_COMMANDS);
-		RunCommand run = new RunCommand();
-		StopCommand stop = new StopCommand(run);
-		ShellCommand shell = new ShellCommand(cli);
-		PromptCommand prompt = new PromptCommand(shell);
-		commands.add(run);
-		commands.add(stop);
-		commands.add(shell);
-		commands.add(prompt);
-		return commands;
+		if (this.commands == null) {
+			synchronized (this) {
+				if (this.commands == null) {
+					this.commands = new ArrayList<Command>(DEFAULT_COMMANDS);
+					RunCommand run = new RunCommand();
+					ShellCommand shell = new ShellCommand(cli);
+					this.commands.add(run);
+					this.commands.add(shell);
+				}
+			}
+		}
+		return this.commands;
 	}
 
 }
