@@ -17,14 +17,17 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * A shell command for Spring Boot. Drops the user into an event loop (REPL) where command
+ * line completion and history are available without relying on OS shell features.
+ * 
  * @author Jon Brisbin
  * @author Dave Syer
  */
 public class ShellCommand extends AbstractCommand {
 
-	private static final String DEFAULT_PROMPT = "$ ";
+	private String defaultPrompt = "$ ";
 	private SpringCli springCli;
-	private String prompt = DEFAULT_PROMPT;
+	private String prompt = this.defaultPrompt;
 	private Stack<String> prompts = new Stack<String>();
 
 	public ShellCommand(SpringCli springCli) {
@@ -35,7 +38,7 @@ public class ShellCommand extends AbstractCommand {
 	@Override
 	public void run(String... args) throws Exception {
 
-		this.springCli.setDisplayName("");
+		enhance(this.springCli);
 
 		final ConsoleReader console = new ConsoleReader();
 		console.addCompleter(new CommandCompleter(console, this.springCli));
@@ -165,11 +168,26 @@ public class ShellCommand extends AbstractCommand {
 		}
 	}
 
-	private void printBanner() {
+	protected void enhance(SpringCli cli) {
+		String name = cli.getDisplayName().trim();
+		this.defaultPrompt = name + "> ";
+		this.prompt = this.defaultPrompt;
+		cli.setDisplayName("");
+		RunCommand run = (RunCommand) cli.find("run");
+		if (run != null) {
+			StopCommand stop = new StopCommand(run);
+			cli.register(stop);
+		}
+		PromptCommand prompt = new PromptCommand(this);
+		cli.register(prompt);
+	}
+
+	protected void printBanner() {
 		String version = ShellCommand.class.getPackage().getImplementationVersion();
 		version = (version == null ? "" : " (v" + version + ")");
 		System.out.println("Spring Boot CLI" + version);
-		System.out.println("Hit TAB to complete. Type 'help' and hit RETURN for help.");
+		System.out
+				.println("Hit TAB to complete. Type 'help' and hit RETURN for help, and 'quit' to exit.");
 	}
 
 	public void pushPrompt(String prompt) {
@@ -179,7 +197,7 @@ public class ShellCommand extends AbstractCommand {
 
 	public String popPrompt() {
 		if (this.prompts.isEmpty()) {
-			this.prompt = DEFAULT_PROMPT;
+			this.prompt = this.defaultPrompt;
 		}
 		else {
 			this.prompt = this.prompts.pop();

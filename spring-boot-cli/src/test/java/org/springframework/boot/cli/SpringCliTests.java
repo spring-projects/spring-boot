@@ -26,10 +26,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.cli.SpringCli.NoArgumentsException;
 import org.springframework.boot.cli.SpringCli.NoHelpCommandArgumentsException;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -50,6 +50,12 @@ public class SpringCliTests {
 
 	@Mock
 	private Command regularCommand;
+
+	@Mock
+	private Command shellCommand;
+
+	@Mock
+	private Command anotherCommand;
 
 	private Set<Call> calls = EnumSet.noneOf(Call.class);
 
@@ -76,21 +82,44 @@ public class SpringCliTests {
 				super.printStackTrace(ex);
 			}
 		};
+		given(this.shellCommand.getName()).willReturn("shell");
+		given(this.anotherCommand.getName()).willReturn("another");
 		given(this.regularCommand.getName()).willReturn("command");
 		given(this.regularCommand.getDescription()).willReturn("A regular command");
-		this.cli.setCommands(Arrays.asList(this.regularCommand));
+		this.cli.setCommands(Arrays.asList(this.regularCommand, this.shellCommand));
 	}
 
 	@Test
 	public void runWithoutArguments() throws Exception {
-		this.thrown.expect(NoArgumentsException.class);
 		this.cli.run();
+		verify(this.shellCommand).run();
 	}
 
 	@Test
 	public void runCommand() throws Exception {
 		this.cli.run("command", "--arg1", "arg2");
 		verify(this.regularCommand).run("--arg1", "arg2");
+	}
+
+	@Test
+	public void registerCommand() throws Exception {
+		int before = this.cli.getCommands().size();
+		this.cli.register(this.anotherCommand);
+		assertEquals(before + 1, this.cli.getCommands().size());
+		// Just before the hint command
+		assertEquals(before - 2, this.cli.getCommands().indexOf(this.cli.find("another")));
+		this.cli.unregister(this.anotherCommand.getName());
+		assertEquals(before, this.cli.getCommands().size());
+	}
+
+	@Test
+	public void reRegisterCommand() throws Exception {
+		int index = this.cli.getCommands().indexOf(this.cli.find("regularCommand"));
+		int before = this.cli.getCommands().size();
+		this.cli.register(this.regularCommand);
+		assertEquals(before, this.cli.getCommands().size());
+		assertEquals(index,
+				this.cli.getCommands().indexOf(this.cli.find("regularCommand")));
 	}
 
 	@Test
@@ -104,13 +133,6 @@ public class SpringCliTests {
 		int status = this.cli.runAndHandleErrors("command");
 		assertThat(status, equalTo(0));
 		assertThat(this.calls, equalTo((Set<Call>) EnumSet.noneOf(Call.class)));
-	}
-
-	@Test
-	public void handlesNoArgumentsException() throws Exception {
-		int status = this.cli.runAndHandleErrors();
-		assertThat(status, equalTo(1));
-		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.SHOW_USAGE)));
 	}
 
 	@Test

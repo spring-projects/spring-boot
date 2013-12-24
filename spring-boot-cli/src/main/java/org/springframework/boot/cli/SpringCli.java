@@ -130,6 +130,15 @@ public class SpringCli {
 	}
 
 	/**
+	 * The name of this tool when printed by the help command.
+	 * 
+	 * @return the displayName
+	 */
+	public String getDisplayName() {
+		return this.displayName;
+	}
+
+	/**
 	 * Parse the arguments and run a suitable command.
 	 * @param args the arguments
 	 * @throws Exception
@@ -148,15 +157,35 @@ public class SpringCli {
 		command.run(commandArguments);
 	}
 
-	protected final Command find(String name) {
+	public final Command find(String name) {
 		for (Command candidate : this.commands) {
-			if (candidate.getName().equals(name)
-					|| (candidate.isOptionCommand() && ("--" + candidate.getName())
+			String candidateName = candidate.getName();
+			if (candidateName.equals(name)
+					|| (candidate.isOptionCommand() && ("--" + candidateName)
 							.equals(name))) {
 				return candidate;
 			}
 		}
 		return null;
+	}
+
+	public void register(Command command) {
+		Command existing = find(command.getName());
+		int index = this.commands.indexOf(find("hint")) - 1;
+		index = index >= 0 ? index : 0;
+		if (existing != null) {
+			index = this.commands.indexOf(existing);
+			this.commands.remove(index);
+		}
+		this.commands.add(index, command);
+	}
+
+	public void unregister(String name) {
+		this.commands.remove(find(name));
+	}
+
+	public List<Command> getCommands() {
+		return Collections.unmodifiableList(this.commands);
 	}
 
 	protected void showUsage() {
@@ -384,4 +413,5 @@ public class SpringCli {
 			System.exit(exitCode);
 		}
 	}
+
 }
