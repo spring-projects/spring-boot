@@ -8,6 +8,8 @@ HOWTO guides. If you want to add a placeholder for a question without
 an answer, put it at the top (at header level 2) and we can fill in
 the gaps later.
 
+### General Advice and Other Sources of Information
+
 There is a really useful `AutoConfigurationReport` available in any
 Spring Boot `ApplicationContext`. You will see it automatically if a
 context fails to start, and also if you enable DEBUG logging for
@@ -22,7 +24,7 @@ Javadocs. Some rules of thumb:
 * Look for classes called `*AutoConfiguration` and read their sources,
   in particular the `@Conditional*` annotations to find out what
   features they enable and when. In those clases...
-  
+
 * Look for classes that are `@ConfigurationProperties`
   (e.g. [`ServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c))
   and read from there the available external configuration
@@ -30,20 +32,101 @@ Javadocs. Some rules of thumb:
   acts as a prefix to external properties, thus `ServerProperties` has
   `name="server"` and its configuration properties are `server.port`,
   `server.address` etc.
-  
+
 * Look for use of `RelaxedEnvironment` to pull configuration values
   explicitly out of the `Environment`. It often is used with a prefix.
-  
+
 * Look for `@Value` annotations that bind directly to the
   `Environment`. This is less flexible than the `RelaxedEnvironment`
   approach, but does allow some relaxed binding, specifically for OS
   environment variables (so `CAPITALS_AND_UNDERSCORES` are synonyms
   for `period.separated`).
-  
+
 * Look for `@ConditionalOnExpression` annotations that switch features
   on and off in response to SpEL expressions, normally evaluated with
   placeholders resolved from the `Environment`.
-  
+
+
+## Write a JSON REST Service
+
+Any Spring `@RestController` in a Spring Boot application should
+render JSON response by default as long as Jackson2 is on the
+classpath. For example:
+
+```java
+@RestController
+public class MyController {
+
+    @RequestMapping("/thing")
+    public MyThing thing() {
+        return new MyThing();
+    }
+
+}
+```
+
+As long as `MyThing` can be serialized by Jackson2 (e.g. a normal POJO
+or Groovy object) then `http://localhost:8080/thing` will serve a JSON
+representation of it by default. Sometimes in a browser you might see
+XML responses (but by default only if `MyThing` was a JAXB object)
+because browsers tend to send accept headers that prefer XML.
+
+## Customize the Jackson ObjectMapper
+
+Spring MVC (client and server side) uses `HttpMessageConverters` to
+negotiate content conversion in an HTTP exchange. If Jackson is on the
+classpath you already get a default converter with a vanilla
+`ObjectMapper`. Spring Boot has some features to make it easier to
+customize this behaviour.
+
+The smallest change that might work is to just add beans of type
+`Module` to your context. They will be registered with the default
+`ObjectMapper` and then injected into the default message
+converter. To replace the default `ObjectMapper` completely, define a
+`@Bean` of that type and mark it as `@Primary`.
+
+In addition, if your context contains any beans of type `ObjectMapper`
+then all of the `Module` beans will be registered with all of the
+mappers. So there is a global mechanism for contributing custom
+modules when you add new features to your application.
+
+Finally, if you provide any `@Beans` of type
+`MappingJackson2HttpMessageConverter` then they will replace the
+default value in the MVC configuration. Also, a convenience bean is
+provided of type `HttpMessageConverters` (always available if you use
+the default MVC configuration) which has some useful methods to access
+the default and user-enhanced message converters.
+
+See also the [section on `HttpMessageConverters`](#message.converters)
+and the `WebMvcAutoConfiguration` source code for more details.
+
+<span id="message.converters"/>
+## Customize the @ResponseBody Rendering
+
+Spring uses `HttpMessageConverters` to render `@ResponseBody` (or
+responses from `@RestControllers`). You can contribute additional
+converters by simply adding beans of that type in a Spring Boot
+context. If a bean you add is of a type that would have been included
+by default anyway (like `MappingJackson2HttpMessageConverter` for JSON
+conversions) then it will replace the default value. A convenience
+bean is provided of type `HttpMessageConverters` (always available if you
+use the default MVC configuration) which has some useful methods to
+access the default and user-enhanced message converters (useful, for
+example if you want to manually inject them into a custom
+`RestTemplate`).
+
+As in normal MVC usage, any `WebMvcConfigurerAdapter` beans that you
+provide can also contribute converters by overriding the
+`configureMessageConverters` method, but unlike with normal MVC, you
+can supply only additional converters that you need (because Spring
+Boot uses the same mechanism to contribute its defaults). Finally, if
+you opt out of the Spring Boot default MVC configuration by providing
+your own `@EnableWebMvc` configuration, then you can take control
+completely and do everything manually using `getMessageConverters`
+from `WebMvcConfigurationSupport`.
+
+See the `WebMvcAutoConfiguration` source code for more details.
+
 ## Add a Servlet, Filter or ServletContextListener to an Application
 
 `Servlet`, `Filter`, `ServletContextListener` and the other listeners
@@ -95,7 +178,7 @@ public EmbeddedServletContainerCustomizer containerCustomizer(){
             if(factory instanceof TomcatEmbeddedServletContainerFactory){
                 TomcatEmbeddedServletContainerFactory containerFactory = (TomcatEmbeddedServletContainerFactory) factory;
                 containerFactory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-                
+
                     @Override
                     public void customize(Connector connector) {
 
@@ -112,7 +195,7 @@ public EmbeddedServletContainerCustomizer containerCustomizer(){
                         connector.setAttribute("clientAuth", "false");
                         connector.setAttribute("sslProtocol", "TLS");
                         connector.setAttribute("SSLEnabled", true);
-                
+
                 });
             }
         }
@@ -126,7 +209,7 @@ If you are using Thymeleaf, then set
 `spring.thymeleaf.cache=false`. See `ThymeleafAutoConfiguration` for
 other template customization options.
 
-# Reload Java Classes Without Restarting the Container
+## Reload Java Classes Without Restarting the Container
 
 Modern IDEs (Eclipse, IDEA etc.) all support hot swapping of bytecode,
 so if you make a change that doesn't affect class or method signatures
@@ -178,7 +261,7 @@ Create a deployable WAR by extending `SpringBootServletInitializer`
 @EnableAutoConfiguration
 @ComponentScan
 public class Application extends SpringBootServletInitializer {
-	
+
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(Application.class);
@@ -229,7 +312,7 @@ Applications can fall into more than one category:
 
 * Servlet 3.0 applications with no `web.xml`
 * Applications with a `web.xml`
-* Applications with a context hierarchy and 
+* Applications with a context hierarchy and
 * Those without a context hierarchy
 
 All of these should be amenable to translation, but each might require
@@ -278,6 +361,22 @@ the Webjars format.
 For more detail look at the
 [`WebMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/WebMvcAutoConfiguration.java?source=c)
 source code.
+
+## Switch off the Spring DispatcherServlet
+
+Spring Boot wants to serve all content from the root of your
+application "/" down. If you would rather map your own servlet to that
+URL you can do it, but of course you may lose some of the other Boot
+MVC features. To add your own servlet and map it to the root resource
+just declare a `@Bean` of type `Servlet` and give it the special bean
+name "dispatcherServlet". (You can also create a bean of a different
+type with that name if you want to switch it off and not replace it.)
+
+## Switch off the Default MVC Configuration
+
+The easiest way to take complete control over MVC configuration is to
+provide your own `@Configuration` with the `@EnableWebMvc`
+annotation. This will leave all MVC configuration in your hands.
 
 ## Change the HTTP Port
 
@@ -342,6 +441,90 @@ server.port: ${port:8080}
 > platforms the `PORT` environment variable is set automatically and
 > Spring can bind to capitalized synonyms for `Environment`
 > properties.
+
+## Configure Logback for Logging
+
+Spring Boot has no mandatory logging dependence, except for the
+`commons-logging` API, of which there are many implementations to
+choose from. To use [Logback](http://logback.qos.ch) you need to
+include it, and some bindings for `commons-logging` on the classpath.
+The simplest way to do that is through the starter poms which all
+depend on `spring-boot-start-logging`.  For a web application you only
+need the web starter since it depends transitively on the logging
+starter. E.g. in Maven:
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+
+Spring Boot has a `LoggingSystem` abstraction that attempts to select
+a system depending on the contents of the classpath. If Logback is
+available it is the first choice. So if you put a `logback.xml` in the
+root of your classpath it will be picked up from there. Spring Boot
+provides a default base configuration that you can include if you just
+want to set levels, e.g.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/base.xml"/>
+	<logger name="org.springframework.web" level="DEBUG"/>
+</configuration>
+```
+
+If you look at the default `logback.xml` in the spring-boot JAR you
+will see that it uses some useful System properties which the
+`LoggingSystem` takes care of creating for you. These are:
+
+* `${PID}` the current process ID
+* `${LOG_FILE}` if `logging.file` was set in Boot's external configuration
+* `${LOG_PATH` if `logging.path` was set (representing a directory for
+  log files to live in)
+
+Spring Boot also provides some nice ANSI colour terminal output on a
+console (but not in a log file) using a custom Logback converter. See
+the default `base.xml` configuration for details.
+
+If Groovy is on the classpath you should be able to configure Logback
+with `logback.groovy` as well (it will be given preference if
+present).
+
+## Configure Log4j for Logging
+
+Spring Boot supports [Log4j](http://logging.apache.org/log4j/1.x/) for
+logging configuration, but it has to be on the classpath. If you are
+using the starter poms for assembling dependencies that means you have
+to exclude logback and then include log4j back. If you aren't using
+the starter poms then you need to provide `commons-logging` (at least)
+in addition to Log4j.
+
+The simplest path to using Log4j is probably through the starter poms,
+even though it requires some jiggling with excludes, e.g. in Maven:
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-log4j</artifactId>
+</dependency>
+```
+
+Note the use of the log4j starter to gather together the dependencies
+for common logging requirements (e.g. including having Tomcat use
+`java.util.logging` but configure the output using Log4j). See the
+[Actuator Log4j Sample]() for more detail and to see it in action.
 
 ## Test a Spring Boot Application
 
@@ -448,7 +631,7 @@ algorithm for choosing a specific implementation.
 * If neither of those is available but an embedded database is then we
   create one of those for you (preference order is h2, then Apache
   Derby, then hsqldb).
-  
+
 The pooling `DataSource` option is controlled by external
 configuration properties in `spring.datasource.*` for example:
 
@@ -560,11 +743,23 @@ without changing the defaults.
 
 ## Change the Location of External Properties of an Application
 
-Properties from different sources are added to the Spring
+By default properties from different sources are added to the Spring
 `Environment` in a defined order, and the precedence for resolution is
 1) commandline, 2) filesystem (current working directory)
-`application.properties`, 3) classpath `application.properties`. To
-modify this you can provide System properties (or environment variables) 
+`application.properties`, 3) classpath `application.properties`.
+
+A nice way to augment and modify this is to add `@PropertySource`
+annotations to your application sources. Classes passed to the
+`SpringApplication` static convenience methods, and those added using
+`setSources()` are inspected to see if they have `@PropertySources`
+and if they do those properties are added to the `Environment` early
+enough to be used in all phases of the `ApplicationContext`
+lifecycle. Properties added in this way have precendence over any
+added using the default locations, but have lower priority than system
+properties, environment variables or the command line.
+
+You can also provide System properties (or environment variables) to
+change the default behaviour:
 
 * `config.name` (`CONFIG_NAME`), defaults to `application` as the root
   of the file name
@@ -651,3 +846,47 @@ To do the same thing with properties files you can use
 `application-${profile}.properties` to specify profile-specific
 values.
 
+## Build An Executable Archive with Ant
+
+To build with Ant you need to grab dependencies and compile and then
+create a JAR or WAR archive as normal.  To make it executable:
+
+1. Use the appropriate launcher as a `Main-Class`,
+e.g. `org.springframework.boot.loader.JarLauncher` for a JAR file, and
+specify the other stuff it needs as manifest entries, principally a
+`Start-Class`.
+
+2. Add the runtime dependencies in a nested "lib" directory (for a
+JAR) and the "provided" (embedded container) dependencies in a nested
+"lib-provided" directory. Remember *not* to compress the entries in
+the archive.
+
+3. Add the `spring-boot-loader` classes at the root of the archive (so
+the `Main-Class` is available).
+
+Example
+
+	<target name="build" depends="compile">
+		<copy todir="target/classes/lib">
+			<fileset dir="lib/runtime" />
+		</copy>
+		<jar destfile="target/spring-boot-sample-actuator-${spring-boot.version}.jar" compress="false">
+			<fileset dir="target/classes" />
+			<fileset dir="src/main/resources" />
+			<zipfileset src="lib/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.springframework.boot.loader.JarLauncher" />
+				<attribute name="Start-Class" value="${start-class}" />
+			</manifest>
+		</jar>
+	</target>
+
+The [Actuator Sample]() has a `build.xml` that should work if you run
+it with
+
+    $ ant -lib <path_to>/ivy-2.2.jar
+
+after which you can run the application with
+
+    $ java -jar target/*.jar
+ 
