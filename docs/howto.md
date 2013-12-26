@@ -161,6 +161,39 @@ are quite rich so once you have access to the
 of ways. Or the nuclear option is to add your own
 `JettyEmbeddedServletContainerFactory`.
 
+## Use Jetty 9
+
+Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so
+we can support Java 1.6 out of the box). You should only need to
+change the classpath to use Jetty 9 for it to work.
+
+If you are using the starter poms and parent you can just add the
+Jetty starter and change the version properties, e.g. for a simple
+webapp or service:
+
+	<properties>
+		<java.version>1.7</java.version>
+		<jetty.version>9.1.0.v20131115</jetty.version>
+		<servlet-api.version>3.1.0</servlet-api.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency
+	</dependencies>
+    
+
 ## Terminate SSL in Tomcat
 
 Add a `EmbeddedServletContainerCustomizer` and in that add a
@@ -733,7 +766,7 @@ In Spring Boot you can also set the active profile in
 spring.profiles.active: production
 ```
 
-A value set this is replaced by the System property or environment
+A value set this way is replaced by the System property or environment
 variable setting, but not by the `SpringApplicationBuilder.profiles()`
 method. Thus the latter Java API can be used to augment the profiles
 without changing the defaults.
@@ -756,16 +789,18 @@ added using the default locations, but have lower priority than system
 properties, environment variables or the command line.
 
 You can also provide System properties (or environment variables) to
-change the default behaviour:
+change the behaviour:
 
 * `config.name` (`CONFIG_NAME`), defaults to `application` as the root
   of the file name
-* `config.location` (`CONFIG_LOCATION`) is a comma-separated list of
-  files to load. A separate `Environment` property source is set up
-  for each document found, so the priority order is most significant
-  first. Defaults to
-  `file:./application.properties,classpath:application.properties`. If
-  YAML is used then those files are also added to the list by default.
+* `config.location` (`CONFIG_LOCATION`) is file to load (e.g. a
+  classpath resource or a URL). A separate `Environment` property
+  source is set up for this document and it can be overridden by
+  system properties, environment variables or the command line.
+  
+No matter what you set in the environment, Spring Boot will always
+load `application.properties` as described above. If YAML is used then
+files with the ".yml" extension are also added to the list by default.
 
 See `ConfigFileApplicationContextInitializer` for more detail.
 

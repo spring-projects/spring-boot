@@ -23,6 +23,7 @@ import org.eclipse.jetty.server.Server;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link EmbeddedServletContainer} that can be used to control an embedded Jetty server.
@@ -86,12 +87,24 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
 				connector.start();
-				this.logger.info("Jetty started on port: " + connector.getLocalPort());
+				this.logger.info("Jetty started on port: " + getLocalPort(connector));
 			}
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Jetty servlet container", ex);
+		}
+	}
+
+	private String getLocalPort(Connector connector) {
+		try {
+			// Jetty 9 internals are different, but the method name is the same
+			return ((Integer) ReflectionUtils.invokeMethod(
+					ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"),
+					connector)).toString();
+		}
+		catch (Exception e) {
+			return "could not determine port ( " + e.getMessage() + ")";
 		}
 	}
 
