@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration;
 import org.springframework.boot.actuate.web.BasicErrorControllerIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -84,7 +85,8 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class })
+			ManagementSecurityAutoConfiguration.class,
+			EndpointMBeanExportAutoConfiguration.class })
 	public static class TestConfiguration {
 
 		// For manual testing
