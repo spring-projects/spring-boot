@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
 @AutoConfigureAfter({ EndpointAutoConfiguration.class })
 @ConditionalOnExpression("${endpoints.jmx.enabled:true}")
 @EnableConfigurationProperties(EndpointMBeanExportProperties.class)
-class EndpointMBeanExportAutoConfiguration {
+public class EndpointMBeanExportAutoConfiguration {
 
 	@Autowired
 	EndpointMBeanExportProperties properties = new EndpointMBeanExportProperties();
