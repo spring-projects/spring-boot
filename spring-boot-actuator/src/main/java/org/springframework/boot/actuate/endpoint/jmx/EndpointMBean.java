@@ -19,15 +19,9 @@ package org.springframework.boot.actuate.endpoint.jmx;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
-import org.springframework.jmx.export.naming.MetadataNamingStrategy;
-import org.springframework.jmx.export.naming.SelfNaming;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -39,16 +33,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author Christian Dupuis
  */
 @ManagedResource
-public class EndpointMBean implements SelfNaming {
-
-	private AnnotationJmxAttributeSource annotationSource = new AnnotationJmxAttributeSource();
-
-	private MetadataNamingStrategy metadataNamingStrategy = new MetadataNamingStrategy(
-			this.annotationSource);
+public class EndpointMBean {
 
 	private Endpoint<?> endpoint;
-
-	private String beanName;
 
 	private ObjectMapper mapper = new ObjectMapper();
 
@@ -56,7 +43,6 @@ public class EndpointMBean implements SelfNaming {
 		Assert.notNull(beanName, "BeanName must not be null");
 		Assert.notNull(endpoint, "Endpoint must not be null");
 		this.endpoint = endpoint;
-		this.beanName = beanName;
 	}
 
 	@ManagedAttribute(description = "Returns the class of the underlying endpoint")
@@ -67,11 +53,6 @@ public class EndpointMBean implements SelfNaming {
 	@ManagedAttribute(description = "Indicates whether the underlying endpoint exposes sensitive information")
 	public boolean isSensitive() {
 		return this.endpoint.isSensitive();
-	}
-
-	@Override
-	public ObjectName getObjectName() throws MalformedObjectNameException {
-		return this.metadataNamingStrategy.getObjectName(this, this.beanName);
 	}
 
 	public Endpoint<?> getEndpoint() {

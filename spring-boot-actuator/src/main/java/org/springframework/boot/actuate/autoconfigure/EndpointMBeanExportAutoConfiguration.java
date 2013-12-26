@@ -16,15 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
@@ -33,13 +37,41 @@ import org.springframework.jmx.export.MBeanExporter;
  * @author Christian Dupuis
  */
 @Configuration
-@ConditionalOnBean({ MBeanExporter.class })
 @AutoConfigureAfter({ EndpointAutoConfiguration.class })
 @ConditionalOnExpression("${endpoints.jmx.enabled:true}")
 class EndpointMBeanExportAutoConfiguration {
 
+	private RelaxedPropertyResolver environment;
+
+	@Autowired
+	public void setEnvironment(Environment environment) {
+		this.environment = new RelaxedPropertyResolver(environment);
+	}
+
 	@Bean
 	public EndpointMBeanExporter endpointMBeanExporter() {
-		return new EndpointMBeanExporter();
+		EndpointMBeanExporter mbeanExporter = new EndpointMBeanExporter();
+
+		String domain = this.environment.getProperty("endpoints.jmx.domain");
+		if (StringUtils.hasText(domain)) {
+			mbeanExporter.setDomain(domain);
+		}
+
+		Boolean ensureUnique = this.environment.getProperty("endpoints.jmx.unique_names",
+				Boolean.class, Boolean.FALSE);
+		mbeanExporter.setEnsureUniqueRuntimeObjectNames(ensureUnique);
+
+		mbeanExporter.setObjectNameStaticProperties(getObjectNameStaticProperties());
+
+		return mbeanExporter;
+	}
+
+	private Properties getObjectNameStaticProperties() {
+		String staticNames = this.environment.getProperty("endpoints.jmx.static_names");
+		if (StringUtils.hasText(staticNames)) {
+			return StringUtils.splitArrayElementsIntoProperties(
+					StringUtils.commaDelimitedListToStringArray(staticNames), "=");
+		}
+		return new Properties();
 	}
 }
