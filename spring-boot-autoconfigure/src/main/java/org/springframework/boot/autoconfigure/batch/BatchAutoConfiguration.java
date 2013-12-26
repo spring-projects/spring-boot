@@ -16,7 +16,17 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import javax.sql.DataSource;
+
+import org.springframework.batch.core.configuration.ListableJobLocator;
+import org.springframework.batch.core.converter.JobParametersConverter;
+import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.batch.core.explore.support.JobExplorerFactoryBean;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.launch.support.SimpleJobOperator;
+import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,20 +48,23 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 @Configuration
-@ConditionalOnClass({ JobLauncher.class })
+@ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
 public class BatchAutoConfiguration {
 
 	@Value("${spring.batch.job.name:}")
 	private String jobName;
 
+	@Autowired(required = false)
+	private JobParametersConverter jobParametersConverter;
+
 	@Bean
-	@ConditionalOnMissingBean(BatchDatabaseInitializer.class)
+	@ConditionalOnMissingBean
 	public BatchDatabaseInitializer batchDatabaseInitializer() {
 		return new BatchDatabaseInitializer();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(JobLauncherCommandLineRunner.class)
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(JobLauncher.class)
 	@ConditionalOnExpression("${spring.batch.job.enabled:true}")
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner() {
@@ -62,10 +76,34 @@ public class BatchAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ExitCodeGenerator.class)
+	@ConditionalOnMissingBean
 	@ConditionalOnBean(JobLauncher.class)
 	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
+		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
+		factory.setDataSource(dataSource);
+		factory.afterPropertiesSet();
+		return (JobExplorer) factory.getObject();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public JobOperator jobOperator(JobExplorer jobExplorer, JobLauncher jobLauncher,
+			ListableJobLocator jobRegistry, JobRepository jobRepository) throws Exception {
+		SimpleJobOperator factory = new SimpleJobOperator();
+		factory.setJobExplorer(jobExplorer);
+		factory.setJobLauncher(jobLauncher);
+		factory.setJobRegistry(jobRegistry);
+		factory.setJobRepository(jobRepository);
+		if (this.jobParametersConverter != null) {
+			factory.setJobParametersConverter(this.jobParametersConverter);
+		}
+		return factory;
 	}
 
 }
