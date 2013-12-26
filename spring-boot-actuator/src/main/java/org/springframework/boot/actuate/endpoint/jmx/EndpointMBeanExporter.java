@@ -18,24 +18,31 @@ package org.springframework.boot.actuate.endpoint.jmx;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.jmx.export.MBeanExportException;
 import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.util.Assert;
+import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
+import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
+import org.springframework.jmx.export.naming.MetadataNamingStrategy;
+import org.springframework.jmx.export.naming.SelfNaming;
+import org.springframework.jmx.support.ObjectNameManager;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ApplicationListener} that registers all known {@link Endpoint}s with an
@@ -44,9 +51,20 @@ import org.springframework.util.Assert;
  * 
  * @author Christian Dupuis
  */
-public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContextAware {
+public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
+		BeanFactoryAware {
+
+	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
 	private static Log logger = LogFactory.getLog(EndpointMBeanExporter.class);
+
+	private final AnnotationJmxAttributeSource attributeSource = new AnnotationJmxAttributeSource();
+
+	private final MetadataMBeanInfoAssembler assembler = new MetadataMBeanInfoAssembler(
+			this.attributeSource);
+
+	private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(
+			this.attributeSource);
 
 	private Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
 
@@ -58,45 +76,65 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 
 	private final ReentrantLock lifecycleLock = new ReentrantLock();
 
-	private ApplicationContext applicationContext;
+	private ListableBeanFactory beanFactory;
+
+	private String domain = DEFAULT_DOMAIN;
+
+	private boolean ensureUniqueRuntimeObjectNames = false;
+
+	private Properties objectNameStaticProperties = new Properties();
+
+	public EndpointMBeanExporter() {
+		super();
+		setAutodetect(false);
+		setNamingStrategy(this.defaultNamingStrategy);
+		setAssembler(this.assembler);
+	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
+	public void setBeanFactory(BeanFactory beanFactory) {
+		super.setBeanFactory(beanFactory);
+		if (beanFactory instanceof ListableBeanFactory) {
+			this.beanFactory = (ListableBeanFactory) beanFactory;
+		}
+		else {
+			logger.info("EndpointMBeanExporter not running in a ListableBeanFactory: "
+					+ "autodetection of Endpoints not available.");
+		}
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+
+	@Override
+	public void setEnsureUniqueRuntimeObjectNames(boolean ensureUniqueRuntimeObjectNames) {
+		super.setEnsureUniqueRuntimeObjectNames(ensureUniqueRuntimeObjectNames);
+		this.ensureUniqueRuntimeObjectNames = ensureUniqueRuntimeObjectNames;
+	}
+
+	public void setObjectNameStaticProperties(Properties objectNameStaticProperties) {
+		this.objectNameStaticProperties = objectNameStaticProperties;
 	}
 
 	protected void doStart() {
-		try {
-			MBeanExporter mbeanExporter = this.applicationContext
-					.getBean(MBeanExporter.class);
-			locateAndRegisterEndpoints(mbeanExporter);
-		}
-		catch (NoSuchBeanDefinitionException nsbde) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Could not obtain MBeanExporter. No Endpoint JMX export will be attemted.");
-			}
-		}
+		locateAndRegisterEndpoints();
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	protected void locateAndRegisterEndpoints(MBeanExporter mbeanExporter) {
-		Assert.notNull(mbeanExporter, "MBeanExporter must not be null");
-		Map<String, Endpoint> endpoints = this.applicationContext
-				.getBeansOfType(Endpoint.class);
+	protected void locateAndRegisterEndpoints() {
+		Map<String, Endpoint> endpoints = this.beanFactory.getBeansOfType(Endpoint.class);
 		for (Map.Entry<String, Endpoint> endpointEntry : endpoints.entrySet()) {
 			if (!this.registeredEndpoints.contains(endpointEntry.getValue())) {
-				registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue(),
-						mbeanExporter);
+				registerEndpoint(endpointEntry.getKey(), endpointEntry.getValue());
 				this.registeredEndpoints.add(endpointEntry.getValue());
 			}
 		}
 	}
 
-	protected void registerEndpoint(String beanName, Endpoint<?> endpoint,
-			MBeanExporter mbeanExporter) {
+	protected void registerEndpoint(String beanName, Endpoint<?> endpoint) {
 		try {
-			mbeanExporter.registerManagedResource(getEndpointMBean(beanName, endpoint));
+			registerBeanNameOrInstance(getEndpointMBean(beanName, endpoint), beanName);
 		}
 		catch (MBeanExportException ex) {
 			logger.error("Could not register MBean for endpoint [" + beanName + "]", ex);
@@ -108,6 +146,42 @@ public class EndpointMBeanExporter implements SmartLifecycle, ApplicationContext
 			return new ShutdownEndpointMBean(beanName, endpoint);
 		}
 		return new DataEndpointMBean(beanName, endpoint);
+	}
+
+	@Override
+	protected ObjectName getObjectName(Object bean, String beanKey)
+			throws MalformedObjectNameException {
+		if (bean instanceof SelfNaming) {
+			return ((SelfNaming) bean).getObjectName();
+		}
+
+		if (bean instanceof EndpointMBean) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(this.domain);
+			builder.append(":type=Endpoint");
+			builder.append(",name=" + beanKey);
+			if (this.ensureUniqueRuntimeObjectNames) {
+				builder.append(",identity="
+						+ ObjectUtils.getIdentityHexString(((EndpointMBean) bean)
+								.getEndpoint()));
+			}
+			builder.append(getStaticNames());
+			return ObjectNameManager.getInstance(builder.toString());
+		}
+
+		return this.defaultNamingStrategy.getObjectName(bean, beanKey);
+	}
+
+	private String getStaticNames() {
+		if (this.objectNameStaticProperties.isEmpty()) {
+			return "";
+		}
+		StringBuilder builder = new StringBuilder();
+
+		for (Object key : this.objectNameStaticProperties.keySet()) {
+			builder.append("," + key + "=" + this.objectNameStaticProperties.get(key));
+		}
+		return builder.toString();
 	}
 
 	// SmartLifeCycle implementation

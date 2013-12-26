@@ -17,6 +17,9 @@
 package org.springframework.boot.actuate.endpoint.jmx;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.management.MBeanInfo;
 import javax.management.MalformedObjectNameException;
@@ -27,10 +30,11 @@ import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.actuate.endpoint.AbstractEndpoint;
-import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.jmx.support.ObjectNameManager;
+import org.springframework.util.ObjectUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -58,20 +62,15 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(EndpointMBeanExporter.class));
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				TestEndpoint.class));
-		this.context.registerBeanDefinition(
-				"mbeanExporter",
-				new RootBeanDefinition(MBeanExporter.class, null,
-						new MutablePropertyValues(Collections.singletonMap(
-								"ensureUniqueRuntimeObjectNames", "false"))));
 		this.context.refresh();
 
-		MBeanExporter mbeanExporter = this.context.getBean(MBeanExporter.class);
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
 		MBeanInfo mbeanInfo = mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint1", this.context));
 		assertNotNull(mbeanInfo);
-		assertEquals(5, mbeanInfo.getOperations().length);
-		assertEquals(5, mbeanInfo.getAttributes().length);
+		assertEquals(3, mbeanInfo.getOperations().length);
+		assertEquals(3, mbeanInfo.getAttributes().length);
 	}
 
 	@Test
@@ -83,19 +82,77 @@ public class EndpointMBeanExporterTests {
 				TestEndpoint.class));
 		this.context.registerBeanDefinition("endpoint2", new RootBeanDefinition(
 				TestEndpoint.class));
-		this.context.registerBeanDefinition(
-				"mbeanExporter",
-				new RootBeanDefinition(MBeanExporter.class, null,
-						new MutablePropertyValues(Collections.singletonMap(
-								"ensureUniqueRuntimeObjectNames", "false"))));
 		this.context.refresh();
 
-		MBeanExporter mbeanExporter = this.context.getBean(MBeanExporter.class);
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint1", this.context)));
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint2", this.context)));
+	}
+
+	@Test
+	public void testRegistrationWithDifferentDomain() throws Exception {
+		this.context = new GenericApplicationContext();
+		this.context.registerBeanDefinition(
+				"endpointMbeanExporter",
+				new RootBeanDefinition(EndpointMBeanExporter.class, null,
+						new MutablePropertyValues(Collections.singletonMap("domain",
+								"test-domain"))));
+		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
+				TestEndpoint.class));
+		this.context.refresh();
+
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
+
+		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
+				getObjectName("test-domain", "endpoint1", false, this.context)));
+	}
+
+	@Test
+	public void testRegistrationWithDifferentDomainAndIdentity() throws Exception {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("domain", "test-domain");
+		properties.put("ensureUniqueRuntimeObjectNames", true);
+		this.context = new GenericApplicationContext();
+		this.context.registerBeanDefinition("endpointMbeanExporter",
+				new RootBeanDefinition(EndpointMBeanExporter.class, null,
+						new MutablePropertyValues(properties)));
+		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
+				TestEndpoint.class));
+		this.context.refresh();
+
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
+
+		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
+				getObjectName("test-domain", "endpoint1", true, this.context)));
+	}
+
+	@Test
+	public void testRegistrationWithDifferentDomainAndIdentityAndStaticNames()
+			throws Exception {
+		Map<String, Object> properties = new HashMap<String, Object>();
+		properties.put("domain", "test-domain");
+		properties.put("ensureUniqueRuntimeObjectNames", true);
+		Properties staticNames = new Properties();
+		staticNames.put("key1", "value1");
+		staticNames.put("key2", "value2");
+		properties.put("objectNameStaticProperties", staticNames);
+		this.context = new GenericApplicationContext();
+		this.context.registerBeanDefinition("endpointMbeanExporter",
+				new RootBeanDefinition(EndpointMBeanExporter.class, null,
+						new MutablePropertyValues(properties)));
+		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
+				TestEndpoint.class));
+		this.context.refresh();
+
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
+
+		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
+				ObjectNameManager.getInstance(getObjectName("test-domain", "endpoint1",
+						true, this.context).toString()
+						+ ",key1=value1,key2=value2")));
 	}
 
 	@Test
@@ -105,19 +162,13 @@ public class EndpointMBeanExporterTests {
 				new RootBeanDefinition(EndpointMBeanExporter.class));
 		this.context.registerBeanDefinition("endpoint1", new RootBeanDefinition(
 				TestEndpoint.class));
-		this.context.registerBeanDefinition(
-				"mbeanExporter",
-				new RootBeanDefinition(MBeanExporter.class, null,
-						new MutablePropertyValues(Collections.singletonMap(
-								"ensureUniqueRuntimeObjectNames", "false"))));
-
 		GenericApplicationContext parent = new GenericApplicationContext();
 
 		this.context.setParent(parent);
 		parent.refresh();
 		this.context.refresh();
 
-		MBeanExporter mbeanExporter = this.context.getBean(MBeanExporter.class);
+		MBeanExporter mbeanExporter = this.context.getBean(EndpointMBeanExporter.class);
 
 		assertNotNull(mbeanExporter.getServer().getMBeanInfo(
 				getObjectName("endpoint1", this.context)));
@@ -125,10 +176,25 @@ public class EndpointMBeanExporterTests {
 		parent.close();
 	}
 
-	private ObjectName getObjectName(String beanKey, ApplicationContext applicationContext)
+	private ObjectName getObjectName(String beanKey, GenericApplicationContext context)
 			throws MalformedObjectNameException {
-		return new DataEndpointMBean(beanKey,
-				(Endpoint<?>) applicationContext.getBean(beanKey)).getObjectName();
+		return getObjectName("org.springframework.boot", beanKey, false, context);
+	}
+
+	private ObjectName getObjectName(String domain, String beanKey,
+			boolean includeIdentity, ApplicationContext applicationContext)
+			throws MalformedObjectNameException {
+		if (includeIdentity) {
+			return ObjectNameManager
+					.getInstance(String.format("%s:type=Endpoint,name=%s,identity=%s",
+							domain, beanKey, ObjectUtils
+									.getIdentityHexString(applicationContext
+											.getBean(beanKey))));
+		}
+		else {
+			return ObjectNameManager.getInstance(String.format(
+					"%s:type=Endpoint,name=%s", domain, beanKey));
+		}
 	}
 
 	public static class TestEndpoint extends AbstractEndpoint<String> {
