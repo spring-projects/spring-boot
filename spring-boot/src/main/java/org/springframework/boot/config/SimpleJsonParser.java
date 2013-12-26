@@ -66,7 +66,6 @@ public class SimpleJsonParser implements JsonParser {
 	private List<Object> parseListInternal(String json) {
 		List<Object> list = new ArrayList<Object>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, ']'), '[');
-		;
 		for (String value : tokenize(json)) {
 			list.add(parseInternal(value));
 		}
@@ -82,6 +81,18 @@ public class SimpleJsonParser implements JsonParser {
 		}
 		if (json.startsWith("\"")) {
 			return trimTrailingCharacter(trimLeadingCharacter(json, '"'), '"');
+		}
+		try {
+			return Long.valueOf(json);
+		}
+		catch (NumberFormatException e) {
+			// ignore
+		}
+		try {
+			return Double.valueOf(json);
+		}
+		catch (NumberFormatException e) {
+			// ignore
 		}
 		return json;
 	}
