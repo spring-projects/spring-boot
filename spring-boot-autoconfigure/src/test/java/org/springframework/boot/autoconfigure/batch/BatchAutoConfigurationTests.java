@@ -32,6 +32,7 @@ import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
@@ -75,6 +76,7 @@ public class BatchAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
+		assertNotNull(this.context.getBean(JobExplorer.class));
 		assertEquals(0, new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from BATCH_JOB_EXECUTION").size());
 	}

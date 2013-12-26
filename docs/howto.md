@@ -151,6 +151,14 @@ Tomcat APIs are quite rich so once you have access to the
 of ways. Or the nuclear option is to add your own
 `TomcatEmbeddedServletContainerFactory`.
 
+## Use Tomcat 8
+
+Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7
+(so we can support Java 1.6 out of the box). You should only need to
+change the classpath to use Tomcat 8 for it to work. The
+[websocket sample](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-websocket/pom.xml)
+shows you how to do that in Maven.
+
 ## Configure Jetty
 
 Generally you can follow the advice [here](#discover.options) about
