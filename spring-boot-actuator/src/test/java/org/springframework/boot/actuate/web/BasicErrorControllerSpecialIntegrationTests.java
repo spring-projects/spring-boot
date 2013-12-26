@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.web;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
@@ -80,14 +81,16 @@ public class BasicErrorControllerSpecialIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class })
+			ManagementSecurityAutoConfiguration.class,
+			EndpointMBeanExportAutoConfiguration.class })
 	protected static class ParentConfiguration {
 
 	}
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class })
+			ManagementSecurityAutoConfiguration.class,
+			EndpointMBeanExportAutoConfiguration.class })
 	@EnableWebMvc
 	protected static class WebMvcIncludedConfiguration {
 		// For manual testing
@@ -99,7 +102,8 @@ public class BasicErrorControllerSpecialIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class })
+			ManagementSecurityAutoConfiguration.class,
+			EndpointMBeanExportAutoConfiguration.class })
 	protected static class VanillaConfiguration {
 		// For manual testing
 		public static void main(String[] args) {
@@ -110,7 +114,8 @@ public class BasicErrorControllerSpecialIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class })
+			ManagementSecurityAutoConfiguration.class,
+			EndpointMBeanExportAutoConfiguration.class })
 	protected static class ChildConfiguration {
 		// For manual testing
 		public static void main(String[] args) {

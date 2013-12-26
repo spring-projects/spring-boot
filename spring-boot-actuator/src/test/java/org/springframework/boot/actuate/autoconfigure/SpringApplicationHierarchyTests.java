@@ -61,7 +61,7 @@ public class SpringApplicationHierarchyTests {
 	}
 
 	@EnableAutoConfiguration(exclude = { ServerPropertiesAutoConfiguration.class,
-			JolokiaAutoConfiguration.class })
+			JolokiaAutoConfiguration.class, EndpointMBeanExportAutoConfiguration.class })
 	public static class Parent {
 	}
 
