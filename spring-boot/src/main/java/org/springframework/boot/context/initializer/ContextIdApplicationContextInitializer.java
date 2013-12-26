@@ -91,14 +91,14 @@ public class ContextIdApplicationContextInitializer implements
 	private String getApplicationId(ConfigurableEnvironment environment) {
 		String name = environment.resolvePlaceholders(this.name);
 		String index = environment.resolvePlaceholders(INDEX_PATTERN);
-		if (!"null".equals(index)) {
-			return name + ":" + index;
-		}
 
 		String profiles = StringUtils.arrayToCommaDelimitedString(environment
 				.getActiveProfiles());
 		if (StringUtils.hasText(profiles)) {
 			name = name + ":" + profiles;
+		}
+		if (!"null".equals(index)) {
+			name = name + ":" + index;
 		}
 		return name;
 	}

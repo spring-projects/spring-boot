@@ -51,9 +51,9 @@ public class ContextIdApplicationContextInitializerTests {
 	public void testNameAndProfiles() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 		TestUtils.addEnviroment(context, "spring.application.name:foo",
-				"spring.profiles.active: spam,bar");
+				"spring.profiles.active: spam,bar", "spring.application.index:12");
 		this.initializer.initialize(context);
-		assertEquals("foo:spam,bar", context.getId());
+		assertEquals("foo:spam,bar:12", context.getId());
 	}
 
 	@Test
