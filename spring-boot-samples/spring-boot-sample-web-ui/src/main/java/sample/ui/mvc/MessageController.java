@@ -68,7 +68,7 @@ public class MessageController {
 		return new ModelAndView("redirect:/{message.id}", "message.id", message.getId());
 	}
 
-	@RequestMapping("/foo")
+	@RequestMapping("foo")
 	public String foo() {
 		throw new RuntimeException("Expected exception in controller");
 	}

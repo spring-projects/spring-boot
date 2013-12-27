@@ -28,7 +28,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.internal.file.collections.SimpleFileCollection;
-import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
@@ -41,29 +40,20 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  */
 public class RunApp extends DefaultTask {
 
-	private SourceSet main;
-
 	@TaskAction
 	public void runApp() {
-
+		
 		final Project project = getProject();
-		JavaPluginConvention javaConvention = project.getConvention().getPlugin(
-				JavaPluginConvention.class);
-		javaConvention.getSourceSets().all(new Action<SourceSet>() {
-
-			@Override
-			public void execute(SourceSet set) {
-				if (SourceSet.MAIN_SOURCE_SET_NAME.equals(set.getName())) {
-					RunApp.this.main = set;
-				}
-			};
-
-		});
+		final SourceSet main = ComputeMain.findMainSourceSet(project);
 
 		final Set<File> allResources = new LinkedHashSet<File>();
-		if (this.main != null) {
-			SourceDirectorySet resources = this.main.getResources();
+		final File outputs;
+		if (main != null) {
+			SourceDirectorySet resources = main.getResources();
 			allResources.addAll(resources.getSrcDirs());
+			outputs = main.getOutput().getResourcesDir();
+		} else {
+			outputs = null;
 		}
 
 		project.getTasks().withType(JavaExec.class, new Action<JavaExec>() {
@@ -76,7 +66,7 @@ public class RunApp extends DefaultTask {
 				getLogger().info("Adding classpath: " + allResources);
 				exec.setClasspath(new SimpleFileCollection(files));
 				if (exec.getMain() == null) {
-					final String mainClass = findMainClass(RunApp.this.main);
+					final String mainClass = findMainClass(main);
 					exec.setMain(mainClass);
 					exec.getConventionMapping().map("main", new Callable<String>() {
 
@@ -87,6 +77,14 @@ public class RunApp extends DefaultTask {
 
 					});
 					getLogger().info("Found main: " + mainClass);
+				}
+				if (outputs != null) {
+					// Special case: this file causes logback to worry that it has been
+					// configured twice, so remove it from the target directory...
+					File logback = new File(outputs, "logback.xml");
+					if (logback.exists()) {
+						logback.delete();
+					}
 				}
 				exec.exec();
 			}

@@ -24,8 +24,11 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.tasks.JavaExec;
+import org.springframework.boot.gradle.task.ComputeMain;
 import org.springframework.boot.gradle.task.Repackage;
 import org.springframework.boot.gradle.task.RunApp;
+import org.springframework.boot.gradle.task.RunWithAgent;
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
@@ -41,26 +44,39 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().apply(BasePlugin.class);
-		project.getPlugins().apply(JavaPlugin.class);
-		project.getPlugins().apply(ApplicationPlugin.class);
-		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
 
 		applyRepackage(project);
 		applyRun(project);
+
+		project.getPlugins().apply(BasePlugin.class);
+		project.getPlugins().apply(JavaPlugin.class);
+		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
+
 		applyResolutionStrategy(project);
+
 	}
 
 	private void applyRepackage(Project project) {
 		Repackage packageTask = addRepackageTask(project);
 		ensureTaskRunsOnAssembly(project, packageTask);
-	}
-
-	private void applyRun(Project project) {
-		addRunAppTask(project);
 		// register BootRepackage so that we can use task foo(type: BootRepackage) {}
 		project.getExtensions().getExtraProperties()
 				.set("BootRepackage", Repackage.class);
+	}
+
+	private void applyRun(Project project) {
+		enhanceRunTask(project);
+		addRunAppTask(project);
+		if (project.getTasks().withType(JavaExec.class).isEmpty()) {
+			// Add the ApplicationPlugin so that a JavaExec task is available (run) to enhance
+			project.getPlugins().apply(ApplicationPlugin.class);
+		}
+	}
+
+	private void enhanceRunTask(Project project) {
+		project.getLogger().debug("Enhancing run tasks");
+		project.getTasks().whenTaskAdded(new RunWithAgent(project));
+		project.getTasks().whenTaskAdded(new ComputeMain(project));
 	}
 
 	private void applyResolutionStrategy(Project project) {
@@ -92,7 +108,13 @@ public class SpringBootPlugin implements Plugin<Project> {
 		runJarTask.setDescription("Run the project with support for "
 				+ "auto-detecting main class and reloading static resources");
 		runJarTask.setGroup("Execution");
-		runJarTask.dependsOn("assemble");
+		if (!project.getTasksByName("compileJava", false).isEmpty()) {
+			if (!project.getTasksByName("compileGroovy", false).isEmpty()) {
+				runJarTask.dependsOn("compileJava", "compileGroovy");
+			} else {
+				runJarTask.dependsOn("compileJava");
+			}
+		}
 	}
 
 	private void ensureTaskRunsOnAssembly(Project project, Repackage task) {
