@@ -35,6 +35,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
@@ -46,7 +47,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -113,6 +116,18 @@ public class EmbeddedWebApplicationContextTests {
 		shutdownHookField.setAccessible(true);
 		Object shutdownHook = shutdownHookField.get(this.context);
 		assertThat(shutdownHook, not(nullValue()));
+	}
+
+	@Test
+	public void containerEventPublished() throws Exception {
+		addEmbeddedServletContainerFactoryBean();
+		this.context.registerBeanDefinition("listener", new RootBeanDefinition(
+				MockListener.class));
+		this.context.refresh();
+		EmbeddedServletContainerInitializedEvent event = this.context.getBean(
+				MockListener.class).getEvent();
+		assertNotNull(event);
+		assertTrue(event.getSource().getPort() >= 0);
 	}
 
 	@Test
@@ -386,5 +401,21 @@ public class EmbeddedWebApplicationContextTests {
 
 	public static <T> T getBean(T object) {
 		return object;
+	}
+
+	public static class MockListener implements
+			ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+
+		private EmbeddedServletContainerInitializedEvent event;
+
+		@Override
+		public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
+			this.event = event;
+		}
+
+		public EmbeddedServletContainerInitializedEvent getEvent() {
+			return this.event;
+		}
+
 	}
 }
