@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.embedded;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -28,13 +29,32 @@ import org.springframework.context.ApplicationEvent;
  */
 public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 
-	public EmbeddedServletContainerInitializedEvent(EmbeddedServletContainer source) {
+	private ApplicationContext applicationContext;
+
+	public EmbeddedServletContainerInitializedEvent(
+			ApplicationContext applicationContext, EmbeddedServletContainer source) {
 		super(source);
+		this.applicationContext = applicationContext;
 	}
 
+	/**
+	 * Access the source of the event (an {@link EmbeddedServletContainer}).
+	 * 
+	 * @return the embedded servlet container
+	 */
 	@Override
 	public EmbeddedServletContainer getSource() {
 		return (EmbeddedServletContainer) super.getSource();
 	}
 
+	/**
+	 * Access the application context that the container was created in. Sometimes it is
+	 * prudent to check that this matches expectations (like being equal to the current
+	 * context) before acting on the server container itself.
+	 * 
+	 * @return the applicationContext that the container was created from
+	 */
+	public ApplicationContext getApplicationContext() {
+		return this.applicationContext;
+	}
 }
