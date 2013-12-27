@@ -423,14 +423,25 @@ can be set with `server.port` (e.g. in `application.properties` or as
 a System property). Thanks to relaxed binding of `Environment` values
 you can also use `SERVER_PORT` (e.g. as an OS environment variable).
 
-To scan for a free port (using OS natives to prevent clashes) use
-`server.port=0`. To switch off the HTTP endpoints completely, but
+To switch off the HTTP endpoints completely, but
 still create a `WebApplicationContext`, use `server.port=-1` (this is
 sometimes useful for testing).
 
 For more detail look at the
 [`ServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c)
 source code.
+
+## Use a Random Unassigned HTTP Port
+
+To scan for a free port (using OS natives to prevent clashes) use
+`server.port=0`.
+
+## Discover the HTTP Port at Runtime
+
+You can access the port the server is running on from log output or
+from the `EmbeddedWebApplicationContext` via its
+`EmbeddedServletContainer` (you can `@Autowired` an
+`ApplicationContext` and downcast it to obtain the specific type).
 
 ## Change the HTTP Port or Address of the Actuator Endpoints
 
