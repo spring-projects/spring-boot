@@ -147,7 +147,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 		super.finishRefresh();
 		startEmbeddedServletContainer();
 		if (this.embeddedServletContainer != null) {
-			publishEvent(new EmbeddedServletContainerInitializedEvent(
+			publishEvent(new EmbeddedServletContainerInitializedEvent(this,
 					this.embeddedServletContainer));
 		}
 	}
