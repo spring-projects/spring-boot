@@ -440,8 +440,10 @@ To scan for a free port (using OS natives to prevent clashes) use
 
 You can access the port the server is running on from log output or
 from the `EmbeddedWebApplicationContext` via its
-`EmbeddedServletContainer` (you can `@Autowired` an
-`ApplicationContext` and downcast it to obtain the specific type).
+`EmbeddedServletContainer`. The best way to get that and be sure that
+it has initialized is to add a `@Bean` of type
+`ApplicationListener<EmbeddedServletContainerInitializedEvent>` and
+pull the container out of the event wehen it is published.
 
 ## Change the HTTP Port or Address of the Actuator Endpoints
 
