@@ -140,7 +140,7 @@ public class SpringApplicationBuilder {
 	 * are copied down into the child, but everything else is a clean sheet.
 	 * 
 	 * @param sources the sources for the application (Spring configuration)
-	 * @return the child application nuilder
+	 * @return the child application builder
 	 */
 	public SpringApplicationBuilder child(Object... sources) {
 
