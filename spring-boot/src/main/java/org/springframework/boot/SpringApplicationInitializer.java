@@ -21,7 +21,7 @@ import org.springframework.core.env.Environment;
 
 /**
  * Strategy interface that can be used to initialize a {@link SpringApplication} before it
- * is runs. A {@link SpringApplicationInitializer} can optionally implement
+ * runs. A {@link SpringApplicationInitializer} can optionally implement
  * {@link EnvironmentAware} if it needs to access or configure the underling application
  * {@link Environment}.
  * 
