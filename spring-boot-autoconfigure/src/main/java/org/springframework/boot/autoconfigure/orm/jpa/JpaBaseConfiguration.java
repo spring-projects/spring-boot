@@ -34,6 +34,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -51,6 +52,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Oliver Gierke
  */
 public abstract class JpaBaseConfiguration implements BeanFactoryAware, EnvironmentAware {
 
@@ -64,14 +66,16 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	public PlatformTransactionManager transactionManager() {
-		return new JpaTransactionManager(entityManagerFactory().getObject());
+		return new JpaTransactionManager();
 	}
 
 	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+	@ConditionalOnMissingBean(EntityManagerFactoryInfo.class)
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(JpaVendorAdapter jpaVendorAdapter) {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-		entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter());
+		entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
 		entityManagerFactoryBean.setDataSource(getDataSource());
 		entityManagerFactoryBean.setPackagesToScan(getPackagesToScan());
 		entityManagerFactoryBean.getJpaPropertyMap().putAll(
@@ -81,6 +85,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(JpaVendorAdapter.class)
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
 		adapter.setShowSql(this.environment.getProperty("show-sql", Boolean.class, true));
