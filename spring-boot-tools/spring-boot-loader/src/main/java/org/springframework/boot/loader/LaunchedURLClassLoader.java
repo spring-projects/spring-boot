@@ -122,7 +122,9 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 		// 2) Try to find locally
 		try {
-			return findClass(name);
+			findPackage(name);
+			Class<?> cls = findClass(name);
+			return cls;
 		}
 		catch (Exception ex) {
 		}
@@ -131,8 +133,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		return super.loadClass(name, false);
 	}
 
-	@Override
-	protected Class<?> findClass(final String name) throws ClassNotFoundException {
+	private void findPackage(final String name) throws ClassNotFoundException {
 		int lastDot = name.lastIndexOf('.');
 		if (lastDot != -1) {
 			String packageName = name.substring(0, lastDot);
@@ -145,14 +146,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 				}
 			}
 		}
-		return super.findClass(name);
 	}
 
 	/**
 	 * Define a package before a {@code findClass} call is made. This is necessary to
 	 * ensure that the appropriate manifest for nested JARs associated with the package.
 	 * @param name the class name being found
-	 * @param packageName the pacakge
+	 * @param packageName the package
 	 */
 	private void definePackageForFindClass(final String name, final String packageName) {
 		try {
