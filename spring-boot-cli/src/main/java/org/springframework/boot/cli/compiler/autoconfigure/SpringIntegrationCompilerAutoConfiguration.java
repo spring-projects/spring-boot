@@ -41,7 +41,7 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.integration.Message").add(
-				"spring-boot-starter-integration", "spring-integration-dsl-groovy-core");
+				"spring-boot-starter-integration");
 		dependencies.ifAnyMissingClasses("groovy.util.XmlParser").add("groovy-xml");
 	}
 
@@ -50,14 +50,14 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 		imports.addImports("org.springframework.integration.Message",
 				"org.springframework.integration.support.MessageBuilder",
 				"org.springframework.integration.MessageChannel",
+				"org.springframework.integration.channel.DirectChannel",
+				"org.springframework.integration.channel.QueueChannel",
+				"org.springframework.integration.channel.ExecutorChannel",
 				"org.springframework.integration.MessageHeaders",
-				"org.springframework.integration.annotation.MessageEndpoint",
-				"org.springframework.integration.annotation.Header",
-				"org.springframework.integration.annotation.Headers",
-				"org.springframework.integration.annotation.Payload",
-				"org.springframework.integration.annotation.Payloads",
-				"org.springframework.integration.dsl.groovy.MessageFlow",
-				"org.springframework.integration.dsl.groovy.builder.IntegrationBuilder",
+				"org.springframework.integration.core.MessagingTemplate",
+				"org.springframework.integration.core.SubscribableChannel",
+				"org.springframework.integration.core.PollableChannel",
 				EnableIntegrationPatterns.class.getCanonicalName());
+		imports.addStarImports("org.springframework.integration.annotation");
 	}
 }
