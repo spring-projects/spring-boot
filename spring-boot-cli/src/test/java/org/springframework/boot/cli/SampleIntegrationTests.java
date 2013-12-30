@@ -122,6 +122,12 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	public void integrationSample() throws Exception {
+		String output = this.cli.run("integration.groovy");
+		assertTrue("Wrong output: " + output, output.contains("Hello, World"));
+	}
+
+	@Test
 	public void xmlSample() throws Exception {
 		String output = this.cli.run("runner.xml", "runner.groovy");
 		assertTrue("Wrong output: " + output, output.contains("Hello World"));
