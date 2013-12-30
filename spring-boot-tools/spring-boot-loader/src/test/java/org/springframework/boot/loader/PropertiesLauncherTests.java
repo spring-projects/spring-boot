@@ -21,10 +21,12 @@ import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link PropertiesLauncher}.
@@ -32,6 +34,9 @@ import static org.junit.Assert.assertEquals;
  * @author Dave Syer
  */
 public class PropertiesLauncherTests {
+
+	@Rule
+	public OutputCapture output = new OutputCapture();
 
 	@Before
 	public void setup() throws IOException {
@@ -65,11 +70,32 @@ public class PropertiesLauncherTests {
 
 	@Test
 	public void testUserSpecifiedConfigName() throws Exception {
-
 		System.setProperty("loader.config.name", "foo");
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertEquals("my.Application", launcher.getMainClass());
 		assertEquals("[etc/]", ReflectionTestUtils.getField(launcher, "paths").toString());
+	}
+
+	@Test
+	public void testUserSpecifiedPath() throws Exception {
+		System.setProperty("loader.path", "jars/*");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[jars/]", ReflectionTestUtils.getField(launcher, "paths")
+				.toString());
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
+	}
+
+	@Test
+	public void testUserSpecifiedJarPath() throws Exception {
+		System.setProperty("loader.path", "jars/app.jar");
+		System.setProperty("loader.main", "demo.Application");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[jars/app.jar]", ReflectionTestUtils.getField(launcher, "paths")
+				.toString());
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
 	}
 
 	@Test
@@ -93,6 +119,17 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.system", "true");
 		new PropertiesLauncher();
 		assertEquals("demo.Application", System.getProperty("loader.main"));
+	}
+
+	private void waitFor(String value) throws Exception {
+		int count = 0;
+		boolean timeout = false;
+		while (!timeout && count < 100) {
+			count++;
+			Thread.sleep(50L);
+			timeout = this.output.toString().contains(value);
+		}
+		assertTrue("Timed out waiting for (" + value + ")", timeout);
 	}
 
 }
