@@ -39,7 +39,6 @@
 		<spock.version>0.7-groovy-2.0</spock.version>
 		<spring.version>4.0.0.RELEASE</spring.version>
 		<spring-integration.version>3.0.0.RELEASE</spring-integration.version>
-		<spring-integration-groovydsl.version>1.0.0.M1</spring-integration-groovydsl.version>
 		<spring-batch.version>2.2.3.RELEASE</spring-batch.version>
 		<spring-data-jpa.version>1.4.3.RELEASE</spring-data-jpa.version>
 		<spring-data-mongo.version>1.3.3.RELEASE</spring-data-mongo.version>
@@ -451,11 +450,6 @@
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-stream</artifactId>
 				<version>${spring-integration.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-dsl-groovy-core</artifactId>
-				<version>${spring-integration-groovydsl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
