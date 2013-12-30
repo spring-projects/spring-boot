@@ -343,6 +343,12 @@ public class PropertiesLauncher extends Launcher {
 			Archive archive = new ExplodedArchive(file);
 			lib.add(archive);
 		}
+		Archive archive = getArchive(file);
+		if (archive != null) {
+			this.logger.info("Adding classpath entries from nested " + archive.getUrl()
+					+ root);
+			lib.add(archive);
+		}
 		Archive nested = getNestedArchive(root);
 		if (nested != null) {
 			this.logger.info("Adding classpath entries from nested " + nested.getUrl()
@@ -350,6 +356,14 @@ public class PropertiesLauncher extends Launcher {
 			lib.add(nested);
 		}
 		return lib;
+	}
+
+	private Archive getArchive(File file) throws IOException {
+		String name = file.getName().toLowerCase();
+		if (name.endsWith(".jar") || name.endsWith(".zip")) {
+			return new JarFileArchive(file);
+		}
+		return null;
 	}
 
 	private Archive getNestedArchive(final String root) throws Exception {
@@ -401,9 +415,17 @@ public class PropertiesLauncher extends Launcher {
 
 	private String cleanupPath(String path) {
 		path = path.trim();
-		// Always a directory
-		if (!path.endsWith("/")) {
-			path = path + "/";
+		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
+			return path;
+		}
+		if (path.endsWith("/*")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		else {
+			// It's a directory
+			if (!path.endsWith("/")) {
+				path = path + "/";
+			}
 		}
 		// No need for current dir path
 		if (path.startsWith("./")) {
