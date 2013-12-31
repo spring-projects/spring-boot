@@ -24,7 +24,6 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.loader.archive.Archive;
@@ -116,7 +115,6 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	@Ignore
 	public void testCustomClassLoaderCreation() throws Exception {
 		System.setProperty("loader.classLoader", TestLoader.class.getName());
 		PropertiesLauncher launcher = new PropertiesLauncher();
