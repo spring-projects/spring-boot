@@ -406,6 +406,12 @@ public class PropertiesLauncher extends Launcher {
 				if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
 					lib.add(0, new JarFileArchive(new File(url.toURI())));
 				}
+				else if (url.toString().endsWith("/*")) {
+					String name = url.getFile();
+					lib.add(0,
+							new ExplodedArchive(new File(name.substring(0,
+									name.length() - 1))));
+				}
 				else {
 					lib.add(0, new ExplodedArchive(new File(url.getFile())));
 				}
