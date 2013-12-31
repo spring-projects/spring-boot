@@ -98,7 +98,7 @@ public class CliTester implements TestRule {
 		final String[] sources = new String[args.length];
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
-			if (arg.startsWith("--")) {
+			if (arg.startsWith("-")) {
 				sources[i] = arg;
 			}
 			else {

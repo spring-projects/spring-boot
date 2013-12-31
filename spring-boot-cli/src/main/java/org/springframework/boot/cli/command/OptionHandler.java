@@ -168,6 +168,9 @@ public class OptionHandler {
 			for (String option : descriptor.options()) {
 				this.options.add((option.length() == 1 ? "-" : "--") + option);
 			}
+			if (this.options.contains("--cp")) {
+				this.options.add("-cp");
+			}
 			this.description = descriptor.description();
 		}
 
