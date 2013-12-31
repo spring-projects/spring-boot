@@ -18,14 +18,19 @@ package org.springframework.boot.loader;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.loader.archive.Archive;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -99,6 +104,27 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
+	public void testUserSpecifiedClassLoader() throws Exception {
+		System.setProperty("loader.path", "jars/app.jar");
+		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[jars/app.jar]", ReflectionTestUtils.getField(launcher, "paths")
+				.toString());
+		launcher.launch(new String[0]);
+		waitFor("Hello World");
+	}
+
+	@Test
+	public void testCustomClassLoaderCreation() throws Exception {
+		System.setProperty("loader.classLoader", TestLoader.class.getName());
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		ClassLoader loader = launcher
+				.createClassLoader(Collections.<Archive> emptyList());
+		assertNotNull(loader);
+		assertEquals(TestLoader.class.getName(), loader.getClass().getName());
+	}
+
+	@Test
 	public void testUserSpecifiedConfigPathWins() throws Exception {
 
 		System.setProperty("loader.config.name", "foo");
@@ -130,6 +156,18 @@ public class PropertiesLauncherTests {
 			timeout = this.output.toString().contains(value);
 		}
 		assertTrue("Timed out waiting for (" + value + ")", timeout);
+	}
+
+	public static class TestLoader extends URLClassLoader {
+
+		public TestLoader(ClassLoader parent) {
+			super(new URL[0], parent);
+		}
+
+		@Override
+		protected Class<?> findClass(String name) throws ClassNotFoundException {
+			return super.findClass(name);
+		}
 	}
 
 }

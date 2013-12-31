@@ -233,10 +233,13 @@
 							<archive>
 								<manifest>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-									<mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
+									<mainClass>org.springframework.boot.loader.PropertiesLauncher</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Start-Class>${start-class}</Start-Class>
+								</manifestEntries>
+								<manifestEntries>
+									<Class-Loader>groovy.lang.GroovyClassLoader</Class-Loader>
 								</manifestEntries>
 							</archive>
 						</configuration>
