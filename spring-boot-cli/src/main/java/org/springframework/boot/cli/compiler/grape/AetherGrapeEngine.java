@@ -263,6 +263,9 @@ public class AetherGrapeEngine implements GrapeEngine {
 	}
 
 	protected void addRepository(RemoteRepository repository) {
+		if (this.repositories.contains(repository)) {
+			return;
+		}
 		if (repository.getProxy() == null) {
 			RemoteRepository.Builder builder = new RemoteRepository.Builder(repository);
 			builder.setProxy(this.proxySelector.getProxy(repository));

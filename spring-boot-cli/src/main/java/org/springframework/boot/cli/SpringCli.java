@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.springframework.boot.cli.command.AbstractCommand;
+import org.springframework.boot.cli.command.InitCommand;
 
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
@@ -48,7 +48,7 @@ public class SpringCli {
 	private static final Set<SpringCliException.Option> NO_EXCEPTION_OPTIONS = EnumSet
 			.noneOf(SpringCliException.Option.class);
 
-	private List<Command> commands;
+	private List<Command> commands = new ArrayList<Command>();
 
 	private String displayName = CLI_APP + " ";
 
@@ -56,15 +56,11 @@ public class SpringCli {
 	 * Create a new {@link SpringCli} implementation with the default set of commands.
 	 */
 	public SpringCli() {
-		setCommands(ServiceLoader.load(CommandFactory.class, getClass().getClassLoader()));
-	}
-
-	private void setCommands(Iterable<CommandFactory> iterable) {
-		this.commands = new ArrayList<Command>();
-		for (CommandFactory factory : iterable) {
-			for (Command command : factory.getCommands(this)) {
-				this.commands.add(command);
-			}
+		try {
+			new InitCommand(this).run();
+		}
+		catch (Exception e) {
+			throw new IllegalStateException("Cannot init with those args", e);
 		}
 		this.commands.add(0, new HelpCommand());
 		this.commands.add(new HintCommand());

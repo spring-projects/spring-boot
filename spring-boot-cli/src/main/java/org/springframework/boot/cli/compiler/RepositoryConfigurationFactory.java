@@ -50,8 +50,8 @@ public final class RepositoryConfigurationFactory {
 		repositoryConfiguration.add(MAVEN_CENTRAL);
 
 		if (!Boolean.getBoolean("disableSpringSnapshotRepos")) {
-			repositoryConfiguration.add(SPRING_SNAPSHOT);
 			repositoryConfiguration.add(SPRING_MILESTONE);
+			repositoryConfiguration.add(SPRING_SNAPSHOT);
 		}
 
 		addDefaultCacheAsRespository(repositoryConfiguration);
