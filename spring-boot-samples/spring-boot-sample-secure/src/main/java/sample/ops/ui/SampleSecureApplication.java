@@ -53,7 +53,8 @@ public class SampleSecureApplication extends WebMvcConfigurerAdapter {
 	public static void main(String[] args) throws Exception {
 		// Set user password to "password" for demo purposes only
 		new SpringApplicationBuilder(SampleSecureApplication.class).properties(
-				"security.basic.enabled=false", "security.user.password=password").run(args);
+				"security.basic.enabled=false", "security.user.password=password").run(
+				args);
 	}
 
 	@Override

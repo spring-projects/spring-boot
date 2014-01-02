@@ -330,7 +330,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			if (resource != null && resource.exists()) {
 				for (PropertySourceLoader loader : loaders) {
 					if (loader.supports(resource)) {
-						PropertySource<?> propertySource = loader.load(resource.getDescription(), resource);
+						PropertySource<?> propertySource = loader.load(
+								resource.getDescription(), resource);
 						propertySources.addFirst(propertySource);
 					}
 				}

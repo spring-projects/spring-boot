@@ -68,6 +68,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		this.controller.afterPropertiesSet();
 	}
 
+	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.controller.setServletContext(servletContext);
 	}
@@ -76,6 +77,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		this.controller.setInitParameters(initParameters);
 	}
 
+	@Override
 	public final void setApplicationContext(ApplicationContext context)
 			throws BeansException {
 		this.controller.setApplicationContext(context);

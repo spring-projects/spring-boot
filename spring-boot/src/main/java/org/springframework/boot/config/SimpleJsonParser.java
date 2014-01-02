@@ -76,24 +76,29 @@ public class SimpleJsonParser implements JsonParser {
 		if (json.startsWith("[")) {
 			return parseListInternal(json);
 		}
+
 		if (json.startsWith("{")) {
 			return parseMapInternal(json);
 		}
+
 		if (json.startsWith("\"")) {
 			return trimTrailingCharacter(trimLeadingCharacter(json, '"'), '"');
 		}
+
 		try {
 			return Long.valueOf(json);
 		}
 		catch (NumberFormatException e) {
 			// ignore
 		}
+
 		try {
 			return Double.valueOf(json);
 		}
 		catch (NumberFormatException e) {
 			// ignore
 		}
+
 		return json;
 	}
 

@@ -73,7 +73,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 
 	@Bean
 	@ConditionalOnMissingBean(EntityManagerFactoryInfo.class)
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(JpaVendorAdapter jpaVendorAdapter) {
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+			JpaVendorAdapter jpaVendorAdapter) {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
 		entityManagerFactoryBean.setDataSource(getDataSource());

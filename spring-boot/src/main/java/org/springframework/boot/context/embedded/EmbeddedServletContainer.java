@@ -45,6 +45,7 @@ public interface EmbeddedServletContainer {
 			// Do nothing
 		}
 
+		@Override
 		public int getPort() {
 			return 0;
 		}

@@ -34,6 +34,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
+ * Tests for {@link SimpleHealthIndicator}.
+ * 
  * @author Dave Syer
  */
 public class SimpleHealthIndicatorTests {

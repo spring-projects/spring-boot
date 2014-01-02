@@ -43,8 +43,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 		// register BootRepackage so that we can use
 		// task foo(type: BootRepackage) {}
-		project.getExtensions().getExtraProperties()
-				.set("BootRepackage", Repackage.class);
+		project.getExtensions().getExtraProperties().set("BootRepackage", Repackage.class);
 		Repackage packageTask = addRepackageTask(project);
 		ensureTaskRunsOnAssembly(project, packageTask);
 		addRunJarTask(project);
