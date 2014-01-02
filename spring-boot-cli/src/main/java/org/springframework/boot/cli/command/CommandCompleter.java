@@ -32,102 +32,109 @@ import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.Log;
 import org.springframework.boot.cli.OptionHelp;
 import org.springframework.boot.cli.SpringCli;
-import org.springframework.util.StringUtils;
 
 /**
+ * JLine {@link Completer} for Spring Boot {@link Command}s.
+ * 
  * @author Jon Brisbin
+ * @author Phillip Webb
  */
 public class CommandCompleter extends StringsCompleter {
 
 	private final Map<String, Completer> optionCompleters = new HashMap<String, Completer>();
+
 	private List<Command> commands = new ArrayList<Command>();
+
 	private ConsoleReader console;
-	private String lastBuffer;
 
-	public CommandCompleter(ConsoleReader console, SpringCli cli) {
-		this.console = console;
-
+	public CommandCompleter(ConsoleReader consoleReader, SpringCli cli) {
+		this.console = consoleReader;
 		this.commands.addAll(cli.getCommands());
 		List<String> names = new ArrayList<String>();
-		for (Command c : this.commands) {
-			names.add(c.getName());
-			List<String> opts = new ArrayList<String>();
-			for (OptionHelp optHelp : c.getOptionsHelp()) {
-				opts.addAll(optHelp.getOptions());
+		for (Command command : this.commands) {
+			names.add(command.getName());
+			List<String> options = new ArrayList<String>();
+			for (OptionHelp optionHelp : command.getOptionsHelp()) {
+				options.addAll(optionHelp.getOptions());
 			}
-			this.optionCompleters.put(c.getName(), new ArgumentCompleter(
-					new StringsCompleter(c.getName()), new StringsCompleter(opts),
-					new NullCompleter()));
+			StringsCompleter commandCompleter = new StringsCompleter(command.getName());
+			StringsCompleter optionsCompleter = new StringsCompleter(options);
+			this.optionCompleters.put(command.getName(), new ArgumentCompleter(
+					commandCompleter, optionsCompleter, new NullCompleter()));
 		}
 		getStrings().addAll(names);
-
 	}
 
 	@Override
 	public int complete(String buffer, int cursor, List<CharSequence> candidates) {
-		int i = super.complete(buffer, cursor, candidates);
-		if (buffer.indexOf(' ') < 1) {
-			return i;
-		}
-		String name = buffer.substring(0, buffer.indexOf(' '));
-		if ("".equals(name.trim())) {
-			return i;
-		}
-		for (Command c : this.commands) {
-			if (!c.getName().equals(name)) {
-				continue;
-			}
-			if (buffer.equals(this.lastBuffer)) {
-				this.lastBuffer = buffer;
-				try {
-					this.console.println();
-					this.console.println("Usage:");
-					this.console.println(c.getName() + " " + c.getUsageHelp());
-					List<List<String>> rows = new ArrayList<List<String>>();
-					int maxSize = 0;
-					for (OptionHelp optHelp : c.getOptionsHelp()) {
-						List<String> cols = new ArrayList<String>();
-						for (String s : optHelp.getOptions()) {
-							cols.add(s);
-						}
-						String opts = StringUtils
-								.collectionToDelimitedString(cols, " | ");
-						if (opts.length() > maxSize) {
-							maxSize = opts.length();
-						}
-						cols.clear();
-						cols.add(opts);
-						cols.add(optHelp.getUsageHelp());
-						rows.add(cols);
+		int completionIndex = super.complete(buffer, cursor, candidates);
+		int spaceIndex = buffer.indexOf(' ');
+		String commandName = (spaceIndex == -1) ? "" : buffer.substring(0, spaceIndex);
+		if (!"".equals(commandName.trim())) {
+			for (Command command : this.commands) {
+				if (command.getName().equals(commandName)) {
+					if (cursor == buffer.length() && buffer.endsWith(" ")) {
+						printUsage(command);
+						break;
 					}
-
-					StringBuilder sb = new StringBuilder("\t");
-					for (List<String> row : rows) {
-						String col1 = row.get(0);
-						String col2 = row.get(1);
-						for (int j = 0; j < (maxSize - col1.length()); j++) {
-							sb.append(" ");
-						}
-						sb.append(col1).append(": ").append(col2);
-						this.console.println(sb.toString());
-						sb = new StringBuilder("\t");
+					Completer completer = this.optionCompleters.get(command.getName());
+					if (completer != null) {
+						completionIndex = completer.complete(buffer, cursor, candidates);
+						break;
 					}
-
-					this.console.drawLine();
-				}
-				catch (IOException e) {
-					Log.error(e.getMessage() + " (" + e.getClass().getName() + ")");
 				}
 			}
-			Completer completer = this.optionCompleters.get(c.getName());
-			if (null != completer) {
-				i = completer.complete(buffer, cursor, candidates);
-				break;
-			}
 		}
-
-		this.lastBuffer = buffer;
-		return i;
+		return completionIndex;
 	}
 
+	private void printUsage(Command command) {
+		try {
+			int maxOptionsLength = 0;
+			List<OptionHelpLine> optionHelpLines = new ArrayList<OptionHelpLine>();
+			for (OptionHelp optionHelp : command.getOptionsHelp()) {
+				OptionHelpLine optionHelpLine = new OptionHelpLine(optionHelp);
+				optionHelpLines.add(optionHelpLine);
+				maxOptionsLength = Math.max(maxOptionsLength, optionHelpLine.getOptions()
+						.length());
+			}
+
+			this.console.println();
+			this.console.println("Usage:");
+			this.console.println(command.getName() + " " + command.getUsageHelp());
+			for (OptionHelpLine optionHelpLine : optionHelpLines) {
+				this.console.println(String.format("\t%" + maxOptionsLength + "s: %s",
+						optionHelpLine.getOptions(), optionHelpLine.getUsage()));
+			}
+			this.console.drawLine();
+		}
+		catch (IOException e) {
+			Log.error(e.getMessage() + " (" + e.getClass().getName() + ")");
+		}
+	}
+
+	private static class OptionHelpLine {
+
+		private final String options;
+
+		private final String usage;
+
+		public OptionHelpLine(OptionHelp optionHelp) {
+			StringBuffer options = new StringBuffer();
+			for (String option : optionHelp.getOptions()) {
+				options.append(options.length() == 0 ? "" : ", ");
+				options.append(option);
+			}
+			this.options = options.toString();
+			this.usage = optionHelp.getUsageHelp();
+		}
+
+		public String getOptions() {
+			return this.options;
+		}
+
+		public String getUsage() {
+			return this.usage;
+		}
+	}
 }

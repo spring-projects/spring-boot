@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -38,8 +39,12 @@ import org.springframework.util.StringUtils;
  * 
  * @author Jon Brisbin
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class ShellCommand extends AbstractCommand {
+
+	private static final Method PROCESS_BUILDER_INHERIT_IO_METHOD = ReflectionUtils
+			.findMethod(ProcessBuilder.class, "inheritIO");
 
 	private String defaultPrompt = "$ ";
 
@@ -50,155 +55,58 @@ public class ShellCommand extends AbstractCommand {
 	private Stack<String> prompts = new Stack<String>();
 
 	public ShellCommand(SpringCli springCli) {
-		super("shell", "Start a nested shell (REPL).");
+		super("shell", "Start a nested shell");
 		this.springCli = springCli;
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-
 		enhance(this.springCli);
 
-		final ConsoleReader console = new ConsoleReader();
-		console.addCompleter(new CommandCompleter(console, this.springCli));
-		console.setHistoryEnabled(true);
-		console.setCompletionHandler(new CandidateListCompletionHandler());
+		InputStream sysin = System.in;
+		PrintStream systemOut = System.out;
+		PrintStream systemErr = System.err;
 
-		final InputStream sysin = System.in;
-		final PrintStream sysout = System.out;
-		final PrintStream syserr = System.err;
-
+		ConsoleReader consoleReader = createConsoleReader();
 		printBanner();
 
-		System.setIn(console.getInput());
-		PrintStream out = new PrintStream(new OutputStream() {
-			@Override
-			public void write(int b) throws IOException {
-				console.getOutput().write(b);
-			}
-		});
+		PrintStream out = new PrintStream(new ConsoleReaderOutputStream(consoleReader));
+		System.setIn(consoleReader.getInput());
 		System.setOut(out);
 		System.setErr(out);
 
-		String line;
-		StringBuffer data = new StringBuffer();
-
 		try {
-
-			while (null != (line = console.readLine(this.prompt))) {
-				if ("quit".equals(line.trim())) {
-					break;
-				}
-				else if ("clear".equals(line.trim())) {
-					console.clearScreen();
-					continue;
-				}
-				List<String> parts = new ArrayList<String>();
-
-				if (line.contains("<<")) {
-					int startMultiline = line.indexOf("<<");
-					data.append(line.substring(startMultiline + 2));
-					String contLine;
-					while (null != (contLine = console.readLine("... "))) {
-						if ("".equals(contLine.trim())) {
-							break;
-						}
-						data.append(contLine);
-					}
-					line = line.substring(0, startMultiline);
-				}
-
-				String lineToParse = line.trim();
-				if (lineToParse.startsWith("!")) {
-					lineToParse = lineToParse.substring(1).trim();
-				}
-				String[] segments = StringUtils.delimitedListToStringArray(lineToParse,
-						" ");
-				StringBuffer sb = new StringBuffer();
-				boolean swallowWhitespace = false;
-				for (String s : segments) {
-					if ("".equals(s)) {
-						continue;
-					}
-					if (s.startsWith("\"")) {
-						swallowWhitespace = true;
-						sb.append(s.substring(1));
-					}
-					else if (s.endsWith("\"")) {
-						swallowWhitespace = false;
-						sb.append(" ").append(s.substring(0, s.length() - 1));
-						parts.add(sb.toString());
-						sb = new StringBuffer();
-					}
-					else {
-						if (!swallowWhitespace) {
-							parts.add(s);
-						}
-						else {
-							sb.append(" ").append(s);
-						}
-					}
-				}
-				if (sb.length() > 0) {
-					parts.add(sb.toString());
-				}
-				if (data.length() > 0) {
-					parts.add(data.toString());
-					data = new StringBuffer();
-				}
-
-				if (parts.size() > 0) {
-					if (line.trim().startsWith("!")) {
-						try {
-							ProcessBuilder pb = new ProcessBuilder(parts);
-							if (isJava7()) {
-								inheritIO(pb);
-							}
-							pb.environment().putAll(System.getenv());
-							Process process = pb.start();
-							if (!isJava7()) {
-								ProcessGroovyMethods.consumeProcessOutput(process,
-										(OutputStream) sysout, (OutputStream) syserr);
-							}
-							process.waitFor();
-						}
-						catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					else {
-						if (!getName().equals(parts.get(0))) {
-							this.springCli.runAndHandleErrors(parts
-									.toArray(new String[parts.size()]));
-						}
-					}
-				}
-			}
-
+			runReadLoop(consoleReader, systemOut, systemErr);
 		}
 		finally {
-
 			System.setIn(sysin);
-			System.setOut(sysout);
-			System.setErr(syserr);
-
-			console.shutdown();
-
+			System.setOut(systemOut);
+			System.setErr(systemErr);
+			consoleReader.shutdown();
 		}
 	}
 
 	protected void enhance(SpringCli cli) {
-		String name = cli.getDisplayName().trim();
-		this.defaultPrompt = name + "> ";
+		this.defaultPrompt = cli.getDisplayName().trim() + "> ";
 		this.prompt = this.defaultPrompt;
 		cli.setDisplayName("");
+
 		RunCommand run = (RunCommand) cli.find("run");
 		if (run != null) {
 			StopCommand stop = new StopCommand(run);
 			cli.register(stop);
 		}
+
 		PromptCommand prompt = new PromptCommand(this);
 		cli.register(prompt);
+	}
+
+	private ConsoleReader createConsoleReader() throws IOException {
+		ConsoleReader reader = new ConsoleReader();
+		reader.addCompleter(new CommandCompleter(reader, this.springCli));
+		reader.setHistoryEnabled(true);
+		reader.setCompletionHandler(new CandidateListCompletionHandler());
+		return reader;
 	}
 
 	protected void printBanner() {
@@ -207,6 +115,129 @@ public class ShellCommand extends AbstractCommand {
 		System.out.println("Spring Boot CLI" + version);
 		System.out.println("Hit TAB to complete. Type 'help' and hit "
 				+ "RETURN for help, and 'quit' to exit.");
+	}
+
+	private void runReadLoop(final ConsoleReader consoleReader,
+			final PrintStream systemOut, final PrintStream systemErr) throws IOException {
+		StringBuffer data = new StringBuffer();
+		while (true) {
+			String line = consoleReader.readLine(this.prompt);
+
+			if (line == null || "quit".equals(line.trim()) || "exit".equals(line.trim())) {
+				return;
+			}
+
+			if ("clear".equals(line.trim())) {
+				consoleReader.clearScreen();
+				continue;
+			}
+
+			if (line.contains("<<")) {
+				int startMultiline = line.indexOf("<<");
+				data.append(line.substring(startMultiline + 2));
+				line = line.substring(0, startMultiline);
+				readMultiLineData(consoleReader, data);
+			}
+
+			line = line.trim();
+			boolean isLaunchProcessCommand = line.startsWith("!");
+			if (isLaunchProcessCommand) {
+				line = line.substring(1);
+			}
+
+			List<String> args = parseArgs(line);
+			if (data.length() > 0) {
+				args.add(data.toString());
+				data.setLength(0);
+			}
+			if (args.size() > 0) {
+				if (isLaunchProcessCommand) {
+					launchProcess(args, systemOut, systemErr);
+				}
+				else {
+					runCommand(args);
+				}
+			}
+		}
+	}
+
+	private void readMultiLineData(final ConsoleReader consoleReader, StringBuffer data)
+			throws IOException {
+		while (true) {
+			String line = consoleReader.readLine("... ");
+			if (line == null || "".equals(line.trim())) {
+				return;
+			}
+			data.append(line);
+		}
+	}
+
+	private List<String> parseArgs(String line) {
+		List<String> parts = new ArrayList<String>();
+		String[] segments = StringUtils.delimitedListToStringArray(line, " ");
+		StringBuffer part = new StringBuffer();
+		boolean swallowWhitespace = false;
+		for (String segment : segments) {
+			if ("".equals(segment)) {
+				continue;
+			}
+			if (segment.startsWith("\"")) {
+				swallowWhitespace = true;
+				part.append(segment.substring(1));
+			}
+			else if (segment.endsWith("\"")) {
+				swallowWhitespace = false;
+				part.append(" ").append(segment.substring(0, segment.length() - 1));
+				parts.add(part.toString());
+				part = new StringBuffer();
+			}
+			else {
+				if (!swallowWhitespace) {
+					parts.add(segment);
+				}
+				else {
+					part.append(" ").append(segment);
+				}
+			}
+		}
+		if (part.length() > 0) {
+			parts.add(part.toString());
+		}
+		return parts;
+	}
+
+	private void launchProcess(List<String> parts, final PrintStream sysout,
+			final PrintStream syserr) {
+		try {
+			ProcessBuilder processBuilder = new ProcessBuilder(parts);
+			if (isJava7()) {
+				inheritIO(processBuilder);
+			}
+			processBuilder.environment().putAll(System.getenv());
+			Process process = processBuilder.start();
+			if (!isJava7()) {
+				ProcessGroovyMethods.consumeProcessOutput(process, (OutputStream) sysout,
+						(OutputStream) syserr);
+			}
+			process.waitFor();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private boolean isJava7() {
+		return PROCESS_BUILDER_INHERIT_IO_METHOD != null;
+	}
+
+	private void inheritIO(ProcessBuilder processBuilder) {
+		ReflectionUtils.invokeMethod(PROCESS_BUILDER_INHERIT_IO_METHOD, processBuilder);
+	}
+
+	private void runCommand(List<String> args) {
+		if (!getName().equals(args.get(0))) {
+			this.springCli.runAndHandleErrors(args.toArray(new String[args.size()]));
+		}
 	}
 
 	public void pushPrompt(String prompt) {
@@ -224,16 +255,18 @@ public class ShellCommand extends AbstractCommand {
 		return this.prompt;
 	}
 
-	private void inheritIO(ProcessBuilder pb) {
-		ReflectionUtils.invokeMethod(
-				ReflectionUtils.findMethod(ProcessBuilder.class, "inheritIO"), pb);
-	}
+	private static class ConsoleReaderOutputStream extends OutputStream {
 
-	private boolean isJava7() {
-		if (ReflectionUtils.findMethod(ProcessBuilder.class, "inheritIO") != null) {
-			return true;
+		private ConsoleReader consoleReader;
+
+		public ConsoleReaderOutputStream(ConsoleReader consoleReader) {
+			this.consoleReader = consoleReader;
 		}
-		return false;
-	}
 
+		@Override
+		public void write(int b) throws IOException {
+			this.consoleReader.getOutput().write(b);
+		}
+
+	}
 }
