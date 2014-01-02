@@ -31,7 +31,9 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	private final PrefixMetricReader reader;
+
 	private final MetricWriter writer;
+
 	private Set<String> groups = new HashSet<String>();
 
 	public PrefixMetricGroupExporter(PrefixMetricReader reader, MetricWriter writer) {
@@ -53,13 +55,13 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	}
 
 	@Override
-	protected Iterable<Metric<?>> next(String group) {
-		return this.reader.findAll(group);
+	protected Iterable<String> groups() {
+		return this.groups;
 	}
 
 	@Override
-	protected Iterable<String> groups() {
-		return this.groups;
+	protected Iterable<Metric<?>> next(String group) {
+		return this.reader.findAll(group);
 	}
 
 	@Override

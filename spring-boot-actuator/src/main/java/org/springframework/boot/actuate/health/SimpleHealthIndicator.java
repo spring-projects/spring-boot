@@ -30,6 +30,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 /**
+ * Simple implementation of {@link HealthIndicator} that returns a status and also
+ * attempts a simple database test.
+ * 
  * @author Dave Syer
  */
 public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object>> {
@@ -53,8 +56,8 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 
 	@Override
 	public Map<String, Object> health() {
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
-		map.put("status", "ok");
+		LinkedHashMap<String, Object> health = new LinkedHashMap<String, Object>();
+		health.put("status", "ok");
 		String product = "unknown";
 		if (this.dataSource != null) {
 			try {
@@ -65,25 +68,25 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 						return connection.getMetaData().getDatabaseProductName();
 					}
 				});
-				map.put("database", product);
+				health.put("database", product);
 			}
 			catch (DataAccessException ex) {
-				map.put("status", "error");
-				map.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+				health.put("status", "error");
+				health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
 			}
 			String query = detectQuery(product);
 			if (StringUtils.hasText(query)) {
 				try {
-					map.put("hello",
+					health.put("hello",
 							this.jdbcTemplate.queryForObject(query, String.class));
 				}
 				catch (Exception ex) {
-					map.put("status", "error");
-					map.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+					health.put("status", "error");
+					health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
 				}
 			}
 		}
-		return map;
+		return health;
 	}
 
 	protected String detectQuery(String product) {
