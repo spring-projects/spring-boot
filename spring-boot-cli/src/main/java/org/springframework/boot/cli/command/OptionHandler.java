@@ -84,6 +84,12 @@ public class OptionHandler {
 	}
 
 	public final void run(String... args) throws Exception {
+		String[] argsToUse = args.clone();
+		for (int i = 0; i < argsToUse.length; i++) {
+			if ("-cp".equals(argsToUse[i])) {
+				argsToUse[i] = "--cp";
+			}
+		}
 		OptionSet options = getParser().parse(args);
 		run(options);
 	}
@@ -106,7 +112,7 @@ public class OptionHandler {
 			catch (IOException ex) {
 				return "Help not available";
 			}
-			this.help = out.toString();
+			this.help = out.toString().replace(" --cp ", " -cp ");
 		}
 		return this.help;
 	}
@@ -169,6 +175,7 @@ public class OptionHandler {
 				this.options.add((option.length() == 1 ? "-" : "--") + option);
 			}
 			if (this.options.contains("--cp")) {
+				this.options.remove("--cp");
 				this.options.add("-cp");
 			}
 			this.description = descriptor.description();
