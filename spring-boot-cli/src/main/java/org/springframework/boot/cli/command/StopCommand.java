@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package org.springframework.boot.cli.command;
 
+import org.springframework.boot.cli.Command;
 
 /**
+ * {@link Command} to stop an application started from the {@link ShellCommand shell}.
+ * 
  * @author Jon Brisbin
  */
 public class StopCommand extends AbstractCommand {
@@ -25,8 +28,8 @@ public class StopCommand extends AbstractCommand {
 	private final RunCommand runCmd;
 
 	public StopCommand(RunCommand runCmd) {
-		super("stop",
-				"Stop the currently-running application started with the 'run' command.");
+		super("stop", "Stop the currently-running application started with "
+				+ "the 'run' command.");
 		this.runCmd = runCmd;
 	}
 
