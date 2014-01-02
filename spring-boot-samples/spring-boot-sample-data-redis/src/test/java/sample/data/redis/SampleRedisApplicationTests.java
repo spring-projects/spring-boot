@@ -16,15 +16,12 @@
 
 package sample.data.redis;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.OutputCapture;
-import sample.data.redis.SampleRedisApplication;
-import org.springframework.core.NestedCheckedException;
+import org.springframework.data.redis.RedisConnectionFailureException;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleRedisApplication}.
@@ -42,7 +39,7 @@ public class SampleRedisApplicationTests {
 			SampleRedisApplication.main(new String[0]);
 		}
 		catch (IllegalStateException ex) {
-			if (serverNotRunning(ex)) {
+			if (!redisServerRunning(ex)) {
 				return;
 			}
 		}
@@ -51,17 +48,11 @@ public class SampleRedisApplicationTests {
 				output.contains("Found key spring.boot.redis.test"));
 	}
 
-	private boolean serverNotRunning(IllegalStateException e) {
-		@SuppressWarnings("serial")
-		NestedCheckedException nested = new NestedCheckedException("failed", e) {
-		};
-		if (nested.contains(IOException.class)) {
-			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("couldn't connect to [localhost")) {
-				return true;
-			}
+	private boolean redisServerRunning(Throwable ex) {
+		System.out.println(ex.getMessage());
+		if (ex instanceof RedisConnectionFailureException) {
+			return false;
 		}
-		return false;
+		return (ex.getCause() == null || redisServerRunning(ex.getCause()));
 	}
-
 }

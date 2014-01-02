@@ -39,7 +39,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's redis support.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.
  * 
  * @author Dave Syer
  */
@@ -99,9 +99,7 @@ public class RedisAutoConfiguration {
 
 		private PoolConfig poolConfig() {
 			PoolConfig pool = new PoolConfig();
-			// FQCN to avoid bizarre compiler error on command line build (!?)
-			org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration.RedisProperties.Pool props = this.config
-					.getPool();
+			RedisProperties.Pool props = this.config.getPool();
 			if (props != null) {
 				pool.setMaxActive(props.getMaxActive());
 				pool.setMaxIdle(props.getMaxIdle());
@@ -185,9 +183,13 @@ public class RedisAutoConfiguration {
 		}
 
 		public static class Pool {
+
 			private int maxIdle = 8;
+
 			private int minIdle = 0;
+
 			private int maxActive = 8;
+
 			private int maxWait = -1;
 
 			public int getMaxIdle() {

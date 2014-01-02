@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.AbstractJpaAutoConfigurationTests.TestConfigurationWithTransactionManager.CustomJpaTransactionManager;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -43,7 +42,7 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -135,36 +134,37 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		assertThat(map.get("a"), equalTo((Object) "b"));
 		assertThat(map.get("c"), equalTo((Object) "d"));
 	}
-	
+
 	@Test
 	public void usesManuallyDefinedEntityManagerFactoryBeanIfAvailable() {
-		
+
 		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
 		this.context.refresh();
-		
-		LocalContainerEntityManagerFactoryBean factoryBean = this.context.getBean(LocalContainerEntityManagerFactoryBean.class);
+
+		LocalContainerEntityManagerFactoryBean factoryBean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = factoryBean.getJpaPropertyMap();
-		assertThat(map.get("configured"), is((Object) "manually"));
+		assertThat(map.get("configured"), equalTo((Object) "manually"));
 	}
-	
+
 	@Test
 	public void usesManuallyDefinedTransactionManagerBeanIfAvailable() {
-		
+
 		setupTestConfiguration(TestConfigurationWithTransactionManager.class);
 		this.context.refresh();
-		
-		PlatformTransactionManager txManager = this.context.getBean(PlatformTransactionManager.class);
-		assertThat(txManager, is(instanceOf(CustomJpaTransactionManager.class)));
+
+		PlatformTransactionManager txManager = this.context
+				.getBean(PlatformTransactionManager.class);
+		assertThat(txManager, instanceOf(CustomJpaTransactionManager.class));
 	}
 
 	protected void setupTestConfiguration() {
 		setupTestConfiguration(TestConfiguration.class);
 	}
-	
+
 	protected void setupTestConfiguration(Class<?> configClass) {
-		
-		this.context.register(configClass,
-				ComponentScanDetectorConfiguration.class,
+
+		this.context.register(configClass, ComponentScanDetectorConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 	}
@@ -188,33 +188,36 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			return new OpenEntityManagerInViewFilter();
 		}
 	}
-	
+
 	@Configuration
-	protected static class TestConfigurationWithEntityManagerFactory extends TestConfiguration {
-		
+	protected static class TestConfigurationWithEntityManagerFactory extends
+			TestConfiguration {
+
 		@Bean
-		public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter adapter) {
-			
+		public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+				DataSource dataSource, JpaVendorAdapter adapter) {
+
 			LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 			factoryBean.setJpaVendorAdapter(adapter);
 			factoryBean.setDataSource(dataSource);
 			factoryBean.setPersistenceUnitName("manually-configured");
-			factoryBean.setJpaPropertyMap(Collections.singletonMap("configured", "manually"));
+			factoryBean.setJpaPropertyMap(Collections.singletonMap("configured",
+					"manually"));
 			return factoryBean;
 		}
 	}
-	
+
 	@Configuration
 	@ComponentScan(basePackageClasses = { City.class })
 	protected static class TestConfigurationWithTransactionManager {
-		
+
 		@Bean
 		public PlatformTransactionManager transactionManager() {
 			return new CustomJpaTransactionManager();
 		}
-		
-		static class CustomJpaTransactionManager extends JpaTransactionManager {
-			
-		}
+
+	}
+
+	static class CustomJpaTransactionManager extends JpaTransactionManager {
 	}
 }
