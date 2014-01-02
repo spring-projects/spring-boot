@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.cli.SpringCli.NoArgumentsException;
 import org.springframework.boot.cli.SpringCli.NoHelpCommandArgumentsException;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -91,8 +92,8 @@ public class SpringCliTests {
 
 	@Test
 	public void runWithoutArguments() throws Exception {
+		this.thrown.expect(NoArgumentsException.class);
 		this.cli.run();
-		verify(this.shellCommand).run();
 	}
 
 	@Test
