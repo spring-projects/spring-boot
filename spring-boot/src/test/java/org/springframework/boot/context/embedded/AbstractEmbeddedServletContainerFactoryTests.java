@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.GenericServlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -166,6 +167,23 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				});
 		this.container.start();
 		assertThat(date[0], notNullValue());
+	}
+
+	@Test
+	public void loadOnStartAfterContextIsInitialized() throws Exception {
+		ConfigurableEmbeddedServletContainerFactory factory = getFactory();
+		final InitCountingServlet servlet = new InitCountingServlet();
+		this.container = factory
+				.getEmbeddedServletContainer(new ServletContextInitializer() {
+					@Override
+					public void onStartup(ServletContext servletContext)
+							throws ServletException {
+						servletContext.addServlet("test", servlet).setLoadOnStartup(1);
+					}
+				});
+		assertThat(servlet.getInitCount(), equalTo(0));
+		this.container.start();
+		assertThat(servlet.getInitCount(), equalTo(1));
 	}
 
 	@Test
@@ -313,4 +331,23 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		bean.setName("error");
 		return bean;
 	}
+
+	private static class InitCountingServlet extends GenericServlet {
+
+		private int initCount;
+
+		@Override
+		public void init() throws ServletException {
+			this.initCount++;
+		}
+
+		@Override
+		public void service(ServletRequest req, ServletResponse res)
+				throws ServletException, IOException {
+		}
+
+		public int getInitCount() {
+			return this.initCount;
+		}
+	};
 }

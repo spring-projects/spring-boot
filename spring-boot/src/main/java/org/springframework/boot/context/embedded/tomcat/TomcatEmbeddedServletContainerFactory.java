@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
@@ -119,14 +118,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
-
-		Connector connector;
 		Tomcat tomcat = new Tomcat();
-
 		File baseDir = (this.baseDirectory != null ? this.baseDirectory
 				: createTempDir("tomcat"));
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
-		connector = new Connector(this.protocol);
+		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
@@ -141,7 +137,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File docBase = getValidDocumentRoot();
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
-		Context context = new StandardContext();
+		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
 		context.setPath(getContextPath());
 		context.setDocBase(docBase.getAbsolutePath());
