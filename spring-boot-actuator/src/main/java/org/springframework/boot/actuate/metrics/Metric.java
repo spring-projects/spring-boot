@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.metrics;
 import java.util.Date;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Immutable class that can be used to hold any arbitrary system measurement value (a
@@ -33,7 +34,7 @@ public class Metric<T extends Number> {
 
 	private final T value;
 
-	private Date timestamp;
+	private final Date timestamp;
 
 	/**
 	 * Create a new {@link Metric} instance for the current time.
@@ -104,41 +105,29 @@ public class Metric<T extends Number> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result
-				+ ((this.timestamp == null) ? 0 : this.timestamp.hashCode());
-		result = prime * result + ((this.value == null) ? 0 : this.value.hashCode());
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.name);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.timestamp);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.value);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Metric<?> other = (Metric<?>) obj;
-		if (this.name == null) {
-			if (other.name != null)
-				return false;
 		}
-		else if (!this.name.equals(other.name))
+		if (obj == null) {
 			return false;
-		if (this.timestamp == null) {
-			if (other.timestamp != null)
-				return false;
 		}
-		else if (!this.timestamp.equals(other.timestamp))
-			return false;
-		if (this.value == null) {
-			if (other.value != null)
-				return false;
+		if (obj instanceof Metric) {
+			Metric<?> other = (Metric<?>) obj;
+			boolean rtn = true;
+			rtn &= ObjectUtils.nullSafeEquals(this.name, other.name);
+			rtn &= ObjectUtils.nullSafeEquals(this.timestamp, other.timestamp);
+			rtn &= ObjectUtils.nullSafeEquals(this.value, other.value);
+			return rtn;
 		}
-		else if (!this.value.equals(other.value))
-			return false;
-		return true;
+		return super.equals(obj);
 	}
 
 }

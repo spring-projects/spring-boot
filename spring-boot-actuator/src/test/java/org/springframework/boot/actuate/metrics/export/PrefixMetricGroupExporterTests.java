@@ -26,12 +26,16 @@ import org.springframework.boot.actuate.metrics.repository.InMemoryMetricReposit
 import static org.junit.Assert.assertEquals;
 
 /**
+ * Tests for {@link PrefixMetricGroupExporter}.
+ * 
  * @author Dave Syer
  */
 public class PrefixMetricGroupExporterTests {
 
-	private InMemoryMetricRepository writer = new InMemoryMetricRepository();
 	private InMemoryMetricRepository reader = new InMemoryMetricRepository();
+
+	private InMemoryMetricRepository writer = new InMemoryMetricRepository();
+
 	private PrefixMetricGroupExporter exporter = new PrefixMetricGroupExporter(
 			this.reader, this.writer);
 

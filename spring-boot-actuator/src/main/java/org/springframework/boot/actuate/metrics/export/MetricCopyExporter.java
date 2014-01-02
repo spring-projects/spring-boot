@@ -23,11 +23,15 @@ import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 /**
+ * {@link Exporter} that "exports" by copying metric data from a source
+ * {@link MetricReader} to a destination {@link MetricWriter}.
+ * 
  * @author Dave Syer
  */
 public class MetricCopyExporter extends AbstractMetricExporter {
 
 	private final MetricReader reader;
+
 	private final MetricWriter writer;
 
 	public MetricCopyExporter(MetricReader reader, MetricWriter writer) {
