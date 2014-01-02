@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler;
+package cli.command;
+
+import java.util.Collection;
+import java.util.Collections;
+
+import org.springframework.boot.cli.Command;
+import org.springframework.boot.cli.CommandFactory;
+import org.springframework.boot.cli.SpringCli;
 
 /**
- * The scope in which a groovy compiler operates.
- * 
- * @author Phillip Webb
+ * @author Dave Syer
  */
-public enum GroovyCompilerScope {
+public class CustomCommandFactory implements CommandFactory {
 
-	/**
-	 * Default scope, exposes groovy.jar (loaded from the parent) and the shared cli
-	 * package (loaded via groovy classloader).
-	 */
-	DEFAULT,
-
-	/**
-	 * Extension scope, allows full access to internal CLI classes.
-	 */
-	EXTENSION
+	@Override
+	public Collection<Command> getCommands(SpringCli cli) {
+		return Collections.<Command> singleton(new CustomCommand());
+	}
 
 }

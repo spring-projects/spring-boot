@@ -99,6 +99,7 @@ public class ShellCommand extends AbstractCommand {
 
 		PromptCommand prompt = new PromptCommand(this);
 		cli.register(prompt);
+		cli.register(new InitCommand(cli));
 	}
 
 	private ConsoleReader createConsoleReader() throws IOException {

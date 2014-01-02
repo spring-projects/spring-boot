@@ -46,12 +46,20 @@ public class FileOptions {
 	}
 
 	/**
-	 * Create a new {@link FileOptions} instance.
+	 * Create a new {@link FileOptions} instance. If it is an error to pass options that
+	 * specify non-existent files, but the default paths are allowed not to exist (the
+	 * paths are tested before use). If default paths are provided and the option set
+	 * contains no file arguments it is not an error even if none of the default paths
+	 * exist).
+	 * 
 	 * @param optionSet the source option set
 	 * @param classLoader an optional classloader used to try and load files that are not
-	 * found directly.
+	 * found in the local filesystem
+	 * @param defaultPaths the default paths to use if no files are provided in the option
+	 * set
 	 */
-	public FileOptions(OptionSet optionSet, ClassLoader classLoader) {
+	public FileOptions(OptionSet optionSet, ClassLoader classLoader,
+			String... defaultPaths) {
 		List<?> nonOptionArguments = optionSet.nonOptionArguments();
 		List<File> files = new ArrayList<File>();
 		for (Object option : nonOptionArguments) {
@@ -63,18 +71,26 @@ public class FileOptions {
 				if (filename.endsWith(".groovy") || filename.endsWith(".java")) {
 					File file = getFile(filename, classLoader);
 					if (file == null) {
-						throw new RuntimeException("Can't find " + filename);
+						throw new IllegalArgumentException("Can't find " + filename);
 					}
 					files.add(file);
 				}
 			}
 		}
-		if (files.size() == 0) {
-			throw new RuntimeException("Please specify a file to run");
-		}
-		this.files = Collections.unmodifiableList(files);
 		this.args = Collections.unmodifiableList(nonOptionArguments.subList(files.size(),
 				nonOptionArguments.size()));
+		if (files.size() == 0) {
+			if (defaultPaths.length == 0) {
+				throw new RuntimeException("Please specify at least one file to run");
+			}
+			for (String path : defaultPaths) {
+				File file = getFile(path, classLoader);
+				if (file != null && file.exists()) {
+					files.add(file);
+				}
+			}
+		}
+		this.files = Collections.unmodifiableList(files);
 	}
 
 	private File getFile(String filename, ClassLoader classLoader) {

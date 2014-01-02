@@ -46,7 +46,7 @@ import org.springframework.util.FileCopyUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-class ExtendedGroovyClassLoader extends GroovyClassLoader {
+public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	private static final String SHARED_PACKAGE = "org.springframework.boot.groovy";
 
