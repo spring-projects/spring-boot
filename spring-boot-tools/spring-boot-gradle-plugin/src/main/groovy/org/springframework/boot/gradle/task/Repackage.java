@@ -57,8 +57,7 @@ public class Repackage extends DefaultTask {
 		}
 		if (this.customConfiguration != null) {
 			libraries.setCustomConfigurationName(this.customConfiguration);
-		}
-		else if (extension.getCustomConfiguration() != null) {
+		} else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
 		project.getTasks().withType(Jar.class, new Action<Jar>() {

@@ -56,7 +56,8 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
 			PropertyPlaceholderAutoConfiguration.class })
 	@ComponentScan(basePackageClasses = { SampleController.class, HelloWorldService.class })
 	public static class NonAutoConfigurationSampleTomcatApplication {

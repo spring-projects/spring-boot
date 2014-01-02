@@ -186,14 +186,17 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 
 	// SmartLifeCycle implementation
 
+	@Override
 	public final int getPhase() {
 		return this.phase;
 	}
 
+	@Override
 	public final boolean isAutoStartup() {
 		return this.autoStartup;
 	}
 
+	@Override
 	public final boolean isRunning() {
 		this.lifecycleLock.lock();
 		try {
@@ -204,6 +207,7 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 		}
 	}
 
+	@Override
 	public final void start() {
 		this.lifecycleLock.lock();
 		try {
@@ -217,6 +221,7 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 		}
 	}
 
+	@Override
 	public final void stop() {
 		this.lifecycleLock.lock();
 		try {
@@ -229,6 +234,7 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 		}
 	}
 
+	@Override
 	public final void stop(Runnable callback) {
 		this.lifecycleLock.lock();
 		try {

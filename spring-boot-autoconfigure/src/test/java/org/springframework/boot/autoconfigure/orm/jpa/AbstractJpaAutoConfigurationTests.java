@@ -137,10 +137,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedEntityManagerFactoryBeanIfAvailable() {
-
 		setupTestConfiguration(TestConfigurationWithEntityManagerFactory.class);
 		this.context.refresh();
-
 		LocalContainerEntityManagerFactoryBean factoryBean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
 		Map<String, Object> map = factoryBean.getJpaPropertyMap();
@@ -149,10 +147,8 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void usesManuallyDefinedTransactionManagerBeanIfAvailable() {
-
 		setupTestConfiguration(TestConfigurationWithTransactionManager.class);
 		this.context.refresh();
-
 		PlatformTransactionManager txManager = this.context
 				.getBean(PlatformTransactionManager.class);
 		assertThat(txManager, instanceOf(CustomJpaTransactionManager.class));

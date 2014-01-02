@@ -59,7 +59,7 @@ public class SampleActuatorNoWebApplicationTests {
 			context.close();
 		}
 	}
-	
+
 	@Test
 	public void endpointsExist() throws Exception {
 		assertNotNull(context.getBean(MetricsEndpoint.class));

@@ -8,7 +8,7 @@ class SpringIntegrationExample implements CommandLineRunner {
 	DirectChannel input() {
 		new DirectChannel();
 	}
-	
+
 	@Override
 	void run(String... args) {
 		print new MessagingTemplate(input()).convertSendAndReceive("World")

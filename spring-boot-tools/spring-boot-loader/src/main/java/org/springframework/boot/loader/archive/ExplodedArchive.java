@@ -39,7 +39,7 @@ import org.springframework.boot.loader.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
- *
+ * 
  * @author Phillip Webb
  */
 public class ExplodedArchive extends Archive {
@@ -72,7 +72,8 @@ public class ExplodedArchive extends Archive {
 
 	private void buildEntries(File file) {
 		if (!file.equals(this.root)) {
-            String name = file.toURI().getPath().substring(root.toURI().getPath().length());
+			String name = file.toURI().getPath()
+					.substring(root.toURI().getPath().length());
 			FileEntry entry = new FileEntry(new AsciiBytes(name), file);
 			this.entries.put(entry.getName(), entry);
 		}
@@ -88,7 +89,7 @@ public class ExplodedArchive extends Archive {
 	@Override
 	public URL getUrl() throws MalformedURLException {
 		FilteredURLStreamHandler handler = new FilteredURLStreamHandler();
-        return new URL("file", "", -1, this.root.toURI().getPath(), handler);
+		return new URL("file", "", -1, this.root.toURI().getPath(), handler);
 	}
 
 	@Override

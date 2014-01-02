@@ -55,6 +55,7 @@ public abstract class AbstractEndpoint<T> implements Endpoint<T> {
 		this.id = id;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return this.enabled;
 	}

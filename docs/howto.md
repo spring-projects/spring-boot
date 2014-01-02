@@ -200,7 +200,7 @@ webapp or service:
 			<artifactId>spring-boot-starter-jetty</artifactId>
 		</dependency
 	</dependencies>
-    
+
 
 ## Terminate SSL in Tomcat
 
@@ -818,7 +818,7 @@ change the behaviour:
   classpath resource or a URL). A separate `Environment` property
   source is set up for this document and it can be overridden by
   system properties, environment variables or the command line.
-  
+
 No matter what you set in the environment, Spring Boot will always
 load `application.properties` as described above. If YAML is used then
 files with the ".yml" extension are also added to the list by default.
@@ -942,4 +942,4 @@ it with
 after which you can run the application with
 
     $ java -jar target/*.jar
- 
+

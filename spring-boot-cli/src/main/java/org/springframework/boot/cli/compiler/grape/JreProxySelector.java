@@ -47,6 +47,7 @@ public final class JreProxySelector implements ProxySelector {
 	public JreProxySelector() {
 	}
 
+	@Override
 	public Proxy getProxy(RemoteRepository repository) {
 		List<java.net.Proxy> proxies = null;
 		try {
@@ -95,6 +96,7 @@ public final class JreProxySelector implements ProxySelector {
 
 		public static final Authentication INSTANCE = new JreProxyAuthentication();
 
+		@Override
 		public void fill(AuthenticationContext context, String key,
 				Map<String, String> data) {
 			Proxy proxy = context.getProxy();
@@ -136,6 +138,7 @@ public final class JreProxySelector implements ProxySelector {
 			}
 		}
 
+		@Override
 		public void digest(AuthenticationDigest digest) {
 			// we don't know anything about the JRE's current authenticator, assume the
 			// worst (i.e. interactive)

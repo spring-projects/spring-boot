@@ -1,3 +1,4 @@
+
 package org.springframework.boot.gradle.task;
 
 import java.io.File;
@@ -20,6 +21,7 @@ class ProjectLibraries implements Libraries {
 	private final Project project;
 
 	private String providedConfigurationName = "providedRuntime";
+
 	private String customConfigurationName = null;
 
 	/**
@@ -47,18 +49,16 @@ class ProjectLibraries implements Libraries {
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
 
-		FileCollection custom = this.customConfigurationName != null ? this.project
-				.getConfigurations().findByName(this.customConfigurationName) : null;
+		FileCollection custom = this.customConfigurationName != null ? this.project.getConfigurations().findByName(
+				this.customConfigurationName)
+				: null;
 
 		if (custom != null) {
 			libraries(LibraryScope.CUSTOM, custom, callback);
-		}
-		else {
-			FileCollection compile = this.project.getConfigurations()
-					.getByName("compile");
+		} else {
+			FileCollection compile = this.project.getConfigurations().getByName("compile");
 
-			FileCollection runtime = this.project.getConfigurations()
-					.getByName("runtime");
+			FileCollection runtime = this.project.getConfigurations().getByName("runtime");
 			runtime = runtime.minus(compile);
 
 			FileCollection provided = this.project.getConfigurations().findByName(

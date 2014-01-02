@@ -67,8 +67,8 @@ public class SampleServletApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:8080", String.class);
+		ResponseEntity<String> entity = getRestTemplate("user", getPassword())
+				.getForEntity("http://localhost:8080", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}
