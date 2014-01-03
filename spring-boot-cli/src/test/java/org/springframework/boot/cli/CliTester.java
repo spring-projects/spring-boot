@@ -88,8 +88,14 @@ public class CliTester implements TestRule {
 		return Executors.newSingleThreadExecutor().submit(new Callable<T>() {
 			@Override
 			public T call() throws Exception {
-				command.run(sources);
-				return command;
+				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				try {
+					command.run(sources);
+					return command;
+				}
+				finally {
+					Thread.currentThread().setContextClassLoader(loader);
+				}
 			}
 		});
 	}
