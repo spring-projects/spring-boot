@@ -17,9 +17,12 @@
 package org.springframework.boot.cli.command;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import joptsimple.OptionSet;
@@ -69,11 +72,11 @@ public class FileOptions {
 					break;
 				}
 				if (filename.endsWith(".groovy") || filename.endsWith(".java")) {
-					File file = getFile(filename, classLoader);
-					if (file == null) {
+					List<File> file = getFiles(filename, classLoader);
+					if (file.isEmpty()) {
 						throw new IllegalArgumentException("Can't find " + filename);
 					}
-					files.add(file);
+					files.addAll(file);
 				}
 			}
 		}
@@ -84,27 +87,38 @@ public class FileOptions {
 				throw new RuntimeException("Please specify at least one file to run");
 			}
 			for (String path : defaultPaths) {
-				File file = getFile(path, classLoader);
-				if (file != null && file.exists()) {
-					files.add(file);
+				for (File file : getFiles(path, classLoader)) {
+					if (file != null && file.exists()) {
+						files.add(file);
+					}
 				}
 			}
 		}
 		this.files = Collections.unmodifiableList(files);
 	}
 
-	private File getFile(String filename, ClassLoader classLoader) {
+	private List<File> getFiles(String filename, ClassLoader classLoader) {
 		File file = new File(filename);
 		if (file.isFile() && file.canRead()) {
-			return file;
+			return Arrays.asList(file);
 		}
+		List<File> result = new ArrayList<File>();
 		if (classLoader != null) {
-			URL url = classLoader.getResource(filename);
-			if (url != null && url.toString().startsWith("file:")) {
-				return new File(url.toString().substring("file:".length()));
+			Enumeration<URL> urls;
+			try {
+				urls = classLoader.getResources(filename);
+				while (urls.hasMoreElements()) {
+					URL url = urls.nextElement();
+					if (url != null && url.toString().startsWith("file:")) {
+						result.add(new File(url.toString().substring("file:".length())));
+					}
+				}
+			}
+			catch (IOException e) {
+				// Ignore
 			}
 		}
-		return null;
+		return result;
 	}
 
 	public List<?> getArgs() {
