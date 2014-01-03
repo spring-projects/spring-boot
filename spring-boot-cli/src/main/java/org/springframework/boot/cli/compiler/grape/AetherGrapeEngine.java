@@ -25,6 +25,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +96,10 @@ public class AetherGrapeEngine implements GrapeEngine {
 		session.setProxySelector(this.proxySelector);
 		this.session = session;
 		this.repositories = new ArrayList<RemoteRepository>();
-		for (RemoteRepository repository : remoteRepositories) {
+		List<RemoteRepository> remotes = new ArrayList<RemoteRepository>(
+				remoteRepositories);
+		Collections.reverse(remotes); // priority is reversed in addRepository
+		for (RemoteRepository repository : remotes) {
 			addRepository(repository);
 		}
 		this.progressReporter = getProgressReporter(session);

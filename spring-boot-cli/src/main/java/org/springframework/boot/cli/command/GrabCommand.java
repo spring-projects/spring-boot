@@ -16,7 +16,6 @@
 
 package org.springframework.boot.cli.command;
 
-import java.io.File;
 import java.util.List;
 
 import joptsimple.OptionSet;
@@ -27,7 +26,6 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link Command} to grab the dependencies of one or more Groovy scripts
@@ -57,33 +55,10 @@ public class GrabCommand extends OptionParsingCommand {
 				System.setProperty("grape.root", ".");
 			}
 
-			if (!new File(System.getProperty("grape.root")).equals(getM2HomeDirectory())) {
-				GrabCommand.addDefaultCacheAsRespository(repositoryConfiguration);
-			}
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
 			groovyCompiler.compile(fileOptions.getFilesArray());
 		}
 
-	}
-
-	/**
-	 * Add the default local M2 cache directory as a remote repository. Only do this if
-	 * the local cache location has been changed from the default.
-	 * 
-	 * @param repositoryConfiguration
-	 */
-	public static void addDefaultCacheAsRespository(
-			List<RepositoryConfiguration> repositoryConfiguration) {
-		repositoryConfiguration.add(0, new RepositoryConfiguration("local", new File(
-				getM2HomeDirectory(), "repository").toURI(), true));
-	}
-
-	private static File getM2HomeDirectory() {
-		String mavenRoot = System.getProperty("maven.home");
-		if (StringUtils.hasLength(mavenRoot)) {
-			return new File(mavenRoot);
-		}
-		return new File(System.getProperty("user.home"), ".m2");
 	}
 
 }

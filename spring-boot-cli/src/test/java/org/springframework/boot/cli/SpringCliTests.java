@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,8 +61,16 @@ public class SpringCliTests {
 
 	private Set<Call> calls = EnumSet.noneOf(Call.class);
 
+	private ClassLoader loader;
+
+	@After
+	public void close() {
+		Thread.currentThread().setContextClassLoader(this.loader);
+	}
+
 	@Before
 	public void setup() {
+		this.loader = Thread.currentThread().getContextClassLoader();
 		MockitoAnnotations.initMocks(this);
 		this.cli = new SpringCli() {
 

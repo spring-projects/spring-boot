@@ -16,11 +16,13 @@
 
 package org.springframework.boot.cli.compiler;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+import org.springframework.util.StringUtils;
 
 /**
  * Factory used to create {@link RepositoryConfiguration}s.
@@ -52,7 +54,31 @@ public final class RepositoryConfigurationFactory {
 			repositoryConfiguration.add(SPRING_MILESTONE);
 		}
 
+		addDefaultCacheAsRespository(repositoryConfiguration);
 		return repositoryConfiguration;
+	}
+
+	/**
+	 * Add the default local M2 cache directory as a remote repository. Only do this if
+	 * the local cache location has been changed from the default.
+	 * 
+	 * @param repositoryConfiguration
+	 */
+	public static void addDefaultCacheAsRespository(
+			List<RepositoryConfiguration> repositoryConfiguration) {
+		RepositoryConfiguration repository = new RepositoryConfiguration("local",
+				new File(getM2HomeDirectory(), "repository").toURI(), true);
+		if (!repositoryConfiguration.contains(repository)) {
+			repositoryConfiguration.add(0, repository);
+		}
+	}
+
+	private static File getM2HomeDirectory() {
+		String mavenRoot = System.getProperty("maven.home");
+		if (StringUtils.hasLength(mavenRoot)) {
+			return new File(mavenRoot);
+		}
+		return new File(System.getProperty("user.home"), ".m2");
 	}
 
 }
