@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-println "Hello ${args[0]}"
+command("foo") { args ->
+
+	println "Hello Command"
+
+}

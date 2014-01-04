@@ -69,6 +69,12 @@ public class InitCommandTests {
 		assertTrue(this.output.toString().contains("Hello Grab"));
 	}
 
+	@Test
+	public void initCommand() throws Exception {
+		this.command.run("src/test/resources/command.groovy");
+		verify(this.cli, times(this.defaultCount + 1)).register(any(Command.class));
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void initNonExistentScript() throws Exception {
 		this.command.run("nonexistent.groovy");
@@ -78,7 +84,7 @@ public class InitCommandTests {
 	@Test
 	public void initDefault() throws Exception {
 		this.command.run();
-		assertTrue(this.output.toString().contains("Hello World"));
+		assertTrue(this.output.toString().contains("Hello Init"));
 	}
 
 }

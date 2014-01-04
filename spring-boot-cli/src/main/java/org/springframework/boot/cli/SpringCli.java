@@ -52,18 +52,25 @@ public class SpringCli {
 
 	private String displayName = CLI_APP + " ";
 
+	private InitCommand init;
+
 	/**
 	 * Create a new {@link SpringCli} implementation with the default set of commands.
 	 */
 	public SpringCli() {
 		try {
-			new InitCommand(this).run();
+			this.init = new InitCommand(this);
+			this.init.run();
 		}
 		catch (Exception e) {
 			throw new IllegalStateException("Cannot init with those args", e);
 		}
 		this.commands.add(0, new HelpCommand());
 		this.commands.add(new HintCommand());
+	}
+
+	public InitCommand getInitCommand() {
+		return this.init;
 	}
 
 	/**
