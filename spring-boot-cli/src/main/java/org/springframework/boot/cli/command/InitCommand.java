@@ -16,11 +16,13 @@
 
 package org.springframework.boot.cli.command;
 
+import groovy.lang.Closure;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import joptsimple.OptionSet;
@@ -87,6 +89,8 @@ public class InitCommand extends OptionParsingCommand {
 						options, this, repositoryConfiguration);
 
 				this.compiler = new GroovyCompiler(configuration);
+				this.compiler
+						.addCompilationCustomizers(new ScriptCompilationCustomizer());
 				loader = this.compiler.getLoader();
 				Thread.currentThread().setContextClassLoader(loader);
 
@@ -102,7 +106,25 @@ public class InitCommand extends OptionParsingCommand {
 			if (this.compiler != null && files.length > 0) {
 				Class<?>[] classes = this.compiler.compile(files);
 				for (Class<?> type : classes) {
-					if (Script.class.isAssignableFrom(type)) {
+					Command script = ScriptCommand.command(type);
+					if (script != null) {
+						this.cli.register(script);
+					}
+					else if (CommandFactory.class.isAssignableFrom(type)) {
+						for (Command command : ((CommandFactory) type.newInstance())
+								.getCommands(this.cli)) {
+							this.cli.register(command);
+						}
+					}
+					else if (Commands.class.isAssignableFrom(type)) {
+						Map<String, Closure<?>> commands = ((Commands) type.newInstance())
+								.getCommands();
+						for (String command : commands.keySet()) {
+							this.cli.register(new ScriptCommand(command, commands
+									.get(command)));
+						}
+					}
+					else if (Script.class.isAssignableFrom(type)) {
 						((Script) type.newInstance()).run();
 					}
 				}
@@ -121,7 +143,6 @@ public class InitCommand extends OptionParsingCommand {
 			}
 
 		}
-
 	}
 
 	private static class InitGroovyCompilerConfigurationAdapter extends
@@ -136,6 +157,10 @@ public class InitCommand extends OptionParsingCommand {
 		public GroovyCompilerScope getScope() {
 			return GroovyCompilerScope.EXTENSION;
 		}
+	}
+
+	public static interface Commands {
+		Map<String, Closure<?>> getCommands();
 	}
 
 }

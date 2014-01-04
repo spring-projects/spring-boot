@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-def run = { msg ->
-	org.springframework.boot.cli.command.ScriptCommandTests.executed = true
-	println "Hello ${msg}"
-}
+command("foo") { args ->
 
-run
+	org.springframework.boot.cli.command.ScriptCommandTests.executed = true
+	println "Hello ${options.nonOptionArguments()}: ${options.has('foo')} ${options.valueOf('bar')}"
+}

@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-class TestCommand implements Runnable {
-	def msg
-	TestCommand(String msg) {
-		this.msg = msg
+package org.test.command
+
+import java.util.Collection;
+
+class TestCommand implements Command {
+
+	String name = "foo"
+
+	String description = "My script command"
+
+	String help = "No options"
+
+	String usageHelp = "Not very useful"
+	
+	Collection<String> optionsHelp = ["No options"]
+	
+	boolean optionCommand = false
+
+	void run(String... args) {
+		println "Hello ${args[0]}"
 	}
-	void run() {
-		org.springframework.boot.cli.command.ScriptCommandTests.executed = true
-		println "Hello ${msg}"
-	}
+
 }
-new TestCommand(args[0])
