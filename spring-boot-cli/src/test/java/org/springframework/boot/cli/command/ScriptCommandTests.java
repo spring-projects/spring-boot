@@ -18,7 +18,6 @@ package org.springframework.boot.cli.command;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.OutputCapture;
@@ -65,15 +64,14 @@ public class ScriptCommandTests {
 	public void handler() throws Exception {
 		this.init.run("src/test/resources/commands/handler.groovy");
 		this.cli.find("foo").run("Foo", "--foo=bar");
-		assertTrue(executed);
+		assertTrue(this.output.toString().contains("Hello [Foo]"));
 	}
 
 	@Test
-	@Ignore
 	public void options() throws Exception {
 		this.init.run("src/test/resources/commands/options.groovy");
 		this.cli.find("foo").run("Foo", "--foo=bar");
-		assertTrue(executed);
+		assertTrue(this.output.toString().contains("Hello Foo"));
 	}
 
 }

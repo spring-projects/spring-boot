@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cli.command;
+package org.springframework.boot.cli.command;
 
 import groovy.lang.Closure;
 
@@ -29,8 +29,6 @@ import org.junit.Test;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.command.InitCommand.Commands;
-import org.springframework.boot.cli.command.OptionHandler;
-import org.springframework.boot.cli.command.ScriptCompilationCustomizer;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
@@ -75,22 +73,53 @@ public class ScriptCompilationCustomizerTests {
 	@Test
 	public void addsCommands() throws Exception {
 		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/options.groovy"));
+				"src/test/resources/scripts/commands.groovy"));
 		Class<?> main = types[0];
 		assertTrue(Commands.class.isAssignableFrom(main));
 	}
 
 	@Test
-	public void commandsExecutable() throws Exception {
+	public void closureWithStringArgs() throws Exception {
 		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/options.groovy"));
+				"src/test/resources/scripts/commands.groovy"));
 		Class<?> main = types[0];
 		Map<String, Closure<?>> commands = ((Commands) main.newInstance()).getCommands();
 		assertEquals(1, commands.size());
 		assertEquals("foo", commands.keySet().iterator().next());
 		Closure<?> closure = commands.values().iterator().next();
-		closure.call(); // what about args?
+		closure.call("foo", "bar");
 		assertTrue(this.output.toString().contains("Hello Command"));
+	}
+
+	@Test
+	public void closureWithEmptyArgs() throws Exception {
+		Class<?>[] types = this.compiler.compile(new File(
+				"src/test/resources/scripts/commands.groovy"));
+		Class<?> main = types[0];
+		Map<String, Closure<?>> commands = ((Commands) main.newInstance()).getCommands();
+		assertEquals(1, commands.size());
+		assertEquals("foo", commands.keySet().iterator().next());
+		Closure<?> closure = commands.values().iterator().next();
+		closure.call();
+		assertTrue(this.output.toString().contains("Hello Command"));
+	}
+
+	@Test
+	public void closureAndOptionsDefined() throws Exception {
+		Class<?>[] types = this.compiler.compile(new File(
+				"src/test/resources/scripts/options.groovy"));
+		Class<?> main = types[0];
+		Commands commands = (Commands) main.newInstance();
+		Map<String, Closure<?>> closures = commands.getCommands();
+		assertEquals(1, closures.size());
+		assertEquals("foo", closures.keySet().iterator().next());
+		final Closure<?> closure = closures.values().iterator().next();
+		Map<String, OptionHandler> options = commands.getOptions();
+		assertEquals(1, options.size());
+		OptionHandler handler = options.get("foo");
+		handler.setClosure(closure);
+		handler.run("--foo=bar", "--bar=blah", "spam");
+		assertTrue(this.output.toString().contains("Hello [spam]: true blah"));
 	}
 
 	private static class TestGroovyCompilerConfiguration implements

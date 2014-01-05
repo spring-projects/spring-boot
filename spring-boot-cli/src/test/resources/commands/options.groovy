@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-command("foo") { args ->
+ def foo() {
+	 "Foo"
+ }
 
-	org.springframework.boot.cli.command.ScriptCommandTests.executed = true
-	println "Hello ${options.nonOptionArguments()}: ${options.has('foo')} ${options.valueOf('bar')}"
+command("foo") {
+
+	options {
+		option "foo", "A foo of type String"
+		option "bar", "Bar has a value" withOptionalArg() ofType Integer
+	}
+
+	run { options ->
+		println "Hello ${foo()}: bar=${options.valueOf('bar')}"
+	}
+
 }

@@ -31,7 +31,6 @@ class TestCommand extends OptionHandler {
 	void run(OptionSet options) {
 		// Demonstrate use of Grape.grab to load dependencies before running
 		println "Clean: " + Git.open(".." as File).status().call().isClean()
-		org.springframework.boot.cli.command.ScriptCommandTests.executed = true
 		println "Hello ${options.nonOptionArguments()}: ${options.has('foo')}"
 	}
 
