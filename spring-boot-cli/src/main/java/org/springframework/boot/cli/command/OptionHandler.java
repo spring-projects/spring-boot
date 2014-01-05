@@ -51,7 +51,7 @@ public class OptionHandler {
 
 	private OptionParser parser;
 
-	private Closure<Void> closure;
+	private Closure<?> closure;
 
 	private String help;
 
@@ -74,12 +74,9 @@ public class OptionHandler {
 	}
 
 	protected void options() {
-		if (this.closure != null) {
-			this.closure.call();
-		}
 	}
 
-	public void setOptions(Closure<Void> closure) {
+	public void setClosure(Closure<?> closure) {
 		this.closure = closure;
 	}
 
@@ -100,6 +97,9 @@ public class OptionHandler {
 	 * @throws Exception
 	 */
 	protected void run(OptionSet options) throws Exception {
+		if (this.closure != null) {
+			this.closure.call(options);
+		}
 	}
 
 	public String getHelp() {

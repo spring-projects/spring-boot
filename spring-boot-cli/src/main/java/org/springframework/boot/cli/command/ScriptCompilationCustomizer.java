@@ -27,30 +27,30 @@ import joptsimple.OptionSpecBuilder;
 import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
 import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
-import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.InnerClassNode;
 import org.codehaus.groovy.ast.Parameter;
 import org.codehaus.groovy.ast.PropertyNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
-import org.springframework.asm.Opcodes;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.command.InitCommand.Commands;
 
 /**
- * Customizer for the compilation of CLI commands.
+ * Customizer for the compilation of CLI script commands.
  * 
  * @author Dave Syer
  */
@@ -64,29 +64,92 @@ public class ScriptCompilationCustomizer extends CompilationCustomizer {
 	public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
 			throws CompilationFailedException {
 		findCommands(source, classNode);
-		overrideOptionsMethod(source, classNode);
 		addImports(source, context, classNode);
 	}
 
+	/**
+	 * If the script defines a block in this form:
+	 * 
+	 * <pre>
+	 * command("foo") { args ->
+	 *     println "Command foo called with args: ${args}"
+	 * }
+	 * </pre>
+	 * 
+	 * Then the block is taken and used to create a Command named "foo" that runs the
+	 * closure when it is executed.
+	 * 
+	 * If you want to declare options (and provide help text), use this form:
+	 * 
+	 * <pre>
+	 * command("foo") {
+	 * 
+	 *   options {
+	 *     option "foo", "My Foo option"
+	 *     option "bar", "Bar has a value" withOptionalArg() ofType Integer
+	 *   }
+	 *   
+	 *   run { options ->
+	 *   	println "Command foo called with bar=${options.valueOf('bar')}"
+	 *   }
+	 * 
+	 * }
+	 * </pre>
+	 * 
+	 * In this case the "options" block is taken and used to override the
+	 * {@link OptionHandler#options()} method. Each "option" is a call to
+	 * {@link OptionHandler#option(String, String)}, and hence returns an
+	 * {@link OptionSpecBuilder}. Makes a nice readable DSL for adding options.
+	 * 
+	 * @param source the source node
+	 * @param classNode the class node to manipulate
+	 */
 	private void findCommands(SourceUnit source, ClassNode classNode) {
-		CommandVisitor visitor = new CommandVisitor(source);
+		CommandVisitor visitor = new CommandVisitor(source, classNode);
 		classNode.visitContents(visitor);
 		visitor.addFactory(classNode);
 	}
 
+	/**
+	 * Add imports to the class node to make writing simple commands easier. No need to
+	 * import {@link OptionParser}, {@link OptionSet}, {@link Command} or
+	 * {@link OptionHandler}.
+	 * 
+	 * @param source the source node
+	 * @param context the current context
+	 * @param classNode the class node to manipulate
+	 */
+	private void addImports(SourceUnit source, GeneratorContext context,
+			ClassNode classNode) {
+		ImportCustomizer importCustomizer = new ImportCustomizer();
+		importCustomizer.addImports("joptsimple.OptionParser", "joptsimple.OptionSet",
+				OptionParsingCommand.class.getCanonicalName(),
+				Command.class.getCanonicalName(), OptionHandler.class.getCanonicalName());
+		importCustomizer.call(source, context, classNode);
+	}
+
+	/**
+	 * Helper to extract a Commands instance (adding that interface to the current class
+	 * node) so individual commands can be registered with the CLI.
+	 * 
+	 * @author Dave Syer
+	 */
 	private static class CommandVisitor extends ClassCodeVisitorSupport {
 
 		private SourceUnit source;
-		private MapExpression map = new MapExpression();
+		private MapExpression closures = new MapExpression();
+		private MapExpression options = new MapExpression();
 		private List<ExpressionStatement> statements = new ArrayList<ExpressionStatement>();
 		private ExpressionStatement statement;
+		private ClassNode classNode;
 
-		public CommandVisitor(SourceUnit source) {
+		public CommandVisitor(SourceUnit source, ClassNode classNode) {
 			this.source = source;
+			this.classNode = classNode;
 		}
 
 		private boolean hasCommands() {
-			return !this.map.getMapEntryExpressions().isEmpty();
+			return !this.closures.getMapEntryExpressions().isEmpty();
 		}
 
 		private void addFactory(ClassNode classNode) {
@@ -96,7 +159,10 @@ public class ScriptCompilationCustomizer extends CompilationCustomizer {
 			classNode.addInterface(ClassHelper.make(Commands.class));
 			classNode.addProperty(new PropertyNode("commands", Modifier.PUBLIC
 					| Modifier.FINAL, ClassHelper.MAP_TYPE.getPlainNodeReference(),
-					classNode, this.map, null, null));
+					classNode, this.closures, null, null));
+			classNode.addProperty(new PropertyNode("options", Modifier.PUBLIC
+					| Modifier.FINAL, ClassHelper.MAP_TYPE.getPlainNodeReference(),
+					classNode, this.options, null, null));
 		}
 
 		@Override
@@ -128,91 +194,105 @@ public class ScriptCompilationCustomizer extends CompilationCustomizer {
 					this.statements.add(this.statement);
 					ConstantExpression name = (ConstantExpression) arguments
 							.getExpression(0);
-					ClosureExpression closure = (ClosureExpression) arguments
-							.getExpression(1);
-					this.map.addMapEntryExpression(name, closure);
-				}
-			}
-		}
-
-	}
-
-	/**
-	 * Add imports to the class node to make writing simple commands easier. No need to
-	 * import {@link OptionParser}, {@link OptionSet}, {@link Command} or
-	 * {@link OptionHandler}.
-	 * 
-	 * @param source the source node
-	 * @param context the current context
-	 * @param classNode the class node to manipulate
-	 */
-	private void addImports(SourceUnit source, GeneratorContext context,
-			ClassNode classNode) {
-		ImportCustomizer importCustomizer = new ImportCustomizer();
-		importCustomizer.addImports("joptsimple.OptionParser", "joptsimple.OptionSet",
-				OptionParsingCommand.class.getCanonicalName(),
-				Command.class.getCanonicalName(), OptionHandler.class.getCanonicalName());
-		importCustomizer.call(source, context, classNode);
-	}
-
-	/**
-	 * If the script defines a block in this form:
-	 * 
-	 * <pre>
-	 * options {
-	 *   option "foo", "My Foo option"
-	 *   option "bar", "Bar has a value" withOptionalArg() ofType Integer
-	 * }
-	 * </pre>
-	 * 
-	 * Then the block is taken and used to override the {@link OptionHandler#options()}
-	 * method. In the example "option" is a call to
-	 * {@link OptionHandler#option(String, String)}, and hence returns an
-	 * {@link OptionSpecBuilder}. Makes a nice readable DSL for adding options.
-	 * 
-	 * @param source the source node
-	 * @param classNode the class node to manipulate
-	 */
-	private void overrideOptionsMethod(SourceUnit source, ClassNode classNode) {
-
-		ClosureExpression closure = options(source, classNode);
-		if (closure != null) {
-			classNode.addMethod(new MethodNode("options", Opcodes.ACC_PROTECTED,
-					ClassHelper.VOID_TYPE, new Parameter[0], new ClassNode[0], closure
-							.getCode()));
-			classNode.setSuperClass(ClassHelper.make(OptionHandler.class));
-		}
-
-	}
-
-	private ClosureExpression options(SourceUnit source, ClassNode classNode) {
-
-		BlockStatement block = source.getAST().getStatementBlock();
-		List<Statement> statements = block.getStatements();
-
-		for (Statement statement : new ArrayList<Statement>(statements)) {
-			if (statement instanceof ExpressionStatement) {
-				ExpressionStatement expr = (ExpressionStatement) statement;
-				Expression expression = expr.getExpression();
-				if (expression instanceof MethodCallExpression) {
-					MethodCallExpression method = (MethodCallExpression) expression;
-					if (method.getMethod().getText().equals("options")) {
-						statements.remove(statement);
-						expression = method.getArguments();
-						if (expression instanceof ArgumentListExpression) {
-							ArgumentListExpression arguments = (ArgumentListExpression) expression;
-							expression = arguments.getExpression(0);
-							if (expression instanceof ClosureExpression) {
-								return (ClosureExpression) expression;
-							}
+					Expression expression = arguments.getExpression(1);
+					if (expression instanceof ClosureExpression) {
+						ClosureExpression closure = (ClosureExpression) expression;
+						ActionExtractorVisitor action = new ActionExtractorVisitor(
+								this.source, this.classNode, name.getText());
+						closure.getCode().visit(action);
+						if (action.hasOptions()) {
+							this.options.addMapEntryExpression(name, action.getOptions());
+							expression = action.getAction();
 						}
+						else {
+							expression = new ClosureExpression(
+									new Parameter[] { new Parameter(
+											ClassHelper.make(String[].class), "args") },
+									closure.getCode());
+						}
+						this.closures.addMapEntryExpression(name, expression);
 					}
 				}
 			}
 		}
 
-		return null;
+	}
 
+	/**
+	 * Helper to pull out options and action closures from a command declaration (if they
+	 * are there).
+	 * 
+	 * @author Dave Syer
+	 */
+	private static class ActionExtractorVisitor extends ClassCodeVisitorSupport {
+
+		private static final Parameter[] OPTIONS_PARAMETERS = new Parameter[] { new Parameter(
+				ClassHelper.make(OptionSet.class), "options") };
+		private SourceUnit source;
+		private ClassNode classNode;
+		private Expression options;
+		private ClosureExpression action;
+		private String name;
+
+		public ActionExtractorVisitor(SourceUnit source, ClassNode classNode, String name) {
+			this.source = source;
+			this.classNode = classNode;
+			this.name = name;
+		}
+
+		@Override
+		protected SourceUnit getSourceUnit() {
+			return this.source;
+		}
+
+		public boolean hasOptions() {
+			return this.options != null;
+		}
+
+		public Expression getOptions() {
+			return this.options;
+		}
+
+		public ClosureExpression getAction() {
+			return this.action != null ? this.action : new ClosureExpression(
+					OPTIONS_PARAMETERS, new EmptyStatement());
+		}
+
+		@Override
+		public void visitMethodCallExpression(MethodCallExpression call) {
+			Expression methodCall = call.getMethod();
+			if (methodCall instanceof ConstantExpression) {
+				ConstantExpression method = (ConstantExpression) methodCall;
+				if ("options".equals(method.getValue())) {
+					ArgumentListExpression arguments = (ArgumentListExpression) call
+							.getArguments();
+					Expression expression = arguments.getExpression(0);
+					if (expression instanceof ClosureExpression) {
+						ClosureExpression closure = (ClosureExpression) expression;
+						InnerClassNode type = new InnerClassNode(this.classNode,
+								this.classNode.getName() + "$" + this.name
+										+ "OptionHandler", Modifier.PUBLIC,
+								ClassHelper.make(OptionHandler.class));
+						type.addMethod("options", Modifier.PROTECTED,
+								ClassHelper.VOID_TYPE, Parameter.EMPTY_ARRAY,
+								ClassNode.EMPTY_ARRAY, closure.getCode());
+						this.classNode.getModule().addClass(type);
+						this.options = new ConstructorCallExpression(type,
+								ArgumentListExpression.EMPTY_ARGUMENTS);
+					}
+				}
+				else if ("run".equals(method.getValue())) {
+					ArgumentListExpression arguments = (ArgumentListExpression) call
+							.getArguments();
+					Expression expression = arguments.getExpression(0);
+					if (expression instanceof ClosureExpression) {
+						ClosureExpression closure = (ClosureExpression) expression;
+						this.action = new ClosureExpression(OPTIONS_PARAMETERS,
+								closure.getCode());
+					}
+				}
+			}
+		}
 	}
 
 }

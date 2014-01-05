@@ -71,8 +71,35 @@ public class InitCommandTests {
 
 	@Test
 	public void initCommand() throws Exception {
-		this.command.run("src/test/resources/command.groovy");
+		this.command.run("src/test/resources/commands/command.groovy");
 		verify(this.cli, times(this.defaultCount + 1)).register(any(Command.class));
+	}
+
+	@Test
+	public void initHandler() throws Exception {
+		this.command.run("src/test/resources/commands/handler.groovy");
+		verify(this.cli, times(this.defaultCount + 1)).register(any(Command.class));
+	}
+
+	@Test
+	public void initClosure() throws Exception {
+		this.command.run("src/test/resources/commands/closure.groovy");
+		verify(this.cli, times(this.defaultCount + 1)).register(any(Command.class));
+	}
+
+	@Test
+	public void initOptions() throws Exception {
+		this.command.run("src/test/resources/commands/options.groovy");
+		verify(this.cli, times(this.defaultCount + 1)).register(any(Command.class));
+	}
+
+	@Test
+	public void runOptions() throws Exception {
+		SpringCli cli = new SpringCli();
+		InitCommand command = cli.getInitCommand();
+		command.run("src/test/resources/commands/options.groovy");
+		cli.find("foo").run("--foo=bar", "--bar=123");
+		assertTrue(this.output.toString().contains("Hello Foo: bar=123"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

@@ -117,11 +117,22 @@ public class InitCommand extends OptionParsingCommand {
 						}
 					}
 					else if (Commands.class.isAssignableFrom(type)) {
-						Map<String, Closure<?>> commands = ((Commands) type.newInstance())
-								.getCommands();
+						Commands instance = (Commands) type.newInstance();
+						Map<String, Closure<?>> commands = instance.getCommands();
+						Map<String, OptionHandler> handlers = instance.getOptions();
 						for (String command : commands.keySet()) {
-							this.cli.register(new ScriptCommand(command, commands
-									.get(command)));
+							if (handlers.containsKey(command)) {
+								// An OptionHandler is available
+								OptionHandler handler = handlers.get(command);
+								handler.setClosure(commands.get(command));
+								this.cli.register(new ScriptCommand(command, handler));
+							}
+							else {
+								// Otherwise just a plain Closure
+								this.cli.register(new ScriptCommand(command, commands
+										.get(command)));
+
+							}
 						}
 					}
 					else if (Script.class.isAssignableFrom(type)) {
@@ -161,6 +172,8 @@ public class InitCommand extends OptionParsingCommand {
 
 	public static interface Commands {
 		Map<String, Closure<?>> getCommands();
+
+		Map<String, OptionHandler> getOptions();
 	}
 
 }
