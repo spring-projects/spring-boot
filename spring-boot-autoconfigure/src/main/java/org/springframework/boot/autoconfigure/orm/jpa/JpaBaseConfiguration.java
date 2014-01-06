@@ -34,7 +34,6 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -72,7 +71,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(EntityManagerFactoryInfo.class)
+	@ConditionalOnMissingBean(name = "entityManagerFactory")
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
 			JpaVendorAdapter jpaVendorAdapter) {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();

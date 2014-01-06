@@ -24,9 +24,11 @@ import javax.sql.DataSource;
 import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +49,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		HibernateEntityManager.class })
 @ConditionalOnBean(DataSource.class)
 @EnableTransactionManagement
+@AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implements
 		BeanClassLoaderAware {
 
