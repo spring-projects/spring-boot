@@ -56,6 +56,7 @@ public class GrabCommandIntegrationTests {
 		String output = this.cli.grab("grab.groovy", "--autoconfigure=false");
 		assertTrue(new File("target/repository/net/sf/jopt-simple/jopt-simple")
 				.isDirectory());
+		// Should be resolved from local repository cache
 		assertTrue(output.contains("Downloading: file:"));
 	}
 }
