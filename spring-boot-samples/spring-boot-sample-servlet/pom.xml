@@ -12,6 +12,7 @@
 	<packaging>war</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
+		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>
 	</properties>
 	<dependencies>
 		<dependency>

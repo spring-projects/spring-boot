@@ -45,6 +45,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
+	// Only used when running in embedded servlet
 	public DispatcherServlet dispatcherServlet() {
 		return new DispatcherServlet();
 	}

@@ -12,7 +12,7 @@
 		</init-param>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>org.springframework.issues.config</param-value>
+			<param-value>sample.traditional.config</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
