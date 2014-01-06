@@ -16,13 +16,21 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.Condition;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Records auto-configuration details for reporting and logging.
@@ -34,7 +42,9 @@ import org.springframework.context.annotation.Condition;
 public class AutoConfigurationReport {
 
 	private static final String BEAN_NAME = "autoConfigurationReport";
+
 	private final SortedMap<String, ConditionAndOutcomes> outcomes = new TreeMap<String, ConditionAndOutcomes>();
+
 	private AutoConfigurationReport parent;
 
 	/**
@@ -52,6 +62,9 @@ public class AutoConfigurationReport {
 	 */
 	public void recordConditionEvaluation(String source, Condition condition,
 			ConditionOutcome outcome) {
+		Assert.notNull(source, "Source must not be null");
+		Assert.notNull(condition, "Condition must not be null");
+		Assert.notNull(outcome, "Outcome must not be null");
 		if (!this.outcomes.containsKey(source)) {
 			this.outcomes.put(source, new ConditionAndOutcomes());
 		}
@@ -67,7 +80,6 @@ public class AutoConfigurationReport {
 
 	/**
 	 * The parent report (from a parent BeanFactory if there is one).
-	 *
 	 * @return the parent report (or null if there isn't one)
 	 */
 	public AutoConfigurationReport getParent() {
@@ -107,7 +119,7 @@ public class AutoConfigurationReport {
 	 */
 	public static class ConditionAndOutcomes implements Iterable<ConditionAndOutcome> {
 
-		private Set<ConditionAndOutcome> outcomes = new HashSet<ConditionAndOutcome>();
+		private Set<ConditionAndOutcome> outcomes = new LinkedHashSet<ConditionAndOutcome>();
 
 		public void add(Condition condition, ConditionOutcome outcome) {
 			this.outcomes.add(new ConditionAndOutcome(condition, outcome));
@@ -138,6 +150,7 @@ public class AutoConfigurationReport {
 	public static class ConditionAndOutcome {
 
 		private final Condition condition;
+
 		private final ConditionOutcome outcome;
 
 		public ConditionAndOutcome(Condition condition, ConditionOutcome outcome) {
@@ -154,29 +167,23 @@ public class AutoConfigurationReport {
 		}
 
 		@Override
-		public boolean equals(Object o) {
-			if (this == o)
+		public boolean equals(Object obj) {
+			if (this == obj) {
 				return true;
-			if (o == null || getClass() != o.getClass())
-				return false;
-
-			if (this.outcome == null || this.outcome.getMessage() == null) {
+			}
+			if (obj == null || getClass() != obj.getClass()) {
 				return false;
 			}
-
-			ConditionAndOutcome that = (ConditionAndOutcome) o;
-
-			if (that.getOutcome() == null || this.getOutcome().getMessage() == null) {
-				return false;
-			}
-
-			return this.getOutcome().getMessage().equals(that.getOutcome().getMessage());
+			ConditionAndOutcome other = (ConditionAndOutcome) obj;
+			return (ObjectUtils.nullSafeEquals(this.condition.getClass(),
+					other.condition.getClass()) && ObjectUtils.nullSafeEquals(
+					this.outcome, other.outcome));
 		}
 
 		@Override
 		public int hashCode() {
-			return outcome != null && outcome.getMessage() != null ? outcome.getMessage().hashCode() : 0;
+			return this.condition.getClass().hashCode() * 31 + this.outcome.hashCode();
 		}
-    }
+	}
 
 }
