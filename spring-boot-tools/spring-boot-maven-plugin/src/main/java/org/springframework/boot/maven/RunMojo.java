@@ -87,7 +87,7 @@ public class RunMojo extends AbstractMojo {
 	 * the archive.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
-	private File classesDirectrory;
+	private File classesDirectory;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -105,7 +105,7 @@ public class RunMojo extends AbstractMojo {
 		String mainClass = this.mainClass;
 		if (mainClass == null) {
 			try {
-				mainClass = MainClassFinder.findMainClass(this.classesDirectrory);
+				mainClass = MainClassFinder.findMainClass(this.classesDirectory);
 			}
 			catch (IOException ex) {
 				throw new MojoExecutionException(ex.getMessage(), ex);
@@ -150,11 +150,17 @@ public class RunMojo extends AbstractMojo {
 			for (Resource resource : this.project.getResources()) {
 				urls.add(new File(resource.getDirectory()).toURI().toURL());
 			}
+			// Special case: this file causes logback to worry that it has been configured
+			// twice, so remove it from the target directory...
+			File logback = new File(this.classesDirectory, "logback.xml");
+			if (logback.exists() && logback.canWrite()) {
+				logback.delete();
+			}
 		}
 	}
 
 	private void addProjectClasses(List<URL> urls) throws MalformedURLException {
-		urls.add(this.classesDirectrory.toURI().toURL());
+		urls.add(this.classesDirectory.toURI().toURL());
 	}
 
 	private void addDependencies(List<URL> urls) throws MalformedURLException {
