@@ -268,7 +268,7 @@ public class AetherGrapeEngine implements GrapeEngine {
 			builder.setProxy(this.proxySelector.getProxy(repository));
 			repository = builder.build();
 		}
-		this.repositories.add(repository);
+		this.repositories.add(0, repository);
 	}
 
 	@Override
