@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.junit.After;
@@ -39,15 +40,21 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.TestUtils;
+import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
@@ -121,7 +128,25 @@ public class BatchAutoConfigurationTests {
 				.queryForList("select * from BATCH_JOB_EXECUTION");
 	}
 
+	@Test
+	public void testUsingJpa() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		// The order is very important here: DataSource -> Hibernate -> Batch
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				ComponentScanDetectorConfiguration.class,
+				HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		PlatformTransactionManager transactionManager = this.context
+				.getBean(PlatformTransactionManager.class);
+		// It's a lazy proxy, but it does render its target if you ask for toString():
+		assertTrue(transactionManager.toString().contains("JpaTransactionManager"));
+		assertNotNull(this.context.getBean(EntityManagerFactory.class));
+	}
+
 	@EnableBatchProcessing
+	@ComponentScan(basePackageClasses = City.class)
 	protected static class TestConfiguration {
 	}
 

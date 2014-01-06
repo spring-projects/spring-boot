@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,7 +44,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean(JpaRepositoryFactoryBean.class)
 @Import(JpaRepositoriesAutoConfigureRegistrar.class)
-@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+@AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 public class JpaRepositoriesAutoConfiguration {
 
 	@Configuration

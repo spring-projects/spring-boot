@@ -47,10 +47,12 @@ public class City implements Serializable {
 	protected City() {
 	}
 
-	public City(String name, String country) {
+	public City(String name, String state, String country, String map) {
 		super();
 		this.name = name;
+		this.state = state;
 		this.country = country;
+		this.map = map;
 	}
 
 	public String getName() {
