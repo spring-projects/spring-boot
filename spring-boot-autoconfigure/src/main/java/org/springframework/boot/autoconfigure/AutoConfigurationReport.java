@@ -16,13 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -40,9 +34,7 @@ import org.springframework.context.annotation.Condition;
 public class AutoConfigurationReport {
 
 	private static final String BEAN_NAME = "autoConfigurationReport";
-
 	private final SortedMap<String, ConditionAndOutcomes> outcomes = new TreeMap<String, ConditionAndOutcomes>();
-
 	private AutoConfigurationReport parent;
 
 	/**
@@ -75,7 +67,7 @@ public class AutoConfigurationReport {
 
 	/**
 	 * The parent report (from a parent BeanFactory if there is one).
-	 * 
+	 *
 	 * @return the parent report (or null if there isn't one)
 	 */
 	public AutoConfigurationReport getParent() {
@@ -115,7 +107,7 @@ public class AutoConfigurationReport {
 	 */
 	public static class ConditionAndOutcomes implements Iterable<ConditionAndOutcome> {
 
-		private List<ConditionAndOutcome> outcomes = new ArrayList<ConditionAndOutcome>();
+		private Set<ConditionAndOutcome> outcomes = new HashSet<ConditionAndOutcome>();
 
 		public void add(Condition condition, ConditionOutcome outcome) {
 			this.outcomes.add(new ConditionAndOutcome(condition, outcome));
@@ -135,7 +127,7 @@ public class AutoConfigurationReport {
 
 		@Override
 		public Iterator<ConditionAndOutcome> iterator() {
-			return Collections.unmodifiableList(this.outcomes).iterator();
+			return Collections.unmodifiableSet(this.outcomes).iterator();
 		}
 
 	}
@@ -146,7 +138,6 @@ public class AutoConfigurationReport {
 	public static class ConditionAndOutcome {
 
 		private final Condition condition;
-
 		private final ConditionOutcome outcome;
 
 		public ConditionAndOutcome(Condition condition, ConditionOutcome outcome) {
@@ -161,6 +152,31 @@ public class AutoConfigurationReport {
 		public ConditionOutcome getOutcome() {
 			return this.outcome;
 		}
-	}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+
+			if (this.outcome == null || this.outcome.getMessage() == null) {
+				return false;
+			}
+
+			ConditionAndOutcome that = (ConditionAndOutcome) o;
+
+			if (that.getOutcome() == null || this.getOutcome().getMessage() == null) {
+				return false;
+			}
+
+			return this.getOutcome().getMessage().equals(that.getOutcome().getMessage());
+		}
+
+		@Override
+		public int hashCode() {
+			return outcome != null && outcome.getMessage() != null ? outcome.getMessage().hashCode() : 0;
+		}
+    }
 
 }

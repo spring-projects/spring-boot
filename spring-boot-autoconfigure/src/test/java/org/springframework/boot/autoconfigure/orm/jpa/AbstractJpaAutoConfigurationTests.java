@@ -216,4 +216,5 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	static class CustomJpaTransactionManager extends JpaTransactionManager {
 	}
+
 }
