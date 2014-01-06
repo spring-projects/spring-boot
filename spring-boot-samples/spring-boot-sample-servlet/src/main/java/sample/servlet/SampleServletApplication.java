@@ -26,12 +26,14 @@ import javax.servlet.ServletResponse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableAutoConfiguration
-public class SampleServletApplication {
+public class SampleServletApplication extends SpringBootServletInitializer {
 
 	@SuppressWarnings("serial")
 	@Bean
@@ -48,6 +50,11 @@ public class SampleServletApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleServletApplication.class, args);
+	}
+	
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(SampleServletApplication.class);
 	}
 
 }
