@@ -33,11 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.jar.Manifest;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.boot.loader.archive.Archive;
 import org.springframework.boot.loader.archive.Archive.Entry;
@@ -120,8 +116,6 @@ public class PropertiesLauncher extends Launcher {
 
 	private static final List<String> DEFAULT_PATHS = Arrays.asList("lib/");
 
-	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
-
 	private final File home;
 
 	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
@@ -129,9 +123,6 @@ public class PropertiesLauncher extends Launcher {
 	private Properties properties = new Properties();
 
 	public PropertiesLauncher() {
-		if (!isDebug()) {
-			this.logger.setLevel(Level.SEVERE);
-		}
 		try {
 			this.home = getHomeDirectory();
 			initializeProperties(this.home);
@@ -140,22 +131,6 @@ public class PropertiesLauncher extends Launcher {
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
-	}
-
-	private boolean isDebug() {
-		String debug = System.getProperty("debug");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		debug = System.getProperty("DEBUG");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		debug = System.getenv("DEBUG");
-		if (debug != null && !"false".equals(debug)) {
-			return true;
-		}
-		return false;
 	}
 
 	protected File getHomeDirectory() {
@@ -315,82 +290,30 @@ public class PropertiesLauncher extends Launcher {
 
 	@Override
 	protected String getMainClass() throws Exception {
-		String mainClass = getProperty(MAIN, "Start-Class");
-		if (mainClass == null) {
-			throw new IllegalStateException("No '" + MAIN
-					+ "' or 'Start-Class' specified");
-		}
-		return mainClass;
-	}
-
-	@Override
-	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
-		ClassLoader loader = super.createClassLoader(archives);
-		String classLoaderType = getProperty("loader.classLoader");
-		if (classLoaderType != null) {
-			Class<?> type = Class.forName(classLoaderType, true, loader);
-			try {
-				loader = (ClassLoader) type.getConstructor(ClassLoader.class)
-						.newInstance(loader);
-			}
-			catch (NoSuchMethodException e) {
-				try {
-					loader = (ClassLoader) type.getConstructor(URL[].class,
-							ClassLoader.class).newInstance(new URL[0], loader);
-				}
-				catch (NoSuchMethodException ex) {
-					loader = (ClassLoader) type.newInstance();
-				}
-			}
-			this.logger.info("Using custom class loader: " + classLoaderType);
-		}
-		return loader;
-	}
-
-	private String getProperty(String propertyKey) throws Exception {
-		return getProperty(propertyKey, null);
-	}
-
-	private String getProperty(String propertyKey, String manifestKey) throws Exception {
-		if (manifestKey == null) {
-			manifestKey = propertyKey.replace(".", "-");
-			manifestKey = toCamelCase(manifestKey);
-		}
-		String property = SystemPropertyUtils.getProperty(propertyKey);
+		String property = SystemPropertyUtils.getProperty(MAIN);
 		if (property != null) {
-			String value = SystemPropertyUtils.resolvePlaceholders(property);
-			this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
-			return value;
+			String mainClass = SystemPropertyUtils.resolvePlaceholders(property);
+			this.logger.info("Main class from environment: " + mainClass);
+			return mainClass;
 		}
-		if (this.properties.containsKey(propertyKey)) {
-			String value = SystemPropertyUtils.resolvePlaceholders(this.properties
-					.getProperty(propertyKey));
-			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
-			return value;
+		if (this.properties.containsKey(MAIN)) {
+			String mainClass = SystemPropertyUtils.resolvePlaceholders(this.properties
+					.getProperty(MAIN));
+			this.logger.info("Main class from properties: " + mainClass);
+			return mainClass;
 		}
 		try {
 			// Prefer home dir for MANIFEST if there is one
-			Manifest manifest = new ExplodedArchive(this.home).getManifest();
-			if (manifest != null) {
-				String value = manifest.getMainAttributes().getValue(manifestKey);
-				this.logger.fine("Property '" + manifestKey
-						+ "' from home directory manifest: " + value);
-				return value;
-			}
+			String mainClass = new ExplodedArchive(this.home).getMainClass();
+			this.logger.info("Main class from home directory manifest: " + mainClass);
+			return mainClass;
 		}
 		catch (IllegalStateException ex) {
+			// Otherwise try the parent archive
+			String mainClass = createArchive().getMainClass();
+			this.logger.info("Main class from archive manifest: " + mainClass);
+			return mainClass;
 		}
-		// Otherwise try the parent archive
-		Manifest manifest = createArchive().getManifest();
-		if (manifest != null) {
-			String value = manifest.getMainAttributes().getValue(manifestKey);
-			if (value != null) {
-				this.logger.fine("Property '" + manifestKey + "' from archive manifest: "
-						+ value);
-				return value;
-			}
-		}
-		return null;
 	}
 
 	@Override
@@ -478,6 +401,7 @@ public class PropertiesLauncher extends Launcher {
 			URISyntaxException {
 		ClassLoader parentClassLoader = getClass().getClassLoader();
 		if (parentClassLoader instanceof URLClassLoader) {
+			@SuppressWarnings("resource")
 			URLClassLoader urlClassLoader = (URLClassLoader) parentClassLoader;
 			for (URL url : urlClassLoader.getURLs()) {
 				if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
@@ -485,9 +409,12 @@ public class PropertiesLauncher extends Launcher {
 				}
 				else if (url.toString().endsWith("/*")) {
 					String name = url.getFile();
-					lib.add(0,
-							new ExplodedArchive(new File(name.substring(0,
-									name.length() - 1))));
+					File dir = new File(name.substring(0, name.length() - 1));
+					if (dir.exists()) {
+						lib.add(0,
+								new ExplodedArchive(new File(name.substring(0,
+										name.length() - 1)), false));
+					}
 				}
 				else {
 					lib.add(0, new ExplodedArchive(new File(url.getFile())));
@@ -519,28 +446,6 @@ public class PropertiesLauncher extends Launcher {
 
 	public static void main(String[] args) {
 		new PropertiesLauncher().launch(args);
-	}
-
-	public static String toCamelCase(CharSequence string) {
-		if (string == null) {
-			return null;
-		}
-		StringBuilder builder = new StringBuilder();
-		Matcher matcher = WORD_SEPARATOR.matcher(string);
-		int pos = 0;
-		while (matcher.find()) {
-			builder.append(capitalize(string.subSequence(pos, matcher.end()).toString()));
-			pos = matcher.end();
-		}
-		builder.append(capitalize(string.subSequence(pos, string.length()).toString()));
-		return builder.toString();
-	}
-
-	private static Object capitalize(String str) {
-		StringBuilder sb = new StringBuilder(str.length());
-		sb.append(Character.toUpperCase(str.charAt(0)));
-		sb.append(str.substring(1));
-		return sb.toString();
 	}
 
 	/**
