@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.security;
 
 import org.junit.Test;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationBeforeRefreshEvent;
 import org.springframework.boot.TestUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
 import org.springframework.boot.autoconfigure.ComponentScanDetector;
@@ -118,7 +120,8 @@ public class SecurityAutoConfigurationTests {
 			AnnotationConfigWebApplicationContext context) {
 		TestUtils.addEnviroment(context, "debug:true");
 		LoggingApplicationListener logging = new LoggingApplicationListener();
-		logging.initialize(context);
+		logging.onApplicationEvent(new SpringApplicationBeforeRefreshEvent(
+				new SpringApplication(), context, new String[0]));
 		AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
 		initializer.initialize(context);
 		context.refresh();

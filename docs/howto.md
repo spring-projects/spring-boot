@@ -823,7 +823,7 @@ No matter what you set in the environment, Spring Boot will always
 load `application.properties` as described above. If YAML is used then
 files with the ".yml" extension are also added to the list by default.
 
-See `ConfigFileApplicationContextInitializer` for more detail.
+See `ConfigFileApplicationListener` for more detail.
 
 ## Use YAML for External Properties
 
@@ -898,6 +898,41 @@ later values override earlier ones).
 To do the same thing with properties files you can use
 `application-${profile}.properties` to specify profile-specific
 values.
+
+## Customize the Environment or ApplicationContext Before it Starts
+
+A `SpringApplication` has `ApplicationListeners` and
+`ApplicationContextInitializers` that are used to apply customizations
+to the context or environment. Spring Boot loads a number of such
+customizations for use internally from
+`META-INF/spring.factories`. There is more than one way to register
+additional ones:
+
+* programmatically per application by calling the `addListeners` and
+  `addInitializers` methods on `SpringApplication` before you run it
+* declaratively per application by setting
+  `context.initializer.classes` or `context.listener.classes`
+* declarative for all applications by adding a
+  `MTEA-INF/spring.factories` and packaging a jar file that the
+  applications all use as a library
+  
+Any `ApplicationContextInitializer` registered programmatically or via
+`spring.factories` that is also an `ApplicationListener` will be
+automatically cross registered (and vice versa for listeners that are
+also initializers).  The `SpringApplication` sends some special
+`ApplicationEvents` to the listeners (even some before the context is
+created), and then registers the listeners for events published by the
+`ApplicationContext` as well:
+
+* `SpringApplicationStartEvent` at the start of a run, but before any
+  processing except the registration of listeners and initializers.
+* `SpringApplicationEnvironmentAvailableEvent` when the `Environment`
+  to be used in the context is known, but before the context is
+  created.
+* `SpringApplicationBeforeRefreshEvent` just before the refresh is
+  started, but after bean definitions have been loaded.
+* `SpringApplicationErrorEvent` if there is an exception on startup.
+
 
 ## Build An Executable Archive with Ant
 
