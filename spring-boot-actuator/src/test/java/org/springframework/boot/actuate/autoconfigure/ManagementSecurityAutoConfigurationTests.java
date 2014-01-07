@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInit
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
+import org.springframework.boot.context.listener.LoggingApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -170,7 +170,7 @@ public class ManagementSecurityAutoConfigurationTests {
 	private static AnnotationConfigWebApplicationContext debugRefresh(
 			AnnotationConfigWebApplicationContext context) {
 		TestUtils.addEnviroment(context, "debug:true");
-		LoggingApplicationContextInitializer logging = new LoggingApplicationContextInitializer();
+		LoggingApplicationListener logging = new LoggingApplicationListener();
 		logging.initialize(context);
 		AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
 		initializer.initialize(context);

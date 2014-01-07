@@ -30,7 +30,7 @@ import java.util.Set;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationNewEnvironmentEvent;
+import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.config.PropertiesPropertySourceLoader;
@@ -89,7 +89,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConfigFileApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		ApplicationListener<SpringApplicationNewEnvironmentEvent>, Ordered {
+		ApplicationListener<SpringApplicationEnvironmentAvailableEvent>, Ordered {
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
 
@@ -114,7 +114,7 @@ public class ConfigFileApplicationContextInitializer implements
 	 * ("spring.main.show_banner=false").
 	 */
 	@Override
-	public void onApplicationEvent(SpringApplicationNewEnvironmentEvent event) {
+	public void onApplicationEvent(SpringApplicationEnvironmentAvailableEvent event) {
 		Environment created = event.getEnvironment();
 		if (created instanceof ConfigurableEnvironment) {
 			SpringApplication springApplication = event.getSpringApplication();
