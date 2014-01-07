@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.initializer;
+package org.springframework.boot.context.listener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,11 +23,11 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
+import org.springframework.boot.context.listener.ConfigFileApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -40,16 +40,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link ConfigFileApplicationContextInitializer}.
+ * Tests for {@link ConfigFileApplicationListener}.
  * 
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class ConfigFileApplicationContextInitializerTests {
+public class ConfigFileApplicationListenerTests {
 
-	private StaticApplicationContext context = new StaticApplicationContext();
+	private StandardEnvironment environment = new StandardEnvironment();
 
-	private ConfigFileApplicationContextInitializer initializer = new ConfigFileApplicationContextInitializer();
+	private SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
+			new SpringApplication(), this.environment, new String[0]);
+
+	private ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
 
 	@After
 	public void cleanup() {
@@ -59,50 +62,43 @@ public class ConfigFileApplicationContextInitializerTests {
 	@Test
 	public void loadPropertiesFile() throws Exception {
 		this.initializer.setNames("testproperties");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
 	}
 
 	@Test
 	public void randomValue() throws Exception {
-		StandardEnvironment environment = new StandardEnvironment();
-		this.initializer.onApplicationEvent(new SpringApplicationEnvironmentAvailableEvent(
-				new SpringApplication(), environment, new String[0]));
-		String property = environment.getProperty("random.value");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("random.value");
 		assertThat(property, notNullValue());
 	}
 
 	@Test
 	public void loadTwoPropertiesFiles() throws Exception {
 		this.initializer.setNames("testproperties,moreproperties");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));
 	}
 
 	@Test
 	public void loadYamlFile() throws Exception {
 		this.initializer.setNames("testyaml");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromyamlfile"));
-		assertThat(this.context.getEnvironment().getProperty("my.array[0]"), equalTo("1"));
-		assertThat(this.context.getEnvironment().getProperty("my.array"),
-				nullValue(String.class));
+		assertThat(this.environment.getProperty("my.array[0]"), equalTo("1"));
+		assertThat(this.environment.getProperty("my.array"), nullValue(String.class));
 	}
 
 	@Test
 	public void commandLineWins() throws Exception {
-		this.context
-				.getEnvironment()
-				.getPropertySources()
-				.addFirst(
-						new SimpleCommandLinePropertySource(
-								"--my.property=fromcommandline"));
+		this.environment.getPropertySources().addFirst(
+				new SimpleCommandLinePropertySource("--my.property=fromcommandline"));
 		this.initializer.setNames("testproperties");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromcommandline"));
 	}
 
@@ -110,43 +106,43 @@ public class ConfigFileApplicationContextInitializerTests {
 	public void systemPropertyWins() throws Exception {
 		System.setProperty("my.property", "fromsystem");
 		this.initializer.setNames("testproperties");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromsystem"));
 	}
 
 	@Test
 	public void loadPropertiesThenProfileProperties() throws Exception {
 		this.initializer.setNames("enableprofile");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromprofilepropertiesfile"));
 	}
 
 	@Test
 	public void profilePropertiesUsedInPlaceholders() throws Exception {
 		this.initializer.setNames("enableprofile");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("one.more");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("one.more");
 		assertThat(property, equalTo("fromprofilepropertiesfile"));
 	}
 
 	@Test
 	public void yamlProfiles() throws Exception {
 		this.initializer.setNames("testprofiles");
-		this.context.getEnvironment().setActiveProfiles("dev");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.environment.setActiveProfiles("dev");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromdevprofile"));
-		property = this.context.getEnvironment().getProperty("my.other");
+		property = this.environment.getProperty("my.other");
 		assertThat(property, equalTo("notempty"));
 	}
 
 	@Test
 	public void yamlSetsProfiles() throws Exception {
 		this.initializer.setNames("testsetprofiles");
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromdevprofile"));
 	}
 
@@ -156,9 +152,9 @@ public class ConfigFileApplicationContextInitializerTests {
 		map.put("spring.profiles.active", "specificprofile");
 		map.put("spring.config.name", "specificfile");
 		MapPropertySource source = new MapPropertySource("map", map);
-		this.context.getEnvironment().getPropertySources().addFirst(source);
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.environment.getPropertySources().addFirst(source);
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromspecificpropertiesfile"));
 	}
 
@@ -167,12 +163,12 @@ public class ConfigFileApplicationContextInitializerTests {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("spring.config.location", "classpath:/specificlocation.properties");
 		MapPropertySource source = new MapPropertySource("map", map);
-		this.context.getEnvironment().getPropertySources().addFirst(source);
-		this.initializer.initialize(this.context);
-		String property = this.context.getEnvironment().getProperty("my.property");
+		this.environment.getPropertySources().addFirst(source);
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
 		// The default property source is still there
-		assertThat(this.context.getEnvironment().getProperty("foo"), equalTo("bucket"));
+		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
 	}
 
 	@Test
