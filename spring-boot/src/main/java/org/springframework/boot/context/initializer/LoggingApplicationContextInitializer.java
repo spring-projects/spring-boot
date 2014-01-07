@@ -23,11 +23,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationInitializer;
+import org.springframework.boot.SpringApplicationStartEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -70,7 +70,7 @@ import org.springframework.util.ResourceUtils;
  */
 public class LoggingApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		SpringApplicationInitializer, Ordered {
+		ApplicationListener<SpringApplicationStartEvent>, Ordered {
 
 	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
 	static {
@@ -99,12 +99,12 @@ public class LoggingApplicationContextInitializer implements
 	private LogLevel springBootLogging = null;
 
 	@Override
-	public void initialize(SpringApplication springApplication, String[] args) {
+	public void onApplicationEvent(SpringApplicationStartEvent event) {
 		if (System.getProperty("PID") == null) {
 			System.setProperty("PID", getPid());
 		}
-		LoggingSystem loggingSystem = LoggingSystem.get(springApplication.getClass()
-				.getClassLoader());
+		LoggingSystem loggingSystem = LoggingSystem.get(event.getSpringApplication()
+				.getClass().getClassLoader());
 		loggingSystem.beforeInitialize();
 	}
 

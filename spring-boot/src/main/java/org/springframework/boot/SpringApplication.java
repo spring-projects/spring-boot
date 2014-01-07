@@ -31,25 +31,27 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.context.event.ApplicationEventMulticaster;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.OrderComparator;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
@@ -124,7 +126,8 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <ul>
  * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}</li>
  * 
- * <li>{@link Resource} - A XML resource to be loaded by {@link XmlBeanDefinitionReader}</li>
+ * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
+ * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
  * 
  * <li>{@link Package} - A Java package to be scanned by
  * {@link ClassPathBeanDefinitionScanner}</li>
@@ -132,6 +135,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
  * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
+ * 
  * </ul>
  * 
  * @author Phillip Webb
@@ -175,6 +179,8 @@ public class SpringApplication {
 
 	private Set<ApplicationContextInitializer<?>> initializers;
 
+	private Set<ApplicationListener<?>> listeners;
+
 	private Map<String, Object> defaultProperties;
 
 	private Set<String> profiles = new HashSet<String>();
@@ -213,7 +219,23 @@ public class SpringApplication {
 		}
 		this.webEnvironment = deduceWebEnvironment();
 		this.initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
-		this.initializers.addAll(getSpringFactoriesApplicationContextInitializers());
+		this.listeners = new LinkedHashSet<ApplicationListener<?>>();
+		@SuppressWarnings("unchecked")
+		Collection<? extends ApplicationContextInitializer<?>> initializers = (Collection<? extends ApplicationContextInitializer<?>>) getSpringFactoriesInstances(ApplicationContextInitializer.class);
+		this.initializers.addAll(initializers);
+		for (ApplicationContextInitializer<?> initializer : initializers) {
+			if (initializer instanceof ApplicationListener) {
+				addListeners((ApplicationListener<?>) initializer);
+			}
+		}
+		@SuppressWarnings("unchecked")
+		Collection<? extends ApplicationListener<?>> listeners = (Collection<? extends ApplicationListener<?>>) getSpringFactoriesInstances(ApplicationListener.class);
+		this.listeners.addAll(listeners);
+		for (ApplicationListener<?> listener : listeners) {
+			if (listener instanceof ApplicationContextInitializer) {
+				addInitializers((ApplicationContextInitializer<?>) listener);
+			}
+		}
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -227,36 +249,33 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns {@link ApplicationContextInitializer} loaded via the
-	 * {@link SpringFactoriesLoader}. Subclasses can override this method to modify
-	 * default initializers if necessary.
+	 * Returns objects loaded via the {@link SpringFactoriesLoader}.
 	 */
-	protected Collection<ApplicationContextInitializer<?>> getSpringFactoriesApplicationContextInitializers() {
+	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type) {
 		ClassLoader classLoader = SpringApplication.class.getClassLoader();
 
 		// Use names and ensure unique to protect against duplicates
 		Set<String> names = new LinkedHashSet<String>(
-				SpringFactoriesLoader.loadFactoryNames(
-						ApplicationContextInitializer.class, classLoader));
-		List<ApplicationContextInitializer<?>> factories = new ArrayList<ApplicationContextInitializer<?>>(
-				names.size());
+				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		List<T> instances = new ArrayList<T>(names.size());
 
 		// Create instances from the names
 		for (String name : names) {
 			try {
 				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
-				Assert.isAssignable(ApplicationContextInitializer.class, instanceClass);
-				factories.add((ApplicationContextInitializer<?>) instanceClass
-						.newInstance());
+				Assert.isAssignable(type, instanceClass);
+				@SuppressWarnings("unchecked")
+				T instance = (T) instanceClass.newInstance();
+				instances.add(instance);
 			}
 			catch (Throwable ex) {
-				throw new IllegalArgumentException(
-						"Cannot instantiate ApplicationContextInitializer : " + name, ex);
+				throw new IllegalArgumentException("Cannot instantiate " + type + " : "
+						+ name, ex);
 			}
 		}
 
-		OrderComparator.sort(factories);
-		return factories;
+		AnnotationAwareOrderComparator.sort(instances);
+		return instances;
 	}
 
 	private Class<?> deduceMainApplicationClass() {
@@ -286,9 +305,12 @@ public class SpringApplication {
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 
+		ApplicationEventMulticaster multicaster = createApplicationEventMulticaster();
 		try {
-			// Call all non environment aware initializers very early
-			callNonEnvironmentAwareSpringApplicationInitializers(args);
+			Set<Object> sources = getSources();
+			registerListeners(multicaster, sources);
+			// Allow logging and stuff to initialize very early
+			multicaster.multicastEvent(new SpringApplicationStartEvent(this, args));
 
 			// Create and configure the environment
 			ConfigurableEnvironment environment = getOrCreateEnvironment();
@@ -297,9 +319,13 @@ public class SpringApplication {
 				environment.addActiveProfile(profile);
 			}
 
-			// Call all remaining initializers
-			callEnvironmentAwareSpringApplicationInitializers(args, environment);
-			Set<Object> sources = getSources();
+			// Notify listeners of the environment creation
+			multicaster.multicastEvent(new SpringApplicationNewEnvironmentEvent(this,
+					environment, args));
+
+			// Sources might have changed when environment was applied
+			sources = getSources();
+			registerListeners(multicaster, sources);
 			Assert.notEmpty(sources, "Sources must not be empty");
 			if (this.showBanner) {
 				printBanner();
@@ -307,6 +333,7 @@ public class SpringApplication {
 
 			// Create, load, refresh and run the ApplicationContext
 			context = createApplicationContext();
+			registerApplicationEventMulticaster(context, multicaster);
 			context.registerShutdownHook();
 			context.setEnvironment(environment);
 			postProcessApplicationContext(context);
@@ -328,49 +355,51 @@ public class SpringApplication {
 			return context;
 		}
 		catch (RuntimeException ex) {
-			handleError(context, args, ex);
+			multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context,
+					args, ex));
 			throw ex;
 		}
 		catch (Error ex) {
-			handleError(context, args, ex);
+			multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context,
+					args, ex));
 			throw ex;
 		}
 
 	}
 
+	private void registerListeners(ApplicationEventMulticaster multicaster,
+			Set<Object> sources) {
+		for (Object object : sources) {
+			if (object instanceof ApplicationListener) {
+				multicaster.addApplicationListener((ApplicationListener<?>) object);
+			}
+			if (object instanceof ApplicationContextInitializer) {
+				addInitializers((ApplicationContextInitializer<?>) object);
+			}
+		}
+	}
+
+	private void registerApplicationEventMulticaster(
+			ConfigurableApplicationContext context,
+			ApplicationEventMulticaster multicaster) {
+		context.getBeanFactory().registerSingleton(
+				AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
+				multicaster);
+		if (multicaster instanceof BeanFactoryAware) {
+			((BeanFactoryAware) multicaster).setBeanFactory(context.getBeanFactory());
+		}
+	}
+
+	private ApplicationEventMulticaster createApplicationEventMulticaster() {
+		final ApplicationEventMulticaster multicaster = new SpringApplicationEventMulticaster();
+		for (ApplicationListener<?> listener : getListeners()) {
+			multicaster.addApplicationListener(listener);
+		}
+		return multicaster;
+	}
+
 	private void afterRefresh(ConfigurableApplicationContext context, String[] args) {
-		ApplicationEventMulticaster multicaster = new SimpleApplicationEventMulticaster();
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
-				getInitializers());
-		for (ApplicationContextInitializer<?> initializer : initializers) {
-			if (initializer instanceof ApplicationListener) {
-				multicaster.addApplicationListener((ApplicationListener<?>) initializer);
-			}
-		}
-		multicaster.multicastEvent(new ContextRefreshedEvent(context));
 		runCommandLineRunners(context, args);
-	}
-
-	private void handleError(ConfigurableApplicationContext context, String[] args,
-			Throwable exception) {
-		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>(
-				getInitializers());
-		Collections.reverse(initializers);
-		for (ApplicationContextInitializer<?> initializer : initializers) {
-			if (initializer instanceof SpringApplicationErrorHandler) {
-				((SpringApplicationErrorHandler) initializer).handleError(this, context,
-						args, exception);
-			}
-		}
-	}
-
-	private void callNonEnvironmentAwareSpringApplicationInitializers(String[] args) {
-		for (ApplicationContextInitializer<?> initializer : getInitializers()) {
-			if (initializer instanceof SpringApplicationInitializer
-					&& !(initializer instanceof EnvironmentAware)) {
-				((SpringApplicationInitializer) initializer).initialize(this, args);
-			}
-		}
 	}
 
 	private ConfigurableEnvironment getOrCreateEnvironment() {
@@ -407,17 +436,6 @@ public class SpringApplication {
 			}
 			else {
 				sources.addFirst(new SimpleCommandLinePropertySource(args));
-			}
-		}
-	}
-
-	private void callEnvironmentAwareSpringApplicationInitializers(String[] args,
-			ConfigurableEnvironment environment) {
-		for (ApplicationContextInitializer<?> initializer : getInitializers()) {
-			if (initializer instanceof SpringApplicationInitializer
-					&& initializer instanceof EnvironmentAware) {
-				((EnvironmentAware) initializer).setEnvironment(environment);
-				((SpringApplicationInitializer) initializer).initialize(this, args);
 			}
 		}
 	}
@@ -549,6 +567,30 @@ public class SpringApplication {
 			loader.setEnvironment(this.environment);
 		}
 		loader.load();
+	}
+
+	/**
+	 * The ResourceLoader that will be used in the ApplicationContext.
+	 * 
+	 * @return the resourceLoader the resource loader that will be used in the
+	 * ApplicationContext (or null if the default)
+	 */
+	public ResourceLoader getResourceLoader() {
+		return this.resourceLoader;
+	}
+
+	/**
+	 * Either the ClassLoader that will be used in the ApplicationContext (if
+	 * {@link #setResourceLoader(ResourceLoader) resourceLoader} is set, or the context
+	 * class loader (if not null), or the loader of the Spring {@link ClassUtils} class.
+	 * 
+	 * @return a ClassLoader (never null)
+	 */
+	public ClassLoader getClassLoader() {
+		if (this.resourceLoader != null) {
+			return this.resourceLoader.getClassLoader();
+		}
+		return ClassUtils.getDefaultClassLoader();
 	}
 
 	/**
@@ -746,24 +788,36 @@ public class SpringApplication {
 
 	/**
 	 * Sets the {@link ApplicationContextInitializer} that will be applied to the Spring
-	 * {@link ApplicationContext}. Any existing initializers will be replaced. The default
-	 * initializers (from <code>META-INF/spring.factories</code> are always appended at
-	 * runtime).
+	 * {@link ApplicationContext}. Any existing initializers will be replaced. Any
+	 * initializers that are also {@link ApplicationListener} will be added to the
+	 * {@link #addListeners(ApplicationListener...) listeners} automatically
 	 * @param initializers the initializers to set
 	 */
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
 		this.initializers = new LinkedHashSet<ApplicationContextInitializer<?>>(
 				initializers);
+		for (ApplicationContextInitializer<?> initializer : initializers) {
+			if (initializer instanceof ApplicationListener) {
+				this.listeners.add((ApplicationListener<?>) initializer);
+			}
+		}
 	}
 
 	/**
 	 * Add {@link ApplicationContextInitializer}s to be applied to the Spring
-	 * {@link ApplicationContext} .
+	 * {@link ApplicationContext}. Any initializers that are also
+	 * {@link ApplicationListener} will be added to the
+	 * {@link #addListeners(ApplicationListener...) listeners} automatically.
 	 * @param initializers the initializers to add
 	 */
 	public void addInitializers(ApplicationContextInitializer<?>... initializers) {
 		this.initializers.addAll(Arrays.asList(initializers));
+		for (ApplicationContextInitializer<?> initializer : initializers) {
+			if (initializer instanceof ApplicationListener) {
+				this.listeners.add((ApplicationListener<?>) initializer);
+			}
+		}
 	}
 
 	/**
@@ -773,6 +827,50 @@ public class SpringApplication {
 	 */
 	public Set<ApplicationContextInitializer<?>> getInitializers() {
 		return Collections.unmodifiableSet(this.initializers);
+	}
+
+	/**
+	 * Sets the {@link ApplicationListener}s that will be applied to the SpringApplication
+	 * and registered with the {@link ApplicationContext}. Any existing listeners will be
+	 * replaced. Any listeners that are also {@link ApplicationContextInitializer} will be
+	 * added to the {@link #addInitializers(ApplicationContextInitializer...)
+	 * initializers} automatically.
+	 * @param listeners the listeners to set
+	 */
+	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
+		this.listeners = new LinkedHashSet<ApplicationListener<?>>(listeners);
+		for (ApplicationListener<?> listener : listeners) {
+			if (listener instanceof ApplicationContextInitializer) {
+				this.initializers.add((ApplicationContextInitializer<?>) listener);
+			}
+		}
+	}
+
+	/**
+	 * Add {@link ApplicationListener}s to be applied to the SpringApplication and
+	 * registered with the {@link ApplicationContext}. Any listeners that are also
+	 * {@link ApplicationContextInitializer} will be added to the
+	 * {@link #addInitializers(ApplicationContextInitializer...) initializers}
+	 * automatically.
+	 * @param listeners the listeners to add
+	 */
+	public void addListeners(ApplicationListener<?>... listeners) {
+		this.listeners.addAll(Arrays.asList(listeners));
+		for (ApplicationListener<?> listener : listeners) {
+			if (listener instanceof ApplicationContextInitializer) {
+				this.initializers.add((ApplicationContextInitializer<?>) listener);
+			}
+		}
+	}
+
+	/**
+	 * Returns readonly set of the {@link ApplicationListener}s that will be applied to
+	 * the SpringApplication and registered with the {@link ApplicationContext}.
+	 * @return the listeners
+	 */
+	public Set<ApplicationListener<?>> getListeners() {
+		return Collections.unmodifiableSet(new LinkedHashSet<ApplicationListener<?>>(
+				this.listeners));
 	}
 
 	/**
@@ -868,6 +966,36 @@ public class SpringApplication {
 			ConfigurableApplicationContext closable = (ConfigurableApplicationContext) context;
 			closable.close();
 		}
+	}
+
+	private static class SpringApplicationEventMulticaster extends
+			SimpleApplicationEventMulticaster implements ApplicationEventPublisher {
+
+		@Override
+		public void publishEvent(ApplicationEvent event) {
+			multicastEvent(event);
+		}
+
+		@Override
+		protected Collection<ApplicationListener<?>> getApplicationListeners(
+				ApplicationEvent event) {
+			List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>(
+					super.getApplicationListeners(event));
+			if (event instanceof SpringApplicationErrorEvent) {
+				Collections.reverse(listeners);
+			}
+			return listeners;
+		}
+
+		@Override
+		public void addApplicationListener(ApplicationListener<?> listener) {
+			super.addApplicationListener(listener);
+			if (listener instanceof ApplicationEventPublisherAware) {
+				((ApplicationEventPublisherAware) listener)
+						.setApplicationEventPublisher(this);
+			}
+		}
+
 	}
 
 }

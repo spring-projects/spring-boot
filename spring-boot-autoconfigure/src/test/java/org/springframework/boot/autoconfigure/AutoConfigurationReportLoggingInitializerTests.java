@@ -29,6 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationErrorEvent;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -122,7 +124,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			fail("Did not error");
 		}
 		catch (Exception ex) {
-			this.initializer.handleError(null, context, new String[] {}, ex);
+			this.initializer.onApplicationEvent(new SpringApplicationErrorEvent(
+					new SpringApplication(), context, new String[] {}, ex));
 		}
 
 		assertThat(this.debugLog.size(), equalTo(0));
@@ -165,8 +168,9 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@Test
 	public void noErrorIfNotInitialized() throws Exception {
-		this.initializer.handleError(null, null, new String[0], new RuntimeException(
-				"Planned"));
+		this.initializer.onApplicationEvent(new SpringApplicationErrorEvent(
+				new SpringApplication(), null, new String[0], new RuntimeException(
+						"Planned")));
 		assertThat(this.infoLog.get(0), containsString("Nothing to report"));
 	}
 

@@ -5,26 +5,27 @@ import liquibase.servicelocator.ServiceLocator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationInitializer;
+import org.springframework.boot.SpringApplicationStartEvent;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link SpringApplicationInitializer} that replaces the liquibase {@link ServiceLocator}
- * with a version that works with Spring Boot executable archives.
+ * {@link ApplicationListener} that replaces the liquibase {@link ServiceLocator} with a
+ * version that works with Spring Boot executable archives.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class LiquibaseServiceLocatorInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		SpringApplicationInitializer {
+		ApplicationListener<SpringApplicationStartEvent> {
 
 	static final Log logger = LogFactory.getLog(LiquibaseServiceLocatorInitializer.class);
 
 	@Override
-	public void initialize(SpringApplication springApplication, String[] args) {
+	public void onApplicationEvent(SpringApplicationStartEvent event) {
 		if (ClassUtils.isPresent("liquibase.servicelocator.ServiceLocator", null)) {
 			new LiquibasePresent().replaceServiceLocator();
 		}
