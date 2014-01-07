@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.initializer;
+package org.springframework.boot.context.listener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +38,6 @@ import org.springframework.boot.config.PropertySourceLoader;
 import org.springframework.boot.config.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.Ordered;
@@ -87,8 +86,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class ConfigFileApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>,
+public class ConfigFileApplicationListener implements
 		ApplicationListener<SpringApplicationEnvironmentAvailableEvent>, Ordered {
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
@@ -138,11 +136,6 @@ public class ConfigFileApplicationContextInitializer implements
 				onApplicationEvent(event);
 			}
 		}
-	}
-
-	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-		load(applicationContext.getEnvironment(), applicationContext);
 	}
 
 	private void extractPropertySources(Set<Object> sources) {
