@@ -107,7 +107,6 @@ public class GroovyCompiler {
 		}
 
 		this.transformations = new ArrayList<ASTTransformation>();
-		// this.transformations.add(new GrabResolversAutoConfigurationTransformation());
 		this.transformations.add(new DependencyAutoConfigurationTransformation(
 				this.loader, this.coordinatesResolver, this.compilerAutoConfigurations));
 		this.transformations.add(new GroovyBeansTransformation());
