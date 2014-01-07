@@ -56,11 +56,18 @@ public class ExplodedArchive extends Archive {
 
 	private Manifest manifest;
 
+	private boolean recursive = true;
+
 	public ExplodedArchive(File root) {
+		this(root, true);
+	}
+
+	public ExplodedArchive(File root, boolean recursive) {
 		if (!root.exists() || !root.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source folder " + root);
 		}
 		this.root = root;
+		this.recursive = recursive;
 		buildEntries(root);
 		this.entries = Collections.unmodifiableMap(this.entries);
 	}
@@ -73,14 +80,16 @@ public class ExplodedArchive extends Archive {
 	private void buildEntries(File file) {
 		if (!file.equals(this.root)) {
 			String name = file.toURI().getPath()
-					.substring(root.toURI().getPath().length());
+					.substring(this.root.toURI().getPath().length());
 			FileEntry entry = new FileEntry(new AsciiBytes(name), file);
 			this.entries.put(entry.getName(), entry);
 		}
 		if (file.isDirectory()) {
-			for (File child : file.listFiles()) {
-				if (!SKIPPED_NAMES.contains(child.getName())) {
-					buildEntries(child);
+			if (this.recursive) {
+				for (File child : file.listFiles()) {
+					if (!SKIPPED_NAMES.contains(child.getName())) {
+						buildEntries(child);
+					}
 				}
 			}
 		}
