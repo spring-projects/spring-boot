@@ -16,21 +16,16 @@
 
 package org.springframework.boot.context.initializer;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.context.initializer.EnvironmentDelegateApplicationContextInitializer;
+import org.springframework.boot.TestUtils;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -41,7 +36,7 @@ import static org.junit.Assert.assertThat;
  * 
  * @author Phillip Webb
  */
-public class EnvironmentDelegateApplicationContextInitializerTest {
+public class EnvironmentDelegateApplicationContextInitializerTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -51,11 +46,9 @@ public class EnvironmentDelegateApplicationContextInitializerTest {
 	@Test
 	public void orderedInitialize() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("context.initializer.classes", MockInitB.class.getName() + ","
-				+ MockInitA.class.getName());
-		PropertySource<?> propertySource = new MapPropertySource("map", map);
-		context.getEnvironment().getPropertySources().addFirst(propertySource);
+		TestUtils.addEnviroment(context,
+				"context.initializer.classes:" + MockInitB.class.getName() + ","
+						+ MockInitA.class.getName());
 		this.initializer.initialize(context);
 		assertThat(context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
 		assertThat(context.getBeanFactory().getSingleton("b"), equalTo((Object) "b"));
@@ -70,20 +63,15 @@ public class EnvironmentDelegateApplicationContextInitializerTest {
 	@Test
 	public void emptyInitializers() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("context.initializer.classes", "");
-		PropertySource<?> propertySource = new MapPropertySource("map", map);
-		context.getEnvironment().getPropertySources().addFirst(propertySource);
+		TestUtils.addEnviroment(context, "context.initializer.classes:");
 		this.initializer.initialize(context);
 	}
 
 	@Test
 	public void noSuchInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("context.initializer.classes", "missing.madeup.class");
-		PropertySource<?> propertySource = new MapPropertySource("map", map);
-		context.getEnvironment().getPropertySources().addFirst(propertySource);
+		TestUtils.addEnviroment(context,
+				"context.initializer.classes:missing.madeup.class");
 		this.thrown.expect(ApplicationContextException.class);
 		this.initializer.initialize(context);
 	}
@@ -91,10 +79,8 @@ public class EnvironmentDelegateApplicationContextInitializerTest {
 	@Test
 	public void notAnInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("context.initializer.classes", Object.class.getName());
-		PropertySource<?> propertySource = new MapPropertySource("map", map);
-		context.getEnvironment().getPropertySources().addFirst(propertySource);
+		TestUtils.addEnviroment(context,
+				"context.initializer.classes:" + Object.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.initializer.initialize(context);
 	}
@@ -102,10 +88,8 @@ public class EnvironmentDelegateApplicationContextInitializerTest {
 	@Test
 	public void genericNotSuitable() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("context.initializer.classes", NotSuitableInit.class.getName());
-		PropertySource<?> propertySource = new MapPropertySource("map", map);
-		context.getEnvironment().getPropertySources().addFirst(propertySource);
+		TestUtils.addEnviroment(context, "context.initializer.classes:"
+				+ NotSuitableInit.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("generic parameter");
 		this.initializer.initialize(context);
