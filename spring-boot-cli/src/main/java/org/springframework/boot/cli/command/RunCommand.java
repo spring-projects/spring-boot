@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command;
 
 import java.awt.Desktop;
+import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -35,9 +36,10 @@ import static java.util.Arrays.asList;
 
 /**
  * {@link Command} to 'run' a groovy script or scripts.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  * @see SpringApplicationRunner
  */
 public class RunCommand extends OptionParsingCommand {
@@ -101,6 +103,8 @@ public class RunCommand extends OptionParsingCommand {
 
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
+			repositoryConfiguration.add(0, new RepositoryConfiguration("local", new File(
+				"repository").toURI(), true));
 
 			SpringApplicationRunnerConfiguration configuration = new SpringApplicationRunnerConfigurationAdapter(
 					options, this, repositoryConfiguration);
