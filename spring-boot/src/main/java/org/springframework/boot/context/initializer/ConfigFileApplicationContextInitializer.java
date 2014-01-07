@@ -30,15 +30,15 @@ import java.util.Set;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationInitializer;
+import org.springframework.boot.SpringApplicationNewEnvironmentEvent;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.config.PropertiesPropertySourceLoader;
 import org.springframework.boot.config.PropertySourceLoader;
 import org.springframework.boot.config.YamlPropertySourceLoader;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.Ordered;
@@ -89,11 +89,9 @@ import org.springframework.util.StringUtils;
  */
 public class ConfigFileApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		SpringApplicationInitializer, Ordered, EnvironmentAware {
+		ApplicationListener<SpringApplicationNewEnvironmentEvent>, Ordered {
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
-
-	private Environment environment;
 
 	private String[] searchLocations = new String[] { "classpath:", "file:./",
 			"classpath:config/", "file:./config/" };
@@ -116,10 +114,12 @@ public class ConfigFileApplicationContextInitializer implements
 	 * ("spring.main.show_banner=false").
 	 */
 	@Override
-	public void initialize(SpringApplication springApplication, String[] args) {
-		if (this.environment instanceof ConfigurableEnvironment) {
+	public void onApplicationEvent(SpringApplicationNewEnvironmentEvent event) {
+		Environment created = event.getEnvironment();
+		if (created instanceof ConfigurableEnvironment) {
+			SpringApplication springApplication = event.getSpringApplication();
 			extractPropertySources(springApplication.getSources());
-			ConfigurableEnvironment environment = (ConfigurableEnvironment) this.environment;
+			ConfigurableEnvironment environment = (ConfigurableEnvironment) created;
 			load(environment, new DefaultResourceLoader());
 			environment.getPropertySources().addAfter(
 					StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
@@ -135,7 +135,7 @@ public class ConfigFileApplicationContextInitializer implements
 			int after = springApplication.getSources().size();
 			if (after > before) {
 				// Do it again in case there are new @PropertySources
-				initialize(springApplication, args);
+				onApplicationEvent(event);
 			}
 		}
 	}
@@ -263,7 +263,7 @@ public class ConfigFileApplicationContextInitializer implements
 			location = location.replace(suffix, "-" + profile + suffix);
 		}
 
-		if (isPropertySourceAnnotationOnExcludedType(profile, type, location)) {
+		if (isPropertySourceAnnotationOnExcludedType(environment, profile, type, location)) {
 			return null;
 		}
 
@@ -296,8 +296,8 @@ public class ConfigFileApplicationContextInitializer implements
 		return propertySource;
 	}
 
-	private boolean isPropertySourceAnnotationOnExcludedType(String profile,
-			Class<?> type, String location) {
+	private boolean isPropertySourceAnnotationOnExcludedType(Environment environment,
+			String profile, Class<?> type, String location) {
 		if (type == null) {
 			// No configuration class to worry about, just a vanilla properties location
 			return false;
@@ -309,7 +309,7 @@ public class ConfigFileApplicationContextInitializer implements
 			return true;
 		}
 		AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(
-				new DefaultListableBeanFactory(), this.environment);
+				new DefaultListableBeanFactory(), environment);
 		int before = reader.getRegistry().getBeanDefinitionCount();
 		reader.register(type);
 		int after = reader.getRegistry().getBeanDefinitionCount();
@@ -334,11 +334,6 @@ public class ConfigFileApplicationContextInitializer implements
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
 	}
 
 	public void setOrder(int order) {

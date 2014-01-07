@@ -32,6 +32,7 @@ import org.springframework.boot.context.initializer.ParentContextApplicationCont
 import org.springframework.boot.context.initializer.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ResourceLoader;
@@ -77,6 +78,7 @@ public class SpringApplicationBuilder {
 	private ConfigurableEnvironment environment;
 
 	private Set<String> additionalProfiles = new LinkedHashSet<String>();
+
 	private Set<ApplicationContextInitializer<?>> initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
 
 	public SpringApplicationBuilder(Object... sources) {
@@ -463,6 +465,18 @@ public class SpringApplicationBuilder {
 			}
 			addInitializers(prepend, initializer);
 		}
+		return this;
+	}
+
+	/**
+	 * Add some initializers to the application (applied to the {@link ApplicationContext}
+	 * before any bean definitions are loaded).
+	 * 
+	 * @param listeners some listeners to add
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder listeners(ApplicationListener<?>... listeners) {
+		this.application.addListeners(listeners);
 		return this;
 	}
 

@@ -20,22 +20,24 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationErrorHandler;
+import org.springframework.boot.SpringApplicationErrorEvent;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationContextInitializer} and {@link SpringApplicationErrorHandler} that
- * writes the {@link AutoConfigurationReport} to the log. Reports are logged at the
+ * {@link ApplicationContextInitializer} and {@link SmartApplicationListener} that writes
+ * the {@link AutoConfigurationReport} to the log. Reports are logged at the
  * {@link LogLevel#DEBUG DEBUG} level unless there was a problem, in which case they are
  * the {@link LogLevel#INFO INFO} level is used.
  * 
@@ -49,13 +51,18 @@ import org.springframework.util.StringUtils;
  */
 public class AutoConfigurationReportLoggingInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		SpringApplicationErrorHandler, ApplicationListener<ContextRefreshedEvent> {
+		SmartApplicationListener {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
 	private ConfigurableApplicationContext applicationContext;
 
 	private AutoConfigurationReport report;
+
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE;
+	}
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -68,16 +75,27 @@ public class AutoConfigurationReportLoggingInitializer implements
 	}
 
 	@Override
-	public void handleError(SpringApplication application,
-			ConfigurableApplicationContext applicationContext, String[] args,
-			Throwable exception) {
-		logAutoConfigurationReport(true);
+	public boolean supportsEventType(Class<? extends ApplicationEvent> type) {
+		return ContextRefreshedEvent.class.isAssignableFrom(type)
+				|| SpringApplicationErrorEvent.class.isAssignableFrom(type);
 	}
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (event.getApplicationContext() == this.applicationContext) {
-			logAutoConfigurationReport();
+	public boolean supportsSourceType(Class<?> sourceType) {
+		return true;
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ContextRefreshedEvent) {
+			if (((ApplicationContextEvent) event).getApplicationContext() == this.applicationContext) {
+				logAutoConfigurationReport();
+			}
+		}
+		else if (event instanceof SpringApplicationErrorEvent) {
+			if (((SpringApplicationErrorEvent) event).getApplicationContext() == this.applicationContext) {
+				logAutoConfigurationReport(true);
+			}
 		}
 	}
 

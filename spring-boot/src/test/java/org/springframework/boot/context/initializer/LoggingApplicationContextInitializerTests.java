@@ -29,7 +29,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationStartEvent;
 import org.springframework.boot.TestUtils;
+import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.context.support.GenericApplicationContext;
@@ -68,7 +70,8 @@ public class LoggingApplicationContextInitializerTests {
 	public void init() throws SecurityException, IOException {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		this.initializer.initialize(new SpringApplication(), NO_ARGS);
+		this.initializer.onApplicationEvent(new SpringApplicationStartEvent(
+				new SpringApplication(), NO_ARGS));
 	}
 
 	@After
@@ -163,7 +166,8 @@ public class LoggingApplicationContextInitializerTests {
 	public void parseArgsDoesntReplace() throws Exception {
 		this.initializer.setSpringBootLogging(LogLevel.ERROR);
 		this.initializer.setParseArgs(false);
-		this.initializer.initialize(this.springApplication, new String[] { "--debug" });
+		this.initializer.onApplicationEvent(new SpringApplicationStartEvent(
+				this.springApplication, new String[] { "--debug" }));
 		this.initializer.initialize(this.context);
 		this.logger.debug("testatdebug");
 		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
