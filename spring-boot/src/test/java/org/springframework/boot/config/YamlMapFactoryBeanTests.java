@@ -18,10 +18,10 @@ package org.springframework.boot.config;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.config.YamlMapFactoryBean;
 import org.springframework.boot.config.YamlProcessor.ResolutionMethod;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.ByteArrayResource;
@@ -29,6 +29,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link YamlMapFactoryBean}.
@@ -88,6 +89,21 @@ public class YamlMapFactoryBeanTests {
 			}
 		}, new ByteArrayResource("foo:\n  spam: bar".getBytes()) });
 		assertEquals(1, this.factory.getObject().size());
+	}
+
+	@Test
+	public void testMapWithPeriodsInKey() throws Exception {
+		this.factory.setResources(new ByteArrayResource[] { new ByteArrayResource(
+				"foo:\n  ? key1.key2\n  : value".getBytes()) });
+		Map<String, Object> map = this.factory.getObject();
+		assertEquals(1, map.size());
+		assertTrue(map.containsKey("foo"));
+		Object object = map.get("foo");
+		assertTrue(object instanceof LinkedHashMap);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> sub = (Map<String, Object>) object;
+		assertTrue(sub.containsKey("key1.key2"));
+		assertTrue(sub.get("key1.key2").equals("value"));
 	}
 
 }

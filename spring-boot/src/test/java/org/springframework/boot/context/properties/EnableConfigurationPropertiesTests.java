@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
@@ -323,6 +324,20 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("bar", this.context.getBean(Another.class).getName());
 	}
 
+	@Test
+	public void testBindingWithMapKeyWithPeriod() {
+		this.context.register(ResourceBindingPropertiesWithMap.class);
+		this.context.refresh();
+
+		ResourceBindingPropertiesWithMap bean = this.context
+				.getBean(ResourceBindingPropertiesWithMap.class);
+		assertEquals("value3", bean.mymap.get("key3"));
+		// this should not fail!!!
+		// mymap looks to contain - {key1=, key3=value3}
+		System.err.println(bean.mymap);
+		assertEquals("value12", bean.mymap.get("key1.key2"));
+	}
+
 	/**
 	 * Strict tests need a known set of properties so we remove system items which may be
 	 * environment specific.
@@ -600,5 +615,19 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		// No getter - you should be able to bind to a write-only bean
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(path = "${binding.location:classpath:map.yml}")
+	protected static class ResourceBindingPropertiesWithMap {
+		private Map<String, String> mymap;
+
+		public void setMymap(Map<String, String> mymap) {
+			this.mymap = mymap;
+		}
+
+		public Map<String, String> getMymap() {
+			return this.mymap;
+		}
 	}
 }
