@@ -18,6 +18,8 @@ package org.springframework.boot.cli.command;
 
 import groovy.lang.GroovyClassLoader;
 
+import java.util.ServiceLoader;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +27,9 @@ import org.junit.Test;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.SpringCli;
+import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
+
+import cli.command.CustomCompilerAutoConfiguration;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -67,6 +72,22 @@ public class InitCommandTests {
 		this.command.run("src/test/resources/grab.groovy");
 		verify(this.cli, times(this.defaultCount + 1)).register(any(Command.class));
 		assertTrue(this.output.toString().contains("Hello Grab"));
+
+		Iterable<CompilerAutoConfiguration> autoConfigurations = ServiceLoader.load(
+				CompilerAutoConfiguration.class, Thread.currentThread()
+						.getContextClassLoader());
+
+		boolean foundCustomConfiguration = false;
+
+		for (CompilerAutoConfiguration autoConfiguration : autoConfigurations) {
+			if (CustomCompilerAutoConfiguration.class.getName().equals(
+					autoConfiguration.getClass().getName())) {
+				foundCustomConfiguration = true;
+				break;
+			}
+		}
+
+		assertTrue(foundCustomConfiguration);
 	}
 
 	@Test
