@@ -4,6 +4,9 @@ org.springframework.boot.context.initializer.ConfigFileApplicationContextInitial
 org.springframework.boot.context.initializer.FileEncodingApplicationContextInitializer,\
 org.springframework.boot.context.initializer.ContextIdApplicationContextInitializer,\
 org.springframework.boot.context.initializer.EnvironmentDelegateApplicationContextInitializer,\
-org.springframework.boot.context.initializer.LoggingApplicationContextInitializer,\
-org.springframework.boot.context.initializer.VcapApplicationContextInitializer,\
+org.springframework.boot.context.initializer.VcapApplicationContextInitializer
+
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.context.listener.LoggingApplicationListener,\
 org.springframework.boot.liquibase.LiquibaseServiceLocatorInitializer

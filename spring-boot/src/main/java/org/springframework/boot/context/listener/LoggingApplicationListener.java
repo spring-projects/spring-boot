@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.initializer;
+package org.springframework.boot.context.listener;
 
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationBeforeRefreshEvent;
+import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.SpringApplicationStartEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.Ordered;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
@@ -50,7 +55,7 @@ import org.springframework.util.ResourceUtils;
  * logback; and <code>classpath:logging.properties</code> for
  * <code>java.util.logging</code>. If the correct one of those files is not found then
  * some sensible defaults are adopted from files of the same name but in the package
- * containing {@link LoggingApplicationContextInitializer}.
+ * containing {@link LoggingApplicationListener}.
  * </p>
  * 
  * <p>
@@ -68,9 +73,7 @@ import org.springframework.util.ResourceUtils;
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class LoggingApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		ApplicationListener<SpringApplicationStartEvent>, Ordered {
+public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
 	static {
@@ -90,6 +93,12 @@ public class LoggingApplicationContextInitializer implements
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
 	}
 
+	@SuppressWarnings("unchecked")
+	private static Collection<Class<? extends ApplicationEvent>> EVENT_TYPES = Arrays
+			.<Class<? extends ApplicationEvent>> asList(
+					SpringApplicationStartEvent.class,
+					SpringApplicationBeforeRefreshEvent.class);
+
 	private final Log logger = LogFactory.getLog(getClass());
 
 	private int order = Integer.MIN_VALUE + 11;
@@ -99,23 +108,42 @@ public class LoggingApplicationContextInitializer implements
 	private LogLevel springBootLogging = null;
 
 	@Override
-	public void onApplicationEvent(SpringApplicationStartEvent event) {
-		if (System.getProperty("PID") == null) {
-			System.setProperty("PID", getPid());
+	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+		for (Class<? extends ApplicationEvent> type : EVENT_TYPES) {
+			if (type.isAssignableFrom(eventType)) {
+				return true;
+			}
 		}
-		LoggingSystem loggingSystem = LoggingSystem.get(event.getSpringApplication()
-				.getClass().getClassLoader());
-		loggingSystem.beforeInitialize();
+		return false;
+	}
+
+	@Override
+	public boolean supportsSourceType(Class<?> sourceType) {
+		return SpringApplication.class.isAssignableFrom(sourceType);
+	}
+
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof SpringApplicationEnvironmentAvailableEvent) {
+			SpringApplicationEnvironmentAvailableEvent available = (SpringApplicationEnvironmentAvailableEvent) event;
+			initialize(available.getEnvironment(), available.getSpringApplication()
+					.getClassLoader());
+		}
+		else {
+			if (System.getProperty("PID") == null) {
+				System.setProperty("PID", getPid());
+			}
+			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
+					.getDefaultClassLoader());
+			loggingSystem.beforeInitialize();
+		}
 	}
 
 	/**
 	 * Initialize the logging system according to preferences expressed through the
 	 * {@link Environment} and the classpath.
 	 */
-	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-
-		ConfigurableEnvironment environment = applicationContext.getEnvironment();
+	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
 
 		if (this.parseArgs && this.springBootLogging == null) {
 			if (environment.containsProperty("debug")) {
@@ -134,7 +162,7 @@ public class LoggingApplicationContextInitializer implements
 			}
 		}
 
-		LoggingSystem system = LoggingSystem.get(applicationContext.getClassLoader());
+		LoggingSystem system = LoggingSystem.get(classLoader);
 
 		// User specified configuration
 		if (environment.containsProperty("logging.config")) {

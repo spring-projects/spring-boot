@@ -16,30 +16,32 @@
 
 package org.springframework.boot;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 /**
- * Event published as early when a {@link SpringApplication} is starting up and the
- * {@link Environment} is first available for inspection and modification.
+ * Event published as when a {@link SpringApplication} is starting up and the
+ * {@link ApplicationContext} is about to refresh. The bean definitions will be loaded and
+ * the {@link Environment} is ready for use at this stage.
  * 
  * @author Dave Syer
  */
-public class SpringApplicationNewEnvironmentEvent extends ApplicationEvent {
+public class SpringApplicationBeforeRefreshEvent extends ApplicationEvent {
 
-	private ConfigurableEnvironment environment;
 	private String[] args;
+	private ConfigurableApplicationContext context;
 
 	/**
 	 * @param springApplication the current application
-	 * @param environment the environment that was just created
+	 * @param context the ApplicationContext about to be refreshed
 	 * @param args the argumemts the application is running with
 	 */
-	public SpringApplicationNewEnvironmentEvent(SpringApplication springApplication,
-			ConfigurableEnvironment environment, String[] args) {
+	public SpringApplicationBeforeRefreshEvent(SpringApplication springApplication,
+			ConfigurableApplicationContext context, String[] args) {
 		super(springApplication);
-		this.environment = environment;
+		this.context = context;
 		this.args = args;
 	}
 
@@ -58,10 +60,10 @@ public class SpringApplicationNewEnvironmentEvent extends ApplicationEvent {
 	}
 
 	/**
-	 * @return the environment
+	 * @return the context
 	 */
-	public ConfigurableEnvironment getEnvironment() {
-		return this.environment;
+	public ConfigurableApplicationContext getApplicationContext() {
+		return this.context;
 	}
 
 }

@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
+import org.springframework.boot.context.listener.LoggingApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -117,7 +117,7 @@ public class SecurityAutoConfigurationTests {
 	private static AnnotationConfigWebApplicationContext debugRefresh(
 			AnnotationConfigWebApplicationContext context) {
 		TestUtils.addEnviroment(context, "debug:true");
-		LoggingApplicationContextInitializer logging = new LoggingApplicationContextInitializer();
+		LoggingApplicationListener logging = new LoggingApplicationListener();
 		logging.initialize(context);
 		AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
 		initializer.initialize(context);

@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.web.DefaultErrorViewIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.initializer.LoggingApplicationContextInitializer;
+import org.springframework.boot.context.listener.LoggingApplicationListener;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author Dave Syer
  */
-@ContextConfiguration(classes = TestConfiguration.class, initializers = { LoggingApplicationContextInitializer.class })
+@ContextConfiguration(classes = TestConfiguration.class, initializers = { LoggingApplicationListener.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 public class DefaultErrorViewIntegrationTests {

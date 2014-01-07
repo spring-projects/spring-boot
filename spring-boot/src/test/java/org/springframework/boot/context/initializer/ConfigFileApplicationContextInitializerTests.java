@@ -22,7 +22,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationNewEnvironmentEvent;
+import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -67,7 +67,7 @@ public class ConfigFileApplicationContextInitializerTests {
 	@Test
 	public void randomValue() throws Exception {
 		StandardEnvironment environment = new StandardEnvironment();
-		this.initializer.onApplicationEvent(new SpringApplicationNewEnvironmentEvent(
+		this.initializer.onApplicationEvent(new SpringApplicationEnvironmentAvailableEvent(
 				new SpringApplication(), environment, new String[0]));
 		String property = environment.getProperty("random.value");
 		assertThat(property, notNullValue());

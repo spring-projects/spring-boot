@@ -320,16 +320,18 @@ public class SpringApplication {
 			}
 
 			// Notify listeners of the environment creation
-			multicaster.multicastEvent(new SpringApplicationNewEnvironmentEvent(this,
-					environment, args));
+			multicaster.multicastEvent(new SpringApplicationEnvironmentAvailableEvent(
+					this, environment, args));
 
 			// Sources might have changed when environment was applied
 			sources = getSources();
-			registerListeners(multicaster, sources);
 			Assert.notEmpty(sources, "Sources must not be empty");
 			if (this.showBanner) {
 				printBanner();
 			}
+
+			// Some sources might be listeners
+			registerListeners(multicaster, sources);
 
 			// Create, load, refresh and run the ApplicationContext
 			context = createApplicationContext();
@@ -343,6 +345,9 @@ public class SpringApplication {
 			}
 
 			load(context, sources.toArray(new Object[sources.size()]));
+			// Notify listeners of intention to refresh
+			multicaster.multicastEvent(new SpringApplicationBeforeRefreshEvent(this,
+					context, args));
 			refresh(context);
 
 			stopWatch.stop();
