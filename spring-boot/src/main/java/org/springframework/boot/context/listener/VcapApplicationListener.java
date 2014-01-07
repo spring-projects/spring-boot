@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.initializer;
+package org.springframework.boot.context.listener;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -26,10 +26,11 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.config.JsonParser;
 import org.springframework.boot.config.JsonParserFactory;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -87,11 +88,10 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-public class VcapApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+public class VcapApplicationListener implements
+		ApplicationListener<SpringApplicationEnvironmentAvailableEvent>, Ordered {
 
-	private static final Log logger = LogFactory
-			.getLog(VcapApplicationContextInitializer.class);
+	private static final Log logger = LogFactory.getLog(VcapApplicationListener.class);
 
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
@@ -113,9 +113,9 @@ public class VcapApplicationContextInitializer implements
 	}
 
 	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
+	public void onApplicationEvent(SpringApplicationEnvironmentAvailableEvent event) {
 
-		ConfigurableEnvironment environment = applicationContext.getEnvironment();
+		ConfigurableEnvironment environment = event.getEnvironment();
 		if (!environment.containsProperty(VCAP_APPLICATION)
 				&& !environment.containsProperty(VCAP_SERVICES)) {
 			return;
