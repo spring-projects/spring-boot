@@ -1,11 +1,11 @@
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\
-org.springframework.boot.context.initializer.FileEncodingApplicationContextInitializer,\
 org.springframework.boot.context.initializer.ContextIdApplicationContextInitializer,\
 org.springframework.boot.context.initializer.EnvironmentDelegateApplicationContextInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
+org.springframework.boot.context.listener.FileEncodingApplicationListener,\
 org.springframework.boot.context.listener.VcapApplicationListener,\
 org.springframework.boot.context.listener.ConfigFileApplicationListener,\
 org.springframework.boot.context.listener.LoggingApplicationListener,\

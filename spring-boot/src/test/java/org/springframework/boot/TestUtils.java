@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 /**
@@ -31,6 +32,10 @@ public abstract class TestUtils {
 
 	public static void addEnviroment(ConfigurableApplicationContext context,
 			String... pairs) {
+		addEnviroment(context.getEnvironment(), pairs);
+	}
+
+	public static void addEnviroment(ConfigurableEnvironment enviroment, String... pairs) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (String pair : pairs) {
 			int index = pair.indexOf(":");
@@ -38,8 +43,7 @@ public abstract class TestUtils {
 			String value = index > 0 ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
 		}
-		context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("test", map));
+		enviroment.getPropertySources().addFirst(new MapPropertySource("test", map));
 	}
 
 }
