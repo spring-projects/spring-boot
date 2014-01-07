@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.initializer;
+package org.springframework.boot.context.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ApplicationListener;
 
 /**
- * An {@link ApplicationContextInitializer} halts application startup if the system file
+ * An {@link ApplicationListener}that halts application startup if the system file
  * encoding does not match an expected value set in the environment. By default has no
  * effect, but if you set <code>spring.mandatory_file_encoding</code> (or some camelCase
  * or UPPERCASE variant of that) to the name of a character encoding (e.g. "UTF-8") then
@@ -41,16 +41,15 @@ import org.springframework.context.ConfigurableApplicationContext;
  * 
  * @author Dave Syer
  */
-public class FileEncodingApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class FileEncodingApplicationListener implements
+		ApplicationListener<SpringApplicationEnvironmentAvailableEvent> {
 
-	private static Log logger = LogFactory
-			.getLog(FileEncodingApplicationContextInitializer.class);
+	private static Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
 
 	@Override
-	public void initialize(final ConfigurableApplicationContext context) {
+	public void onApplicationEvent(SpringApplicationEnvironmentAvailableEvent event) {
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
-				context.getEnvironment(), "spring.");
+				event.getEnvironment(), "spring.");
 		if (resolver.containsProperty("mandatoryFileEncoding")) {
 			final String encoding = System.getProperty("file.encoding");
 			final String desired = resolver.getProperty("mandatoryFileEncoding");
