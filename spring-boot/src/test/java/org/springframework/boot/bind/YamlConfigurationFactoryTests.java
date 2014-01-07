@@ -24,7 +24,6 @@ import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
 
 import org.junit.Test;
-import org.springframework.boot.bind.YamlConfigurationFactory;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Validator;
@@ -40,21 +39,32 @@ import static org.junit.Assert.assertEquals;
  */
 public class YamlConfigurationFactoryTests {
 
-	private YamlConfigurationFactory<Foo> factory;
-
 	private Validator validator;
 
 	private Map<Class<?>, Map<String, String>> aliases = new HashMap<Class<?>, Map<String, String>>();
 
 	private Foo createFoo(final String yaml) throws Exception {
-		this.factory = new YamlConfigurationFactory<Foo>(Foo.class);
-		this.factory.setYaml(yaml);
-		this.factory.setExceptionIfInvalid(true);
-		this.factory.setPropertyAliases(this.aliases);
-		this.factory.setValidator(this.validator);
-		this.factory.setMessageSource(new StaticMessageSource());
-		this.factory.afterPropertiesSet();
-		return this.factory.getObject();
+		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(
+				Foo.class);
+		factory.setYaml(yaml);
+		factory.setExceptionIfInvalid(true);
+		factory.setPropertyAliases(this.aliases);
+		factory.setValidator(this.validator);
+		factory.setMessageSource(new StaticMessageSource());
+		factory.afterPropertiesSet();
+		return factory.getObject();
+	}
+
+	private Jee createJee(final String yaml) throws Exception {
+		YamlConfigurationFactory<Jee> factory = new YamlConfigurationFactory<Jee>(
+				Jee.class);
+		factory.setYaml(yaml);
+		factory.setExceptionIfInvalid(true);
+		factory.setPropertyAliases(this.aliases);
+		factory.setValidator(this.validator);
+		factory.setMessageSource(new StaticMessageSource());
+		factory.afterPropertiesSet();
+		return factory.getObject();
 	}
 
 	@Test
@@ -82,6 +92,12 @@ public class YamlConfigurationFactoryTests {
 		createFoo("bar: blah");
 	}
 
+	@Test
+	public void testWithPeriodInKey() throws Exception {
+		Jee jee = createJee("mymap:\n  ? key1.key2\n  : value");
+		assertEquals("value", jee.mymap.get("key1.key2"));
+	}
+
 	private static class Foo {
 		@NotNull
 		public String name;
@@ -89,4 +105,7 @@ public class YamlConfigurationFactoryTests {
 		public String bar;
 	}
 
+	private static class Jee {
+		public Map<Object, Object> mymap;
+	}
 }
