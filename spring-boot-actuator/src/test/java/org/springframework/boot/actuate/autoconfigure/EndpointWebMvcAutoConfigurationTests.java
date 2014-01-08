@@ -23,7 +23,7 @@ import java.nio.charset.Charset;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoint;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
@@ -121,7 +121,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void specificPortsViaProperties() throws Exception {
-		TestUtils.addEnviroment(this.applicationContext, "server.port:7070",
+		SpringBootTestUtils.addEnviroment(this.applicationContext, "server.port:7070",
 				"management.port:7071");
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -142,7 +142,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void contextPath() throws Exception {
-		TestUtils.addEnviroment(this.applicationContext, "management.contextPath:/test");
+		SpringBootTestUtils.addEnviroment(this.applicationContext, "management.contextPath:/test");
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,

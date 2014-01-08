@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -38,7 +38,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 
 	@Test
 	public void testCustomNamingStrategy() throws Exception {
-		TestUtils.addEnviroment(this.context, "spring.jpa.hibernate.namingstrategy:"
+		SpringBootTestUtils.addEnviroment(this.context, "spring.jpa.hibernate.namingstrategy:"
 				+ "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
 		this.context.refresh();

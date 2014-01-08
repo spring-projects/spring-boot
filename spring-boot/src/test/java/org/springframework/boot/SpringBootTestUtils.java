@@ -28,7 +28,7 @@ import org.springframework.core.env.MapPropertySource;
  * 
  * @author Dave Syer
  */
-public abstract class TestUtils {
+public abstract class SpringBootTestUtils {
 
 	public static void addEnviroment(ConfigurableApplicationContext context,
 			String... pairs) {
