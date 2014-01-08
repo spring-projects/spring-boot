@@ -251,6 +251,14 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindNestedMapOfString() throws Exception {
+		TargetWithNestedMapOfString target = new TargetWithNestedMapOfString();
+		bind(target, "nested.foo: bar\n" + "nested.value.foo: 123");
+		assertEquals("bar", target.getNested().get("foo"));
+		assertEquals("123", target.getNested().get("value.foo"));
+	}
+
+	@Test
 	public void testBindNestedMapBracketReferenced() throws Exception {
 		TargetWithNestedMap target = new TargetWithNestedMap();
 		bind(target, "nested[foo]: bar\n" + "nested[value]: 123");
@@ -465,6 +473,18 @@ public class RelaxedDataBinderTests {
 		}
 
 		public void setNested(Map<String, Object> nested) {
+			this.nested = nested;
+		}
+	}
+
+	public static class TargetWithNestedMapOfString {
+		private Map<String, String> nested;
+
+		public Map<String, String> getNested() {
+			return this.nested;
+		}
+
+		public void setNested(Map<String, String> nested) {
 			this.nested = nested;
 		}
 	}

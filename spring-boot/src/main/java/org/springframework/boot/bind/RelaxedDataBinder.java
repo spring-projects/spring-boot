@@ -187,6 +187,14 @@ public class RelaxedDataBinder extends DataBinder {
 		if (descriptor == null || descriptor.isMap()) {
 			if (descriptor != null) {
 				wrapper.getPropertyValue(name + "[foo]");
+				TypeDescriptor valueDescriptor = descriptor.getMapValueTypeDescriptor();
+				if (valueDescriptor != null) {
+					Class<?> valueType = valueDescriptor.getObjectType();
+					if (valueType != null
+							&& CharSequence.class.isAssignableFrom(valueType)) {
+						path.collapseKeys(index);
+					}
+				}
 			}
 			path.mapIndex(index);
 			extendMapIfNecessary(wrapper, path, index);
@@ -276,6 +284,22 @@ public class RelaxedDataBinder extends DataBinder {
 
 		public BeanPath(String path) {
 			this.nodes = splitPath(path);
+		}
+
+		public void collapseKeys(int index) {
+			List<PathNode> revised = new ArrayList<PathNode>();
+			for (int i = 0; i < index; i++) {
+				revised.add(this.nodes.get(i));
+			}
+			StringBuilder builder = new StringBuilder();
+			for (int i = index; i < this.nodes.size(); i++) {
+				if (i > index) {
+					builder.append(".");
+				}
+				builder.append(this.nodes.get(i).name);
+			}
+			revised.add(new PropertyNode(builder.toString()));
+			this.nodes = revised;
 		}
 
 		public void mapIndex(int index) {
