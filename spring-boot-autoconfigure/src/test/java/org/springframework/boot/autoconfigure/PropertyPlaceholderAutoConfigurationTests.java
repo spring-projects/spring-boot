@@ -48,7 +48,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	public void propertyPlaceholderse() throws Exception {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class);
-		SpringBootTestUtils.addEnviroment(this.context, "foo:two");
+		SpringBootTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
 		assertEquals("two", this.context.getBean(PlaceholderConfig.class).getFoo());
 	}
@@ -57,7 +57,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	public void propertyPlaceholdersOverride() throws Exception {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class, PlaceholdersOverride.class);
-		SpringBootTestUtils.addEnviroment(this.context, "foo:two");
+		SpringBootTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
 		assertEquals("spam", this.context.getBean(PlaceholderConfig.class).getFoo());
 	}

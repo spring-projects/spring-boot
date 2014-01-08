@@ -95,7 +95,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void testOverrideConfigLocation() {
-		SpringBootTestUtils.addEnviroment(this.context,
+		SpringBootTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -108,7 +108,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void testOverrideConfigDoesNotExist() throws Exception {
-		SpringBootTestUtils.addEnviroment(this.context, "logging.config: doesnotexist.xml");
+		SpringBootTestUtils.addEnvironment(this.context, "logging.config: doesnotexist.xml");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		// Should not throw
@@ -116,7 +116,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void testAddLogFileProperty() {
-		SpringBootTestUtils.addEnviroment(this.context,
+		SpringBootTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml",
 				"logging.file: foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -129,7 +129,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void testAddLogPathProperty() {
-		SpringBootTestUtils.addEnviroment(this.context,
+		SpringBootTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml", "logging.path: foo/");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
@@ -141,7 +141,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseDebugArg() throws Exception {
-		SpringBootTestUtils.addEnviroment(this.context, "debug");
+		SpringBootTestUtils.addEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -152,7 +152,7 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void parseTraceArg() throws Exception {
-		SpringBootTestUtils.addEnviroment(this.context, "trace");
+		SpringBootTestUtils.addEnvironment(this.context, "trace");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");
@@ -164,7 +164,7 @@ public class LoggingApplicationListenerTests {
 	@Test
 	public void parseArgsDisabled() throws Exception {
 		this.initializer.setParseArgs(false);
-		SpringBootTestUtils.addEnviroment(this.context, "debug");
+		SpringBootTestUtils.addEnvironment(this.context, "debug");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.debug("testatdebug");

@@ -56,7 +56,7 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
+		SpringBootTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
 		this.context.refresh();
 		assertEquals("jdbc:foo//bar/spam",
 				this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class)

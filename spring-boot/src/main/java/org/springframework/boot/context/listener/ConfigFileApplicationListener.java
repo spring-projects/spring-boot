@@ -187,13 +187,26 @@ public class ConfigFileApplicationListener implements
 		PropertySource<?> removed = environment.getPropertySources().remove(
 				"defaultProperties");
 
-		List<PropertySource<?>> sources = new ArrayList<PropertySource<?>>();
+		String first = null;
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
 			PropertySource<?> source = load(environment, resourceLoader, candidate, null);
 			if (source != null) {
-				sources.add(source);
+				if (first == null) {
+					first = source.getName();
+				}
+				environment.getPropertySources().addLast(source);
 			}
+		}
+
+		if (environment.containsProperty("spring.profiles.active")) {
+			Set<String> profiles = StringUtils.commaDelimitedListToSet(environment
+					.getProperty("spring.profiles.active").toString());
+			for (String active : profiles) {
+				// allow document with no profile to set the active one
+				environment.addActiveProfile(active);
+			}
+
 		}
 
 		// Second load for specific profiles
@@ -202,14 +215,16 @@ public class ConfigFileApplicationListener implements
 				PropertySource<?> source = load(environment, resourceLoader, candidate,
 						profile);
 				if (source != null) {
-					environment.getPropertySources().addLast(source);
+					if (first != null) {
+						// Originals go at the end so they don't override the specific
+						// profiles
+						environment.getPropertySources().addBefore(first, source);
+					}
+					else {
+						environment.getPropertySources().addLast(source);
+					}
 				}
 			}
-		}
-
-		// Originals go at the end so they don't override the specific profiles
-		for (PropertySource<?> source : sources) {
-			environment.getPropertySources().addLast(source);
 		}
 
 		if (removed != null) {
@@ -276,15 +291,6 @@ public class ConfigFileApplicationListener implements
 				loaders);
 		if (propertySource == null) {
 			return null;
-		}
-		if (propertySource.containsProperty("spring.profiles.active")) {
-			Set<String> profiles = StringUtils.commaDelimitedListToSet(propertySource
-					.getProperty("spring.profiles.active").toString());
-			for (String active : profiles) {
-				// allow document with no profile to set the active one
-				environment.addActiveProfile(active);
-			}
-
 		}
 		return propertySource;
 	}

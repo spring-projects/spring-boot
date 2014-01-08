@@ -121,7 +121,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void specificPortsViaProperties() throws Exception {
-		SpringBootTestUtils.addEnviroment(this.applicationContext, "server.port:7070",
+		SpringBootTestUtils.addEnvironment(this.applicationContext, "server.port:7070",
 				"management.port:7071");
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -142,7 +142,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void contextPath() throws Exception {
-		SpringBootTestUtils.addEnviroment(this.applicationContext, "management.contextPath:/test");
+		SpringBootTestUtils.addEnvironment(this.applicationContext, "management.contextPath:/test");
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,

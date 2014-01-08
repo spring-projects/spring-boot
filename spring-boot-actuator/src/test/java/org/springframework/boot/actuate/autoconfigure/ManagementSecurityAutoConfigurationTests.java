@@ -117,7 +117,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "security.ignored:none");
+		SpringBootTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application and management endpoints now
 		assertEquals(2, this.context.getBean(FilterChainProxy.class).getFilterChains()
@@ -134,7 +134,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "security.basic.enabled:false");
+		SpringBootTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now
 		assertEquals(7, this.context.getBean(FilterChainProxy.class).getFilterChains()
@@ -171,7 +171,7 @@ public class ManagementSecurityAutoConfigurationTests {
 
 	private static AnnotationConfigWebApplicationContext debugRefresh(
 			AnnotationConfigWebApplicationContext context) {
-		SpringBootTestUtils.addEnviroment(context, "debug:true");
+		SpringBootTestUtils.addEnvironment(context, "debug:true");
 		LoggingApplicationListener logging = new LoggingApplicationListener();
 		logging.onApplicationEvent(new SpringApplicationBeforeRefreshEvent(
 				new SpringApplication(), context, new String[0]));

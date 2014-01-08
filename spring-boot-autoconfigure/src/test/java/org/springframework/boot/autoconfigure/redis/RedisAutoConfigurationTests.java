@@ -47,7 +47,7 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testOverrideRedisConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		SpringBootTestUtils.addEnviroment(this.context, "spring.redis.host:foo");
+		SpringBootTestUtils.addEnvironment(this.context, "spring.redis.host:foo");
 		this.context.register(RedisAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

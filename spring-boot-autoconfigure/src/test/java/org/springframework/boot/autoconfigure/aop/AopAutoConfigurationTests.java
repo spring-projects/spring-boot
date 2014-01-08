@@ -42,7 +42,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "spring.aop.auto:false");
+		SpringBootTestUtils.addEnvironment(this.context, "spring.aop.auto:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());
@@ -56,7 +56,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "spring.aop.proxyTargetClass:true");
+		SpringBootTestUtils.addEnvironment(this.context, "spring.aop.proxyTargetClass:true");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());
@@ -70,7 +70,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "spring.aop.proxyTargetClass:false");
+		SpringBootTestUtils.addEnvironment(this.context, "spring.aop.proxyTargetClass:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());

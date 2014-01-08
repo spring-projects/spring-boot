@@ -104,7 +104,7 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testInfoEndpointConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		SpringBootTestUtils.addEnviroment(this.context, "info.foo:bar");
+		SpringBootTestUtils.addEnvironment(this.context, "info.foo:bar");
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
@@ -116,7 +116,7 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testNoGitProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		SpringBootTestUtils.addEnviroment(this.context,
+		SpringBootTestUtils.addEnvironment(this.context,
 				"spring.git.properties:classpath:nonexistent");
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();
