@@ -478,7 +478,6 @@ public class PropertiesLauncher extends Launcher {
 			URISyntaxException {
 		ClassLoader parentClassLoader = getClass().getClassLoader();
 		if (parentClassLoader instanceof URLClassLoader) {
-			@SuppressWarnings("resource")
 			URLClassLoader urlClassLoader = (URLClassLoader) parentClassLoader;
 			for (URL url : urlClassLoader.getURLs()) {
 				if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
