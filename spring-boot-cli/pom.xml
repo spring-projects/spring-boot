@@ -37,6 +37,11 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>spring-boot-maven-settings</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-xml</artifactId>
 				<version>${groovy.version}</version>

@@ -18,11 +18,11 @@ package org.springframework.boot.cli.compiler.grape;
 
 import groovy.lang.GroovyClassLoader;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.aether.repository.RemoteRepository;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -36,9 +36,9 @@ public class AetherGrapeEngineTests {
 
 	private final GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
 
-	private final AetherGrapeEngine grapeEngine = new AetherGrapeEngine(
-			this.groovyClassLoader, Arrays.asList(new RemoteRepository.Builder("central",
-					"default", "http://repo1.maven.org/maven2/").build()));
+	private final AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(
+			this.groovyClassLoader, Arrays.asList(new RepositoryConfiguration("central",
+					URI.create("http://repo1.maven.org/maven2"), false)));
 
 	@Test
 	public void dependencyResolution() {

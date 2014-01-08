@@ -22,6 +22,7 @@ import groovy.lang.GroovyClassLoader.ClassCollector;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,11 +43,9 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.repository.RepositoryPolicy;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
+import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
-import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.compiler.transformation.DependencyAutoConfigurationTransformation;
 import org.springframework.boot.cli.compiler.transformation.GroovyBeansTransformation;
 import org.springframework.boot.cli.compiler.transformation.ResolveDependencyCoordinatesTransformation;
@@ -92,15 +91,17 @@ public class GroovyCompiler {
 		this.loader = createLoader(configuration);
 
 		this.coordinatesResolver = new PropertiesArtifactCoordinatesResolver(this.loader);
-		GrapeEngineInstaller.install(new AetherGrapeEngine(this.loader,
-				createRepositories(configuration.getRepositoryConfiguration())));
+
+		AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(this.loader,
+				configuration.getRepositoryConfiguration());
+
+		GrapeEngineInstaller.install(grapeEngine);
 
 		this.loader.getConfiguration().addCompilationCustomizers(
 				new CompilerAutoConfigureCustomizer());
 		if (configuration.isAutoconfigure()) {
-			this.compilerAutoConfigurations = ServiceLoader.load(
-					CompilerAutoConfiguration.class,
-					GroovyCompiler.class.getClassLoader());
+			this.compilerAutoConfigurations = ServiceLoader
+					.load(CompilerAutoConfiguration.class);
 		}
 		else {
 			this.compilerAutoConfigurations = Collections.emptySet();
@@ -122,31 +123,29 @@ public class GroovyCompiler {
 
 	private ExtendedGroovyClassLoader createLoader(
 			GroovyCompilerConfiguration configuration) {
+
 		ExtendedGroovyClassLoader loader = new ExtendedGroovyClassLoader(
 				configuration.getScope());
+
+		for (URL url : getExistingUrls()) {
+			loader.addURL(url);
+		}
+
 		for (String classpath : configuration.getClasspath()) {
 			loader.addClasspath(classpath);
 		}
+
 		return loader;
 	}
 
-	private List<RemoteRepository> createRepositories(
-			List<RepositoryConfiguration> repositoryConfigurations) {
-		List<RemoteRepository> repositories = new ArrayList<RemoteRepository>(
-				repositoryConfigurations.size());
-		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
-			RemoteRepository.Builder builder = new RemoteRepository.Builder(
-					repositoryConfiguration.getName(), "default", repositoryConfiguration
-							.getUri().toASCIIString());
-
-			if (!repositoryConfiguration.getSnapshotsEnabled()) {
-				builder.setSnapshotPolicy(new RepositoryPolicy(false,
-						RepositoryPolicy.UPDATE_POLICY_NEVER,
-						RepositoryPolicy.CHECKSUM_POLICY_IGNORE));
-			}
-			repositories.add(builder.build());
+	private URL[] getExistingUrls() {
+		ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+		if (tccl instanceof ExtendedGroovyClassLoader) {
+			return ((ExtendedGroovyClassLoader) tccl).getURLs();
 		}
-		return repositories;
+		else {
+			return new URL[0];
+		}
 	}
 
 	public void addCompilationCustomizers(CompilationCustomizer... customizers) {
