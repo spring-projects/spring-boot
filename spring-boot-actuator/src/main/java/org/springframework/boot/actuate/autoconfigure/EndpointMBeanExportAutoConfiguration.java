@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @AutoConfigureAfter({ EndpointAutoConfiguration.class })
-@ConditionalOnExpression("${endpoints.jmx.enabled:true}")
+@ConditionalOnExpression("${endpoints.jmx.enabled:true}&&${spring.jmx.enabled:true}")
 @EnableConfigurationProperties(EndpointMBeanExportProperties.class)
 public class EndpointMBeanExportAutoConfiguration {
 
@@ -55,7 +55,7 @@ public class EndpointMBeanExportAutoConfiguration {
 			mbeanExporter.setDomain(domain);
 		}
 
-		mbeanExporter.setEnsureUniqueRuntimeObjectNames(this.properties.getUniqueNames());
+		mbeanExporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		mbeanExporter.setObjectNameStaticProperties(this.properties.getStaticNames());
 
 		return mbeanExporter;
@@ -68,7 +68,17 @@ public class EndpointMBeanExportAutoConfiguration {
 
 		private boolean uniqueNames = false;
 
+		private boolean enabled = true;
+
 		private Properties staticNames = new Properties();
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public String getDomain() {
 			return this.domain;
@@ -78,7 +88,7 @@ public class EndpointMBeanExportAutoConfiguration {
 			this.domain = domain;
 		}
 
-		public boolean getUniqueNames() {
+		public boolean isUniqueNames() {
 			return this.uniqueNames;
 		}
 
