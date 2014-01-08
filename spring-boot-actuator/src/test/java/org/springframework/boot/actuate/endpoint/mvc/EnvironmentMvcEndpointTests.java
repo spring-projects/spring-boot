@@ -59,7 +59,7 @@ public class EnvironmentMvcEndpointTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		SpringBootTestUtils.addEnviroment((ConfigurableApplicationContext) this.context, "foo:bar");
+		SpringBootTestUtils.addEnvironment((ConfigurableApplicationContext) this.context, "foo:bar");
 	}
 
 	@Test

@@ -66,7 +66,7 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testEmbeddedTypeDefaultsUsername() throws Exception {
-		SpringBootTestUtils.addEnviroment(this.context,
+		SpringBootTestUtils.addEnvironment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
 		this.context.register(DataSourceAutoConfiguration.class,
@@ -82,7 +82,7 @@ public class DataSourceAutoConfigurationTests {
 	@Test
 	public void testExplicitDriverClassClearsUserName() throws Exception {
 		SpringBootTestUtils
-				.addEnviroment(
+				.addEnvironment(
 						this.context,
 						"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
 						"spring.datasource.url:jdbc:foo://localhost",

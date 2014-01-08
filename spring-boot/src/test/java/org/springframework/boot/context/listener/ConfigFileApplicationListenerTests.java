@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.listener;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
-import org.springframework.boot.context.listener.ConfigFileApplicationListener;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -32,6 +33,7 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -143,7 +145,18 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()), contains("dev"));
 		assertThat(property, equalTo("fromdevprofile"));
+	}
+
+	@Test
+	public void yamlProfileCanBeChanged() throws Exception {
+		SpringBootTestUtils
+				.addEnviroment(this.environment, "spring.profiles.active:prod");
+		this.initializer.setNames("testsetprofiles");
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(Arrays.asList(this.environment.getActiveProfiles()).toString(),
+				equalTo("[prod]"));
 	}
 
 	@Test

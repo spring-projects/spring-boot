@@ -72,7 +72,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "server.port:9000");
+		SpringBootTestUtils.addEnvironment(this.context, "server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertNotNull(server);
@@ -86,7 +86,7 @@ public class ServerPropertiesAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, ServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnviroment(this.context, "server.tomcat.basedir:target/foo",
+		SpringBootTestUtils.addEnvironment(this.context, "server.tomcat.basedir:target/foo",
 				"server.port:9000");
 		this.context.refresh();
 		ServerProperties server = this.context.getBean(ServerProperties.class);

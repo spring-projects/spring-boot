@@ -65,7 +65,7 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentDisabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		SpringBootTestUtils.addEnviroment(this.context, "endpoints.jolokia.enabled:false");
+		SpringBootTestUtils.addEnvironment(this.context, "endpoints.jolokia.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,

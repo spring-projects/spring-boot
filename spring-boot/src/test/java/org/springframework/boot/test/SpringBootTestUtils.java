@@ -30,7 +30,7 @@ import org.springframework.core.env.MapPropertySource;
  */
 public abstract class SpringBootTestUtils {
 
-	public static void addEnviroment(ConfigurableApplicationContext context,
+	public static void addEnvironment(ConfigurableApplicationContext context,
 			String... pairs) {
 		addEnviroment(context.getEnvironment(), pairs);
 	}

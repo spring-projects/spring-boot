@@ -84,7 +84,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void idOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		SpringBootTestUtils.addEnviroment(this.context, this.property + ".id:myid");
+		SpringBootTestUtils.addEnvironment(this.context, this.property + ".id:myid");
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().getId(), equalTo("myid"));
