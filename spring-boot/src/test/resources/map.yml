@@ -1,0 +1,5 @@
+mymap:
+  ? key1.key2
+  : value12
+  ? key3
+  : value3
