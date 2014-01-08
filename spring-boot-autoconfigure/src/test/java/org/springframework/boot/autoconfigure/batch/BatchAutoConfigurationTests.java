@@ -54,6 +54,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -143,6 +144,9 @@ public class BatchAutoConfigurationTests {
 		// It's a lazy proxy, but it does render its target if you ask for toString():
 		assertTrue(transactionManager.toString().contains("JpaTransactionManager"));
 		assertNotNull(this.context.getBean(EntityManagerFactory.class));
+		// Ensure the JobRepository can be used (no problem with isolation level)
+		assertNull(this.context.getBean(JobRepository.class).getLastJobExecution("job",
+				new JobParameters()));
 	}
 
 	@EnableBatchProcessing
