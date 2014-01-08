@@ -20,6 +20,8 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
@@ -35,6 +37,8 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Component
 public class BasicBatchConfigurer implements BatchConfigurer {
+
+	private static Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
 	private DataSource dataSource;
 	private EntityManagerFactory entityManagerFactory;
@@ -84,6 +88,10 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	protected JobRepository createJobRepository() throws Exception {
 		JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
 		factory.setDataSource(this.dataSource);
+		if (this.entityManagerFactory != null) {
+			logger.warn("JPA does not support custom isolation levels, so locks may not be taken when launching Jobs");
+			factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
+		}
 		factory.setTransactionManager(getTransactionManager());
 		factory.afterPropertiesSet();
 		return (JobRepository) factory.getObject();
