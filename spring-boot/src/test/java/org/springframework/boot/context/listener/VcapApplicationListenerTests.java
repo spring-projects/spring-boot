@@ -19,7 +19,7 @@ package org.springframework.boot.context.listener;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
-import org.springframework.boot.SpringBootTestUtils;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

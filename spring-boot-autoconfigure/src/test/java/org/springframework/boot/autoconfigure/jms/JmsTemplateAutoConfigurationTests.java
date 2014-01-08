@@ -23,7 +23,7 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.SpringBootTestUtils;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

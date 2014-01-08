@@ -23,12 +23,12 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
