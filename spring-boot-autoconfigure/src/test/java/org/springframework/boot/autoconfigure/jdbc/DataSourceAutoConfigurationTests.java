@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -66,7 +66,7 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testEmbeddedTypeDefaultsUsername() throws Exception {
-		TestUtils.addEnviroment(this.context,
+		SpringBootTestUtils.addEnviroment(this.context,
 				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
 				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
 		this.context.register(DataSourceAutoConfiguration.class,
@@ -81,7 +81,7 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testExplicitDriverClassClearsUserName() throws Exception {
-		TestUtils
+		SpringBootTestUtils
 				.addEnviroment(
 						this.context,
 						"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",

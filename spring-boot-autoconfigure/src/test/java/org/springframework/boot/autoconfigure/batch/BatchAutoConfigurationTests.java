@@ -39,7 +39,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -105,7 +105,7 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDisableLaunchesJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(this.context, "spring.batch.job.enabled:false");
+		SpringBootTestUtils.addEnviroment(this.context, "spring.batch.job.enabled:false");
 		this.context.register(JobConfiguration.class, BatchAutoConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -117,7 +117,7 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDisableSchemaLoader() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(this.context, "spring.datasource.name:batchtest",
+		SpringBootTestUtils.addEnviroment(this.context, "spring.datasource.name:batchtest",
 				"spring.batch.initializer.enabled:false");
 		this.context.register(TestConfiguration.class, BatchAutoConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,

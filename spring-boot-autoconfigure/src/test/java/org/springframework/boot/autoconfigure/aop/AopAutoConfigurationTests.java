@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.aop;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestUtils.addEnviroment(this.context, "spring.aop.auto:false");
+		SpringBootTestUtils.addEnviroment(this.context, "spring.aop.auto:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());
@@ -56,7 +56,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestUtils.addEnviroment(this.context, "spring.aop.proxyTargetClass:true");
+		SpringBootTestUtils.addEnviroment(this.context, "spring.aop.proxyTargetClass:true");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());
@@ -70,7 +70,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestUtils.addEnviroment(this.context, "spring.aop.proxyTargetClass:false");
+		SpringBootTestUtils.addEnviroment(this.context, "spring.aop.proxyTargetClass:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());

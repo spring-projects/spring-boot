@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.redis;
 
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -47,7 +47,7 @@ public class RedisAutoConfigurationTests {
 	@Test
 	public void testOverrideRedisConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(this.context, "spring.redis.host:foo");
+		SpringBootTestUtils.addEnviroment(this.context, "spring.redis.host:foo");
 		this.context.register(RedisAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
@@ -112,7 +112,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff()
 			throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		TestUtils.addEnviroment(context, "spring.jpa.open_in_view:false");
+		SpringBootTestUtils.addEnviroment(context, "spring.jpa.open_in_view:false");
 		context.register(TestConfiguration.class,
 				ComponentScanDetectorConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
@@ -124,7 +124,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void customJpaProperties() throws Exception {
-		TestUtils.addEnviroment(this.context, "spring.jpa.properties.a:b",
+		SpringBootTestUtils.addEnviroment(this.context, "spring.jpa.properties.a:b",
 				"spring.jpa.properties.c:d");
 		setupTestConfiguration();
 		this.context.refresh();

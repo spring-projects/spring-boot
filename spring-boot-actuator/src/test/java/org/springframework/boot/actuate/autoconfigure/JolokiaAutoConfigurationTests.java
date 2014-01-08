@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -65,7 +65,7 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentDisabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		TestUtils.addEnviroment(this.context, "endpoints.jolokia.enabled:false");
+		SpringBootTestUtils.addEnviroment(this.context, "endpoints.jolokia.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,

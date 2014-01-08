@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.security;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationBeforeRefreshEvent;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
 import org.springframework.boot.autoconfigure.ComponentScanDetector;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -72,7 +72,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestUtils.addEnviroment(this.context, "security.ignored:none");
+		SpringBootTestUtils.addEnviroment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application endpoints now
 		assertEquals(1, this.context.getBean(FilterChainProxy.class).getFilterChains()
@@ -85,7 +85,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		TestUtils.addEnviroment(this.context, "security.basic.enabled:false");
+		SpringBootTestUtils.addEnviroment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		// No security at all not even ignores
 		assertEquals(0, this.context.getBeanNamesForType(FilterChainProxy.class).length);
@@ -118,7 +118,7 @@ public class SecurityAutoConfigurationTests {
 
 	private static AnnotationConfigWebApplicationContext debugRefresh(
 			AnnotationConfigWebApplicationContext context) {
-		TestUtils.addEnviroment(context, "debug:true");
+		SpringBootTestUtils.addEnviroment(context, "debug:true");
 		LoggingApplicationListener logging = new LoggingApplicationListener();
 		logging.onApplicationEvent(new SpringApplicationBeforeRefreshEvent(
 				new SpringApplication(), context, new String[0]));

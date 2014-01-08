@@ -19,7 +19,7 @@ package org.springframework.boot.context.initializer;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -46,7 +46,7 @@ public class EnvironmentDelegateApplicationContextInitializerTests {
 	@Test
 	public void orderedInitialize() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		TestUtils.addEnviroment(context,
+		SpringBootTestUtils.addEnviroment(context,
 				"context.initializer.classes:" + MockInitB.class.getName() + ","
 						+ MockInitA.class.getName());
 		this.initializer.initialize(context);
@@ -63,14 +63,14 @@ public class EnvironmentDelegateApplicationContextInitializerTests {
 	@Test
 	public void emptyInitializers() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		TestUtils.addEnviroment(context, "context.initializer.classes:");
+		SpringBootTestUtils.addEnviroment(context, "context.initializer.classes:");
 		this.initializer.initialize(context);
 	}
 
 	@Test
 	public void noSuchInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		TestUtils.addEnviroment(context,
+		SpringBootTestUtils.addEnviroment(context,
 				"context.initializer.classes:missing.madeup.class");
 		this.thrown.expect(ApplicationContextException.class);
 		this.initializer.initialize(context);
@@ -79,7 +79,7 @@ public class EnvironmentDelegateApplicationContextInitializerTests {
 	@Test
 	public void notAnInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		TestUtils.addEnviroment(context,
+		SpringBootTestUtils.addEnviroment(context,
 				"context.initializer.classes:" + Object.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.initializer.initialize(context);
@@ -88,7 +88,7 @@ public class EnvironmentDelegateApplicationContextInitializerTests {
 	@Test
 	public void genericNotSuitable() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		TestUtils.addEnviroment(context, "context.initializer.classes:"
+		SpringBootTestUtils.addEnviroment(context, "context.initializer.classes:"
 				+ NotSuitableInit.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("generic parameter");

@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
 import org.springframework.boot.actuate.endpoint.DumpEndpoint;
@@ -104,7 +104,7 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testInfoEndpointConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(this.context, "info.foo:bar");
+		SpringBootTestUtils.addEnviroment(this.context, "info.foo:bar");
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
@@ -116,7 +116,7 @@ public class EndpointAutoConfigurationTests {
 	@Test
 	public void testNoGitProperties() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(this.context,
+		SpringBootTestUtils.addEnviroment(this.context,
 				"spring.git.properties:classpath:nonexistent");
 		this.context.register(EndpointAutoConfiguration.class);
 		this.context.refresh();

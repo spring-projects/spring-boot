@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -51,7 +51,7 @@ public class EnvironmentDelegateApplicationListenerTests {
 
 	@Test
 	public void orderedInitialize() throws Exception {
-		TestUtils.addEnviroment(this.context, "context.listener.classes:"
+		SpringBootTestUtils.addEnviroment(this.context, "context.listener.classes:"
 				+ MockInitB.class.getName() + "," + MockInitA.class.getName());
 		this.listener.onApplicationEvent(new SpringApplicationEnvironmentAvailableEvent(
 				new SpringApplication(), this.context.getEnvironment(), new String[0]));
@@ -69,7 +69,7 @@ public class EnvironmentDelegateApplicationListenerTests {
 
 	@Test
 	public void emptyInitializers() throws Exception {
-		TestUtils.addEnviroment(this.context, "context.listener.classes:");
+		SpringBootTestUtils.addEnviroment(this.context, "context.listener.classes:");
 		this.listener.onApplicationEvent(new SpringApplicationEnvironmentAvailableEvent(
 				new SpringApplication(), this.context.getEnvironment(), new String[0]));
 	}

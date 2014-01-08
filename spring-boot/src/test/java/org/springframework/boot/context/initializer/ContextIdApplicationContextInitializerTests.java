@@ -17,7 +17,7 @@
 package org.springframework.boot.context.initializer;
 
 import org.junit.Test;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -42,7 +42,7 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testNameAndPort() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(context, "spring.application.name:foo", "PORT:8080");
+		SpringBootTestUtils.addEnviroment(context, "spring.application.name:foo", "PORT:8080");
 		this.initializer.initialize(context);
 		assertEquals("foo:8080", context.getId());
 	}
@@ -50,7 +50,7 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testNameAndProfiles() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(context, "spring.application.name:foo",
+		SpringBootTestUtils.addEnviroment(context, "spring.application.name:foo",
 				"spring.profiles.active: spam,bar", "spring.application.index:12");
 		this.initializer.initialize(context);
 		assertEquals("foo:spam,bar:12", context.getId());
@@ -59,7 +59,7 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testCloudFoundry() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(context, "spring.config.name:foo", "PORT:8080",
+		SpringBootTestUtils.addEnviroment(context, "spring.config.name:foo", "PORT:8080",
 				"vcap.application.name:bar", "vcap.application.instance_index:2");
 		this.initializer.initialize(context);
 		assertEquals("bar:2", context.getId());
@@ -68,7 +68,7 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testExplicitName() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		TestUtils.addEnviroment(context, "spring.application.name:spam",
+		SpringBootTestUtils.addEnviroment(context, "spring.application.name:spam",
 				"spring.config.name:foo", "PORT:8080", "vcap.application.name:bar",
 				"vcap.application.instance_index:2");
 		this.initializer.initialize(context);

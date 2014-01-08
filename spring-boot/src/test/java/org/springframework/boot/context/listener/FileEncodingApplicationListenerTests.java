@@ -20,7 +20,7 @@ import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
-import org.springframework.boot.TestUtils;
+import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
@@ -36,7 +36,7 @@ public class FileEncodingApplicationListenerTests {
 
 	@Test(expected = IllegalStateException.class)
 	public void testIllegalState() {
-		TestUtils.addEnviroment(this.environment, "spring.mandatory_file_encoding:FOO");
+		SpringBootTestUtils.addEnviroment(this.environment, "spring.mandatory_file_encoding:FOO");
 		this.initializer.onApplicationEvent(this.event);
 	}
 
@@ -48,7 +48,7 @@ public class FileEncodingApplicationListenerTests {
 	@Test
 	public void testSunnyDayMandated() {
 		Assume.assumeNotNull(System.getProperty("file.encoding"));
-		TestUtils.addEnviroment(this.environment, "spring.mandatory_file_encoding:"
+		SpringBootTestUtils.addEnviroment(this.environment, "spring.mandatory_file_encoding:"
 				+ System.getProperty("file.encoding"));
 		this.initializer.onApplicationEvent(this.event);
 	}
