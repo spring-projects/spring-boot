@@ -242,8 +242,6 @@
 								</manifest>
 								<manifestEntries>
 									<Start-Class>${start-class}</Start-Class>
-								</manifestEntries>
-								<manifestEntries>
 									<Class-Loader>groovy.lang.GroovyClassLoader</Class-Loader>
 								</manifestEntries>
 							</archive>
