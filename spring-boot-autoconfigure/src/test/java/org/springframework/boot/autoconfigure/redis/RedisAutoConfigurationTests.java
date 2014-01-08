@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.redis;
 
 import org.junit.Test;
-import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;

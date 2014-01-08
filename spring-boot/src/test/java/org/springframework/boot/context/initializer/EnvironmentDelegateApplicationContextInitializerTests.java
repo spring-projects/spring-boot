@@ -19,7 +19,7 @@ package org.springframework.boot.context.initializer;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.SpringBootTestUtils;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;

@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import org.junit.Test;
-import org.springframework.boot.SpringBootTestUtils;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.hamcrest.Matchers.equalTo;

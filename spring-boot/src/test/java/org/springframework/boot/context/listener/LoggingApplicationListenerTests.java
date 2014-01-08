@@ -30,9 +30,9 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationStartEvent;
-import org.springframework.boot.SpringBootTestUtils;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;

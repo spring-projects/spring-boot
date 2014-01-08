@@ -17,7 +17,7 @@
 package org.springframework.boot.context.initializer;
 
 import org.junit.Test;
-import org.springframework.boot.SpringBootTestUtils;
+import org.springframework.boot.test.SpringBootTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
