@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -112,7 +112,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	public void testOpenEntityManagerInViewInterceptorNotRegisteredWhenExplicitlyOff()
 			throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		SpringBootTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
+		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
 		context.register(TestConfiguration.class,
 				ComponentScanDetectorConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
@@ -124,7 +124,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	public void customJpaProperties() throws Exception {
-		SpringBootTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.properties.a:b",
 				"spring.jpa.properties.c:d");
 		setupTestConfiguration();
 		this.context.refresh();

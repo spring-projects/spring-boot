@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +48,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	public void propertyPlaceholderse() throws Exception {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class);
-		SpringBootTestUtils.addEnvironment(this.context, "foo:two");
+		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
 		assertEquals("two", this.context.getBean(PlaceholderConfig.class).getFoo());
 	}
@@ -57,7 +57,7 @@ public class PropertyPlaceholderAutoConfigurationTests {
 	public void propertyPlaceholdersOverride() throws Exception {
 		this.context.register(PropertyPlaceholderAutoConfiguration.class,
 				PlaceholderConfig.class, PlaceholdersOverride.class);
-		SpringBootTestUtils.addEnvironment(this.context, "foo:two");
+		EnvironmentTestUtils.addEnvironment(this.context, "foo:two");
 		this.context.refresh();
 		assertEquals("spam", this.context.getBean(PlaceholderConfig.class).getFoo());
 	}

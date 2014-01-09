@@ -24,7 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -35,6 +35,7 @@ import org.springframework.core.env.StandardEnvironment;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotNull;
@@ -59,6 +60,7 @@ public class ConfigFileApplicationListenerTests {
 	@After
 	public void cleanup() {
 		System.clearProperty("my.property");
+		System.clearProperty("spring.config.location");
 	}
 
 	@Test
@@ -151,7 +153,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void yamlProfileCanBeChanged() throws Exception {
-		SpringBootTestUtils
+		EnvironmentTestUtils
 				.addEnviroment(this.environment, "spring.profiles.active:prod");
 		this.initializer.setNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
@@ -173,14 +175,17 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void specificResource() throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.config.location", "classpath:/specificlocation.properties");
-		MapPropertySource source = new MapPropertySource("map", map);
-		this.environment.getPropertySources().addFirst(source);
+		String location = "classpath:specificlocation.properties";
+		EnvironmentTestUtils.addEnviroment(this.environment, "spring.config.location:"
+				+ location);
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
+		assertThat(this.environment.getPropertySources().contains(location), is(true));
 		// The default property source is still there
+		assertThat(
+				this.environment.getPropertySources().contains(
+						"classpath:application.properties"), is(true));
 		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
 	}
 

@@ -24,18 +24,18 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 
 /**
- * General test utilities.
+ * Test utilities for setting environment values.
  * 
  * @author Dave Syer
  */
-public abstract class SpringBootTestUtils {
+public abstract class EnvironmentTestUtils {
 
 	public static void addEnvironment(ConfigurableApplicationContext context,
 			String... pairs) {
 		addEnviroment(context.getEnvironment(), pairs);
 	}
 
-	public static void addEnviroment(ConfigurableEnvironment enviroment, String... pairs) {
+	public static void addEnviroment(ConfigurableEnvironment environment, String... pairs) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (String pair : pairs) {
 			int index = pair.indexOf(":");
@@ -43,7 +43,7 @@ public abstract class SpringBootTestUtils {
 			String value = index > 0 ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
 		}
-		enviroment.getPropertySources().addFirst(new MapPropertySource("test", map));
+		environment.getPropertySources().addFirst(new MapPropertySource("test", map));
 	}
 
 }

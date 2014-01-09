@@ -24,7 +24,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.ReflectionUtils;
 
@@ -56,7 +56,7 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
 		this.context.refresh();
 		assertEquals("jdbc:foo//bar/spam",
 				this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class)

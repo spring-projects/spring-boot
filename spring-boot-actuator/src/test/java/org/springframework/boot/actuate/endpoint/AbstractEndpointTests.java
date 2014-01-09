@@ -21,7 +21,7 @@ import java.util.Collections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -84,7 +84,7 @@ public abstract class AbstractEndpointTests<T extends Endpoint<?>> {
 	@Test
 	public void idOverride() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		SpringBootTestUtils.addEnvironment(this.context, this.property + ".id:myid");
+		EnvironmentTestUtils.addEnvironment(this.context, this.property + ".id:myid");
 		this.context.register(this.configClass);
 		this.context.refresh();
 		assertThat(getEndpointBean().getId(), equalTo("myid"));
