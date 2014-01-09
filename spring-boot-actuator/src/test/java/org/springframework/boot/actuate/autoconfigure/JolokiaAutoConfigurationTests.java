@@ -54,6 +54,8 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentServletRegisteredWithAppContext() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "jolokia.config[key1]:value1",
+				"jolokia.config[key2]:value2");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -65,7 +67,8 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentDisabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.jolokia.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"endpoints.jolokia.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
