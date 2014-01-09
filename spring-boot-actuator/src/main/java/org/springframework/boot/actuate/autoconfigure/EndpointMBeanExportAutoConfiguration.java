@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  */
 @Configuration
+@ConditionalOnExpression("${endpoints.jmx.enabled:true} && ${spring.jmx.enabled:true}")
 @AutoConfigureAfter({ EndpointAutoConfiguration.class })
-@ConditionalOnExpression("${endpoints.jmx.enabled:true}&&${spring.jmx.enabled:true}")
 @EnableConfigurationProperties(EndpointMBeanExportProperties.class)
 public class EndpointMBeanExportAutoConfiguration {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration.JolokiaProperties;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -30,10 +32,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding Jolokia, a JMX-HTTP
@@ -56,17 +58,14 @@ import org.springframework.core.env.Environment;
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass({ AgentServlet.class })
+@ConditionalOnExpression("${endpoints.jolokia.enabled:true}")
 @AutoConfigureBefore(ManagementSecurityAutoConfiguration.class)
 @AutoConfigureAfter(EmbeddedServletContainerAutoConfiguration.class)
-@ConditionalOnExpression("${endpoints.jolokia.enabled:true}")
+@EnableConfigurationProperties(JolokiaProperties.class)
 public class JolokiaAutoConfiguration {
 
-	private RelaxedPropertyResolver environment;
-
 	@Autowired
-	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment);
-	}
+	JolokiaProperties properties = new JolokiaProperties();
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -77,14 +76,23 @@ public class JolokiaAutoConfiguration {
 	}
 
 	private Properties getInitParameters() {
-		Properties properties = new Properties();
-		Map<String, Object> configParameters = this.environment
-				.getSubProperties("jolokia.config.");
-		for (Map.Entry<String, Object> configParameter : configParameters.entrySet()) {
-			properties.setProperty(configParameter.getKey(), configParameter.getValue()
-					.toString());
+		Properties initParameters = new Properties();
+		initParameters.putAll(this.properties.getConfig());
+		return initParameters;
+	}
+
+	@ConfigurationProperties(name = "jolokia")
+	public static class JolokiaProperties {
+
+		private Map<String, String> config = new HashMap<String, String>();
+
+		public Map<String, String> getConfig() {
+			return this.config;
 		}
-		return properties;
+
+		public void setConfig(Map<String, String> config) {
+			this.config = config;
+		}
 	}
 
 }
