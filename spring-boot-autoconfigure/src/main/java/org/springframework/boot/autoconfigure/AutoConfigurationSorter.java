@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +36,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
+
 
 /**
  * Sort {@link EnableAutoConfiguration auto-configuration} classes into priority order by
@@ -63,6 +63,9 @@ class AutoConfigurationSorter {
 		List<String> orderedClassNames = new ArrayList<String>(classNames);
 
 		// Sort initially by order
+		Collections.sort(orderedClassNames);
+
+		// Then sort by order
 		Collections.sort(orderedClassNames, new Comparator<String>() {
 			@Override
 			public int compare(String o1, String o2) {
@@ -130,7 +133,7 @@ class AutoConfigurationSorter {
 		}
 
 		public Set<String> getClassesRequestedAfter(String className) {
-			Set<String> rtn = new HashSet<String>();
+			Set<String> rtn = new LinkedHashSet<String>();
 			rtn.addAll(get(className).getAfter());
 			for (Map.Entry<String, AutoConfigurationClass> entry : this.classes
 					.entrySet()) {

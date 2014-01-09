@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,14 @@ public class AutoConfigurationSorterTests {
 	public void byAutoConfigureMixedBeforeAndAfter() throws Exception {
 		List<String> actual = this.sorter
 				.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
+		assertThat(actual, nameMatcher(C, W, B, A, X));
+	}
+
+	@Test
+	public void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder()
+			throws Exception {
+		List<String> actual = this.sorter
+				.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
 		assertThat(actual, nameMatcher(C, W, B, A, X));
 	}
 
