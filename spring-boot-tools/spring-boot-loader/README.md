@@ -14,8 +14,8 @@ environment variable `LOADER_PATH`or `loader.path` in
 `application.properties` (colon-separated list of directories or archives).
 
 > **Note:** The quickest way to build a compatible archive is to use the
-> [spring-boot-maven-plugin](../spring-boot-maven-plugin) or
-> [spring-boot-gradle-plugin](../spring-boot-gradle-plugin).
+> [spring-boot-maven-plugin](../spring-boot-maven-plugin/README.md) or
+> [spring-boot-gradle-plugin](../spring-boot-gradle-plugin/README.md).
 
 ## Nested JARs
 Java does not provide any standard way to load nested jar files (i.e. jar files that
