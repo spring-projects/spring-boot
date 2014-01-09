@@ -128,11 +128,11 @@ public class ManagementSecurityAutoConfigurationTests {
 	public void testDisableBasicAuthOnApplicationPaths() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
+		this.context.register(HttpMessageConvertersAutoConfiguration.class,
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
+				SecurityAutoConfiguration.class,
+				ManagementSecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();

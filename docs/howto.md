@@ -476,6 +476,26 @@ default configuration you should find a `BeanNameViewResolver` in your
 way of doing that.  Look at `ErrorMvcAutoConfiguration` for more
 options.
 
+## Secure an Application
+
+Web applications will be secure by default (with Basic authentication
+on all endpoints) if Spring Security is on the classpath. To add
+method-level security to a web application you can simply
+`@EnableGlobalMethodSecurity` with your desired settings.
+
+The default `AuthenticationManager` has a single user (username "user"
+and password random, printed at INFO when the application starts
+up). You can change the password by providing a
+`security.user.password`. This and other useful properties are
+externalized via `SecurityProperties`.
+
+## Change the AuthenticationManager and add User Accounts
+
+If you provide a `@Bean` of type `AuthenticationManager` the default
+one will not be created, so you have the full feature set of Spring
+Security available
+(e.g. [various authentication options](http://docs.spring.io/spring-security/site/docs/3.2.1.CI-SNAPSHOT/reference/htmlsingle/#jc-authentication)).
+
 ## Use 'Short' Command Line Arguments
 
 Some people like to use (for example) `--port=9000` instead of

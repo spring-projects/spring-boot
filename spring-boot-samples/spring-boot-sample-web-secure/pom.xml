@@ -8,7 +8,7 @@
 		<artifactId>spring-boot-samples</artifactId>
 		<version>0.5.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-secure</artifactId>
+	<artifactId>spring-boot-sample-web-secure</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
@@ -18,6 +18,15 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.thymeleaf</groupId>
+			<artifactId>thymeleaf-spring4</artifactId>
 		</dependency>
 	</dependencies>
 	<build>
