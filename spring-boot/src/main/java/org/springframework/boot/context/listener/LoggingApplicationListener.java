@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationBeforeRefreshEvent;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.SpringApplicationStartEvent;
 import org.springframework.boot.logging.LogLevel;
@@ -97,7 +96,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	private static Collection<Class<? extends ApplicationEvent>> EVENT_TYPES = Arrays
 			.<Class<? extends ApplicationEvent>> asList(
 					SpringApplicationStartEvent.class,
-					SpringApplicationBeforeRefreshEvent.class);
+					SpringApplicationEnvironmentAvailableEvent.class);
 
 	private final Log logger = LogFactory.getLog(getClass());
 
