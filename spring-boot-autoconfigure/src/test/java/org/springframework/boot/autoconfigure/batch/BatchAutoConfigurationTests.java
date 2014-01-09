@@ -48,6 +48,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -90,6 +91,17 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	public void testNoBatchConfiguration() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmptyConfiguration.class, BatchAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(JobLauncher.class).length);
+		assertEquals(0, this.context.getBeanNamesForType(JobRepository.class).length);
+	}
+
+	@Test
 	public void testDefinesAndLaunchesJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JobConfiguration.class, BatchAutoConfiguration.class,
@@ -105,7 +117,8 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDisableLaunchesJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.batch.job.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.batch.job.enabled:false");
 		this.context.register(JobConfiguration.class, BatchAutoConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -117,7 +130,8 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDisableSchemaLoader() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.name:batchtest",
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.name:batchtest",
 				"spring.batch.initializer.enabled:false");
 		this.context.register(TestConfiguration.class, BatchAutoConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
@@ -147,6 +161,10 @@ public class BatchAutoConfigurationTests {
 		// Ensure the JobRepository can be used (no problem with isolation level)
 		assertNull(this.context.getBean(JobRepository.class).getLastJobExecution("job",
 				new JobParameters()));
+	}
+
+	@Configuration
+	protected static class EmptyConfiguration {
 	}
 
 	@EnableBatchProcessing
