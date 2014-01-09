@@ -26,7 +26,7 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomi
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -65,7 +65,7 @@ public class JolokiaAutoConfigurationTests {
 	@Test
 	public void agentDisabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		SpringBootTestUtils.addEnvironment(this.context, "endpoints.jolokia.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "endpoints.jolokia.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,

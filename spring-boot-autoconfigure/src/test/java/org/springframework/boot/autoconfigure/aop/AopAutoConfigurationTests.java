@@ -20,7 +20,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +42,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.aop.auto:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.aop.auto:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());
@@ -56,7 +56,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.aop.proxyTargetClass:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.aop.proxyTargetClass:true");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());
@@ -70,7 +70,7 @@ public class AopAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, AopAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.aop.proxyTargetClass:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.aop.proxyTargetClass:false");
 		this.context.refresh();
 		TestAspect aspect = this.context.getBean(TestAspect.class);
 		assertFalse(aspect.isCalled());

@@ -30,7 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,7 +64,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testBasicPropertiesBinding() {
 		this.context.register(TestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
 		assertEquals("foo", this.context.getBean(TestProperties.class).name);
@@ -105,7 +105,7 @@ public class EnableConfigurationPropertiesTests {
 	public void testStrictPropertiesBinding() {
 		removeSystemProperties();
 		this.context.register(StrictTestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(StrictTestProperties.class).length);
@@ -115,7 +115,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testPropertiesEmbeddedBinding() {
 		this.context.register(EmbeddedTestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring_foo_name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring_foo_name:foo");
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
@@ -126,7 +126,7 @@ public class EnableConfigurationPropertiesTests {
 	public void testIgnoreNestedPropertiesBinding() {
 		removeSystemProperties();
 		this.context.register(IgnoreNestedTestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo", "nested.name:bar");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "nested.name:bar");
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(IgnoreNestedTestProperties.class).length);
@@ -136,7 +136,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testExceptionOnValidation() {
 		this.context.register(ExceptionIfInvalidTestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.expected.expectCause(Matchers.<Throwable> instanceOf(BindException.class));
 		this.context.refresh();
 	}
@@ -144,7 +144,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testNoExceptionOnValidation() {
 		this.context.register(NoExceptionIfInvalidTestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(
 				1,
@@ -156,7 +156,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testNestedPropertiesBinding() {
 		this.context.register(NestedConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo", "nested.name:bar");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "nested.name:bar");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
 		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
@@ -166,7 +166,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testBasicPropertiesBindingWithAnnotationOnBaseClass() {
 		this.context.register(DerivedConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(DerivedProperties.class).length);
 		assertEquals("foo", this.context.getBean(BaseProperties.class).name);
@@ -175,7 +175,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testArrayPropertiesBinding() {
 		this.context.register(TestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo", "array:1,2,3");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "array:1,2,3");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(TestProperties.class).length);
 		assertEquals(3, this.context.getBean(TestProperties.class).getArray().length);
@@ -184,7 +184,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testCollectionPropertiesBindingFromYamlArray() {
 		this.context.register(TestConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo", "list[0]:1", "list[1]:2");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "list[0]:1", "list[1]:2");
 		this.context.refresh();
 		assertEquals(2, this.context.getBean(TestProperties.class).getList().size());
 	}
@@ -192,7 +192,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testPropertiesBindingWithoutAnnotation() {
 		this.context.register(MoreConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(MoreProperties.class).length);
 		assertEquals("foo", this.context.getBean(MoreProperties.class).name);
@@ -227,7 +227,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testBindingDirectlyToFileResolvedFromEnvironment() {
-		SpringBootTestUtils.addEnvironment(this.context, "binding.location:classpath:other.yml");
+		EnvironmentTestUtils.addEnvironment(this.context, "binding.location:classpath:other.yml");
 		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
 		this.context.refresh();
 		assertEquals(1,
@@ -268,7 +268,7 @@ public class EnableConfigurationPropertiesTests {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
 		parent.register(TestConfiguration.class);
 		parent.refresh();
-		SpringBootTestUtils.addEnvironment(this.context, "name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo");
 		this.context.setParent(parent);
 		this.context.register(TestConfiguration.class, TestConsumer.class);
 		this.context.refresh();
@@ -280,7 +280,7 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testBindingOnlyParentContext() {
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		SpringBootTestUtils.addEnvironment(parent, "name:foo");
+		EnvironmentTestUtils.addEnvironment(parent, "name:foo");
 		parent.register(TestConfiguration.class);
 		parent.refresh();
 		this.context.setParent(parent);
@@ -293,7 +293,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testUnderscoresInPrefix() throws Exception {
-		SpringBootTestUtils.addEnvironment(this.context, "spring_test_external_val:baz");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring_test_external_val:baz");
 		this.context.register(SystemExampleConfig.class);
 		this.context.refresh();
 		assertEquals("baz", this.context.getBean(SystemEnvVar.class).getVal());
@@ -301,7 +301,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testSimpleAutoConfig() throws Exception {
-		SpringBootTestUtils.addEnvironment(this.context, "external.name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo");
 		this.context.register(ExampleConfig.class);
 		this.context.refresh();
 		assertEquals("foo", this.context.getBean(External.class).getName());
@@ -309,7 +309,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testExplicitType() throws Exception {
-		SpringBootTestUtils.addEnvironment(this.context, "external.name:foo");
+		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo");
 		this.context.register(AnotherExampleConfig.class);
 		this.context.refresh();
 		assertEquals("foo", this.context.getBean(External.class).getName());
@@ -317,7 +317,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testMultipleExplicitTypes() throws Exception {
-		SpringBootTestUtils.addEnvironment(this.context, "external.name:foo", "another.name:bar");
+		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo", "another.name:bar");
 		this.context.register(FurtherExampleConfig.class);
 		this.context.refresh();
 		assertEquals("foo", this.context.getBean(External.class).getName());

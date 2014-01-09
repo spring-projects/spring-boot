@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.ManagementServerProperties
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaEndpointTests.Config;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -66,7 +66,7 @@ public class JolokiaEndpointTests {
 	@Before
 	public void setUp() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-		SpringBootTestUtils.addEnvironment((ConfigurableApplicationContext) this.context, "foo:bar");
+		EnvironmentTestUtils.addEnvironment((ConfigurableApplicationContext) this.context, "foo:bar");
 	}
 
 	@Test

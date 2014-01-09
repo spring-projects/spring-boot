@@ -33,7 +33,7 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -121,7 +121,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void specificPortsViaProperties() throws Exception {
-		SpringBootTestUtils.addEnvironment(this.applicationContext, "server.port:7070",
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.port:7070",
 				"management.port:7071");
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -142,7 +142,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void contextPath() throws Exception {
-		SpringBootTestUtils.addEnvironment(this.applicationContext, "management.contextPath:/test");
+		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.contextPath:/test");
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,

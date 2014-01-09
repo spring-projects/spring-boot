@@ -19,7 +19,7 @@ package org.springframework.boot.context.listener;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -39,7 +39,7 @@ public class VcapApplicationListenerTests {
 
 	@Test
 	public void testApplicationProperties() {
-		SpringBootTestUtils
+		EnvironmentTestUtils
 				.addEnvironment(
 						this.context,
 						"VCAP_APPLICATION:{\"application_users\":[],\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],\"started_at\":\"2013-05-29 02:37:59 +0000\",\"started_at_timestamp\":1369795079,\"host\":\"0.0.0.0\",\"port\":61034,\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
@@ -50,14 +50,14 @@ public class VcapApplicationListenerTests {
 
 	@Test
 	public void testUnparseableApplicationProperties() {
-		SpringBootTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:");
+		EnvironmentTestUtils.addEnvironment(this.context, "VCAP_APPLICATION:");
 		this.initializer.onApplicationEvent(this.event);
 		assertEquals(null, this.context.getEnvironment().getProperty("vcap"));
 	}
 
 	@Test
 	public void testNullApplicationProperties() {
-		SpringBootTestUtils
+		EnvironmentTestUtils
 				.addEnvironment(
 						this.context,
 						"VCAP_APPLICATION:{\"application_users\":null,\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],\"started_at\":\"2013-05-29 02:37:59 +0000\",\"started_at_timestamp\":1369795079,\"host\":\"0.0.0.0\",\"port\":61034,\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\",\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
@@ -67,7 +67,7 @@ public class VcapApplicationListenerTests {
 
 	@Test
 	public void testServiceProperties() {
-		SpringBootTestUtils
+		EnvironmentTestUtils
 				.addEnvironment(
 						this.context,
 						"VCAP_SERVICES:{\"rds-mysql-n/a\":[{\"name\":\"mysql\",\"label\":\"rds-mysql-n/a\",\"plan\":\"10mb\",\"credentials\":{\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\",\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\",\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\",\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":\"urpRuqTf8Cpe6\",\"password\":\"pxLsGVpsC9A5S\"}}]}");

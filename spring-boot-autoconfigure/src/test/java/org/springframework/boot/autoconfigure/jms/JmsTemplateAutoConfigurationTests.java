@@ -23,7 +23,7 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -118,7 +118,7 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.jms.pubSubDomain:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.jms.pubSubDomain:false");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
@@ -134,7 +134,7 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.activemq.inMemory:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.inMemory:false");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
@@ -153,7 +153,7 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.activemq.inMemory:false",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.inMemory:false",
 				"spring.activemq.brokerURL:tcp://remote-host:10000");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
@@ -173,7 +173,7 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
@@ -191,7 +191,7 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true",
 				"spring.activemq.inMemory:false");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
@@ -210,7 +210,7 @@ public class JmsTemplateAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true",
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true",
 				"spring.activemq.inMemory:false",
 				"spring.activemq.brokerURL:tcp://remote-host:10000");
 		this.context.refresh();

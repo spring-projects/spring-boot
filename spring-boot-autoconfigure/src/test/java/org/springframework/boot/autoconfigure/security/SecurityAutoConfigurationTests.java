@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.context.listener.LoggingApplicationListener;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -72,7 +72,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "security.ignored:none");
+		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application endpoints now
 		assertEquals(1, this.context.getBean(FilterChainProxy.class).getFilterChains()
@@ -85,7 +85,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		// No security at all not even ignores
 		assertEquals(0, this.context.getBeanNamesForType(FilterChainProxy.class).length);
@@ -118,7 +118,7 @@ public class SecurityAutoConfigurationTests {
 
 	private static AnnotationConfigWebApplicationContext debugRefresh(
 			AnnotationConfigWebApplicationContext context) {
-		SpringBootTestUtils.addEnvironment(context, "debug:true");
+		EnvironmentTestUtils.addEnvironment(context, "debug:true");
 		LoggingApplicationListener logging = new LoggingApplicationListener();
 		logging.onApplicationEvent(new SpringApplicationBeforeRefreshEvent(
 				new SpringApplication(), context, new String[0]));

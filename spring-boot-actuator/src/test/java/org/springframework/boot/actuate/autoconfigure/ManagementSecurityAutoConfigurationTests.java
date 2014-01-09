@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.context.listener.LoggingApplicationListener;
-import org.springframework.boot.test.SpringBootTestUtils;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -117,7 +117,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "security.ignored:none");
+		EnvironmentTestUtils.addEnvironment(this.context, "security.ignored:none");
 		this.context.refresh();
 		// Just the application and management endpoints now
 		assertEquals(2, this.context.getBean(FilterChainProxy.class).getFilterChains()
@@ -134,7 +134,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				EndpointAutoConfiguration.class, EndpointWebMvcAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		SpringBootTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
 		// Just the management endpoints (one filter) and ignores now
 		assertEquals(7, this.context.getBean(FilterChainProxy.class).getFilterChains()
@@ -171,7 +171,7 @@ public class ManagementSecurityAutoConfigurationTests {
 
 	private static AnnotationConfigWebApplicationContext debugRefresh(
 			AnnotationConfigWebApplicationContext context) {
-		SpringBootTestUtils.addEnvironment(context, "debug:true");
+		EnvironmentTestUtils.addEnvironment(context, "debug:true");
 		LoggingApplicationListener logging = new LoggingApplicationListener();
 		logging.onApplicationEvent(new SpringApplicationBeforeRefreshEvent(
 				new SpringApplication(), context, new String[0]));
