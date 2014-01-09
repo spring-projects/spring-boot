@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.junit.Assert.assertNotNull;
@@ -56,9 +57,32 @@ public class JpaRepositoriesAutoConfigurationTests {
 		assertNotNull(this.context.getBean(EntityManagerFactory.class));
 	}
 
+	@Test
+	public void testOverrideRepositoryConfiguration() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomConfiguration.class,
+				ComponentScanDetectorConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class,
+				JpaRepositoriesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context
+				.getBean(org.springframework.boot.autoconfigure.data.alt.CityRepository.class));
+		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
+		assertNotNull(this.context.getBean(EntityManagerFactory.class));
+	}
+
 	@Configuration
 	@ComponentScan(basePackageClasses = City.class)
 	protected static class TestConfiguration {
+
+	}
+
+	@Configuration
+	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.CityRepository.class)
+	@ComponentScan(basePackageClasses = City.class)
+	protected static class CustomConfiguration {
 
 	}
 
