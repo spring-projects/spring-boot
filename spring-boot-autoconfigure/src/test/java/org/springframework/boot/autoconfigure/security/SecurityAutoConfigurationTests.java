@@ -106,12 +106,12 @@ public class SecurityAutoConfigurationTests {
 	public void testJpaCoexistsHappily() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(EntityConfiguration.class, TestConfiguration.class,
+		this.context.register(EntityConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 				SecurityAutoConfiguration.class);
 		// This can fail if security @Conditionals force early instantiation of the
-		// HibernateJpaAutoConfiguration
+		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JpaTransactionManager.class));
 	}

@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.security.AuthenticationManagerConf
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -127,7 +128,7 @@ public class ManagementSecurityAutoConfiguration {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			// The ignores are not cumulative, so to prevent overwriting the defaults we
 			// add them back.
-			List<String> ignored = SecurityAutoConfiguration.getIgnored(this.security);
+			List<String> ignored = SpringBootWebSecurityConfiguration.getIgnored(this.security);
 			ignored.addAll(Arrays.asList(getEndpointPaths(this.endpointHandlerMapping,
 					false)));
 			if (!this.management.getSecurity().isEnabled()) {
@@ -185,7 +186,7 @@ public class ManagementSecurityAutoConfiguration {
 				http.sessionManagement().sessionCreationPolicy(
 						this.management.getSecurity().getSessions());
 
-				SecurityAutoConfiguration.configureHeaders(http.headers(),
+				SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 						this.security.getHeaders());
 
 			}
