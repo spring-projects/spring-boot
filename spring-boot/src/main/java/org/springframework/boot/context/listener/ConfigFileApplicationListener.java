@@ -263,7 +263,16 @@ public class ConfigFileApplicationListener implements
 
 	private PropertySource<?> load(ConfigurableEnvironment environment,
 			ResourceLoader resourceLoader, String location, String profile) {
-		location = environment.resolvePlaceholders(location);
+
+		String path = environment.resolvePlaceholders(location);
+		if (LOCATION_VARIABLE.equals(location) && !path.contains("$")) {
+			if (!path.contains(":")) {
+				path = "file:" + path;
+			}
+			path = StringUtils.cleanPath(path);
+		}
+		location = path;
+
 		String suffix = "." + StringUtils.getFilenameExtension(location);
 		Class<?> type = this.propertySourceAnnotations.configuration(location);
 
