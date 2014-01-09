@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass({ JobLauncher.class, DataSource.class, JdbcOperations.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
+@ConditionalOnBean(JobLauncher.class)
 public class BatchAutoConfiguration {
 
 	@Value("${spring.batch.job.name:}")
@@ -70,7 +71,6 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(JobLauncher.class)
 	@ConditionalOnExpression("${spring.batch.job.enabled:true}")
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner() {
 		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner();
@@ -82,7 +82,6 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(JobLauncher.class)
 	public ExitCodeGenerator jobExecutionExitCodeGenerator() {
 		return new JobExecutionExitCodeGenerator();
 	}
