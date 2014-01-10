@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,11 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 
 	private BasicDataSource pool;
 
+	public CommonsDataSourceConfiguration() {
+		// Ensure to set the correct default value for Commons DBCP
+		setInitialSize(0);
+	}
+
 	@Bean
 	public DataSource dataSource() {
 		logger.info("Hint: using Commons DBCP BasicDataSource. It's going to work, "
@@ -55,6 +60,7 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		if (getPassword() != null) {
 			this.pool.setPassword(getPassword());
 		}
+		this.pool.setInitialSize(getInitialSize());
 		this.pool.setMaxActive(getMaxActive());
 		this.pool.setMaxIdle(getMaxIdle());
 		this.pool.setMinIdle(getMinIdle());

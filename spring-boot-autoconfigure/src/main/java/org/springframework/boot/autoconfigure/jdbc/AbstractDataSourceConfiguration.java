@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,8 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 	private int maxIdle = 8;
 
 	private int minIdle = 8;
+
+	private int initialSize = 10;
 
 	private String validationQuery;
 
@@ -122,6 +124,10 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		this.driverClassName = driverClassName;
 	}
 
+	public void setInitialSize(int initialSize) {
+		this.initialSize = initialSize;
+	}
+
 	public void setUrl(String url) {
 		this.url = url;
 	}
@@ -156,6 +162,10 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	public void setTestOnReturn(boolean testOnReturn) {
 		this.testOnReturn = testOnReturn;
+	}
+
+	public int getInitialSize() {
+		return this.initialSize;
 	}
 
 	protected int getMaxActive() {
