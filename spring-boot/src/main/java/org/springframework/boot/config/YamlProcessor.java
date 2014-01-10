@@ -19,6 +19,7 @@ package org.springframework.boot.config;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -164,7 +165,20 @@ public class YamlProcessor {
 
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> asMap(Object object) {
-		return (Map<String, Object>) object;
+		// YAML can have numbers as keys
+		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		Map<Object, Object> map = (Map<Object, Object>) object;
+		for (Entry<Object, Object> entry : map.entrySet()) {
+			Object key = entry.getKey();
+			if (key instanceof CharSequence) {
+				result.put(key.toString(), entry.getValue());
+			}
+			else {
+				// It has to be a map key in this case
+				result.put("[" + key.toString() + "]", entry.getValue());
+			}
+		}
+		return result;
 	}
 
 	private boolean process(Map<String, Object> map, MatchCallback callback) {
