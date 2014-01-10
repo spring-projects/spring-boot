@@ -46,11 +46,11 @@ public class TestCommand extends OptionParsingCommand {
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
-			SourceOptions fileOptions = new SourceOptions(options);
+			SourceOptions sourceOptions = new SourceOptions(options);
 			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
 					options, this);
-			this.runner = new TestRunner(configuration, fileOptions.getSourcesArray(),
-					fileOptions.getArgsArray());
+			this.runner = new TestRunner(configuration, sourceOptions.getSourcesArray(),
+					sourceOptions.getArgsArray());
 			this.runner.compileAndRunTests();
 		}
 

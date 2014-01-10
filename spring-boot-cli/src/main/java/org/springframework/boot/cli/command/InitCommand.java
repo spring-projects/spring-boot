@@ -75,9 +75,9 @@ public class InitCommand extends OptionParsingCommand {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			boolean enhanced = false;
 
-			SourceOptions fileOptions = new SourceOptions(options, loader, "init.groovy",
+			SourceOptions sourceOptions = new SourceOptions(options, loader, "init.groovy",
 					"spring.groovy");
-			String[] files = fileOptions.getSourcesArray();
+			String[] sources = sourceOptions.getSourcesArray();
 
 			if (!(loader instanceof GroovyClassLoader)) {
 
@@ -102,8 +102,8 @@ public class InitCommand extends OptionParsingCommand {
 				}
 			}
 
-			if (this.compiler != null && files.length > 0) {
-				Class<?>[] classes = this.compiler.compile(files);
+			if (this.compiler != null && sources.length > 0) {
+				Class<?>[] classes = this.compiler.compile(sources);
 				for (Class<?> type : classes) {
 					Command script = ScriptCommand.command(type);
 					if (script != null) {

@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.util;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,21 +34,38 @@ import org.springframework.util.StringUtils;
  * Utilities for manipulating resource paths and URLs.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public abstract class ResourceUtils {
 
-	/** Pseudo URL prefix for loading from the class path: "classpath:" */
+	/**
+	 * Pseudo URL prefix for loading from the class path: "classpath:"
+	 */
 	public static final String CLASSPATH_URL_PREFIX = "classpath:";
 
-	/** Pseudo URL prefix for loading all resources from the class path: "classpath*:" */
+	/**
+	 * Pseudo URL prefix for loading all resources from the class path: "classpath*:"
+	 */
 	public static final String ALL_CLASSPATH_URL_PREFIX = "classpath*:";
 
-	/** URL prefix for loading from the file system: "file:" */
+	/**
+	 * URL prefix for loading from the file system: "file:"
+	 */
 	public static final String FILE_URL_PREFIX = "file:";
 
-	/** Wildcard character in source path */
-	public static final CharSequence WILDCARD = "*";
+	/**
+	 * Wildcard character in source path
+	 */
+	private static final CharSequence WILDCARD = "*";
 
+	/**
+	 * Return URLs from a given source path. Source paths can be simple file locations
+	 * (/some/file.java) or wildcard patterns (/some/**). Additionally the prefixes
+	 * "file:", "classpath:" and "classpath*:" can be used for specific path types.
+	 * @param path the source path
+	 * @param classLoader the class loader or {@code null} to use the default
+	 * @return a list of URLs
+	 */
 	public static List<String> getUrls(String path, ClassLoader classLoader) {
 
 		if (classLoader == null) {
@@ -57,60 +73,103 @@ public abstract class ResourceUtils {
 		}
 
 		path = StringUtils.cleanPath(path);
-		if (path.contains(WILDCARD)) {
+
+		try {
+			if (path.contains(WILDCARD)) {
+				return getUrlsFromWildcardPath(path, classLoader);
+			}
+
 			if (path.contains(":")) {
-				try {
-					Resource[] resources = new PathMatchingResourcePatternResolver(
-							classLoader).getResources(path);
-					List<String> result = new ArrayList<String>();
-					for (Resource resource : resources) {
-						result.add(resource.getURL().toExternalForm());
-					}
-					return result;
-				}
-				catch (IOException e) {
-					throw new IllegalArgumentException("Cannot resolve paths at [" + path
-							+ "]", e);
-				}
-			}
-			else {
-				try {
-					return getUrls(FILE_URL_PREFIX + path, classLoader);
-				}
-				catch (IllegalArgumentException e) {
-					// ignore
-				}
-				return getUrls(ALL_CLASSPATH_URL_PREFIX + path, classLoader);
-			}
-		}
-
-		if (path.contains(":")) {
-
-			if (path.startsWith(CLASSPATH_URL_PREFIX)) {
-				path = path.substring(CLASSPATH_URL_PREFIX.length());
-			}
-			else {
-				return getFilePath(path);
+				return getUrlsFromPrefixedPath(path, classLoader);
 			}
 
-		}
-		else {
 			try {
-				return getFilePath(path);
+				return getUrlsFromFile(path);
 			}
-			catch (IllegalArgumentException e) {
+			catch (IOException ex) {
 				// ignore
 			}
+
+			return getUrlsFromResources(path, classLoader);
+		}
+		catch (Exception ex) {
+			throw new IllegalArgumentException("Cannot create URL from path [" + path
+					+ "]", ex);
+
+		}
+	}
+
+	private static List<String> getUrlsFromWildcardPath(String path,
+			ClassLoader classLoader) throws IOException {
+		if (path.contains(":")) {
+			return getUrlsFromPrefixedWildcardPath(path, classLoader);
 		}
 
-		while (path.startsWith("/")) {
-			path = path.substring(1);
+		try {
+			return getUrls(FILE_URL_PREFIX + path, classLoader);
 		}
+		catch (IllegalArgumentException ex) {
+			// ignore
+		}
+
+		return getUrls(ALL_CLASSPATH_URL_PREFIX + path, classLoader);
+	}
+
+	private static List<String> getUrlsFromPrefixedWildcardPath(String path,
+			ClassLoader classLoader) throws IOException {
+		Resource[] resources = new PathMatchingResourcePatternResolver(classLoader)
+				.getResources(path);
+		List<String> result = new ArrayList<String>();
+		for (Resource resource : resources) {
+			result.add(resource.getURL().toExternalForm());
+		}
+		return result;
+	}
+
+	private static List<String> getUrlsFromPrefixedPath(String path,
+			ClassLoader classLoader) throws IOException {
+		if (path.startsWith(CLASSPATH_URL_PREFIX)) {
+			return getUrlsFromResources(path.substring(CLASSPATH_URL_PREFIX.length()),
+					classLoader);
+		}
+		return getUrlsFromFile(path);
+	}
+
+	private static List<String> getUrlsFromFile(String path) throws IOException {
+		Resource resource = new FileSystemResource(path);
+		if (resource.exists()) {
+			if (resource.getFile().isDirectory()) {
+				return getChildFiles(resource);
+			}
+			return Collections.singletonList(resource.getURL().toExternalForm());
+		}
+
+		resource = new UrlResource(path);
+		if (resource.exists()) {
+			return Collections.singletonList(resource.getURL().toExternalForm());
+		}
+
+		return Collections.emptyList();
+	}
+
+	private static List<String> getChildFiles(Resource resource) throws IOException {
+		Resource[] children = new PathMatchingResourcePatternResolver()
+				.getResources(resource.getURL() + "/**");
+		List<String> childFiles = new ArrayList<String>();
+		for (Resource child : children) {
+			if (!child.getFile().isDirectory()) {
+				childFiles.add(child.getURL().toExternalForm());
+			}
+		}
+		return childFiles;
+	}
+
+	private static List<String> getUrlsFromResources(String path, ClassLoader classLoader) {
+		path = stripLeadingSlashes(path);
 		List<String> result = new ArrayList<String>();
 		if (classLoader != null) {
-			Enumeration<URL> urls;
 			try {
-				urls = classLoader.getResources(path);
+				Enumeration<URL> urls = classLoader.getResources(path);
 				while (urls.hasMoreElements()) {
 					URL url = urls.nextElement();
 					result.add(url.toExternalForm());
@@ -123,44 +182,11 @@ public abstract class ResourceUtils {
 		return result;
 	}
 
-	private static List<String> getFilePath(String path) {
-		FileSystemResource resource = new FileSystemResource(path);
-		if (resource.exists()) {
-			try {
-				if (resource.getFile().isDirectory()) {
-					Resource[] resources = new PathMatchingResourcePatternResolver()
-							.getResources(resource.getURL() + "/**");
-					List<String> result = new ArrayList<String>();
-					for (Resource sub : resources) {
-						if (!sub.getFile().isDirectory()) {
-							result.add(sub.getURL().toExternalForm());
-						}
-					}
-					return result;
-				}
-				return Collections.singletonList(resource.getURL().toExternalForm());
-			}
-			catch (IOException e) {
-				throw new IllegalArgumentException("Cannot create URL from path [" + path
-						+ "]", e);
-			}
+	private static String stripLeadingSlashes(String path) {
+		while (path.startsWith("/")) {
+			path = path.substring(1);
 		}
-		try {
-			UrlResource url = new UrlResource(path);
-			if (url.exists()) {
-				try {
-					return Collections.singletonList(url.getURL().toExternalForm());
-				}
-				catch (IOException e) {
-					throw new IllegalArgumentException("Cannot create URL from path ["
-							+ path + "]", e);
-				}
-			}
-		}
-		catch (MalformedURLException ex) {
-			throw new IllegalArgumentException("Cannot create URL from path [" + path
-					+ "]", ex);
-		}
-		return Collections.emptyList();
+		return path;
 	}
+
 }

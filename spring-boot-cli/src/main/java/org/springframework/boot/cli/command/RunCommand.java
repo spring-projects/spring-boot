@@ -95,10 +95,10 @@ public class RunCommand extends OptionParsingCommand {
 						"Already running. Please stop the current application before running another.");
 			}
 
-			SourceOptions fileOptions = new SourceOptions(options);
+			SourceOptions sourceOptions = new SourceOptions(options);
 
 			if (options.has(this.editOption)) {
-				Desktop.getDesktop().edit(new File(fileOptions.getSources().get(0)));
+				Desktop.getDesktop().edit(new File(sourceOptions.getSources().get(0)));
 			}
 
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
@@ -110,7 +110,7 @@ public class RunCommand extends OptionParsingCommand {
 					options, this, repositoryConfiguration);
 
 			this.runner = new SpringApplicationRunner(configuration,
-					fileOptions.getSourcesArray(), fileOptions.getArgsArray());
+					sourceOptions.getSourcesArray(), sourceOptions.getArgsArray());
 			this.runner.compileAndRun();
 		}
 

@@ -33,25 +33,25 @@ public class TestRunner {
 
 	private static final String JUNIT_TEST_ANNOTATION = "org.junit.Test";
 
-	private final String[] files;
+	private final String[] sources;
 
 	private final GroovyCompiler compiler;
 
 	/**
 	 * Create a new {@link TestRunner} instance.
 	 * @param configuration
-	 * @param files
+	 * @param sources
 	 * @param args
 	 */
-	public TestRunner(TestRunnerConfiguration configuration, String[] files, String[] args) {
-		this.files = files.clone();
+	public TestRunner(TestRunnerConfiguration configuration, String[] sources, String[] args) {
+		this.sources = sources.clone();
 		this.compiler = new GroovyCompiler(configuration);
 	}
 
 	public void compileAndRunTests() throws Exception {
-		Object[] sources = this.compiler.sources(this.files);
+		Object[] sources = this.compiler.sources(this.sources);
 		if (sources.length == 0) {
-			throw new RuntimeException("No classes found in '" + this.files + "'");
+			throw new RuntimeException("No classes found in '" + this.sources + "'");
 		}
 
 		// Run in new thread to ensure that the context classloader is setup
