@@ -15,6 +15,8 @@
  */
 package org.springframework.boot.config;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -23,8 +25,6 @@ import org.springframework.boot.config.YamlProcessor.MatchCallback;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Tests for {@link YamlProcessor}.
  * 
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class YamlProcessorTests {
 
-	private YamlProcessor processor = new YamlProcessor();
+	private final YamlProcessor processor = new YamlProcessor();
 
 	@Test
 	public void arrayConvertedToIndexedBeanReference() {
@@ -68,6 +68,20 @@ public class YamlProcessorTests {
 		this.processor.setResources(new Resource[] { new ByteArrayResource(
 				"foo: bar\n1: bar".getBytes()) });
 		this.processor.process(new MatchCallback() {
+			@Override
+			public void process(Properties properties, Map<String, Object> map) {
+				assertEquals("bar", properties.get("[1]"));
+				assertEquals(2, properties.size());
+			}
+		});
+	}
+
+	@Test
+	public void integerDeepKeyBehaves() {
+		this.processor.setResources(new Resource[] { new ByteArrayResource(
+				"foo:\n  1: bar".getBytes()) });
+		this.processor.process(new MatchCallback() {
+
 			@Override
 			public void process(Properties properties, Map<String, Object> map) {
 				assertEquals("bar", properties.get("[1]"));
