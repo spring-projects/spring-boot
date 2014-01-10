@@ -104,6 +104,8 @@ public class ConfigFileApplicationListener implements
 
 	private PropertySourceAnnotations propertySourceAnnotations = new PropertySourceAnnotations();
 
+	private PropertySourceLoaderFactory propertySourceLoaderFactory = new DefaultPropertySourceLoaderFactory();
+
 	/**
 	 * Binds the early {@link Environment} to the {@link SpringApplication}. This makes it
 	 * possible to set {@link SpringApplication} properties dynamically, like the sources
@@ -284,12 +286,8 @@ public class ConfigFileApplicationListener implements
 			return null;
 		}
 
-		List<PropertySourceLoader> loaders = new ArrayList<PropertySourceLoader>();
-		loaders.add(new PropertiesPropertySourceLoader());
-		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
-			loaders.add(YamlPropertySourceLoader.springProfileAwareLoader(environment
-					.getActiveProfiles()));
-		}
+		List<PropertySourceLoader> loaders = this.propertySourceLoaderFactory
+				.getLoaders(environment);
 
 		Resource resource = resourceLoader.getResource(location);
 		String name = this.propertySourceAnnotations.name(location);
@@ -334,12 +332,22 @@ public class ConfigFileApplicationListener implements
 		if (this.cached.containsKey(key)) {
 			return this.cached.get(key);
 		}
+		boolean satisfied = true;
 		for (PropertySourceLoader loader : loaders) {
-			if (resource != null && resource.exists() && loader.supports(resource)) {
-				PropertySource<?> propertySource = loader.load(name, resource);
-				this.cached.put(key, propertySource);
-				return propertySource;
+			if (resource != null && resource.exists()) {
+				if (loader.supports(resource)) {
+					PropertySource<?> propertySource = loader.load(name, resource);
+					this.cached.put(key, propertySource);
+					return propertySource;
+				}
+				else {
+					satisfied = false;
+				}
 			}
+		}
+		if (!satisfied) {
+			throw new IllegalStateException(
+					"No supported loader found for configuration resource: " + resource);
 		}
 		return null;
 	}
@@ -366,6 +374,14 @@ public class ConfigFileApplicationListener implements
 	 */
 	public void setSearchLocations(String[] searchLocations) {
 		this.searchLocations = (searchLocations == null ? null : searchLocations.clone());
+	}
+
+	/**
+	 * @param propertySourceLoaderFactory the factory to set
+	 */
+	public void setPropertySourceLoaderFactory(
+			PropertySourceLoaderFactory propertySourceLoaderFactory) {
+		this.propertySourceLoaderFactory = propertySourceLoaderFactory;
 	}
 
 	private static class RandomValuePropertySource extends PropertySource<Random> {
@@ -442,6 +458,26 @@ public class ConfigFileApplicationListener implements
 		public Collection<String> locations() {
 			return this.locations;
 		}
+	}
+
+	public static interface PropertySourceLoaderFactory {
+		List<PropertySourceLoader> getLoaders(Environment environment);
+	}
+
+	private static class DefaultPropertySourceLoaderFactory implements
+			PropertySourceLoaderFactory {
+
+		@Override
+		public List<PropertySourceLoader> getLoaders(Environment environment) {
+			ArrayList<PropertySourceLoader> loaders = new ArrayList<PropertySourceLoader>();
+			loaders.add(new PropertiesPropertySourceLoader());
+			if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
+				loaders.add(YamlPropertySourceLoader.springProfileAwareLoader(environment
+						.getActiveProfiles()));
+			}
+			return loaders;
+		}
+
 	}
 
 }

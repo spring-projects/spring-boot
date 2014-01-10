@@ -18,20 +18,27 @@ package org.springframework.boot.context.listener;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
+import org.springframework.boot.config.PropertySourceLoader;
+import org.springframework.boot.context.listener.ConfigFileApplicationListener.PropertySourceLoaderFactory;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.Resource;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -56,6 +63,9 @@ public class ConfigFileApplicationListenerTests {
 			new SpringApplication(), this.environment, new String[0]);
 
 	private ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
+
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
 
 	@After
 	public void cleanup() {
@@ -196,6 +206,34 @@ public class ConfigFileApplicationListenerTests {
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
 		assertThat(this.environment.getPropertySources().contains(location), is(true));
+	}
+
+	@Test
+	public void unsupportedResource() throws Exception {
+		this.initializer
+				.setPropertySourceLoaderFactory(new PropertySourceLoaderFactory() {
+					@Override
+					public List<PropertySourceLoader> getLoaders(Environment environment) {
+						return Arrays
+								.<PropertySourceLoader> asList(new PropertySourceLoader() {
+
+									@Override
+									public boolean supports(Resource resource) {
+										return false;
+									}
+
+									@Override
+									public org.springframework.core.env.PropertySource<?> load(
+											String name, Resource resource) {
+										return null;
+									}
+
+								});
+					}
+				});
+		this.expected.expect(IllegalStateException.class);
+		this.expected.expectMessage("No supported loader");
+		this.initializer.onApplicationEvent(this.event);
 	}
 
 	@Test
