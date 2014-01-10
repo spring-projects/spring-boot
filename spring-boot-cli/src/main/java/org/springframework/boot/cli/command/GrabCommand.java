@@ -43,7 +43,7 @@ public class GrabCommand extends OptionParsingCommand {
 
 		@Override
 		protected void run(OptionSet options) throws Exception {
-			FileOptions fileOptions = new FileOptions(options);
+			SourceOptions fileOptions = new SourceOptions(options);
 
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
@@ -56,7 +56,7 @@ public class GrabCommand extends OptionParsingCommand {
 			}
 
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
-			groovyCompiler.compile(fileOptions.getFilesArray());
+			groovyCompiler.compile(fileOptions.getSourcesArray());
 		}
 
 	}

@@ -18,8 +18,8 @@ package org.springframework.boot.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
+import groovy.lang.GroovyCodeSource;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -49,10 +49,12 @@ import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
 import org.springframework.boot.cli.compiler.transformation.DependencyAutoConfigurationTransformation;
 import org.springframework.boot.cli.compiler.transformation.GroovyBeansTransformation;
 import org.springframework.boot.cli.compiler.transformation.ResolveDependencyCoordinatesTransformation;
+import org.springframework.boot.cli.util.ResourceUtils;
 
 /**
- * Compiler for Groovy source files. Primarily a simple Facade for
- * {@link GroovyClassLoader#parseClass(File)} with the following additional features:
+ * Compiler for Groovy sources. Primarily a simple Facade for
+ * {@link GroovyClassLoader#parseClass(GroovyCodeSource)} with the following additional
+ * features:
  * <ul>
  * <li>{@link CompilerAutoConfiguration} strategies will be read from
  * <code>META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration</code>
@@ -152,32 +154,33 @@ public class GroovyCompiler {
 		this.loader.getConfiguration().addCompilationCustomizers(customizers);
 	}
 
-	public Object[] sources(File... files) throws CompilationFailedException, IOException {
-		List<File> compilables = new ArrayList<File>();
+	public Object[] sources(String... sources) throws CompilationFailedException,
+			IOException {
+		List<String> compilables = new ArrayList<String>();
 		List<Object> others = new ArrayList<Object>();
-		for (File file : files) {
-			if (file.getName().endsWith(".groovy") || file.getName().endsWith(".java")) {
-				compilables.add(file);
+		for (String source : sources) {
+			if (source.endsWith(".groovy") || source.endsWith(".java")) {
+				compilables.add(source);
 			}
 			else {
-				others.add(file);
+				others.add(source);
 			}
 		}
-		Class<?>[] compiled = compile(compilables.toArray(new File[compilables.size()]));
+		Class<?>[] compiled = compile(compilables.toArray(new String[compilables.size()]));
 		others.addAll(0, Arrays.asList(compiled));
 		return others.toArray(new Object[others.size()]);
 	}
 
 	/**
-	 * Compile the specified Groovy source files, applying any
-	 * {@link CompilerAutoConfiguration}s. All classes defined in the files will be
+	 * Compile the specified Groovy sources, applying any
+	 * {@link CompilerAutoConfiguration}s. All classes defined in the sources will be
 	 * returned from this method.
-	 * @param file the file to compile
+	 * @param sources the sources to compile
 	 * @return compiled classes
 	 * @throws CompilationFailedException
 	 * @throws IOException
 	 */
-	public Class<?>[] compile(File... file) throws CompilationFailedException,
+	public Class<?>[] compile(String... sources) throws CompilationFailedException,
 			IOException {
 
 		this.loader.clearCache();
@@ -187,13 +190,15 @@ public class GroovyCompiler {
 
 		CompilationUnit compilationUnit = new CompilationUnit(configuration, null,
 				this.loader);
-		SourceUnit sourceUnit = new SourceUnit(file[0], configuration, this.loader,
-				compilationUnit.getErrorCollector());
-		ClassCollector collector = this.loader.createCollector(compilationUnit,
-				sourceUnit);
+		ClassCollector collector = this.loader.createCollector(compilationUnit, null);
 		compilationUnit.setClassgenCallback(collector);
 
-		compilationUnit.addSources(file);
+		for (String source : sources) {
+			List<String> paths = ResourceUtils.getUrls(source, this.loader);
+			for (String path : paths) {
+				compilationUnit.addSource(new URL(path));
+			}
+		}
 
 		addAstTransformations(compilationUnit);
 

@@ -18,7 +18,6 @@ package org.springframework.boot.cli.command;
 
 import groovy.lang.Closure;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +54,8 @@ public class ScriptCompilationCustomizerTests {
 
 	@Test
 	public void simpleCompile() throws Exception {
-		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/command.groovy"));
+		Class<?>[] types = this.compiler
+				.compile("src/test/resources/scripts/command.groovy");
 		Class<?> main = types[0];
 		assertEquals("org.test.command.TestCommand", main.getName());
 		assertTrue(Command.class.isAssignableFrom(main));
@@ -64,24 +63,21 @@ public class ScriptCompilationCustomizerTests {
 
 	@Test
 	public void addsOptionHandler() throws Exception {
-		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/handler.groovy"));
+		Class<?>[] types = this.compiler.compile("classpath:/scripts/handler.groovy");
 		Class<?> main = types[0];
 		assertTrue(OptionHandler.class.isAssignableFrom(main));
 	}
 
 	@Test
 	public void addsCommands() throws Exception {
-		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/commands.groovy"));
+		Class<?>[] types = this.compiler.compile("classpath:scripts/commands.groovy");
 		Class<?> main = types[0];
 		assertTrue(Commands.class.isAssignableFrom(main));
 	}
 
 	@Test
 	public void closureWithStringArgs() throws Exception {
-		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/commands.groovy"));
+		Class<?>[] types = this.compiler.compile("classpath:scripts/commands.groovy");
 		Class<?> main = types[0];
 		Map<String, Closure<?>> commands = ((Commands) main.newInstance()).getCommands();
 		assertEquals(1, commands.size());
@@ -93,8 +89,8 @@ public class ScriptCompilationCustomizerTests {
 
 	@Test
 	public void closureWithEmptyArgs() throws Exception {
-		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/commands.groovy"));
+		Class<?>[] types = this.compiler
+				.compile("src/test/resources/scripts/commands.groovy");
 		Class<?> main = types[0];
 		Map<String, Closure<?>> commands = ((Commands) main.newInstance()).getCommands();
 		assertEquals(1, commands.size());
@@ -106,8 +102,8 @@ public class ScriptCompilationCustomizerTests {
 
 	@Test
 	public void closureAndOptionsDefined() throws Exception {
-		Class<?>[] types = this.compiler.compile(new File(
-				"src/test/resources/scripts/options.groovy"));
+		Class<?>[] types = this.compiler
+				.compile("src/test/resources/scripts/options.groovy");
 		Class<?> main = types[0];
 		Commands commands = (Commands) main.newInstance();
 		Map<String, Closure<?>> closures = commands.getCommands();

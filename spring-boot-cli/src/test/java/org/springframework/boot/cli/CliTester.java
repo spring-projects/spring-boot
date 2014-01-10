@@ -17,6 +17,7 @@
 package org.springframework.boot.cli;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -104,8 +105,13 @@ public class CliTester implements TestRule {
 		final String[] sources = new String[args.length];
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
-			if (arg.startsWith("-")) {
-				sources[i] = arg;
+			if (!arg.endsWith(".groovy") && !arg.endsWith(".xml")) {
+				if (new File(this.prefix + arg).isDirectory()) {
+					sources[i] = this.prefix + arg;
+				}
+				else {
+					sources[i] = arg;
+				}
 			}
 			else {
 				sources[i] = this.prefix + arg;
