@@ -142,7 +142,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void contextPath() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.applicationContext, "management.contextPath:/test");
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.contextPath:/test");
 		this.applicationContext.register(RootConfig.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,

@@ -128,7 +128,8 @@ public class ManagementSecurityAutoConfiguration {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			// The ignores are not cumulative, so to prevent overwriting the defaults we
 			// add them back.
-			List<String> ignored = SpringBootWebSecurityConfiguration.getIgnored(this.security);
+			List<String> ignored = SpringBootWebSecurityConfiguration
+					.getIgnored(this.security);
 			ignored.addAll(Arrays.asList(getEndpointPaths(this.endpointHandlerMapping,
 					false)));
 			if (!this.management.getSecurity().isEnabled()) {

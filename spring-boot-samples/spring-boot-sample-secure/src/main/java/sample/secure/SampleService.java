@@ -22,11 +22,11 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Dave Syer
- *
+ * 
  */
 @Service
 public class SampleService {
-	
+
 	@Secured("ROLE_USER")
 	public String secure() {
 		return "Hello Security";

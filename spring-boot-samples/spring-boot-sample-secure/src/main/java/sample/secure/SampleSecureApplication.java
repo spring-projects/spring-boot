@@ -41,7 +41,8 @@ public class SampleSecureApplication implements CommandLineRunner {
 						.commaSeparatedStringToAuthorityList("ROLE_USER")));
 		try {
 			System.out.println(service.secure());
-		} finally {
+		}
+		finally {
 			SecurityContextHolder.clearContext();
 		}
 	}

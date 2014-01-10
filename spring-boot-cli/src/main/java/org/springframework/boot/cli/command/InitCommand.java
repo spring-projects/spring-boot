@@ -75,8 +75,8 @@ public class InitCommand extends OptionParsingCommand {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			boolean enhanced = false;
 
-			SourceOptions sourceOptions = new SourceOptions(options, loader, "init.groovy",
-					"spring.groovy");
+			SourceOptions sourceOptions = new SourceOptions(options, loader,
+					"init.groovy", "spring.groovy");
 			String[] sources = sourceOptions.getSourcesArray();
 
 			if (!(loader instanceof GroovyClassLoader)) {

@@ -184,7 +184,8 @@ public class EnableConfigurationPropertiesTests {
 	@Test
 	public void testCollectionPropertiesBindingFromYamlArray() {
 		this.context.register(TestConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "list[0]:1", "list[1]:2");
+		EnvironmentTestUtils.addEnvironment(this.context, "name:foo", "list[0]:1",
+				"list[1]:2");
 		this.context.refresh();
 		assertEquals(2, this.context.getBean(TestProperties.class).getList().size());
 	}
@@ -227,7 +228,8 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testBindingDirectlyToFileResolvedFromEnvironment() {
-		EnvironmentTestUtils.addEnvironment(this.context, "binding.location:classpath:other.yml");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"binding.location:classpath:other.yml");
 		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
 		this.context.refresh();
 		assertEquals(1,
@@ -317,7 +319,8 @@ public class EnableConfigurationPropertiesTests {
 
 	@Test
 	public void testMultipleExplicitTypes() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo", "another.name:bar");
+		EnvironmentTestUtils.addEnvironment(this.context, "external.name:foo",
+				"another.name:bar");
 		this.context.register(FurtherExampleConfig.class);
 		this.context.refresh();
 		assertEquals("foo", this.context.getBean(External.class).getName());

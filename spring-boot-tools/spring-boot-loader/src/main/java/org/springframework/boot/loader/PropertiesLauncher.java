@@ -74,6 +74,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * </ul>
  * 
  * @author Dave Syer
+ * @author Janne Valkealahti
  */
 public class PropertiesLauncher extends Launcher {
 
@@ -326,25 +327,37 @@ public class PropertiesLauncher extends Launcher {
 	@Override
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
 		ClassLoader loader = super.createClassLoader(archives);
-		String classLoaderType = getProperty("loader.classLoader");
-		if (classLoaderType != null) {
-			Class<?> type = Class.forName(classLoaderType, true, loader);
-			try {
-				loader = (ClassLoader) type.getConstructor(ClassLoader.class)
-						.newInstance(loader);
-			}
-			catch (NoSuchMethodException e) {
-				try {
-					loader = (ClassLoader) type.getConstructor(URL[].class,
-							ClassLoader.class).newInstance(new URL[0], loader);
-				}
-				catch (NoSuchMethodException ex) {
-					loader = (ClassLoader) type.newInstance();
-				}
-			}
-			this.logger.info("Using custom class loader: " + classLoaderType);
+		String customLoaderClassName = getProperty("loader.classLoader");
+		if (customLoaderClassName != null) {
+			loader = wrapWithCustomClassLoader(loader, customLoaderClassName);
+			this.logger.info("Using custom class loader: " + customLoaderClassName);
 		}
 		return loader;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ClassLoader wrapWithCustomClassLoader(ClassLoader parent,
+			String loaderClassName) throws Exception {
+
+		Class<ClassLoader> loaderClass = (Class<ClassLoader>) Class.forName(
+				loaderClassName, true, parent);
+
+		try {
+			return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
+		}
+		catch (NoSuchMethodException e) {
+			// Ignore and try with URLs
+		}
+
+		try {
+			return loaderClass.getConstructor(URL[].class, ClassLoader.class)
+					.newInstance(new URL[0], parent);
+		}
+		catch (NoSuchMethodException ex) {
+			// Ignore and try without any arguments
+		}
+
+		return loaderClass.newInstance();
 	}
 
 	private String getProperty(String propertyKey) throws Exception {
@@ -356,18 +369,21 @@ public class PropertiesLauncher extends Launcher {
 			manifestKey = propertyKey.replace(".", "-");
 			manifestKey = toCamelCase(manifestKey);
 		}
+
 		String property = SystemPropertyUtils.getProperty(propertyKey);
 		if (property != null) {
 			String value = SystemPropertyUtils.resolvePlaceholders(property);
 			this.logger.fine("Property '" + propertyKey + "' from environment: " + value);
 			return value;
 		}
+
 		if (this.properties.containsKey(propertyKey)) {
 			String value = SystemPropertyUtils.resolvePlaceholders(this.properties
 					.getProperty(propertyKey));
 			this.logger.fine("Property '" + propertyKey + "' from properties: " + value);
 			return value;
 		}
+
 		try {
 			// Prefer home dir for MANIFEST if there is one
 			Manifest manifest = new ExplodedArchive(this.home).getManifest();
@@ -379,7 +395,9 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		catch (IllegalStateException ex) {
+			// Ignore
 		}
+
 		// Otherwise try the parent archive
 		Manifest manifest = createArchive().getManifest();
 		if (manifest != null) {
