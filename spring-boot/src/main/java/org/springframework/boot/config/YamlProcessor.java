@@ -169,13 +169,17 @@ public class YamlProcessor {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		Map<Object, Object> map = (Map<Object, Object>) object;
 		for (Entry<Object, Object> entry : map.entrySet()) {
+			Object value = entry.getValue();
+			if (value instanceof Map) {
+				value = asMap(value);
+			}
 			Object key = entry.getKey();
 			if (key instanceof CharSequence) {
-				result.put(key.toString(), entry.getValue());
+				result.put(key.toString(), value);
 			}
 			else {
 				// It has to be a map key in this case
-				result.put("[" + key.toString() + "]", entry.getValue());
+				result.put("[" + key.toString() + "]", value);
 			}
 		}
 		return result;
