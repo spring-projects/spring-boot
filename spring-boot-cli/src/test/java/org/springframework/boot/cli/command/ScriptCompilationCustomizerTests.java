@@ -19,7 +19,6 @@ package org.springframework.boot.cli.command;
 import groovy.lang.Closure;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ import org.springframework.boot.cli.command.InitCommand.Commands;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
+import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
 import static org.junit.Assert.assertEquals;
@@ -152,7 +152,7 @@ public class ScriptCompilationCustomizerTests {
 
 		@Override
 		public List<RepositoryConfiguration> getRepositoryConfiguration() {
-			return Collections.emptyList();
+			return RepositoryConfigurationFactory.createDefaultRepositoryConfiguration();
 		}
 
 	}
