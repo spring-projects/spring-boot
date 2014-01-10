@@ -27,7 +27,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 @Configuration
 @ConditionalOnClass(AuthenticationManager.class)
 @EnableConfigurationProperties
-@Import({ SpringBootWebSecurityConfiguration.class, AuthenticationManagerConfiguration.class })
+@Import({ SpringBootWebSecurityConfiguration.class,
+		AuthenticationManagerConfiguration.class })
 public class SecurityAutoConfiguration {
 
 	@Bean(name = "org.springframework.autoconfigure.security.SecurityProperties")

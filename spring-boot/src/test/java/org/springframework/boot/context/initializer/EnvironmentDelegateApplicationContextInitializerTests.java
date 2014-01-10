@@ -46,9 +46,8 @@ public class EnvironmentDelegateApplicationContextInitializerTests {
 	@Test
 	public void orderedInitialize() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"context.initializer.classes:" + MockInitB.class.getName() + ","
-						+ MockInitA.class.getName());
+		EnvironmentTestUtils.addEnvironment(context, "context.initializer.classes:"
+				+ MockInitB.class.getName() + "," + MockInitA.class.getName());
 		this.initializer.initialize(context);
 		assertThat(context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
 		assertThat(context.getBeanFactory().getSingleton("b"), equalTo((Object) "b"));
@@ -79,8 +78,8 @@ public class EnvironmentDelegateApplicationContextInitializerTests {
 	@Test
 	public void notAnInitializerClass() throws Exception {
 		StaticApplicationContext context = new StaticApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"context.initializer.classes:" + Object.class.getName());
+		EnvironmentTestUtils.addEnvironment(context, "context.initializer.classes:"
+				+ Object.class.getName());
 		this.thrown.expect(IllegalArgumentException.class);
 		this.initializer.initialize(context);
 	}

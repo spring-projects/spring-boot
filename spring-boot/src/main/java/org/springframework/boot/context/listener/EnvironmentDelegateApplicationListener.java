@@ -50,6 +50,7 @@ public class EnvironmentDelegateApplicationListener implements
 
 	private SimpleApplicationEventMulticaster multicaster;
 
+	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof SpringApplicationEnvironmentAvailableEvent) {
 			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(((SpringApplicationEnvironmentAvailableEvent) event)

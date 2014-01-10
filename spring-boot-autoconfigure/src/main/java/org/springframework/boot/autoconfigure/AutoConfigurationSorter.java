@@ -15,6 +15,7 @@
  */
 
 package org.springframework.boot.autoconfigure;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,6 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
-
 
 /**
  * Sort {@link EnableAutoConfiguration auto-configuration} classes into priority order by

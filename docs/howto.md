@@ -935,7 +935,7 @@ additional ones:
 * declarative for all applications by adding a
   `MTEA-INF/spring.factories` and packaging a jar file that the
   applications all use as a library
-  
+
 Any `ApplicationContextInitializer` registered programmatically or via
 `spring.factories` that is also an `ApplicationListener` will be
 automatically cross registered (and vice versa for listeners that are

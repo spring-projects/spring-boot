@@ -38,8 +38,9 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 
 	@Test
 	public void testCustomNamingStrategy() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.jpa.hibernate.namingstrategy:"
-				+ "org.hibernate.cfg.EJB3NamingStrategy");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.hibernate.namingstrategy:"
+						+ "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context

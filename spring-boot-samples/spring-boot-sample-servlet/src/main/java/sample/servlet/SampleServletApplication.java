@@ -51,7 +51,7 @@ public class SampleServletApplication extends SpringBootServletInitializer {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleServletApplication.class, args);
 	}
-	
+
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(SampleServletApplication.class);

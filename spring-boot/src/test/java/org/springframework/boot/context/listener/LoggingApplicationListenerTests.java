@@ -108,7 +108,8 @@ public class LoggingApplicationListenerTests {
 
 	@Test
 	public void testOverrideConfigDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "logging.config: doesnotexist.xml");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.config: doesnotexist.xml");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		// Should not throw

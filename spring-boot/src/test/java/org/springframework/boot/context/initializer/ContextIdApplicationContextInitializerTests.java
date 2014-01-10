@@ -42,7 +42,8 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testNameAndPort() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo", "PORT:8080");
+		EnvironmentTestUtils.addEnvironment(context, "spring.application.name:foo",
+				"PORT:8080");
 		this.initializer.initialize(context);
 		assertEquals("foo:8080", context.getId());
 	}
@@ -59,8 +60,9 @@ public class ContextIdApplicationContextInitializerTests {
 	@Test
 	public void testCloudFoundry() {
 		ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.config.name:foo", "PORT:8080",
-				"vcap.application.name:bar", "vcap.application.instance_index:2");
+		EnvironmentTestUtils.addEnvironment(context, "spring.config.name:foo",
+				"PORT:8080", "vcap.application.name:bar",
+				"vcap.application.instance_index:2");
 		this.initializer.initialize(context);
 		assertEquals("bar:2", context.getId());
 	}

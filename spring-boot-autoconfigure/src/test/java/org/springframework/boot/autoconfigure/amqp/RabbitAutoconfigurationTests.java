@@ -65,9 +65,10 @@ public class RabbitAutoconfigurationTests {
 	public void testRabbitTemplateWithOverrides() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.rabbitmq.host:remote-server",
-				"spring.rabbitmq.port:9000", "spring.rabbitmq.username:alice",
-				"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
+				"spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret",
+				"spring.rabbitmq.virtual_host:/vhost");
 		this.context.refresh();
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
@@ -80,7 +81,8 @@ public class RabbitAutoconfigurationTests {
 	public void testRabbitTemplateEmptyVirtualHost() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.rabbitmq.virtual_host:");
+		EnvironmentTestUtils
+				.addEnvironment(this.context, "spring.rabbitmq.virtual_host:");
 		this.context.refresh();
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
@@ -91,7 +93,8 @@ public class RabbitAutoconfigurationTests {
 	public void testRabbitTemplateVirtualHostMissingSlash() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.rabbitmq.virtual_host:foo");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.rabbitmq.virtual_host:foo");
 		this.context.refresh();
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
@@ -102,7 +105,8 @@ public class RabbitAutoconfigurationTests {
 	public void testRabbitTemplateDefaultVirtualHost() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.rabbitmq.virtual_host:/");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.rabbitmq.virtual_host:/");
 		this.context.refresh();
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
@@ -126,7 +130,8 @@ public class RabbitAutoconfigurationTests {
 	public void testStaticQueues() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.rabbitmq.dynamic:false");
+		EnvironmentTestUtils
+				.addEnvironment(this.context, "spring.rabbitmq.dynamic:false");
 		this.context.refresh();
 		// There should NOT be an AmqpAdmin bean when dynamic is switch to false
 		this.thrown.expect(NoSuchBeanDefinitionException.class);

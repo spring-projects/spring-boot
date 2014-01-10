@@ -43,7 +43,8 @@ public class TestRunner {
 	 * @param sources
 	 * @param args
 	 */
-	public TestRunner(TestRunnerConfiguration configuration, String[] sources, String[] args) {
+	public TestRunner(TestRunnerConfiguration configuration, String[] sources,
+			String[] args) {
 		this.sources = sources.clone();
 		this.compiler = new GroovyCompiler(configuration);
 	}
