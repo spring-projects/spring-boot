@@ -51,7 +51,6 @@ public class SourceOptions {
 	 * paths are tested before use). If default paths are provided and the option set
 	 * contains no source file arguments it is not an error even if none of the default
 	 * paths exist).
-	 * 
 	 * @param optionSet the source option set
 	 * @param classLoader an optional classloader used to try and load files that are not
 	 * found in the local filesystem

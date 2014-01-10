@@ -25,7 +25,7 @@ import org.springframework.boot.cli.compiler.GroovyCompiler;
 
 /**
  * Compiles Groovy code running the resulting classes using a {@code SpringApplication}.
- * Takes care of threading and class-loading issues and can optionally monitor files for
+ * Takes care of threading and class-loading issues and can optionally monitor sources for
  * changes.
  * 
  * @author Phillip Webb
@@ -39,7 +39,7 @@ public class SpringApplicationRunner {
 
 	private final SpringApplicationRunnerConfiguration configuration;
 
-	private final String[] files;
+	private final String[] sources;
 
 	private final String[] args;
 
@@ -52,14 +52,14 @@ public class SpringApplicationRunner {
 	/**
 	 * Create a new {@link SpringApplicationRunner} instance.
 	 * @param configuration the configuration
-	 * @param files the files to compile/watch
+	 * @param sources the files to compile/watch
 	 * @param args input arguments
 	 */
 	public SpringApplicationRunner(
-			final SpringApplicationRunnerConfiguration configuration, String[] files,
+			final SpringApplicationRunnerConfiguration configuration, String[] sources,
 			String... args) {
 		this.configuration = configuration;
-		this.files = files.clone();
+		this.sources = sources.clone();
 		this.args = args.clone();
 		this.compiler = new GroovyCompiler(configuration);
 		if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
@@ -78,13 +78,13 @@ public class SpringApplicationRunner {
 			stop();
 
 			// Compile
-			Object[] sources = this.compiler.sources(this.files);
-			if (sources.length == 0) {
-				throw new RuntimeException("No classes found in '" + this.files + "'");
+			Object[] compiledSources = this.compiler.sources(this.sources);
+			if (compiledSources.length == 0) {
+				throw new RuntimeException("No classes found in '" + this.sources + "'");
 			}
 
 			// Run in new thread to ensure that the context classloader is setup
-			this.runThread = new RunThread(sources);
+			this.runThread = new RunThread(compiledSources);
 			this.runThread.start();
 			this.runThread.join();
 
@@ -111,19 +111,19 @@ public class SpringApplicationRunner {
 	 */
 	private class RunThread extends Thread {
 
-		private final Object[] sources;
+		private final Object[] compiledSources;
 
 		private Object applicationContext;
 
 		/**
 		 * Create a new {@link RunThread} instance.
-		 * @param sources the sources to launch
+		 * @param compiledSources the sources to launch
 		 */
-		public RunThread(Object... sources) {
+		public RunThread(Object... compiledSources) {
 			super("runner-" + (runnerCounter++));
-			this.sources = sources;
-			if (sources.length != 0 && sources[0] instanceof Class) {
-				setContextClassLoader(((Class<?>) sources[0]).getClassLoader());
+			this.compiledSources = compiledSources;
+			if (compiledSources.length != 0 && compiledSources[0] instanceof Class) {
+				setContextClassLoader(((Class<?>) compiledSources[0]).getClassLoader());
 			}
 			setDaemon(true);
 		}
@@ -136,7 +136,7 @@ public class SpringApplicationRunner {
 						"org.springframework.boot.SpringApplication");
 				Method method = application.getMethod("run", Object[].class,
 						String[].class);
-				this.applicationContext = method.invoke(null, this.sources,
+				this.applicationContext = method.invoke(null, this.compiledSources,
 						SpringApplicationRunner.this.args);
 			}
 			catch (Exception ex) {
@@ -176,7 +176,7 @@ public class SpringApplicationRunner {
 		public FileWatchThread() {
 			super("filewatcher-" + (watcherCounter++));
 			this.previous = 0;
-			for (String path : SpringApplicationRunner.this.files) {
+			for (String path : SpringApplicationRunner.this.sources) {
 				File file = new File(path);
 				if (file.exists()) {
 					long current = file.lastModified();
@@ -193,7 +193,7 @@ public class SpringApplicationRunner {
 			while (true) {
 				try {
 					Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-					for (String path : SpringApplicationRunner.this.files) {
+					for (String path : SpringApplicationRunner.this.sources) {
 						File file = new File(path);
 						if (file.exists()) {
 							long current = file.lastModified();

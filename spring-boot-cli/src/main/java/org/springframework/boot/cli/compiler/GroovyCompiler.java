@@ -304,4 +304,5 @@ public class GroovyCompiler {
 		}
 
 	}
+
 }
