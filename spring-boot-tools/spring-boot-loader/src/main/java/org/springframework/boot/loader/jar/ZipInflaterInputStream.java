@@ -35,7 +35,7 @@ class ZipInflaterInputStream extends InflaterInputStream {
 	private int available;
 
 	public ZipInflaterInputStream(InputStream inputStream, int size) {
-		super(inputStream, new Inflater(true), 512);
+		super(inputStream, new Inflater(true), getInflaterBufferSize(size));
 		this.available = size;
 	}
 
@@ -70,6 +70,13 @@ class ZipInflaterInputStream extends InflaterInputStream {
 			this.extraBytesWritten = true;
 			this.inf.setInput(this.buf, 0, this.len);
 		}
+	}
+
+	private static int getInflaterBufferSize(long size) {
+		size += 2; // inflater likes some space
+		size = (size > 65536 ? 8192 : size);
+		size = (size <= 0 ? 4096 : size);
+		return (int) size;
 	}
 
 }

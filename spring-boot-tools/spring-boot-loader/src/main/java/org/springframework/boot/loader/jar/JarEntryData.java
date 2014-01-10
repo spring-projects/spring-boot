@@ -47,7 +47,7 @@ public final class JarEntryData {
 
 	private final AsciiBytes comment;
 
-	private long dataOffset;
+	private long localHeaderOffset;
 
 	private RandomAccessData data;
 
@@ -66,10 +66,7 @@ public final class JarEntryData {
 		this.extra = Bytes.get(inputStream, extraLength);
 		this.comment = new AsciiBytes(Bytes.get(inputStream, commentLength));
 
-		this.dataOffset = Bytes.littleEndianValue(header, 42, 4);
-		this.dataOffset += LOCAL_FILE_HEADER_SIZE;
-		this.dataOffset += this.name.length();
-		this.dataOffset += this.extra.length;
+		this.localHeaderOffset = Bytes.littleEndianValue(header, 42, 4);
 	}
 
 	void setName(AsciiBytes name) {
@@ -88,10 +85,18 @@ public final class JarEntryData {
 		return inputStream;
 	}
 
-	RandomAccessData getData() {
+	RandomAccessData getData() throws IOException {
 		if (this.data == null) {
-			this.data = this.source.getData().getSubsection(this.dataOffset,
-					getCompressedSize());
+			// aspectjrt-1.7.4.jar has a different ext bytes length in the
+			// local directory to the central directory. We need to re-read
+			// here to skip them
+			byte[] localHeader = Bytes.get(this.source.getData().getSubsection(
+					this.localHeaderOffset, LOCAL_FILE_HEADER_SIZE));
+			long nameLength = Bytes.littleEndianValue(localHeader, 26, 2);
+			long extraLength = Bytes.littleEndianValue(localHeader, 28, 2);
+			this.data = this.source.getData().getSubsection(
+					this.localHeaderOffset + LOCAL_FILE_HEADER_SIZE + nameLength
+							+ extraLength, getCompressedSize());
 		}
 		return this.data;
 	}
