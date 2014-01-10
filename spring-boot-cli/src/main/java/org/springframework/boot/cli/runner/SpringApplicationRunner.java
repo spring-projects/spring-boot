@@ -39,7 +39,7 @@ public class SpringApplicationRunner {
 
 	private final SpringApplicationRunnerConfiguration configuration;
 
-	private final File[] files;
+	private final String[] files;
 
 	private final String[] args;
 
@@ -56,7 +56,7 @@ public class SpringApplicationRunner {
 	 * @param args input arguments
 	 */
 	public SpringApplicationRunner(
-			final SpringApplicationRunnerConfiguration configuration, File[] files,
+			final SpringApplicationRunnerConfiguration configuration, String[] files,
 			String... args) {
 		this.configuration = configuration;
 		this.files = files.clone();
@@ -176,10 +176,13 @@ public class SpringApplicationRunner {
 		public FileWatchThread() {
 			super("filewatcher-" + (watcherCounter++));
 			this.previous = 0;
-			for (File file : SpringApplicationRunner.this.files) {
-				long current = file.lastModified();
-				if (current > this.previous) {
-					this.previous = current;
+			for (String path : SpringApplicationRunner.this.files) {
+				File file = new File(path);
+				if (file.exists()) {
+					long current = file.lastModified();
+					if (current > this.previous) {
+						this.previous = current;
+					}
 				}
 			}
 			setDaemon(false);
@@ -190,11 +193,14 @@ public class SpringApplicationRunner {
 			while (true) {
 				try {
 					Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-					for (File file : SpringApplicationRunner.this.files) {
-						long current = file.lastModified();
-						if (this.previous < current) {
-							this.previous = current;
-							compileAndRun();
+					for (String path : SpringApplicationRunner.this.files) {
+						File file = new File(path);
+						if (file.exists()) {
+							long current = file.lastModified();
+							if (this.previous < current) {
+								this.previous = current;
+								compileAndRun();
+							}
 						}
 					}
 				}

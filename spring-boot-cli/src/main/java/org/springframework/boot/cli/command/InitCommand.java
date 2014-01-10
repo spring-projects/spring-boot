@@ -20,7 +20,6 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -76,9 +75,9 @@ public class InitCommand extends OptionParsingCommand {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			boolean enhanced = false;
 
-			FileOptions fileOptions = new FileOptions(options, loader, "init.groovy",
+			SourceOptions fileOptions = new SourceOptions(options, loader, "init.groovy",
 					"spring.groovy");
-			File[] files = fileOptions.getFilesArray();
+			String[] files = fileOptions.getSourcesArray();
 
 			if (!(loader instanceof GroovyClassLoader)) {
 

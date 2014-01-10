@@ -16,7 +16,6 @@
 
 package org.springframework.boot.cli.testrunner;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class TestRunner {
 
 	private static final String JUNIT_TEST_ANNOTATION = "org.junit.Test";
 
-	private final File[] files;
+	private final String[] files;
 
 	private final GroovyCompiler compiler;
 
@@ -44,7 +43,7 @@ public class TestRunner {
 	 * @param files
 	 * @param args
 	 */
-	public TestRunner(TestRunnerConfiguration configuration, File[] files, String[] args) {
+	public TestRunner(TestRunnerConfiguration configuration, String[] files, String[] args) {
 		this.files = files.clone();
 		this.compiler = new GroovyCompiler(configuration);
 	}

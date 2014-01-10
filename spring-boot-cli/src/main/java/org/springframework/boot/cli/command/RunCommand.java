@@ -36,7 +36,7 @@ import static java.util.Arrays.asList;
 
 /**
  * {@link Command} to 'run' a groovy script or scripts.
- *
+ * 
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -95,22 +95,22 @@ public class RunCommand extends OptionParsingCommand {
 						"Already running. Please stop the current application before running another.");
 			}
 
-			FileOptions fileOptions = new FileOptions(options);
+			SourceOptions fileOptions = new SourceOptions(options);
 
 			if (options.has(this.editOption)) {
-				Desktop.getDesktop().edit(fileOptions.getFiles().get(0));
+				Desktop.getDesktop().edit(new File(fileOptions.getSources().get(0)));
 			}
 
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
 			repositoryConfiguration.add(0, new RepositoryConfiguration("local", new File(
-				"repository").toURI(), true));
+					"repository").toURI(), true));
 
 			SpringApplicationRunnerConfiguration configuration = new SpringApplicationRunnerConfigurationAdapter(
 					options, this, repositoryConfiguration);
 
 			this.runner = new SpringApplicationRunner(configuration,
-					fileOptions.getFilesArray(), fileOptions.getArgsArray());
+					fileOptions.getSourcesArray(), fileOptions.getArgsArray());
 			this.runner.compileAndRun();
 		}
 
