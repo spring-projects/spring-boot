@@ -79,7 +79,7 @@ public class InitCommand extends OptionParsingCommand {
 					"init.groovy", "spring.groovy");
 			String[] sources = sourceOptions.getSourcesArray();
 
-			if (!(loader instanceof GroovyClassLoader)) {
+			if (!(loader instanceof GroovyClassLoader) && sources.length > 0) {
 
 				List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 						.createDefaultRepositoryConfiguration();
