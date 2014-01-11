@@ -238,7 +238,7 @@
 							<archive>
 								<manifest>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-									<mainClass>org.springframework.boot.loader.PropertiesLauncher</mainClass>
+									<mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
 								</manifest>
 								<manifestEntries>
 									<Start-Class>${start-class}</Start-Class>
