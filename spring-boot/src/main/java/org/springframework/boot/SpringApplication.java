@@ -360,16 +360,23 @@ public class SpringApplication {
 			return context;
 		}
 		catch (RuntimeException ex) {
-			multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context,
-					args, ex));
+			handleError(context, multicaster, ex, args);
 			throw ex;
 		}
 		catch (Error ex) {
-			multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context,
-					args, ex));
+			handleError(context, multicaster, ex, args);
 			throw ex;
 		}
 
+	}
+
+	protected void handleError(ConfigurableApplicationContext context,
+			ApplicationEventMulticaster multicaster, Throwable ex, String... args) {
+		multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context, args,
+				ex));
+		if (context != null) {
+			context.close();
+		}
 	}
 
 	private void registerListeners(ApplicationEventMulticaster multicaster,
