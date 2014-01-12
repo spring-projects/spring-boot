@@ -32,10 +32,10 @@ public abstract class EnvironmentTestUtils {
 
 	public static void addEnvironment(ConfigurableApplicationContext context,
 			String... pairs) {
-		addEnviroment(context.getEnvironment(), pairs);
+		addEnvironment(context.getEnvironment(), pairs);
 	}
 
-	public static void addEnviroment(ConfigurableEnvironment environment, String... pairs) {
+	public static void addEnvironment(ConfigurableEnvironment environment, String... pairs) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (String pair : pairs) {
 			int index = pair.indexOf(":");
