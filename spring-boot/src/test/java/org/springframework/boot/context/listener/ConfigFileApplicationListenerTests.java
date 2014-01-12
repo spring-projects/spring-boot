@@ -163,7 +163,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void yamlProfileCanBeChanged() throws Exception {
-		EnvironmentTestUtils.addEnviroment(this.environment,
+		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.profiles.active:prod");
 		this.initializer.setNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
@@ -186,7 +186,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void specificResource() throws Exception {
 		String location = "classpath:specificlocation.properties";
-		EnvironmentTestUtils.addEnviroment(this.environment, "spring.config.location:"
+		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
@@ -202,7 +202,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void specificResourceAsFile() throws Exception {
 		String location = "file:src/test/resources/specificlocation.properties";
-		EnvironmentTestUtils.addEnviroment(this.environment, "spring.config.location:"
+		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
 		assertThat(this.environment.getPropertySources().contains(location), is(true));
@@ -239,7 +239,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void specificResourceDefaultsToFile() throws Exception {
 		String location = "src/test/resources/specificlocation.properties";
-		EnvironmentTestUtils.addEnviroment(this.environment, "spring.config.location:"
+		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
 		assertThat(this.environment.getPropertySources().contains("file:" + location),

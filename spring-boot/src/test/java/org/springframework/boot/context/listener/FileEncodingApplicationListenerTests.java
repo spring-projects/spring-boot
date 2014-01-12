@@ -38,7 +38,7 @@ public class FileEncodingApplicationListenerTests {
 
 	@Test(expected = IllegalStateException.class)
 	public void testIllegalState() {
-		EnvironmentTestUtils.addEnviroment(this.environment,
+		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.mandatory_file_encoding:FOO");
 		this.initializer.onApplicationEvent(this.event);
 	}
@@ -51,7 +51,7 @@ public class FileEncodingApplicationListenerTests {
 	@Test
 	public void testSunnyDayMandated() {
 		Assume.assumeNotNull(System.getProperty("file.encoding"));
-		EnvironmentTestUtils.addEnviroment(this.environment,
+		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.mandatory_file_encoding:" + System.getProperty("file.encoding"));
 		this.initializer.onApplicationEvent(this.event);
 	}
