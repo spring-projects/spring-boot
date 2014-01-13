@@ -217,7 +217,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
-							<includeScope>compile</includeScope>
+							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
 				</executions>
