@@ -933,7 +933,7 @@ additional ones:
 * declaratively per application by setting
   `context.initializer.classes` or `context.listener.classes`
 * declarative for all applications by adding a
-  `MTEA-INF/spring.factories` and packaging a jar file that the
+  `META-INF/spring.factories` and packaging a jar file that the
   applications all use as a library
 
 Any `ApplicationContextInitializer` registered programmatically or via
