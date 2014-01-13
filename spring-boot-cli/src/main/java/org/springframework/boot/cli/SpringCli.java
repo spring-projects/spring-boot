@@ -57,10 +57,10 @@ public class SpringCli {
 	/**
 	 * Create a new {@link SpringCli} implementation with the default set of commands.
 	 */
-	public SpringCli() {
+	public SpringCli(String... args) {
 		try {
 			this.init = new InitCommand(this);
-			this.init.run();
+			this.init.run(args);
 		}
 		catch (Exception e) {
 			throw new IllegalStateException("Cannot init with those args", e);
@@ -410,7 +410,21 @@ public class SpringCli {
 	 * @param args CLI arguments
 	 */
 	public static void main(String... args) {
-		int exitCode = new SpringCli().runAndHandleErrors(args);
+		String[] init = new String[1];
+		for (String arg : args) {
+			if (arg.startsWith("--init")) {
+				init[0] = arg;
+			}
+		}
+		if (init[0] != null) {
+			String[] newargs = new String[args.length - 1];
+			System.arraycopy(args, 1, newargs, 0, newargs.length);
+			args = newargs;
+		}
+		else {
+			init = new String[0];
+		}
+		int exitCode = new SpringCli(init).runAndHandleErrors(args);
 		if (exitCode != 0) {
 			System.exit(exitCode);
 		}
