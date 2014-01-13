@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.CommandFactory;
@@ -35,6 +36,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+import org.springframework.util.StringUtils;
 
 /**
  * <p>
@@ -62,11 +64,21 @@ public class InitCommand extends OptionParsingCommand {
 
 	private static class InitOptionHandler extends CompilerOptionHandler {
 
+		private static final String DEFAULT_PATH = "file:init.groovy,file:spring.groovy";
 		private SpringCli cli;
 		private GroovyCompiler compiler;
+		private OptionSpec<String> initOption;
 
 		public InitOptionHandler(SpringCli cli) {
 			this.cli = cli;
+		}
+
+		@Override
+		protected void doOptions() {
+			this.initOption = option("init",
+					"Path to init file as comma-separated list (default file:init.groovy,file:spring.groovy)")
+					.withOptionalArg().defaultsTo(
+							System.getProperty("spring.cli.init", DEFAULT_PATH));
 		}
 
 		@Override
@@ -75,8 +87,9 @@ public class InitCommand extends OptionParsingCommand {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			boolean enhanced = false;
 
-			SourceOptions sourceOptions = new SourceOptions(options, loader,
-					"init.groovy", "spring.groovy");
+			String[] paths = StringUtils.commaDelimitedListToStringArray(this.initOption
+					.value(options));
+			SourceOptions sourceOptions = new SourceOptions(options, loader, paths);
 			String[] sources = sourceOptions.getSourcesArray();
 
 			if (!(loader instanceof GroovyClassLoader) && sources.length > 0) {

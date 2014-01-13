@@ -18,6 +18,8 @@ package org.springframework.boot.cli.command;
 
 import groovy.lang.GroovyClassLoader;
 
+import java.util.Random;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +28,7 @@ import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.SpringCli;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -107,11 +110,28 @@ public class InitCommandTests {
 		this.command.run("nonexistent.groovy");
 	}
 
-	// There is an init.groovy on the test classpath so this succeeds
 	@Test
 	public void initDefault() throws Exception {
 		this.command.run();
+		assertFalse(this.output.toString().contains("Hello Init"));
+	}
+
+	@Test
+	public void initWithCommandline() throws Exception {
+		this.command.run("--init=init.groovy");
 		assertTrue(this.output.toString().contains("Hello Init"));
+	}
+
+	public static void main(String[] args) throws Exception {
+		Random random = new Random();
+		InitCommandTests test = new InitCommandTests();
+		test.init();
+		SpringCli cli = new SpringCli();
+		while (true) {
+			InitCommand command = new InitCommand(cli);
+			command.run("--init=file:" + random.nextInt() + ".groovy");
+			test.close();
+		}
 	}
 
 }
