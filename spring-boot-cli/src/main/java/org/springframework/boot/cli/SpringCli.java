@@ -21,7 +21,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.cli.command.AbstractCommand;
@@ -54,6 +56,8 @@ public class SpringCli {
 
 	private InitCommand init;
 
+	private Map<String, Command> commandMap = new HashMap<String, Command>();
+
 	/**
 	 * Create a new {@link SpringCli} implementation with the default set of commands.
 	 */
@@ -65,8 +69,7 @@ public class SpringCli {
 		catch (Exception e) {
 			throw new IllegalStateException("Cannot init with those args", e);
 		}
-		this.commands.add(0, new HelpCommand());
-		this.commands.add(new HintCommand());
+		addBaseCommands();
 	}
 
 	public InitCommand getInitCommand() {
@@ -79,9 +82,21 @@ public class SpringCli {
 	 * @param commands the commands to add
 	 */
 	public void setCommands(List<? extends Command> commands) {
+		this.commandMap.clear();
 		this.commands = new ArrayList<Command>(commands);
-		this.commands.add(0, new HelpCommand());
-		this.commands.add(new HintCommand());
+		for (Command command : commands) {
+			this.commandMap.put(command.getName(), command);
+		}
+		addBaseCommands();
+	}
+
+	protected void addBaseCommands() {
+		HelpCommand help = new HelpCommand();
+		this.commands.add(0, help);
+		this.commandMap.put(help.getName(), help);
+		HintCommand hint = new HintCommand();
+		this.commands.add(hint);
+		this.commandMap.put(hint.getName(), hint);
 	}
 
 	/**
@@ -161,26 +176,22 @@ public class SpringCli {
 	}
 
 	public final Command find(String name) {
-		for (Command candidate : this.commands) {
-			String candidateName = candidate.getName();
-			if (candidateName.equals(name)
-					|| (candidate.isOptionCommand() && ("--" + candidateName)
-							.equals(name))) {
-				return candidate;
-			}
-		}
-		return null;
+		return this.commandMap.get(name);
 	}
 
 	public void register(Command command) {
-		Command existing = find(command.getName());
-		int index = this.commands.indexOf(find("hint")) - 1;
+		String name = command.getName();
+		Command existing = find(name);
+		int index = this.commands.size() - 1;
 		index = index >= 0 ? index : 0;
 		if (existing != null) {
 			index = this.commands.indexOf(existing);
-			this.commands.remove(index);
+			this.commands.set(index, command);
 		}
-		this.commands.add(index, command);
+		else {
+			this.commands.add(index, command);
+		}
+		this.commandMap.put(name, command);
 	}
 
 	public void unregister(String name) {
@@ -412,14 +423,21 @@ public class SpringCli {
 	 */
 	public static void main(String... args) {
 		String[] init = new String[1];
-		for (String arg : args) {
-			if (arg.startsWith("--init")) {
+		int index = 0;
+		String arg = args[0];
+		if (arg.startsWith("--init")) {
+			if (arg.contains("=") || args.length < 2) {
 				init[0] = arg;
+				index = 1;
+			}
+			else {
+				init[0] = arg + "=" + args[1];
+				index = 2;
 			}
 		}
-		if (init[0] != null) {
-			String[] newargs = new String[args.length - 1];
-			System.arraycopy(args, 1, newargs, 0, newargs.length);
+		if (index > 0) {
+			String[] newargs = new String[args.length - index];
+			System.arraycopy(args, index, newargs, 0, newargs.length);
 			args = newargs;
 		}
 		else {
@@ -430,5 +448,4 @@ public class SpringCli {
 			System.exit(exitCode);
 		}
 	}
-
 }
