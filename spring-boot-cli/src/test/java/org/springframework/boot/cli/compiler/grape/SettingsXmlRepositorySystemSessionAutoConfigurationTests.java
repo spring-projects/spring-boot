@@ -1,4 +1,4 @@
-package org.springframework.boot.maven.settings;
+package org.springframework.boot.cli.compiler.grape;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.settings.building.SettingsBuildingException;
@@ -11,6 +11,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.boot.cli.compiler.grape.SettingsXmlRepositorySystemSessionAutoConfiguration;
 
 import static org.junit.Assert.assertNotNull;
 

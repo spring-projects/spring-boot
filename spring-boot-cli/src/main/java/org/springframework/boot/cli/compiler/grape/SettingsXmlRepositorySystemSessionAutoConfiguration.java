@@ -1,4 +1,4 @@
-package org.springframework.boot.maven.settings;
+package org.springframework.boot.cli.compiler.grape;
 
 import java.io.File;
 
@@ -23,7 +23,6 @@ import org.eclipse.aether.util.repository.ConservativeAuthenticationSelector;
 import org.eclipse.aether.util.repository.DefaultAuthenticationSelector;
 import org.eclipse.aether.util.repository.DefaultMirrorSelector;
 import org.eclipse.aether.util.repository.DefaultProxySelector;
-import org.springframework.boot.cli.compiler.grape.RepositorySystemSessionAutoConfiguration;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
