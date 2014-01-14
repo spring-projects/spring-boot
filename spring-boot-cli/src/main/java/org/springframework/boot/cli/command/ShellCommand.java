@@ -131,6 +131,7 @@ public class ShellCommand extends AbstractCommand {
 			}
 
 			if ("clear".equals(line.trim())) {
+				consoleReader.setPrompt(null);
 				consoleReader.clearScreen();
 				continue;
 			}
