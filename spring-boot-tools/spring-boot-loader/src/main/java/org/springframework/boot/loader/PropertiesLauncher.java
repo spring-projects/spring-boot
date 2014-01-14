@@ -539,7 +539,10 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	public static void main(String[] args) {
-		new PropertiesLauncher().launch(args);
+		int count = new Integer(System.getProperty("launcher.count", "1"));
+		for (int i = 0; i < count; i++) {
+			new PropertiesLauncher().launch(args);
+		}
 	}
 
 	public static String toCamelCase(CharSequence string) {
