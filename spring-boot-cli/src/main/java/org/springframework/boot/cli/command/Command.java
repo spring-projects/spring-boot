@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli;
+package org.springframework.boot.cli.command;
 
 import java.util.Collection;
 
@@ -36,13 +36,6 @@ public interface Command {
 	 * Returns a description of the command.
 	 */
 	String getDescription();
-
-	/**
-	 * Returns {@code true} if this is an 'option command'. An option command is a special
-	 * type of command that usually makes more sense to present as if it is an option. For
-	 * example '--version'.
-	 */
-	boolean isOptionCommand();
 
 	/**
 	 * Returns usage help for the command. This should be a simple one-line string

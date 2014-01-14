@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli;
+package org.springframework.boot.cli.command.shell;
 
-import java.util.Collection;
-import java.util.ServiceLoader;
+import org.springframework.boot.cli.command.AbstractCommand;
+import org.springframework.boot.cli.command.Command;
 
 /**
- * Factory used to create CLI {@link Command}s. Intended for use with a Java
- * {@link ServiceLoader}.
+ * {@link Command} to quit the {@link Shell}.
  * 
- * @author Dave Syer
+ * @author Phillip Webb
  */
-public interface CommandFactory {
+class ExitCommand extends AbstractCommand {
 
-	/**
-	 * Returns the CLI {@link Command}s.
-	 * @return The commands
-	 */
-	Collection<Command> getCommands(SpringCli cli);
+	public ExitCommand() {
+		super("exit", "Quit the embedded shell");
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		throw new ShellExitException();
+	}
 
 }

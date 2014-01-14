@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.runner;
-
-import java.util.logging.Level;
-
-import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
+package org.springframework.boot.cli;
 
 /**
- * Configuration for the {@link SpringApplicationRunner}.
+ * Exception used to indicate that no arguemnts were specified.
  * 
  * @author Phillip Webb
  */
-public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConfiguration {
+class NoArgumentsException extends CommandException {
 
-	/**
-	 * Returns {@code true} if the source file should be monitored for changes and
-	 * automatically recompiled.
-	 */
-	boolean isWatchForFileChanges();
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Returns the logging level to use.
-	 */
-	Level getLogLevel();
 }

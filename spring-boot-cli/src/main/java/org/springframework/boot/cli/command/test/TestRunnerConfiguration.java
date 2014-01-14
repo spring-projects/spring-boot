@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.groovy;
+package org.springframework.boot.cli.command.test;
 
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
-import org.springframework.boot.cli.command.test.TestRunner;
+import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
- * Delegate test runner to launch tests in user application classpath.
+ * Configuration for {@link TestRunner}.
  * 
  * @author Phillip Webb
- * @see TestRunner
  */
-public class DelegateTestRunner {
-
-	public static void run(Class<?>[] testClasses) {
-		JUnitCore jUnitCore = new JUnitCore();
-		jUnitCore.addListener(new TextListener(System.out));
-		jUnitCore.run(testClasses);
-	}
+public interface TestRunnerConfiguration extends GroovyCompilerConfiguration {
 
 }

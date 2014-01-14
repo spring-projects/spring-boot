@@ -14,22 +14,36 @@
  * limitations under the License.
  */
 
-package cli.command;
+package org.springframework.boot.cli.command.shell;
 
-import java.util.Collection;
-import java.util.Collections;
-
+import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.CommandFactory;
 
 /**
+ * {@link Command} to change the {@link Shell} prompt.
+ * 
  * @author Dave Syer
  */
-public class CustomCommandFactory implements CommandFactory {
+public class PromptCommand extends AbstractCommand {
+
+	private final Shell shell;
+
+	public PromptCommand(Shell shell) {
+		super("prompt", "Change the prompt used with the current 'shell' command. "
+				+ "Execute with no arguments to return to the previous value.");
+		this.shell = shell;
+	}
 
 	@Override
-	public Collection<Command> getCommands() {
-		return Collections.<Command> singleton(new CustomCommand());
+	public void run(String... strings) throws Exception {
+		if (strings.length > 0) {
+			for (String string : strings) {
+				this.shell.pushPrompt(string + " ");
+			}
+		}
+		else {
+			this.shell.popPrompt();
+		}
 	}
 
 }

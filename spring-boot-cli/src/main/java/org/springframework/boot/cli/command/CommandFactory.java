@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli;
+package org.springframework.boot.cli.command;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.ServiceLoader;
 
 /**
- * Help for a specific option.
+ * Factory used to create CLI {@link Command}s. Intended for use with a Java
+ * {@link ServiceLoader}.
  * 
- * @author Phillip Webb
+ * @author Dave Syer
  */
-public interface OptionHelp {
+public interface CommandFactory {
 
 	/**
-	 * Returns the set of options that are mutually synonymous.
+	 * Returns the CLI {@link Command}s.
+	 * @return The commands
 	 */
-	Set<String> getOptions();
-
-	/**
-	 * Returns usage help for the option.
-	 */
-	String getUsageHelp();
+	Collection<Command> getCommands();
 
 }

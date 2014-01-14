@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,6 @@ package org.springframework.boot.cli.command;
 
 import java.util.Collection;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.OptionHelp;
-
 /**
  * Base class for a {@link Command} that parse options using an {@link OptionHandler}.
  * 
@@ -33,12 +30,7 @@ public abstract class OptionParsingCommand extends AbstractCommand {
 	private OptionHandler handler;
 
 	protected OptionParsingCommand(String name, String description, OptionHandler handler) {
-		this(name, description, false, handler);
-	}
-
-	protected OptionParsingCommand(String name, String description,
-			boolean optionCommand, OptionHandler handler) {
-		super(name, description, optionCommand);
+		super(name, description);
 		this.handler = handler;
 	}
 

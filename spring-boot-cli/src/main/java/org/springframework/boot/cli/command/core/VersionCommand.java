@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.groovy;
+package org.springframework.boot.cli.command.core;
 
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
-import org.springframework.boot.cli.command.test.TestRunner;
+import org.springframework.boot.cli.Log;
+import org.springframework.boot.cli.command.AbstractCommand;
+import org.springframework.boot.cli.command.Command;
 
 /**
- * Delegate test runner to launch tests in user application classpath.
+ * {@link Command} to display the 'version' number.
  * 
  * @author Phillip Webb
- * @see TestRunner
  */
-public class DelegateTestRunner {
+public class VersionCommand extends AbstractCommand {
 
-	public static void run(Class<?>[] testClasses) {
-		JUnitCore jUnitCore = new JUnitCore();
-		jUnitCore.addListener(new TextListener(System.out));
-		jUnitCore.run(testClasses);
+	public VersionCommand() {
+		super("version", "Show the version");
+	}
+
+	@Override
+	public void run(String... args) {
+		Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
 	}
 
 }
