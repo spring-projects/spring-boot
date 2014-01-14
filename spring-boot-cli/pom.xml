@@ -14,7 +14,6 @@
 		<main.basedir>${basedir}/..</main.basedir>
 		<start-class>org.springframework.boot.cli.SpringCli</start-class>
 		<spring.profiles.active>default</spring.profiles.active>
-		<jline.version>2.11</jline.version>
 	</properties>
 	<profiles>
 		<profile>
@@ -53,7 +52,6 @@
 		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
-			<version>${jline.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
@@ -320,7 +318,6 @@
 							<target>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 								<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
-								<var name="version" value="${project.version}" />
 								<var name="version-type" value="${project.version}" />
 								<propertyregex property="version-type" override="true"
 									input="${version-type}" regexp=".*\.(.*)" replace="\1" />
@@ -332,10 +329,10 @@
 									<lowercase />
 								</stringutil>
 								<checksum algorithm="sha-1"
-									file="${project.build.directory}/spring-boot-cli-${version}-bin.tar.gz"
+									file="${project.build.directory}/spring-boot-cli-${project.version}-bin.tar.gz"
 									property="checksum" />
 								<echo
-									message="Customizing homebrew for ${version} with checksum ${checksum} in ${repo} repo" />
+									message="Customizing homebrew for ${project.version} with checksum ${checksum} in ${repo} repo" />
 								<copy file="${basedir}/src/main/homebrew/springboot.rb"
 									tofile="${project.build.directory}/springboot.rb" overwrite="true">
 									<filterchain>

@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.groovy;
+package org.springframework.boot.cli.command;
 
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
-import org.springframework.boot.cli.command.test.TestRunner;
+import java.util.Set;
 
 /**
- * Delegate test runner to launch tests in user application classpath.
+ * Help for a specific option.
  * 
  * @author Phillip Webb
- * @see TestRunner
  */
-public class DelegateTestRunner {
+public interface OptionHelp {
 
-	public static void run(Class<?>[] testClasses) {
-		JUnitCore jUnitCore = new JUnitCore();
-		jUnitCore.addListener(new TextListener(System.out));
-		jUnitCore.run(testClasses);
-	}
+	/**
+	 * Returns the set of options that are mutually synonymous.
+	 */
+	Set<String> getOptions();
+
+	/**
+	 * Returns usage help for the option.
+	 */
+	String getUsageHelp();
 
 }

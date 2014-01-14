@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.cli.command.CleanCommand;
-import org.springframework.boot.cli.command.TestCommand;
+import org.springframework.boot.cli.command.grab.CleanCommand;
+import org.springframework.boot.cli.command.test.TestCommand;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;

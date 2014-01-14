@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@ package org.springframework.boot.cli.command;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.OptionHelp;
-
 /**
  * Abstract {@link Command} implementation.
  * 
@@ -34,37 +31,19 @@ public abstract class AbstractCommand implements Command {
 
 	private final String description;
 
-	private final boolean optionCommand;
-
 	/**
 	 * Create a new {@link AbstractCommand} instance.
 	 * @param name the name of the command
 	 * @param description the command description
 	 */
 	protected AbstractCommand(String name, String description) {
-		this(name, description, false);
-	}
-
-	/**
-	 * Create a new {@link AbstractCommand} instance.
-	 * @param name the name of the command
-	 * @param description the command description
-	 * @param optionCommand if this command is an option command
-	 */
-	protected AbstractCommand(String name, String description, boolean optionCommand) {
 		this.name = name;
 		this.description = description;
-		this.optionCommand = optionCommand;
 	}
 
 	@Override
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public boolean isOptionCommand() {
-		return this.optionCommand;
 	}
 
 	@Override

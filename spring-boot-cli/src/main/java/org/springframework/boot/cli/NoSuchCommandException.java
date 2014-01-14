@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,16 @@
 package org.springframework.boot.cli;
 
 /**
- * Exception thrown when an unknown command is specified.
+ * Exception used when a command is not found.
  * 
  * @author Phillip Webb
  */
-class NoSuchCommandException extends SpringCliException {
+public class NoSuchCommandException extends CommandException {
 
 	private static final long serialVersionUID = 1L;
 
 	public NoSuchCommandException(String name) {
-		super(String.format("%1$s: '%2$s' is not a valid command. See '%1$s help'.",
-				SpringCli.CLI_APP, name));
+		super(String.format("'%1$s' is not a valid command. See 'help'.", name));
 	}
 
 }

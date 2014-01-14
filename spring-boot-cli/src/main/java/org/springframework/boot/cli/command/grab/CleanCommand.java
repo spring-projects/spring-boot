@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.command.grab;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,8 +23,10 @@ import java.util.List;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.Log;
+import org.springframework.boot.cli.command.Command;
+import org.springframework.boot.cli.command.OptionHandler;
+import org.springframework.boot.cli.command.OptionParsingCommand;
 
 /**
  * {@link Command} to 'clean' up grapes, removing cached dependencies and forcing a

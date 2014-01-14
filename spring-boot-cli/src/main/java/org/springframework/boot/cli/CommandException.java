@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,41 +23,41 @@ import java.util.Set;
 
 /**
  * Runtime exception wrapper that defines additional {@link Option}s that are understood
- * by the {@link SpringCli}.
+ * by the {@link CommandRunner}.
  * 
  * @author Phillip Webb
  */
-public class SpringCliException extends RuntimeException {
+public class CommandException extends RuntimeException {
 
 	private static final long serialVersionUID = 0L;
 
 	private final EnumSet<Option> options;
 
 	/**
-	 * Create a new {@link SpringCliException} with the specified options.
+	 * Create a new {@link CommandException} with the specified options.
 	 * @param options the exception options
 	 */
-	public SpringCliException(Option... options) {
+	public CommandException(Option... options) {
 		this.options = asEnumSet(options);
 	}
 
 	/**
-	 * Create a new {@link SpringCliException} with the specified options.
+	 * Create a new {@link CommandException} with the specified options.
 	 * @param message the exception message to display to the user
 	 * @param options the exception options
 	 */
-	public SpringCliException(String message, Option... options) {
+	public CommandException(String message, Option... options) {
 		super(message);
 		this.options = asEnumSet(options);
 	}
 
 	/**
-	 * Create a new {@link SpringCliException} with the specified options.
+	 * Create a new {@link CommandException} with the specified options.
 	 * @param message the exception message to display to the user
 	 * @param cause the underlying cause
 	 * @param options the exception options
 	 */
-	public SpringCliException(String message, Throwable cause, Option... options) {
+	public CommandException(String message, Throwable cause, Option... options) {
 		super(message, cause);
 		this.options = asEnumSet(options);
 	}
@@ -70,16 +70,21 @@ public class SpringCliException extends RuntimeException {
 	}
 
 	/**
-	 * Returns options a set of options that are understood by the {@link SpringCli}.
+	 * Returns options a set of options that are understood by the {@link CommandRunner}.
 	 */
 	public Set<Option> getOptions() {
 		return Collections.unmodifiableSet(this.options);
 	}
 
 	/**
-	 * Specific options understood by the {@link SpringCli}.
+	 * Specific options understood by the {@link CommandRunner}.
 	 */
 	public static enum Option {
+
+		/**
+		 * Hide the exception message.
+		 */
+		HIDE_MESSAGE,
 
 		/**
 		 * Print basic CLI usage information.
@@ -89,7 +94,12 @@ public class SpringCliException extends RuntimeException {
 		/**
 		 * Print the stack-trace of the exception.
 		 */
-		STACK_TRACE
+		STACK_TRACE,
+
+		/**
+		 * Re-throw the exception rather than dealing with it.
+		 */
+		RETHROW
 	}
 
 }

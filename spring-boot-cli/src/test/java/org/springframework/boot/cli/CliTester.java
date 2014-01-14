@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,11 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.AbstractCommand;
-import org.springframework.boot.cli.command.CleanCommand;
-import org.springframework.boot.cli.command.GrabCommand;
 import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.RunCommand;
-import org.springframework.boot.cli.command.TestCommand;
+import org.springframework.boot.cli.command.grab.CleanCommand;
+import org.springframework.boot.cli.command.grab.GrabCommand;
+import org.springframework.boot.cli.command.run.RunCommand;
+import org.springframework.boot.cli.command.test.TestCommand;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.

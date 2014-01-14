@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.command.run;
 
-import org.springframework.boot.cli.Command;
-import org.springframework.boot.cli.Log;
+import java.util.logging.Level;
+
+import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
- * {@link Command} to display the 'version' number.
+ * Configuration for the {@link SpringApplicationRunner}.
  * 
  * @author Phillip Webb
  */
-public class VersionCommand extends AbstractCommand {
+public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConfiguration {
 
-	public VersionCommand() {
-		super("version", "Show the version", true);
-	}
+	/**
+	 * Returns {@code true} if the source file should be monitored for changes and
+	 * automatically recompiled.
+	 */
+	boolean isWatchForFileChanges();
 
-	@Override
-	public void run(String... args) {
-		Log.info("Spring CLI v" + getClass().getPackage().getImplementationVersion());
-	}
-
+	/**
+	 * Returns the logging level to use.
+	 */
+	Level getLogLevel();
 }

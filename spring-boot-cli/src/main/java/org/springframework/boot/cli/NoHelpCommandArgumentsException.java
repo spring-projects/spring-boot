@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
-
-import org.springframework.boot.cli.Command;
+package org.springframework.boot.cli;
 
 /**
- * {@link Command} to stop an application started from the {@link ShellCommand shell}.
+ * Exception used to when the help command is called without arguments.
  * 
- * @author Jon Brisbin
+ * @author Phillip Webb
  */
-public class StopCommand extends AbstractCommand {
+public class NoHelpCommandArgumentsException extends CommandException {
 
-	private final RunCommand runCmd;
+	private static final long serialVersionUID = 1L;
 
-	public StopCommand(RunCommand runCmd) {
-		super("stop", "Stop the currently-running application started with "
-				+ "the 'run' command.");
-		this.runCmd = runCmd;
-	}
-
-	@Override
-	public void run(String... strings) throws Exception {
-		this.runCmd.stop();
+	public NoHelpCommandArgumentsException() {
+		super(Option.SHOW_USAGE, Option.HIDE_MESSAGE);
 	}
 
 }

@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.groovy;
+package org.springframework.boot.cli.command.shell;
 
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
-import org.springframework.boot.cli.command.test.TestRunner;
+import org.springframework.boot.cli.command.AbstractCommand;
+import org.springframework.boot.cli.command.Command;
 
 /**
- * Delegate test runner to launch tests in user application classpath.
+ * {@link Command} to start a nested REPL shell.
  * 
  * @author Phillip Webb
- * @see TestRunner
+ * @see Shell
  */
-public class DelegateTestRunner {
+public class ShellCommand extends AbstractCommand {
 
-	public static void run(Class<?>[] testClasses) {
-		JUnitCore jUnitCore = new JUnitCore();
-		jUnitCore.addListener(new TextListener(System.out));
-		jUnitCore.run(testClasses);
+	public ShellCommand() {
+		super("shell", "Start a nested shell");
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		new Shell().run();
 	}
 
 }

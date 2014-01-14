@@ -14,35 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.command.shell;
 
-import org.springframework.boot.cli.Command;
+import jline.console.ConsoleReader;
+
+import org.springframework.boot.cli.command.AbstractCommand;
 
 /**
- * {@link Command} to change the {@link ShellCommand shell} prompt.
+ * Clear the {@link Shell} screen.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
-public class PromptCommand extends AbstractCommand {
+class ClearCommand extends AbstractCommand {
 
-	private final ShellCommand runCmd;
+	private final ConsoleReader consoleReader;
 
-	public PromptCommand(ShellCommand runCmd) {
-		super("prompt", "Change the prompt used with the current 'shell' command. "
-				+ "Execute with no arguments to return to the previous value.");
-		this.runCmd = runCmd;
+	public ClearCommand(ConsoleReader consoleReader) {
+		super("clear", "Clear the screen");
+		this.consoleReader = consoleReader;
 	}
 
 	@Override
-	public void run(String... strings) throws Exception {
-		if (strings.length > 0) {
-			for (String string : strings) {
-				this.runCmd.pushPrompt(string + " ");
-			}
-		}
-		else {
-			this.runCmd.popPrompt();
-		}
+	public void run(String... args) throws Exception {
+		this.consoleReader.setPrompt("");
+		this.consoleReader.clearScreen();
 	}
 
 }

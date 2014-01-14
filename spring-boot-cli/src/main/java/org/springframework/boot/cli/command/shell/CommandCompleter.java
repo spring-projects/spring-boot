@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.command.shell;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,15 +23,16 @@ import java.util.List;
 import java.util.Map;
 
 import jline.console.ConsoleReader;
+import jline.console.completer.AggregateCompleter;
 import jline.console.completer.ArgumentCompleter;
+import jline.console.completer.ArgumentCompleter.ArgumentDelimiter;
 import jline.console.completer.Completer;
-import jline.console.completer.NullCompleter;
+import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 
-import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.Log;
-import org.springframework.boot.cli.OptionHelp;
-import org.springframework.boot.cli.SpringCli;
+import org.springframework.boot.cli.command.Command;
+import org.springframework.boot.cli.command.OptionHelp;
 
 /**
  * JLine {@link Completer} for Spring Boot {@link Command}s.
@@ -41,26 +42,29 @@ import org.springframework.boot.cli.SpringCli;
  */
 public class CommandCompleter extends StringsCompleter {
 
-	private final Map<String, Completer> optionCompleters = new HashMap<String, Completer>();
+	private final Map<String, Completer> commandCompleters = new HashMap<String, Completer>();
 
 	private List<Command> commands = new ArrayList<Command>();
 
 	private ConsoleReader console;
 
-	public CommandCompleter(ConsoleReader consoleReader, SpringCli cli) {
+	public CommandCompleter(ConsoleReader consoleReader,
+			ArgumentDelimiter argumentDelimiter, Iterable<Command> commands) {
 		this.console = consoleReader;
-		this.commands.addAll(cli.getCommands());
 		List<String> names = new ArrayList<String>();
-		for (Command command : this.commands) {
+		for (Command command : commands) {
+			this.commands.add(command);
 			names.add(command.getName());
 			List<String> options = new ArrayList<String>();
 			for (OptionHelp optionHelp : command.getOptionsHelp()) {
 				options.addAll(optionHelp.getOptions());
 			}
-			StringsCompleter commandCompleter = new StringsCompleter(command.getName());
-			StringsCompleter optionsCompleter = new StringsCompleter(options);
-			this.optionCompleters.put(command.getName(), new ArgumentCompleter(
-					commandCompleter, optionsCompleter, new NullCompleter()));
+			AggregateCompleter arguementCompleters = new AggregateCompleter(
+					new StringsCompleter(options), new FileNameCompleter());
+			ArgumentCompleter argumentCompleter = new ArgumentCompleter(
+					argumentDelimiter, arguementCompleters);
+			argumentCompleter.setStrict(false);
+			this.commandCompleters.put(command.getName(), argumentCompleter);
 		}
 		getStrings().addAll(names);
 	}
@@ -77,7 +81,7 @@ public class CommandCompleter extends StringsCompleter {
 						printUsage(command);
 						break;
 					}
-					Completer completer = this.optionCompleters.get(command.getName());
+					Completer completer = this.commandCompleters.get(command.getName());
 					if (completer != null) {
 						completionIndex = completer.complete(buffer, cursor, candidates);
 						break;
