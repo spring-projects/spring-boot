@@ -61,6 +61,7 @@ public class SourceOptions {
 			String... defaultPaths) {
 		List<?> nonOptionArguments = optionSet.nonOptionArguments();
 		List<String> sources = new ArrayList<String>();
+		int sourceArgCount = 0;
 		for (Object option : nonOptionArguments) {
 			if (option instanceof String) {
 				String filename = (String) option;
@@ -73,14 +74,18 @@ public class SourceOptions {
 						sources.add(url);
 					}
 				}
-				if ((filename.endsWith(".groovy") || filename.endsWith(".java"))
-						&& urls.isEmpty()) {
-					throw new IllegalArgumentException("Can't find " + filename);
+				if ((filename.endsWith(".groovy") || filename.endsWith(".java"))) {
+					if (urls.isEmpty()) {
+						throw new IllegalArgumentException("Can't find " + filename);
+					}
+					else {
+						sourceArgCount++;
+					}
 				}
 			}
 		}
 		this.args = Collections.unmodifiableList(nonOptionArguments.subList(
-				sources.size(), nonOptionArguments.size()));
+				sourceArgCount, nonOptionArguments.size()));
 		if (sources.size() == 0) {
 			if (defaultPaths.length == 0) {
 				throw new IllegalArgumentException(
