@@ -154,7 +154,7 @@ public class InitCommand extends OptionParsingCommand {
 				enhanced = true;
 			}
 
-			if (this.cli.getCommands().isEmpty() || enhanced) {
+			if (enhanced) {
 
 				for (CommandFactory factory : ServiceLoader.load(CommandFactory.class,
 						loader)) {

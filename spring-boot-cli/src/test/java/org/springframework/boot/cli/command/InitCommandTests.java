@@ -99,7 +99,7 @@ public class InitCommandTests {
 	@Test
 	public void runOptions() throws Exception {
 		SpringCli cli = new SpringCli();
-		InitCommand command = cli.getInitCommand();
+		InitCommand command = new InitCommand(cli);
 		command.run("src/test/resources/commands/options.groovy");
 		cli.find("foo").run("--foo=bar", "--bar=123");
 		assertTrue(this.output.toString().contains("Hello Foo: bar=123"));
