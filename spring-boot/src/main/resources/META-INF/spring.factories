@@ -5,9 +5,11 @@ org.springframework.boot.context.initializer.EnvironmentDelegateApplicationConte
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
-org.springframework.boot.context.listener.FileEncodingApplicationListener,\
-org.springframework.boot.context.listener.VcapApplicationListener,\
+org.springframework.boot.context.listener.ClasspathLoggingApplicationListener,\
 org.springframework.boot.context.listener.ConfigFileApplicationListener,\
+org.springframework.boot.context.listener.EnvironmentDelegateApplicationListener,\
+org.springframework.boot.context.listener.FileEncodingApplicationListener,\
 org.springframework.boot.context.listener.LoggingApplicationListener,\
-org.springframework.boot.liquibase.LiquibaseServiceLocatorInitializer,\
-org.springframework.boot.context.listener.EnvironmentDelegateApplicationListener
+org.springframework.boot.context.listener.VcapApplicationListener,\
+org.springframework.boot.liquibase.LiquibaseServiceLocatorInitializer
+
