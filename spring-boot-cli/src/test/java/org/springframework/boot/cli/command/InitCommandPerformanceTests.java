@@ -28,8 +28,6 @@ import org.springframework.boot.cli.Command;
 import org.springframework.boot.cli.CommandFactory;
 import org.springframework.boot.cli.SpringCli;
 
-import static org.mockito.Mockito.mock;
-
 /**
  * @author Dave Syer
  */
@@ -37,7 +35,6 @@ public class InitCommandPerformanceTests {
 
 	@Rule
 	public OutputCapture output = new OutputCapture();
-	private SpringCli cli = mock(SpringCli.class);
 	private ClassLoader classLoader;
 	private Random random = new Random();
 
@@ -54,7 +51,8 @@ public class InitCommandPerformanceTests {
 	@Test
 	public void initDefault() throws Exception {
 		for (int i = 0; i < 100; i++) {
-			InitCommand command = new InitCommand(this.cli);
+			SpringCli cli = new SpringCli();
+			InitCommand command = new InitCommand(cli);
 			command.run();
 			close();
 		}
@@ -64,7 +62,8 @@ public class InitCommandPerformanceTests {
 	// Fast...
 	public void initNonExistent() throws Exception {
 		for (int i = 0; i < 100; i++) {
-			InitCommand command = new InitCommand(this.cli);
+			SpringCli cli = new SpringCli();
+			InitCommand command = new InitCommand(cli);
 			command.run("--init=" + this.random.nextInt() + ".groovy");
 			close();
 		}
@@ -73,6 +72,7 @@ public class InitCommandPerformanceTests {
 	@Test
 	// Fast...
 	public void fakeCommand() throws Exception {
+		final SpringCli cli = new SpringCli();
 		for (int i = 0; i < 100; i++) {
 			Command command = new AbstractCommand("fake", "") {
 				@Override
@@ -80,9 +80,8 @@ public class InitCommandPerformanceTests {
 					for (CommandFactory factory : ServiceLoader.load(
 							CommandFactory.class, Thread.currentThread()
 									.getContextClassLoader())) {
-						for (Command command : factory
-								.getCommands(InitCommandPerformanceTests.this.cli)) {
-							InitCommandPerformanceTests.this.cli.register(command);
+						for (Command command : factory.getCommands(cli)) {
+							cli.register(command);
 						}
 					}
 				}
@@ -96,7 +95,8 @@ public class InitCommandPerformanceTests {
 	// Fast...
 	public void initNonExistentWithPrefix() throws Exception {
 		for (int i = 0; i < 100; i++) {
-			InitCommand command = new InitCommand(this.cli);
+			SpringCli cli = new SpringCli();
+			InitCommand command = new InitCommand(cli);
 			command.run("--init=file:" + this.random.nextInt() + ".groovy");
 			close();
 		}
@@ -107,10 +107,15 @@ public class InitCommandPerformanceTests {
 	// Slow...
 	public void initFromClasspath() throws Exception {
 		for (int i = 0; i < 5; i++) {
-			InitCommand command = new InitCommand(this.cli);
+			SpringCli cli = new SpringCli();
+			InitCommand command = new InitCommand(cli);
 			command.run("--init=init.groovy");
 			close();
 		}
+	}
+
+	public static void main(String[] args) {
+		SpringCli.main("hint");
 	}
 
 }

@@ -117,7 +117,7 @@ public class SpringCliTests {
 		this.cli.register(this.anotherCommand);
 		assertEquals(before + 1, this.cli.getCommands().size());
 		// Just before the hint command
-		assertEquals(before - 2, this.cli.getCommands().indexOf(this.cli.find("another")));
+		assertEquals(before - 1, this.cli.getCommands().indexOf(this.cli.find("another")));
 		this.cli.unregister(this.anotherCommand.getName());
 		assertEquals(before, this.cli.getCommands().size());
 	}
