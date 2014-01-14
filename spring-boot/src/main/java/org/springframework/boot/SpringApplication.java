@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,6 +177,8 @@ public class SpringApplication {
 
 	private boolean webEnvironment;
 
+	private boolean headless = true;
+
 	private Set<ApplicationContextInitializer<?>> initializers;
 
 	private Set<ApplicationListener<?>> listeners;
@@ -304,6 +306,8 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
+
+		System.setProperty("java.awt.headless", Boolean.toString(this.headless));
 
 		ApplicationEventMulticaster multicaster = createApplicationEventMulticaster();
 		try {
@@ -671,6 +675,15 @@ public class SpringApplication {
 	 */
 	public void setWebEnvironment(boolean webEnvironment) {
 		this.webEnvironment = webEnvironment;
+	}
+
+	/**
+	 * Sets if the application is headless and should not instantiate AWT. Defaults to
+	 * {@code true} to prevent java icons appearing.
+	 * @param headless if the application is headless
+	 */
+	public void setHeadless(boolean headless) {
+		this.headless = headless;
 	}
 
 	/**
