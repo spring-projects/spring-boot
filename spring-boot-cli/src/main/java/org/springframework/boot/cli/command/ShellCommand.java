@@ -159,7 +159,7 @@ public class ShellCommand extends AbstractCommand {
 					launchProcess(args, systemOut, systemErr);
 				}
 				else {
-					runCommand(args);
+					runCommand(args, systemOut, systemErr);
 				}
 			}
 		}
@@ -238,9 +238,20 @@ public class ShellCommand extends AbstractCommand {
 		ReflectionUtils.invokeMethod(PROCESS_BUILDER_INHERIT_IO_METHOD, processBuilder);
 	}
 
-	private void runCommand(List<String> args) {
+	private void runCommand(List<String> args, PrintStream systemOut,
+			PrintStream systemErr) {
 		if (!getName().equals(args.get(0))) {
-			this.springCli.runAndHandleErrors(args.toArray(new String[args.size()]));
+			PrintStream out = System.out;
+			PrintStream err = System.err;
+			System.setOut(systemOut);
+			System.setErr(systemErr);
+			try {
+				this.springCli.runAndHandleErrors(args.toArray(new String[args.size()]));
+			}
+			finally {
+				System.setOut(out);
+				System.setErr(err);
+			}
 		}
 	}
 
