@@ -16,12 +16,10 @@
 
 package org.springframework.boot.cli.command;
 
-import groovy.lang.Closure;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
 
 import java.util.List;
-import java.util.Map;
 import java.util.ServiceLoader;
 
 import joptsimple.OptionSet;
@@ -101,8 +99,6 @@ public class InitCommand extends OptionParsingCommand {
 						options, this, repositoryConfiguration);
 
 				this.compiler = new GroovyCompiler(configuration);
-				this.compiler
-						.addCompilationCustomizers(new ScriptCompilationCustomizer());
 				loader = this.compiler.getLoader();
 				Thread.currentThread().setContextClassLoader(loader);
 
@@ -118,37 +114,9 @@ public class InitCommand extends OptionParsingCommand {
 			if (this.compiler != null && sources.length > 0) {
 				Class<?>[] classes = this.compiler.compile(sources);
 				for (Class<?> type : classes) {
-					Command script = ScriptCommand.command(type);
-					if (script != null) {
-						this.cli.register(script);
-					}
-					else if (CommandFactory.class.isAssignableFrom(type)) {
-						for (Command command : ((CommandFactory) type.newInstance())
-								.getCommands(this.cli)) {
-							this.cli.register(command);
-						}
-					}
-					else if (Commands.class.isAssignableFrom(type)) {
-						Commands instance = (Commands) type.newInstance();
-						Map<String, Closure<?>> commands = instance.getCommands();
-						Map<String, OptionHandler> handlers = instance.getOptions();
-						for (String command : commands.keySet()) {
-							if (handlers.containsKey(command)) {
-								// An OptionHandler is available
-								OptionHandler handler = handlers.get(command);
-								handler.setClosure(commands.get(command));
-								this.cli.register(new ScriptCommand(command, handler));
-							}
-							else {
-								// Otherwise just a plain Closure
-								this.cli.register(new ScriptCommand(command, commands
-										.get(command)));
-
-							}
-						}
-					}
-					else if (Script.class.isAssignableFrom(type)) {
-						((Script) type.newInstance()).run();
+					if (Script.class.isAssignableFrom(type)) {
+						Script script = (Script) type.newInstance();
+						script.run();
 					}
 				}
 				enhanced = true;
@@ -180,12 +148,6 @@ public class InitCommand extends OptionParsingCommand {
 		public GroovyCompilerScope getScope() {
 			return GroovyCompilerScope.EXTENSION;
 		}
-	}
-
-	public static interface Commands {
-		Map<String, Closure<?>> getCommands();
-
-		Map<String, OptionHandler> getOptions();
 	}
 
 }
