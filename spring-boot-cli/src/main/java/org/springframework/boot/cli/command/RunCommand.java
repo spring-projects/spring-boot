@@ -92,7 +92,7 @@ public class RunCommand extends OptionParsingCommand {
 
 			if (this.runner != null) {
 				throw new RuntimeException(
-						"Already running. Please stop the current application before running another.");
+						"Already running. Please stop the current application before running another (use the 'stop' command).");
 			}
 
 			SourceOptions sourceOptions = new SourceOptions(options);
