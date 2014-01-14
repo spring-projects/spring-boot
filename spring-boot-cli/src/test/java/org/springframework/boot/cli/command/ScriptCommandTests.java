@@ -44,7 +44,7 @@ public class ScriptCommandTests {
 	public void init() {
 		this.classLoader = Thread.currentThread().getContextClassLoader();
 		this.cli = new SpringCli();
-		this.init = this.cli.getInitCommand();
+		this.init = new InitCommand(this.cli);
 		executed = false;
 	}
 

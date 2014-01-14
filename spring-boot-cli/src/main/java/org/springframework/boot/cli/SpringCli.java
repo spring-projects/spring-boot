@@ -24,10 +24,10 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 import org.springframework.boot.cli.command.AbstractCommand;
-import org.springframework.boot.cli.command.InitCommand;
 
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
@@ -54,26 +54,18 @@ public class SpringCli {
 
 	private String displayName = CLI_APP + " ";
 
-	private InitCommand init;
-
 	private Map<String, Command> commandMap = new HashMap<String, Command>();
 
 	/**
 	 * Create a new {@link SpringCli} implementation with the default set of commands.
 	 */
 	public SpringCli(String... args) {
-		try {
-			this.init = new InitCommand(this);
-			this.init.run(args);
-		}
-		catch (Exception e) {
-			throw new IllegalStateException("Cannot init with those args", e);
+		for (CommandFactory factory : ServiceLoader.load(CommandFactory.class)) {
+			for (Command command : factory.getCommands(this)) {
+				register(command);
+			}
 		}
 		addBaseCommands();
-	}
-
-	public InitCommand getInitCommand() {
-		return this.init;
 	}
 
 	/**
