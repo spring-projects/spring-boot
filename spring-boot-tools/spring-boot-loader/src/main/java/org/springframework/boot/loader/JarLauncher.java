@@ -41,9 +41,6 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	public static void main(String[] args) {
-		int count = new Integer(System.getProperty("launcher.count", "1"));
-		for (int i = 0; i < count; i++) {
-			new JarLauncher().launch(args);
-		}
+		new JarLauncher().launch(args);
 	}
 }
