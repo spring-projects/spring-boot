@@ -105,6 +105,9 @@ public class ShellCommand extends AbstractCommand {
 		ConsoleReader reader = new ConsoleReader();
 		reader.addCompleter(new CommandCompleter(reader, this.springCli));
 		reader.setHistoryEnabled(true);
+		// Prevent exceptions if user types !foo. If anyone knows how to process those
+		// exceptions, please help out and write some code.
+		reader.setExpandEvents(false);
 		reader.setCompletionHandler(new CandidateListCompletionHandler());
 		return reader;
 	}
