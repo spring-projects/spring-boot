@@ -832,12 +832,12 @@ properties, environment variables or the command line.
 You can also provide System properties (or environment variables) to
 change the behaviour:
 
-* `config.name` (`CONFIG_NAME`), defaults to `application` as the root
-  of the file name
-* `config.location` (`CONFIG_LOCATION`) is file to load (e.g. a
-  classpath resource or a URL). A separate `Environment` property
-  source is set up for this document and it can be overridden by
-  system properties, environment variables or the command line.
+* `spring.config.name` (`SPRING_CONFIG_NAME`), defaults to
+  `application` as the root of the file name
+* `spring.config.location` (`SPRING_CONFIG_LOCATION`) is file to load
+  (e.g. a classpath resource or a URL). A separate `Environment`
+  property source is set up for this document and it can be overridden
+  by system properties, environment variables or the command line.
 
 No matter what you set in the environment, Spring Boot will always
 load `application.properties` as described above. If YAML is used then
