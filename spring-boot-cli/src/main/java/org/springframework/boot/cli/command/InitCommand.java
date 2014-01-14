@@ -16,10 +16,13 @@
 
 package org.springframework.boot.cli.command;
 
+import groovy.lang.Binding;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.Script;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 import joptsimple.OptionSet;
@@ -34,6 +37,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
+import org.springframework.core.env.JOptCommandLinePropertySource;
 import org.springframework.util.StringUtils;
 
 /**
@@ -116,10 +120,17 @@ public class InitCommand extends OptionParsingCommand {
 				for (Class<?> type : classes) {
 					if (Script.class.isAssignableFrom(type)) {
 						Script script = (Script) type.newInstance();
+						JOptCommandLinePropertySource properties = new JOptCommandLinePropertySource(
+								options);
+						Map<String, Object> map = new HashMap<String, Object>();
+						for (String key : properties.getPropertyNames()) {
+							map.put(key, properties.getProperty(key));
+						}
+						script.setBinding(new Binding(map));
 						script.run();
 					}
+					enhanced = true;
 				}
-				enhanced = true;
 			}
 
 			if (enhanced) {
