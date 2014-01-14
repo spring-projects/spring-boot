@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -396,6 +396,23 @@ public class SpringApplicationTests {
 		this.context = application.run();
 		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
 		verify(applicationContext.getApplicationContext()).registerShutdownHook();
+	}
+
+	@Test
+	public void headless() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		application.run();
+		assertThat(System.getProperty("java.awt.headless"), equalTo("true"));
+	}
+
+	@Test
+	public void headlessFalse() throws Exception {
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		application.setHeadless(false);
+		application.run();
+		assertThat(System.getProperty("java.awt.headless"), equalTo("false"));
 	}
 
 	private boolean hasPropertySource(ConfigurableEnvironment environment,

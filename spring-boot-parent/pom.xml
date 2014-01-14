@@ -359,6 +359,7 @@
 					</excludes>
 					<systemPropertyVariables>
 						<java.security.egd>file:/dev/./urandom</java.security.egd>
+						<java.awt.headless>true</java.awt.headless>
 					</systemPropertyVariables>
 					<argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
 				</configuration>
