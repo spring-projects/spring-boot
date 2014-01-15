@@ -26,6 +26,7 @@ import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.internal.impl.DefaultRepositorySystem;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -62,8 +63,12 @@ public abstract class AetherGrapeEngineFactory {
 		new DefaultRepositorySystemSessionAutoConfiguration().apply(
 				repositorySystemSession, repositorySystem);
 
+		List<Dependency> managedDependencies = new PropertiesManagedDependenciesFactory()
+				.getManagedDependencies();
+
 		return new AetherGrapeEngine(classLoader, repositorySystem,
-				repositorySystemSession, createRepositories(repositoryConfigurations));
+				repositorySystemSession, createRepositories(repositoryConfigurations),
+				managedDependencies);
 	}
 
 	private static ServiceLocator createServiceLocator() {
