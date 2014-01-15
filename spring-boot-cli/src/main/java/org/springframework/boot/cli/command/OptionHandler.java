@@ -112,7 +112,7 @@ public class OptionHandler {
 			catch (IOException ex) {
 				return "Help not available";
 			}
-			this.help = out.toString().replace(" --cp ", " -cp ");
+			this.help = out.toString().replace(" --cp ", " -cp  ");
 		}
 		return this.help;
 	}
