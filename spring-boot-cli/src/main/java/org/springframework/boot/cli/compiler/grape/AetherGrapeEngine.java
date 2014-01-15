@@ -58,6 +58,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 	private static final Collection<Exclusion> WILDCARD_EXCLUSION = Arrays
 			.asList(new Exclusion("*", "*", "*", "*"));
 
+	private final List<Dependency> managedDependencies = new ArrayList<Dependency>();
+
 	private final ProgressReporter progressReporter;
 
 	private final GroovyClassLoader classLoader;
@@ -71,10 +73,12 @@ public class AetherGrapeEngine implements GrapeEngine {
 	public AetherGrapeEngine(GroovyClassLoader classLoader,
 			RepositorySystem repositorySystem,
 			DefaultRepositorySystemSession repositorySystemSession,
-			List<RemoteRepository> remoteRepositories) {
+			List<RemoteRepository> remoteRepositories,
+			List<Dependency> managedDependencies) {
 		this.classLoader = classLoader;
 		this.repositorySystem = repositorySystem;
 		this.session = repositorySystemSession;
+		this.managedDependencies.addAll(managedDependencies);
 
 		this.repositories = new ArrayList<RemoteRepository>();
 		List<RemoteRepository> remotes = new ArrayList<RemoteRepository>(
@@ -174,13 +178,20 @@ public class AetherGrapeEngine implements GrapeEngine {
 
 	private List<File> resolve(List<Dependency> dependencies)
 			throws ArtifactResolutionException {
+
 		try {
 			CollectRequest collectRequest = new CollectRequest((Dependency) null,
 					dependencies, new ArrayList<RemoteRepository>(this.repositories));
+			collectRequest.setManagedDependencies(this.managedDependencies);
+
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
 					DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE));
+
 			DependencyResult dependencyResult = this.repositorySystem
 					.resolveDependencies(this.session, dependencyRequest);
+
+			this.managedDependencies.addAll(getDependencies(dependencyResult));
+
 			return getFiles(dependencyResult);
 		}
 		catch (Exception ex) {
@@ -189,6 +200,15 @@ public class AetherGrapeEngine implements GrapeEngine {
 		finally {
 			this.progressReporter.finished();
 		}
+	}
+
+	private List<Dependency> getDependencies(DependencyResult dependencyResult) {
+		List<Dependency> dependencies = new ArrayList<Dependency>();
+		for (ArtifactResult artifactResult : dependencyResult.getArtifactResults()) {
+			dependencies.add(new Dependency(artifactResult.getArtifact(),
+					JavaScopes.COMPILE));
+		}
+		return dependencies;
 	}
 
 	private List<File> getFiles(DependencyResult dependencyResult) {
