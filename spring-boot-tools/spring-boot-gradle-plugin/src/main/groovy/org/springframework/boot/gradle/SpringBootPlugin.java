@@ -19,26 +19,29 @@ package org.springframework.boot.gradle;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.springframework.boot.gradle.task.Repackage;
-import org.springframework.boot.gradle.task.RunJar;
+import org.springframework.boot.gradle.task.RunApp;
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}. Provides 2 tasks (bootRepackge and bootRun).
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class SpringBootPlugin implements Plugin<Project> {
 
 	private static final String REPACKAGE_TASK_NAME = "bootRepackage";
 
-	private static final String RUN_JAR_TASK_NAME = "bootRun";
+	private static final String RUN_APP_TASK_NAME = "bootRun";
 
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(BasePlugin.class);
 		project.getPlugins().apply(JavaPlugin.class);
+		project.getPlugins().apply(ApplicationPlugin.class);
 		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
 
 		// register BootRepackage so that we can use
@@ -46,14 +49,14 @@ public class SpringBootPlugin implements Plugin<Project> {
 		project.getExtensions().getExtraProperties().set("BootRepackage", Repackage.class);
 		Repackage packageTask = addRepackageTask(project);
 		ensureTaskRunsOnAssembly(project, packageTask);
-		addRunJarTask(project);
+		addRunAppTask(project);
 	}
 
-	private void addRunJarTask(Project project) {
-		RunJar runJarTask = project.getTasks().create(RUN_JAR_TASK_NAME, RunJar.class);
-		runJarTask.setDescription("Run the executable JAR/WAR");
+	private void addRunAppTask(Project project) {
+		RunApp runJarTask = project.getTasks().create(RUN_APP_TASK_NAME, RunApp.class);
+		runJarTask.setDescription("Run the project with support for auto-detecting main class and reloading static resources");
 		runJarTask.setGroup("Execution");
-		runJarTask.dependsOn(REPACKAGE_TASK_NAME);
+		runJarTask.dependsOn("assemble");
 	}
 
 	private Repackage addRepackageTask(Project project) {
