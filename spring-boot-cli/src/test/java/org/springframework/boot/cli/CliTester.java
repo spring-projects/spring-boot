@@ -35,7 +35,6 @@ import org.junit.runners.model.Statement;
 import org.springframework.boot.OutputCapture;
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.grab.CleanCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
@@ -173,7 +172,6 @@ public class CliTester implements TestRule {
 		public void evaluate() throws Throwable {
 			System.setProperty("disableSpringSnapshotRepos", "false");
 			try {
-				new CleanCommand().run("org.springframework");
 				try {
 					this.base.evaluate();
 				}

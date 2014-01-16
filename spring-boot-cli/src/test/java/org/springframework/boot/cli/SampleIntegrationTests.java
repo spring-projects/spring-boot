@@ -20,7 +20,6 @@ import java.io.File;
 import java.net.URI;
 
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,11 +39,6 @@ public class SampleIntegrationTests {
 
 	@Rule
 	public CliTester cli = new CliTester("samples/");
-
-	@BeforeClass
-	public static void cleanGrapes() throws Exception {
-		GrapesCleaner.cleanIfNecessary();
-	}
 
 	@Test
 	public void appSample() throws Exception {
