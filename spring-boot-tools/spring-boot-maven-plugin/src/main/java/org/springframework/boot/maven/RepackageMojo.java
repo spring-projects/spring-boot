@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.jar.JarFile;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -45,6 +47,8 @@ import org.springframework.boot.loader.tools.Repackager;
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractMojo {
+
+	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	/**
 	 * The Maven project.
@@ -95,7 +99,24 @@ public class RepackageMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
-		Repackager repackager = new Repackager(source);
+		Repackager repackager = new Repackager(source) {
+			@Override
+			protected String findMainMethod(JarFile source) throws IOException {
+				long startTime = System.currentTimeMillis();
+				try {
+					return super.findMainMethod(source);
+				}
+				finally {
+					long duration = System.currentTimeMillis() - startTime;
+					if (duration > FIND_WARNING_TIMEOUT) {
+						getLog().warn(
+								"Searching for the main-class is taking some time, "
+										+ "consider using the mainClass configuration "
+										+ "parameter");
+					}
+				}
+			}
+		};
 		repackager.setMainClass(this.mainClass);
 		if (this.layout != null) {
 			getLog().info("Layout: " + this.layout);

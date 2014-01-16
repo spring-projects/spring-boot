@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,27 +77,42 @@ public abstract class MainClassFinder {
 	 * @throws IOException
 	 */
 	public static String findMainClass(File rootFolder) throws IOException {
+		return doWithMainClasses(rootFolder, new ClassNameCallback<String>() {
+			@Override
+			public String doWith(String className) {
+				return className;
+			}
+		});
+	}
+
+	/**
+	 * Perform the given callback operation on all main classes from the given root
+	 * folder.
+	 * @param rootFolder the root folder
+	 * @param callback the callback
+	 * @return the first callback result or {@code null}
+	 * @throws IOException
+	 */
+	public static <T> T doWithMainClasses(File rootFolder, ClassNameCallback<T> callback)
+			throws IOException {
 		if (!rootFolder.isDirectory()) {
 			throw new IllegalArgumentException("Inavlid root folder '" + rootFolder + "'");
 		}
-		File mainClassFile = findMainClassFile(rootFolder);
-		if (mainClassFile == null) {
-			return null;
-		}
-		String mainClass = mainClassFile.getAbsolutePath();
-		return convertToClassName(mainClass, rootFolder.getAbsolutePath() + "/");
-	}
-
-	private static File findMainClassFile(File root) throws IOException {
+		String prefix = rootFolder.getAbsolutePath() + "/";
 		Deque<File> stack = new ArrayDeque<File>();
-		stack.push(root);
+		stack.push(rootFolder);
 		while (!stack.isEmpty()) {
 			File file = stack.pop();
 			if (file.isFile()) {
 				InputStream inputStream = new FileInputStream(file);
 				try {
 					if (isMainClass(inputStream)) {
-						return file;
+						String className = convertToClassName(file.getAbsolutePath(),
+								prefix);
+						T result = callback.doWith(className);
+						if (result != null) {
+							return result;
+						}
 					}
 				}
 				finally {
@@ -133,6 +148,24 @@ public abstract class MainClassFinder {
 	 */
 	public static String findMainClass(JarFile jarFile, String classesLocation)
 			throws IOException {
+		return doWithMainClasses(jarFile, classesLocation,
+				new ClassNameCallback<String>() {
+					@Override
+					public String doWith(String className) {
+						return className;
+					}
+				});
+	}
+
+	/**
+	 * Perform the given callback operation on all main classes from the given jar.
+	 * @param jarFile the jar file to search
+	 * @param classesLocation the location within the jar containing classes
+	 * @return the first callback result or {@code null}
+	 * @throws IOException
+	 */
+	public static <T> T doWithMainClasses(JarFile jarFile, String classesLocation,
+			ClassNameCallback<T> callback) throws IOException {
 		List<JarEntry> classEntries = getClassEntries(jarFile, classesLocation);
 		Collections.sort(classEntries, new ClassEntryComparator());
 		for (JarEntry entry : classEntries) {
@@ -140,9 +173,12 @@ public abstract class MainClassFinder {
 					jarFile.getInputStream(entry));
 			try {
 				if (isMainClass(inputStream)) {
-					String name = entry.getName();
-					name = convertToClassName(name, classesLocation);
-					return name;
+					String className = convertToClassName(entry.getName(),
+							classesLocation);
+					T result = callback.doWith(className);
+					if (result != null) {
+						return result;
+					}
 				}
 			}
 			finally {
@@ -238,6 +274,20 @@ public abstract class MainClassFinder {
 		public boolean isFound() {
 			return this.found;
 		}
+
 	}
 
+	/**
+	 * Callback interface used to receive class names.
+	 */
+	public static interface ClassNameCallback<T> {
+
+		/**
+		 * Handle the specified class name
+		 * @param className the class name
+		 * @return a non-null value if processing should end or {@code null} to continue
+		 */
+		T doWith(String className);
+
+	}
 }

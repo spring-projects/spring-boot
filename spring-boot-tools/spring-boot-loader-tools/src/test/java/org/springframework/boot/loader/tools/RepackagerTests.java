@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,6 +128,18 @@ public class RepackagerTests {
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class"),
 				equalTo("a.b.C"));
 		assertThat(hasLauncherClasses(file), equalTo(true));
+	}
+
+	@Test
+	public void multipleMainClassFound() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/D.class", ClassWithMainMethod.class);
+		File file = this.testJarFile.getFile();
+		Repackager repackager = new Repackager(file);
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("Unable to find a single main class "
+				+ "from the following candidates [a.b.C, a.b.D]");
+		repackager.repackage(NO_LIBRARIES);
 	}
 
 	@Test
