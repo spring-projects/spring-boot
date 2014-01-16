@@ -71,11 +71,14 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@Before
 	public void setup() {
+		setupLogging(true, true);
+	}
 
+	private void setupLogging(boolean debug, boolean info) {
 		this.log = mock(Log.class);
 		logThreadLocal.set(this.log);
 
-		given(this.log.isDebugEnabled()).willReturn(true);
+		given(this.log.isDebugEnabled()).willReturn(debug);
 		willAnswer(new Answer<Object>() {
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -84,7 +87,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			}
 		}).given(this.log).debug(anyObject());
 
-		given(this.log.isInfoEnabled()).willReturn(true);
+		given(this.log.isInfoEnabled()).willReturn(info);
 		willAnswer(new Answer<Object>() {
 			@Override
 			public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -115,7 +118,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	}
 
 	@Test
-	public void logsInfoAndDebugOnError() {
+	public void logsDebugOnError() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
@@ -129,6 +132,25 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		}
 
 		assertThat(this.debugLog.size(), not(equalTo(0)));
+		assertThat(this.infoLog.size(), equalTo(0));
+	}
+
+	@Test
+	public void logsInfoOnErrorIfDebugDisabled() {
+		setupLogging(false, true);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		this.initializer.initialize(context);
+		context.register(ErrorConfig.class);
+		try {
+			context.refresh();
+			fail("Did not error");
+		}
+		catch (Exception ex) {
+			this.initializer.onApplicationEvent(new SpringApplicationErrorEvent(
+					new SpringApplication(), context, new String[] {}, ex));
+		}
+
+		assertThat(this.debugLog.size(), equalTo(0));
 		assertThat(this.infoLog.size(), not(equalTo(0)));
 	}
 

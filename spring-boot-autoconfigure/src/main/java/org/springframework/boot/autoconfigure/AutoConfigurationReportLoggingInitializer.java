@@ -114,7 +114,8 @@ public class AutoConfigurationReportLoggingInitializer implements
 					.getBeanFactory());
 		}
 		if (this.report.getConditionAndOutcomesBySource().size() > 0) {
-			if (isCrashReport && this.logger.isInfoEnabled()) {
+			if (isCrashReport && this.logger.isInfoEnabled()
+					&& !this.logger.isDebugEnabled()) {
 				this.logger.info("\n\nError starting ApplicationContext. "
 						+ "To display the auto-configuration report enabled "
 						+ "debug logging (start with --debug)\n\n");
