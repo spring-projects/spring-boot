@@ -1,5 +1,5 @@
 language: java
 services: mongodb
 
-install: mvn install -U -DskipTests=true -P spring-snapshot
-script: mvn install -nsu -P '!integration'
+install: mvn install -q -U -DskipTests=true -P spring-snapshot
+script: mvn install -q -nsu -P '!integration'
