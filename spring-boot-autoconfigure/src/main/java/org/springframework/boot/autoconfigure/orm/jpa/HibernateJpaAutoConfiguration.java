@@ -21,7 +21,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
-import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -31,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.orm.jpa.SpringNamingStrategy;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -83,7 +83,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implemen
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
 		properties.put("hibernate.ejb.naming_strategy", this.environment.getProperty(
-				"naming-strategy", ImprovedNamingStrategy.class.getName()));
+				"naming-strategy", SpringNamingStrategy.class.getName()));
 		String ddlAuto = this.environment.getProperty("ddl-auto", getDefaultDdlAuto());
 		if (!"none".equals(ddlAuto)) {
 			properties.put("hibernate.hbm2ddl.auto", ddlAuto);
