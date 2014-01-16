@@ -175,8 +175,8 @@ public class Shell {
 	}
 
 	private void runInputLoop() throws Exception {
-		while (true) {
-			String line = this.consoleReader.readLine(getPrompt());
+		String line;
+		while ((line = this.consoleReader.readLine(getPrompt())) != null) {
 			while (line.endsWith("\\")) {
 				line = line.substring(0, line.length() - 1);
 				line += this.consoleReader.readLine("> ");
