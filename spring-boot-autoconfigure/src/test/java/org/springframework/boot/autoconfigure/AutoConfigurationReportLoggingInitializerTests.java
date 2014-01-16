@@ -115,7 +115,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	}
 
 	@Test
-	public void logsInfoOnError() {
+	public void logsInfoAndDebugOnError() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
@@ -128,7 +128,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 					new SpringApplication(), context, new String[] {}, ex));
 		}
 
-		assertThat(this.debugLog.size(), equalTo(0));
+		assertThat(this.debugLog.size(), not(equalTo(0)));
 		assertThat(this.infoLog.size(), not(equalTo(0)));
 	}
 
@@ -171,7 +171,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		this.initializer.onApplicationEvent(new SpringApplicationErrorEvent(
 				new SpringApplication(), null, new String[0], new RuntimeException(
 						"Planned")));
-		assertThat(this.infoLog.get(0), containsString("Nothing to report"));
+		assertThat(this.infoLog.get(0),
+				containsString("Unable to provide auto-configuration report"));
 	}
 
 	public static class MockLogFactory extends LogFactoryImpl {
