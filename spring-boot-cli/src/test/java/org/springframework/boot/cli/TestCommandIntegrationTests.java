@@ -18,11 +18,9 @@ package org.springframework.boot.cli;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.cli.command.grab.CleanCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
 
 import static org.hamcrest.Matchers.containsString;
@@ -42,15 +40,9 @@ public class TestCommandIntegrationTests {
 	@Rule
 	public CliTester cli = new CliTester("test-samples/");
 
-	@BeforeClass
-	public static void cleanGrapes() throws Exception {
-		GrapesCleaner.cleanIfNecessary();
-	}
-
 	@Before
 	public void setup() throws Exception {
 		System.setProperty("disableSpringSnapshotRepos", "false");
-		new CleanCommand().run("org.springframework");
 	}
 
 	@After
