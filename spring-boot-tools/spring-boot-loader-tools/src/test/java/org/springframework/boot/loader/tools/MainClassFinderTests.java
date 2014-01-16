@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,14 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.loader.tools.MainClassFinder;
+import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 
@@ -104,6 +106,44 @@ public class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		String actual = MainClassFinder.findMainClass(this.testJarFile.getJarSource());
 		assertThat(actual, equalTo("a.B"));
+	}
+
+	@Test
+	public void doWithFolderMainMethods() throws Exception {
+		this.testJarFile.addClass("a/b/c/D.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/c/E.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/F.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/G.class", ClassWithMainMethod.class);
+		ClassNameCollector callback = new ClassNameCollector();
+		MainClassFinder.doWithMainClasses(this.testJarFile.getJarSource(), callback);
+		assertThat(callback.getClassNames().toString(), equalTo("[a.b.G, a.b.c.D]"));
+	}
+
+	@Test
+	public void doWithJarMainMethods() throws Exception {
+		this.testJarFile.addClass("a/b/c/D.class", ClassWithMainMethod.class);
+		this.testJarFile.addClass("a/b/c/E.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/F.class", ClassWithoutMainMethod.class);
+		this.testJarFile.addClass("a/b/G.class", ClassWithMainMethod.class);
+		ClassNameCollector callback = new ClassNameCollector();
+		MainClassFinder.doWithMainClasses(this.testJarFile.getJarFile(), "", callback);
+		assertThat(callback.getClassNames().toString(), equalTo("[a.b.G, a.b.c.D]"));
+	}
+
+	private static class ClassNameCollector implements ClassNameCallback<Object> {
+
+		private final List<String> classNames = new ArrayList<String>();
+
+		@Override
+		public Object doWith(String className) {
+			this.classNames.add(className);
+			return null;
+		}
+
+		public List<String> getClassNames() {
+			return this.classNames;
+		}
+
 	}
 
 }

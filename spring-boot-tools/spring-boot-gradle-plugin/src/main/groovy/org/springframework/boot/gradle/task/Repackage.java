@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.task;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
@@ -29,10 +30,12 @@ import org.springframework.boot.loader.tools.Repackager;
 
 /**
  * Repackage task.
- * 
+ *
  * @author Phillip Webb
  */
 public class Repackage extends DefaultTask {
+
+	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	private String customConfiguration;
 
@@ -74,7 +77,22 @@ public class Repackage extends DefaultTask {
 				if ("".equals(archive.getClassifier())) {
 					File file = archive.getArchivePath();
 					if (file.exists()) {
-						Repackager repackager = new Repackager(file);
+						Repackager repackager = new Repackager(file) {
+							protected String findMainMethod(java.util.jar.JarFile source) throws IOException {
+								long startTime = System.currentTimeMillis();
+								try {
+									return super.findMainMethod(source);
+								}
+								finally {
+									long duration = System.currentTimeMillis() - startTime;
+									if (duration > FIND_WARNING_TIMEOUT) {
+										getLogger().warn(
+												"Searching for the main-class is taking some time, "
+														+ "consider using setting 'springBoot.mainClass'");
+									}
+								}
+							};
+						};
 						repackager.setMainClass(extension.getMainClass());
 						if (extension.convertLayout() != null) {
 							repackager.setLayout(extension.convertLayout());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,12 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
 
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
@@ -171,8 +175,7 @@ public class Repackager {
 			startClass = manifest.getMainAttributes().getValue(MAIN_CLASS_ATTRIBUTE);
 		}
 		if (startClass == null) {
-			startClass = MainClassFinder.findMainClass(source,
-					this.layout.getClassesLocation());
+			startClass = findMainMethod(source);
 		}
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
@@ -193,6 +196,13 @@ public class Repackager {
 		return manifest;
 	}
 
+	protected String findMainMethod(JarFile source) throws IOException {
+		MainClassesCallback callback = new MainClassesCallback();
+		MainClassFinder.doWithMainClasses(source, this.layout.getClassesLocation(),
+				callback);
+		return callback.getMainClass();
+	}
+
 	private void renameFile(File file, File dest) {
 		if (!file.renameTo(dest)) {
 			throw new IllegalStateException("Unable to rename '" + file + "' to '" + dest
@@ -206,4 +216,24 @@ public class Repackager {
 		}
 	}
 
+	private static class MainClassesCallback implements ClassNameCallback<Object> {
+
+		private final List<String> classNames = new ArrayList<String>();
+
+		@Override
+		public Object doWith(String className) {
+			this.classNames.add(className);
+			return null;
+		}
+
+		public String getMainClass() {
+			if (this.classNames.size() > 1) {
+				throw new IllegalStateException(
+						"Unable to find a single main class from the following candidates "
+								+ this.classNames);
+			}
+			return this.classNames.isEmpty() ? null : this.classNames.get(0);
+		}
+
+	}
 }
