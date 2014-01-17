@@ -3,33 +3,37 @@
 <head>
 <title>Static</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script type="text/javascript" src="/webjars/jquery/2.0.3/jquery.min.js"></script>
 <link rel="stylesheet" type="text/css"
-	href="/webjars/bootstrap/2.3.0/css/bootstrap.min.css" />
-<link rel="stylesheet" type="text/css"
-	href="/webjars/bootstrap/2.3.0/css/bootstrap-responsive.min.css" />
-<script type="text/javascript" src="/webjars/bootstrap/2.3.0/js/bootstrap.min.js"></script>
+	href="/webjars/bootstrap/3.0.3/css/bootstrap.min.css" />
 </head>
 <body>
-	<div class="navbar">
-		<div class="navbar-inner">
-			<div class="container">
-				<a class="brand" href="https://github.com/SpringSource/spring-boot">
-					Spring Boot </a> <a class="btn btn-navbar" data-toggle="collapse"
-					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
-					class="icon-bar"></span> <span class="icon-bar"></span>
-				</a>
-				<div class="nav-collapse collapse">
-					<ul class="nav">
-						<li><a href="/"> Home </a></li>
-					</ul>
-				</div>
-			</div>
+	<script type="text/javascript"
+		src="/webjars/jquery/2.0.3/jquery.min.js"></script>
+	<div id="navbar" class="navbar navbar-default" role="navigation">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse"
+				data-target=".navbar-collapse">
+				<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+					class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand"
+				href="https://github.com/SpringSource/spring-boot"> Spring Boot
+			</a>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="/"> Home </a></li>
+			</ul>
 		</div>
 	</div>
-	<div class="container">
+	<div class="jumbotron">
 		<h1>Home</h1>
-		<div>Some static content</div>
+		<p>Some static content</p>
+		<p>
+          <a class="btn btn-lg btn-primary" href="#navbar" role="button">Go &raquo;</a>
+        </p>
 	</div>
+	<script type="text/javascript"
+		src="/webjars/bootstrap/3.0.3/js/bootstrap.min.js"></script>
 </body>
 </html>
