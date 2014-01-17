@@ -208,7 +208,9 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	}
 
 	@Configuration
-	@Import({ WebMvcAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
+	@Import({ WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			PropertyPlaceholderAutoConfiguration.class })
 	static class Config {
 
 	}

@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -78,7 +79,8 @@ public class DeviceResolverAutoConfigurationTests {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				DeviceResolverAutoConfiguration.class);
+				DeviceResolverAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		context.refresh();
 		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
 				.getBean("requestMappingHandlerMapping");

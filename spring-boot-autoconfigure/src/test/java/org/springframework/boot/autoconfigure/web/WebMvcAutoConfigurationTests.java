@@ -28,6 +28,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -78,7 +79,8 @@ public class WebMvcAutoConfigurationTests {
 	public void handerAdaptersCreated() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(3, this.context.getBeanNamesForType(HandlerAdapter.class).length);
 		assertFalse(this.context.getBean(RequestMappingHandlerAdapter.class)
@@ -92,7 +94,8 @@ public class WebMvcAutoConfigurationTests {
 	public void handerMappingsCreated() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(6, this.context.getBeanNamesForType(HandlerMapping.class).length);
 	}
@@ -101,7 +104,8 @@ public class WebMvcAutoConfigurationTests {
 	public void resourceHandlerMapping() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, List<Resource>> mappingLocations = getMappingLocations();
 		assertThat(mappingLocations.get("/**").size(), equalTo(5));
@@ -114,7 +118,8 @@ public class WebMvcAutoConfigurationTests {
 	public void resourceHandlerMappingOverrideWebjars() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(WebJars.class, Config.class, WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, List<Resource>> mappingLocations = getMappingLocations();
 		assertThat(mappingLocations.get("/webjars/**").size(), equalTo(1));
@@ -127,7 +132,8 @@ public class WebMvcAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class);
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, List<Resource>> mappingLocations = getMappingLocations();
 		assertThat(mappingLocations.get("/**").size(), equalTo(1));
