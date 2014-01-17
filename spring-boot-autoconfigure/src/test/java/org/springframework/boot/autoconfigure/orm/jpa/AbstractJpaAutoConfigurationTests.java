@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -32,7 +32,6 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -86,9 +85,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	@Test
 	public void testOpenEntityManagerInViewInterceptorCreated() throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(TestConfiguration.class,
-				ComponentScanDetectorConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
 		assertNotNull(context.getBean(OpenEntityManagerInViewInterceptor.class));
@@ -100,7 +97,6 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		context.register(TestFilterConfiguration.class,
-				ComponentScanDetectorConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
@@ -113,9 +109,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 			throws Exception {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(context, "spring.jpa.open_in_view:false");
-		context.register(TestConfiguration.class,
-				ComponentScanDetectorConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		context.register(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 		context.refresh();
 		assertEquals(0, getInterceptorBeans(context).length);
@@ -159,9 +153,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	protected void setupTestConfiguration(Class<?> configClass) {
-
-		this.context.register(configClass, ComponentScanDetectorConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 	}
 
@@ -170,13 +162,13 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ComponentScan(basePackageClasses = { City.class })
+	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
 	@Configuration
-	@ComponentScan(basePackageClasses = { City.class })
+	@TestAutoConfigurationPackage(City.class)
 	protected static class TestFilterConfiguration {
 
 		@Bean
@@ -204,7 +196,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ComponentScan(basePackageClasses = { City.class })
+	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfigurationWithTransactionManager {
 
 		@Bean

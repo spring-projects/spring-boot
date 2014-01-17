@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -47,7 +47,6 @@ import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -149,7 +148,6 @@ public class BatchAutoConfigurationTests {
 		// The order is very important here: DataSource -> Hibernate -> Batch
 		this.context.register(TestConfiguration.class,
 				EmbeddedDataSourceConfiguration.class,
-				ComponentScanDetectorConfiguration.class,
 				HibernateJpaAutoConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -168,7 +166,7 @@ public class BatchAutoConfigurationTests {
 	}
 
 	@EnableBatchProcessing
-	@ComponentScan(basePackageClasses = City.class)
+	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 	}
 

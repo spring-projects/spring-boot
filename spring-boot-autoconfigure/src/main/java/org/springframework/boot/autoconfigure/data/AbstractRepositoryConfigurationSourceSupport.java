@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,14 @@ package org.springframework.boot.autoconfigure.data;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.boot.autoconfigure.AutoConfigurationUtils;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
@@ -53,9 +50,6 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 public abstract class AbstractRepositoryConfigurationSourceSupport implements
 		BeanFactoryAware, ImportBeanDefinitionRegistrar, BeanClassLoaderAware,
 		EnvironmentAware {
-
-	private static Log logger = LogFactory
-			.getLog(AbstractRepositoryConfigurationSourceSupport.class);
 
 	private ClassLoader beanClassLoader;
 
@@ -108,13 +102,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	}
 
 	protected Iterable<String> getBasePackages() {
-		List<String> basePackages = AutoConfigurationUtils
-				.getBasePackages(this.beanFactory);
-		if (basePackages.isEmpty()) {
-			logger.info("Unable to find repository base packages.  If you need Repositories please define "
-					+ "a @ComponentScan annotation or else disable *RepositoriesAutoConfiguration");
-		}
-		return basePackages;
+		return AutoConfigurationPackages.get(this.beanFactory);
 	}
 
 	/**

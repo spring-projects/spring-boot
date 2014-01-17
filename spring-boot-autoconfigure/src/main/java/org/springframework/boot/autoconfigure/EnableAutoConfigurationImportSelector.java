@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,9 +65,6 @@ class EnableAutoConfigurationImportSelector implements DeferredImportSelector,
 			// Sort
 			factories = new AutoConfigurationSorter(this.resourceLoader)
 					.getInPriorityOrder(factories);
-
-			// Always add the ComponentScanDetector as the first in the list
-			factories.add(0, ComponentScanDetector.class.getName());
 
 			return factories.toArray(new String[factories.size()]);
 		}
