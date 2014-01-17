@@ -27,12 +27,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationStartEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.support.GenericApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;

@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

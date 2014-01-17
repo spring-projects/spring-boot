@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.OutputCapture;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
 /**

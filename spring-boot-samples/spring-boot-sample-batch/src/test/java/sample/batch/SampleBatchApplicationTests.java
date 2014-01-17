@@ -18,8 +18,8 @@ package sample.batch;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.OutputCapture;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.test.OutputCapture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
