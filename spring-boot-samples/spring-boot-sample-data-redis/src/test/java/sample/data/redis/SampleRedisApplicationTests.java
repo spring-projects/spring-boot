@@ -18,7 +18,7 @@ package sample.data.redis;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.OutputCapture;
+import org.springframework.boot.test.OutputCapture;
 import org.springframework.data.redis.RedisConnectionFailureException;
 
 import static org.junit.Assert.assertTrue;
