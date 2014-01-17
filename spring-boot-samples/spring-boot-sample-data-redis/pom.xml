@@ -26,6 +26,11 @@
 			<groupId>com.lambdaworks</groupId>
 			<artifactId>lettuce</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
