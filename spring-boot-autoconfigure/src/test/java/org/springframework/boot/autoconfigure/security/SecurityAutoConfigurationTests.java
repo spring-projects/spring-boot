@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.security;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationBeforeRefreshEvent;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
-import org.springframework.boot.autoconfigure.ComponentScanDetector;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -28,9 +28,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.context.listener.LoggingApplicationListener;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -130,8 +128,7 @@ public class SecurityAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ComponentScan(basePackageClasses = { City.class })
-	@Import(ComponentScanDetector.class)
+	@TestAutoConfigurationPackage(City.class)
 	protected static class EntityConfiguration {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
 package org.springframework.boot.autoconfigure.data;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.ComponentScanDetector;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.City;
 import org.springframework.boot.autoconfigure.data.jpa.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.mock.web.MockServletContext;
@@ -59,10 +57,7 @@ public class JpaWebAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ComponentScan(basePackageClasses = City.class)
-	// These is usually added by @EnableAutoConfiguration but have to be added as
-	// annotations if not using that feature
-	@Import(ComponentScanDetector.class)
+	@TestAutoConfigurationPackage(City.class)
 	@EnableWebMvc
 	protected static class TestConfiguration {
 

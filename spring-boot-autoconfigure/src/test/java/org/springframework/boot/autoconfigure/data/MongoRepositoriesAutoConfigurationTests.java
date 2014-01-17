@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 package org.springframework.boot.autoconfigure.data;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.ComponentScanDetectorConfiguration;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.City;
 import org.springframework.boot.autoconfigure.data.mongo.CityRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import com.mongodb.Mongo;
@@ -42,7 +41,6 @@ public class MongoRepositoriesAutoConfigurationTests {
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class,
-				ComponentScanDetectorConfiguration.class,
 				MongoRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -54,7 +52,6 @@ public class MongoRepositoriesAutoConfigurationTests {
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EmptyConfiguration.class,
-				ComponentScanDetectorConfiguration.class,
 				MongoRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -62,12 +59,13 @@ public class MongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@ComponentScan(basePackageClasses = City.class)
+	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
 
 	}
 
 	@Configuration
+	@TestAutoConfigurationPackage(MongoRepositoriesAutoConfigurationTests.class)
 	protected static class EmptyConfiguration {
 
 	}

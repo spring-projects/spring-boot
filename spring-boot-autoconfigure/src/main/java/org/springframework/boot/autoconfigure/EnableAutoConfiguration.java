@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,18 +34,24 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Enable auto-configuration of the Spring Application Context, attempting to guess and
- * configure beans that you are likely to need.
- * 
- * Auto-configuration classes are usually applied based on your classpath and what beans
- * you have defined. For example, If you have {@code tomat-embedded.jar} on your classpath
- * you are likely to want a {@link TomcatEmbeddedServletContainerFactory} (unless you have
- * defined your own {@link EmbeddedServletContainerFactory} bean).
+ * configure beans that you are likely to need. Auto-configuration classes are usually
+ * applied based on your classpath and what beans you have defined. For example, If you
+ * have {@code tomat-embedded.jar} on your classpath you are likely to want a
+ * {@link TomcatEmbeddedServletContainerFactory} (unless you have defined your own
+ * {@link EmbeddedServletContainerFactory} bean).
  * 
  * <p>
  * Auto-configuration tries to be as intelligent as possible and will back-away as you
  * define more of your own configuration. You can always manually {@link #exclude()} any
  * configuration that you never want to apply. Auto-configuration is always applied after
  * user-defined beans have been registered.
+ * 
+ * <p>
+ * The package of the class that is annotated with {@code @EnableAutoConfiguration} has
+ * specific significance and is often used as a 'default'. For example, it will be used
+ * when scanning for {@code @Entity} classes. It is generally recommended that you place
+ * {@code @EnableAutoConfiguration} in a root package so that all sub-packages and classes
+ * can be searched.
  * 
  * <p>
  * Auto-configuration classes are regular Spring {@link Configuration} beans. They are
@@ -63,7 +69,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(EnableAutoConfigurationImportSelector.class)
+@Import({ EnableAutoConfigurationImportSelector.class,
+		AutoConfigurationPackages.Registrar.class })
 public @interface EnableAutoConfiguration {
 
 	/**
