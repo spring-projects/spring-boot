@@ -39,21 +39,7 @@
 		<module>spring-boot-sample-websocket</module>
 		<module>spring-boot-sample-xml</module>
 	</modules>
-	<dependencies>
-		<!-- Test -->
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot</artifactId>
-			<version>${project.version}</version>
-			<classifier>tests</classifier>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <!-- No dependencies - otherwise the samples won't work if you change the parent -->
 	<build>
 		<plugins>
 			<plugin>
