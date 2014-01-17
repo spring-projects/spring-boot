@@ -122,6 +122,9 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.view.suffix:}")
 		private String suffix = "";
 
+		@Value("${spring.resources.cachePeriod:}")
+		private Integer cachePeriod;
+
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
@@ -193,12 +196,14 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			if (!registry.hasMappingForPattern("/webjars/**")) {
-				registry.addResourceHandler("/webjars/**").addResourceLocations(
-						"classpath:/META-INF/resources/webjars/");
+				registry.addResourceHandler("/webjars/**")
+						.addResourceLocations("classpath:/META-INF/resources/webjars/")
+						.setCachePeriod(this.cachePeriod);
 			}
 			if (!registry.hasMappingForPattern("/**")) {
-				registry.addResourceHandler("/**").addResourceLocations(
-						RESOURCE_LOCATIONS);
+				registry.addResourceHandler("/**")
+						.addResourceLocations(RESOURCE_LOCATIONS)
+						.setCachePeriod(this.cachePeriod);
 			}
 		}
 
