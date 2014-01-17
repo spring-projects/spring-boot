@@ -121,6 +121,10 @@ public class WebMvcAutoConfiguration {
 
 		@Value("${spring.view.suffix:}")
 		private String suffix = "";
+		
+		// default should be null, not sure how to specify null alternative with this syntax
+		@Value("${spring.resources.cachePeriod:0}")
+		private Integer cachePeriod;
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
