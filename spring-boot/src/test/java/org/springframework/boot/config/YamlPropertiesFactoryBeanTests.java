@@ -21,7 +21,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.config.YamlProcessor.DocumentMatcher;
 import org.springframework.boot.config.YamlProcessor.MatchStatus;
 import org.springframework.boot.config.YamlProcessor.ResolutionMethod;
@@ -29,6 +31,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,6 +42,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class YamlPropertiesFactoryBeanTests {
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+
 	@Test
 	public void testLoadResource() throws Exception {
 		YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
@@ -47,6 +53,16 @@ public class YamlPropertiesFactoryBeanTests {
 		Properties properties = factory.getObject();
 		assertEquals("bar", properties.get("foo"));
 		assertEquals("baz", properties.get("spam.foo"));
+	}
+
+	@Test
+	public void testBadResource() throws Exception {
+		YamlPropertiesFactoryBean factory = new YamlPropertiesFactoryBean();
+		factory.setResources(new Resource[] { new ByteArrayResource(
+				"foo: bar\ncd\nspam:\n  foo: baz".getBytes()) });
+		this.exception.expect(ScannerException.class);
+		this.exception.expectMessage("line 3, column 1");
+		factory.getObject();
 	}
 
 	@Test

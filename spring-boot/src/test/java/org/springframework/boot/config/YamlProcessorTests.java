@@ -18,10 +18,13 @@ package org.springframework.boot.config;
 import java.util.Map;
 import java.util.Properties;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.config.YamlProcessor.MatchCallback;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.yaml.snakeyaml.scanner.ScannerException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,6 +37,9 @@ public class YamlProcessorTests {
 
 	private YamlProcessor processor = new YamlProcessor();
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+
 	@Test
 	public void arrayConvertedToIndexedBeanReference() {
 		this.processor.setResources(new Resource[] { new ByteArrayResource(
@@ -45,6 +51,19 @@ public class YamlProcessorTests {
 				assertEquals(2, properties.get("bar[1]"));
 				assertEquals(3, properties.get("bar[2]"));
 				assertEquals(4, properties.size());
+			}
+		});
+	}
+
+	@Test
+	public void testBadResource() throws Exception {
+		this.processor.setResources(new Resource[] { new ByteArrayResource(
+				"foo: bar\ncd\nspam:\n  foo: baz".getBytes()) });
+		this.exception.expect(ScannerException.class);
+		this.exception.expectMessage("line 3, column 1");
+		this.processor.process(new MatchCallback() {
+			@Override
+			public void process(Properties properties, Map<String, Object> map) {
 			}
 		});
 	}
