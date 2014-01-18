@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
@@ -57,6 +58,7 @@ public class JolokiaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "jolokia.config[key1]:value1",
 				"jolokia.config[key2]:value2");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
@@ -70,6 +72,7 @@ public class JolokiaAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"endpoints.jolokia.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				JolokiaAutoConfiguration.class);
