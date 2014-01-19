@@ -34,7 +34,7 @@ public interface PropertySourceLoader {
 
 	/**
 	 * Load the resource into a property source.
-	 * @param name TODO
+	 * @param name the name of the property source
 	 * @return a property source
 	 */
 	PropertySource<?> load(String name, Resource resource);

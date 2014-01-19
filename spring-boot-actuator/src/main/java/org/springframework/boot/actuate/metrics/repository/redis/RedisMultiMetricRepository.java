@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.metrics.repository.redis;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -127,11 +128,14 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	}
 
 	private Metric<?> deserialize(String redisKey, String v) {
-		return new Metric<Double>(nameFor(redisKey), Double.valueOf(v));
+		String[] vals = v.split("@");
+		Double value = Double.valueOf(vals[0]);
+		Date timestamp = vals.length > 1 ? new Date(Long.valueOf(vals[1])) : new Date();
+		return new Metric<Double>(nameFor(redisKey), value, timestamp);
 	}
 
 	private String serialize(Metric<?> entity) {
-		return String.valueOf(entity.getValue());
+		return String.valueOf(entity.getValue() + "@" + entity.getTimestamp().getTime());
 	}
 
 	private String keyFor(String name) {

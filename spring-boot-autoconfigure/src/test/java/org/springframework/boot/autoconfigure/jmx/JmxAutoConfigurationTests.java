@@ -28,8 +28,11 @@ import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -95,8 +98,10 @@ public class JmxAutoConfigurationTests {
 
 		MBeanExporter mBeanExporter = this.context.getBean(MBeanExporter.class);
 		assertNotNull(mBeanExporter);
-
-		// TODO cdupuis add test for default domain
+		MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils
+				.getField(mBeanExporter, "metadataNamingStrategy");
+		assertEquals("my-test-domain",
+				ReflectionTestUtils.getField(naming, "defaultDomain"));
 	}
 
 	@Configuration
