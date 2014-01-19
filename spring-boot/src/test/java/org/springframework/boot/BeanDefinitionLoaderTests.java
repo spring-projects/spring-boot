@@ -33,8 +33,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class BeanDefinitionLoaderTests {
 
-	// FIXME
-
 	private StaticApplicationContext registry;
 
 	@Before

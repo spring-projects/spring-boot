@@ -126,7 +126,13 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 							.noMatch("Thymeleaf template found for error view");
 				}
 			}
-			// FIXME: add matcher for JSP view if Jasper detected
+			if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig",
+					context.getClassLoader())) {
+				if (WebMvcAutoConfiguration.templateExists(context.getEnvironment(),
+						context.getResourceLoader(), "error")) {
+					return ConditionOutcome.noMatch("JSP template found for error view");
+				}
+			}
 			return ConditionOutcome.match("no error template view detected");
 		};
 	}
