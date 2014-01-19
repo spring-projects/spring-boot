@@ -139,4 +139,5 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 		}
 
 	}
+
 }

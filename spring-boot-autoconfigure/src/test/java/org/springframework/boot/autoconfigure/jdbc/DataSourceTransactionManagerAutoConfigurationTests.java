@@ -19,10 +19,9 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -53,6 +52,21 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		assertEquals(
 				0,
 				this.context.getBeanNamesForType(DataSourceTransactionManager.class).length);
+	}
+
+	@Test
+	public void testManualConfiguration() throws Exception {
+		this.context.register(SwitchTransactionsOn.class,
+				EmbeddedDataSourceConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(DataSource.class));
+		assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
+	}
+
+	@EnableTransactionManagement
+	protected static class SwitchTransactionsOn {
+
 	}
 
 }

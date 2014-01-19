@@ -48,7 +48,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		EnableTransactionManagement.class, EntityManager.class,
 		HibernateEntityManager.class })
 @ConditionalOnBean(DataSource.class)
-@EnableTransactionManagement
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implements
 		BeanClassLoaderAware {
