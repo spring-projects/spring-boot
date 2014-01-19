@@ -23,12 +23,15 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -53,6 +56,13 @@ public class DataSourceTransactionManagerAutoConfiguration implements Ordered {
 	@ConditionalOnBean(DataSource.class)
 	public PlatformTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(this.dataSource);
+	}
+
+	@ConditionalOnMissingClass(AbstractTransactionManagementConfiguration.class)
+	@Configuration
+	@EnableTransactionManagement
+	protected static class TransactionManagementConfiguration {
+
 	}
 
 }
