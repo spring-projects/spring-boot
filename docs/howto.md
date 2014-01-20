@@ -651,8 +651,8 @@ also bootstrap a Spring application to set up the infrastructure to
 use, then it's easy with the `SpringApplication` features of Spring
 Boot. A `SpringApplication` changes its `ApplicationContext` class
 depending on whether it thinks it needs a web application or not. The
-first thing you can do to help it is to just leave the web
-depdendencies off the classpath. If you can't do that (e.g. you are
+first thing you can do to help it is to just leave the servlet API
+dependencies off the classpath. If you can't do that (e.g. you are
 running 2 applications from the same code base) then you can
 explicitly call `SpringApplication.setWebEnvironment(false)`, or set
 the `applicationContextClass` property (through the Java API or with
