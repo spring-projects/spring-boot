@@ -297,11 +297,10 @@ point to a database or directory server, you only need to provide a
 
 
 
-    @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        return new AuthenticationManagerBuilder(
-                ObjectPostProcessor.QUIESCENT_POSTPROCESSOR).inMemoryAuthentication().withUser("client")
-                .password("secret").roles("USER").and().and().build();
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("client").password("secret").roles("USER");
     }
 
 Try it out:
