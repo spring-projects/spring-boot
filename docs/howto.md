@@ -731,18 +731,37 @@ for more details.
 
 Spring Data can create implementations for you of `@Repository`
 interfaces of various flavours. Spring Boot will handle all of that
-for you as long as those `@Repositories` are included in a
-`@ComponentScan`.
+for you as long as those `@Repositories` are included in the same
+package (or a sub-package) of your `@EnableAutoConfiguration` class.
 
 For many applications all you will need is to put the right Spring
 Data dependencies on your classpath (there is a
-"spring-boot-starter-data-jpa" for JPA and for Mongodb you only nee
-dto add "spring-datamongodb"), create some repository interfaces to
-handle your `@Entity` objects, and then add a `@ComponentScan` that
-covers those packages. Examples are in the
+"spring-boot-starter-data-jpa" for JPA and for Mongodb you only need
+to add "spring-datamongodb"), create some repository interfaces to
+handle your `@Entity` objects. Examples are in the
 [JPA sample](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-jpa)
 or the
 [Mongodb sample](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-mongodb).
+
+Spring Boot tries to guess the location of your `@Repository`
+definitions, based on the `@EnableAutoConfiguration` it finds. To get
+more control, use the `@EnableJpaRepositories` annotation (from Spring
+Data JPA).
+
+## Separate @Entity Definitions from Spring Configuration
+
+Spring Boot tries to guess the location of your `@Entity` definitions,
+based on the `@EnableAutoConfiguration` it finds. To get more control,
+you can use the `@EntityScan` annotation, e.g.
+
+```java
+@Configuration
+@EnableAutoConfiguration
+@EntityScan(basePackageClasses=City.class)
+public class Application {
+...
+}
+```
 
 ## Configure JPA Properties
 
@@ -771,6 +790,18 @@ See
 and
 [`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)
 for more details.
+
+## Use a Traditional persistence.xml
+
+Spring doesn't require the use of XML to configure the JPA provider,
+and Spring Boot assumes you want to take advantage of that feature. If
+you prefer to use `persistence.xml` then you need to define your own
+`@Bean` of type `LocalEntityManagerFactoryBean`, and set the
+persistence unit name there.
+
+See
+[`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)
+for the default settings.
 
 <span id="discover.options"/>
 ## Discover Built-in Options for External Properties
