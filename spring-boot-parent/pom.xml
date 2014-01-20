@@ -234,6 +234,17 @@
 					<version>1.3.1</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
 					<artifactId>maven-plugin-plugin</artifactId>
 					<version>3.2</version>
 				</plugin>
