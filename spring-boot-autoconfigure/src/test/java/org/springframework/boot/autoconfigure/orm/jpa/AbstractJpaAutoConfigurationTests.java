@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Map;
 
@@ -23,8 +24,9 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
@@ -36,6 +38,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -148,6 +152,19 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		assertThat(txManager, instanceOf(CustomJpaTransactionManager.class));
 	}
 
+	@Test
+	public void customPersistenceUnitManager() throws Exception {
+		setupTestConfiguration(TestConfigurationWithCustomPersistenceUnitManager.class);
+		this.context.refresh();
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
+		Field field = LocalContainerEntityManagerFactoryBean.class
+				.getDeclaredField("persistenceUnitManager");
+		field.setAccessible(true);
+		assertThat(field.get(entityManagerFactoryBean),
+				equalTo((Object) this.context.getBean(PersistenceUnitManager.class)));
+	}
+
 	protected void setupTestConfiguration() {
 		setupTestConfiguration(TestConfiguration.class);
 	}
@@ -175,6 +192,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		public OpenEntityManagerInViewFilter openEntityManagerInViewFilter() {
 			return new OpenEntityManagerInViewFilter();
 		}
+
 	}
 
 	@Configuration
@@ -202,6 +220,23 @@ public abstract class AbstractJpaAutoConfigurationTests {
 		@Bean
 		public PlatformTransactionManager transactionManager() {
 			return new CustomJpaTransactionManager();
+		}
+
+	}
+
+	@Configuration
+	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
+	public static class TestConfigurationWithCustomPersistenceUnitManager {
+
+		@Autowired
+		private DataSource dataSource;
+
+		@Bean
+		public PersistenceUnitManager persistenceUnitManager() {
+			DefaultPersistenceUnitManager persistenceUnitManager = new DefaultPersistenceUnitManager();
+			persistenceUnitManager.setDefaultDataSource(this.dataSource);
+			persistenceUnitManager.setPackagesToScan(City.class.getPackage().getName());
+			return persistenceUnitManager;
 		}
 
 	}

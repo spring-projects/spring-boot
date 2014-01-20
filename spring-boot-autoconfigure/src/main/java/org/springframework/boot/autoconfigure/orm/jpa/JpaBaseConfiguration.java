@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -37,6 +38,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
@@ -58,6 +60,9 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 
 	private RelaxedPropertyResolver environment;
 
+	@Autowired(required = false)
+	private PersistenceUnitManager persistenceUnitManager;
+
 	@Override
 	public void setEnvironment(Environment environment) {
 		this.environment = new RelaxedPropertyResolver(environment, "spring.jpa.");
@@ -74,6 +79,10 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
 			JpaVendorAdapter jpaVendorAdapter) {
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+		if (this.persistenceUnitManager != null) {
+			entityManagerFactoryBean
+					.setPersistenceUnitManager(this.persistenceUnitManager);
+		}
 		entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
 		entityManagerFactoryBean.setDataSource(getDataSource());
 		entityManagerFactoryBean.setPackagesToScan(getPackagesToScan());
