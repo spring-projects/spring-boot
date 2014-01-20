@@ -46,7 +46,6 @@
 			</activation>
 			<modules>
 				<module>spring-boot-integration-tests</module>
-				<module>spring-boot-cli-integration-tests</module>
 			</modules>
 		</profile>
 		<profile>
