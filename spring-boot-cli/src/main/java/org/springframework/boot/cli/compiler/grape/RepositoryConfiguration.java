@@ -18,6 +18,8 @@ package org.springframework.boot.cli.compiler.grape;
 
 import java.net.URI;
 
+import org.springframework.util.ObjectUtils;
+
 /**
  * The configuration of a repository
  * 
@@ -75,28 +77,22 @@ public final class RepositoryConfiguration {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		return result;
+		return ObjectUtils.nullSafeHashCode(this.name);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		RepositoryConfiguration other = (RepositoryConfiguration) obj;
-		if (this.name == null) {
-			if (other.name != null)
-				return false;
 		}
-		else if (!this.name.equals(other.name))
+		if (obj == null) {
 			return false;
-		return true;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		RepositoryConfiguration other = (RepositoryConfiguration) obj;
+		return ObjectUtils.nullSafeEquals(this.name, other.name);
 	}
 
 }
