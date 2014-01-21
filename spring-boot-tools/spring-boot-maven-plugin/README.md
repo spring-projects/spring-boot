@@ -1,4 +1,4 @@
-# Spring Boot - Maven Plugin 
+# Spring Boot - Maven Plugin
 
 The Spring Boot Maven Plugin provides Spring Boot support in Maven,
 allowing you to package executable jar or war archives and run an

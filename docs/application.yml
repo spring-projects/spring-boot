@@ -79,7 +79,7 @@ spring:
   view:
     prefix:
     suffix:
- 
+
 
 # actuator
 
