@@ -453,8 +453,10 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Add some initializers to the application (applied to the {@link ApplicationContext}
-	 * before any bean definitions are loaded).
+	 * Add some listeners to the application (listening for SpringApplication events as
+	 * well as regular Spring events once the context is running). Any listeners that are
+	 * also {@link ApplicationContextInitializer} will be added to the
+	 * {@link #initializers(ApplicationContextInitializer...) initializers} automatically.
 	 * @param listeners some listeners to add
 	 * @return the current builder
 	 */
