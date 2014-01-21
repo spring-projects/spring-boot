@@ -49,17 +49,21 @@ public class Location {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || getClass() != o.getClass())
+		}
+		if (o == null || getClass() != o.getClass()) {
 			return false;
+		}
 
 		Location location = (Location) o;
 
-		if (this.x != location.x)
+		if (this.x != location.x) {
 			return false;
-		if (this.y != location.y)
+		}
+		if (this.y != location.y) {
 			return false;
+		}
 
 		return true;
 	}

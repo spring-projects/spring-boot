@@ -25,8 +25,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainer;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

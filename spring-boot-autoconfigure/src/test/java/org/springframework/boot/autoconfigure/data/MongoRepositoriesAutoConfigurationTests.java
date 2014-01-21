@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.data;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.mongo.City;
 import org.springframework.boot.autoconfigure.data.mongo.CityRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

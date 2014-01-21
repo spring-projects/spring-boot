@@ -18,9 +18,6 @@ package org.springframework.boot.actuate.metrics.writer;
 
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.boot.actuate.metrics.writer.DefaultCounterService;
-import org.springframework.boot.actuate.metrics.writer.Delta;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;

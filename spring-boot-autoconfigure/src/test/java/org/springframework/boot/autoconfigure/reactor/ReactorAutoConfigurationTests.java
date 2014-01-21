@@ -17,10 +17,10 @@
 package org.springframework.boot.autoconfigure.reactor;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import reactor.core.Reactor;
+
 import static org.junit.Assert.assertNotNull;
 
 /**

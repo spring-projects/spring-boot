@@ -21,8 +21,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 

@@ -16,12 +16,13 @@
 
 package sample.data.jpa.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import sample.data.jpa.domain.City;
 import sample.data.jpa.domain.Hotel;
 import sample.data.jpa.domain.Review;
 import sample.data.jpa.domain.ReviewDetails;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface HotelService {
 

@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import sample.actuator.SampleActuatorApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;

@@ -16,8 +16,6 @@
 
 package sample.actuator.ui;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -29,13 +27,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import sample.actuator.ui.SampleActuatorUiApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.

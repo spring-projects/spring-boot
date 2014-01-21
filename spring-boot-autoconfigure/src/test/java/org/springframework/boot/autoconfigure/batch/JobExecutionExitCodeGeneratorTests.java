@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.batch;
 import org.junit.Test;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.boot.autoconfigure.batch.JobExecutionEvent;
-import org.springframework.boot.autoconfigure.batch.JobExecutionExitCodeGenerator;
 
 import static org.junit.Assert.assertEquals;
 

@@ -19,17 +19,15 @@ package org.springframework.boot.ansi;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.springframework.boot.ansi.AnsiElement.BOLD;
 import static org.springframework.boot.ansi.AnsiElement.FAINT;
 import static org.springframework.boot.ansi.AnsiElement.GREEN;
 import static org.springframework.boot.ansi.AnsiElement.NORMAL;
 import static org.springframework.boot.ansi.AnsiElement.RED;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AnsiOutput}.

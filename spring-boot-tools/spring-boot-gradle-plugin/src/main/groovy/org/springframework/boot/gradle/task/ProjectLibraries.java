@@ -28,7 +28,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
  * Expose Gradle {@link Configuration}s as {@link Libraries}.
- *
+ * 
  * @author Phillip Webb
  */
 class ProjectLibraries implements Libraries {
@@ -41,6 +41,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
+	 * 
 	 * @param project the gradle project
 	 */
 	public ProjectLibraries(Project project) {
@@ -49,6 +50,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Set the name of the provided configuration. Defaults to 'providedRuntime'.
+	 * 
 	 * @param providedConfigurationName the providedConfigurationName to set
 	 */
 	public void setProvidedConfigurationName(String providedConfigurationName) {

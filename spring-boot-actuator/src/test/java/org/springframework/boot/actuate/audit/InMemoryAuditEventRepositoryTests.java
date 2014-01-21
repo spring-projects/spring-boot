@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.audit;
 import java.util.Date;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 
 import static org.junit.Assert.assertEquals;
 

@@ -16,8 +16,6 @@
 
 package sample.actuator;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,6 +27,8 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Basic integration tests for service demo application.
