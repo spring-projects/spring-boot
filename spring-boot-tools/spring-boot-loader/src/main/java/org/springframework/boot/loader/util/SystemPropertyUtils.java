@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,11 @@ import java.util.Set;
 
 /**
  * Helper class for resolving placeholders in texts. Usually applied to file paths.
- * 
  * <p>
  * A text may contain {@code $ ...} placeholders, to be resolved as system properties:
  * e.g. {@code $ user.dir} . Default values can be supplied using the ":" separator
  * between key and value.
- * 
  * <p>
- * 
  * Adapted from Spring.
  * 
  * @author Juergen Hoeller
@@ -40,13 +37,19 @@ import java.util.Set;
  */
 public abstract class SystemPropertyUtils {
 
-	/** Prefix for system property placeholders: "${" */
+	/**
+	 * Prefix for system property placeholders: "${"
+	 */
 	public static final String PLACEHOLDER_PREFIX = "${";
 
-	/** Suffix for system property placeholders: "}" */
+	/**
+	 * Suffix for system property placeholders: "}"
+	 */
 	public static final String PLACEHOLDER_SUFFIX = "}";
 
-	/** Value separator for system property placeholders: ":" */
+	/**
+	 * Value separator for system property placeholders: ":"
+	 */
 	public static final String VALUE_SEPARATOR = ":";
 
 	private static final String SIMPLE_PREFIX = PLACEHOLDER_PREFIX.substring(1);
@@ -166,7 +169,6 @@ public abstract class SystemPropertyUtils {
 	 * Search the System properties and environment variables for a value with the
 	 * provided key. Environment variables in <code>UPPER_CASE</code> style are allowed
 	 * where System properties would normally be <code>lower.case</code>.
-	 * 
 	 * @param key the key to resolve
 	 * @param text optional extra context for an error message if the key resolution fails
 	 * (e.g. if System properties are not accessible)

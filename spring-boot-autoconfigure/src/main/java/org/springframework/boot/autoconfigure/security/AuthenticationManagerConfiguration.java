@@ -33,6 +33,11 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 
+/**
+ * Configuration for a Spring Security in-memory {@link AuthenticationManager}.
+ * 
+ * @author Dave Syer
+ */
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean(AuthenticationManager.class)

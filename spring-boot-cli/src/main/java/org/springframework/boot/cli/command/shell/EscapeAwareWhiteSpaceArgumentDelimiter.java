@@ -20,7 +20,7 @@ import jline.console.completer.ArgumentCompleter.ArgumentList;
 import jline.console.completer.ArgumentCompleter.WhitespaceArgumentDelimiter;
 
 /**
- * Escape ware variant of {@link WhitespaceArgumentDelimiter}.
+ * Escape aware variant of {@link WhitespaceArgumentDelimiter}.
  * 
  * @author Phillip Webb
  */

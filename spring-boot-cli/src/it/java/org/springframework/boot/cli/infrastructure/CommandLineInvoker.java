@@ -106,7 +106,7 @@ public final class CommandLineInvoker {
 					lines.add(line);
 				}
 			}
-			catch (IOException e) {
+			catch (IOException ex) {
 				throw new RuntimeException("Failed to read standard output");
 			}
 			return lines;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
+ * Adapter to expose {@link MetricsEndpoint} as an {@link MvcEndpoint}.
+ * 
  * @author Dave Syer
  */
-public class MetricsMvcEndpoint extends GenericMvcEndpoint {
+public class MetricsMvcEndpoint extends EndpointMvcAdapter {
 
-	private MetricsEndpoint delegate;
+	private final MetricsEndpoint delegate;
 
 	public MetricsMvcEndpoint(MetricsEndpoint delegate) {
 		super(delegate);

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,6 +25,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
 
+/**
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Security.
+ * 
+ * @author Dave Syer
+ */
 @Configuration
 @ConditionalOnClass(AuthenticationManager.class)
 @EnableConfigurationProperties

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ public class EndpointHandlerMappingTests {
 
 	}
 
-	private static class TestMvcEndpoint extends GenericMvcEndpoint {
+	private static class TestMvcEndpoint extends EndpointMvcAdapter {
 
 		public TestMvcEndpoint(TestEndpoint delegate) {
 			super(delegate);
@@ -154,7 +154,7 @@ public class EndpointHandlerMappingTests {
 
 	}
 
-	private static class TestActionEndpoint extends GenericMvcEndpoint {
+	private static class TestActionEndpoint extends EndpointMvcAdapter {
 
 		public TestActionEndpoint(TestEndpoint delegate) {
 			super(delegate);

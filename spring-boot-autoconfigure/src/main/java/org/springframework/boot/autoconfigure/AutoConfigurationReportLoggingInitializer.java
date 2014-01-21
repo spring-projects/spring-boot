@@ -40,7 +40,6 @@ import org.springframework.util.StringUtils;
  * the {@link AutoConfigurationReport} to the log. Reports are logged at the
  * {@link LogLevel#DEBUG DEBUG} level unless there was a problem, in which case they are
  * the {@link LogLevel#INFO INFO} level is used.
- * 
  * <p>
  * This initializer is not intended to be shared across multiple application context
  * instances.

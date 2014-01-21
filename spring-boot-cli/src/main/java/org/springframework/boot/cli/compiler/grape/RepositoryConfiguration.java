@@ -34,8 +34,7 @@ public final class RepositoryConfiguration {
 	private final boolean snapshotsEnabled;
 
 	/**
-	 * Creates a new {@code RepositoryConfiguration}.
-	 * 
+	 * Creates a new {@code RepositoryConfiguration} instance.
 	 * @param name The name of the repository
 	 * @param uri The uri of the repository
 	 * @param snapshotsEnabled {@code true} if the repository should enable access to

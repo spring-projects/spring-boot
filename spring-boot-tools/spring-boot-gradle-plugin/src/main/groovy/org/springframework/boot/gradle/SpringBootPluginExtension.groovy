@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package org.springframework.boot.gradle
 import org.springframework.boot.loader.tools.Layout
 import org.springframework.boot.loader.tools.Layouts
 
+
 /**
  * Gradle DSL Extension for 'Spring Boot'.  Most of the time Spring Boot can guess the
  * settings in this extension, but occasionally you might need to explicitly set one
  * or two of them. E.g.
- * 
+ *
  * <pre>
  *     apply plugin: "spring-boot"
  *     springBoot {
@@ -53,7 +54,7 @@ public class SpringBootPluginExtension {
 	String mainClass
 
 	/**
-	 * The name of the ivy configuration name to treat as 'provided' (when packaging 
+	 * The name of the ivy configuration name to treat as 'provided' (when packaging
 	 * those dependencies in a separate path). If not specified 'providedRuntime' will
 	 * be used.
 	 */
@@ -73,15 +74,14 @@ public class SpringBootPluginExtension {
 	 * The layout of the archive if it can't be derived from the file extension.
 	 * Valid values are JAR, WAR, ZIP, DIR (for exploded zip file). ZIP and DIR
 	 * are actually synonymous, and should be used if there is no MANIFEST.MF
-	 * available, or if you want the MANIFEST.MF 'Main-Class' to be 
-	 * PropertiesLauncher. Gradle will coerce literal String values to the 
+	 * available, or if you want the MANIFEST.MF 'Main-Class' to be
+	 * PropertiesLauncher. Gradle will coerce literal String values to the
 	 * correct type.
 	 */
 	LayoutType layout;
 
 	/**
 	 * Convenience method for use in a custom task.
-	 * 
 	 * @return the Layout to use or null if not explicitly set
 	 */
 	Layout convertLayout() {

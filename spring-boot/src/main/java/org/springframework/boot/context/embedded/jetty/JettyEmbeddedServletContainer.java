@@ -109,8 +109,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 					ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"),
 					connector)).toString();
 		}
-		catch (Exception e) {
-			return "could not determine port ( " + e.getMessage() + ")";
+		catch (Exception ex) {
+			return "could not determine port ( " + ex.getMessage() + ")";
 		}
 	}
 

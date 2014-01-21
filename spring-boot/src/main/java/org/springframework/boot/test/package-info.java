@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.groovy;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.springframework.boot.cli.compiler.autoconfigure.JmsCompilerAutoConfiguration;
-
 /**
- * Pseudo annotation used to trigger {@link JmsCompilerAutoConfiguration}.
+ * Classes and utilities that are useful when unit-testing Spring Boot applications.
+ * This package is only intended for use in 'src/test' and should not be used in your
+ * 'src/main' code.
  */
-@Target(ElementType.TYPE)
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-public @interface EnableJmsMessaging {
+package org.springframework.boot.test;
 
-}

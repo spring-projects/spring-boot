@@ -51,7 +51,6 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * {@link Launcher} for archives with user-configured classpath and main class via a
  * properties file. This model is often more flexible and more amenable to creating
  * well-behaved OS-level services than a model based on executable jars.
- * 
  * <p>
  * Looks in various places for a properties file to extract loader settings, defaulting to
  * <code>application.properties</code> either on the current classpath or in the current
@@ -62,7 +61,6 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * <code>file:</code> or any valid URL). Once that file is located turns it into
  * Properties and extracts optional values (which can also be provided overridden as
  * System properties in case the file doesn't exist):
- * 
  * <ul>
  * <li><code>loader.path</code>: a comma-separated list of directories to append to the
  * classpath (containing file resources and/or nested archives in *.jar or *.zip).
@@ -345,7 +343,7 @@ public class PropertiesLauncher extends Launcher {
 		try {
 			return loaderClass.getConstructor(ClassLoader.class).newInstance(parent);
 		}
-		catch (NoSuchMethodException e) {
+		catch (NoSuchMethodException ex) {
 			// Ignore and try with URLs
 		}
 

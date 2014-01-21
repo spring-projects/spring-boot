@@ -80,16 +80,14 @@ public class JmsTemplateAutoConfiguration {
 		private ActiveMQConnectionFactoryProperties config;
 
 		@Bean
-		ConnectionFactory jmsConnectionFactory() {
+		public ConnectionFactory jmsConnectionFactory() {
 			if (this.config.isPooled()) {
 				PooledConnectionFactory pool = new PooledConnectionFactory();
 				pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config
 						.getBrokerURL()));
 				return pool;
 			}
-			else {
-				return new ActiveMQConnectionFactory(this.config.getBrokerURL());
-			}
+			return new ActiveMQConnectionFactory(this.config.getBrokerURL());
 		}
 
 	}
@@ -108,9 +106,7 @@ public class JmsTemplateAutoConfiguration {
 			if (this.inMemory) {
 				return "vm://localhost";
 			}
-			else {
-				return this.brokerURL;
-			}
+			return this.brokerURL;
 		}
 
 		public void setBrokerURL(String brokerURL) {

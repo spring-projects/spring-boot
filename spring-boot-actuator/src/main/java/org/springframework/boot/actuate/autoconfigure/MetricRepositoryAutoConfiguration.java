@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,11 +48,9 @@ import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import com.codahale.metrics.MetricRegistry;
 
 /**
- * <p>
  * {@link EnableAutoConfiguration Auto-configuration} for metrics services. Creates
  * user-facing {@link GaugeService} and {@link CounterService} instances, and also back
- * end repositories to catch the data pumped into them.
- * </p>
+ * end repositories to catch the data pumped into them. </p>
  * <p>
  * An {@link InMemoryMetricRepository} is always created unless another
  * {@link MetricRepository} is already provided by the user. In general, even if metric

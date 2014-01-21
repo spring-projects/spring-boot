@@ -394,12 +394,14 @@ public class EnableConfigurationPropertiesTests {
 
 	@Configuration
 	protected static class DefaultConfiguration {
+
 		@Bean
 		public TestProperties testProperties() {
 			TestProperties test = new TestProperties();
 			test.setName("bar");
 			return test;
 		}
+
 	}
 
 	@Configuration
@@ -410,10 +412,12 @@ public class EnableConfigurationPropertiesTests {
 	@EnableConfigurationProperties
 	@Configuration
 	public static class ExampleConfig {
+
 		@Bean
 		public External external() {
 			return new External();
 		}
+
 	}
 
 	@EnableConfigurationProperties(External.class)
@@ -461,6 +465,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(name = "spring_test_external")
 	public static class SystemEnvVar {
+
 		public String getVal() {
 			return this.val;
 		}
@@ -475,6 +480,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@Component
 	protected static class TestConsumer {
+
 		@Autowired
 		private TestProperties properties;
 
@@ -495,7 +501,9 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties
 	protected static class NestedProperties {
+
 		private String name;
+
 		private Nested nested = new Nested();
 
 		public void setName(String name) {
@@ -507,6 +515,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 
 		protected static class Nested {
+
 			private String name;
 
 			public void setName(String name) {
@@ -514,15 +523,18 @@ public class EnableConfigurationPropertiesTests {
 			}
 
 		}
+
 	}
 
 	@ConfigurationProperties
 	protected static class BaseProperties {
+
 		private String name;
 
 		public void setName(String name) {
 			this.name = name;
 		}
+
 	}
 
 	protected static class DerivedProperties extends BaseProperties {
@@ -530,8 +542,11 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties
 	protected static class TestProperties {
+
 		private String name;
+
 		private int[] array;
+
 		private List<Integer> list = new ArrayList<Integer>();
 
 		// No getter - you should be able to bind to a write-only bean
@@ -551,6 +566,7 @@ public class EnableConfigurationPropertiesTests {
 		public List<Integer> getList() {
 			return this.list;
 		}
+
 	}
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
@@ -559,12 +575,10 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(name = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
-
 	}
 
 	@ConfigurationProperties(ignoreUnknownFields = false, ignoreNestedProperties = true)
 	protected static class IgnoreNestedTestProperties extends TestProperties {
-
 	}
 
 	@ConfigurationProperties
@@ -600,6 +614,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	protected static class MoreProperties {
+
 		private String name;
 
 		public void setName(String name) {
@@ -611,6 +626,7 @@ public class EnableConfigurationPropertiesTests {
 
 	@ConfigurationProperties(path = "${binding.location:classpath:name.yml}")
 	protected static class ResourceBindingProperties {
+
 		private String name;
 
 		public void setName(String name) {
@@ -623,6 +639,7 @@ public class EnableConfigurationPropertiesTests {
 	@EnableConfigurationProperties
 	@ConfigurationProperties(path = "${binding.location:classpath:map.yml}")
 	protected static class ResourceBindingPropertiesWithMap {
+
 		private Map<String, String> mymap;
 
 		public void setMymap(Map<String, String> mymap) {
