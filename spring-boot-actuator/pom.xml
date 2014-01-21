@@ -92,6 +92,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.crashub</groupId>
 			<artifactId>crash.embed.spring</artifactId>
 			<optional>true</optional>
