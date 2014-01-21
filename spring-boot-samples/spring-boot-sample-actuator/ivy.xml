@@ -6,8 +6,8 @@
       <conf name="runtime" extends="compile" description="everything needed to run this module" />
     </configurations>
     <dependencies>
-        <dependency org="org.springframework.boot" name="spring-boot-loader" rev="0.5.0.BUILD-SNAPSHOT" conf="loader->default"/>
-        <dependency org="org.springframework.boot" name="spring-boot-starter-web" rev="0.5.0.BUILD-SNAPSHOT" conf="compile"/>
-        <dependency org="org.springframework.boot" name="spring-boot-starter-actuator" rev="0.5.0.BUILD-SNAPSHOT" conf="runtime"/>
+        <dependency org="org.springframework.boot" name="spring-boot-loader" rev="1.0.0.BUILD-SNAPSHOT" conf="loader->default"/>
+        <dependency org="org.springframework.boot" name="spring-boot-starter-web" rev="1.0.0.BUILD-SNAPSHOT" conf="compile"/>
+        <dependency org="org.springframework.boot" name="spring-boot-starter-actuator" rev="1.0.0.BUILD-SNAPSHOT" conf="runtime"/>
     </dependencies>
 </ivy-module>
