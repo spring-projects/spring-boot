@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration;
 import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

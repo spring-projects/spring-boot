@@ -139,10 +139,11 @@ public final class RelaxedNames implements Iterable<String> {
 					builder.append(builder.length() == 0 ? field : StringUtils
 							.capitalize(field));
 				}
-				for (String suffix : new String[] { "_", "-", "." })
+				for (String suffix : new String[] { "_", "-", "." }) {
 					if (value.endsWith(suffix)) {
 						builder.append(suffix);
 					}
+				}
 				return builder.toString();
 			}
 		};

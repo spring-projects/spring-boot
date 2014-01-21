@@ -19,17 +19,18 @@ package samples.websocket.config;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
+
 import samples.websocket.client.GreetingService;
 import samples.websocket.client.SimpleGreetingService;
 import samples.websocket.echo.DefaultEchoService;
 import samples.websocket.echo.EchoService;
 import samples.websocket.echo.EchoWebSocketHandler;
 import samples.websocket.snake.SnakeWebSocketHandler;
-import org.springframework.boot.web.SpringBootServletInitializer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 
 @Configuration
 @EnableAutoConfiguration

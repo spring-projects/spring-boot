@@ -21,8 +21,6 @@ import java.util.Collections;
 import org.junit.Test;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
-import org.springframework.boot.actuate.audit.listener.AuditListener;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

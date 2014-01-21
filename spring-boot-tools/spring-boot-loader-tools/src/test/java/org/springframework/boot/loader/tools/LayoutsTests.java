@@ -21,9 +21,6 @@ import java.io.File;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.loader.tools.Layout;
-import org.springframework.boot.loader.tools.Layouts;
-import org.springframework.boot.loader.tools.LibraryScope;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;

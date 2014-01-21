@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.Test;
-import org.springframework.boot.actuate.autoconfigure.ManagementServerPropertiesAutoConfiguration;
 import org.springframework.boot.actuate.properties.ManagementServerProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;

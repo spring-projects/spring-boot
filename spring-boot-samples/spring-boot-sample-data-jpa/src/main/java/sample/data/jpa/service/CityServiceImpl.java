@@ -17,14 +17,15 @@
 package sample.data.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import sample.data.jpa.domain.City;
-import sample.data.jpa.domain.HotelSummary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import sample.data.jpa.domain.City;
+import sample.data.jpa.domain.HotelSummary;
 
 @Component("cityService")
 @Transactional

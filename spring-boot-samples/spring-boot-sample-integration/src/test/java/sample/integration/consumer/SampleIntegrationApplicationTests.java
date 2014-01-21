@@ -25,13 +25,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import sample.integration.SampleIntegrationApplication;
-import sample.integration.producer.ProducerApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.StreamUtils;
+
+import sample.integration.SampleIntegrationApplication;
+import sample.integration.producer.ProducerApplication;
 
 import static org.junit.Assert.assertTrue;
 

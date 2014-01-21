@@ -132,6 +132,7 @@ public final class CommandLineInvoker {
 				this.output = buffer;
 			}
 
+			@Override
 			public void run() {
 				int read;
 				try {

@@ -50,6 +50,8 @@ public class RunApp extends DefaultTask {
 		JavaPluginConvention javaConvention = project.getConvention().getPlugin(
 				JavaPluginConvention.class);
 		javaConvention.getSourceSets().all(new Action<SourceSet>() {
+
+			@Override
 			public void execute(SourceSet set) {
 				if (SourceSet.MAIN_SOURCE_SET_NAME.equals(set.getName())) {
 					main = set;
@@ -64,10 +66,11 @@ public class RunApp extends DefaultTask {
 		}
 
 		project.getTasks().withType(JavaExec.class, new Action<JavaExec>() {
+
 			@Override
 			public void execute(JavaExec exec) {
-				ArrayList<File> files = new ArrayList<File>(exec.getClasspath()
-						.getFiles());
+				ArrayList<File> files = new ArrayList<File>(
+						exec.getClasspath().getFiles());
 				files.addAll(0, allResources);
 				getLogger().info("Adding classpath: " + allResources);
 				exec.setClasspath(new SimpleFileCollection(files));
@@ -75,6 +78,7 @@ public class RunApp extends DefaultTask {
 					final String mainClass = findMainClass(main);
 					exec.setMain(mainClass);
 					exec.getConventionMapping().map("main", new Callable<String>() {
+
 						@Override
 						public String call() throws Exception {
 							return mainClass;

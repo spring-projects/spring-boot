@@ -30,7 +30,7 @@ import org.springframework.boot.loader.tools.Repackager;
 
 /**
  * Repackage task.
- *
+ * 
  * @author Phillip Webb
  */
 public class Repackage extends DefaultTask {
@@ -78,13 +78,16 @@ public class Repackage extends DefaultTask {
 					File file = archive.getArchivePath();
 					if (file.exists()) {
 						Repackager repackager = new Repackager(file) {
-							protected String findMainMethod(java.util.jar.JarFile source) throws IOException {
+
+							@Override
+							protected String findMainMethod(java.util.jar.JarFile source)
+									throws IOException {
 								long startTime = System.currentTimeMillis();
 								try {
 									return super.findMainMethod(source);
-								}
-								finally {
-									long duration = System.currentTimeMillis() - startTime;
+								} finally {
+									long duration = System.currentTimeMillis()
+											- startTime;
 									if (duration > FIND_WARNING_TIMEOUT) {
 										getLogger().warn(
 												"Searching for the main-class is taking some time, "
