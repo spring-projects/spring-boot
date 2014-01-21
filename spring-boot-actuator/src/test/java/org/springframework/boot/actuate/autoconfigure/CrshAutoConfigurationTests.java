@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.crsh.auth.AuthenticationPlugin;
 import org.crsh.auth.JaasAuthenticationPlugin;
-import org.crsh.lang.groovy.GroovyREPL;
+import org.crsh.lang.groovy.GroovyRepl;
 import org.crsh.plugin.PluginContext;
 import org.crsh.plugin.PluginLifeCycle;
 import org.crsh.plugin.ResourceKind;
@@ -86,7 +86,7 @@ public class CrshAutoConfigurationTests {
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertNotNull(lifeCycle);
 
-		assertNull(lifeCycle.getContext().getPlugin(GroovyREPL.class));
+		assertNull(lifeCycle.getContext().getPlugin(GroovyRepl.class));
 		assertNull(lifeCycle.getContext().getPlugin(ProcessorIOHandler.class));
 		assertNull(lifeCycle.getContext().getPlugin(JaasAuthenticationPlugin.class));
 	}
@@ -155,7 +155,7 @@ public class CrshAutoConfigurationTests {
 
 		count = 0;
 		resources = lifeCycle.getContext()
-				.loadResources("help.java", ResourceKind.COMMAND).iterator();
+				.loadResources("sleep.groovy", ResourceKind.COMMAND).iterator();
 		while (resources.hasNext()) {
 			count++;
 			resources.next();
