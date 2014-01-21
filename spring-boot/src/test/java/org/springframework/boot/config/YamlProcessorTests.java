@@ -24,6 +24,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.config.YamlProcessor.MatchCallback;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
 import static org.junit.Assert.assertEquals;
@@ -51,6 +52,31 @@ public class YamlProcessorTests {
 				assertEquals(2, properties.get("bar[1]"));
 				assertEquals(3, properties.get("bar[2]"));
 				assertEquals(4, properties.size());
+			}
+		});
+	}
+
+	@Test
+	public void testStringResource() throws Exception {
+		this.processor.setResources(new Resource[] { new ByteArrayResource(
+				"foo # a document that is a literal".getBytes()) });
+		this.processor.process(new MatchCallback() {
+			@Override
+			public void process(Properties properties, Map<String, Object> map) {
+				assertEquals("foo", map.get("document"));
+			}
+		});
+	}
+
+	@Test
+	public void testBadDocumentStart() throws Exception {
+		this.processor.setResources(new Resource[] { new ByteArrayResource(
+				"foo # a document\nbar: baz".getBytes()) });
+		this.exception.expect(ParserException.class);
+		this.exception.expectMessage("line 2, column 1");
+		this.processor.process(new MatchCallback() {
+			@Override
+			public void process(Properties properties, Map<String, Object> map) {
 			}
 		});
 	}

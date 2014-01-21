@@ -167,6 +167,11 @@ public class YamlProcessor {
 	private Map<String, Object> asMap(Object object) {
 		// YAML can have numbers as keys
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
+		if (!(object instanceof Map)) {
+			// A document can be a text literal
+			result.put("document", object);
+			return result;
+		}
 		Map<Object, Object> map = (Map<Object, Object>) object;
 		for (Entry<Object, Object> entry : map.entrySet()) {
 			Object value = entry.getValue();
