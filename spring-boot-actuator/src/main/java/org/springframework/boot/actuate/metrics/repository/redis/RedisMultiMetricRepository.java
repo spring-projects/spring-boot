@@ -43,6 +43,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	private static final String DEFAULT_METRICS_PREFIX = "spring.groups.";
 
 	private String prefix = DEFAULT_METRICS_PREFIX;
+
 	private String keys = this.prefix + "keys";
 
 	private BoundZSetOperations<String, String> zSetOperations;
@@ -57,7 +58,6 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 
 	/**
 	 * The prefix for all metrics keys.
-	 * 
 	 * @param prefix the prefix to set for all metrics keys
 	 */
 	public void setPrefix(String prefix) {

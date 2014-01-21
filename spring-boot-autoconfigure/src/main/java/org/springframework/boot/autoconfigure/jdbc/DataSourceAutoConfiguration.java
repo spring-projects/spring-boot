@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContext;
@@ -177,6 +177,9 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	}
 
+	/**
+	 * Base {@link Condition} for non-embedded database checks.
+	 */
 	static abstract class NonEmbeddedDatabaseCondition extends SpringBootCondition {
 
 		protected abstract String getDataSourceClassName();
@@ -243,6 +246,10 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		}
 	}
 
+	/**
+	 * {@link Condition} to detect when a commons-dbcp {@code BasicDataSource} backed
+	 * database is used.
+	 */
 	static class BasicDatabaseCondition extends NonEmbeddedDatabaseCondition {
 
 		private Condition tomcatCondition = new TomcatDatabaseCondition();
@@ -256,12 +263,15 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
 			if (matches(context, metadata, this.tomcatCondition)) {
-				return ConditionOutcome.noMatch("tomcat DataSource");
+				return ConditionOutcome.noMatch("Tomcat DataSource");
 			}
 			return super.getMatchOutcome(context, metadata);
 		}
 	}
 
+	/**
+	 * {@link Condition} to detect when a Tomcat DataSource backed database is used.
+	 */
 	static class TomcatDatabaseCondition extends NonEmbeddedDatabaseCondition {
 
 		@Override
@@ -271,6 +281,9 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	}
 
+	/**
+	 * {@link Condition} to detect when an embedded database is used.
+	 */
 	static class EmbeddedDatabaseCondition extends SpringBootCondition {
 
 		private SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();
@@ -293,6 +306,9 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		}
 	}
 
+	/**
+	 * {@link Condition} to detect when a database is configured.
+	 */
 	static class DatabaseCondition extends SpringBootCondition {
 
 		private SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();

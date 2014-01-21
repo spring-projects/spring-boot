@@ -260,7 +260,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 		}
 
 		@Override
-		public Class<?> getEndpointType() {
+		@SuppressWarnings("rawtypes")
+		public Class<? extends Endpoint> getEndpointType() {
 			return Endpoint.class;
 		}
 

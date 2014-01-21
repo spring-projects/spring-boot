@@ -112,11 +112,14 @@ public class CommandCompleter extends StringsCompleter {
 			}
 			this.console.drawLine();
 		}
-		catch (IOException e) {
-			Log.error(e.getMessage() + " (" + e.getClass().getName() + ")");
+		catch (IOException ex) {
+			Log.error(ex.getMessage() + " (" + ex.getClass().getName() + ")");
 		}
 	}
 
+	/**
+	 * Encapsulated options and usage help.
+	 */
 	private static class OptionHelpLine {
 
 		private final String options;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,14 +198,24 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			if (this.types.isEmpty() && this.names.isEmpty()) {
 				addDeducedBeanType(context, metadata, this.types);
 			}
-			Assert.isTrue(
-					!this.types.isEmpty() || !this.names.isEmpty()
-							|| !this.annotations.isEmpty(),
-					"@"
-							+ ClassUtils.getShortName(annotationType)
-							+ " annotations must specify at least one bean (type, name or annotation)");
+			Assert.isTrue(hasAtLeastOne(this.types, this.names, this.annotations),
+					annotationName(annotationType) + " annotations must "
+							+ "specify at least one bean (type, name or annotation)");
 			this.strategy = (SearchStrategy) metadata.getAnnotationAttributes(
 					annotationType.getName()).get("search");
+		}
+
+		private boolean hasAtLeastOne(List<?>... lists) {
+			for (List<?> list : lists) {
+				if (!list.isEmpty()) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private String annotationName(Class<?> annotationType) {
+			return "@" + ClassUtils.getShortName(annotationType);
 		}
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })

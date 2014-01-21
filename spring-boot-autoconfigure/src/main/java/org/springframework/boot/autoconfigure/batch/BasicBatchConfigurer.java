@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
+ * Basic {@link BatchConfigurer} implementation.
+ * 
  * @author Dave Syer
  */
 @Component
@@ -41,15 +43,28 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	private static Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
 	private DataSource dataSource;
+
 	private EntityManagerFactory entityManagerFactory;
+
 	private PlatformTransactionManager transactionManager;
+
 	private JobRepository jobRepository;
+
 	private JobLauncher jobLauncher;
 
+	/**
+	 * Create a new {@link BasicBatchConfigurer} instance.
+	 * @param dataSource the underlying data source
+	 */
 	public BasicBatchConfigurer(DataSource dataSource) {
 		this(dataSource, null);
 	}
 
+	/**
+	 * Create a new {@link BasicBatchConfigurer} instance.
+	 * @param dataSource the underlying data source
+	 * @param entityManagerFactory the entity manager factory (or {@code null})
+	 */
 	public BasicBatchConfigurer(DataSource dataSource,
 			EntityManagerFactory entityManagerFactory) {
 		this.entityManagerFactory = entityManagerFactory;

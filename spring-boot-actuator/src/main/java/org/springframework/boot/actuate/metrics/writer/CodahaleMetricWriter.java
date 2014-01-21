@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import com.codahale.metrics.Timer;
 /**
  * A {@link MetricWriter} that send data to a Codahale {@link MetricRegistry} based on a
  * naming convention:
+ * 
  * <ul>
  * <li>Updates to {@link #increment(Delta)} with names in "meter.*" are treated as
  * {@link Meter} events</li>
@@ -49,7 +50,8 @@ public class CodahaleMetricWriter implements MetricWriter {
 	private final MetricRegistry registry;
 
 	/**
-	 * @param registry
+	 * Create a new {@link CodahaleMetricWriter} instance.
+	 * @param registry the underlying metric registry
 	 */
 	public CodahaleMetricWriter(MetricRegistry registry) {
 		this.registry = registry;
@@ -94,17 +96,20 @@ public class CodahaleMetricWriter implements MetricWriter {
 		this.registry.remove(metricName);
 	}
 
+	/**
+	 * Simple {@link Gauge} implementation to {@literal double} value.
+	 */
 	private static class SimpleGauge implements Gauge<Double> {
 
-		private final double gauge;
+		private final double value;
 
-		private SimpleGauge(double gauge) {
-			this.gauge = gauge;
+		private SimpleGauge(double value) {
+			this.value = value;
 		}
 
 		@Override
 		public Double getValue() {
-			return this.gauge;
+			return this.value;
 		}
 	}
 

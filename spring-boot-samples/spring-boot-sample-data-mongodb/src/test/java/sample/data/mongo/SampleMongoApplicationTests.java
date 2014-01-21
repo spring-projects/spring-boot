@@ -50,9 +50,9 @@ public class SampleMongoApplicationTests {
 				output.contains("firstName='Alice', lastName='Smith'"));
 	}
 
-	private boolean serverNotRunning(IllegalStateException e) {
+	private boolean serverNotRunning(IllegalStateException ex) {
 		@SuppressWarnings("serial")
-		NestedCheckedException nested = new NestedCheckedException("failed", e) {
+		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
 		if (nested.contains(IOException.class)) {
 			Throwable root = nested.getRootCause();

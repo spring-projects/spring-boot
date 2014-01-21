@@ -95,8 +95,8 @@ public class RunApp extends DefaultTask {
 		getLogger().info("Looking for main in: " + main.getOutput().getClassesDir());
 		try {
 			return MainClassFinder.findMainClass(main.getOutput().getClassesDir());
-		} catch (IOException e) {
-			throw new IllegalStateException("Cannot find main class", e);
+		} catch (IOException ex) {
+			throw new IllegalStateException("Cannot find main class", ex);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,26 @@
 package org.springframework.boot.actuate.endpoint.mvc;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
+ * Adapter class to expose {@link Endpoint}s as {@link MvcEndpoint}s.
+ * 
  * @author Dave Syer
  */
-public class GenericMvcEndpoint implements MvcEndpoint {
+public class EndpointMvcAdapter implements MvcEndpoint {
 
-	private Endpoint<?> delegate;
+	private final Endpoint<?> delegate;
 
-	public GenericMvcEndpoint(Endpoint<?> delegate) {
+	/**
+	 * Create a new {@link EndpointMvcAdapter}.
+	 * @param delegate the underlying {@link Endpoint} to adapt.
+	 */
+	public EndpointMvcAdapter(Endpoint<?> delegate) {
+		Assert.notNull(delegate, "Delegate must not be null");
 		this.delegate = delegate;
 	}
 
@@ -49,11 +57,9 @@ public class GenericMvcEndpoint implements MvcEndpoint {
 	}
 
 	@Override
-	public Class<?> getEndpointType() {
-		@SuppressWarnings("unchecked")
-		Class<? extends Endpoint<?>> type = (Class<? extends Endpoint<?>>) this.delegate
-				.getClass();
-		return type;
+	@SuppressWarnings("rawtypes")
+	public Class<? extends Endpoint> getEndpointType() {
+		return this.delegate.getClass();
 	}
 
 }

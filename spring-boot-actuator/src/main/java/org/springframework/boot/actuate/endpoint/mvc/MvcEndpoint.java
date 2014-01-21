@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,22 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
  */
 public interface MvcEndpoint {
 
+	/**
+	 * Return the MVC path of the endpoint.
+	 */
 	String getPath();
 
+	/**
+	 * Return if the endpoint exposes sensitive information.
+	 */
 	boolean isSensitive();
 
-	Class<?> getEndpointType();
+	/**
+	 * Return the type of {@link Endpoint} exposed, or {@code null} if this
+	 * {@link MvcEndpoint} exposes information that cannot be represented as a traditional
+	 * {@link Endpoint}.
+	 */
+	@SuppressWarnings("rawtypes")
+	Class<? extends Endpoint> getEndpointType();
 
 }

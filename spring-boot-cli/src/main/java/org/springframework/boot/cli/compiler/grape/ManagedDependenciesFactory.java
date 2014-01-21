@@ -28,5 +28,9 @@ import org.eclipse.aether.graph.Dependency;
  */
 public interface ManagedDependenciesFactory {
 
+	/**
+	 * Returns the managed dependencies.
+	 */
 	List<Dependency> getManagedDependencies();
+
 }

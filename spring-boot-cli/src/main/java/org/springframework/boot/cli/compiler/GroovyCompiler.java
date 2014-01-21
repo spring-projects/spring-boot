@@ -64,8 +64,7 @@ import org.springframework.boot.cli.util.ResourceUtils;
  * 
  * <li>Generated class files can also be loaded using
  * {@link ClassLoader#getResource(String)}</li>
- * 
- * <ul>
+ * </ul>
  * 
  * @author Phillip Webb
  * @author Dave Syer

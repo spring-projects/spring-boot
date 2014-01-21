@@ -87,7 +87,6 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
 @ConditionalOnClass({ EnableWebSecurity.class })
 @ConditionalOnMissingBean(WebSecurityConfiguration.class)
 @ConditionalOnWebApplication
-// @ConditionalOnMissingBean(annotation = EnableWebSecurity.class)
 public class SpringBootWebSecurityConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
@@ -105,6 +104,39 @@ public class SpringBootWebSecurityConfiguration {
 	@ConditionalOnBean(SpringBootWebSecurityConfiguration.class)
 	public SecurityConfigurer<Filter, WebSecurity> ignoredPathsWebSecurityConfigurerAdapter() {
 		return new IgnoredPathsWebSecurityConfigurerAdapter();
+	}
+
+	public static void configureHeaders(HeadersConfigurer<?> configurer,
+			SecurityProperties.Headers headers) throws Exception {
+		if (headers.getHsts() != Headers.HSTS.none) {
+			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.all;
+			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubdomains);
+			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
+			configurer.addHeaderWriter(writer);
+		}
+		if (headers.isContentType()) {
+			configurer.contentTypeOptions();
+		}
+		if (headers.isXss()) {
+			configurer.xssProtection();
+		}
+		if (headers.isCache()) {
+			configurer.cacheControl();
+		}
+		if (headers.isFrame()) {
+			configurer.frameOptions();
+		}
+	}
+
+	public static List<String> getIgnored(SecurityProperties security) {
+		List<String> ignored = new ArrayList<String>(security.getIgnored());
+		if (ignored.isEmpty()) {
+			ignored.addAll(DEFAULT_IGNORED);
+		}
+		else if (ignored.contains("none")) {
+			ignored.remove("none");
+		}
+		return ignored;
 	}
 
 	// Get the ignored paths in early
@@ -135,10 +167,12 @@ public class SpringBootWebSecurityConfiguration {
 	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
 	protected static class WebMvcSecurityConfigurationConditions {
+
 		@Configuration
 		@EnableWebMvcSecurity
 		protected static class DefaultWebMvcSecurityConfiguration {
 		}
+
 	}
 
 	// Pull in a plain @EnableWebSecurity if Spring MVC is not available
@@ -221,39 +255,6 @@ public class SpringBootWebSecurityConfiguration {
 			return manager;
 		}
 
-	}
-
-	public static void configureHeaders(HeadersConfigurer<?> configurer,
-			SecurityProperties.Headers headers) throws Exception {
-		if (headers.getHsts() != Headers.HSTS.none) {
-			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.all;
-			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubdomains);
-			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
-			configurer.addHeaderWriter(writer);
-		}
-		if (headers.isContentType()) {
-			configurer.contentTypeOptions();
-		}
-		if (headers.isXss()) {
-			configurer.xssProtection();
-		}
-		if (headers.isCache()) {
-			configurer.cacheControl();
-		}
-		if (headers.isFrame()) {
-			configurer.frameOptions();
-		}
-	}
-
-	public static List<String> getIgnored(SecurityProperties security) {
-		List<String> ignored = new ArrayList<String>(security.getIgnored());
-		if (ignored.isEmpty()) {
-			ignored.addAll(DEFAULT_IGNORED);
-		}
-		else if (ignored.contains("none")) {
-			ignored.remove("none");
-		}
-		return ignored;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,19 @@ package org.springframework.boot.actuate.endpoint.mvc;
 
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.web.ErrorController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * Special endpoint for handling "/error" path when the management servlet is in a child
- * context. The regular {@link ErrorController} should be available there but because of
- * the way the handler mappings are set up it will not be detected.
+ * Special {@link MvcEndpoint} for handling "/error" path when the management servlet is
+ * in a child context. The regular {@link ErrorController} should be available there but
+ * because of the way the handler mappings are set up it will not be detected.
  * 
  * @author Dave Syer
  */
@@ -36,9 +38,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 public class ManagementErrorEndpoint implements MvcEndpoint {
 
 	private final ErrorController controller;
-	private String path;
+
+	private final String path;
 
 	public ManagementErrorEndpoint(String path, ErrorController controller) {
+		Assert.notNull(controller, "Controller must not be null");
 		this.path = path;
 		this.controller = controller;
 	}
@@ -61,7 +65,8 @@ public class ManagementErrorEndpoint implements MvcEndpoint {
 	}
 
 	@Override
-	public Class<?> getEndpointType() {
+	@SuppressWarnings("rawtypes")
+	public Class<? extends Endpoint> getEndpointType() {
 		return null;
 	}
 }

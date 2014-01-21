@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ public final class JreProxySelector implements ProxySelector {
 			URI uri = new URI(repository.getUrl()).parseServerAuthority();
 			proxies = java.net.ProxySelector.getDefault().select(uri);
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			// URL invalid or not accepted by selector or no selector at all, simply use
 			// no proxy
 		}
@@ -113,7 +113,7 @@ public final class JreProxySelector implements ProxySelector {
 				try {
 					url = new URL(context.getRepository().getUrl());
 				}
-				catch (Exception e) {
+				catch (Exception ex) {
 					url = null;
 				}
 
@@ -133,7 +133,7 @@ public final class JreProxySelector implements ProxySelector {
 							System.getProperty("http.proxyPassword"));
 				}
 			}
-			catch (SecurityException e) {
+			catch (SecurityException ex) {
 				// oh well, let's hope the proxy can do without auth
 			}
 		}

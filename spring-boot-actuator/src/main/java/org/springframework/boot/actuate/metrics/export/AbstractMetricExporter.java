@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,6 @@ public abstract class AbstractMetricExporter implements Exporter {
 
 	/**
 	 * The earliest time for which data will be exported.
-	 * 
 	 * @param earliestTimestamp the timestamp to set
 	 */
 	public void setEarliestTimestamp(Date earliestTimestamp) {
@@ -58,7 +57,6 @@ public abstract class AbstractMetricExporter implements Exporter {
 
 	/**
 	 * Ignore timestamps (export all metrics).
-	 * 
 	 * @param ignoreTimestamps the flag to set
 	 */
 	public void setIgnoreTimestamps(boolean ignoreTimestamps) {
@@ -96,7 +94,6 @@ public abstract class AbstractMetricExporter implements Exporter {
 	 * prefixes). If the metrics to be exported partition into groups identified by a
 	 * String, subclasses should override this method. Otherwise the default should be
 	 * fine (iteration over all metrics).
-	 * 
 	 * @return groups of metrics to iterate over (default singleton empty string)
 	 */
 	protected Iterable<String> groups() {
@@ -105,7 +102,6 @@ public abstract class AbstractMetricExporter implements Exporter {
 
 	/**
 	 * Write the values associated with a group.
-	 * 
 	 * @param group the group to write
 	 * @param values the values to write
 	 */
@@ -113,7 +109,6 @@ public abstract class AbstractMetricExporter implements Exporter {
 
 	/**
 	 * Get the next group of metrics to write.
-	 * 
 	 * @param group the group name to write
 	 * @return some metrics to write
 	 */

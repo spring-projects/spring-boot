@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ public interface ErrorController {
 
 	/**
 	 * Extract a useful model of the error from the request attributes.
-	 * 
 	 * @param attributes the request attributes
 	 * @param trace flag to indicate that stack trace information should be included
 	 * @return a model containing error messages and codes etc.

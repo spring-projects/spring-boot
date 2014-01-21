@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,9 @@ public class RedisServer implements TestRule {
 		try {
 			this.resource = obtainResource();
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			maybeCleanup();
-
-			return failOrSkip(e);
+			return failOrSkip(ex);
 		}
 
 		return new Statement() {
@@ -82,17 +81,18 @@ public class RedisServer implements TestRule {
 		};
 	}
 
-	private Statement failOrSkip(Exception e) {
+	private Statement failOrSkip(Exception exception) {
 		String serversRequired = System.getenv(EXTERNAL_SERVERS_REQUIRED);
 		if ("true".equalsIgnoreCase(serversRequired)) {
-			logger.error(this.resourceDescription + " IS REQUIRED BUT NOT AVAILABLE", e);
+			logger.error(this.resourceDescription + " IS REQUIRED BUT NOT AVAILABLE",
+					exception);
 			fail(this.resourceDescription + " IS NOT AVAILABLE");
 			// Never reached, here to satisfy method signature
 			return null;
 		}
 		else {
 			logger.error(this.resourceDescription + " IS NOT AVAILABLE, SKIPPING TESTS",
-					e);
+					exception);
 			return new Statement() {
 
 				@Override

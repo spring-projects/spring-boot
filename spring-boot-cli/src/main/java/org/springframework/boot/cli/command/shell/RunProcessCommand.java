@@ -103,7 +103,7 @@ class RunProcessCommand extends AbstractCommand {
 					}
 					reader.close();
 				}
-				catch (Exception e) {
+				catch (Exception ex) {
 				}
 			};
 		}.start();
@@ -135,7 +135,7 @@ class RunProcessCommand extends AbstractCommand {
 				this.process = null;
 				return true;
 			}
-			catch (InterruptedException e) {
+			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
 		}
