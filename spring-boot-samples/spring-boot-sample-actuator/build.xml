@@ -5,7 +5,7 @@
 		'$ ant -lib ivy-2.2.jar' (substitute the location of your actual ivy jar). Run with '$ java -jar target/*.jar'. 
 	</description>
 
-	<property name="spring-boot.version" value="0.5.0.BUILD-SNAPSHOT" />
+	<property name="spring-boot.version" value="1.0.0.BUILD-SNAPSHOT" />
 	<property name="start-class" value="org.springframework.boot.sample.actuator.SampleActuatorApplication" />
 
 	<target name="resolve" description="--> retrieve dependencies with ivy">
