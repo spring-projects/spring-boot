@@ -6,6 +6,9 @@
 	<artifactId>run</artifactId>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
 	<packaging>jar</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
