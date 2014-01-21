@@ -328,21 +328,22 @@ public class ConfigFileApplicationListener implements
 
 	private PropertySource<?> getPropertySource(String name, Resource resource,
 			String profile, List<PropertySourceLoader> loaders) {
+		if (resource == null || !resource.exists()) {
+			return null;
+		}
 		String key = resource.getDescription() + (profile == null ? "" : "#" + profile);
 		if (this.cached.containsKey(key)) {
 			return this.cached.get(key);
 		}
 		boolean satisfied = true;
 		for (PropertySourceLoader loader : loaders) {
-			if (resource != null && resource.exists()) {
-				if (loader.supports(resource)) {
-					PropertySource<?> propertySource = loader.load(name, resource);
-					this.cached.put(key, propertySource);
-					return propertySource;
-				}
-				else {
-					satisfied = false;
-				}
+			if (loader.supports(resource)) {
+				PropertySource<?> propertySource = loader.load(name, resource);
+				this.cached.put(key, propertySource);
+				return propertySource;
+			}
+			else {
+				satisfied = false;
 			}
 		}
 		if (!satisfied) {
