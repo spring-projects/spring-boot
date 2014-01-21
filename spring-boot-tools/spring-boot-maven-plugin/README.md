@@ -1,6 +1,8 @@
-# Spring Boot - Maven Plugin
-The Spring Boot Maven Plugin provides Spring Boot support in Maven, allowing you to
-package executable jar or war archives and run an application in-place.
+# Spring Boot - Maven Plugin 
+
+The Spring Boot Maven Plugin provides Spring Boot support in Maven,
+allowing you to package executable jar or war archives and run an
+application in-place. To use it you must be using Maven 3 (or better).
 
 ## Including the plugin
 To use the Spring Boot Maven Plugin simply include the appropriate XML in the `plugins`
@@ -16,12 +18,12 @@ section of your `pom.xml`
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-package-maven-plugin</artifactId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>{{project.version}}</version>
 				<executions>
 					<execution>
 						<goals>
-							<goal>package</goal>
+							<goal>repackage</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -30,6 +32,25 @@ section of your `pom.xml`
 	</build>
 </project>
 ```
+
+This configuration will repackage a JAR or WAR that is built in the
+"package" phase of the Maven lifecycle, so
+
+```
+$ mvn package
+$ ls target/*.jar
+target/myproject-1.0.0.jar target/myproject-1.0.0.jar.original
+```
+
+will reveal the result. If you don't include the `<execution/>`
+configuration as above you can run the plugin on its own, but only if
+the package goal is used as well, e.g.
+
+```
+$ mvn package spring-boot:repackage
+```
+
+will have the same effect as above.
 
 If you are using a milestone or snapshot release you will also need to add appropriate
 `pluginRepository` elements:
@@ -48,7 +69,7 @@ If you are using a milestone or snapshot release you will also need to add appro
 ```
 
 ## Packaging executable jar and war files
-Once `spring-package-maven-plugin` has been included in your `pom.xml` it will
+Once `spring-boot-maven-plugin` has been included in your `pom.xml` it will
 automatically attempt to rewrite archives to make them executable using the
 `spring-boot:repackage` goal. You should configure your project to build a jar or war
 (as appropriate) using the usual `packaging` element:
