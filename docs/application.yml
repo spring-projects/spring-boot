@@ -59,7 +59,6 @@ spring:
     test-on-return
     validation-query
 
-
   jpa:
     open-in-view:
     show-sql:
@@ -71,14 +70,16 @@ spring:
       cache-provider:
       ddl-auto:
 
-
-  thymeleaf
+  thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
     mode: HTML5
     cache: true
 
-
+  view:
+    prefix:
+    suffix:
+ 
 
 # actuator
 
@@ -94,7 +95,11 @@ endpoints:
   shutdown
   trace
 
+#  (ManagementServerProperties)
 management:
-  port
+  port:
 
+#  (SecurityProperties)
 security:
+  basic:
+    enabled: true
