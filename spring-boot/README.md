@@ -1,6 +1,6 @@
 # Spring Boot - Core
-This module provides the core features for the other modules in the project. It is 
-relatively unopinionated and it has minimal required dependencies which makes it usable 
+This module provides the core features for the other modules in the project. It is
+relatively unopinionated and it has minimal required dependencies which makes it usable
 as a stand-alone library for anyone whose tastes diverge from ours.
 
 ## SpringApplication
@@ -44,18 +44,18 @@ public static void main(String[] args) {
 }
 ```
 
-Note that the constructor arguments passed to `SpringApplication` are configuration 
+Note that the constructor arguments passed to `SpringApplication` are configuration
 sources for spring beans. In most cases these will be references to `@Configuration`
 classes, but they could also be references to XML configuration or to packages that
 should be scanned.
 
-See the `SpringApplication` Javadoc for a complete list of the configuration options  
+See the `SpringApplication` Javadoc for a complete list of the configuration options
 
 ### Accessing command line properties
-By default `SpringApplication` will convert any command line option arguments (starting 
-with '--', e.g. `--server.port=9000`) to a `PropertySource` and add it to the Spring 
-`Environment` with highest priority (taking precedence and overriding values  from other 
-sources). Properties in the `Environment` (including System properties and OS environment 
+By default `SpringApplication` will convert any command line option arguments (starting
+with '--', e.g. `--server.port=9000`) to a `PropertySource` and add it to the Spring
+`Environment` with highest priority (taking precedence and overriding values  from other
+sources). Properties in the `Environment` (including System properties and OS environment
 variables) can always be injected into Spring components using `@Value` with
  placeholders, e.g.
 
@@ -65,19 +65,19 @@ import org.springframework.beans.factory.annotation.*
 
 @Component
 public class MyBean {
-	
+
 	@Value("${name}")
-	private String name; 
+	private String name;
 	// Running 'java -jar myapp.jar --name=Spring' will set this to "Spring"
 
-	// ...	
+	// ...
 }
 ```
 
 ### CommandLineRunner beans
 If you want access to the raw command line argument, or you need to run some specific
 code once the `SpringApplication` has started you can implement the `CommandLineRunner`
-interface. The `run(String... args)` method will be called on all spring beans 
+interface. The `run(String... args)` method will be called on all spring beans
 implementing this interface.
 
 ```java
@@ -90,7 +90,7 @@ public class MyBean implements CommandLineRunner {
 	public void run(String... args) {
 		// Do something...
 	}
-	
+
 }
 ```
 
@@ -108,8 +108,8 @@ In addition, beans may implement the `org.springframework.boot.ExitCodeGenerator
 interface if they wish to return a specific exit code when the application ends.
 
 ### Externalized Configuration
-A `SpringApplication` will load properties from `application.properties` in the root of 
-your classpath and  add them to the Spring `Environment`. The actual search path for the 
+A `SpringApplication` will load properties from `application.properties` in the root of
+your classpath and  add them to the Spring `Environment`. The actual search path for the
 files is:
 
 1. classpath root
@@ -117,13 +117,13 @@ files is:
 3. classpath `/config` package
 4. `/config` subdir of the current directory.
 
-The list is ordered by decreasing precedence (so properties can be overridden by others 
+The list is ordered by decreasing precedence (so properties can be overridden by others
 with the same name defined in later locations). In addition, profile specific properties
-can also be defined using the naming convention `application-{profile}.properties` 
+can also be defined using the naming convention `application-{profile}.properties`
 (properties from these files override the default ones).
 
-The values in `application.properties` are filtered through the existing `Environment` 
-when they are used so you can refer back to previously defined values (e.g. from System 
+The values in `application.properties` are filtered through the existing `Environment`
+when they are used so you can refer back to previously defined values (e.g. from System
 properties).
 
 ```
@@ -131,23 +131,23 @@ app.name: MyApp
 app.description: ${app.name} is a Spring Boot application
 ```
 
-If you don't like `application.properties` as the configuration file name you can 
-switch to another by specifying `spring.config.name` environment property. You can also 
+If you don't like `application.properties` as the configuration file name you can
+switch to another by specifying `spring.config.name` environment property. You can also
 refer to an explicit location using the `spring.config.location` environment property.
 
     $ java -jar myproject.jar --spring.config.name=myproject
 
 
-> **Note:** You can also use '.yaml' files as an alternative to '.properties' (see 
+> **Note:** You can also use '.yaml' files as an alternative to '.properties' (see
 > [below](#using-yaml-instead-of-properties))_
 
 ### Setting the Default Spring Profile
-Spring Profiles are a way to segregate parts of the application configuration and make it 
-only available in certain environments.  Any `@Component` that is marked with `@Profile` 
+Spring Profiles are a way to segregate parts of the application configuration and make it
+only available in certain environments.  Any `@Component` that is marked with `@Profile`
 will only be loaded in the profile specified by the latter annotation.
 
-A `SpringApplication` takes this a stage further, in that you can use a 
-`spring.profiles.active` `Environment` property to specify which profiles are active. 
+A `SpringApplication` takes this a stage further, in that you can use a
+`spring.profiles.active` `Environment` property to specify which profiles are active.
 You can specify the property in any of the usual ways, for example you could include
 it in your `application.properties`:
 
@@ -163,28 +163,28 @@ to customize an `ApplicationContext` before it is used. If you need to use an in
 with your `SpringApplication` you can use the `addInitializers` method.
 
 You can also specify initializers by setting comma-delimited list of class names to the
-`Environment` property `context.initializer.classes` or by using Spring's 
+`Environment` property `context.initializer.classes` or by using Spring's
 `SpringFactoriesLoader` mechanism.
 
 
 ## Embedded Servlet Container Support
 Spring Boot introduces a new type of Spring `ApplicationContext` that can be used to
-start an embedded servlet container. The `EmbeddedWebApplicationContext`  is a special 
-type of `WebApplicationContext` that starts the container by searching for a single 
-`EmbeddedServletContainerFactory` bean contained within itself. We provide 
+start an embedded servlet container. The `EmbeddedWebApplicationContext`  is a special
+type of `WebApplicationContext` that starts the container by searching for a single
+`EmbeddedServletContainerFactory` bean contained within itself. We provide
 `TomcatEmbeddedServletContainerFactory` and `JettyEmbeddedServletContainerFactory`
- implementations for running embedded Tomcat or Jetty. 
+ implementations for running embedded Tomcat or Jetty.
 
-One advantage of using a Spring bean to define the embedded container is that you can use   
+One advantage of using a Spring bean to define the embedded container is that you can use
 all the standard Spring concepts. For example, it becomes trivial to define a Tomcat
 server that sets its port from an injected `@Value`.
 
 ```java
 @Configuration
 public class MyConfiguration {
-	
+
 	@Value("${tomcatport:8080}")
-	private int port; 
+	private int port;
 
 	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
@@ -195,7 +195,7 @@ public class MyConfiguration {
 ```
 
 ### Customizing Servlet Containers
-Both the Tomcat and Jetty factories extend from the base 
+Both the Tomcat and Jetty factories extend from the base
 `AbstractEmbeddedServletContainerFactory` class. This provides a uniform way
 to configure both containers.
 
@@ -211,31 +211,55 @@ public EmbeddedServletContainerFactory servletContainer() {
 	factory.addErrorPages(new ErrorPage(HttpStatus.404, "/notfound.html");
 	return factory;
 }
-``` 
+```
 
 In addition, you can also add `ServletContextInitializer` implementations which allow
 you to customize the `javax.servlet.ServletContext` in the same way as any Servlet 3.0
 environment.
 
 ### Servlets and Filters
-Servlets and Filters can be defined directly as beans with the 
-`EmbeddedWebApplicationContext`. By default, if the context contains only a single 
-Servlet it will be mapped to '/'. In the case of multiple Servlets beans the bean name 
+Servlets and Filters can be defined directly as beans with the
+`EmbeddedWebApplicationContext`. By default, if the context contains only a single
+Servlet it will be mapped to '/'. In the case of multiple Servlets beans the bean name
 will be used as a path prefix. Filters will map to '/*'.
 
-If convention based mapping is not flexible enough you can use the 
+If convention based mapping is not flexible enough you can use the
 `ServletRegistrationBean` and `FilterRegistrationBean` classes for complete control. You
 can also register items directly if your bean implements the `ServletContextInitializer`
 interface.
 
 
+### JSP limitations
+When running a Spring Boot application that uses an embedded servlet container and is
+packaged as an executable JAR or WAR, there are some limitations in the JSP support.
+
+Due to the way that Jasper (Tomcat and Jetty's JSP engine) loads tag libraries, tag
+libraries packaged in JAR files nested within the JAR or WAR will not work correctly.
+When packaged and run as an executable JAR, you will see an error message produced during
+application startup that is similar to the following:
+
+> org.apache.jasper.JasperException: The absolute uri: http://www.springframework.org/tags
+> cannot be resolved in either web.xml or the jar files deployed with this application
+
+When packaged and run as an executable WAR, you will see an error message produced during
+application startup that is similar to the following:
+
+> java.io.FileNotFoundException: JAR entry
+> WEB-INF/lib-provided/tomcat-embed-jasper-7.0.47.jar!/javax/servlet/jsp/resources/web-jsptaglibrary_1_2.dtd
+> not found in my-app.war
+
+To avoid these limitations, rather than using the embedded servlet container support,
+package your application as a traditional (non-executable) WAR file and deploy it to a
+servlet container. Alternatively, you may want to consider using an alternative view
+technology.
+
 ## Using YAML instead of Properties
 [YAML](http://yaml.org) is a superset of JSON, and as such is a very convenient format
-for specifying hierarchical configuration data. The `SpringApplication` class will 
+for specifying hierarchical configuration data. The `SpringApplication` class will
 automatically support YAML as an alternative to properties whenever you have the
 [SnakeYAML](http://code.google.com/p/snakeyaml/) library on your classpath.
 
-### Loading YAML 
+### Loading YAML
 Spring Boot provides two convenient classes that can be used to load YAML documents. The
 `YamlPropertiesFactoryBean` will load YAML as `Properties` and the `YamlMapFactoryBean`
 will load YAML as a `Map`.
@@ -258,15 +282,15 @@ environments.prod.url=http://foo.bar.com
 environments.prod.name=My Cool App
 ```
 
- YAML lists are represented as comma-separated values (useful for simple String values) 
+ YAML lists are represented as comma-separated values (useful for simple String values)
  and also as property keys with `[index]` dereferencers, for example this YAML:
- 
+
  ```yaml
  servers:
  	- dev.bar.com
  	- foo.bar.com
  ```
- 
+
 Would be transformed into these properties:
 
 ```text
@@ -307,7 +331,7 @@ the configuration of your application. For example:
 public class ConnectionSettings {
 
 	private String username;
-	
+
 	private InetAddress remoteAddress;
 
 	// ... getters and setters
@@ -338,10 +362,10 @@ as any other bean.
 public class MyService {
 
 	@Autowired
-	private ConnectionSettings connection; 
+	private ConnectionSettings connection;
 
  	//...
- 	
+
 	@PostConstruct
 	public void openConnection() {
 		Server server = new Server();
@@ -350,8 +374,8 @@ public class MyService {
 }
 ```
 
-It is also possible to shortcut the registration of `@ConfigurationProperties` bean 
-definitions by simply listing the properties classes directly in the 
+It is also possible to shortcut the registration of `@ConfigurationProperties` bean
+definitions by simply listing the properties classes directly in the
 `@EnableConfigurationProperties` annotation:
 
 ```java
@@ -362,19 +386,19 @@ public class MyConfiguration {
 ```
 
 ### Relaxed binding
-Spring Boot uses some relaxed rules for binding `Environment` properties to 
-`@ConfigurationProperties` beans, so there doesn't need to be an exact match between 
-the `Environment` property name and the bean property name.  Common examples where this 
+Spring Boot uses some relaxed rules for binding `Environment` properties to
+`@ConfigurationProperties` beans, so there doesn't need to be an exact match between
+the `Environment` property name and the bean property name.  Common examples where this
 is useful include underscore separated (e.g. `context_path` binds to `contextPath`), and
 capitalized (e.g. `PORT` binds to `port`) environment properties.
 
-Spring will attempt to coerce the external application properties to the right type when 
-it binds to the `@ConfigurationProperties` beans. If you need custom type conversion you 
+Spring will attempt to coerce the external application properties to the right type when
+it binds to the `@ConfigurationProperties` beans. If you need custom type conversion you
 can provide a `ConversionService` bean (with bean id `conversionService`) or custom
 property editors (via a `CustomEditorConfigurer` bean).
 
 ### @ConfigurationProperties Validation
-Spring Boot will attempt to validate external configuration, by default using JSR-303 
+Spring Boot will attempt to validate external configuration, by default using JSR-303
 (if it is on the classpath). You can simply add JSR-303 `javax.valididation` constraint
 annotations to your `@ConfigurationProperties` class:
 
@@ -391,16 +415,16 @@ public class ConnectionSettings {
 }
 ```
 
-You can also add a custom Spring `Validator` by creating a bean definition called 
+You can also add a custom Spring `Validator` by creating a bean definition called
 `configurationPropertiesValidator`.
 
 ### Using Project Lombok
-You can safely use [Project Lombok](http://projectlombok.org) to generate getters and 
-setters for your `@ConfigurationProperties`. Refer to the documentation on the Lombok 
+You can safely use [Project Lombok](http://projectlombok.org) to generate getters and
+setters for your `@ConfigurationProperties`. Refer to the documentation on the Lombok
 for how to enable it in your compiler or IDE.
 
 ### External EmbeddedServletContainerFactory configuration
-Spring Boot includes a `@ConfigurationProperties` annotated class called 
+Spring Boot includes a `@ConfigurationProperties` annotated class called
 `ServerProperties` that can be used to configure the `EmbeddedServletContainerFactory`.
 
 When registered as a bean, the `ServerProperties` can be used to specify:
@@ -412,30 +436,30 @@ When registered as a bean, the `ServerProperties` can be used to specify:
   from all clients).
 * The context root of the application endpoints (`server.context_path`
   defaults to '/')
-  
+
 If you are using Tomcat as you embedded container then, in addition to the
 generic `ServerProperties`, you can also bind `server.tomcat.*` properties
 to specify:
 
 * The Tomcat access log pattern (`server.tomcat.accessLogPattern`)
-* The remote IP and protocol headers (`server.tomcat.protocolHeader`, 
+* The remote IP and protocol headers (`server.tomcat.protocolHeader`,
   `server.tomcat.remoteIpHeader`)
 * The Tomcat `base directory` (`server.tomcat.basedir`)
 
 ## Customizing Logging
 Spring Boot uses [Commons Logging](commons.apache.org/logging/‎) for all internal logging,
-but leaves the underlying log implementation open. Default configurations are provided for 
+but leaves the underlying log implementation open. Default configurations are provided for
 [Java Util Logging](http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html),
 [Log4J](http://logging.apache.org/log4j/) and [Logback](http://logback.qos.ch/).
 In each case there is console output and file output (rotating, 10MB file size).
 
-The various logging systems can be activated by including the appropriate libraries on 
+The various logging systems can be activated by including the appropriate libraries on
 the classpath, and further customized by supported by providing a suitable configuration
-file in the root of the classpath, or in a location specified by the Spring `Environment` 
+file in the root of the classpath, or in a location specified by the Spring `Environment`
 property `logging.config`.
 
 Depending on your logging system, the following files will be loaded:
- 
+
 |Logging System|Customization                  |
 |--------------|-------------------------------|
 |Logback       | logback.xml                   |
@@ -443,7 +467,7 @@ Depending on your logging system, the following files will be loaded:
 |JDK           | logging.properties            |
 
 
-To help with the customization some other properties are transferred from the Spring 
+To help with the customization some other properties are transferred from the Spring
 `Environment` to System properties:
 
 |Environment  |System Property |Comments |
@@ -452,20 +476,20 @@ To help with the customization some other properties are transferred from the Sp
 |logging.path |LOG_PATH        | Used in default log configuration if defined                              |
 |PID          |PID             | The current process ID is discovered if possible and not already provided |
 
-All the logging systems supported can consult System properties when parsing their 
+All the logging systems supported can consult System properties when parsing their
 configuration files.  See the default configurations in `spring-boot.jar` for examples.
 
 ## Cloud Foundry Support
 When a `SpringApplication` is deployed to [Cloud Foundry](http://www.cloudfoundry.com/)
-appropriate meta-data will be exposed as `Environemnt` properties. All Cloud Foundry 
-properties are prefixed `vcap.` You can use vcap properties to access application 
+appropriate meta-data will be exposed as `Environemnt` properties. All Cloud Foundry
+properties are prefixed `vcap.` You can use vcap properties to access application
 information (such as the public URL of the application) and service information (such
 as database credentials). See `ApplicationContextInitializer` Javdoc for complete details.
- 
+
 ## Further Reading
 For more information about any of the classes or interfaces discussed in the document
 please refer to the extensive project Javadoc. If looking to reduce the amount of
-configuration required for your application you should consider 
+configuration required for your application you should consider
 [spring-boot-autoconfigure](../spring-boot-autoconfigure/README.md). For operational
 concerns see [spring-boot-actuator](../spring-boot-actuator/README.md). For details on
 how to package your application into a single executable JAR file take a look at
