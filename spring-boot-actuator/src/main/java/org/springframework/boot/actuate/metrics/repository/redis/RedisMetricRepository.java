@@ -45,9 +45,9 @@ public class RedisMetricRepository implements MetricRepository {
 
 	private String prefix = DEFAULT_METRICS_PREFIX;
 
-	private String keys = this.prefix + "keys";
+	private String key = "keys." + DEFAULT_METRICS_PREFIX;
 
-	private final BoundZSetOperations<String, String> zSetOperations;
+	private BoundZSetOperations<String, String> zSetOperations;
 
 	private final RedisOperations<String, String> redisOperations;
 
@@ -59,7 +59,7 @@ public class RedisMetricRepository implements MetricRepository {
 		RedisTemplate<String, Long> longRedisTemplate = RedisUtils.createRedisTemplate(
 				redisConnectionFactory, Long.class);
 		this.longOperations = longRedisTemplate.opsForValue();
-		this.zSetOperations = this.redisOperations.boundZSetOps(this.keys);
+		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 	}
 
 	/**
@@ -68,20 +68,30 @@ public class RedisMetricRepository implements MetricRepository {
 	 * @param prefix the prefix to set for all metrics keys
 	 */
 	public void setPrefix(String prefix) {
+		if (!prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
 		this.prefix = prefix;
-		this.keys = this.prefix + "keys";
+	}
+
+	/**
+	 * The redis key to use to store the index of other keys. The redis store will hold a
+	 * zset under this key. Defaults to "keys.spring.metrics". REad operations, especially
+	 * {@link #findAll()} and {@link #count()}, will be much more efficient if the key is
+	 * unique to the {@link #setPrefix(String) prefix} of this repository.
+	 * 
+	 * @param key the key to set
+	 */
+	public void setKey(String key) {
+		this.key = key;
+		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 	}
 
 	@Override
 	public Metric<?> findOne(String metricName) {
 		String redisKey = keyFor(metricName);
 		String raw = this.redisOperations.opsForValue().get(redisKey);
-		if (raw != null) {
-			return deserialize(redisKey, raw);
-		}
-		else {
-			return null;
-		}
+		return deserialize(redisKey, raw);
 	}
 
 	@Override
@@ -94,7 +104,10 @@ public class RedisMetricRepository implements MetricRepository {
 		List<Metric<?>> result = new ArrayList<Metric<?>>(keys.size());
 		List<String> values = this.redisOperations.opsForValue().multiGet(keys);
 		for (String v : values) {
-			result.add(deserialize(keysIt.next(), v));
+			Metric<?> value = deserialize(keysIt.next(), v);
+			if (value != null) {
+				result.add(value);
+			}
 		}
 		return result;
 
@@ -131,6 +144,9 @@ public class RedisMetricRepository implements MetricRepository {
 	}
 
 	private Metric<?> deserialize(String redisKey, String v) {
+		if (redisKey == null || v == null || !redisKey.startsWith(this.prefix)) {
+			return null;
+		}
 		String[] vals = v.split("@");
 		Double value = Double.valueOf(vals[0]);
 		Date timestamp = vals.length > 1 ? new Date(Long.valueOf(vals[1])) : new Date();
@@ -146,8 +162,6 @@ public class RedisMetricRepository implements MetricRepository {
 	}
 
 	private String nameFor(String redisKey) {
-		Assert.state(redisKey != null && redisKey.startsWith(this.prefix),
-				"Invalid key does not start with prefix: " + redisKey);
 		return redisKey.substring(this.prefix.length());
 	}
 

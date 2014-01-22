@@ -22,8 +22,6 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.StopWatch;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
@@ -72,23 +70,20 @@ public class MetricFilterAutoConfiguration {
 	 * Filter that counts requests and measures processing times.
 	 */
 	@Order(Ordered.HIGHEST_PRECEDENCE)
-	private final class MetricsFilter extends GenericFilterBean {
+	private final class MetricsFilter extends OncePerRequestFilter {
 
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.
+		 * servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
+		 * javax.servlet.FilterChain)
+		 */
 		@Override
-		public void doFilter(ServletRequest request, ServletResponse response,
-				FilterChain chain) throws IOException, ServletException {
-			if ((request instanceof HttpServletRequest)
-					&& (response instanceof HttpServletResponse)) {
-				doFilter((HttpServletRequest) request, (HttpServletResponse) response,
-						chain);
-			}
-			else {
-				chain.doFilter(request, response);
-			}
-		}
-
-		public void doFilter(HttpServletRequest request, HttpServletResponse response,
-				FilterChain chain) throws IOException, ServletException {
+		protected void doFilterInternal(HttpServletRequest request,
+				HttpServletResponse response, FilterChain chain) throws ServletException,
+				IOException {
 			UrlPathHelper helper = new UrlPathHelper();
 			String suffix = helper.getPathWithinApplication(request);
 			StopWatch stopWatch = new StopWatch();
