@@ -53,7 +53,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	private static Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
 
 	@Autowired(required = false)
-	private JobParametersConverter converter = new DefaultJobParametersConverter();
+	private final JobParametersConverter converter = new DefaultJobParametersConverter();
 
 	@Autowired
 	private JobLauncher jobLauncher;
@@ -64,7 +64,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	private String jobName;
 
 	@Autowired(required = false)
-	private Collection<Job> jobs = Collections.emptySet();
+	private final Collection<Job> jobs = Collections.emptySet();
 
 	private ApplicationEventPublisher publisher;
 

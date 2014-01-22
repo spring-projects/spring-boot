@@ -32,7 +32,7 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
  */
 public class InMemoryRichGaugeRepository implements RichGaugeRepository {
 
-	private SimpleInMemoryRepository<RichGauge> repository = new SimpleInMemoryRepository<RichGauge>();
+	private final SimpleInMemoryRepository<RichGauge> repository = new SimpleInMemoryRepository<RichGauge>();
 
 	@Override
 	public void increment(Delta<?> delta) {

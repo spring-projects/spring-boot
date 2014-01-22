@@ -29,8 +29,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class CodahaleMetricWriterTests {
 
-	private MetricRegistry registry = new MetricRegistry();
-	private CodahaleMetricWriter writer = new CodahaleMetricWriter(this.registry);
+	private final MetricRegistry registry = new MetricRegistry();
+	private final CodahaleMetricWriter writer = new CodahaleMetricWriter(this.registry);
 
 	@Test
 	public void incrementCounter() {

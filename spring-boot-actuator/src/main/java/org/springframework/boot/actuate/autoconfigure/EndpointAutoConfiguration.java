@@ -78,13 +78,13 @@ public class EndpointAutoConfiguration {
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
-	private MetricReader metricRepository = new InMemoryMetricRepository();
+	private final MetricReader metricRepository = new InMemoryMetricRepository();
 
 	@Autowired(required = false)
 	private PublicMetrics metrics;
 
 	@Autowired(required = false)
-	private TraceRepository traceRepository = new InMemoryTraceRepository();
+	private final TraceRepository traceRepository = new InMemoryTraceRepository();
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -170,7 +170,7 @@ public class EndpointAutoConfiguration {
 	protected static class InfoPropertiesConfiguration {
 
 		@Autowired
-		private ConfigurableEnvironment environment = new StandardEnvironment();
+		private final ConfigurableEnvironment environment = new StandardEnvironment();
 		@Value("${spring.git.properties:classpath:git.properties}")
 		private Resource gitProperties;
 
@@ -198,7 +198,7 @@ public class EndpointAutoConfiguration {
 
 	public static class GitInfo {
 		private String branch;
-		private Commit commit = new Commit();
+		private final Commit commit = new Commit();
 
 		public String getBranch() {
 			return this.branch;

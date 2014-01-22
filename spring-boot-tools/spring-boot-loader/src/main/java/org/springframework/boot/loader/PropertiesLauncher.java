@@ -76,7 +76,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  */
 public class PropertiesLauncher extends Launcher {
 
-	private Logger logger = Logger.getLogger(Launcher.class.getName());
+	private final Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
 	 * Properties key for main class
@@ -125,7 +125,7 @@ public class PropertiesLauncher extends Launcher {
 
 	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
 
-	private Properties properties = new Properties();
+	private final Properties properties = new Properties();
 
 	public PropertiesLauncher() {
 		if (!isDebug()) {

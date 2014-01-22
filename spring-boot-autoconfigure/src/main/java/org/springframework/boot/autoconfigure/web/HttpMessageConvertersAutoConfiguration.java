@@ -50,7 +50,7 @@ import com.fasterxml.jackson.datatype.joda.JodaModule;
 public class HttpMessageConvertersAutoConfiguration {
 
 	@Autowired(required = false)
-	private List<HttpMessageConverter<?>> converters = Collections.emptyList();
+	private final List<HttpMessageConverter<?>> converters = Collections.emptyList();
 
 	@Bean
 	@ConditionalOnMissingBean

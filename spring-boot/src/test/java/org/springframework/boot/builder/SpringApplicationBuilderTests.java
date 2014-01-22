@@ -215,7 +215,7 @@ public class SpringApplicationBuilderTests {
 
 	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
 
-		private ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
+		private final ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
 		private ResourceLoader resourceLoader;
 
 		@Override

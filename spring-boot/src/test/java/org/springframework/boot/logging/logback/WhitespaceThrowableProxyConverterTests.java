@@ -36,9 +36,9 @@ public class WhitespaceThrowableProxyConverterTests {
 
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-	private WhitespaceThrowableProxyConverter converter = new WhitespaceThrowableProxyConverter();
+	private final WhitespaceThrowableProxyConverter converter = new WhitespaceThrowableProxyConverter();
 
-	private LoggingEvent event = new LoggingEvent();
+	private final LoggingEvent event = new LoggingEvent();
 
 	@Test
 	public void noStackTrace() throws Exception {

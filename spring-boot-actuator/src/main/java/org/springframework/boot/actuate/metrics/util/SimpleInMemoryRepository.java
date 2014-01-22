@@ -30,9 +30,9 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class SimpleInMemoryRepository<T> {
 
-	private ConcurrentNavigableMap<String, T> values = new ConcurrentSkipListMap<String, T>();
+	private final ConcurrentNavigableMap<String, T> values = new ConcurrentSkipListMap<String, T>();
 
-	private ConcurrentMap<String, Object> locks = new ConcurrentHashMap<String, Object>();
+	private final ConcurrentMap<String, Object> locks = new ConcurrentHashMap<String, Object>();
 
 	public static interface Callback<T> {
 		T modify(T current);

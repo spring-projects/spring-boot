@@ -29,9 +29,9 @@ import org.springframework.util.Assert;
  */
 public final class Trace {
 
-	private Date timestamp;
+	private final Date timestamp;
 
-	private Map<String, Object> info;
+	private final Map<String, Object> info;
 
 	public Trace(Date timestamp, Map<String, Object> info) {
 		super();

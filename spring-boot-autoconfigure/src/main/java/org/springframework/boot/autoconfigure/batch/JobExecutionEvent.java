@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationEvent;
  */
 public class JobExecutionEvent extends ApplicationEvent {
 
-	private JobExecution execution;
+	private final JobExecution execution;
 
 	/**
 	 * @param execution the job execution

@@ -34,7 +34,7 @@ public final class RelaxedNames implements Iterable<String> {
 
 	private final String name;
 
-	private Set<String> values = new LinkedHashSet<String>();
+	private final Set<String> values = new LinkedHashSet<String>();
 
 	/**
 	 * Create a new {@link RelaxedNames} instance.

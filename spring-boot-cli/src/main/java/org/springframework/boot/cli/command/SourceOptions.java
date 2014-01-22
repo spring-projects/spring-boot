@@ -33,9 +33,9 @@ import org.springframework.boot.cli.util.ResourceUtils;
  */
 public class SourceOptions {
 
-	private List<String> sources;
+	private final List<String> sources;
 
-	private List<?> args;
+	private final List<?> args;
 
 	/**
 	 * Create a new {@link SourceOptions} instance.

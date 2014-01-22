@@ -54,7 +54,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class DataSourceAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void testDefaultDataSourceExists() throws Exception {

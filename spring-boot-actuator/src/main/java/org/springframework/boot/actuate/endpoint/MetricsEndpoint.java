@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 @ConfigurationProperties(name = "endpoints.metrics", ignoreUnknownFields = false)
 public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private PublicMetrics metrics;
+	private final PublicMetrics metrics;
 
 	/**
 	 * Create a new {@link MetricsEndpoint} instance.

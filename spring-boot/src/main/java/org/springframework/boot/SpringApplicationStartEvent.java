@@ -32,7 +32,7 @@ import org.springframework.core.env.Environment;
  */
 public class SpringApplicationStartEvent extends ApplicationEvent {
 
-	private String[] args;
+	private final String[] args;
 
 	/**
 	 * @param springApplication the current application

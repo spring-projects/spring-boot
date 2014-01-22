@@ -26,9 +26,9 @@ import java.lang.reflect.Method;
  */
 public class MainMethodRunner implements Runnable {
 
-	private String mainClassName;
+	private final String mainClassName;
 
-	private String[] args;
+	private final String[] args;
 
 	/**
 	 * Create a new {@link MainMethodRunner} instance.

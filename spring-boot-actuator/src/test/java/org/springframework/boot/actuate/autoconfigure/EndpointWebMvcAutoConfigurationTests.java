@@ -56,7 +56,7 @@ import static org.junit.Assert.assertThat;
  */
 public class EndpointWebMvcAutoConfigurationTests {
 
-	private AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
+	private final AnnotationConfigEmbeddedWebApplicationContext applicationContext = new AnnotationConfigEmbeddedWebApplicationContext();
 
 	@After
 	public void close() {

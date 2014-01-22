@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class PropertiesMergingResourceTransformerTests {
 
-	private PropertiesMergingResourceTransformer transformer = new PropertiesMergingResourceTransformer();
+	private final PropertiesMergingResourceTransformer transformer = new PropertiesMergingResourceTransformer();
 
 	@Test
 	public void testProcess() throws Exception {

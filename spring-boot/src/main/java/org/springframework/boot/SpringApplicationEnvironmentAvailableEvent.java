@@ -28,8 +28,8 @@ import org.springframework.core.env.Environment;
  */
 public class SpringApplicationEnvironmentAvailableEvent extends ApplicationEvent {
 
-	private ConfigurableEnvironment environment;
-	private String[] args;
+	private final ConfigurableEnvironment environment;
+	private final String[] args;
 
 	/**
 	 * @param springApplication the current application

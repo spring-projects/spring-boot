@@ -38,7 +38,7 @@ public class PropertiesMergingResourceTransformer implements ResourceTransformer
 	// Set this in pom configuration with <resource>...</resource>
 	private String resource;
 
-	private Properties data = new Properties();
+	private final Properties data = new Properties();
 
 	/**
 	 * @return the data the properties being merged

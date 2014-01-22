@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ConditionalOnResourceTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void testResourceExists() {

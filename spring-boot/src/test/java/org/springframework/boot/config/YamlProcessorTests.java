@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class YamlProcessorTests {
 
-	private YamlProcessor processor = new YamlProcessor();
+	private final YamlProcessor processor = new YamlProcessor();
 
 	@Rule
 	public ExpectedException exception = ExpectedException.none();

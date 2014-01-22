@@ -44,9 +44,9 @@ public class CommandCompleter extends StringsCompleter {
 
 	private final Map<String, Completer> commandCompleters = new HashMap<String, Completer>();
 
-	private List<Command> commands = new ArrayList<Command>();
+	private final List<Command> commands = new ArrayList<Command>();
 
-	private ConsoleReader console;
+	private final ConsoleReader console;
 
 	public CommandCompleter(ConsoleReader consoleReader,
 			ArgumentDelimiter argumentDelimiter, Iterable<Command> commands) {

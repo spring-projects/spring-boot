@@ -59,7 +59,7 @@ public class ContextIdApplicationContextInitializer implements
 	 */
 	private static final String INDEX_PATTERN = "${vcap.application.instance_index:${spring.application.index:${server.port:${PORT:null}}}}";
 
-	private String name;
+	private final String name;
 
 	private int order = Integer.MAX_VALUE - 10;
 

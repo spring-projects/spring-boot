@@ -51,7 +51,7 @@ public class BasicErrorController implements ErrorController {
 
 	private static final String ERROR_KEY = "error";
 
-	private Log logger = LogFactory.getLog(BasicErrorController.class);
+	private final Log logger = LogFactory.getLog(BasicErrorController.class);
 
 	@Value("${error.path:/error}")
 	private String errorPath;

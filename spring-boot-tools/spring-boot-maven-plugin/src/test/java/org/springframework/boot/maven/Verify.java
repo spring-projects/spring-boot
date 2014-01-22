@@ -52,7 +52,7 @@ public class Verify {
 
 	private static abstract class AbstractArchiveVerification {
 
-		private File file;
+		private final File file;
 
 		public AbstractArchiveVerification(File file) {
 			this.file = file;
@@ -98,7 +98,7 @@ public class Verify {
 
 	private static class JarArchiveVerification extends AbstractArchiveVerification {
 
-		private String main;
+		private final String main;
 
 		public JarArchiveVerification(File file, String main) {
 			super(file);

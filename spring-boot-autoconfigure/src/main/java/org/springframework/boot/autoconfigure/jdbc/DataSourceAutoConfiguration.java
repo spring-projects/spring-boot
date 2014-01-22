@@ -252,7 +252,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 	 */
 	static class BasicDatabaseCondition extends NonEmbeddedDatabaseCondition {
 
-		private Condition tomcatCondition = new TomcatDatabaseCondition();
+		private final Condition tomcatCondition = new TomcatDatabaseCondition();
 
 		@Override
 		protected String getDataSourceClassName() {
@@ -286,9 +286,9 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 	 */
 	static class EmbeddedDatabaseCondition extends SpringBootCondition {
 
-		private SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();
+		private final SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();
 
-		private SpringBootCondition dbcpCondition = new BasicDatabaseCondition();
+		private final SpringBootCondition dbcpCondition = new BasicDatabaseCondition();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
@@ -311,11 +311,11 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 	 */
 	static class DatabaseCondition extends SpringBootCondition {
 
-		private SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();
+		private final SpringBootCondition tomcatCondition = new TomcatDatabaseCondition();
 
-		private SpringBootCondition dbcpCondition = new BasicDatabaseCondition();
+		private final SpringBootCondition dbcpCondition = new BasicDatabaseCondition();
 
-		private SpringBootCondition embeddedCondition = new EmbeddedDatabaseCondition();
+		private final SpringBootCondition embeddedCondition = new EmbeddedDatabaseCondition();
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,

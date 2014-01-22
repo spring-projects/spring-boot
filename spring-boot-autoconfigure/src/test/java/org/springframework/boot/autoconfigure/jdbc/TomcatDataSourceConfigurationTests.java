@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class TomcatDataSourceConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@After
 	public void restore() {

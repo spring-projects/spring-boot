@@ -31,7 +31,7 @@ public class MessageChannelMetricWriter implements MetricWriter {
 
 	private static final String METRIC_NAME = "metricName";
 
-	private String DELETE = "delete";
+	private final String DELETE = "delete";
 
 	private final MessageChannel channel;
 

@@ -48,13 +48,13 @@ import org.springframework.boot.cli.util.OutputCapture;
  */
 public class CliTester implements TestRule {
 
-	private OutputCapture outputCapture = new OutputCapture();
+	private final OutputCapture outputCapture = new OutputCapture();
 
 	private long timeout = TimeUnit.MINUTES.toMillis(6);
 
-	private List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
+	private final List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
 
-	private String prefix;
+	private final String prefix;
 
 	public CliTester(String prefix) {
 		this.prefix = prefix;

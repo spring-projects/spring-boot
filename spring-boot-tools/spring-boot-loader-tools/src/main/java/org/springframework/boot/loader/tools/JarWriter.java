@@ -222,7 +222,7 @@ class JarWriter {
 
 		private static final byte[] ZIP_HEADER = new byte[] { 0x50, 0x4b, 0x03, 0x04 };
 
-		private byte[] header;
+		private final byte[] header;
 
 		private ByteArrayInputStream headerStream;
 

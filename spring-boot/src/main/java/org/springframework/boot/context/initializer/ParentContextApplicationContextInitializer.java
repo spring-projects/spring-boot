@@ -31,7 +31,7 @@ public class ParentContextApplicationContextInitializer implements
 
 	private int order = Integer.MIN_VALUE;
 
-	private ApplicationContext parent;
+	private final ApplicationContext parent;
 
 	public ParentContextApplicationContextInitializer(ApplicationContext parent) {
 		this.parent = parent;

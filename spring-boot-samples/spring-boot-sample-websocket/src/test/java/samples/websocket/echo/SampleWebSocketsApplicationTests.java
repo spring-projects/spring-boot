@@ -83,7 +83,7 @@ public class SampleWebSocketsApplicationTests {
 	@Configuration
 	static class ClientConfiguration implements CommandLineRunner {
 
-		private CountDownLatch latch = new CountDownLatch(1);
+		private final CountDownLatch latch = new CountDownLatch(1);
 
 		@Override
 		public void run(String... args) throws Exception {

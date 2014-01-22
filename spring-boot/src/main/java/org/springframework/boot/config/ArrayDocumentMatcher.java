@@ -32,9 +32,9 @@ import org.springframework.util.StringUtils;
  */
 public class ArrayDocumentMatcher implements DocumentMatcher {
 
-	private String key;
+	private final String key;
 
-	private String[] patterns;
+	private final String[] patterns;
 
 	public ArrayDocumentMatcher(final String key, final String... patterns) {
 		this.key = key;

@@ -34,9 +34,9 @@ import org.springframework.boot.loader.AsciiBytes;
  */
 public class FilteredArchive extends Archive {
 
-	private Archive parent;
+	private final Archive parent;
 
-	private EntryFilter filter;
+	private final EntryFilter filter;
 
 	public FilteredArchive(Archive parent, EntryFilter filter) {
 		this.parent = parent;

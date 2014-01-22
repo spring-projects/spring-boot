@@ -66,7 +66,7 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 	private final MetadataNamingStrategy defaultNamingStrategy = new MetadataNamingStrategy(
 			this.attributeSource);
 
-	private Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
+	private final Set<Endpoint<?>> registeredEndpoints = new HashSet<Endpoint<?>>();
 
 	private volatile boolean autoStartup = true;
 

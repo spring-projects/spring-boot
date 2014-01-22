@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ContextIdApplicationContextInitializerTests {
 
-	private ContextIdApplicationContextInitializer initializer = new ContextIdApplicationContextInitializer();
+	private final ContextIdApplicationContextInitializer initializer = new ContextIdApplicationContextInitializer();
 
 	@Test
 	public void testDefaults() {

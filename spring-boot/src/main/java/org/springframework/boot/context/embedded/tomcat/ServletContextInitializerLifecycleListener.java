@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  */
 public class ServletContextInitializerLifecycleListener implements LifecycleListener {
 
-	private ServletContextInitializer[] initializers;
+	private final ServletContextInitializer[] initializers;
 
 	/**
 	 * Create a new {@link ServletContextInitializerLifecycleListener} instance with the

@@ -38,7 +38,7 @@ public class RedisServer implements TestRule {
 
 	protected LettuceConnectionFactory resource;
 
-	private String resourceDescription = "Redis ConnectionFactory";
+	private final String resourceDescription = "Redis ConnectionFactory";
 
 	private static final Log logger = LogFactory.getLog(RedisServer.class);
 

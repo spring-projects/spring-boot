@@ -65,7 +65,7 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		private static final String SOURCE_INTERFACE = "org.springframework.boot.BeanDefinitionLoader.GroovyBeanDefinitionSource";
 		private static final String BEANS = "beans";
 		private final SourceUnit source;
-		private ClassNode classNode;
+		private final ClassNode classNode;
 		private boolean xformed = false;
 
 		public ClassVisitor(SourceUnit source, ClassNode classNode) {

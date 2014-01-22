@@ -29,9 +29,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class RichGaugeExporterTests {
 
-	private InMemoryRichGaugeRepository reader = new InMemoryRichGaugeRepository();
-	private InMemoryMetricRepository writer = new InMemoryMetricRepository();
-	private RichGaugeExporter exporter = new RichGaugeExporter(this.reader, this.writer);
+	private final InMemoryRichGaugeRepository reader = new InMemoryRichGaugeRepository();
+	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
+	private final RichGaugeExporter exporter = new RichGaugeExporter(this.reader, this.writer);
 
 	@Test
 	public void prefixedMetricsCopied() {

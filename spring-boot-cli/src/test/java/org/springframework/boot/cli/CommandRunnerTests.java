@@ -56,7 +56,7 @@ public class CommandRunnerTests {
 	@Mock
 	private Command anotherCommand;
 
-	private Set<Call> calls = EnumSet.noneOf(Call.class);
+	private final Set<Call> calls = EnumSet.noneOf(Call.class);
 
 	private ClassLoader loader;
 

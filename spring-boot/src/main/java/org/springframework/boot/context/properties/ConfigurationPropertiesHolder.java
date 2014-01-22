@@ -24,7 +24,7 @@ package org.springframework.boot.context.properties;
  */
 class ConfigurationPropertiesHolder {
 
-	private Object target;
+	private final Object target;
 
 	public ConfigurationPropertiesHolder(Object target) {
 		this.target = target;

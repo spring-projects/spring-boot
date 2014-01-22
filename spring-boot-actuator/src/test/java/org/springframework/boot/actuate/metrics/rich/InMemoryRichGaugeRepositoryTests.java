@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class InMemoryRichGaugeRepositoryTests {
 
-	private InMemoryRichGaugeRepository repository = new InMemoryRichGaugeRepository();
+	private final InMemoryRichGaugeRepository repository = new InMemoryRichGaugeRepository();
 
 	@Test
 	public void writeAndRead() {

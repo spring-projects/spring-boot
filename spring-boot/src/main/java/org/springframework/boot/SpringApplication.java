@@ -157,7 +157,7 @@ public class SpringApplication {
 
 	private final Log log = LogFactory.getLog(getClass());
 
-	private Set<Object> sources = new LinkedHashSet<Object>();
+	private final Set<Object> sources = new LinkedHashSet<Object>();
 
 	private Class<?> mainApplicationClass;
 

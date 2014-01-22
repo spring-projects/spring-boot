@@ -52,7 +52,7 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private Class<?> type;
+	private final Class<?> type;
 
 	private boolean exceptionIfInvalid;
 

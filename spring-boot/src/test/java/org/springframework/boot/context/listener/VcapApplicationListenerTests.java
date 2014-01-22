@@ -32,9 +32,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class VcapApplicationListenerTests {
 
-	private VcapApplicationListener initializer = new VcapApplicationListener();
-	private ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-	private SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
+	private final VcapApplicationListener initializer = new VcapApplicationListener();
+	private final ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+	private final SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
 			new SpringApplication(), this.context.getEnvironment(), new String[0]);
 
 	@Test

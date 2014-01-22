@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class InMemoryTraceRepositoryTests {
 
-	private InMemoryTraceRepository repository = new InMemoryTraceRepository();
+	private final InMemoryTraceRepository repository = new InMemoryTraceRepository();
 
 	@Test
 	public void capacityLimited() {

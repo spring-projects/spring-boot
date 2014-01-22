@@ -41,11 +41,11 @@ import org.springframework.validation.DataBinder;
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-	private Map<String, PropertyValue> propertyValues = new ConcurrentHashMap<String, PropertyValue>();
+	private final Map<String, PropertyValue> propertyValues = new ConcurrentHashMap<String, PropertyValue>();
 
-	private PropertySources propertySources;
+	private final PropertySources propertySources;
 
-	private Collection<String> NON_ENUMERABLE_ENUMERABLES = Arrays.asList(
+	private final Collection<String> NON_ENUMERABLE_ENUMERABLES = Arrays.asList(
 			StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 			StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
 

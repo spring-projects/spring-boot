@@ -36,9 +36,9 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository,
 		PrefixMetricReader {
 
-	private SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
+	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
 
-	private Collection<String> groups = new HashSet<String>();
+	private final Collection<String> groups = new HashSet<String>();
 
 	@Override
 	public void increment(Delta<?> delta) {

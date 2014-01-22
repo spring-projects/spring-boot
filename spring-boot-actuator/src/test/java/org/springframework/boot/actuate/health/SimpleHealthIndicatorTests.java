@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
  */
 public class SimpleHealthIndicatorTests {
 
-	private SimpleHealthIndicator indicator = new SimpleHealthIndicator();
+	private final SimpleHealthIndicator indicator = new SimpleHealthIndicator();
 	private DriverManagerDataSource dataSource;
 
 	@Before

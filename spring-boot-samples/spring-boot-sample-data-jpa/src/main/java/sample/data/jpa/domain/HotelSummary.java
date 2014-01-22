@@ -28,13 +28,13 @@ public class HotelSummary implements Serializable {
 	private static final MathContext MATH_CONTEXT = new MathContext(2,
 			RoundingMode.HALF_UP);
 
-	private City city;
+	private final City city;
 
-	private String name;
+	private final String name;
 
-	private Double averageRating;
+	private final Double averageRating;
 
-	private Integer averageRatingRounded;
+	private final Integer averageRatingRounded;
 
 	public HotelSummary(City city, String name, Double averageRating) {
 		this.city = city;

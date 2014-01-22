@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class CommonsDataSourceConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void testDataSourceExists() throws Exception {

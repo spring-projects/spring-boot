@@ -41,7 +41,7 @@ public class ServletListenerRegistrationBeanTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private ServletContextListener listener = Mockito.mock(ServletContextListener.class);
+	private final ServletContextListener listener = Mockito.mock(ServletContextListener.class);
 
 	@Mock
 	private ServletContext servletContext;

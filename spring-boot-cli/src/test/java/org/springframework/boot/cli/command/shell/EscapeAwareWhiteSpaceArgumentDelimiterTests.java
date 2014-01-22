@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
  */
 public class EscapeAwareWhiteSpaceArgumentDelimiterTests {
 
-	private EscapeAwareWhiteSpaceArgumentDelimiter delimiter = new EscapeAwareWhiteSpaceArgumentDelimiter();
+	private final EscapeAwareWhiteSpaceArgumentDelimiter delimiter = new EscapeAwareWhiteSpaceArgumentDelimiter();
 
 	@Test
 	public void simple() throws Exception {

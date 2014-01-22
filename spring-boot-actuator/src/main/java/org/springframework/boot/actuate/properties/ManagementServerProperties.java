@@ -42,7 +42,7 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	@NotNull
 	private String contextPath = "";
 
-	private Security security = maybeCreateSecurity();
+	private final Security security = maybeCreateSecurity();
 
 	/**
 	 * Returns the management port or {@code null} if the

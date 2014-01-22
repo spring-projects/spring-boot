@@ -98,11 +98,11 @@ public class ConfigFileApplicationListener implements
 
 	private int order = Integer.MIN_VALUE + 10;
 
-	private Map<String, PropertySource<?>> cached = new HashMap<String, PropertySource<?>>();
+	private final Map<String, PropertySource<?>> cached = new HashMap<String, PropertySource<?>>();
 
-	private ConversionService conversionService = new DefaultConversionService();
+	private final ConversionService conversionService = new DefaultConversionService();
 
-	private PropertySourceAnnotations propertySourceAnnotations = new PropertySourceAnnotations();
+	private final PropertySourceAnnotations propertySourceAnnotations = new PropertySourceAnnotations();
 
 	private PropertySourceLoaderFactory propertySourceLoaderFactory = new DefaultPropertySourceLoaderFactory();
 
@@ -411,13 +411,13 @@ public class ConfigFileApplicationListener implements
 
 	private static class PropertySourceAnnotations {
 
-		private Collection<String> locations = new LinkedHashSet<String>();
+		private final Collection<String> locations = new LinkedHashSet<String>();
 
-		private Map<String, String> names = new HashMap<String, String>();
+		private final Map<String, String> names = new HashMap<String, String>();
 
-		private Map<String, Class<?>> configs = new HashMap<String, Class<?>>();
+		private final Map<String, Class<?>> configs = new HashMap<String, Class<?>>();
 
-		private Map<String, Boolean> ignores = new HashMap<String, Boolean>();
+		private final Map<String, Boolean> ignores = new HashMap<String, Boolean>();
 
 		public void add(Class<?> source, String[] locations,
 				boolean ignoreResourceNotFound, String name) {

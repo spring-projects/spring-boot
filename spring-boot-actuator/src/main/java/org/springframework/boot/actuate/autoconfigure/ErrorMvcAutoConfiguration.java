@@ -89,7 +89,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	@Conditional(ErrorTemplateMissingCondition.class)
 	protected static class WhitelabelErrorViewConfiguration {
 
-		private SpelView defaultErrorView = new SpelView(
+		private final SpelView defaultErrorView = new SpelView(
 				"<html><body><h1>Whitelabel Error Page</h1>"
 						+ "<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>"
 						+ "<div id='created'>${timestamp}</div>"

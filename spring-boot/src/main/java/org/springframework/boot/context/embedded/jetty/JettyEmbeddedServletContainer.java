@@ -40,7 +40,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	private final Log logger = LogFactory.getLog(JettyEmbeddedServletContainer.class);
 
 	private final Server server;
-	private boolean autoStart;
+	private final boolean autoStart;
 
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.

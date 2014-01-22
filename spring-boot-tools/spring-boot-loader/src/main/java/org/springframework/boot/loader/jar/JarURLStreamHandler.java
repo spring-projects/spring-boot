@@ -28,7 +28,7 @@ import java.net.URLStreamHandler;
  */
 class JarURLStreamHandler extends URLStreamHandler {
 
-	private JarFile jarFile;
+	private final JarFile jarFile;
 
 	public JarURLStreamHandler(JarFile jarFile) {
 		this.jarFile = jarFile;

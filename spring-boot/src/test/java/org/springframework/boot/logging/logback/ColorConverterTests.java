@@ -39,7 +39,7 @@ public class ColorConverterTests {
 
 	private ColorConverter converter;
 	private LoggingEvent event;
-	private String in = "in";
+	private final String in = "in";
 
 	@BeforeClass
 	public static void setupAnsi() {

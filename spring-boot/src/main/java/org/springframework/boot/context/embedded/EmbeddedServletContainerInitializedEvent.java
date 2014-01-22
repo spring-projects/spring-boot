@@ -29,7 +29,7 @@ import org.springframework.context.ApplicationEvent;
  */
 public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	public EmbeddedServletContainerInitializedEvent(
 			ApplicationContext applicationContext, EmbeddedServletContainer source) {

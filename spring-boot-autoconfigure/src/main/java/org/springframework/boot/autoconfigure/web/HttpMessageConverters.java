@@ -50,7 +50,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  */
 public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> {
 
-	private List<HttpMessageConverter<?>> converters;
+	private final List<HttpMessageConverter<?>> converters;
 
 	/**
 	 * Create a new {@link HttpMessageConverters} instance with the specified additional

@@ -40,13 +40,13 @@ public class SecurityProperties implements SecurityPrequisite {
 
 	private Basic basic = new Basic();
 
-	private Headers headers = new Headers();
+	private final Headers headers = new Headers();
 
 	private SessionCreationPolicy sessions = SessionCreationPolicy.STATELESS;
 
 	private List<String> ignored = new ArrayList<String>();
 
-	private User user = new User();
+	private final User user = new User();
 
 	public Headers getHeaders() {
 		return this.headers;

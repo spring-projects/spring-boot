@@ -538,7 +538,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	public static class TargetWithReadOnlyNestedList {
-		private List<String> nested = new ArrayList<String>();
+		private final List<String> nested = new ArrayList<String>();
 
 		public List<String> getNested() {
 			return this.nested;
@@ -546,7 +546,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	public static class TargetWithReadOnlyNestedCollection {
-		private Collection<String> nested = new ArrayList<String>();
+		private final Collection<String> nested = new ArrayList<String>();
 
 		public Collection<String> getNested() {
 			return this.nested;

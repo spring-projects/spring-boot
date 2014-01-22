@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class JobExecutionExitCodeGeneratorTests {
 
-	private JobExecutionExitCodeGenerator generator = new JobExecutionExitCodeGenerator();
+	private final JobExecutionExitCodeGenerator generator = new JobExecutionExitCodeGenerator();
 
 	@Test
 	public void testExitCodeForRunning() {

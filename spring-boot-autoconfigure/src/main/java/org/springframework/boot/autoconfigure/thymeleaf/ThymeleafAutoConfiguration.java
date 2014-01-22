@@ -63,7 +63,7 @@ public class ThymeleafAutoConfiguration {
 	public static class DefaultTemplateResolverConfiguration implements EnvironmentAware {
 
 		@Autowired
-		private ResourceLoader resourceLoader = new DefaultResourceLoader();
+		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 		private RelaxedPropertyResolver environment;
 
@@ -108,10 +108,10 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafDefaultConfiguration {
 
 		@Autowired
-		private Collection<ITemplateResolver> templateResolvers = Collections.emptySet();
+		private final Collection<ITemplateResolver> templateResolvers = Collections.emptySet();
 
 		@Autowired(required = false)
-		private Collection<IDialect> dialects = Collections.emptySet();
+		private final Collection<IDialect> dialects = Collections.emptySet();
 
 		@Bean
 		public SpringTemplateEngine templateEngine() {

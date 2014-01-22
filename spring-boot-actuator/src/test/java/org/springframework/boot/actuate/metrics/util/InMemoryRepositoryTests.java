@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class InMemoryRepositoryTests {
 
-	private SimpleInMemoryRepository<String> repository = new SimpleInMemoryRepository<String>();
+	private final SimpleInMemoryRepository<String> repository = new SimpleInMemoryRepository<String>();
 
 	@Test
 	public void setAndGet() {

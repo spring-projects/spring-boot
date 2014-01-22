@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
  */
 public class EndpointHandlerMappingTests {
 
-	private StaticApplicationContext context = new StaticApplicationContext();
+	private final StaticApplicationContext context = new StaticApplicationContext();
 	private Method method;
 
 	@Before
