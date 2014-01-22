@@ -25,10 +25,27 @@ import org.springframework.boot.actuate.metrics.Metric;
  */
 public interface MetricReader {
 
+	/**
+	 * Find an instance of the metric with the given name (usually the latest recorded
+	 * value).
+	 * 
+	 * @param metricName the name of the metric to find
+	 * @return a metric value or null if there are none with that name
+	 */
 	Metric<?> findOne(String metricName);
 
+	/**
+	 * Find all the metrics known to this reader.
+	 * 
+	 * @return all instances of metrics known to this reader
+	 */
 	Iterable<Metric<?>> findAll();
 
+	/**
+	 * The number of metrics known to this reader.
+	 * 
+	 * @return the number of metrics
+	 */
 	long count();
 
 }
