@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.ops.ui;
+package sample.ui.secure;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -38,6 +38,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+import sample.ui.secure.SampleSecureApplication;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
