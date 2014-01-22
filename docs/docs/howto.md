@@ -154,6 +154,14 @@ Tomcat APIs are quite rich so once you have access to the
 of ways. Or the nuclear option is to add your own
 `TomcatEmbeddedServletContainerFactory`.
 
+## Use Tomcat 8
+
+Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7
+(so we can support Java 1.6 out of the box). You should only need to
+change the classpath to use Tomcat 8 for it to work. The
+[websocket sample](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-websocket/pom.xml)
+shows you how to do that in Maven.
+
 ## Configure Jetty
 
 Generally you can follow the advice [here](#discover.options) about
@@ -163,6 +171,39 @@ are quite rich so once you have access to the
 `JettyEmbeddedServletContainerFactory` you can modify it in a number
 of ways. Or the nuclear option is to add your own
 `JettyEmbeddedServletContainerFactory`.
+
+## Use Jetty 9
+
+Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so
+we can support Java 1.6 out of the box). You should only need to
+change the classpath to use Jetty 9 for it to work.
+
+If you are using the starter poms and parent you can just add the
+Jetty starter and change the version properties, e.g. for a simple
+webapp or service:
+
+	<properties>
+		<java.version>1.7</java.version>
+		<jetty.version>9.1.0.v20131115</jetty.version>
+		<servlet-api.version>3.1.0</servlet-api.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+		</dependency
+	</dependencies>
+
 
 ## Terminate SSL in Tomcat
 
@@ -385,14 +426,27 @@ can be set with `server.port` (e.g. in `application.properties` or as
 a System property). Thanks to relaxed binding of `Environment` values
 you can also use `SERVER_PORT` (e.g. as an OS environment variable).
 
-To scan for a free port (using OS natives to prevent clashes) use
-`server.port=0`. To switch off the HTTP endpoints completely, but
+To switch off the HTTP endpoints completely, but
 still create a `WebApplicationContext`, use `server.port=-1` (this is
 sometimes useful for testing).
 
 For more detail look at the
 [`ServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c)
 source code.
+
+## Use a Random Unassigned HTTP Port
+
+To scan for a free port (using OS natives to prevent clashes) use
+`server.port=0`.
+
+## Discover the HTTP Port at Runtime
+
+You can access the port the server is running on from log output or
+from the `EmbeddedWebApplicationContext` via its
+`EmbeddedServletContainer`. The best way to get that and be sure that
+it has initialized is to add a `@Bean` of type
+`ApplicationListener<EmbeddedServletContainerInitializedEvent>` and
+pull the container out of the event wehen it is published.
 
 ## Change the HTTP Port or Address of the Actuator Endpoints
 
@@ -424,6 +478,26 @@ default configuration you should find a `BeanNameViewResolver` in your
 `ApplicationContext` so a `@Bean` with id "error" would be a simple
 way of doing that.  Look at `ErrorMvcAutoConfiguration` for more
 options.
+
+## Secure an Application
+
+Web applications will be secure by default (with Basic authentication
+on all endpoints) if Spring Security is on the classpath. To add
+method-level security to a web application you can simply
+`@EnableGlobalMethodSecurity` with your desired settings.
+
+The default `AuthenticationManager` has a single user (username "user"
+and password random, printed at INFO when the application starts
+up). You can change the password by providing a
+`security.user.password`. This and other useful properties are
+externalized via `SecurityProperties`.
+
+## Change the AuthenticationManager and add User Accounts
+
+If you provide a `@Bean` of type `AuthenticationManager` the default
+one will not be created, so you have the full feature set of Spring
+Security available
+(e.g. [various authentication options](http://docs.spring.io/spring-security/site/docs/3.2.1.CI-SNAPSHOT/reference/htmlsingle/#jc-authentication)).
 
 ## Use 'Short' Command Line Arguments
 
@@ -580,8 +654,8 @@ also bootstrap a Spring application to set up the infrastructure to
 use, then it's easy with the `SpringApplication` features of Spring
 Boot. A `SpringApplication` changes its `ApplicationContext` class
 depending on whether it thinks it needs a web application or not. The
-first thing you can do to help it is to just leave the web
-depdendencies off the classpath. If you can't do that (e.g. you are
+first thing you can do to help it is to just leave the servlet API
+dependencies off the classpath. If you can't do that (e.g. you are
 running 2 applications from the same code base) then you can
 explicitly call `SpringApplication.setWebEnvironment(false)`, or set
 the `applicationContextClass` property (through the Java API or with
@@ -660,18 +734,37 @@ for more details.
 
 Spring Data can create implementations for you of `@Repository`
 interfaces of various flavours. Spring Boot will handle all of that
-for you as long as those `@Repositories` are included in a
-`@ComponentScan`.
+for you as long as those `@Repositories` are included in the same
+package (or a sub-package) of your `@EnableAutoConfiguration` class.
 
 For many applications all you will need is to put the right Spring
 Data dependencies on your classpath (there is a
-"spring-boot-starter-data-jpa" for JPA and for Mongodb you only nee
-dto add "spring-datamongodb"), create some repository interfaces to
-handle your `@Entity` objects, and then add a `@ComponentScan` that
-covers those packages. Examples are in the
+"spring-boot-starter-data-jpa" for JPA and for Mongodb you only need
+to add "spring-datamongodb"), create some repository interfaces to
+handle your `@Entity` objects. Examples are in the
 [JPA sample](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-jpa)
 or the
 [Mongodb sample](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-data-mongodb).
+
+Spring Boot tries to guess the location of your `@Repository`
+definitions, based on the `@EnableAutoConfiguration` it finds. To get
+more control, use the `@EnableJpaRepositories` annotation (from Spring
+Data JPA).
+
+## Separate @Entity Definitions from Spring Configuration
+
+Spring Boot tries to guess the location of your `@Entity` definitions,
+based on the `@EnableAutoConfiguration` it finds. To get more control,
+you can use the `@EntityScan` annotation, e.g.
+
+```java
+@Configuration
+@EnableAutoConfiguration
+@EntityScan(basePackageClasses=City.class)
+public class Application {
+...
+}
+```
 
 ## Configure JPA Properties
 
@@ -700,6 +793,18 @@ See
 and
 [`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)
 for more details.
+
+## Use a Traditional persistence.xml
+
+Spring doesn't require the use of XML to configure the JPA provider,
+and Spring Boot assumes you want to take advantage of that feature. If
+you prefer to use `persistence.xml` then you need to define your own
+`@Bean` of type `LocalEntityManagerFactoryBean`, and set the
+persistence unit name there.
+
+See
+[`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)
+for the default settings.
 
 <span id="discover.options"/>
 ## Discover Built-in Options for External Properties
@@ -736,7 +841,7 @@ In Spring Boot you can also set the active profile in
 spring.profiles.active: production
 ```
 
-A value set this is replaced by the System property or environment
+A value set this way is replaced by the System property or environment
 variable setting, but not by the `SpringApplicationBuilder.profiles()`
 method. Thus the latter Java API can be used to augment the profiles
 without changing the defaults.
@@ -759,18 +864,20 @@ added using the default locations, but have lower priority than system
 properties, environment variables or the command line.
 
 You can also provide System properties (or environment variables) to
-change the default behaviour:
+change the behaviour:
 
-* `config.name` (`CONFIG_NAME`), defaults to `application` as the root
-  of the file name
-* `config.location` (`CONFIG_LOCATION`) is a comma-separated list of
-  files to load. A separate `Environment` property source is set up
-  for each document found, so the priority order is most significant
-  first. Defaults to
-  `file:./application.properties,classpath:application.properties`. If
-  YAML is used then those files are also added to the list by default.
+* `spring.config.name` (`SPRING_CONFIG_NAME`), defaults to
+  `application` as the root of the file name
+* `spring.config.location` (`SPRING_CONFIG_LOCATION`) is file to load
+  (e.g. a classpath resource or a URL). A separate `Environment`
+  property source is set up for this document and it can be overridden
+  by system properties, environment variables or the command line.
 
-See `ConfigFileApplicationContextInitializer` for more detail.
+No matter what you set in the environment, Spring Boot will always
+load `application.properties` as described above. If YAML is used then
+files with the ".yml" extension are also added to the list by default.
+
+See `ConfigFileApplicationListener` for more detail.
 
 ## Use YAML for External Properties
 
@@ -846,6 +953,41 @@ To do the same thing with properties files you can use
 `application-${profile}.properties` to specify profile-specific
 values.
 
+## Customize the Environment or ApplicationContext Before it Starts
+
+A `SpringApplication` has `ApplicationListeners` and
+`ApplicationContextInitializers` that are used to apply customizations
+to the context or environment. Spring Boot loads a number of such
+customizations for use internally from
+`META-INF/spring.factories`. There is more than one way to register
+additional ones:
+
+* programmatically per application by calling the `addListeners` and
+  `addInitializers` methods on `SpringApplication` before you run it
+* declaratively per application by setting
+  `context.initializer.classes` or `context.listener.classes`
+* declarative for all applications by adding a
+  `META-INF/spring.factories` and packaging a jar file that the
+  applications all use as a library
+
+Any `ApplicationContextInitializer` registered programmatically or via
+`spring.factories` that is also an `ApplicationListener` will be
+automatically cross registered (and vice versa for listeners that are
+also initializers).  The `SpringApplication` sends some special
+`ApplicationEvents` to the listeners (even some before the context is
+created), and then registers the listeners for events published by the
+`ApplicationContext` as well:
+
+* `SpringApplicationStartEvent` at the start of a run, but before any
+  processing except the registration of listeners and initializers.
+* `SpringApplicationEnvironmentAvailableEvent` when the `Environment`
+  to be used in the context is known, but before the context is
+  created.
+* `SpringApplicationBeforeRefreshEvent` just before the refresh is
+  started, but after bean definitions have been loaded.
+* `SpringApplicationErrorEvent` if there is an exception on startup.
+
+
 ## Build An Executable Archive with Ant
 
 To build with Ant you need to grab dependencies and compile and then
@@ -889,4 +1031,4 @@ it with
 after which you can run the application with
 
     $ java -jar target/*.jar
- 
+

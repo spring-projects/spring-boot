@@ -14,11 +14,11 @@ opposed to explicitly on the classpath). In the case of the
 those locations if you want more. The `PropertiesLauncher` looks in
 `lib/` by default, but you can add additional locations by setting an
 environment variable `LOADER_PATH`or `loader.path` in
-`application.properties` (colon-separated list of directories).
+`application.properties` (colon-separated list of directories or archives).
 
 > **Note:** The quickest way to build a compatible archive is to use the
-> [spring-boot-maven-plugin](../spring-boot-maven-plugin) or
-> [spring-boot-gradle-plugin](../spring-boot-gradle-plugin).
+> [spring-boot-maven-plugin](../spring-boot-maven-plugin/README.html) or
+> [spring-boot-gradle-plugin](../spring-boot-gradle-plugin/README.html).
 
 ## Nested JARs
 Java does not provide any standard way to load nested jar files (i.e. jar files that

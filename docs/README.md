@@ -47,8 +47,8 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-0.5.0.M6-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M6/spring-boot-cli-0.5.0.M6-bin.zip)
-* [spring-boot-cli-0.5.0.M6-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/0.5.0.M6/spring-boot-cli-0.5.0.M6-bin.tar.gz)
+* [spring-boot-cli-1.0.0.RC1-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/1.0.0.RC1/spring-boot-cli-1.0.0.RC1-bin.zip)
+* [spring-boot-cli-1.0.0.RC1-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/1.0.0.RC1/spring-boot-cli-1.0.0.RC1-bin.tar.gz)
 
 Cutting edge [snapshot distributions](http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
@@ -69,14 +69,14 @@ itself and the Spring Boot CLI. Get `gvm` from
 
     $ gvm install springboot
     $ spring --version
-    Spring Boot v0.5.0.M6
+    Spring Boot v1.0.0.RC1
 
 > **Note:** If you are developing features for the CLI and want easy access to the version you just built, follow these extra instructions.
 
-    $ gvm install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-0.5.0.BUILD-SNAPSHOT-bin/spring-0.5.0.BUILD-SNAPSHOT/
+    $ gvm install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-1.0.0.BUILD-SNAPSHOT-bin/spring-1.0.0.BUILD-SNAPSHOT/
    	$ gvm use springboot dev
    	$ spring --version
-    Spring CLI v0.5.0.BUILD-SNAPSHOT
+    Spring CLI v1.0.0.BUILD-SNAPSHOT
 
 This will install a local instance of `spring` called the `dev` instance inside your gvm repository. It points at your target build location, so every time you rebuild Spring Boot, `spring` will be up-to-date.
 
@@ -89,7 +89,7 @@ You can see it by doing this:
 Available Springboot Versions
 ================================================================================
  > + dev
-   * 0.5.0.M6
+   * 1.0.0.RC1
 
 ================================================================================
 + - local version
@@ -166,7 +166,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>0.5.0.M6</version>
+		<version>1.0.0.RC1</version>
 	</parent>
 
 	<!-- Add typical dependencies for a web application -->
@@ -188,7 +188,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	</build>
 
 	<!-- Allow access to Spring milestones and snapshots -->
-	<!-- (you don't need this if you are using anything after 0.5.0.RELEASE) -->
+	<!-- (you don't need this if you are using anything after 1.0.0.RELEASE) -->
 	<repositories>
 		<repository>
 			<id>spring-snapshots</id>
@@ -394,9 +394,7 @@ The [spring.io](http://spring.io/) site contains several guides that show how to
 Boot](http://spring.io/guides/gs/spring-boot/) is a very basic guide
 that shows you how to create a simple application, run it and add some
 management services.
-
 * [Building a RESTful Web Service with Spring Boot Actuator](http://spring.io/guides/gs/actuator-service/)
 is a guide to creating a REST web service and also shows how the server can be configured.
-
 * [Converting a Spring Boot JAR Application to a WAR](http://spring.io/guides/gs/convert-jar-to-war/) shows you how to run applications in a
 web server as a WAR file.
