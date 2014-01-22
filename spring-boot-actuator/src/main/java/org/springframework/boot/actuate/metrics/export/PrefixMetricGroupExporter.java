@@ -26,6 +26,9 @@ import org.springframework.boot.actuate.metrics.repository.MultiMetricRepository
 import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 /**
+ * A convenient exporter for a group of metrics from a {@link PrefixMetricReader}. Exports
+ * all metrics whose name starts with a prefix (or all metrics if the prefix is empty).
+ * 
  * @author Dave Syer
  */
 public class PrefixMetricGroupExporter extends AbstractMetricExporter {
@@ -36,10 +39,25 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	private Set<String> groups = new HashSet<String>();
 
+	/**
+	 * Create a new exporter for metrics to a writer based on an empty prefix for the
+	 * metric names.
+	 * 
+	 * @param reader a reader as the source of metrics
+	 * @param writer the writer to send the metrics to
+	 */
 	public PrefixMetricGroupExporter(PrefixMetricReader reader, MetricWriter writer) {
 		this(reader, writer, "");
 	}
 
+	/**
+	 * Create a new exporter for metrics to a writer based on a prefix for the metric
+	 * names.
+	 * 
+	 * @param reader a reader as the source of metrics
+	 * @param writer the writer to send the metrics to
+	 * @param prefix the prefix for metrics to export
+	 */
 	public PrefixMetricGroupExporter(PrefixMetricReader reader, MetricWriter writer,
 			String prefix) {
 		super(prefix);

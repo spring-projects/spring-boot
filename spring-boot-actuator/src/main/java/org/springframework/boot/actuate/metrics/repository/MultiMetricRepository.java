@@ -29,12 +29,32 @@ import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
  */
 public interface MultiMetricRepository extends PrefixMetricReader {
 
+	/**
+	 * Save some metric values and associate them with a group name.
+	 * 
+	 * @param group the name of the group
+	 * @param values the metric values to save
+	 */
 	void save(String group, Collection<Metric<?>> values);
 
+	/**
+	 * Rest the values of all metrics in the group. Implementations may choose to discard
+	 * the old values.
+	 * 
+	 * @param group reset the whole group
+	 */
 	void reset(String group);
 
+	/**
+	 * The names of all the groups known to this repository
+	 * 
+	 * @return all available group names
+	 */
 	Iterable<String> groups();
 
+	/**
+	 * @return the number of groups available
+	 */
 	long count();
 
 }
