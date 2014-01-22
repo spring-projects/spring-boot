@@ -37,20 +37,23 @@ public class RedisMetricRepositoryTests {
 	@Rule
 	public RedisServer redis = RedisServer.running();
 	private RedisMetricRepository repository;
+	private String prefix;
 
 	@Before
 	public void init() {
 		this.repository = new RedisMetricRepository(this.redis.getResource());
+		this.prefix = "spring.test." + System.currentTimeMillis();
+		this.repository.setPrefix(this.prefix);
 	}
 
 	@After
 	public void clear() {
 		assertNotNull(new StringRedisTemplate(this.redis.getResource()).opsForValue()
-				.get("spring.metrics.foo"));
+				.get(this.prefix + ".foo"));
 		this.repository.reset("foo");
 		this.repository.reset("bar");
 		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				"spring.metrics.foo"));
+				this.prefix + ".foo"));
 	}
 
 	@Test

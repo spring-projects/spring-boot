@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.PoolConfig;
@@ -112,8 +111,13 @@ public class RedisAutoConfiguration {
 		}
 	}
 
+	@Bean(name = "org.springframework.autoconfigure.redis.RedisProperties")
+	@ConditionalOnMissingBean
+	public RedisProperties redisProperties() {
+		return new RedisProperties();
+	}
+
 	@Configuration
-	@EnableConfigurationProperties(RedisProperties.class)
 	protected static class RedisConfiguration {
 
 		@Autowired
