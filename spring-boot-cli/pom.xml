@@ -301,9 +301,11 @@
 								<propertyregex property="version-type" override="true"
 									input="${version-type}" regexp=".*\.(.*)" replace="\1" />
 								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="(M)\d+" replace="\1ILESTONE" />
+									input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
 								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="BUILD-(.*)" replace="\1" />
+									input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+								<propertyregex property="version-type" override="true"
+									input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
