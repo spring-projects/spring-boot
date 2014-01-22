@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.ops.ui;
+package sample.ui.secure;
 
 import java.util.Date;
 import java.util.Map;
