@@ -31,7 +31,7 @@ public class InMemoryTraceRepository implements TraceRepository {
 
 	private int capacity = 100;
 
-	private List<Trace> traces = new ArrayList<Trace>();
+	private final List<Trace> traces = new ArrayList<Trace>();
 
 	/**
 	 * @param capacity the capacity to set

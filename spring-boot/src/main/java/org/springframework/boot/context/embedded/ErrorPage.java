@@ -27,7 +27,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class ErrorPage {
 
-	private String path;
+	private final String path;
 
 	private Class<? extends Throwable> exception = null;
 

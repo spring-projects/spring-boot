@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public class VanillaPublicMetrics implements PublicMetrics {
 
-	private MetricReader reader;
+	private final MetricReader reader;
 
 	public VanillaPublicMetrics(MetricReader reader) {
 		Assert.notNull(reader, "MetricReader must not be null");

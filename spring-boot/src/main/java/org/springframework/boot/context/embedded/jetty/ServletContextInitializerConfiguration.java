@@ -33,9 +33,9 @@ import org.springframework.util.Assert;
  */
 public class ServletContextInitializerConfiguration extends AbstractConfiguration {
 
-	private ContextHandler contextHandler;
+	private final ContextHandler contextHandler;
 
-	private ServletContextInitializer[] initializers;
+	private final ServletContextInitializer[] initializers;
 
 	/**
 	 * Create a new {@link ServletContextInitializerConfiguration}.

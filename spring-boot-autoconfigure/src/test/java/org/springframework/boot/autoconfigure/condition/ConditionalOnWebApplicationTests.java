@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ConditionalOnWebApplicationTests {
 
-	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
+	private final AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@Test
 	public void testWebApplication() {

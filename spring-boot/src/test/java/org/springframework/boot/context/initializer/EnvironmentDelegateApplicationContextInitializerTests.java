@@ -41,7 +41,7 @@ public class EnvironmentDelegateApplicationContextInitializerTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private EnvironmentDelegateApplicationContextInitializer initializer = new EnvironmentDelegateApplicationContextInitializer();
+	private final EnvironmentDelegateApplicationContextInitializer initializer = new EnvironmentDelegateApplicationContextInitializer();
 
 	@Test
 	public void orderedInitialize() throws Exception {

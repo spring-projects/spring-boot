@@ -50,7 +50,7 @@ public class ExplodedArchive extends Archive {
 	private static final AsciiBytes MANIFEST_ENTRY_NAME = new AsciiBytes(
 			"META-INF/MANIFEST.MF");
 
-	private File root;
+	private final File root;
 
 	private Map<AsciiBytes, Entry> entries = new LinkedHashMap<AsciiBytes, Entry>();
 
@@ -200,7 +200,7 @@ public class ExplodedArchive extends Archive {
 	 */
 	private static class FileNotFoundURLConnection extends URLConnection {
 
-		private String name;
+		private final String name;
 
 		public FileNotFoundURLConnection(URL url, String name) {
 			super(url);

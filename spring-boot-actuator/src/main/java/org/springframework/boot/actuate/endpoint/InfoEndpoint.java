@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 @ConfigurationProperties(name = "endpoints.info", ignoreUnknownFields = false)
 public class InfoEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private Map<String, ? extends Object> info;
+	private final Map<String, ? extends Object> info;
 
 	/**
 	 * Create a new {@link InfoEndpoint} instance.

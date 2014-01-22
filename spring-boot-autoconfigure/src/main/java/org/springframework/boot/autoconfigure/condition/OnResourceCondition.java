@@ -35,7 +35,7 @@ import org.springframework.util.MultiValueMap;
  */
 class OnResourceCondition extends SpringBootCondition {
 
-	private ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
+	private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,

@@ -47,11 +47,11 @@ public class RedisMetricRepository implements MetricRepository {
 
 	private String keys = this.prefix + "keys";
 
-	private BoundZSetOperations<String, String> zSetOperations;
+	private final BoundZSetOperations<String, String> zSetOperations;
 
-	private RedisOperations<String, String> redisOperations;
+	private final RedisOperations<String, String> redisOperations;
 
-	private ValueOperations<String, Long> longOperations;
+	private final ValueOperations<String, Long> longOperations;
 
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");

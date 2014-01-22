@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class PropertyPlaceholderAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@After
 	public void close() {

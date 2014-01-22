@@ -31,9 +31,9 @@ import org.springframework.core.env.StandardEnvironment;
  */
 public class FileEncodingApplicationListenerTests {
 
-	private FileEncodingApplicationListener initializer = new FileEncodingApplicationListener();
-	private ConfigurableEnvironment environment = new StandardEnvironment();
-	private SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
+	private final FileEncodingApplicationListener initializer = new FileEncodingApplicationListener();
+	private final ConfigurableEnvironment environment = new StandardEnvironment();
+	private final SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
 			new SpringApplication(), this.environment, new String[0]);
 
 	@Test(expected = IllegalStateException.class)

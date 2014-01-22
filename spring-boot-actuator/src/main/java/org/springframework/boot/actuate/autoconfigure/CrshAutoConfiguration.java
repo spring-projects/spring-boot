@@ -340,9 +340,9 @@ public class CrshAutoConfiguration {
 	private static class BeanFactoryFilteringPluginDiscovery extends
 			ServiceLoaderDiscovery {
 
-		private ListableBeanFactory beanFactory;
+		private final ListableBeanFactory beanFactory;
 
-		private String[] disabledPlugins;
+		private final String[] disabledPlugins;
 
 		public BeanFactoryFilteringPluginDiscovery(ClassLoader classLoader,
 				ListableBeanFactory beanFactory, String[] disabledPlugins)
@@ -409,7 +409,7 @@ public class CrshAutoConfiguration {
 	 */
 	private static class SimpleFileSystemDriver extends AbstractFSDriver<ResourceHandle> {
 
-		private ResourceHandle root;
+		private final ResourceHandle root;
 
 		public SimpleFileSystemDriver(ResourceHandle handle) {
 			this.root = handle;
@@ -463,7 +463,7 @@ public class CrshAutoConfiguration {
 	 */
 	private abstract static class ResourceHandle {
 
-		private String name;
+		private final String name;
 
 		public ResourceHandle(String name) {
 			this.name = name;
@@ -480,7 +480,7 @@ public class CrshAutoConfiguration {
 	 */
 	private static class DirectoryHandle extends ResourceHandle {
 
-		private ResourcePatternResolver resourceLoader;
+		private final ResourcePatternResolver resourceLoader;
 
 		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader) {
 			super(name);
@@ -505,7 +505,7 @@ public class CrshAutoConfiguration {
 	 */
 	private static class FileHandle extends ResourceHandle {
 
-		private Resource resource;
+		private final Resource resource;
 
 		public FileHandle(String name, Resource resource) {
 			super(name);

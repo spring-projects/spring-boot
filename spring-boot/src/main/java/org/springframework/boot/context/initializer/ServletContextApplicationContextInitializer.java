@@ -32,7 +32,7 @@ public class ServletContextApplicationContextInitializer implements
 
 	private int order = Integer.MIN_VALUE;
 
-	private ServletContext servletContext;
+	private final ServletContext servletContext;
 
 	/**
 	 * @param servletContext

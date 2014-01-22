@@ -119,7 +119,7 @@ public class AutoConfigurationReport {
 	 */
 	public static class ConditionAndOutcomes implements Iterable<ConditionAndOutcome> {
 
-		private Set<ConditionAndOutcome> outcomes = new LinkedHashSet<ConditionAndOutcome>();
+		private final Set<ConditionAndOutcome> outcomes = new LinkedHashSet<ConditionAndOutcome>();
 
 		public void add(Condition condition, ConditionOutcome outcome) {
 			this.outcomes.add(new ConditionAndOutcome(condition, outcome));

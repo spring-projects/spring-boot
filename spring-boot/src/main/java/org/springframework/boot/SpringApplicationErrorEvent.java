@@ -26,9 +26,9 @@ import org.springframework.context.ConfigurableApplicationContext;
  */
 public class SpringApplicationErrorEvent extends ApplicationEvent {
 
-	private String[] args;
-	private Throwable exception;
-	private ConfigurableApplicationContext context;
+	private final String[] args;
+	private final Throwable exception;
+	private final ConfigurableApplicationContext context;
 
 	/**
 	 * @param springApplication the current application

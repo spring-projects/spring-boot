@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ReactorAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void reactorIsAvailable() {

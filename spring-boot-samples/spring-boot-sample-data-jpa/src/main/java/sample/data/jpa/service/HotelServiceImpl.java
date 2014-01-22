@@ -82,7 +82,7 @@ class HotelServiceImpl implements HotelService {
 
 	private static class ReviewsSummaryImpl implements ReviewsSummary {
 
-		private Map<Rating, Long> ratingCount;
+		private final Map<Rating, Long> ratingCount;
 
 		public ReviewsSummaryImpl(List<RatingCount> ratingCounts) {
 			this.ratingCount = new HashMap<Rating, Long>();

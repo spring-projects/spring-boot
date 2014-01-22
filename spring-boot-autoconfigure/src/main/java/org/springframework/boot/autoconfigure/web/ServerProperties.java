@@ -56,7 +56,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	@NotNull
 	private String contextPath = "";
 
-	private Tomcat tomcat = new Tomcat();
+	private final Tomcat tomcat = new Tomcat();
 
 	public Tomcat getTomcat() {
 		return this.tomcat;

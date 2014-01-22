@@ -56,15 +56,15 @@ class BeanDefinitionLoader {
 
 	private static final ResourceLoader DEFAULT_RESOURCE_LOADER = new PathMatchingResourcePatternResolver();
 
-	private Object[] sources;
+	private final Object[] sources;
 
-	private AnnotatedBeanDefinitionReader annotatedReader;
+	private final AnnotatedBeanDefinitionReader annotatedReader;
 
-	private XmlBeanDefinitionReader xmlReader;
+	private final XmlBeanDefinitionReader xmlReader;
 
 	private GroovyBeanDefinitionReader groovyReader;
 
-	private ClassPathBeanDefinitionScanner scanner;
+	private final ClassPathBeanDefinitionScanner scanner;
 
 	private ResourceLoader resourceLoader;
 
@@ -286,7 +286,7 @@ class BeanDefinitionLoader {
 	 */
 	private static class ClassExcludeFilter extends AbstractTypeHierarchyTraversingFilter {
 
-		private Set<String> classNames = new HashSet<String>();
+		private final Set<String> classNames = new HashSet<String>();
 
 		public ClassExcludeFilter(Object... sources) {
 			super(false, false);

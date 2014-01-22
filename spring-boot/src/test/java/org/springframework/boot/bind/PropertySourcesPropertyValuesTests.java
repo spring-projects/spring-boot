@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class PropertySourcesPropertyValuesTests {
 
-	private MutablePropertySources propertySources = new MutablePropertySources();
+	private final MutablePropertySources propertySources = new MutablePropertySources();
 
 	@Before
 	public void init() {

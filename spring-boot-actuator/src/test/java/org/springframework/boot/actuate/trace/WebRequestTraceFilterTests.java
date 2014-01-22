@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class WebRequestTraceFilterTests {
 
-	private WebRequestTraceFilter filter = new WebRequestTraceFilter(
+	private final WebRequestTraceFilter filter = new WebRequestTraceFilter(
 			new InMemoryTraceRepository());
 
 	@Test

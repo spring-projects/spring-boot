@@ -30,7 +30,7 @@ class AnsiString {
 
 	private final Terminal terminal;
 
-	private StringBuilder value = new StringBuilder();
+	private final StringBuilder value = new StringBuilder();
 
 	/**
 	 * Create a new {@link AnsiString} for the given {@link Terminal}.

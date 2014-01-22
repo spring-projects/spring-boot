@@ -32,11 +32,11 @@ import static org.junit.Assert.assertEquals;
  */
 public class PrefixMetricGroupExporterTests {
 
-	private InMemoryMetricRepository reader = new InMemoryMetricRepository();
+	private final InMemoryMetricRepository reader = new InMemoryMetricRepository();
 
-	private InMemoryMetricRepository writer = new InMemoryMetricRepository();
+	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
 
-	private PrefixMetricGroupExporter exporter = new PrefixMetricGroupExporter(
+	private final PrefixMetricGroupExporter exporter = new PrefixMetricGroupExporter(
 			this.reader, this.writer);
 
 	@Test

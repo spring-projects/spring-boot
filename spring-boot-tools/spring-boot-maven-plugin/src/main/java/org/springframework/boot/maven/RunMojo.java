@@ -228,8 +228,8 @@ public class RunMojo extends AbstractMojo {
 	 */
 	class LaunchRunner implements Runnable {
 
-		private String startClassName;
-		private String[] args;
+		private final String startClassName;
+		private final String[] args;
 
 		public LaunchRunner(String startClassName, String... args) {
 			this.startClassName = startClassName;

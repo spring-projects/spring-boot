@@ -22,9 +22,9 @@ public class RatingCount implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Rating rating;
+	private final Rating rating;
 
-	private long count;
+	private final long count;
 
 	public RatingCount(Rating rating, long count) {
 		this.rating = rating;

@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.metrics.Metric;
  */
 public class CompositeMetricWriter implements MetricWriter {
 
-	private List<MetricWriter> writers = new ArrayList<MetricWriter>();
+	private final List<MetricWriter> writers = new ArrayList<MetricWriter>();
 
 	public CompositeMetricWriter(MetricWriter... writers) {
 		for (MetricWriter writer : writers) {

@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 @ConfigurationProperties(name = "endpoints.trace", ignoreUnknownFields = false)
 public class TraceEndpoint extends AbstractEndpoint<List<Trace>> {
 
-	private TraceRepository repository;
+	private final TraceRepository repository;
 
 	/**
 	 * Create a new {@link TraceEndpoint} instance.

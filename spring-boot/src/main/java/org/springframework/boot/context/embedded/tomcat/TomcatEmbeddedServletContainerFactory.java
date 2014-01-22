@@ -420,11 +420,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private static class TomcatErrorPage {
 
-		private String location;
-		private String exceptionType;
-		private int errorCode;
+		private final String location;
+		private final String exceptionType;
+		private final int errorCode;
 
-		private Object nativePage;
+		private final Object nativePage;
 
 		public TomcatErrorPage(ErrorPage errorPage) {
 			this.location = errorPage.getPath();
@@ -487,7 +487,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	private static class StoreMergedWebXmlListener implements LifecycleListener {
 
-		private String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
+		private final String MERGED_WEB_XML = org.apache.tomcat.util.scan.Constants.MERGED_WEB_XML;
 
 		@Override
 		public void lifecycleEvent(LifecycleEvent event) {

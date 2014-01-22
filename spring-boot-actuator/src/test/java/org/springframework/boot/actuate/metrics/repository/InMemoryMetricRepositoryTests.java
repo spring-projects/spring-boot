@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class InMemoryMetricRepositoryTests {
 
-	private InMemoryMetricRepository repository = new InMemoryMetricRepository();
+	private final InMemoryMetricRepository repository = new InMemoryMetricRepository();
 
 	@Test
 	public void increment() {

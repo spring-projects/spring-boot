@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
  */
 class AutoConfigurationSorter {
 
-	private CachingMetadataReaderFactory metadataReaderFactory;
+	private final CachingMetadataReaderFactory metadataReaderFactory;
 
 	public AutoConfigurationSorter(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");

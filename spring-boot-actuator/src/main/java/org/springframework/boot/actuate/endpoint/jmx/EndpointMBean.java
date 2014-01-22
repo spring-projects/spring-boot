@@ -35,9 +35,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ManagedResource
 public class EndpointMBean {
 
-	private Endpoint<?> endpoint;
+	private final Endpoint<?> endpoint;
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	public EndpointMBean(String beanName, Endpoint<?> endpoint) {
 		Assert.notNull(beanName, "BeanName must not be null");

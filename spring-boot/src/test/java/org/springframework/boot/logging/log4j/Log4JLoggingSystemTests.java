@@ -39,7 +39,7 @@ public class Log4JLoggingSystemTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(getClass()
+	private final Log4JLoggingSystem loggingSystem = new Log4JLoggingSystem(getClass()
 			.getClassLoader());
 
 	private Log4JLogger logger;

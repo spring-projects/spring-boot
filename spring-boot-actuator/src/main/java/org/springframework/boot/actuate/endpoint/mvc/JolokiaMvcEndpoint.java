@@ -54,7 +54,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 
 	private boolean enabled = true;
 
-	private ServletWrappingController controller = new ServletWrappingController();
+	private final ServletWrappingController controller = new ServletWrappingController();
 
 	public JolokiaMvcEndpoint() {
 		this.path = "/jolokia";
@@ -123,7 +123,7 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 
 	private static class PathStripper extends HttpServletRequestWrapper {
 
-		private String path;
+		private final String path;
 
 		public PathStripper(HttpServletRequest request, String path) {
 			super(request);

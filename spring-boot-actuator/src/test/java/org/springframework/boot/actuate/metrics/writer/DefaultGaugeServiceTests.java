@@ -29,9 +29,9 @@ import static org.mockito.Mockito.verify;
  */
 public class DefaultGaugeServiceTests {
 
-	private MetricWriter repository = mock(MetricWriter.class);
+	private final MetricWriter repository = mock(MetricWriter.class);
 
-	private DefaultGaugeService service = new DefaultGaugeService(this.repository);
+	private final DefaultGaugeService service = new DefaultGaugeService(this.repository);
 
 	@Test
 	public void setPrependsGauge() {

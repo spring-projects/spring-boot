@@ -77,13 +77,13 @@ public class MockEmbeddedServletContainerFactory extends
 
 		private ServletContext servletContext;
 
-		private ServletContextInitializer[] initializers;
+		private final ServletContextInitializer[] initializers;
 
-		private List<RegisteredServlet> registeredServlets = new ArrayList<RegisteredServlet>();
+		private final List<RegisteredServlet> registeredServlets = new ArrayList<RegisteredServlet>();
 
-		private List<RegisteredFilter> registeredFilters = new ArrayList<RegisteredFilter>();
+		private final List<RegisteredFilter> registeredFilters = new ArrayList<RegisteredFilter>();
 
-		private int port;
+		private final int port;
 
 		public MockEmbeddedServletContainer(ServletContextInitializer[] initializers,
 				int port) {
@@ -187,9 +187,9 @@ public class MockEmbeddedServletContainerFactory extends
 
 	public static class RegisteredServlet {
 
-		private Servlet servlet;
+		private final Servlet servlet;
 
-		private ServletRegistration.Dynamic registration;
+		private final ServletRegistration.Dynamic registration;
 
 		public RegisteredServlet(Servlet servlet) {
 			this.servlet = servlet;
@@ -207,9 +207,9 @@ public class MockEmbeddedServletContainerFactory extends
 
 	public static class RegisteredFilter {
 
-		private Filter filter;
+		private final Filter filter;
 
-		private FilterRegistration.Dynamic registration;
+		private final FilterRegistration.Dynamic registration;
 
 		public RegisteredFilter(Filter filter) {
 			this.filter = filter;

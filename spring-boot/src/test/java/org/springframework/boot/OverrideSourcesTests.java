@@ -83,7 +83,7 @@ public class OverrideSourcesTests {
 
 	protected static class TestBean {
 
-		private String name;
+		private final String name;
 
 		public TestBean(String name) {
 			this.name = name;

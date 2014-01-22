@@ -49,7 +49,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class EnableConfigurationPropertiesTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
@@ -504,7 +504,7 @@ public class EnableConfigurationPropertiesTests {
 
 		private String name;
 
-		private Nested nested = new Nested();
+		private final Nested nested = new Nested();
 
 		public void setName(String name) {
 			this.name = name;
@@ -547,7 +547,7 @@ public class EnableConfigurationPropertiesTests {
 
 		private int[] array;
 
-		private List<Integer> list = new ArrayList<Integer>();
+		private final List<Integer> list = new ArrayList<Integer>();
 
 		// No getter - you should be able to bind to a write-only bean
 

@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Configuration;
 public class AuditAutoConfiguration {
 
 	@Autowired(required = false)
-	private AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
+	private final AuditEventRepository auditEventRepository = new InMemoryAuditEventRepository();
 
 	@Bean
 	public AuditListener auditListener() throws Exception {

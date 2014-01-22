@@ -229,7 +229,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 	 */
 	private class FilePool {
 
-		private int size;
+		private final int size;
 
 		private final Semaphore available;
 

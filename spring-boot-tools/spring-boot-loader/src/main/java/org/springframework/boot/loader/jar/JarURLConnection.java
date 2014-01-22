@@ -33,7 +33,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final String JAR_URL_PREFIX = "jar:file:";
 
-	private JarFile jarFile;
+	private final JarFile jarFile;
 
 	private JarEntryData jarEntryData;
 

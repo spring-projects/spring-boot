@@ -26,7 +26,7 @@ import org.hamcrest.TypeSafeMatcher;
  */
 public class ByteArrayStartsWith extends TypeSafeMatcher<byte[]> {
 
-	private byte[] bytes;
+	private final byte[] bytes;
 
 	public ByteArrayStartsWith(byte[] bytes) {
 		this.bytes = bytes;

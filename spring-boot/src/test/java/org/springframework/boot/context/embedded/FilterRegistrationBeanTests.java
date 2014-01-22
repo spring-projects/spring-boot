@@ -48,7 +48,7 @@ public class FilterRegistrationBeanTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private MockFilter filter = new MockFilter();
+	private final MockFilter filter = new MockFilter();
 
 	@Mock
 	private ServletContext servletContext;

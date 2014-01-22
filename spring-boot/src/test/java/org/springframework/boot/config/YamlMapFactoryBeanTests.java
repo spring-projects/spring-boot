@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class YamlMapFactoryBeanTests {
 
-	private YamlMapFactoryBean factory = new YamlMapFactoryBean();
+	private final YamlMapFactoryBean factory = new YamlMapFactoryBean();
 
 	@Test
 	public void testSetIgnoreResourceNotFound() throws Exception {

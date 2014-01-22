@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
  */
 public class ServerPropertiesTests {
 
-	private ServerProperties properties = new ServerProperties();
+	private final ServerProperties properties = new ServerProperties();
 
 	@Test
 	public void testAddressBinding() throws Exception {

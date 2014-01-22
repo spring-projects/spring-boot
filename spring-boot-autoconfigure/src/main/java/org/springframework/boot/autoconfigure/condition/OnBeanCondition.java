@@ -180,13 +180,13 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 
 	private static class BeanSearchSpec {
 
-		private List<String> names = new ArrayList<String>();
+		private final List<String> names = new ArrayList<String>();
 
-		private List<String> types = new ArrayList<String>();
+		private final List<String> types = new ArrayList<String>();
 
-		private List<String> annotations = new ArrayList<String>();
+		private final List<String> annotations = new ArrayList<String>();
 
-		private SearchStrategy strategy;
+		private final SearchStrategy strategy;
 
 		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
 				Class<?> annotationType) {

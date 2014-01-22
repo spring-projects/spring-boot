@@ -42,9 +42,9 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 
 	private static Log logger = LogFactory.getLog(BasicBatchConfigurer.class);
 
-	private DataSource dataSource;
+	private final DataSource dataSource;
 
-	private EntityManagerFactory entityManagerFactory;
+	private final EntityManagerFactory entityManagerFactory;
 
 	private PlatformTransactionManager transactionManager;
 

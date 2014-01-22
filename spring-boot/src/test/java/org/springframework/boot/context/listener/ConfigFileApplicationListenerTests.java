@@ -57,12 +57,12 @@ import static org.junit.Assert.assertThat;
  */
 public class ConfigFileApplicationListenerTests {
 
-	private StandardEnvironment environment = new StandardEnvironment();
+	private final StandardEnvironment environment = new StandardEnvironment();
 
-	private SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
+	private final SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
 			new SpringApplication(), this.environment, new String[0]);
 
-	private ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
+	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
 
 	@Rule
 	public ExpectedException expected = ExpectedException.none();

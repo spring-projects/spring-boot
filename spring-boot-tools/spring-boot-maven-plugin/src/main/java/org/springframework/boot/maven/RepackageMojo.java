@@ -150,7 +150,7 @@ public class RepackageMojo extends AbstractMojo {
 	public static enum LayoutType {
 		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(
 				new Layouts.Expanded()), NONE(new Layouts.None());
-		private Layout layout;
+		private final Layout layout;
 
 		public Layout layout() {
 			return this.layout;

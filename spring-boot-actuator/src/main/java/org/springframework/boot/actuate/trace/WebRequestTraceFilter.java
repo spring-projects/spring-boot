@@ -55,7 +55,7 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 
 	private int order = Integer.MAX_VALUE;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	private BasicErrorController errorController;
 

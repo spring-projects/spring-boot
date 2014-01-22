@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class JavaLoggerSystemTests {
 
-	private JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass()
+	private final JavaLoggingSystem loggingSystem = new JavaLoggingSystem(getClass()
 			.getClassLoader());
 
 	@Rule

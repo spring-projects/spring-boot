@@ -69,7 +69,7 @@ public class WebSocketAutoConfiguration {
 	protected static class WebSocketRegistrationConfiguration implements
 			BeanPostProcessor, BeanFactoryAware, WebSocketConfigurer {
 
-		private Map<String, WebSocketHandler> prefixes = new HashMap<String, WebSocketHandler>();
+		private final Map<String, WebSocketHandler> prefixes = new HashMap<String, WebSocketHandler>();
 
 		private ListableBeanFactory beanFactory;
 

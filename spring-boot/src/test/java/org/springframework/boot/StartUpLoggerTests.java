@@ -28,9 +28,9 @@ import static org.junit.Assert.assertTrue;
  */
 public class StartUpLoggerTests {
 
-	private StringBuffer output = new StringBuffer();
+	private final StringBuffer output = new StringBuffer();
 
-	private SimpleLog log = new SimpleLog("test") {
+	private final SimpleLog log = new SimpleLog("test") {
 		@Override
 		protected void write(StringBuffer buffer) {
 			StartUpLoggerTests.this.output.append(buffer).append("\n");

@@ -521,13 +521,13 @@ public class SpringApplicationTests {
 	static class TestCommandLineRunner implements CommandLineRunner,
 			ApplicationContextAware, Ordered {
 
-		private String[] expectedBefore;
+		private final String[] expectedBefore;
 
 		private ApplicationContext applicationContext;
 
 		private String[] args;
 
-		private int order;
+		private final int order;
 
 		public TestCommandLineRunner(int order, String... expectedBefore) {
 			this.expectedBefore = expectedBefore;

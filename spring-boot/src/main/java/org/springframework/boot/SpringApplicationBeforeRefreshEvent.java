@@ -30,8 +30,8 @@ import org.springframework.core.env.Environment;
  */
 public class SpringApplicationBeforeRefreshEvent extends ApplicationEvent {
 
-	private String[] args;
-	private ConfigurableApplicationContext context;
+	private final String[] args;
+	private final ConfigurableApplicationContext context;
 
 	/**
 	 * @param springApplication the current application

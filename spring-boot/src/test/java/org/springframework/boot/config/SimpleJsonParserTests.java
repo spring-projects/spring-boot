@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class SimpleJsonParserTests {
 
-	private JsonParser parser = getParser();
+	private final JsonParser parser = getParser();
 
 	protected JsonParser getParser() {
 		return new SimpleJsonParser();

@@ -39,9 +39,9 @@ import org.springframework.core.env.Environment;
 public class BeansEndpoint extends AbstractEndpoint<List<Object>> implements
 		ApplicationContextAware {
 
-	private LiveBeansView liveBeansView = new LiveBeansView();
+	private final LiveBeansView liveBeansView = new LiveBeansView();
 
-	private JsonParser parser = JsonParserFactory.getJsonParser();
+	private final JsonParser parser = JsonParserFactory.getJsonParser();
 
 	public BeansEndpoint() {
 		super("beans");

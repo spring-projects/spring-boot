@@ -47,7 +47,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 
 	private final Tomcat tomcat;
 
-	private boolean autoStart;
+	private final boolean autoStart;
 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainer} instance.

@@ -41,7 +41,7 @@ public class YamlConfigurationFactoryTests {
 
 	private Validator validator;
 
-	private Map<Class<?>, Map<String, String>> aliases = new HashMap<Class<?>, Map<String, String>>();
+	private final Map<Class<?>, Map<String, String>> aliases = new HashMap<Class<?>, Map<String, String>>();
 
 	private Foo createFoo(final String yaml) throws Exception {
 		YamlConfigurationFactory<Foo> factory = new YamlConfigurationFactory<Foo>(

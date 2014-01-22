@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class InMemoryAuditEventRepositoryTests {
 
-	private InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
+	private final InMemoryAuditEventRepository repository = new InMemoryAuditEventRepository();
 
 	@Test
 	public void testAddToCapacity() throws Exception {

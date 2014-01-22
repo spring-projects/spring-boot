@@ -62,13 +62,13 @@ public class Shell {
 
 	private static final String DEFAULT_PROMPT = "$ ";
 
-	private ShellCommandRunner commandRunner;
+	private final ShellCommandRunner commandRunner;
 
-	private ConsoleReader consoleReader;
+	private final ConsoleReader consoleReader;
 
-	private EscapeAwareWhiteSpaceArgumentDelimiter argumentDelimiter = new EscapeAwareWhiteSpaceArgumentDelimiter();
+	private final EscapeAwareWhiteSpaceArgumentDelimiter argumentDelimiter = new EscapeAwareWhiteSpaceArgumentDelimiter();
 
-	private Stack<String> prompts = new Stack<String>();
+	private final Stack<String> prompts = new Stack<String>();
 
 	/**
 	 * Create a new {@link Shell} instance.

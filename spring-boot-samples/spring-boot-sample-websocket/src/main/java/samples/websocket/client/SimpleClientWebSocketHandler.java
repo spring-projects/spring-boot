@@ -31,7 +31,7 @@ public class SimpleClientWebSocketHandler extends TextWebSocketHandler {
 
 	private final GreetingService greetingService;
 
-	private CountDownLatch latch;
+	private final CountDownLatch latch;
 
 	@Autowired
 	public SimpleClientWebSocketHandler(GreetingService greetingService,

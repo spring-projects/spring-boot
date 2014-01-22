@@ -57,9 +57,9 @@ public class ShellProperties {
 
 	private String[] disabledPlugins = new String[0];
 
-	private Ssh ssh = new Ssh();
+	private final Ssh ssh = new Ssh();
 
-	private Telnet telnet = new Telnet();
+	private final Telnet telnet = new Telnet();
 
 	public void setAuth(String auth) {
 		Assert.hasLength(auth, "Auth must not be empty");

@@ -65,7 +65,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private final RandomAccessDataFile rootFile;
 
-	private RandomAccessData data;
+	private final RandomAccessData data;
 
 	private final String name;
 

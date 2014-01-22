@@ -39,7 +39,7 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 
 	private ApplicationContext applicationContext;
 
-	private Set<MvcEndpoint> endpoints = new HashSet<MvcEndpoint>();
+	private final Set<MvcEndpoint> endpoints = new HashSet<MvcEndpoint>();
 
 	private Set<Class<?>> customTypes;
 

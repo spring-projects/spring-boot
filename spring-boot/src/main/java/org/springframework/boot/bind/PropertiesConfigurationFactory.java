@@ -62,7 +62,7 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 
 	private PropertySources propertySources;
 
-	private T target;
+	private final T target;
 
 	private Validator validator;
 

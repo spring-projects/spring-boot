@@ -46,9 +46,9 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 
 	private String keys = this.prefix + "keys";
 
-	private BoundZSetOperations<String, String> zSetOperations;
+	private final BoundZSetOperations<String, String> zSetOperations;
 
-	private RedisOperations<String, String> redisOperations;
+	private final RedisOperations<String, String> redisOperations;
 
 	public RedisMultiMetricRepository(RedisConnectionFactory redisConnectionFactory) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");

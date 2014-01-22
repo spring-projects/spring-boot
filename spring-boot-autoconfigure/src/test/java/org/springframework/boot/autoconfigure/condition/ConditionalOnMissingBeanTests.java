@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings("resource")
 public class ConditionalOnMissingBeanTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void testNameOnMissingBeanCondition() {

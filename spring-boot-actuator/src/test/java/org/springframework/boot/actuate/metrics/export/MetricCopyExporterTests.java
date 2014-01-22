@@ -29,9 +29,9 @@ import static org.junit.Assert.assertEquals;
  */
 public class MetricCopyExporterTests {
 
-	private InMemoryMetricRepository writer = new InMemoryMetricRepository();
-	private InMemoryMetricRepository reader = new InMemoryMetricRepository();
-	private MetricCopyExporter exporter = new MetricCopyExporter(this.reader, this.writer);
+	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
+	private final InMemoryMetricRepository reader = new InMemoryMetricRepository();
+	private final MetricCopyExporter exporter = new MetricCopyExporter(this.reader, this.writer);
 
 	@Test
 	public void export() {

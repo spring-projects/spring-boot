@@ -34,7 +34,7 @@ import sample.ui.MessageRepository;
 @Controller
 @RequestMapping("/")
 public class MessageController {
-	private MessageRepository messageRepository;
+	private final MessageRepository messageRepository;
 
 	@Autowired
 	public MessageController(MessageRepository messageRepository) {

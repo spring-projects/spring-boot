@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  */
 public class AuditApplicationEvent extends ApplicationEvent {
 
-	private AuditEvent auditEvent;
+	private final AuditEvent auditEvent;
 
 	/**
 	 * Create a new {@link AuditApplicationEvent} that wraps a newly created

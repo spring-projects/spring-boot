@@ -78,11 +78,11 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ConversionService conversionService;
 
-	private DefaultConversionService defaultConversionService = new DefaultConversionService();
+	private final DefaultConversionService defaultConversionService = new DefaultConversionService();
 
 	private BeanFactory beanFactory;
 
-	private boolean initialized = false;
+	private final boolean initialized = false;
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 

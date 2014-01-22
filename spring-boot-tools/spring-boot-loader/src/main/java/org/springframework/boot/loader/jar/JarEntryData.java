@@ -39,7 +39,7 @@ public final class JarEntryData {
 
 	private final JarFile source;
 
-	private byte[] header;
+	private final byte[] header;
 
 	private AsciiBytes name;
 
@@ -47,7 +47,7 @@ public final class JarEntryData {
 
 	private final AsciiBytes comment;
 
-	private long localHeaderOffset;
+	private final long localHeaderOffset;
 
 	private RandomAccessData data;
 

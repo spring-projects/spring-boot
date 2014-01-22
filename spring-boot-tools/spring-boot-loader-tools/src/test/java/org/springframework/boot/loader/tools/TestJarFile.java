@@ -36,9 +36,9 @@ public class TestJarFile {
 
 	private final byte[] buffer = new byte[4096];
 
-	private TemporaryFolder temporaryFolder;
+	private final TemporaryFolder temporaryFolder;
 
-	private File jarSource;
+	private final File jarSource;
 
 	public TestJarFile(TemporaryFolder temporaryFolder) throws IOException {
 		this.temporaryFolder = temporaryFolder;

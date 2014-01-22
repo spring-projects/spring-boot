@@ -38,9 +38,9 @@ public class EnvironmentDelegateApplicationListenerTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private EnvironmentDelegateApplicationListener listener = new EnvironmentDelegateApplicationListener();
+	private final EnvironmentDelegateApplicationListener listener = new EnvironmentDelegateApplicationListener();
 
-	private StaticApplicationContext context = new StaticApplicationContext();
+	private final StaticApplicationContext context = new StaticApplicationContext();
 
 	@After
 	public void close() {

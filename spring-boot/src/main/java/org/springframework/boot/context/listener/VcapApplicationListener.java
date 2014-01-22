@@ -101,7 +101,7 @@ public class VcapApplicationListener implements
 	// use these ones
 	private int order = Integer.MIN_VALUE + 9;
 
-	private JsonParser parser = JsonParserFactory.getJsonParser();
+	private final JsonParser parser = JsonParserFactory.getJsonParser();
 
 	public void setOrder(int order) {
 		this.order = order;

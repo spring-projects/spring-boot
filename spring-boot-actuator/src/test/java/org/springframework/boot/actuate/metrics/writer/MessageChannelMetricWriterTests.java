@@ -30,9 +30,9 @@ import static org.mockito.Mockito.verify;
  */
 public class MessageChannelMetricWriterTests {
 
-	private MessageChannel channel = mock(MessageChannel.class);
+	private final MessageChannel channel = mock(MessageChannel.class);
 
-	private MessageChannelMetricWriter observer = new MessageChannelMetricWriter(
+	private final MessageChannelMetricWriter observer = new MessageChannelMetricWriter(
 			this.channel);
 
 	@Test

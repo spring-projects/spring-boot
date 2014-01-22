@@ -32,7 +32,7 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 
 	private int capacity = 100;
 
-	private Map<String, List<AuditEvent>> events = new HashMap<String, List<AuditEvent>>();
+	private final Map<String, List<AuditEvent>> events = new HashMap<String, List<AuditEvent>>();
 
 	/**
 	 * @param capacity the capacity to set

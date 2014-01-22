@@ -50,7 +50,7 @@ public class ServletRegistrationBeanTests {
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private MockServlet servlet = new MockServlet();
+	private final MockServlet servlet = new MockServlet();
 
 	@Mock
 	private ServletContext servletContext;

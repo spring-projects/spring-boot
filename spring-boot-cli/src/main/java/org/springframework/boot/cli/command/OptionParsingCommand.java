@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 public abstract class OptionParsingCommand extends AbstractCommand {
 
-	private OptionHandler handler;
+	private final OptionHandler handler;
 
 	protected OptionParsingCommand(String name, String description, OptionHandler handler) {
 		super(name, description);

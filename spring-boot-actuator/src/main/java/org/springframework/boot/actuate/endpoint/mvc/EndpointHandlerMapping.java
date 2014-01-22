@@ -50,7 +50,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class EndpointHandlerMapping extends RequestMappingHandlerMapping implements
 		ApplicationContextAware {
 
-	private Set<? extends MvcEndpoint> endpoints;
+	private final Set<? extends MvcEndpoint> endpoints;
 
 	private String prefix = "";
 

@@ -57,13 +57,13 @@ public class LoggingApplicationListenerTests {
 	@Rule
 	public OutputCapture outputCapture = new OutputCapture();
 
-	private LoggingApplicationListener initializer = new LoggingApplicationListener();
+	private final LoggingApplicationListener initializer = new LoggingApplicationListener();
 
-	private Log logger = new SLF4JLogFactory().getInstance(getClass());
+	private final Log logger = new SLF4JLogFactory().getInstance(getClass());
 
-	private SpringApplication springApplication = new SpringApplication();
+	private final SpringApplication springApplication = new SpringApplication();
 
-	private GenericApplicationContext context = new GenericApplicationContext();
+	private final GenericApplicationContext context = new GenericApplicationContext();
 
 	@Before
 	public void init() throws SecurityException, IOException {

@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  */
 public class YamlPropertySourceLoader extends PropertiesPropertySourceLoader {
 
-	private List<DocumentMatcher> matchers;
+	private final List<DocumentMatcher> matchers;
 
 	/**
 	 * Create a {@link YamlPropertySourceLoader} instance with the specified matchers.

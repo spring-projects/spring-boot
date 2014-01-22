@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 @ConfigurationProperties(name = "endpoints.health", ignoreUnknownFields = false)
 public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 
-	private HealthIndicator<? extends T> indicator;
+	private final HealthIndicator<? extends T> indicator;
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.

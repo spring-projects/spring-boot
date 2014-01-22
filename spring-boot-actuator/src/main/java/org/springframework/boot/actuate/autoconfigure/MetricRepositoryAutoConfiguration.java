@@ -123,7 +123,7 @@ public class MetricRepositoryAutoConfiguration {
 
 		@Autowired(required = false)
 		@Qualifier("metricsExecutor")
-		private Executor executor = Executors.newSingleThreadExecutor();
+		private final Executor executor = Executors.newSingleThreadExecutor();
 
 		@Bean
 		@ConditionalOnMissingBean(name = "metricsChannel")
