@@ -49,6 +49,8 @@ public class MessageSourceAutoConfiguration implements EnvironmentAware {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		String basename = this.environment.getProperty("basename", "messages");
 		messageSource.setBasename(basename);
+		String encoding = this.environment.getProperty("encoding", "utf-8");
+		messageSource.setDefaultEncoding(encoding);
 		return messageSource;
 	}
 
