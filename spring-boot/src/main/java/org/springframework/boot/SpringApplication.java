@@ -376,8 +376,19 @@ public class SpringApplication {
 
 	protected void handleError(ConfigurableApplicationContext context,
 			ApplicationEventMulticaster multicaster, Throwable ex, String... args) {
-		multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context, args,
-				ex));
+		try {
+			multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context,
+					args, ex));
+		}
+		catch (Exception e) {
+			// We don't want to fail here and mask the original exception
+			if (this.log.isDebugEnabled()) {
+				this.log.error("Error handling failed", e);
+			}
+			else {
+				this.log.warn("Error handling failed (" + e.getMessage() + ")");
+			}
+		}
 		if (context != null) {
 			context.close();
 		}
@@ -1004,8 +1015,8 @@ public class SpringApplication {
 		@Override
 		protected Collection<ApplicationListener<?>> getApplicationListeners(
 				ApplicationEvent event) {
-			List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>(
-					super.getApplicationListeners(event));
+			List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
+			listeners.addAll(super.getApplicationListeners(event));
 			if (event instanceof SpringApplicationErrorEvent) {
 				Collections.reverse(listeners);
 			}
