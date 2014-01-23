@@ -182,7 +182,7 @@ public class ConfigFileApplicationListener implements
 
 	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 
-		List<String> candidates = getCandidateLocations(resourceLoader);
+		List<String> candidates = getCandidateLocations(environment, resourceLoader);
 		Collections.reverse(candidates);
 		PropertySource<?> removed = environment.getPropertySources().remove(
 				"defaultProperties");
@@ -190,12 +190,24 @@ public class ConfigFileApplicationListener implements
 		String first = null;
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
-			PropertySource<?> source = load(environment, resourceLoader, candidate, null);
-			if (source != null) {
-				if (first == null) {
-					first = source.getName();
+			for (String path : StringUtils.commaDelimitedListToStringArray(environment
+					.resolvePlaceholders(candidate))) {
+
+				if (LOCATION_VARIABLE.equals(candidate) && !path.contains("$")) {
+					if (!path.contains(":")) {
+						path = "file:" + path;
+					}
+					path = StringUtils.cleanPath(path);
 				}
-				environment.getPropertySources().addLast(source);
+
+				PropertySource<?> source = load(environment, resourceLoader, path, null);
+				if (source != null) {
+					if (first == null) {
+						first = source.getName();
+					}
+					environment.getPropertySources().addLast(source);
+				}
+
 			}
 		}
 
@@ -232,12 +244,14 @@ public class ConfigFileApplicationListener implements
 		}
 	}
 
-	private List<String> getCandidateLocations(ResourceLoader resourceLoader) {
+	private List<String> getCandidateLocations(ConfigurableEnvironment environment,
+			ResourceLoader resourceLoader) {
 		Set<String> candidates = new LinkedHashSet<String>();
 		for (String searchLocation : this.searchLocations) {
 			for (String extension : new String[] { ".properties", ".yml" }) {
 				for (String name : StringUtils
-						.commaDelimitedListToStringArray(this.names)) {
+						.commaDelimitedListToStringArray(environment
+								.resolvePlaceholders(this.names))) {
 					String location = searchLocation + name + extension;
 					candidates.add(location);
 				}
@@ -263,15 +277,6 @@ public class ConfigFileApplicationListener implements
 
 	private PropertySource<?> load(ConfigurableEnvironment environment,
 			ResourceLoader resourceLoader, String location, String profile) {
-
-		String path = environment.resolvePlaceholders(location);
-		if (LOCATION_VARIABLE.equals(location) && !path.contains("$")) {
-			if (!path.contains(":")) {
-				path = "file:" + path;
-			}
-			path = StringUtils.cleanPath(path);
-		}
-		location = path;
 
 		String suffix = "." + StringUtils.getFilenameExtension(location);
 		Class<?> type = this.propertySourceAnnotations.configuration(location);

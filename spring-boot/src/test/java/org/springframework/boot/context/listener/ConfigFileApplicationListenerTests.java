@@ -17,9 +17,7 @@
 package org.springframework.boot.context.listener;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -35,7 +33,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
@@ -76,6 +73,28 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void loadPropertiesFile() throws Exception {
 		this.initializer.setNames("testproperties");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("frompropertiesfile"));
+	}
+
+	@Test
+	public void loadTwoPropertiesFile() throws Exception {
+		EnvironmentTestUtils
+				.addEnvironment(
+						this.environment,
+						"spring.config.location:classpath:testproperties.properties,classpath:application.properties");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("frompropertiesfile"));
+	}
+
+	@Test
+	public void loadTwoOfThreePropertiesFile() throws Exception {
+		EnvironmentTestUtils
+				.addEnvironment(
+						this.environment,
+						"spring.config.location:classpath:testproperties.properties,classpath:application.properties,classpath:nonexistent.properties");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
@@ -173,11 +192,9 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void specificNameAndProfileFromExistingSource() throws Exception {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.profiles.active", "specificprofile");
-		map.put("spring.config.name", "specificfile");
-		MapPropertySource source = new MapPropertySource("map", map);
-		this.environment.getPropertySources().addFirst(source);
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.profiles.active=specificprofile",
+				"spring.config.name=specificfile");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromspecificpropertiesfile"));
