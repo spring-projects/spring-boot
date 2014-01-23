@@ -16,13 +16,11 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.env.MapPropertySource;
 
 import static org.junit.Assert.assertEquals;
 
@@ -50,13 +48,23 @@ public class MessageSourceAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MessageSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.messages.basename", "test/messages");
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("test", map));
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.messages.basename:test/messages");
 		this.context.refresh();
 		assertEquals("bar",
 				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+	}
+
+	@Test
+	public void testBadEncoding() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MessageSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.messages.encoding:rubbish");
+		this.context.refresh();
+		// Bad encoding just means the messages are ignored
+		assertEquals("blah", this.context.getMessage("foo", null, "blah", Locale.UK));
 	}
 
 }
