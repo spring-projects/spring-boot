@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.PoolConfig;
@@ -46,6 +47,7 @@ import com.lambdaworks.redis.RedisClient;
  */
 @Configuration
 @ConditionalOnClass({ LettuceConnection.class, RedisOperations.class, RedisClient.class })
+@EnableConfigurationProperties
 public class RedisAutoConfiguration {
 
 	@Configuration
