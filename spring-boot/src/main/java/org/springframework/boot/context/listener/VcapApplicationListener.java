@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.config.JsonParser;
 import org.springframework.boot.config.JsonParserFactory;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -40,8 +39,8 @@ import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.util.StringUtils;
 
 /**
- * An {@link ApplicationContextInitializer} that knows where to find VCAP (a.k.a. Cloud
- * Foundry) meta data in the existing environment. It parses out the VCAP_APPLICATION and
+ * An {@link ApplicationListener} that knows where to find VCAP (a.k.a. Cloud Foundry)
+ * meta data in the existing environment. It parses out the VCAP_APPLICATION and
  * VCAP_SERVICES meta data and dumps it in a form that is easily consumed by
  * {@link Environment} users. If the app is running in Cloud Foundry then both meta data
  * items are JSON objects encoded in OS environment variables. VCAP_APPLICATION is a

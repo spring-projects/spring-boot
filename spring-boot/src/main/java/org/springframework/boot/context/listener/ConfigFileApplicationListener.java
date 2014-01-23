@@ -36,7 +36,6 @@ import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.config.PropertiesPropertySourceLoader;
 import org.springframework.boot.config.PropertySourceLoader;
 import org.springframework.boot.config.YamlPropertySourceLoader;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.PropertySources;
@@ -58,10 +57,9 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationContextInitializer} that configures the context environment by
- * loading properties from well known file locations. By default properties will be loaded
- * from 'application.properties' and/or 'application.yml' files in the following
- * locations:
+ * {@link ApplicationListener} that configures the context environment by loading
+ * properties from well known file locations. By default properties will be loaded from
+ * 'application.properties' and/or 'application.yml' files in the following locations:
  * <ul>
  * <li>classpath:</li>
  * <li>file:./</li>

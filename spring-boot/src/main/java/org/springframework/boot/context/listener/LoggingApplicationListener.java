@@ -30,8 +30,8 @@ import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.SpringApplicationStartEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.SmartApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -41,11 +41,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
 
 /**
- * An {@link ApplicationContextInitializer} that configures a logging framework depending
- * on what it finds on the classpath and in the {@link Environment}. If the environment
- * contains a property <code>logging.config</code> then that will be used to initialize
- * the logging system, otherwise a default location is used. The classpath is probed for
- * log4j and logback and if those are present they will be reconfigured, otherwise vanilla
+ * An {@link ApplicationListener} that configures a logging framework depending on what it
+ * finds on the classpath and in the {@link Environment}. If the environment contains a
+ * property <code>logging.config</code> then that will be used to initialize the logging
+ * system, otherwise a default location is used. The classpath is probed for log4j and
+ * logback and if those are present they will be reconfigured, otherwise vanilla
  * <code>java.util.logging</code> will be used. </p>
  * 
  * <p>
