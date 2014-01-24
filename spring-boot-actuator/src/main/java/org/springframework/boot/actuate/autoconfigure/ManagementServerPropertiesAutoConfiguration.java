@@ -38,14 +38,14 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties
 public class ManagementServerPropertiesAutoConfiguration {
 
-	@Bean(name = "org.springframework.actuate.properties.ManagementServerProperties")
+	@Bean
 	@ConditionalOnMissingBean
 	public ManagementServerProperties managementServerProperties() {
 		return new ManagementServerProperties();
 	}
 
 	// In case security auto configuration hasn't been included
-	@Bean(name = "org.springframework.autoconfigure.security.SecurityProperties")
+	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = "org.springframework.security.config.annotation.web.configuration.EnableWebSecurity")
 	public SecurityProperties securityProperties() {

@@ -37,7 +37,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 		AuthenticationManagerConfiguration.class })
 public class SecurityAutoConfiguration {
 
-	@Bean(name = "org.springframework.autoconfigure.security.SecurityProperties")
+	@Bean
 	@ConditionalOnMissingBean
 	public SecurityProperties securityProperties() {
 		return new SecurityProperties();

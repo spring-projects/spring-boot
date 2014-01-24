@@ -46,7 +46,7 @@ public class ServerPropertiesAutoConfiguration implements ApplicationContextAwar
 
 	private ApplicationContext applicationContext;
 
-	@Bean(name = "org.springframework.boot.autoconfigure.web.ServerProperties")
+	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public ServerProperties serverProperties() {
 		return new ServerProperties();
