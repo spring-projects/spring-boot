@@ -158,6 +158,9 @@ public class CommandRunner implements Iterable<Command> {
 	public int runAndHandleErrors(String... args) {
 		String[] argsWithoutDebugFlags = removeDebugFlags(args);
 		boolean debug = argsWithoutDebugFlags.length != args.length;
+		if (debug) {
+			System.setProperty("debug", "true");
+		}
 		try {
 			run(argsWithoutDebugFlags);
 			return 0;
@@ -173,10 +176,14 @@ public class CommandRunner implements Iterable<Command> {
 
 	private String[] removeDebugFlags(String[] args) {
 		List<String> rtn = new ArrayList<String>(args.length);
+		boolean appArgsDetected = false;
 		for (String arg : args) {
-			if (!("-d".equals(arg) || "--debug".equals(arg))) {
-				rtn.add(arg);
+			// Allow apps to have a -d argument
+			appArgsDetected |= "--".equals(arg);
+			if (("-d".equals(arg) || "--debug".equals(arg)) && !appArgsDetected) {
+				continue;
 			}
+			rtn.add(arg);
 		}
 		return rtn.toArray(new String[rtn.size()]);
 	}

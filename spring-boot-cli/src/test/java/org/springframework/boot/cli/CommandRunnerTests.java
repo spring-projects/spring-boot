@@ -29,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.cli.command.Command;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -63,6 +64,7 @@ public class CommandRunnerTests {
 	@After
 	public void close() {
 		Thread.currentThread().setContextClassLoader(this.loader);
+		System.clearProperty("debug");
 	}
 
 	@Before
@@ -116,6 +118,15 @@ public class CommandRunnerTests {
 	}
 
 	@Test
+	public void appArguments() throws Exception {
+		this.commandRunner.runAndHandleErrors("command", "--", "--debug", "bar");
+		verify(this.regularCommand).run("--", "--debug", "bar");
+		// When handled by the command itself it shouldn't cause the system property to be
+		// set
+		assertEquals(null, System.getProperty("debug"));
+	}
+
+	@Test
 	public void handlesSuccess() throws Exception {
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status, equalTo(0));
@@ -150,6 +161,7 @@ public class CommandRunnerTests {
 	public void handlesExceptionWithDashD() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "-d");
+		assertEquals("true", System.getProperty("debug"));
 		assertThat(status, equalTo(1));
 		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE,
 				Call.PRINT_STACK_TRACE)));
@@ -159,6 +171,7 @@ public class CommandRunnerTests {
 	public void handlesExceptionWithDashDashDebug() throws Exception {
 		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command", "--debug");
+		assertEquals("true", System.getProperty("debug"));
 		assertThat(status, equalTo(1));
 		assertThat(this.calls, equalTo((Set<Call>) EnumSet.of(Call.ERROR_MESSAGE,
 				Call.PRINT_STACK_TRACE)));
