@@ -47,7 +47,7 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		setInitialSize(0);
 	}
 
-	@Bean
+	@Bean(destroyMethod = "close")
 	public DataSource dataSource() {
 		logger.info("Hint: using Commons DBCP BasicDataSource. It's going to work, "
 				+ "but the Tomcat DataSource is more reliable.");

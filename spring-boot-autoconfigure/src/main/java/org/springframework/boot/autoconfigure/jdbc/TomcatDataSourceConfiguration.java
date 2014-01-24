@@ -34,7 +34,7 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 
 	private org.apache.tomcat.jdbc.pool.DataSource pool;
 
-	@Bean
+	@Bean(destroyMethod = "close")
 	public DataSource dataSource() {
 		this.pool = new org.apache.tomcat.jdbc.pool.DataSource();
 		this.pool.setDriverClassName(getDriverClassName());
