@@ -97,7 +97,6 @@ $ mvn package
 $ java -jar target/mymodule-0.0.1-SNAPSHOT.jar
 ```
 
-
 ### Repackage configuration
 The following configuration options are available for the `spring-boot:repackage` goal:
 
@@ -115,7 +114,34 @@ The following configuration options are available for the `spring-boot:repackage
 |-----------------|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | classifier      | String | Classifier to add to the artifact generated. If given, the artifact will be attached. If this is not given, it will merely be written to the output directory according to the finalName |
 | mainClass       | String | The name of the main class. If not specified the first compiled class found that contains a 'main' method will be used                                                                   |
+| layout          | String | The type of archive (which corresponds to how the dependencies are layed out inside it). Defaults to a guess based on the archive type. |
 
+The plugin rewrites your manifest, and in particular it manages the
+`Main-Class` and `Start-Class` entries, so if the defaults don't work
+you have to configure those there (not in the jar plugin). The
+`Main-Class` in the manifest is actually controlled by the `layout`
+property of the boot plugin, e.g.
+
+    <plugin>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-maven-plugin</artifactId>
+      <version>{{project.version}}</version>
+      <configuration>
+        <mainClass>${start-class}</mainClass>
+        <layout>ZIP</layout>
+      </configuration>
+      <executions>
+        <execution>
+          <goals>
+            <goal>repackage</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+
+The layout property defaults to a guess based on the archive type (JAR
+or WAR). For the `PropertiesLauncher` the layout is "ZIP" (even though
+the output might be a JAR file).
 
 ## Running applications
 The Spring Boot Maven Plugin includes a `run` goal which can be used to launch your

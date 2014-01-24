@@ -52,6 +52,10 @@ To run a project in place without building a jar first you can use the "bootRun"
 $ gradle bootRun
 ```
 
+Running this way makes your static classpath resources (i.e. in
+`src/main/resources` by default) reloadable in the live application,
+which can be helpful at development time.
+
 ### Repackage configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
 for configuration. Simply set the appropriate properties as you would any other gradle
@@ -116,6 +120,7 @@ The following configuration options are available:
 | providedConfiguration | String  | The name of the provided configuration                                                                                                                                     | providedRuntime |
 | backupSource          | boolean | If the original source archive should be backed-up before being repackaged                                                                                                 | true            |
 | customConfiguration | String  | The name of the custom configuration                                                                                                                                         | none            |
+| layout          | String | The type of archive (which corresponds to how the dependencies are layed out inside it). Defaults to a guess based on the archive type. |
 
 ## Further Reading
 For more information on how Spring Boot Loader archives work, take a look at the
