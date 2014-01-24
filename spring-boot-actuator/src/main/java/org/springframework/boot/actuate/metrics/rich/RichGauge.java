@@ -46,11 +46,8 @@ public final class RichGauge {
 	private double alpha;
 
 	/**
-	 * Creates an "empty" gauge.
-	 * 
-	 * The average, max and min will be zero, but this initial value will not be included
-	 * after the first value has been set on the gauge.
-	 * 
+	 * Creates an "empty" gauge. The average, max and min will be zero, but this initial
+	 * value will not be included after the first value has been set on the gauge.
 	 * @param name the name under which the gauge will be stored.
 	 */
 	public RichGauge(String name) {

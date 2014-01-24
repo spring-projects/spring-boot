@@ -64,7 +64,6 @@ public class RedisMetricRepository implements MetricRepository {
 
 	/**
 	 * The prefix for all metrics keys.
-	 * 
 	 * @param prefix the prefix to set for all metrics keys
 	 */
 	public void setPrefix(String prefix) {
@@ -79,7 +78,6 @@ public class RedisMetricRepository implements MetricRepository {
 	 * zset under this key. Defaults to "keys.spring.metrics". REad operations, especially
 	 * {@link #findAll()} and {@link #count()}, will be much more efficient if the key is
 	 * unique to the {@link #setPrefix(String) prefix} of this repository.
-	 * 
 	 * @param key the key to set
 	 */
 	public void setKey(String key) {

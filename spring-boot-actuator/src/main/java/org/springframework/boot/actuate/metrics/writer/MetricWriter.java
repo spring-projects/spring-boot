@@ -28,14 +28,12 @@ public interface MetricWriter {
 	/**
 	 * Increment the value of a metric (or decrement if the delta is negative). The name
 	 * of the delta is the name of the metric to increment.
-	 * 
 	 * @param delta the amount to increment by
 	 */
 	void increment(Delta<?> delta);
 
 	/**
 	 * Set the value of a metric.
-	 * 
 	 * @param value
 	 */
 	void set(Metric<?> value);
@@ -43,7 +41,6 @@ public interface MetricWriter {
 	/**
 	 * Reset the value of a metric, usually to zero value. Implementations can discard the
 	 * old values if desired, but may choose not to.
-	 * 
 	 * @param metricName the name to reset
 	 */
 	void reset(String metricName);
