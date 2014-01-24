@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,26 +34,24 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.boot.config.PropertiesPropertySourceLoader;
+import org.springframework.boot.config.DefaultPropertySourceLoadersFactory;
 import org.springframework.boot.config.PropertySourceLoader;
-import org.springframework.boot.config.YamlPropertySourceLoader;
+import org.springframework.boot.config.PropertySourceLoadersFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -66,16 +65,13 @@ import org.springframework.util.StringUtils;
  * <li>classpath:config/</li>
  * <li>file:./config/:</li>
  * </ul>
- * 
  * <p>
  * Alternative locations and names can be specified using
  * {@link #setSearchLocations(String[])} and {@link #setNames(String)}.
- * 
  * <p>
  * Additional files will also be loaded based on active profiles. For example if a 'web'
  * profile is active 'application-web.properties' and 'application-web.yml' will be
  * considered.
- * 
  * <p>
  * The 'spring.config.name' property can be used to specify an alternative name to load or
  * alternatively the 'spring.config.location' property can be used to specify an exact
@@ -87,6 +83,8 @@ import org.springframework.util.StringUtils;
 public class ConfigFileApplicationListener implements
 		ApplicationListener<SpringApplicationEnvironmentAvailableEvent>, Ordered {
 
+	private static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
+
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
 
 	private String[] searchLocations = new String[] { "classpath:", "file:./",
@@ -96,13 +94,13 @@ public class ConfigFileApplicationListener implements
 
 	private int order = Integer.MIN_VALUE + 10;
 
-	private final Map<String, PropertySource<?>> cached = new HashMap<String, PropertySource<?>>();
-
 	private final ConversionService conversionService = new DefaultConversionService();
 
-	private final PropertySourceAnnotations propertySourceAnnotations = new PropertySourceAnnotations();
+	private final Map<String, PropertySource<?>> cache = new HashMap<String, PropertySource<?>>();
 
-	private PropertySourceLoaderFactory propertySourceLoaderFactory = new DefaultPropertySourceLoaderFactory();
+	private final PropertySourceAnnotations annotations = new PropertySourceAnnotations();
+
+	private PropertySourceLoadersFactory propertySourceLoadersFactory = new DefaultPropertySourceLoadersFactory();
 
 	/**
 	 * Binds the early {@link Environment} to the {@link SpringApplication}. This makes it
@@ -113,81 +111,63 @@ public class ConfigFileApplicationListener implements
 	 */
 	@Override
 	public void onApplicationEvent(SpringApplicationEnvironmentAvailableEvent event) {
-		Environment created = event.getEnvironment();
-		if (created instanceof ConfigurableEnvironment) {
-			SpringApplication springApplication = event.getSpringApplication();
-			extractPropertySources(springApplication.getSources());
-			ConfigurableEnvironment environment = (ConfigurableEnvironment) created;
-			load(environment, new DefaultResourceLoader());
-			environment.getPropertySources().addAfter(
-					StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-					new RandomValuePropertySource("random"));
-			int before = springApplication.getSources().size();
-			// Set bean properties from the early environment
-			PropertyValues propertyValues = new PropertySourcesPropertyValues(
-					environment.getPropertySources());
-			RelaxedDataBinder binder = new RelaxedDataBinder(springApplication,
-					"spring.main");
-			binder.setConversionService(this.conversionService);
-			binder.bind(propertyValues);
-			int after = springApplication.getSources().size();
-			if (after > before) {
-				// Do it again in case there are new @PropertySources
-				onApplicationEvent(event);
-			}
+		Environment environment = event.getEnvironment();
+		if (environment instanceof ConfigurableEnvironment) {
+			configure((ConfigurableEnvironment) environment, event.getSpringApplication());
 		}
 	}
 
-	private void extractPropertySources(Set<Object> sources) {
-		for (Object source : sources) {
-			if (source instanceof Class) {
-				Class<?> type = (Class<?>) source;
-				for (AnnotationAttributes propertySource : attributesForRepeatable(
-						new StandardAnnotationMetadata(type), PropertySources.class,
-						org.springframework.context.annotation.PropertySource.class)) {
-					this.propertySourceAnnotations.add(type,
-							propertySource.getStringArray("value"),
-							propertySource.getBoolean("ignoreResourceNotFound"),
-							propertySource.getString("name"));
-				}
-			}
+	private void configure(ConfigurableEnvironment environment,
+			SpringApplication springApplication) {
+		for (Object source : springApplication.getSources()) {
+			this.annotations.addFromSource(source);
 		}
-	}
+		load(environment, new DefaultResourceLoader());
+		environment.getPropertySources().addAfter(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				new RandomValuePropertySource("random"));
 
-	@SuppressWarnings("unchecked")
-	static Set<AnnotationAttributes> attributesForRepeatable(AnnotationMetadata metadata,
-			Class<?> containerClass, Class<?> annotationClass) {
-		Set<AnnotationAttributes> result = new LinkedHashSet<AnnotationAttributes>();
+		int sourcesSizeBefore = springApplication.getSources().size();
+		// Set bean properties from the early environment
+		PropertyValues propertyValues = new PropertySourcesPropertyValues(
+				environment.getPropertySources());
+		RelaxedDataBinder binder = new RelaxedDataBinder(springApplication, "spring.main");
+		binder.setConversionService(this.conversionService);
+		binder.bind(propertyValues);
 
-		addAttributesIfNotNull(result,
-				metadata.getAnnotationAttributes(annotationClass.getName(), false));
-
-		Map<String, Object> container = metadata.getAnnotationAttributes(
-				containerClass.getName(), false);
-		if (container != null && container.containsKey("value")) {
-			for (Map<String, Object> containedAttributes : (Map<String, Object>[]) container
-					.get("value")) {
-				addAttributesIfNotNull(result, containedAttributes);
-			}
-		}
-		return Collections.unmodifiableSet(result);
-	}
-
-	private static void addAttributesIfNotNull(Set<AnnotationAttributes> result,
-			Map<String, Object> attributes) {
-		if (attributes != null) {
-			result.add(AnnotationAttributes.fromMap(attributes));
+		if (springApplication.getSources().size() > sourcesSizeBefore) {
+			// Configure again in case there are new @PropertySources
+			configure(environment, springApplication);
 		}
 	}
 
 	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 
-		List<String> candidates = getCandidateLocations(environment, resourceLoader);
-		Collections.reverse(candidates);
-		PropertySource<?> removed = environment.getPropertySources().remove(
+		LoadCandidates candidates = new LoadCandidates(environment, resourceLoader);
+		PropertySource<?> defaultProperties = environment.getPropertySources().remove(
 				"defaultProperties");
 
-		String first = null;
+		String firstPropertySourceName = loadInitial(environment, resourceLoader,
+				candidates);
+
+		if (environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
+			for (String activeProfile : StringUtils.commaDelimitedListToSet(environment
+					.getProperty(ACTIVE_PROFILES_PROPERTY).toString())) {
+				environment.addActiveProfile(activeProfile);
+			}
+		}
+
+		// Second load for specific profiles
+		loadAgain(environment, resourceLoader, candidates, firstPropertySourceName);
+
+		if (defaultProperties != null) {
+			environment.getPropertySources().addLast(defaultProperties);
+		}
+	}
+
+	private String loadInitial(ConfigurableEnvironment environment,
+			ResourceLoader resourceLoader, LoadCandidates candidates) {
+		String firstSourceName = null;
 		// Initial load allows profiles to be activated
 		for (String candidate : candidates) {
 			for (String path : StringUtils.commaDelimitedListToStringArray(environment
@@ -200,87 +180,51 @@ public class ConfigFileApplicationListener implements
 					path = StringUtils.cleanPath(path);
 				}
 
-				PropertySource<?> source = load(environment, resourceLoader, path, null);
+				PropertySource<?> source = loadPropertySource(environment,
+						resourceLoader, path, null);
 				if (source != null) {
-					if (first == null) {
-						first = source.getName();
+					if (firstSourceName == null) {
+						firstSourceName = source.getName();
 					}
 					environment.getPropertySources().addLast(source);
 				}
-
 			}
 		}
+		return firstSourceName;
+	}
 
-		if (environment.containsProperty("spring.profiles.active")) {
-			Set<String> profiles = StringUtils.commaDelimitedListToSet(environment
-					.getProperty("spring.profiles.active").toString());
-			for (String active : profiles) {
-				// allow document with no profile to set the active one
-				environment.addActiveProfile(active);
-			}
-
-		}
-
-		// Second load for specific profiles
+	private void loadAgain(ConfigurableEnvironment environment,
+			ResourceLoader resourceLoader, LoadCandidates candidates,
+			String firstPropertySourceName) {
 		for (String profile : environment.getActiveProfiles()) {
 			for (String candidate : candidates) {
-				PropertySource<?> source = load(environment, resourceLoader, candidate,
-						profile);
-				if (source != null) {
-					if (first != null) {
-						// Originals go at the end so they don't override the specific
-						// profiles
-						environment.getPropertySources().addBefore(first, source);
-					}
-					else {
-						environment.getPropertySources().addLast(source);
-					}
-				}
+				PropertySource<?> source = loadPropertySource(environment,
+						resourceLoader, candidate, profile);
+				addBeforeOrLast(environment, firstPropertySourceName, source);
 			}
-		}
-
-		if (removed != null) {
-			environment.getPropertySources().addLast(removed);
 		}
 	}
 
-	private List<String> getCandidateLocations(ConfigurableEnvironment environment,
-			ResourceLoader resourceLoader) {
-		Set<String> candidates = new LinkedHashSet<String>();
-		for (String searchLocation : this.searchLocations) {
-			for (String extension : new String[] { ".properties", ".yml" }) {
-				for (String name : StringUtils
-						.commaDelimitedListToStringArray(environment
-								.resolvePlaceholders(this.names))) {
-					String location = searchLocation + name + extension;
-					candidates.add(location);
-				}
+	private void addBeforeOrLast(ConfigurableEnvironment environment,
+			String relativePropertySourceName, PropertySource<?> source) {
+		if (source != null) {
+			MutablePropertySources propertySources = environment.getPropertySources();
+			// Originals go at the end so they don't override the specific profiles
+			if (relativePropertySourceName != null) {
+				propertySources.addBefore(relativePropertySourceName, source);
+			}
+			else {
+				propertySources.addLast(source);
 			}
 		}
-		candidates.add(LOCATION_VARIABLE);
-		/*
-		 * @PropertySource annotation locations go last here (eventually highest
-		 * priority). This unfortunately isn't the same semantics as @PropertySource in
-		 * Spring and it's hard to change that (so the property source gets added again in
-		 * last position by Spring later in the cycle).
-		 */
-		for (String location : this.propertySourceAnnotations.locations()) {
-			Resource resource = resourceLoader.getResource(location);
-			if (!this.propertySourceAnnotations.ignoreResourceNotFound(location)
-					&& !resource.exists()) {
-				throw new IllegalStateException("Resource not found: " + location);
-			}
-			candidates.add(location);
-		}
-		return new ArrayList<String>(candidates);
 	}
 
-	private PropertySource<?> load(ConfigurableEnvironment environment,
+	private PropertySource<?> loadPropertySource(ConfigurableEnvironment environment,
 			ResourceLoader resourceLoader, String location, String profile) {
 
-		String suffix = "." + StringUtils.getFilenameExtension(location);
-		Class<?> type = this.propertySourceAnnotations.configuration(location);
+		Class<?> type = this.annotations.configuration(location);
 
+		String suffix = "." + StringUtils.getFilenameExtension(location);
 		if (StringUtils.hasLength(profile)) {
 			location = location.replace(suffix, "-" + profile + suffix);
 		}
@@ -289,71 +233,56 @@ public class ConfigFileApplicationListener implements
 			return null;
 		}
 
-		List<PropertySourceLoader> loaders = this.propertySourceLoaderFactory
-				.getLoaders(environment);
-
 		Resource resource = resourceLoader.getResource(location);
-		String name = this.propertySourceAnnotations.name(location);
-		if (name == null) {
-			name = location;
-		}
-		PropertySource<?> propertySource = getPropertySource(name, resource, profile,
-				loaders);
-		if (propertySource == null) {
-			return null;
-		}
-		return propertySource;
+		String name = this.annotations.name(location);
+		name = (name != null ? name : location);
+		return getPropertySource(environment, name, resource, profile);
 	}
 
 	private boolean isPropertySourceAnnotationOnExcludedType(Environment environment,
 			String profile, Class<?> type, String location) {
+
 		if (type == null) {
 			// No configuration class to worry about, just a vanilla properties location
 			return false;
 		}
+
 		if (StringUtils.hasText(profile)
-				&& !this.propertySourceAnnotations.locations().contains(location)) {
+				&& !this.annotations.getLocations().contains(location)) {
 			// We are looking for profile specific properties and this one isn't
 			// explicitly asked for in propertySourceAnnotations
 			return true;
 		}
+
 		AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(
 				new DefaultListableBeanFactory(), environment);
 		int before = reader.getRegistry().getBeanDefinitionCount();
 		reader.register(type);
 		int after = reader.getRegistry().getBeanDefinitionCount();
-		if (after == before) {
-			// The configuration class was @Conditional and excluded
-			return true;
-		}
-		return false;
+
+		// Return if the configuration class was @Conditional and excluded
+		return (after == before);
 	}
 
-	private PropertySource<?> getPropertySource(String name, Resource resource,
-			String profile, List<PropertySourceLoader> loaders) {
+	private PropertySource<?> getPropertySource(Environment environment, String name,
+			Resource resource, String profile) {
 		if (resource == null || !resource.exists()) {
 			return null;
 		}
 		String key = resource.getDescription() + (profile == null ? "" : "#" + profile);
-		if (this.cached.containsKey(key)) {
-			return this.cached.get(key);
+		if (this.cache.containsKey(key)) {
+			return this.cache.get(key);
 		}
-		boolean satisfied = true;
-		for (PropertySourceLoader loader : loaders) {
+		for (PropertySourceLoader loader : this.propertySourceLoadersFactory
+				.getLoaders(environment)) {
 			if (loader.supports(resource)) {
 				PropertySource<?> propertySource = loader.load(name, resource);
-				this.cached.put(key, propertySource);
+				this.cache.put(key, propertySource);
 				return propertySource;
 			}
-			else {
-				satisfied = false;
-			}
 		}
-		if (!satisfied) {
-			throw new IllegalStateException(
-					"No supported loader found for configuration resource: " + resource);
-		}
-		return null;
+		throw new IllegalStateException("No supported loader found for "
+				+ "configuration resource: " + resource);
 	}
 
 	public void setOrder(int order) {
@@ -381,13 +310,75 @@ public class ConfigFileApplicationListener implements
 	}
 
 	/**
-	 * @param propertySourceLoaderFactory the factory to set
+	 * Set the {@link PropertySourceLoadersFactory} that will be used to create
+	 * {@link PropertySourceLoader}s.
 	 */
-	public void setPropertySourceLoaderFactory(
-			PropertySourceLoaderFactory propertySourceLoaderFactory) {
-		this.propertySourceLoaderFactory = propertySourceLoaderFactory;
+	public void setPropertySourceLoadersFactory(
+			PropertySourceLoadersFactory propertySourceLoaderFactory) {
+		this.propertySourceLoadersFactory = propertySourceLoaderFactory;
 	}
 
+	/**
+	 * Provides {@link Iterable} access to candidate property sources.
+	 */
+	private class LoadCandidates implements Iterable<String> {
+
+		private final List<String> candidates;
+
+		public LoadCandidates(ConfigurableEnvironment environment,
+				ResourceLoader resourceLoader) {
+			Set<String> candidates = new LinkedHashSet<String>();
+			addLoadCandidatesFromSearchLocations(environment, candidates);
+			candidates.add(LOCATION_VARIABLE);
+			// @PropertySource annotation locations go last here (eventually highest
+			// priority). This unfortunately isn't the same semantics as @PropertySource
+			// in
+			// Spring and it's hard to change that (so the property source gets added
+			// again in
+			// last position by Spring later in the cycle).
+			addLoadCandidatesFromAnnotations(resourceLoader, candidates);
+			this.candidates = new ArrayList<String>(candidates);
+			Collections.reverse(this.candidates);
+		}
+
+		private void addLoadCandidatesFromSearchLocations(
+				ConfigurableEnvironment environment, Set<String> candidates) {
+			for (String location : ConfigFileApplicationListener.this.searchLocations) {
+				for (String extension : new String[] { ".properties", ".yml" }) {
+					for (String name : StringUtils
+							.commaDelimitedListToStringArray(environment
+									.resolvePlaceholders(ConfigFileApplicationListener.this.names))) {
+						candidates.add(location + name + extension);
+					}
+				}
+			}
+		}
+
+		private void addLoadCandidatesFromAnnotations(ResourceLoader resourceLoader,
+				Set<String> candidates) {
+			for (String location : ConfigFileApplicationListener.this.annotations
+					.getLocations()) {
+				Resource resource = resourceLoader.getResource(location);
+				if (!ConfigFileApplicationListener.this.annotations
+						.ignoreResourceNotFound(location) && !resource.exists()) {
+					throw new IllegalStateException("Resource not found: " + location);
+				}
+				candidates.add(location);
+			}
+		}
+
+		@Override
+		public Iterator<String> iterator() {
+			return this.candidates.iterator();
+		}
+
+	}
+
+	/**
+	 * {@link PropertySource} that returns a random value for any property that starts
+	 * with {@literal "random."}. Return a {@code byte[]} unless the property name ends
+	 * with {@literal ".int} or {@literal ".long"}.
+	 */
 	private static class RandomValuePropertySource extends PropertySource<Random> {
 
 		public RandomValuePropertySource(String name) {
@@ -412,6 +403,10 @@ public class ConfigFileApplicationListener implements
 
 	}
 
+	/**
+	 * Holds details collected from
+	 * {@link org.springframework.context.annotation.PropertySource} annotations.
+	 */
 	private static class PropertySourceAnnotations {
 
 		private final Collection<String> locations = new LinkedHashSet<String>();
@@ -422,16 +417,30 @@ public class ConfigFileApplicationListener implements
 
 		private final Map<String, Boolean> ignores = new HashMap<String, Boolean>();
 
-		public void add(Class<?> source, String[] locations,
-				boolean ignoreResourceNotFound, String name) {
-			this.locations.addAll(Arrays.asList(locations));
-			if (StringUtils.hasText(name)) {
-				for (String location : locations) {
-					this.names.put(location, name);
+		public void addFromSource(Object source) {
+			if (source instanceof Class<?>) {
+				addFromSource((Class<?>) source);
+			}
+		}
+
+		private void addFromSource(Class<?> source) {
+			for (org.springframework.context.annotation.PropertySource propertySource : AnnotationUtils
+					.getRepeatableAnnotation(source, PropertySources.class,
+							org.springframework.context.annotation.PropertySource.class)) {
+				add(source, propertySource);
+			}
+		}
+
+		private void add(Class<?> source,
+				org.springframework.context.annotation.PropertySource annotation) {
+			this.locations.addAll(Arrays.asList(annotation.value()));
+			if (StringUtils.hasText(annotation.name())) {
+				for (String location : annotation.value()) {
+					this.names.put(location, annotation.name());
 				}
 			}
-			for (String location : locations) {
-				boolean reallyIgnore = ignoreResourceNotFound;
+			for (String location : annotation.value()) {
+				boolean reallyIgnore = annotation.ignoreResourceNotFound();
 				if (this.ignores.containsKey(location)) {
 					// Only if they all ignore this location will it be ignored
 					reallyIgnore &= this.ignores.get(location);
@@ -446,8 +455,7 @@ public class ConfigFileApplicationListener implements
 		}
 
 		public boolean ignoreResourceNotFound(String location) {
-			return this.ignores.containsKey(location) ? this.ignores.get(location)
-					: false;
+			return Boolean.TRUE.equals(this.ignores.get(location));
 		}
 
 		public String name(String location) {
@@ -459,29 +467,9 @@ public class ConfigFileApplicationListener implements
 			return "boot." + name;
 		}
 
-		public Collection<String> locations() {
+		public Collection<String> getLocations() {
 			return this.locations;
 		}
-	}
-
-	public static interface PropertySourceLoaderFactory {
-		List<PropertySourceLoader> getLoaders(Environment environment);
-	}
-
-	private static class DefaultPropertySourceLoaderFactory implements
-			PropertySourceLoaderFactory {
-
-		@Override
-		public List<PropertySourceLoader> getLoaders(Environment environment) {
-			ArrayList<PropertySourceLoader> loaders = new ArrayList<PropertySourceLoader>();
-			loaders.add(new PropertiesPropertySourceLoader());
-			if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
-				loaders.add(YamlPropertySourceLoader.springProfileAwareLoader(environment
-						.getActiveProfiles()));
-			}
-			return loaders;
-		}
-
 	}
 
 }
