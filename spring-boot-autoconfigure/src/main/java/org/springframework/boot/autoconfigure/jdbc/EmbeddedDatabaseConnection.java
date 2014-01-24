@@ -36,7 +36,8 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * H2 Database Connection.
 	 */
-	H2(EmbeddedDatabaseType.H2, "org.h2.Driver", "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1"),
+	H2(EmbeddedDatabaseType.H2, "org.h2.Driver",
+			"jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"),
 
 	/**
 	 * Derby Database Connection.
