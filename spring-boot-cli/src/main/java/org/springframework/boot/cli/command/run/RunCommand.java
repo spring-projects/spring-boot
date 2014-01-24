@@ -77,7 +77,8 @@ public class RunCommand extends OptionParsingCommand {
 			this.watchOption = option("watch", "Watch the specified file for changes");
 			this.editOption = option(asList("edit", "e"),
 					"Open the file with the default system editor");
-			this.verboseOption = option(asList("verbose", "v"), "Verbose logging");
+			this.verboseOption = option(asList("verbose", "v"),
+					"Verbose logging of dependency resolution");
 			this.quietOption = option(asList("quiet", "q"), "Quiet logging");
 		}
 
@@ -141,11 +142,11 @@ public class RunCommand extends OptionParsingCommand {
 
 			@Override
 			public Level getLogLevel() {
-				if (getOptions().has(RunOptionHandler.this.verboseOption)) {
-					return Level.FINEST;
-				}
 				if (getOptions().has(RunOptionHandler.this.quietOption)) {
 					return Level.OFF;
+				}
+				if (getOptions().has(RunOptionHandler.this.verboseOption)) {
+					return Level.FINEST;
 				}
 				return Level.INFO;
 			}
