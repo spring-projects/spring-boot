@@ -25,7 +25,6 @@ public interface RichGaugeReader {
 
 	/**
 	 * Find a single instance of a rich gauge by name.
-	 * 
 	 * @param name the name of the gauge
 	 * @return a rich gauge value
 	 */
@@ -33,7 +32,6 @@ public interface RichGaugeReader {
 
 	/**
 	 * Find all instances of rich gauge known to this reader.
-	 * 
 	 * @return all instances known to this reader
 	 */
 	Iterable<RichGauge> findAll();

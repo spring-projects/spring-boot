@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,28 @@
 package org.springframework.boot.actuate.metrics.reader;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
 
 /**
+ * Composite implementation of {@link MetricReader}.
+ * 
  * @author Dave Syer
  */
 public class CompositeMetricReader implements MetricReader {
 
-	private List<MetricReader> delegates = Collections.emptyList();
+	private final List<MetricReader> readers = new ArrayList<MetricReader>();
 
-	public void setDelegates(Collection<MetricReader> delegates) {
-		this.delegates = new ArrayList<MetricReader>(delegates);
+	public CompositeMetricReader(MetricReader... readers) {
+		for (MetricReader reader : readers) {
+			this.readers.add(reader);
+		}
 	}
 
 	@Override
 	public Metric<?> findOne(String metricName) {
-		for (MetricReader delegate : this.delegates) {
+		for (MetricReader delegate : this.readers) {
 			Metric<?> value = delegate.findOne(metricName);
 			if (value != null) {
 				return value;
@@ -48,7 +50,7 @@ public class CompositeMetricReader implements MetricReader {
 	@Override
 	public Iterable<Metric<?>> findAll() {
 		List<Metric<?>> values = new ArrayList<Metric<?>>((int) count());
-		for (MetricReader delegate : this.delegates) {
+		for (MetricReader delegate : this.readers) {
 			Iterable<Metric<?>> all = delegate.findAll();
 			for (Metric<?> value : all) {
 				values.add(value);
@@ -60,7 +62,7 @@ public class CompositeMetricReader implements MetricReader {
 	@Override
 	public long count() {
 		long count = 0;
-		for (MetricReader delegate : this.delegates) {
+		for (MetricReader delegate : this.readers) {
 			count += delegate.count();
 
 		}

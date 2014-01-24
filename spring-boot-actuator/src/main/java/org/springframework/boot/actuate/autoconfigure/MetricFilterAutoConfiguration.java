@@ -72,14 +72,6 @@ public class MetricFilterAutoConfiguration {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	private final class MetricsFilter extends OncePerRequestFilter {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.
-		 * servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse,
-		 * javax.servlet.FilterChain)
-		 */
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
 				HttpServletResponse response, FilterChain chain) throws ServletException,

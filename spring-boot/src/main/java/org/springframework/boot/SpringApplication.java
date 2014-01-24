@@ -375,22 +375,25 @@ public class SpringApplication {
 	}
 
 	protected void handleError(ConfigurableApplicationContext context,
-			ApplicationEventMulticaster multicaster, Throwable ex, String... args) {
+			ApplicationEventMulticaster multicaster, Throwable exception, String... args) {
 		try {
 			multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context,
-					args, ex));
+					args, exception));
 		}
-		catch (Exception e) {
+		catch (Exception ex) {
 			// We don't want to fail here and mask the original exception
 			if (this.log.isDebugEnabled()) {
-				this.log.error("Error handling failed", e);
+				this.log.error("Error handling failed", ex);
 			}
 			else {
-				this.log.warn("Error handling failed (" + e.getMessage() + ")");
+				this.log.warn("Error handling failed (" + ex.getMessage() == null ? "no error message"
+						: ex.getMessage() + ")");
 			}
 		}
-		if (context != null) {
-			context.close();
+		finally {
+			if (context != null) {
+				context.close();
+			}
 		}
 	}
 
@@ -524,7 +527,6 @@ public class SpringApplication {
 	 * @see #setApplicationContextClass(Class)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
-
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
 			try {
@@ -538,9 +540,7 @@ public class SpringApplication {
 								+ "please specify an ApplicationContextClass", ex);
 			}
 		}
-
 		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
-
 	}
 
 	/**

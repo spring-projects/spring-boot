@@ -42,7 +42,6 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	/**
 	 * Create a new exporter for metrics to a writer based on an empty prefix for the
 	 * metric names.
-	 * 
 	 * @param reader a reader as the source of metrics
 	 * @param writer the writer to send the metrics to
 	 */
@@ -53,7 +52,6 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	/**
 	 * Create a new exporter for metrics to a writer based on a prefix for the metric
 	 * names.
-	 * 
 	 * @param reader a reader as the source of metrics
 	 * @param writer the writer to send the metrics to
 	 * @param prefix the prefix for metrics to export
