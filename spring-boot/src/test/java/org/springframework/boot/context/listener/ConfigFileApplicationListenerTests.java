@@ -26,7 +26,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.config.PropertySourceLoader;
-import org.springframework.boot.context.listener.ConfigFileApplicationListener.PropertySourceLoaderFactory;
+import org.springframework.boot.config.PropertySourceLoadersFactory;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -228,7 +228,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void unsupportedResource() throws Exception {
 		this.initializer
-				.setPropertySourceLoaderFactory(new PropertySourceLoaderFactory() {
+				.setPropertySourceLoadersFactory(new PropertySourceLoadersFactory() {
 					@Override
 					public List<PropertySourceLoader> getLoaders(Environment environment) {
 						return Arrays
