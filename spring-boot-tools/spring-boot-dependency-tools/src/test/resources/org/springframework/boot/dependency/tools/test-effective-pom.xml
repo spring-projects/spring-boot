@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<version>1.0.0.BUILD-SNAPSHOT</version>
+	<properties>
+		<sample.version>1.0.0</sample.version>
+	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.sample</groupId>
+				<artifactId>sample01</artifactId>
+				<version>1.0.0</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.exclude</groupId>
+						<artifactId>exclude01</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.sample</groupId>
+				<artifactId>sample02</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.extra</groupId>
+				<artifactId>extra01</artifactId>
+				<version>2.0.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>

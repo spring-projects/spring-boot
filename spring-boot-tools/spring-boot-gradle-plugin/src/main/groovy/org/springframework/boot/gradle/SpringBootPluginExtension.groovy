@@ -39,8 +39,19 @@ import org.springframework.boot.loader.tools.Layouts
 public class SpringBootPluginExtension {
 
 	static enum LayoutType {
-		JAR(new Layouts.Jar()), WAR(new Layouts.War()), ZIP(new Layouts.Expanded()), DIR(new Layouts.Expanded()), NONE(new Layouts.None());
+
+		JAR(new Layouts.Jar()),
+
+		WAR(new Layouts.War()),
+
+		ZIP(new Layouts.Expanded()),
+
+		DIR(new Layouts.Expanded()),
+
+		NONE(new Layouts.None());
+
 		Layout layout;
+
 		private LayoutType(Layout layout) {
 			this.layout = layout;
 		}
@@ -85,6 +96,6 @@ public class SpringBootPluginExtension {
 	 * @return the Layout to use or null if not explicitly set
 	 */
 	Layout convertLayout() {
-		layout==null ? null : layout.layout
+		(layout == null ? null : layout.layout)
 	}
 }
