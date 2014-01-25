@@ -91,7 +91,7 @@ public class GroovyCompiler {
 		this.configuration = configuration;
 		this.loader = createLoader(configuration);
 
-		this.coordinatesResolver = new PropertiesArtifactCoordinatesResolver(this.loader);
+		this.coordinatesResolver = new ManagedDependenciesArtifactCoordinatesResolver();
 
 		AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(this.loader,
 				configuration.getRepositoryConfiguration());

@@ -63,7 +63,7 @@ public abstract class AetherGrapeEngineFactory {
 		new DefaultRepositorySystemSessionAutoConfiguration().apply(
 				repositorySystemSession, repositorySystem);
 
-		List<Dependency> managedDependencies = new PropertiesManagedDependenciesFactory()
+		List<Dependency> managedDependencies = new ManagedDependenciesFactory()
 				.getManagedDependencies();
 
 		return new AetherGrapeEngine(classLoader, repositorySystem,
