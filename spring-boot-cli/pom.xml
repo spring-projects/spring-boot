@@ -26,29 +26,13 @@
 			</properties>
 		</profile>
 	</profiles>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-parent</artifactId>
-				<version>${project.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.codehaus.groovy</groupId>
-				<artifactId>groovy-xml</artifactId>
-				<version>${groovy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.projectreactor</groupId>
-				<artifactId>reactor-core</artifactId>
-				<version>${reactor.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	<dependencies>
 		<!-- Compile -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-dependency-tools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
@@ -131,21 +115,6 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-				<excludes>
-					<exclude>**/*.vpp</exclude>
-				</excludes>
-			</resource>
-			<resource>
-				<directory>src/main/groovy</directory>
-			</resource>
-			<resource>
-				<directory>${project.build.directory}/generated-resources</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -252,11 +221,6 @@
 						</exclusions>
 					</dependency>
 					<dependency>
-						<groupId>foundrylogic.vpp</groupId>
-						<artifactId>vpp</artifactId>
-						<version>2.2.1</version>
-					</dependency>
-					<dependency>
 						<groupId>org.apache.ant</groupId>
 						<artifactId>ant-nodeps</artifactId>
 						<version>1.8.1</version>
@@ -268,24 +232,6 @@
 					</dependency>
 				</dependencies>
 				<executions>
-					<execution>
-						<id>generate-cli-properties</id>
-						<phase>generate-resources</phase>
-						<configuration>
-							<target>
-								<typedef resource="foundrylogic/vpp/typedef.properties" />
-								<taskdef resource="foundrylogic/vpp/taskdef.properties" />
-								<property name="dependencies" value="${project.parent}" />
-								<vppcopy
-									file="${basedir}/src/main/resources/META-INF/springcli.properties.vpp"
-									tofile="${project.build.directory}/generated-resources/META-INF/springcli.properties"
-									overwrite="true" />
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
 					<execution>
 						<id>homebrew</id>
 						<phase>package</phase>

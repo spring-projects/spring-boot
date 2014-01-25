@@ -12,6 +12,7 @@
 		<codahale-metrics.version>3.0.1</codahale-metrics.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-pool.version>1.6</commons-pool.version>
+		<crashub.version>1.3.0-beta14</crashub.version>
 		<gradle.version>1.6</gradle.version>
 		<groovy.version>2.2.1</groovy.version>
 		<h2.version>1.3.175</h2.version>
@@ -25,6 +26,7 @@
 		<jackson.version>2.3.1</jackson.version>
 		<jetty.version>8.1.14.v20131031</jetty.version>
 		<joda-time.version>2.3</joda-time.version>
+		<jolokia.version>1.1.5</jolokia.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.11</junit.version>
 		<lettuce.version>2.3.3</lettuce.version>
@@ -51,8 +53,6 @@
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.2.1</thymeleaf-layout-dialect.version>
 		<tomcat.version>7.0.47</tomcat.version>
-		<crashub.version>1.3.0-beta14</crashub.version>
-		<jolokia.version>1.1.5</jolokia.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.0</maven>
@@ -210,6 +210,16 @@
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-xml</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-templates</artifactId>
+                <version>${groovy.version}</version>
+            </dependency>
+			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
 				<version>${jetty.version}</version>
@@ -270,6 +280,11 @@
 				<artifactId>liquibase-core</artifactId>
 				<version>${liquibase.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.projectreactor</groupId>
+                <artifactId>reactor-core</artifactId>
+                <version>${reactor.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.projectreactor</groupId>
 				<artifactId>reactor-spring</artifactId>
@@ -320,7 +335,6 @@
 						<artifactId>groovy-all</artifactId>
 					</exclusion>
 				</exclusions>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
