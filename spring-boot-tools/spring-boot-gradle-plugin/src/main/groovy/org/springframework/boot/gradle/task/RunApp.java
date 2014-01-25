@@ -36,7 +36,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
  * Run the project from Gradle.
- * 
+ *
  * @author Dave Syer
  */
 public class RunApp extends DefaultTask {
@@ -57,6 +57,7 @@ public class RunApp extends DefaultTask {
 					main = set;
 				}
 			};
+
 		});
 
 		final Set<File> allResources = new LinkedHashSet<File>();

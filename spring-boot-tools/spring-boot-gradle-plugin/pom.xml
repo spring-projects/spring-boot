@@ -18,6 +18,11 @@
 			<artifactId>spring-boot-loader-tools</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>spring-boot-dependency-tools</artifactId>
+            <version>${project.version}</version>
+		</dependency>
 		<!-- Provided -->
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>

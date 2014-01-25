@@ -617,6 +617,10 @@
 					<version>2.5.1</version>
 				</plugin>
 				<plugin>
+					<artifactId>maven-help-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>2.4</version>
 				</plugin>

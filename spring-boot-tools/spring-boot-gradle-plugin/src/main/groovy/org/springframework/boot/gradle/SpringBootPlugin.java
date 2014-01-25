@@ -16,8 +16,10 @@
 
 package org.springframework.boot.gradle;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
@@ -26,8 +28,8 @@ import org.springframework.boot.gradle.task.Repackage;
 import org.springframework.boot.gradle.task.RunApp;
 
 /**
- * Gradle 'Spring Boot' {@link Plugin}. Provides 2 tasks (bootRepackge and bootRun).
- * 
+ * Gradle 'Spring Boot' {@link Plugin}.
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -44,19 +46,31 @@ public class SpringBootPlugin implements Plugin<Project> {
 		project.getPlugins().apply(ApplicationPlugin.class);
 		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
 
-		// register BootRepackage so that we can use
-		// task foo(type: BootRepackage) {}
-		project.getExtensions().getExtraProperties().set("BootRepackage", Repackage.class);
-		Repackage packageTask = addRepackageTask(project);
-		ensureTaskRunsOnAssembly(project, packageTask);
-		addRunAppTask(project);
+		applyRepackage(project);
+		applyRun(project);
+		applyResolutionStrategy(project);
 	}
 
-	private void addRunAppTask(Project project) {
-		RunApp runJarTask = project.getTasks().create(RUN_APP_TASK_NAME, RunApp.class);
-		runJarTask.setDescription("Run the project with support for auto-detecting main class and reloading static resources");
-		runJarTask.setGroup("Execution");
-		runJarTask.dependsOn("assemble");
+	private void applyRepackage(Project project) {
+		Repackage packageTask = addRepackageTask(project);
+		ensureTaskRunsOnAssembly(project, packageTask);
+	}
+
+	private void applyRun(Project project) {
+		addRunAppTask(project);
+		// register BootRepackage so that we can use task foo(type: BootRepackage) {}
+		project.getExtensions().getExtraProperties().set("BootRepackage", Repackage.class);
+	}
+
+	private void applyResolutionStrategy(Project project) {
+		project.getConfigurations().all(new Action<Configuration>() {
+
+			@Override
+			public void execute(Configuration configuration) {
+				SpringBootResolutionStrategy.apply(configuration.getResolutionStrategy());
+			}
+
+		});
 	}
 
 	private Repackage addRepackageTask(Project project) {
@@ -69,6 +83,13 @@ public class SpringBootPlugin implements Plugin<Project> {
 		packageTask.dependsOn(project.getConfigurations().getByName(
 				Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts().getBuildDependencies());
 		return packageTask;
+	}
+
+	private void addRunAppTask(Project project) {
+		RunApp runJarTask = project.getTasks().create(RUN_APP_TASK_NAME, RunApp.class);
+		runJarTask.setDescription("Run the project with support for auto-detecting main class and reloading static resources");
+		runJarTask.setGroup("Execution");
+		runJarTask.dependsOn("assemble");
 	}
 
 	private void ensureTaskRunsOnAssembly(Project project, Repackage task) {
