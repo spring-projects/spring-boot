@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,11 @@ import java.net.URL;
  */
 class JarURLConnection extends java.net.JarURLConnection {
 
-	private static final String JAR_URL_POSTFIX = "!/";
+	static final String PROTOCOL = "jar";
 
-	private static final String JAR_URL_PREFIX = "jar:file:";
+	static final String SEPARATOR = "!/";
+
+	private static final String PREFIX = PROTOCOL + ":" + "file:";
 
 	private final JarFile jarFile;
 
@@ -46,9 +48,10 @@ class JarURLConnection extends java.net.JarURLConnection {
 		this.jarFile = jarFile;
 
 		String spec = url.getFile();
-		int separator = spec.lastIndexOf(JAR_URL_POSTFIX);
+		int separator = spec.lastIndexOf(SEPARATOR);
 		if (separator == -1) {
-			throw new MalformedURLException("no !/ found in url spec:" + spec);
+			throw new MalformedURLException("no " + SEPARATOR + " found in url spec:"
+					+ spec);
 		}
 		if (separator + 2 != spec.length()) {
 			this.jarEntryName = spec.substring(separator + 2);
@@ -122,11 +125,11 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static String buildRootUrl(JarFile jarFile) {
 		String path = jarFile.getRootJarFile().getFile().getPath();
-		StringBuilder builder = new StringBuilder(JAR_URL_PREFIX.length() + path.length()
-				+ JAR_URL_POSTFIX.length());
-		builder.append(JAR_URL_PREFIX);
+		StringBuilder builder = new StringBuilder(PREFIX.length() + path.length()
+				+ SEPARATOR.length());
+		builder.append(PREFIX);
 		builder.append(path);
-		builder.append(JAR_URL_POSTFIX);
+		builder.append(SEPARATOR);
 		return builder.toString();
 	}
 

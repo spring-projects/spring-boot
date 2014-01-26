@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
  * 
  * @author Phillip Webb
  */
-public class RandomAccessJarFileTests {
+public class JarFileTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -153,7 +153,7 @@ public class RandomAccessJarFileTests {
 	}
 
 	@Test
-	public void getEntryUrl() throws Exception {
+	public void createEntryUrl() throws Exception {
 		URL url = new URL(this.jarFile.getUrl(), "1.dat");
 		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
 				+ "!/1.dat"));
@@ -235,6 +235,29 @@ public class RandomAccessJarFileTests {
 				+ "!/d!/"));
 		assertThat(((JarURLConnection) url.openConnection()).getJarFile(),
 				sameInstance(nestedJarFile));
+	}
+
+	@Test
+	public void getNestJarEntryUrl() throws Exception {
+		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
+				.getEntry("nested.jar"));
+		URL url = nestedJarFile.getJarEntry("3.dat").getUrl();
+		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
+				+ "!/nested.jar!/3.dat"));
+		InputStream inputStream = url.openStream();
+		assertThat(inputStream, notNullValue());
+		assertThat(inputStream.read(), equalTo(3));
+	}
+
+	@Test
+	public void createUrlFromString() throws Exception {
+		JarFile.registerUrlProtocolHandler();
+		String spec = "jar:file:" + this.rootJarFile.getPath() + "!/nested.jar!/3.dat";
+		URL url = new URL(spec);
+		assertThat(url.toString(), equalTo(spec));
+		InputStream inputStream = url.openStream();
+		assertThat(inputStream, notNullValue());
+		assertThat(inputStream.read(), equalTo(3));
 	}
 
 	@Test
