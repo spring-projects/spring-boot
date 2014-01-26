@@ -33,6 +33,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
+import org.springframework.test.context.support.AnnotationConfigContextLoaderUtils;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
@@ -82,7 +83,29 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		Set<Object> sources = new LinkedHashSet<Object>();
 		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
+		if (sources.isEmpty()) {
+			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(mergedConfig
+					.getTestClass());
+			sources.addAll(Arrays.asList(defaultConfigClasses));
+		}
 		return sources;
+	}
+
+	/**
+	 * Detect the default configuration classes for the supplied test class.
+	 * 
+	 * <p>
+	 * The default implementation simply delegates to
+	 * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses(Class)}.
+	 * 
+	 * @param declaringClass the test class that declared {@code @ContextConfiguration}
+	 * @return an array of default configuration classes, potentially empty but never
+	 * {@code null}
+	 * @see AnnotationConfigContextLoaderUtils
+	 */
+	protected Class<?>[] detectDefaultConfigurationClasses(Class<?> declaringClass) {
+		return AnnotationConfigContextLoaderUtils
+				.detectDefaultConfigurationClasses(declaringClass);
 	}
 
 	private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
