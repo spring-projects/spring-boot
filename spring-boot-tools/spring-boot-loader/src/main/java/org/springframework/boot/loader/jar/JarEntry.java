@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.util.jar.Attributes;
@@ -45,6 +47,13 @@ public class JarEntry extends java.util.jar.JarEntry {
 	 */
 	public JarEntryData getSource() {
 		return this.source;
+	}
+
+	/**
+	 * Return a {@link URL} for this {@link JarEntry}.
+	 */
+	public URL getUrl() throws MalformedURLException {
+		return new URL(this.source.getSource().getUrl(), getName());
 	}
 
 	@Override

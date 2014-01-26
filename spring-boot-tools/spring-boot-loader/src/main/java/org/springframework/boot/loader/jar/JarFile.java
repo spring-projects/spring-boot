@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -62,6 +64,10 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	private static final AsciiBytes MANIFEST_MF = new AsciiBytes("META-INF/MANIFEST.MF");
 
 	private static final AsciiBytes SIGNATURE_FILE_EXTENSION = new AsciiBytes(".SF");
+
+	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
+
+	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
 	private final RandomAccessDataFile rootFile;
 
@@ -380,8 +386,32 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @throws MalformedURLException
 	 */
 	public URL getUrl() throws MalformedURLException {
-		JarURLStreamHandler handler = new JarURLStreamHandler(this);
+		Handler handler = new Handler(this);
 		return new URL("jar", "", -1, "file:" + getName() + "!/", handler);
 	}
 
+	/**
+	 * Register a {@literal 'java.protocol.handler.pkgs'} property so that a
+	 * {@link URLStreamHandler} will be located to deal with jar URLs.
+	 */
+	public static void registerUrlProtocolHandler() {
+		String handlers = System.getProperty(PROTOCOL_HANDLER);
+		System.setProperty(PROTOCOL_HANDLER, ("".equals(handlers) ? HANDLERS_PACKAGE
+				: handlers + "|" + HANDLERS_PACKAGE));
+		resetCachedUrlHandlers();
+	}
+
+	/**
+	 * Reset any cached handers just in case a jar protocol has already been used. We
+	 * reset the handler by trying to set a null {@link URLStreamHandlerFactory} which
+	 * should have no effect other than clearing the handlers cache.
+	 */
+	private static void resetCachedUrlHandlers() {
+		try {
+			URL.setURLStreamHandlerFactory(null);
+		}
+		catch (Error ex) {
+			// Ignore
+		}
+	}
 }

@@ -162,25 +162,6 @@ $ java org.springframework.boot.loader.JarLauncher
 There are a number of restrictions that you need to consider when working with a Spring
 Boot Loader packaged application.
 
-### URLs
-URLs for nested jar entries intentionally look and behave like standard jar URLs,
-You cannot, however, directly create a nested jar URL from a string:
-
-```
-URL url = classLoader.getResoure("/a/b.txt");
-String s = url.toString(); // In the form 'jar:file:/file.jar!/nested.jar!/a/b.txt'
-new URL(s); // This will fail
-```
-
-If you need to obtain URL using a String, ensure that you always provide a context URL
-to the constructor. This will ensure that the custom `URLStreamHandler` used to support
-nested jars is used.
-
-```
-URL url = classLoader.getResoure("/a");
-new URL(url, "b.txt");
-```
-
 ### Zip entry compression
 The `ZipEntry` for a nested jar must be saved using the `ZipEntry.STORED` method. This
 is required so that we can seek directly to individual content within the nested jar.
