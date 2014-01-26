@@ -19,6 +19,7 @@
 		<module>spring-boot-starter-aop</module>
 		<module>spring-boot-starter-batch</module>
 		<module>spring-boot-starter-data-jpa</module>
+		<module>spring-boot-starter-data-mongodb</module>
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
 		<module>spring-boot-starter-jetty</module>
