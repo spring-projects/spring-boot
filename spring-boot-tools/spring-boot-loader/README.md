@@ -158,6 +158,39 @@ $ unzip -q myapp.jar
 $ java org.springframework.boot.loader.JarLauncher
 ```
 
+## PropertiesLauncher Features
+
+`PropertiesLauncher` has a few special features that can be enabled
+with external properties (System properties, environment variables,
+manifest entries or `application.properties`).
+
+| Key        | Purpose | Typical value |
+|------------|---------|---------------|
+|loader.path |Classpath (colon-separated) |lib:${HOME}/app/lib|
+|loader.home |Location of additional properties file (defaults to `${user.dir}`) |file:///opt/app|
+|loader.args |Default arguments for the main method (space separated) ||
+|loader.main |Name of main class to launch | com.app.Application |
+|loader.config.name|Name of properties file (default "application") | loader|
+|loader.config.location|Path to properties file (default "application/.properties") | classpath:loader.properties|
+|loader.system|Boolean flag to indicate that all properties should be added to System properties (default false)|true|
+
+Manifest entry keys are formed by capitalizing intial letters of words
+and changing the separator to '-' from '.' (e.g. "Loader-Path"). The
+exception is "loader.main" which is looked up as "Start-Class" in the
+manifest for compatibility with `JarLauncher`).
+
+Environment variables can be capitalized with underscore separators
+instead of periods.
+
+* `loader.home` is the directory location of an additional properties
+  file (overriding the default) as long as `loader.config.location` is
+  not specified
+* `loader.path` can contain directories (scanned recursively for jar
+  and zip files), archive paths, or wildcard patterns (for the default
+  JVM behaviour)
+* Placeholder replacement is done from System and environment
+  variables plus the properties file itself on all values before use.
+
 ## Restrictions
 There are a number of restrictions that you need to consider when working with a Spring
 Boot Loader packaged application.

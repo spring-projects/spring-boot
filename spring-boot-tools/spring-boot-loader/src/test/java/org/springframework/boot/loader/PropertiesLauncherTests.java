@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.After;
@@ -145,6 +146,13 @@ public class PropertiesLauncherTests {
 		System.setProperty("loader.system", "true");
 		new PropertiesLauncher();
 		assertEquals("demo.Application", System.getProperty("loader.main"));
+	}
+
+	@Test
+	public void testArgsEnhanced() throws Exception {
+		System.setProperty("loader.args", "foo");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[foo, bar]", Arrays.asList(launcher.getArgs("bar")).toString());
 	}
 
 	private void waitFor(String value) throws Exception {
