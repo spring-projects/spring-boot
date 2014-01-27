@@ -79,7 +79,8 @@ public class PropertiesLauncher extends Launcher {
 	private final Logger logger = Logger.getLogger(Launcher.class.getName());
 
 	/**
-	 * Properties key for main class
+	 * Properties key for main class. As a manifest entry can also be specified as
+	 * <code>Start-Class</code>.
 	 */
 	public static final String MAIN = "loader.main";
 
@@ -93,9 +94,15 @@ public class PropertiesLauncher extends Launcher {
 	 * Properties key for home directory. This is the location of external configuration
 	 * if not on classpath, and also the base path for any relative paths in the
 	 * {@link #PATH loader path}. Defaults to current working directory (
-	 * <code>${user.home}</code>).
+	 * <code>${user.dir}</code>).
 	 */
 	public static final String HOME = "loader.home";
+
+	/**
+	 * Properties key for default command line arguments. These arguments (if present) are
+	 * prepended to the main method arguments before launching.
+	 */
+	public static final String ARGS = "loader.args";
 
 	/**
 	 * Properties key for name of external configuration file (excluding suffix). Defaults
@@ -312,6 +319,19 @@ public class PropertiesLauncher extends Launcher {
 			}
 		}
 		return paths;
+	}
+
+	protected String[] getArgs(String... args) throws Exception {
+		String loaderArgs = getProperty(ARGS);
+		if (loaderArgs != null) {
+			String[] defaultArgs = loaderArgs.split("\\s+");
+			String[] additionalArgs = args;
+			args = new String[defaultArgs.length + additionalArgs.length];
+			System.arraycopy(defaultArgs, 0, args, 0, defaultArgs.length);
+			System.arraycopy(additionalArgs, 0, args, defaultArgs.length,
+					additionalArgs.length);
+		}
+		return args;
 	}
 
 	@Override
@@ -542,8 +562,10 @@ public class PropertiesLauncher extends Launcher {
 		return path;
 	}
 
-	public static void main(String[] args) {
-		new PropertiesLauncher().launch(args);
+	public static void main(String[] args) throws Exception {
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		args = launcher.getArgs(args);
+		launcher.launch(args);
 	}
 
 	public static String toCamelCase(CharSequence string) {
