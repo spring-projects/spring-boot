@@ -21,22 +21,28 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
-import org.hibernate.jpa.HibernateEntityManager;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.orm.jpa.SpringNamingStrategy;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hibernate JPA.
@@ -45,8 +51,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
-		EnableTransactionManagement.class, EntityManager.class,
-		HibernateEntityManager.class })
+		EnableTransactionManagement.class, EntityManager.class })
+@Conditional(HibernateEntityManagerCondition.class)
 @ConditionalOnBean(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implements
@@ -97,4 +103,20 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implemen
 		}
 		return "create-drop";
 	}
+
+	public static class HibernateEntityManagerCondition extends SpringBootCondition {
+
+		@Override
+		public ConditionOutcome getMatchOutcome(ConditionContext context,
+				AnnotatedTypeMetadata metadata) {
+			if (ClassUtils.isPresent("org.hibernate.ejb.HibernateEntityManager",
+					context.getClassLoader())
+					|| ClassUtils.isPresent("org.hibernate.jpa.HibernateEntityManager",
+							context.getClassLoader())) {
+				return ConditionOutcome.match("found HibernateEntityManager class");
+			}
+			return ConditionOutcome.noMatch("did not find HibernateEntityManager class");
+		}
+	}
+
 }
