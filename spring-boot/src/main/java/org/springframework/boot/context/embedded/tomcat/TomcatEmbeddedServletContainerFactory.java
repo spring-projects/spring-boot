@@ -37,7 +37,6 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.startup.TldConfig;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
@@ -90,13 +89,13 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private String protocol = DEFAULT_PROTOCOL;
 
-	private static String DEFAULT_NO_TLD_JARS = "tomcat-*.jar,tools.jar,commons-beanutils*.jar,commons-codec*.jar,commons-collections*.jar,"
+	private static String DEFAULT_SKIP_JARS = "tomcat-*.jar,tools.jar,commons-beanutils*.jar,commons-codec*.jar,commons-collections*.jar,"
 			+ "commons-dbcp*.jar,commons-digester*.jar,commons-fileupload*.jar,commons-httpclient*.jar,commons-io*.jar,commons-lang*.jar,"
 			+ "commons-logging*.jar,commons-math*.jar,commons-pool*.jar,jstl-*.jar,geronimo-spec-jaxrpc*.jar,wsdl4j*.jar,ant-*.jar,"
 			+ "aspectj*.jar,jmx.jar,h2*.jar,hibernate*.jar,httpclient*.jar,jmx-tools-*.jar,jta*.jar,log4j-*.jar,mail*.jar,slf4j*.jar,"
 			+ "xercesImpl-*.jar,xmlParserAPIs-*.jar,xml-apis-*.jar,junit-*.jar,hamcrest*.jar,org.hamcrest*.jar";
 
-	private String noTldJars = DEFAULT_NO_TLD_JARS;
+	private String skipJars = DEFAULT_SKIP_JARS;
 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
@@ -146,7 +145,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File docBase = getValidDocumentRoot();
 		docBase = (docBase != null ? docBase : createTempDir("tomcat-docbase"));
-		TldConfig.setNoTldJars(this.noTldJars);
+		applySkipJars();
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		context.setName(getContextPath());
 		context.setPath(getContextPath());
@@ -171,6 +170,14 @@ public class TomcatEmbeddedServletContainerFactory extends
 		configureContext(context, initializersToUse);
 		host.addChild(context);
 		postProcessContext(context);
+	}
+
+	private void applySkipJars() {
+		// Tomcat 8.0
+		System.setProperty("tomcat.util.scan.StandardJarScanFilter.jarsToSkip",
+				this.skipJars);
+		// Tomcat 7.0
+		System.setProperty("tomcat.util.scan.DefaultJarScanner.jarsToSkip", this.skipJars);
 	}
 
 	private void addDefaultServlet(Context context) {
@@ -295,10 +302,10 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * A comma-separated list of jars to ignore for TLD scanning. See Tomcat's
 	 * catalina.properties for typical values. Defaults to a list drawn from that source.
 	 * 
-	 * @param noTldJars the noTldJars to set
+	 * @param skipJars the jars to skip when scanning for tlds etc
 	 */
-	public void setNoTldJars(String noTldJars) {
-		this.noTldJars = noTldJars;
+	public void setSkipJars(String skipJars) {
+		this.skipJars = skipJars;
 	}
 
 	/**
