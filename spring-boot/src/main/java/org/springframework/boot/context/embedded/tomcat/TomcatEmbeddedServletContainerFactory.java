@@ -89,10 +89,11 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private String protocol = DEFAULT_PROTOCOL;
 
-	private static String DEFAULT_SKIP_JARS = "tomcat-*.jar,tools.jar,commons-beanutils*.jar,commons-codec*.jar,commons-collections*.jar,"
+	private static String DEFAULT_SKIP_JARS = "tomcat-embed-core-*.jar,tomcat-embed-logging-*.jar,tomcat-juli-*.jar,tomcat-jdbc-*.jar,"
+			+ "tools.jar,commons-beanutils*.jar,commons-codec*.jar,commons-collections*.jar,"
 			+ "commons-dbcp*.jar,commons-digester*.jar,commons-fileupload*.jar,commons-httpclient*.jar,commons-io*.jar,commons-lang*.jar,"
-			+ "commons-logging*.jar,commons-math*.jar,commons-pool*.jar,jstl-*.jar,geronimo-spec-jaxrpc*.jar,wsdl4j*.jar,ant-*.jar,"
-			+ "aspectj*.jar,jmx.jar,h2*.jar,hibernate*.jar,httpclient*.jar,jmx-tools-*.jar,jta*.jar,log4j-*.jar,mail*.jar,slf4j*.jar,"
+			+ "commons-logging*.jar,commons-math*.jar,commons-pool*.jar,geronimo-spec-jaxrpc*.jar,wsdl4j*.jar,ant-*.jar,"
+			+ "aspectj*.jar,jmx*.jar,h2*.jar,hibernate*.jar,httpclient*.jar,jmx-tools-*.jar,jta*.jar,log4j-*.jar,mail*.jar,slf4j*.jar,"
 			+ "xercesImpl-*.jar,xmlParserAPIs-*.jar,xml-apis-*.jar,junit-*.jar,hamcrest*.jar,org.hamcrest*.jar";
 
 	private String skipJars = DEFAULT_SKIP_JARS;
