@@ -121,6 +121,8 @@ public class PropertiesLauncher extends Launcher {
 
 	private static final Pattern WORD_SEPARATOR = Pattern.compile("\\W+");
 
+	private static final URL[] EMPTY_URLS = {};
+
 	private final File home;
 
 	private List<String> paths = new ArrayList<String>(DEFAULT_PATHS);
@@ -493,26 +495,30 @@ public class PropertiesLauncher extends Launcher {
 	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
 			URISyntaxException {
 		ClassLoader parentClassLoader = getClass().getClassLoader();
-		if (parentClassLoader instanceof URLClassLoader) {
-			URLClassLoader urlClassLoader = (URLClassLoader) parentClassLoader;
-			for (URL url : urlClassLoader.getURLs()) {
-				if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
-					lib.add(0, new JarFileArchive(new File(url.toURI())));
-				}
-				else if (url.toString().endsWith("/*")) {
-					String name = url.getFile();
-					File dir = new File(name.substring(0, name.length() - 1));
-					if (dir.exists()) {
-						lib.add(0,
-								new ExplodedArchive(new File(name.substring(0,
-										name.length() - 1)), false));
-					}
-				}
-				else {
-					lib.add(0, new ExplodedArchive(new File(url.getFile())));
+		for (URL url : getURLs(parentClassLoader)) {
+			if (url.toString().endsWith(".jar") || url.toString().endsWith(".zip")) {
+				lib.add(0, new JarFileArchive(new File(url.toURI())));
+			}
+			else if (url.toString().endsWith("/*")) {
+				String name = url.getFile();
+				File dir = new File(name.substring(0, name.length() - 1));
+				if (dir.exists()) {
+					lib.add(0,
+							new ExplodedArchive(new File(name.substring(0,
+									name.length() - 1)), false));
 				}
 			}
+			else {
+				lib.add(0, new ExplodedArchive(new File(url.getFile())));
+			}
 		}
+	}
+
+	private URL[] getURLs(ClassLoader classLoader) {
+		if (classLoader instanceof URLClassLoader) {
+			return ((URLClassLoader) classLoader).getURLs();
+		}
+		return EMPTY_URLS;
 	}
 
 	private String cleanupPath(String path) {

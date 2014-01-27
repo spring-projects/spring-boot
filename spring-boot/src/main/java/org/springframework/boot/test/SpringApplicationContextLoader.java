@@ -46,7 +46,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * class and only creates a web application context if it is present. Non-web features,
  * like a repository layer, can be tested cleanly by simply <em>not</em> marking the test
  * class <code>@WebAppConfiguration</code>.
- * 
  * <p>
  * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
  * create the application context.
@@ -92,12 +91,9 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	}
 
 	/**
-	 * Detect the default configuration classes for the supplied test class.
-	 * 
-	 * <p>
-	 * The default implementation simply delegates to
-	 * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses(Class)}.
-	 * 
+	 * Detect the default configuration classes for the supplied test class. By default
+	 * simply delegates to
+	 * {@link AnnotationConfigContextLoaderUtils#detectDefaultConfigurationClasses} .
 	 * @param declaringClass the test class that declared {@code @ContextConfiguration}
 	 * @return an array of default configuration classes, potentially empty but never
 	 * {@code null}

@@ -281,6 +281,7 @@ public class RandomAccessJarFileTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	public void verifySignedJar() throws Exception {
 		String classpath = System.getProperty("java.class.path");
 		String[] entries = classpath.split(System.getProperty("path.separator"));
