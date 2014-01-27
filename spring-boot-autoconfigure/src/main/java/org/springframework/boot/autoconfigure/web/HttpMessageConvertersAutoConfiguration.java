@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
@@ -58,17 +56,6 @@ public class HttpMessageConvertersAutoConfiguration {
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(
 				this.converters);
 		return new HttpMessageConverters(converters);
-	}
-
-	@Configuration
-	@ConditionalOnClass({ JodaModule.class, DateTime.class })
-	protected static class JodaModuleConfiguration {
-
-		@Bean
-		public JodaModule jodaModule() {
-			return new JodaModule();
-		}
-
 	}
 
 	@Configuration
