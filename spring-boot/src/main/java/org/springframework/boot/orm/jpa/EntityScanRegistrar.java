@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationListener;
@@ -52,6 +53,7 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 			beanDefinition.setBeanClass(EntityScanBeanPostProcessor.class);
 			beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
 					getPackagesToScan(importingClassMetadata));
+			beanDefinition.setRole(AbstractBeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
 		}
 	}
