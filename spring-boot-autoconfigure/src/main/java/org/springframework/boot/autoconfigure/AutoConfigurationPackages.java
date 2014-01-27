@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -64,6 +65,7 @@ public abstract class AutoConfigurationPackages {
 		beanDefinition.setBeanClass(BasePackage.class);
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
 				packageName);
+		beanDefinition.setRole(AbstractBeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(BEAN, beanDefinition);
 	}
 
