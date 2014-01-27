@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.io.IOException;
 
+import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -35,9 +36,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
@@ -78,7 +80,8 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean("jodaModule", Module.class));
+		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
+		assertThat(objectMapper.canSerialize(LocalDateTime.class), equalTo(true));
 	}
 
 	@Test
