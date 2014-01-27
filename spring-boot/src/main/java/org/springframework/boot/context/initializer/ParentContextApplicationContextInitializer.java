@@ -18,16 +18,22 @@ package org.springframework.boot.context.initializer;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 
 /**
- * {@link ApplicationContextInitializer} for setting the parent context.
+ * {@link ApplicationContextInitializer} for setting the parent context. Also publishes
+ * {@link ParentContextAvailableEvent} when the context is refreshed to signal to other
+ * listeners that the context is available and has a parent.
  * 
  * @author Dave Syer
  */
 public class ParentContextApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
+		ApplicationContextInitializer<ConfigurableApplicationContext>,
+		ApplicationListener<ContextRefreshedEvent>, Ordered {
 
 	private int order = Integer.MIN_VALUE;
 
@@ -47,8 +53,30 @@ public class ParentContextApplicationContextInitializer implements
 	}
 
 	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		ApplicationContext context = event.getApplicationContext();
+		if (context instanceof ConfigurableApplicationContext) {
+			context.publishEvent(new ParentContextAvailableEvent(
+					(ConfigurableApplicationContext) context));
+		}
+	}
+
+	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.setParent(this.parent);
+	}
+
+	public static class ParentContextAvailableEvent extends ApplicationEvent {
+
+		public ParentContextAvailableEvent(
+				ConfigurableApplicationContext applicationContext) {
+			super(applicationContext);
+		}
+
+		public ConfigurableApplicationContext getApplicationContext() {
+			return (ConfigurableApplicationContext) getSource();
+		}
+
 	}
 
 }
