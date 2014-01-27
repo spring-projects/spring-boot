@@ -104,16 +104,19 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implemen
 		return "create-drop";
 	}
 
-	public static class HibernateEntityManagerCondition extends SpringBootCondition {
+	static class HibernateEntityManagerCondition extends SpringBootCondition {
+
+		private static String[] CLASS_NAMES = {
+				"org.hibernate.ejb.HibernateEntityManager",
+				"org.hibernate.jpa.HibernateEntityManager" };
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			if (ClassUtils.isPresent("org.hibernate.ejb.HibernateEntityManager",
-					context.getClassLoader())
-					|| ClassUtils.isPresent("org.hibernate.jpa.HibernateEntityManager",
-							context.getClassLoader())) {
-				return ConditionOutcome.match("found HibernateEntityManager class");
+			for (String className : CLASS_NAMES) {
+				if (ClassUtils.isPresent(className, context.getClassLoader())) {
+					return ConditionOutcome.match("found HibernateEntityManager class");
+				}
 			}
 			return ConditionOutcome.noMatch("did not find HibernateEntityManager class");
 		}
