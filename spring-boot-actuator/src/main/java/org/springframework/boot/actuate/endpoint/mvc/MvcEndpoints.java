@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.context.ApplicationContext;
@@ -56,8 +57,8 @@ public class MvcEndpoints implements ApplicationContextAware, InitializingBean {
 		this.endpoints.addAll(existing);
 		this.customTypes = findEndpointClasses(existing);
 		@SuppressWarnings("rawtypes")
-		Collection<Endpoint> delegates = this.applicationContext.getBeansOfType(
-				Endpoint.class).values();
+		Collection<Endpoint> delegates = BeanFactoryUtils.beansOfTypeIncludingAncestors(
+				this.applicationContext, Endpoint.class).values();
 		for (Endpoint<?> endpoint : delegates) {
 			if (isGenericEndpoint(endpoint.getClass())) {
 				this.endpoints.add(new EndpointMvcAdapter(endpoint));
