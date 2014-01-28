@@ -223,9 +223,17 @@ public class ShellProperties {
 			this.keyPath = keyPath;
 		}
 
+		public String getKeyPath() {
+			return this.keyPath;
+		}
+
 		public void setPort(Integer port) {
 			Assert.notNull(port, "port must not be null");
 			this.port = port.toString();
+		}
+
+		public String getPort() {
+			return this.port;
 		}
 
 	}
@@ -260,6 +268,10 @@ public class ShellProperties {
 			this.port = port.toString();
 		}
 
+		public String getPort() {
+			return this.port;
+		}
+
 	}
 
 	/**
@@ -280,6 +292,10 @@ public class ShellProperties {
 		public void setDomain(String domain) {
 			Assert.hasText(domain, "domain must have text");
 			this.domain = domain;
+		}
+
+		public String getDomain() {
+			return this.domain;
 		}
 
 	}
@@ -304,6 +320,10 @@ public class ShellProperties {
 		public void setPath(String path) {
 			Assert.hasText(path, "path must have text");
 			this.path = path;
+		}
+
+		public String getPath() {
+			return this.path;
 		}
 
 	}
@@ -398,6 +418,10 @@ public class ShellProperties {
 			// shell is required.
 			Assert.notNull(roles, "roles must not be null");
 			this.roles = roles;
+		}
+
+		public String[] getRoles() {
+			return this.roles;
 		}
 
 	}
