@@ -34,6 +34,8 @@ public class Handler extends URLStreamHandler {
 	// NOTE: in order to be found as a URL protocol hander, this class must be public,
 	// must be named Handler and must be in a package ending '.jar'
 
+	private static final String FILE_PROTOCOL = "file:";
+
 	private static final String SEPARATOR = JarURLConnection.SEPARATOR;
 
 	private final JarFile jarFile;
@@ -74,7 +76,11 @@ public class Handler extends URLStreamHandler {
 
 	private JarFile getRootJarFile(String name) throws IOException {
 		try {
-			return new JarFile(new File(new URL(name).toURI()));
+			if (!name.startsWith(FILE_PROTOCOL)) {
+				throw new IllegalStateException("Not a file URL");
+			}
+			String path = name.substring(FILE_PROTOCOL.length());
+			return new JarFile(new File(path));
 		}
 		catch (Exception ex) {
 			throw new IOException("Unable to open root Jar file '" + name + "'", ex);
