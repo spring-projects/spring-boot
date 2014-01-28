@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -151,23 +150,6 @@ public class GroovyCompiler {
 
 	public void addCompilationCustomizers(CompilationCustomizer... customizers) {
 		this.loader.getConfiguration().addCompilationCustomizers(customizers);
-	}
-
-	public Object[] sources(String... sources) throws CompilationFailedException,
-			IOException {
-		List<String> compilables = new ArrayList<String>();
-		List<Object> others = new ArrayList<Object>();
-		for (String source : sources) {
-			if (source.endsWith(".groovy") || source.endsWith(".java")) {
-				compilables.add(source);
-			}
-			else {
-				others.add(source);
-			}
-		}
-		Class<?>[] compiled = compile(compilables.toArray(new String[compilables.size()]));
-		others.addAll(0, Arrays.asList(compiled));
-		return others.toArray(new Object[others.size()]);
 	}
 
 	/**

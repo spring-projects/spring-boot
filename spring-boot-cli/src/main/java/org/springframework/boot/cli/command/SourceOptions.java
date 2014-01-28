@@ -23,6 +23,7 @@ import java.util.List;
 import joptsimple.OptionSet;
 
 import org.springframework.boot.cli.util.ResourceUtils;
+import org.springframework.util.Assert;
 
 /**
  * Extract source file options (anything following '--' in an {@link OptionSet}).
@@ -54,11 +55,8 @@ public class SourceOptions {
 	 * @param optionSet the source option set
 	 * @param classLoader an optional classloader used to try and load files that are not
 	 * found in the local filesystem
-	 * @param defaultPaths the default paths to use if no files are provided in the option
-	 * set
 	 */
-	public SourceOptions(OptionSet optionSet, ClassLoader classLoader,
-			String... defaultPaths) {
+	public SourceOptions(OptionSet optionSet, ClassLoader classLoader) {
 		List<?> nonOptionArguments = optionSet.nonOptionArguments();
 		List<String> sources = new ArrayList<String>();
 		int sourceArgCount = 0;
@@ -86,15 +84,7 @@ public class SourceOptions {
 		}
 		this.args = Collections.unmodifiableList(nonOptionArguments.subList(
 				sourceArgCount, nonOptionArguments.size()));
-		if (sources.size() == 0) {
-			if (defaultPaths.length == 0) {
-				throw new IllegalArgumentException(
-						"Please specify at least one file to run");
-			}
-			for (String path : defaultPaths) {
-				sources.addAll(ResourceUtils.getUrls(path, classLoader));
-			}
-		}
+		Assert.isTrue(sources.size() > 0, "Please specify at least one file to run");
 		this.sources = Collections.unmodifiableList(sources);
 	}
 

@@ -78,7 +78,7 @@ public class SpringApplicationRunner {
 			stop();
 
 			// Compile
-			Object[] compiledSources = this.compiler.sources(this.sources);
+			Object[] compiledSources = this.compiler.compile(this.sources);
 			if (compiledSources.length == 0) {
 				throw new RuntimeException("No classes found in '" + this.sources + "'");
 			}
