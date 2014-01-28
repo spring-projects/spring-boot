@@ -50,7 +50,7 @@ public class TestRunner {
 	}
 
 	public void compileAndRunTests() throws Exception {
-		Object[] sources = this.compiler.sources(this.sources);
+		Object[] sources = this.compiler.compile(this.sources);
 		if (sources.length == 0) {
 			throw new RuntimeException("No classes found in '" + this.sources + "'");
 		}
