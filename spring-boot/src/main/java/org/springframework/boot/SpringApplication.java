@@ -862,7 +862,11 @@ public class SpringApplication {
 	 * @return the initializers
 	 */
 	public Set<ApplicationContextInitializer<?>> getInitializers() {
-		return Collections.unmodifiableSet(this.initializers);
+		ArrayList<ApplicationContextInitializer<?>> list = new ArrayList<ApplicationContextInitializer<?>>(
+				this.initializers);
+		AnnotationAwareOrderComparator.sort(list);
+		return Collections
+				.unmodifiableSet(new LinkedHashSet<ApplicationContextInitializer<?>>(list));
 	}
 
 	/**
@@ -905,8 +909,11 @@ public class SpringApplication {
 	 * @return the listeners
 	 */
 	public Set<ApplicationListener<?>> getListeners() {
-		return Collections.unmodifiableSet(new LinkedHashSet<ApplicationListener<?>>(
-				this.listeners));
+		ArrayList<ApplicationListener<?>> list = new ArrayList<ApplicationListener<?>>(
+				this.listeners);
+		AnnotationAwareOrderComparator.sort(list);
+		return Collections
+				.unmodifiableSet(new LinkedHashSet<ApplicationListener<?>>(list));
 	}
 
 	/**
