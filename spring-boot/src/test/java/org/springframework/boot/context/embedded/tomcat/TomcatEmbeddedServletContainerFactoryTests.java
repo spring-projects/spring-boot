@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,6 +136,38 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		factory.addContextValves(valve);
 		this.container = factory.getEmbeddedServletContainer();
 		verify(valve).setNext(any(Valve.class));
+	}
+
+	@Test
+	public void setNullTomcatContextCustomizersThrows() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("TomcatContextCustomizers must not be null");
+		factory.setTomcatContextCustomizers(null);
+	}
+
+	@Test
+	public void addNullContextCustomizersThrows() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("TomcatContextCustomizers must not be null");
+		factory.addContextCustomizers((TomcatContextCustomizer[]) null);
+	}
+
+	@Test
+	public void setNullTomcatConnectorCustomizersThrows() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("TomcatConnectorCustomizers must not be null");
+		factory.setTomcatConnectorCustomizers(null);
+	}
+
+	@Test
+	public void addNullConnectorCustomizersThrows() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("TomcatConnectorCustomizers must not be null");
+		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
 	}
 
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
