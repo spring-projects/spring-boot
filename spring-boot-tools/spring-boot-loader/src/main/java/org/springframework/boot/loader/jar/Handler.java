@@ -19,7 +19,6 @@ package org.springframework.boot.loader.jar;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -77,7 +76,7 @@ public class Handler extends URLStreamHandler {
 		try {
 			return new JarFile(new File(new URL(name).toURI()));
 		}
-		catch (URISyntaxException ex) {
+		catch (Exception ex) {
 			throw new IOException("Unable to open root Jar file '" + name + "'", ex);
 		}
 	}
