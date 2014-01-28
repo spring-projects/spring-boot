@@ -371,7 +371,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	public void setTomcatContextCustomizers(
 			Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
-		Assert.notNull(this.contextLifecycleListeners,
+		Assert.notNull(tomcatContextCustomizers,
 				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers = new ArrayList<TomcatContextCustomizer>(
 				tomcatContextCustomizers);
@@ -392,8 +392,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 * @param tomcatContextCustomizers the customizers to add
 	 */
 	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
-		Assert.notNull(this.tomcatContextCustomizers,
-				"TomcatContextCustomizer must not be null");
+		Assert.notNull(tomcatContextCustomizers,
+				"TomcatContextCustomizers must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
 	}
 
@@ -404,8 +404,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	public void setTomcatConnectorCustomizers(
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
-		Assert.notNull(this.contextLifecycleListeners,
-				"TomcatConnectorCustomizer must not be null");
+		Assert.notNull(tomcatConnectorCustomizers,
+				"TomcatConnectorCustomizers must not be null");
 		this.tomcatConnectorCustomizers = new ArrayList<TomcatConnectorCustomizer>(
 				tomcatConnectorCustomizers);
 	}
@@ -417,8 +417,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	public void addConnectorCustomizers(
 			TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
-		Assert.notNull(this.tomcatContextCustomizers,
-				"TomcatConnectorCustomizer must not be null");
+		Assert.notNull(tomcatConnectorCustomizers,
+				"TomcatConnectorCustomizers must not be null");
 		this.tomcatConnectorCustomizers.addAll(Arrays.asList(tomcatConnectorCustomizers));
 	}
 
