@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 /**
  * Import selector that sets up binding of external properties to configuration classes
@@ -39,6 +40,7 @@ import org.springframework.util.MultiValueMap;
  * {@link ConfigurationProperties} bean of each unique type).
  * 
  * @author Dave Syer
+ * @author Christian Dupuis
  */
 class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 
@@ -67,11 +69,23 @@ class EnableConfigurationPropertiesImportSelector implements ImportSelector {
 							EnableConfigurationProperties.class.getName(), false);
 			List<Class<?>> types = collectClasses(attributes.get("value"));
 			for (Class<?> type : types) {
-				String name = type.getName();
+				String prefix = extractPrefix(type);
+				String name = (StringUtils.hasText(prefix) ? prefix
+						+ ".CONFIGURATION_PROPERTIES" : type.getName());
 				if (!registry.containsBeanDefinition(name)) {
 					registerBeanDefinition(registry, type, name);
 				}
 			}
+		}
+
+		private String extractPrefix(Class<?> type) {
+			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(type,
+					ConfigurationProperties.class);
+			if (annotation != null) {
+				return (StringUtils.hasLength(annotation.value()) ? annotation.value()
+						: annotation.name());
+			}
+			return "";
 		}
 
 		private List<Class<?>> collectClasses(List<Object> list) {
