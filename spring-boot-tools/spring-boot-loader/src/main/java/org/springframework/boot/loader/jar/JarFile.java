@@ -104,7 +104,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @throws IOException
 	 */
 	JarFile(RandomAccessDataFile file, JarEntryFilter... filters) throws IOException {
-		this(file, file.getFile().getPath(), file, filters);
+		this(file, file.getFile().getAbsolutePath(), file, filters);
 	}
 
 	/**
