@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.listener;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.LogManager;
 
@@ -71,6 +72,7 @@ public class LoggingApplicationListenerTests {
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
 		this.initializer.onApplicationEvent(new SpringApplicationStartEvent(
 				new SpringApplication(), NO_ARGS));
+		new File("target/foo.log").delete();
 	}
 
 	@After
@@ -119,25 +121,37 @@ public class LoggingApplicationListenerTests {
 	public void testAddLogFileProperty() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml",
-				"logging.file: foo.log");
+				"logging.file: target/foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("foo.log"));
+		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo.log"));
+	}
+
+	@Test
+	public void testAddLogFilePropertyWithDefault() {
+		assertFalse(new File("target/foo.log").exists());
+		EnvironmentTestUtils.addEnvironment(this.context, "logging.file: target/foo.log");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
+		logger.info("Hello world");
+		assertTrue(new File("target/foo.log").exists());
 	}
 
 	@Test
 	public void testAddLogPathProperty() {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"logging.config: classpath:logback-nondefault.xml", "logging.path: foo/");
+				"logging.config: classpath:logback-nondefault.xml",
+				"logging.path: target/foo/");
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		Log logger = LogFactory.getLog(LoggingApplicationListenerTests.class);
 		logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
-		assertTrue("Wrong output:\n" + output, output.startsWith("foo/spring.log"));
+		assertTrue("Wrong output:\n" + output, output.startsWith("target/foo/spring.log"));
 	}
 
 	@Test
