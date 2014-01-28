@@ -137,6 +137,30 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		this.container = factory.getEmbeddedServletContainer();
 		verify(valve).setNext(any(Valve.class));
 	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testSetTomcatContextCustomizers() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setTomcatContextCustomizers(null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testSetTomcatConnectorCustomizers() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setTomcatConnectorCustomizers(null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testAddConnectorCustomizers() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.addConnectorCustomizers(null);
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testAddContextCustomizers() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.addContextCustomizers(null);
+	}
 
 	@Test
 	public void setNullTomcatContextCustomizersThrows() {
