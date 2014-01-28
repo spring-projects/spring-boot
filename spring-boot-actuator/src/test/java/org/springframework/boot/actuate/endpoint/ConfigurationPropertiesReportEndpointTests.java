@@ -44,12 +44,23 @@ public class ConfigurationPropertiesReportEndpointTests extends
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testDefaultKeySanitization() throws Exception {
+	public void testNaming() throws Exception {
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
-		// report.setKeysToSanitize(new String[] {});
 		Map<String, Object> properties = report.invoke();
 		Map<String, Object> nestedProperties = (Map<String, Object>) properties
 				.get("testProperties");
+		assertNotNull(nestedProperties);
+		assertEquals("test", nestedProperties.get("prefix"));
+		assertNotNull(nestedProperties.get("properties"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testDefaultKeySanitization() throws Exception {
+		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
+		Map<String, Object> properties = report.invoke();
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
 		assertNotNull(nestedProperties);
 		assertEquals("******", nestedProperties.get("dbPassword"));
 		assertEquals("654321", nestedProperties.get("myTestProperty"));
@@ -61,8 +72,8 @@ public class ConfigurationPropertiesReportEndpointTests extends
 		ConfigurationPropertiesReportEndpoint report = getEndpointBean();
 		report.setKeysToSanitize(new String[] { "property" });
 		Map<String, Object> properties = report.invoke();
-		Map<String, Object> nestedProperties = (Map<String, Object>) properties
-				.get("testProperties");
+		Map<String, Object> nestedProperties = (Map<String, Object>) ((Map<String, Object>) properties
+				.get("testProperties")).get("properties");
 		assertNotNull(nestedProperties);
 		assertEquals("123456", nestedProperties.get("dbPassword"));
 		assertEquals("******", nestedProperties.get("myTestProperty"));

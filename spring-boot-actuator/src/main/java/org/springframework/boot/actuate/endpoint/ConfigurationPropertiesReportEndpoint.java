@@ -16,13 +16,16 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,28 +68,40 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	@Override
 	public Map<String, Object> invoke() {
-		Map<String, Object> beans = extract(this.context);
-		return beans;
+		return extract(this.context);
 	}
 
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> extract(ApplicationContext context) {
 
+		Map<String, Object> result = new HashMap<String, Object>();
 		Map<String, Object> beans = context
 				.getBeansWithAnnotation(ConfigurationProperties.class);
 
 		// Serialize beans into map structure and sanitize values
 		ObjectMapper mapper = new ObjectMapper();
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
-			Map<String, Object> value = mapper.convertValue(entry.getValue(), Map.class);
-			beans.put(entry.getKey(), sanitize(value));
+			String beanName = entry.getKey();
+			Object bean = entry.getValue();
+
+			Map<String, Object> root = new HashMap<String, Object>();
+			root.put("prefix", extractPrefix(bean));
+			root.put("properties", sanitize(mapper.convertValue(bean, Map.class)));
+			result.put(beanName, root);
 		}
 
 		if (context.getParent() != null) {
-			beans.put("parent", extract(context.getParent()));
+			result.put("parent", extract(context.getParent()));
 		}
 
-		return beans;
+		return result;
+	}
+
+	private String extractPrefix(Object bean) {
+		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
+				bean.getClass(), ConfigurationProperties.class);
+		return (StringUtils.hasLength(annotation.value()) ? annotation.value()
+				: annotation.name());
 	}
 
 	@SuppressWarnings("unchecked")
