@@ -153,16 +153,22 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			}
 		}
 
+		boolean environmentChanged = false;
 		for (Map.Entry<String, String> mapping : ENVIRONMENT_SYSTEM_PROPERTY_MAPPING
 				.entrySet()) {
 			if (environment.containsProperty(mapping.getKey())) {
 				System.setProperty(mapping.getValue(),
 						environment.getProperty(mapping.getKey()));
+				environmentChanged = true;
 			}
 		}
 
 		LoggingSystem system = LoggingSystem.get(classLoader);
 
+		if (environmentChanged) {
+			// Re-initialize the defaults in case the Environment changed
+			system.beforeInitialize();
+		}
 		// User specified configuration
 		if (environment.containsProperty("logging.config")) {
 			String value = environment.getProperty("logging.config");
