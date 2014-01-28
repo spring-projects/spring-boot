@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,10 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -60,6 +62,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * 
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
@@ -294,7 +297,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		else {
 			factory.setPropertySources(this.propertySources);
 		}
-		factory.setValidator(this.validator);
+		factory.setValidator(determineValidator(bean));
 		// If no explicit conversion service is provided we add one so that (at least)
 		// comma-separated arrays of convertibles can be bound automatically
 		factory.setConversionService(this.conversionService == null ? getDefaultConversionService()
@@ -316,6 +319,16 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		catch (Exception ex) {
 			throw new BeanCreationException(beanName, "Could not bind properties", ex);
 		}
+	}
+
+	private Validator determineValidator(Object bean) {
+		if (ClassUtils.isAssignable(Validator.class, bean.getClass())) {
+			if (this.validator == null) {
+				return (Validator) bean;
+			}
+			return new ChainingValidator(this.validator, (Validator) bean);
+		}
+		return this.validator;
 	}
 
 	private PropertySources loadPropertySources(String[] path) {
@@ -361,6 +374,40 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			validator.setApplicationContext(applicationContext);
 			validator.afterPropertiesSet();
 			return validator;
+		}
+
+	}
+
+	/**
+	 * {@link Validator} implementation that wraps {@link Validator} instances and chains
+	 * their execution.
+	 */
+	private static class ChainingValidator implements Validator {
+
+		private Validator[] validators;
+
+		public ChainingValidator(Validator... validators) {
+			Assert.notNull(validators, "Validators must not be null");
+			this.validators = validators;
+		}
+
+		@Override
+		public boolean supports(Class<?> clazz) {
+			for (Validator validator : this.validators) {
+				if (validator.supports(clazz)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public void validate(Object target, Errors errors) {
+			for (Validator validator : this.validators) {
+				if (validator.supports(target.getClass())) {
+					validator.validate(target, errors);
+				}
+			}
 		}
 
 	}
