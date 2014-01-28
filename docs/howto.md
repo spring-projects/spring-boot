@@ -241,7 +241,20 @@ public EmbeddedServletContainerCustomizer containerCustomizer(){
 }
 ```
 
-## Reload Static Content (E.g. Thymeleaf Templates) Without Restarting the Container
+## Reload Static Content
+
+There are several options. Running in an IDE (especially with
+debugging on) is a good way to do development (all modern IDEs allow
+reloading of static resources and usually also hotswapping of Java
+class changes). The
+[Maven](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-tools/spring-boot-maven-plugin#running-applications)
+and
+[Gradle](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-tools/spring-boot-gradle-plugin#running-a-project-in-place)
+tooling also support running from the command line with reloading of
+static files. You can use that with an external css/js compiler
+process if you are writing that code with higher level tools.
+
+## Reload Thymeleaf Templates Without Restarting the Container
 
 If you are using Thymeleaf, then set
 `spring.thymeleaf.cache=false`. See `ThymeleafAutoConfiguration` for
