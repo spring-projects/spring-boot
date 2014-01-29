@@ -20,7 +20,11 @@ Javadocs. Some rules of thumb:
 
 * Look for classes called `*AutoConfiguration` and read their sources,
   in particular the `@Conditional*` annotations to find out what
-  features they enable and when. In those clases...
+  features they enable and when. Add "--debug" to the command line or
+  a System property `-Ddebug` to get a printout on the console of all
+  the autoconfiguration decisions that were made in your app. In a
+  running Actuator app look at the "/autoconfig" endpoint (or the JMX
+  equivalent) for the same information.
 
 * Look for classes that are `@ConfigurationProperties`
   (e.g. [`ServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/ServerProperties.java?source=c))
@@ -28,7 +32,8 @@ Javadocs. Some rules of thumb:
   options. The `@ConfigurationProperties` has a `name` attribute which
   acts as a prefix to external properties, thus `ServerProperties` has
   `name="server"` and its configuration properties are `server.port`,
-  `server.address` etc.
+  `server.address` etc. In a running Actuator app look at the
+  "/configprops" endpoint or JMX equivalent.
 
 * Look for use of `RelaxedEnvironment` to pull configuration values
   explicitly out of the `Environment`. It often is used with a prefix.
@@ -502,12 +507,46 @@ up). You can change the password by providing a
 `security.user.password`. This and other useful properties are
 externalized via `SecurityProperties`.
 
+## Switch off the Spring Boot Security Configuration
+
+If you define a `@Configuration` with `@EnableWebSecurity` anywhere in
+your application it will switch off the default webapp security
+settings in Spring Boot. To tweak the defaults try setting properties
+in `security.*` (see
+[SecurityProperties](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/security/SecurityProperties.java)
+for details of available settings).
+
 ## Change the AuthenticationManager and add User Accounts
 
 If you provide a `@Bean` of type `AuthenticationManager` the default
 one will not be created, so you have the full feature set of Spring
 Security available
-(e.g. [various authentication options](http://docs.spring.io/spring-security/site/docs/3.2.1.CI-SNAPSHOT/reference/htmlsingle/#jc-authentication)).
+(e.g. [various authentication options](http://docs.spring.io/spring-security/site/docs/3.2.1.RELEASE/reference/htmlsingle/#jc-authentication)).
+
+Spring Security also provides a convenient
+`AuthenticationManagerBuilder` which can be used to build an
+`AuthenticationManager` with common options. The recommended way to
+use this in a webapp is to inject it into a void method in a
+`WebSecurityConfigurerAdapter`, e.g.
+
+```
+@Configuration
+@Order(0)
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    protected void init(AuthenticationManagerBuilder builder) {
+        builder.inMemoryAuthentication().withUser("barry"); // ...  etc.
+    }
+    
+    // ... other stuff for application security
+
+}
+```
+
+The configuration class that does this should declare an `@Order` so
+that it is used before the default one in Spring Boot (which has very
+low precedence).
 
 ## Use 'Short' Command Line Arguments
 
@@ -737,7 +776,7 @@ class has to be loadable.
 
 To override the default settings just define a `@Bean` of your own of
 type `DataSource`. See
-[`DataSourceAutoConfiguration`]((https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java))
+[`DataSourceAutoConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/jdbc/DataSourceAutoConfiguration.java)
 for more details.
 
 ## Use Spring Data Repositories
@@ -823,7 +862,14 @@ Spring Boot binds external properties from `application.properties`
 (or `.yml`) (and other places) into an application at runtime.  There
 is not (and technically cannot be) an exhaustive list of all supported
 properties in a single location because contributions can come from
-additional JAR files on your classpath.  There is a sample
+additional JAR files on your classpath.
+
+A running application with the Actuator features has a "/configprops"
+endpoint that shows all the bound and bindable properties available
+through `@ConfigurationProperties` (also exposed through JMX if you
+don't have a web endpoint).
+
+There is a sample
 [`application.yml`](https://github.com/spring-projects/spring-boot/blob/master/docs/application.yml)
 with a non-exhaustive and possibly inaccurate list of properties
 supported by Spring Boot vanilla with autoconfiguration. The
