@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
+import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
 
@@ -33,7 +34,8 @@ import org.springframework.boot.cli.command.test.TestCommand;
 public class DefaultCommandFactory implements CommandFactory {
 
 	private static final List<Command> DEFAULT_COMMANDS = Arrays.<Command> asList(
-			new VersionCommand(), new RunCommand(), new TestCommand(), new GrabCommand());
+			new VersionCommand(), new RunCommand(), new TestCommand(), new GrabCommand(),
+			new JarCommand());
 
 	@Override
 	public Collection<Command> getCommands() {

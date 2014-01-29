@@ -45,7 +45,7 @@ import java.util.zip.ZipEntry;
  * 
  * @author Phillip Webb
  */
-class JarWriter {
+public class JarWriter {
 
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
@@ -105,6 +105,18 @@ class JarWriter {
 				inputStream.close();
 			}
 		}
+	}
+
+	/**
+	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
+	 * 
+	 * @param entryName The name of the entry
+	 * @param inputStream The stream from which the entry's data can be read
+	 * @throws IOException if the write fails
+	 */
+	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
+		JarEntry entry = new JarEntry(entryName);
+		writeEntry(entry, new InputStreamEntryWriter(inputStream, true));
 	}
 
 	/**

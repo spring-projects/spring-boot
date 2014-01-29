@@ -34,6 +34,11 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-loader-tools</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
 		</dependency>
@@ -98,6 +103,12 @@
 			<artifactId>aether-util</artifactId>
 		</dependency>
 		<!-- Provided -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-loader</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-templates</artifactId>

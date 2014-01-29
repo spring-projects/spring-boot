@@ -198,3 +198,18 @@ $ . ~/.gvm/springboot/current/bash_completion.d/spring
 $ spring <HIT TAB HERE>
 clean    -d       debug    help     run      test     version
 ```
+
+## Packaging Your Application
+
+You can use the `jar` command to package your application into a
+self-contained executable jar file. For example:
+
+```
+$ spring jar my-app.jar *.groovy
+```
+
+The resulting jar will containe the classes produced by compiling
+the application and all of the application's dependencies such that
+it can then be run using `java -jar`. The jar file will also contain
+entries from the application's classpath. See the output of
+`spring help jar` for more information.
