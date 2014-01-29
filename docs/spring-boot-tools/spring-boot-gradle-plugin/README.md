@@ -3,7 +3,8 @@ layout: documentation_page
 ---
 # Spring Boot - Gradle Plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, allowing you to
-package executable jar or war archives.
+package executable jar or war archives, run Spring Boot applications and remove version
+information from your `build.gradle` file.
 
 ## Including the plugin
 To use the Spring Boot Gradle Plugin simply include a `buildscript` dependency and apply
@@ -30,6 +31,23 @@ buildscript {
 }
 ```
 
+## Declaring dependencies without versions
+The `spring-boot` plugin will register a custom Gradle `ResolutionStrategy` with your
+build that allows you to omit version numbers when declaring dependencies to known
+artifacts. All artifacts with a `org.springframework.boot` group ID, and any of the
+artifacts declared in the `managementDependencies` section of the `spring-dependencies`
+POM can have their version number resolved automatically.
+
+Simply declare dependencies in the usual way, but leave the version number empty:
+
+```groovy
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.thymeleaf:thymeleaf-spring4")
+    compile("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+}
+```
+
 ## Packaging executable jar and war files
 Once the `spring-boot` plugin has been applied to your project it will automatically
 attempt to rewrite archives to make them executable using the `bootRepackage` task. You
@@ -48,12 +66,15 @@ $ java -jar build/libs/mymodule-0.0.1-SNAPSHOT.jar
 ```
 
 ### Running a Project in Place
-
 To run a project in place without building a jar first you can use the "bootRun" task:
 
 ```
 $ gradle bootRun
 ```
+
+Running this way makes your static classpath resources (i.e. in
+`src/main/resources` by default) reloadable in the live application,
+which can be helpful at development time.
 
 ### Repackage configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
@@ -119,6 +140,7 @@ The following configuration options are available:
 | providedConfiguration | String  | The name of the provided configuration                                                                                                                                     | providedRuntime |
 | backupSource          | boolean | If the original source archive should be backed-up before being repackaged                                                                                                 | true            |
 | customConfiguration | String  | The name of the custom configuration                                                                                                                                         | none            |
+| layout          | String | The type of archive (which corresponds to how the dependencies are layed out inside it). Defaults to a guess based on the archive type. |
 
 ## Further Reading
 For more information on how Spring Boot Loader archives work, take a look at the
