@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist
+ * @author Andy Wilkinson
  */
 public class SourceOptions {
 
@@ -47,6 +48,14 @@ public class SourceOptions {
 	}
 
 	/**
+	 * Create a new {@link SourceOptions} instance.
+	 * @param arguments the source arguments
+	 */
+	public SourceOptions(List<?> arguments) {
+		this(arguments, null);
+	}
+
+	/**
 	 * Create a new {@link SourceOptions} instance. If it is an error to pass options that
 	 * specify non-existent sources, but the default paths are allowed not to exist (the
 	 * paths are tested before use). If default paths are provided and the option set
@@ -57,7 +66,10 @@ public class SourceOptions {
 	 * found in the local filesystem
 	 */
 	public SourceOptions(OptionSet optionSet, ClassLoader classLoader) {
-		List<?> nonOptionArguments = optionSet.nonOptionArguments();
+		this(optionSet.nonOptionArguments(), classLoader);
+	}
+
+	private SourceOptions(List<?> nonOptionArguments, ClassLoader classLoader) {
 		List<String> sources = new ArrayList<String>();
 		int sourceArgCount = 0;
 		for (Object option : nonOptionArguments) {
@@ -84,7 +96,7 @@ public class SourceOptions {
 		}
 		this.args = Collections.unmodifiableList(nonOptionArguments.subList(
 				sourceArgCount, nonOptionArguments.size()));
-		Assert.isTrue(sources.size() > 0, "Please specify at least one file to run");
+		Assert.isTrue(sources.size() > 0, "Please specify at least one file");
 		this.sources = Collections.unmodifiableList(sources);
 	}
 

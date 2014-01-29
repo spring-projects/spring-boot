@@ -37,6 +37,16 @@ import org.springframework.util.Assert;
  */
 public final class CommandLineInvoker {
 
+	private final File workingDirectory;
+
+	public CommandLineInvoker() {
+		this(new File("."));
+	}
+
+	public CommandLineInvoker(File workingDirectory) {
+		this.workingDirectory = workingDirectory;
+	}
+
 	public Invocation invoke(String... args) throws IOException {
 		return new Invocation(runCliProcess(args));
 	}
@@ -45,7 +55,7 @@ public final class CommandLineInvoker {
 		List<String> command = new ArrayList<String>();
 		command.add(findLaunchScript().getAbsolutePath());
 		command.addAll(Arrays.asList(args));
-		return new ProcessBuilder(command).start();
+		return new ProcessBuilder(command).directory(this.workingDirectory).start();
 	}
 
 	private File findLaunchScript() {
@@ -70,9 +80,9 @@ public final class CommandLineInvoker {
 	}
 
 	/**
-	 * An ongoing CLI invocation.
+	 * An ongoing Process invocation.
 	 */
-	public final class Invocation {
+	public static final class Invocation {
 
 		private final StringBuffer err = new StringBuffer();
 
@@ -80,7 +90,7 @@ public final class CommandLineInvoker {
 
 		private final Process process;
 
-		Invocation(Process process) {
+		public Invocation(Process process) {
 			this.process = process;
 			new Thread(new StreamReadingRunnable(this.process.getErrorStream(), this.err))
 					.start();
