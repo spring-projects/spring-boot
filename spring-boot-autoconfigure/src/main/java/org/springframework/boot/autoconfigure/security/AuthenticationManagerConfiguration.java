@@ -16,22 +16,20 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}.
@@ -41,10 +39,10 @@ import org.springframework.security.config.annotation.authentication.configurers
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean(AuthenticationManager.class)
-public class AuthenticationManagerConfiguration {
-
-	private static Log logger = LogFactory
-			.getLog(AuthenticationManagerConfiguration.class);
+@ConditionalOnWebApplication
+@Order(Ordered.LOWEST_PRECEDENCE - 3)
+public class AuthenticationManagerConfiguration implements
+		WebSecurityConfigurer<WebSecurity> {
 
 	@Autowired
 	private SecurityProperties security;
@@ -52,26 +50,17 @@ public class AuthenticationManagerConfiguration {
 	@Autowired
 	private List<SecurityPrequisite> dependencies;
 
-	@Bean
-	public AuthenticationManager authenticationManager(
-			ObjectPostProcessor<Object> objectPostProcessor) throws Exception {
+	@Override
+	public void init(WebSecurity builder) throws Exception {
+	}
 
-		InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> builder = new AuthenticationManagerBuilder(
-				objectPostProcessor).inMemoryAuthentication();
-		User user = this.security.getUser();
+	@Override
+	public void configure(WebSecurity builder) throws Exception {
+	}
 
-		if (user.isDefaultPassword()) {
-			logger.info("\n\nUsing default password for application endpoints: "
-					+ user.getPassword() + "\n\n");
-		}
-
-		Set<String> roles = new LinkedHashSet<String>(user.getRole());
-
-		builder.withUser(user.getName()).password(user.getPassword())
-				.roles(roles.toArray(new String[roles.size()]));
-
-		return builder.and().build();
-
+	@Autowired
+	public void authentication(AuthenticationManagerBuilder builder) throws Exception {
+		SecurityAutoConfiguration.authentication(builder, this.security);
 	}
 
 }

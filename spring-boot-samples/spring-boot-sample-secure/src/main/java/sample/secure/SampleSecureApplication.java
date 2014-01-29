@@ -48,7 +48,7 @@ public class SampleSecureApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(SampleSecureApplication.class, args);
+		SpringApplication.run(SampleSecureApplication.class, "--debug");
 	}
 
 }

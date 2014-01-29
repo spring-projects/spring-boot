@@ -18,22 +18,20 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationBeforeRefreshEvent;
-import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.context.listener.LoggingApplicationListener;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -74,7 +72,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				ManagementServerPropertiesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(AuthenticationManager.class));
+		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
 		// 6 for static resources, one for management endpoints and one for the rest
 		assertEquals(8, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
@@ -89,9 +87,9 @@ public class ManagementSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class,
+				ManagementSecurityAutoConfiguration.class, UserDetailsExposed.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		debugRefresh(this.context);
+		this.context.refresh();
 		UserDetails user = getUser();
 		assertTrue(user.getAuthorities().containsAll(
 				AuthorityUtils
@@ -169,17 +167,24 @@ public class ManagementSecurityAutoConfigurationTests {
 				this.context.getBean(AuthenticationManager.class));
 	}
 
-	private static AnnotationConfigWebApplicationContext debugRefresh(
-			AnnotationConfigWebApplicationContext context) {
-		EnvironmentTestUtils.addEnvironment(context, "debug:true");
-		LoggingApplicationListener logging = new LoggingApplicationListener();
-		logging.onApplicationEvent(new SpringApplicationBeforeRefreshEvent(
-				new SpringApplication(), context, new String[0]));
-		AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
-		initializer.initialize(context);
-		context.refresh();
-		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		return context;
+	@Configuration
+	protected static class UserDetailsExposed implements
+			WebSecurityConfigurer<WebSecurity> {
+
+		@Override
+		public void init(WebSecurity builder) throws Exception {
+		}
+
+		@Override
+		public void configure(WebSecurity builder) throws Exception {
+		}
+
+		@Bean
+		public AuthenticationManager authenticationManager(
+				AuthenticationManagerBuilder builder) throws Exception {
+			return builder.getOrBuild();
+		}
+
 	}
 
 	@Configuration

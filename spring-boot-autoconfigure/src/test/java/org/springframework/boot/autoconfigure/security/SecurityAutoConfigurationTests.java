@@ -34,6 +34,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.FilterChainProxy;
@@ -58,7 +59,7 @@ public class SecurityAutoConfigurationTests {
 		this.context.register(SecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		debugRefresh(this.context);
-		assertNotNull(this.context.getBean(AuthenticationManager.class));
+		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
 		// 4 for static resources and one for the rest
 		assertEquals(5, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
