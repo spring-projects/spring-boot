@@ -28,11 +28,14 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.jmx.export.MBeanExportException;
@@ -52,7 +55,7 @@ import org.springframework.util.ObjectUtils;
  * @author Christian Dupuis
  */
 public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,
-		BeanFactoryAware {
+		BeanFactoryAware, ApplicationContextAware {
 
 	public static final String DEFAULT_DOMAIN = "org.springframework.boot";
 
@@ -76,6 +79,8 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 
 	private final ReentrantLock lifecycleLock = new ReentrantLock();
 
+	private ApplicationContext applicationContext;
+
 	private ListableBeanFactory beanFactory;
 
 	private String domain = DEFAULT_DOMAIN;
@@ -89,6 +94,12 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 		setAutodetect(false);
 		setNamingStrategy(this.defaultNamingStrategy);
 		setAssembler(this.assembler);
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;
 	}
 
 	@Override
@@ -159,6 +170,10 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 			StringBuilder builder = new StringBuilder();
 			builder.append(this.domain);
 			builder.append(":type=Endpoint");
+			if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
+				builder.append(",context="
+						+ ObjectUtils.getIdentityHexString(this.applicationContext));
+			}
 			builder.append(",name=" + beanKey);
 			if (this.ensureUniqueRuntimeObjectNames) {
 				builder.append(",identity="
@@ -170,6 +185,21 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 		}
 
 		return this.defaultNamingStrategy.getObjectName(bean, beanKey);
+	}
+
+	private boolean parentContextContainsSameBean(ApplicationContext applicationContext,
+			String beanKey) {
+		if (applicationContext.getParent() != null) {
+			try {
+				this.applicationContext.getParent().getBean(beanKey, Endpoint.class);
+				return true;
+			}
+			catch (BeansException ex) {
+				return parentContextContainsSameBean(applicationContext.getParent(),
+						beanKey);
+			}
+		}
+		return false;
 	}
 
 	private String getStaticNames() {
@@ -243,4 +273,5 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 			this.lifecycleLock.unlock();
 		}
 	}
+
 }

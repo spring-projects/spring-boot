@@ -97,11 +97,45 @@ public class EndpointMBeanExportAutoConfigurationTests {
 						+ ",key1=value1,key2=value2")));
 	}
 
+	@Test
+	public void testEndpointMBeanExporterInParentChild() throws IntrospectionException,
+			InstanceNotFoundException, MalformedObjectNameException, ReflectionException {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EndpointAutoConfiguration.class,
+				EndpointMBeanExportAutoConfiguration.class);
+
+		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+		parent.register(EndpointAutoConfiguration.class,
+				EndpointMBeanExportAutoConfiguration.class);
+		this.context.setParent(parent);
+
+		parent.refresh();
+		this.context.refresh();
+
+		parent.close();
+
+		System.out.println("parent " + ObjectUtils.getIdentityHexString(parent));
+		System.out.println("child " + ObjectUtils.getIdentityHexString(this.context));
+	}
+
 	private ObjectName getObjectName(String domain, String beanKey,
 			ApplicationContext applicationContext) throws MalformedObjectNameException {
-		return ObjectNameManager.getInstance(String.format(
-				"%s:type=Endpoint,name=%s,identity=%s", domain, beanKey,
-				ObjectUtils.getIdentityHexString(applicationContext.getBean(beanKey))));
+		if (applicationContext.getParent() != null) {
+			return ObjectNameManager
+					.getInstance(String.format(
+							"%s:type=Endpoint,name=%s,context=%s,identity=%s", domain,
+							beanKey,
+							ObjectUtils.getIdentityHexString(applicationContext),
+							ObjectUtils.getIdentityHexString(applicationContext
+									.getBean(beanKey))));
+		}
+		else {
+			return ObjectNameManager
+					.getInstance(String.format("%s:type=Endpoint,name=%s,identity=%s",
+							domain, beanKey, ObjectUtils
+									.getIdentityHexString(applicationContext
+											.getBean(beanKey))));
+		}
 	}
 
 	@Configuration
