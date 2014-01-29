@@ -28,13 +28,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import joptsimple.OptionSet;
@@ -58,8 +55,10 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
-import org.springframework.boot.loader.ArchiveResolver;
+import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
+import org.springframework.boot.loader.tools.Layout;
+import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.util.StringUtils;
 
 /**
@@ -68,6 +67,8 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 public class JarCommand extends OptionParsingCommand {
+
+	private static final Layout LAYOUT = new Layouts.Jar();
 
 	public JarCommand() {
 		super(
@@ -146,8 +147,11 @@ public class JarCommand extends OptionParsingCommand {
 				addDependencies(jarWriter, dependencyUrls);
 				addClasspathEntries(jarWriter, classpathEntries);
 				addApplicationClasses(jarWriter, compiledClasses);
+				String runnerClassName = getClassFile(PackagedSpringApplicationLauncher.class
+						.getName());
+				jarWriter.writeEntry(runnerClassName,
+						getClass().getResourceAsStream("/" + runnerClassName));
 				jarWriter.writeLoaderClasses();
-				addJarRunner(jarWriter);
 			}
 			finally {
 				jarWriter.close();
@@ -206,9 +210,10 @@ public class JarCommand extends OptionParsingCommand {
 							"Application-Classes",
 							StringUtils.collectionToCommaDelimitedString(compiledClasses
 									.keySet()));
-
-			manifest.getMainAttributes()
-					.putValue("Main-Class", JarRunner.class.getName());
+			manifest.getMainAttributes().putValue("Main-Class",
+					LAYOUT.getLauncherClassName());
+			manifest.getMainAttributes().putValue("Start-Class",
+					PackagedSpringApplicationLauncher.class.getName());
 			return manifest;
 		}
 
@@ -243,27 +248,14 @@ public class JarCommand extends OptionParsingCommand {
 				final Map<String, byte[]> compiledClasses) throws IOException {
 
 			for (Entry<String, byte[]> entry : compiledClasses.entrySet()) {
-				String className = entry.getKey().replace(".", "/") + ".class";
-				jarWriter.writeEntry(className,
+				jarWriter.writeEntry(getClassFile(entry.getKey()),
 						new ByteArrayInputStream(entry.getValue()));
 			}
 		}
 
-		private void addJarRunner(JarWriter jar) throws IOException, URISyntaxException {
-			JarFile jarFile = getJarFile();
-			String namePrefix = JarRunner.class.getName().replace(".", "/");
-			Enumeration<JarEntry> entries = jarFile.entries();
-			while (entries.hasMoreElements()) {
-				JarEntry entry = entries.nextElement();
-				if (entry.getName().startsWith(namePrefix)) {
-					jar.writeEntry(entry.getName(), jarFile.getInputStream(entry));
-				}
-			}
+		private String getClassFile(String className) {
+			return className.replace(".", "/") + ".class";
 		}
 
-		private JarFile getJarFile() throws URISyntaxException, IOException {
-			return new JarFile(
-					new ArchiveResolver().resolveArchiveLocation(JarCommand.class));
-		}
 	}
 }

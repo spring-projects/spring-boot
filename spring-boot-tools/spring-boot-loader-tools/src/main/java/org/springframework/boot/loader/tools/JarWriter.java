@@ -44,6 +44,7 @@ import java.util.zip.ZipEntry;
  * items are ignored.
  * 
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class JarWriter {
 
@@ -109,7 +110,6 @@ public class JarWriter {
 
 	/**
 	 * Writes an entry. The {@code inputStream} is closed once the entry has been written
-	 * 
 	 * @param entryName The name of the entry
 	 * @param inputStream The stream from which the entry's data can be read
 	 * @throws IOException if the write fails
@@ -123,7 +123,7 @@ public class JarWriter {
 	 * Write a nested library.
 	 * @param destination the destination of the library
 	 * @param file the library file
-	 * @throws IOException
+	 * @throws IOException if the write fails
 	 */
 	public void writeNestedLibrary(String destination, File file) throws IOException {
 		JarEntry entry = new JarEntry(destination + file.getName());
