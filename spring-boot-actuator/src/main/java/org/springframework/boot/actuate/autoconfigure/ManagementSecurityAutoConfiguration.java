@@ -202,6 +202,7 @@ public class ManagementSecurityAutoConfiguration {
 
 		@Configuration
 		@ConditionalOnMissingBean(AuthenticationManager.class)
+		@Order(Ordered.LOWEST_PRECEDENCE - 4)
 		protected static class ManagementAuthenticationManagerConfiguration extends
 				AuthenticationManagerConfiguration {
 		}
