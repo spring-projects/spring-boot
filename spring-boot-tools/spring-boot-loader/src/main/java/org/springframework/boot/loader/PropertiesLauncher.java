@@ -21,10 +21,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -494,7 +497,19 @@ public class PropertiesLauncher extends Launcher {
 	}
 
 	private Archive createArchive() throws Exception {
-		return new ArchiveResolver().resolveArchive(getClass());
+		ProtectionDomain protectionDomain = getClass().getProtectionDomain();
+		CodeSource codeSource = protectionDomain.getCodeSource();
+		URI location = (codeSource == null ? null : codeSource.getLocation().toURI());
+		String path = (location == null ? null : location.getPath());
+		if (path == null) {
+			throw new IllegalStateException("Unable to determine code source archive");
+		}
+		File root = new File(path);
+		if (!root.exists()) {
+			throw new IllegalStateException(
+					"Unable to determine code source archive from " + root);
+		}
+		return (root.isDirectory() ? new ExplodedArchive(root) : new JarFileArchive(root));
 	}
 
 	private void addParentClassLoaderEntries(List<Archive> lib) throws IOException,
