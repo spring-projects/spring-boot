@@ -96,6 +96,14 @@ public class AutoConfigurationReportTests {
 				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
 		assertThat(this.report, not(nullValue()));
 		assertThat(this.report.getParent(), not(nullValue()));
+		AutoConfigurationReport.get((ConfigurableListableBeanFactory) this.beanFactory
+				.getParentBeanFactory());
+		assertThat(this.report,
+				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
+		assertThat(this.report.getParent(),
+				sameInstance(AutoConfigurationReport
+						.get((ConfigurableListableBeanFactory) this.beanFactory
+								.getParentBeanFactory())));
 	}
 
 	@Test
