@@ -50,6 +50,8 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 
 	private static final String SHARED_PACKAGE = "org.springframework.boot.groovy";
 
+	private static final URL[] NO_URLS = new URL[] {};
+
 	private final Map<String, byte[]> classResources = new HashMap<String, byte[]>();
 
 	private final GroovyCompilerScope scope;
@@ -127,7 +129,14 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 				.doPrivileged(new PrivilegedAction<InnerLoader>() {
 					@Override
 					public InnerLoader run() {
-						return new InnerLoader(ExtendedGroovyClassLoader.this);
+						return new InnerLoader(ExtendedGroovyClassLoader.this) {
+							// Don't return URLs from the inner loader so that Tomcat only
+							// searches the parent. Fixes 'TLD skipped' issues
+							@Override
+							public URL[] getURLs() {
+								return NO_URLS;
+							}
+						};
 					}
 				});
 		return new ExtendedClassCollector(loader, unit, su);
