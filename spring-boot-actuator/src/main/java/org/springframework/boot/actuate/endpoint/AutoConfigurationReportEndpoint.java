@@ -32,6 +32,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
@@ -60,6 +62,7 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	 * Adapts {@link AutoConfigurationReport} to a JSON friendly structure.
 	 */
 	@JsonPropertyOrder({ "positiveMatches", "negativeMatches" })
+	@JsonInclude(Include.NON_EMPTY)
 	public static class Report {
 
 		private MultiValueMap<String, MessageAndCondition> positiveMatches;

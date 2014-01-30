@@ -112,9 +112,7 @@ public class AutoConfigurationReportTests {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
 		AutoConfigurationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
-		this.report = AutoConfigurationReport.get(this.beanFactory); // NB: overrides
-																		// setup
-
+		this.report = AutoConfigurationReport.get(this.beanFactory);
 		assertThat(this.report, not(nullValue()));
 		assertThat(this.report, not(sameInstance(this.report.getParent())));
 		assertThat(this.report.getParent(), not(nullValue()));
