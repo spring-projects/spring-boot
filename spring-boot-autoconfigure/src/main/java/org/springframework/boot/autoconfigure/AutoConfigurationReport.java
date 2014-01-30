@@ -25,7 +25,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.Condition;
@@ -94,10 +93,10 @@ public class AutoConfigurationReport {
 	public static AutoConfigurationReport get(ConfigurableListableBeanFactory beanFactory) {
 		synchronized (beanFactory) {
 			AutoConfigurationReport report;
-			try {
+			if (beanFactory.containsSingleton(BEAN_NAME)) {
 				report = beanFactory.getBean(BEAN_NAME, AutoConfigurationReport.class);
 			}
-			catch (NoSuchBeanDefinitionException ex) {
+			else {
 				report = new AutoConfigurationReport();
 				beanFactory.registerSingleton(BEAN_NAME, report);
 			}
