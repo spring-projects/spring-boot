@@ -19,13 +19,20 @@ package org.springframework.boot.cli;
 import java.io.File;
 
 import org.junit.Test;
+import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker;
 import org.springframework.boot.cli.infrastructure.CommandLineInvoker.Invocation;
+import org.springframework.boot.cli.util.JavaExecutable;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Integration test for {@link JarCommand}.
+ * 
  * @author Andy Wilkinson
  */
 public class JarCommandIT {
@@ -37,20 +44,18 @@ public class JarCommandIT {
 	public void noArguments() throws Exception {
 		Invocation invocation = this.cli.invoke("jar");
 		invocation.await();
-		assertEquals(0, invocation.getStandardOutput().length());
-		assertEquals(
-				"The name of the resulting jar and at least one source file must be specified",
-				invocation.getErrorOutput().trim());
+		assertThat(invocation.getStandardOutput(), equalTo(""));
+		assertThat(invocation.getErrorOutput(), containsString("The name of the "
+				+ "resulting jar and at least one source file must be specified"));
 	}
 
 	@Test
 	public void noSources() throws Exception {
 		Invocation invocation = this.cli.invoke("jar", "test-app.jar");
 		invocation.await();
-		assertEquals(0, invocation.getStandardOutput().length());
-		assertEquals(
-				"The name of the resulting jar and at least one source file must be specified",
-				invocation.getErrorOutput().trim());
+		assertThat(invocation.getStandardOutput(), equalTo(""));
+		assertThat(invocation.getErrorOutput(), containsString("The name of the "
+				+ "resulting jar and at least one source file must be specified"));
 	}
 
 	@Test
@@ -62,14 +67,13 @@ public class JarCommandIT {
 		assertEquals(0, invocation.getErrorOutput().length());
 		assertTrue(jar.exists());
 
-		ProcessBuilder builder = new ProcessBuilder(System.getProperty("java.home")
-				+ "/bin/java", "-jar", jar.getAbsolutePath());
-		Process process = builder.start();
-		Invocation appInvocation = new Invocation(process);
-		appInvocation.await();
+		Process process = new JavaExecutable().processBuilder("-jar",
+				jar.getAbsolutePath()).start();
+		invocation = new Invocation(process);
+		invocation.await();
 
-		assertEquals(0, appInvocation.getErrorOutput().length());
-		assertTrue(appInvocation.getStandardOutput().contains("Hello World!"));
-		assertTrue(appInvocation.getStandardOutput().contains("/static/test.txt"));
+		assertThat(invocation.getErrorOutput(), equalTo(""));
+		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
+		assertThat(invocation.getStandardOutput(), containsString("/static/test.txt"));
 	}
 }

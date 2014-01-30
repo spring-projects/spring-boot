@@ -16,8 +16,6 @@
 
 package org.springframework.boot.cli.command.shell;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,8 +23,7 @@ import java.util.List;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionHelp;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.cli.util.JavaExecutable;
 
 /**
  * Decorate an existing command to run it by forking the current java process.
@@ -40,7 +37,7 @@ class ForkProcessCommand extends RunProcessCommand {
 	private final Command command;
 
 	public ForkProcessCommand(Command command) {
-		super(getJavaCommand());
+		super(new JavaExecutable().toString());
 		this.command = command;
 	}
 
@@ -78,26 +75,6 @@ class ForkProcessCommand extends RunProcessCommand {
 		fullArgs.add(this.command.getName());
 		fullArgs.addAll(Arrays.asList(args));
 		run(fullArgs);
-	}
-
-	private static String getJavaCommand() {
-		String javaHome = System.getProperty("java.home");
-		Assert.state(StringUtils.hasLength(javaHome),
-				"Unable to find java command to fork process");
-		try {
-			return getJavaCommand(javaHome).getCanonicalPath();
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
-	private static File getJavaCommand(String javaHome) {
-		File bin = new File(new File(javaHome), "bin");
-		File command = new File(bin, "java.exe");
-		command = (command.exists() ? command : new File(bin, "java"));
-		Assert.state(command.exists(), "Unable to find java in " + javaHome);
-		return command;
 	}
 
 }

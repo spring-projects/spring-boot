@@ -29,6 +29,8 @@ import java.util.jar.Manifest;
  */
 public class PackagedSpringApplicationLauncher {
 
+	public static final String SOURCE_MANIFEST_ENTRY = "Spring-Application-Source-Classes";
+
 	private static final String SPRING_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
 
 	private void run(String[] args) throws Exception {
@@ -42,7 +44,7 @@ public class PackagedSpringApplicationLauncher {
 	private Object[] getSources(URLClassLoader classLoader) throws Exception {
 		URL url = classLoader.findResource("META-INF/MANIFEST.MF");
 		Manifest manifest = new Manifest(url.openStream());
-		String attribute = manifest.getMainAttributes().getValue("Application-Classes");
+		String attribute = manifest.getMainAttributes().getValue(SOURCE_MANIFEST_ENTRY);
 		return loadClasses(classLoader, attribute.split(","));
 	}
 

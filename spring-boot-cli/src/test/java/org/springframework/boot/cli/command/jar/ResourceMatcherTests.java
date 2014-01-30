@@ -29,7 +29,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author awilkinson
+ * Tests for {@link ResourceMatcher}.
+ * 
+ * @author Andy Wilkinson
  */
 public class ResourceMatcherTests {
 
@@ -38,22 +40,21 @@ public class ResourceMatcherTests {
 
 	@Test
 	public void nonExistentRoot() throws IOException {
-		List<MatchedResource> matchedResources = this.resourceMatcher
-				.matchResources(Arrays.asList(new File("does-not-exist")));
+		List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays
+				.asList(new File("does-not-exist")));
 		assertEquals(0, matchedResources.size());
 	}
 
 	@Test
 	public void resourceMatching() throws IOException {
-		List<MatchedResource> matchedResources = this.resourceMatcher
-				.matchResources(Arrays.asList(new File(
-						"src/test/resources/resource-matcher/one"), new File(
+		List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays.asList(
+				new File("src/test/resources/resource-matcher/one"), new File(
 						"src/test/resources/resource-matcher/two"), new File(
 						"src/test/resources/resource-matcher/three")));
 		System.out.println(matchedResources);
 		List<String> paths = new ArrayList<String>();
 		for (MatchedResource resource : matchedResources) {
-			paths.add(resource.getPath());
+			paths.add(resource.getName());
 		}
 
 		assertEquals(6, paths.size());

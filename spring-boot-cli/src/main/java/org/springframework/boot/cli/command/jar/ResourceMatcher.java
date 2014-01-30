@@ -28,6 +28,7 @@ import java.util.List;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.AntPathMatcher;
 
@@ -36,7 +37,7 @@ import org.springframework.util.AntPathMatcher;
  * 
  * @author Andy Wilkinson
  */
-final class ResourceMatcher {
+class ResourceMatcher {
 
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -49,110 +50,128 @@ final class ResourceMatcher {
 		this.excludes = excludes;
 	}
 
-	List<MatchedResource> matchResources(List<File> roots) throws IOException {
+	public List<MatchedResource> find(List<File> roots) throws IOException {
 		List<MatchedResource> matchedResources = new ArrayList<MatchedResource>();
-
 		for (File root : roots) {
 			if (root.isFile()) {
 				matchedResources.add(new MatchedResource(root));
 			}
 			else {
-				matchedResources.addAll(matchResources(root));
+				matchedResources.addAll(findInFolder(root));
 			}
 		}
 		return matchedResources;
 	}
 
-	private List<MatchedResource> matchResources(File root) throws IOException {
-		List<MatchedResource> resources = new ArrayList<MatchedResource>();
+	private List<MatchedResource> findInFolder(File folder) throws IOException {
+		List<MatchedResource> matchedResources = new ArrayList<MatchedResource>();
 
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
-				new ResourceCollectionResourceLoader(root));
+				new FolderResourceLoader(folder));
 
 		for (String include : this.includes) {
-			Resource[] candidates = resolver.getResources(include);
-			for (Resource candidate : candidates) {
+			for (Resource candidate : resolver.getResources(include)) {
 				File file = candidate.getFile();
 				if (file.isFile()) {
-					MatchedResource matchedResource = new MatchedResource(root, file);
+					MatchedResource matchedResource = new MatchedResource(folder, file);
 					if (!isExcluded(matchedResource)) {
-						resources.add(matchedResource);
+						matchedResources.add(matchedResource);
 					}
 				}
 			}
 		}
 
-		return resources;
+		return matchedResources;
 	}
 
 	private boolean isExcluded(MatchedResource matchedResource) {
 		for (String exclude : this.excludes) {
-			if (this.pathMatcher.match(exclude, matchedResource.getPath())) {
+			if (this.pathMatcher.match(exclude, matchedResource.getName())) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
-	private static final class ResourceCollectionResourceLoader extends
-			DefaultResourceLoader {
+	/**
+	 * {@link ResourceLoader} to get load resource from a folder.
+	 */
+	private static class FolderResourceLoader extends DefaultResourceLoader {
 
-		private final File root;
+		private final File rootFolder;
 
-		ResourceCollectionResourceLoader(File root) throws MalformedURLException {
-			super(new URLClassLoader(new URL[] { root.toURI().toURL() }) {
-				@Override
-				public Enumeration<URL> getResources(String name) throws IOException {
-					return findResources(name);
-				}
-
-				@Override
-				public URL getResource(String name) {
-					return findResource(name);
-				}
-			});
-			this.root = root;
+		public FolderResourceLoader(File root) throws MalformedURLException {
+			super(new FolderClassLoader(root));
+			this.rootFolder = root;
 		}
 
 		@Override
 		protected Resource getResourceByPath(String path) {
-			return new FileSystemResource(new File(this.root, path));
+			return new FileSystemResource(new File(this.rootFolder, path));
 		}
+
 	}
 
-	static final class MatchedResource {
+	/**
+	 * {@link ClassLoader} backed by a folder.
+	 */
+	private static class FolderClassLoader extends URLClassLoader {
+
+		public FolderClassLoader(File rootFolder) throws MalformedURLException {
+			super(new URL[] { rootFolder.toURI().toURL() });
+		}
+
+		@Override
+		public Enumeration<URL> getResources(String name) throws IOException {
+			return findResources(name);
+		}
+
+		@Override
+		public URL getResource(String name) {
+			return findResource(name);
+		}
+
+	}
+
+	/**
+	 * A single matched resource.
+	 */
+	public static final class MatchedResource {
 
 		private final File file;
 
-		private final String path;
+		private final String name;
 
 		private final boolean root;
 
-		private MatchedResource(File resourceFile) {
-			this(resourceFile, resourceFile.getName(), true);
+		private MatchedResource(File file) {
+			this.name = file.getName();
+			this.file = file;
+			this.root = false;
 		}
 
-		private MatchedResource(File root, File resourceFile) {
-			this(resourceFile, resourceFile.getAbsolutePath().substring(
-					root.getAbsolutePath().length() + 1), false);
+		private MatchedResource(File rootFolder, File file) {
+			this.name = file.getAbsolutePath().substring(
+					rootFolder.getAbsolutePath().length() + 1);
+			this.file = file;
+			this.root = false;
 		}
 
 		private MatchedResource(File resourceFile, String path, boolean root) {
 			this.file = resourceFile;
-			this.path = path;
+			this.name = path;
 			this.root = root;
 		}
 
-		File getFile() {
+		public String getName() {
+			return this.name;
+		}
+
+		public File getFile() {
 			return this.file;
 		}
 
-		String getPath() {
-			return this.path;
-		}
-
-		boolean isRoot() {
+		public boolean isRoot() {
 			return this.root;
 		}
 
@@ -160,6 +179,7 @@ final class ResourceMatcher {
 		public String toString() {
 			return this.file.getAbsolutePath();
 		}
+
 	}
 
 }
