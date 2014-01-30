@@ -17,6 +17,7 @@
 package sample.data.mongo;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,9 +55,9 @@ public class SampleMongoApplicationTests {
 		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
-		if (nested.contains(IOException.class)) {
+		if (nested.contains(ConnectException.class)) {
 			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("couldn't connect to [localhost")) {
+			if (root.getMessage().contains("Connection refused")) {
 				return true;
 			}
 		}
