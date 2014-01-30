@@ -36,6 +36,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
@@ -66,7 +67,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  */
 public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProcessor,
 		BeanFactoryAware, ResourceLoaderAware, EnvironmentAware, ApplicationContextAware,
-		InitializingBean, DisposableBean, Ordered {
+		InitializingBean, DisposableBean, PriorityOrdered {
 
 	public static final String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
 
@@ -93,7 +94,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 	private ApplicationContext applicationContext;
 
-	private int order = Ordered.HIGHEST_PRECEDENCE;
+	private int order = Ordered.HIGHEST_PRECEDENCE + 1;
 
 	/**
 	 * @param order the order to set
@@ -271,21 +272,21 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
+		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
+				bean.getClass(), ConfigurationProperties.class);
+		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
+			postProcessBeforeInitialization(bean, beanName, annotation);
+		}
 		return bean;
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName)
 			throws BeansException {
-		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
-				bean.getClass(), ConfigurationProperties.class);
-		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
-			postProcessAfterInitialization(bean, beanName, annotation);
-		}
 		return bean;
 	}
 
-	private void postProcessAfterInitialization(Object bean, String beanName,
+	private void postProcessBeforeInitialization(Object bean, String beanName,
 			ConfigurationProperties annotation) {
 		Object target = (bean instanceof ConfigurationPropertiesHolder ? ((ConfigurationPropertiesHolder) bean)
 				.getTarget() : bean);

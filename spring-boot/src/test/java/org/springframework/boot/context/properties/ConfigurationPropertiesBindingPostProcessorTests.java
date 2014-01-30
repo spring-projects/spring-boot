@@ -16,11 +16,13 @@
 
 package org.springframework.boot.context.properties;
 
+import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockEnvironment;
@@ -28,8 +30,8 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -40,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ConfigurationPropertiesBindingPostProcessorTests {
 
-	private AnnotationConfigWebApplicationContext context;
+	private AnnotationConfigApplicationContext context;
 
 	@After
 	public void close() {
@@ -51,7 +53,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void testValidationWithoutJSR303() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithoutJSR303.class);
 		try {
 			this.context.refresh();
@@ -64,7 +66,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	@Test
 	public void testValidationWithJSR303() {
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithJSR303.class);
 		try {
 			this.context.refresh();
@@ -80,9 +82,19 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("test.foo", "123456");
 		env.setProperty("test.bar", "654321");
-		this.context = new AnnotationConfigWebApplicationContext();
+		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(env);
 		this.context.register(TestConfigurationWithJSR303.class);
+		this.context.refresh();
+	}
+
+	@Test
+	public void testInitializersSeeBoundProperties() {
+		MockEnvironment env = new MockEnvironment();
+		env.setProperty("bar", "foo");
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setEnvironment(env);
+		this.context.register(TestConfigurationWithInitializer.class);
 		this.context.refresh();
 	}
 
@@ -129,6 +141,28 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@Bean
 		public PropertyWithJSR303 testProperties() {
 			return new PropertyWithJSR303();
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties
+	public static class TestConfigurationWithInitializer {
+
+		private String bar;
+
+		public void setBar(String bar) {
+			this.bar = bar;
+		}
+
+		public String getBar() {
+			return this.bar;
+		}
+
+		@PostConstruct
+		public void init() {
+			assertNotNull(this.bar);
 		}
 
 	}

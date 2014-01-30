@@ -16,15 +16,14 @@
 
 package sample.data.mongo;
 
-import java.io.IOException;
+import static org.junit.Assert.assertTrue;
+
 import java.net.ConnectException;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleMongoApplication}.
