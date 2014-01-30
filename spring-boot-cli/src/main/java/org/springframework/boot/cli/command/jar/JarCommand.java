@@ -68,6 +68,12 @@ import org.springframework.util.StringUtils;
  */
 public class JarCommand extends OptionParsingCommand {
 
+	private static final String[] DEFAULT_INCLUDES = { "public/**", "static/**",
+			"resources/**", "META-INF/**", "*" };
+
+	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
+			"target/**", "**/*.jar", "**/*.groovy" };
+
 	private static final Layout LAYOUT = new Layouts.Jar();
 
 	public JarCommand() {
@@ -93,13 +99,11 @@ public class JarCommand extends OptionParsingCommand {
 			this.includeOption = option(
 					"include",
 					"Pattern applied to directories on the classpath to find files to include in the resulting jar")
-					.withRequiredArg().defaultsTo("public/**", "static/**",
-							"resources/**", "META-INF/**", "*");
+					.withRequiredArg().defaultsTo(DEFAULT_INCLUDES);
 			this.excludeOption = option(
 					"exclude",
 					"Pattern applied to directories on the claspath to find files to exclude from the resulting jar")
-					.withRequiredArg().defaultsTo(".*", "repository/**", "build/**",
-							"target/**");
+					.withRequiredArg().defaultsTo(DEFAULT_EXCLUDES);
 		}
 
 		@Override
