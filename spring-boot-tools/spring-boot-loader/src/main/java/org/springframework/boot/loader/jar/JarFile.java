@@ -305,10 +305,16 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 */
 	public synchronized JarFile getNestedJarFile(final JarEntryData sourceEntry,
 			JarEntryFilter... filters) throws IOException {
-		if (sourceEntry.isDirectory()) {
-			return getNestedJarFileFromDirectoryEntry(sourceEntry, filters);
+		try {
+			if (sourceEntry.isDirectory()) {
+				return getNestedJarFileFromDirectoryEntry(sourceEntry, filters);
+			}
+			return getNestedJarFileFromFileEntry(sourceEntry, filters);
 		}
-		return getNestedJarFileFromFileEntry(sourceEntry, filters);
+		catch (IOException ex) {
+			throw new IOException("Unable to open nested jar file '"
+					+ sourceEntry.getName() + "'", ex);
+		}
 	}
 
 	private JarFile getNestedJarFileFromDirectoryEntry(JarEntryData sourceEntry,
