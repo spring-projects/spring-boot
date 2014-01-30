@@ -107,6 +107,21 @@ public class AutoConfigurationReportTests {
 	}
 
 	@Test
+	public void parentBottomUp() throws Exception {
+		this.beanFactory = new DefaultListableBeanFactory(); // NB: overrides setup
+		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
+		AutoConfigurationReport.get((ConfigurableListableBeanFactory) this.beanFactory
+				.getParentBeanFactory());
+		this.report = AutoConfigurationReport.get(this.beanFactory); // NB: overrides
+																		// setup
+
+		assertThat(this.report, not(nullValue()));
+		assertThat(this.report, not(sameInstance(this.report.getParent())));
+		assertThat(this.report.getParent(), not(nullValue()));
+		assertThat(this.report.getParent().getParent(), nullValue());
+	}
+
+	@Test
 	public void recordConditionEvaluations() throws Exception {
 		this.outcome1 = new ConditionOutcome(false, "m1");
 		this.outcome2 = new ConditionOutcome(false, "m2");
