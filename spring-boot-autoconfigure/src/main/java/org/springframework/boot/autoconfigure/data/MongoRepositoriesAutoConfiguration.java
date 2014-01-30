@@ -101,8 +101,8 @@ public class MongoRepositoriesAutoConfiguration {
 		}
 
 		public Mongo mongo() throws UnknownHostException {
-			return this.host != null ? new MongoClient(this.host, this.port)
-					: new MongoClient(new MongoClientURI(this.uri));
+			return (this.host != null ? new MongoClient(this.host, this.port)
+					: new MongoClient(new MongoClientURI(this.uri)));
 		}
 
 		public void setHost(String host) {
