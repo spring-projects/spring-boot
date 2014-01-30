@@ -35,7 +35,8 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import com.mongodb.DBPort;
 import com.mongodb.Mongo;
-import com.mongodb.MongoURI;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Mongo
@@ -95,13 +96,13 @@ public class MongoRepositoriesAutoConfiguration {
 		}
 
 		public String database() {
-			return this.database == null ? new MongoURI(this.uri).getDatabase()
+			return this.database == null ? new MongoClientURI(this.uri).getDatabase()
 					: this.database;
 		}
 
 		public Mongo mongo() throws UnknownHostException {
-			return this.host != null ? new Mongo(this.host, this.port) : new Mongo(
-					new MongoURI(this.uri));
+			return this.host != null ? new MongoClient(this.host, this.port)
+					: new MongoClient(new MongoClientURI(this.uri));
 		}
 
 		public void setHost(String host) {
