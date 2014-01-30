@@ -104,12 +104,6 @@
 		</dependency>
 		<!-- Provided -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-boot-loader</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-templates</artifactId>
 			<scope>provided</scope>

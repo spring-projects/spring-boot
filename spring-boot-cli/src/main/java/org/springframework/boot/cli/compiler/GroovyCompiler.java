@@ -34,7 +34,6 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.classgen.GeneratorContext;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
-import org.codehaus.groovy.control.CompilationUnit.ClassgenCallback;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
@@ -43,8 +42,6 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
@@ -120,6 +117,10 @@ public class GroovyCompiler {
 		}
 	}
 
+	/**
+	 * Return a mutable list of the {@link ASTTransformation}s to be applied during
+	 * {@link #compile(String...)}.
+	 */
 	public List<ASTTransformation> getAstTransformations() {
 		return this.transformations;
 	}
@@ -210,42 +211,6 @@ public class GroovyCompiler {
 		return classes.toArray(new Class<?>[classes.size()]);
 	}
 
-	public void compile(final CompilationCallback callback, String... sources)
-			throws CompilationFailedException, IOException {
-		this.loader.clearCache();
-
-		CompilerConfiguration configuration = this.loader.getConfiguration();
-
-		final CompilationUnit compilationUnit = new CompilationUnit(configuration, null,
-				this.loader);
-		ClassgenCallback classgenCallback = new ClassgenCallback() {
-
-			@Override
-			public void call(ClassVisitor writer, ClassNode node)
-					throws CompilationFailedException {
-				try {
-					callback.byteCodeGenerated(((ClassWriter) writer).toByteArray(), node);
-				}
-				catch (IOException ioe) {
-					throw new CompilationFailedException(Phases.CLASS_GENERATION,
-							compilationUnit);
-				}
-			}
-		};
-		compilationUnit.setClassgenCallback(classgenCallback);
-
-		for (String source : sources) {
-			List<String> paths = ResourceUtils.getUrls(source, this.loader);
-			for (String path : paths) {
-				compilationUnit.addSource(new URL(path));
-			}
-		}
-
-		addAstTransformations(compilationUnit);
-
-		compilationUnit.compile(Phases.CLASS_GENERATION);
-	}
-
 	@SuppressWarnings("rawtypes")
 	private void addAstTransformations(CompilationUnit compilationUnit) {
 		LinkedList[] phaseOperations = getPhaseOperations(compilationUnit);
@@ -327,12 +292,6 @@ public class GroovyCompiler {
 			importCustomizer.call(source, context, classNode);
 		}
 
-	}
-
-	public static interface CompilationCallback {
-
-		public void byteCodeGenerated(byte[] byteCode, ClassNode classNode)
-				throws IOException;
 	}
 
 }

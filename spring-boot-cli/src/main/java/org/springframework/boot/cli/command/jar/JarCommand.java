@@ -18,20 +18,17 @@ package org.springframework.boot.cli.command.jar;
 
 import groovy.lang.Grab;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.jar.Manifest;
 
 import joptsimple.OptionSet;
@@ -50,7 +47,6 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.SourceOptions;
 import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
-import org.springframework.boot.cli.compiler.GroovyCompiler.CompilationCallback;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
@@ -59,12 +55,13 @@ import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
-import org.springframework.util.StringUtils;
+import org.springframework.util.Assert;
 
 /**
  * {@link Command} to create a self-contained executable jar file from a CLI application
  * 
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public class JarCommand extends OptionParsingCommand {
 
@@ -77,9 +74,8 @@ public class JarCommand extends OptionParsingCommand {
 	private static final Layout LAYOUT = new Layouts.Jar();
 
 	public JarCommand() {
-		super(
-				"jar",
-				"Create a self-contained executable jar file from a Spring Groovy script",
+		super("jar", "Create a self-contained "
+				+ "executable jar file from a Spring Groovy script",
 				new JarOptionHandler());
 	}
 
@@ -110,156 +106,163 @@ public class JarCommand extends OptionParsingCommand {
 		protected void run(OptionSet options) throws Exception {
 			List<?> nonOptionArguments = new ArrayList<Object>(
 					options.nonOptionArguments());
-			if (nonOptionArguments.size() < 2) {
-				throw new IllegalStateException(
-						"The name of the resulting jar and at least one source file must be specified");
-			}
+			Assert.isTrue(nonOptionArguments.size() >= 2,
+					"The name of the resulting jar and at least one source file must be specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
-			if (output.exists() && !output.delete()) {
-				throw new IllegalStateException(
-						"Failed to delete existing application jar file "
-								+ output.getPath());
-			}
+			deleteIfExists(output);
 
-			GroovyCompiler groovyCompiler = createCompiler(options);
+			GroovyCompiler compiler = createCompiler(options);
 
-			List<URL> classpathUrls = Arrays.asList(groovyCompiler.getLoader().getURLs());
-			List<MatchedResource> classpathEntries = findClasspathEntries(classpathUrls,
-					options);
+			List<URL> classpath = getClassPathUrls(compiler);
+			List<MatchedResource> classpathEntries = findMatchingClasspathEntries(
+					classpath, options);
 
-			final Map<String, byte[]> compiledClasses = new HashMap<String, byte[]>();
-			groovyCompiler.compile(new CompilationCallback() {
+			String[] sources = new SourceOptions(nonOptionArguments).getSourcesArray();
+			Class<?>[] compiledClasses = compiler.compile(sources);
 
-				@Override
-				public void byteCodeGenerated(byte[] byteCode, ClassNode classNode)
-						throws IOException {
-					String className = classNode.getName();
-					compiledClasses.put(className, byteCode);
-				}
+			List<URL> dependencies = getClassPathUrls(compiler);
+			dependencies.removeAll(classpath);
 
-			}, new SourceOptions(nonOptionArguments).getSourcesArray());
+			writeJar(output, compiledClasses, classpathEntries, dependencies);
+		}
 
-			List<URL> dependencyUrls = new ArrayList<URL>(Arrays.asList(groovyCompiler
-					.getLoader().getURLs()));
-			dependencyUrls.removeAll(classpathUrls);
-
-			JarWriter jarWriter = new JarWriter(output);
-
-			try {
-				jarWriter.writeManifest(createManifest(compiledClasses));
-				addDependencies(jarWriter, dependencyUrls);
-				addClasspathEntries(jarWriter, classpathEntries);
-				addApplicationClasses(jarWriter, compiledClasses);
-				String runnerClassName = getClassFile(PackagedSpringApplicationLauncher.class
-						.getName());
-				jarWriter.writeEntry(runnerClassName,
-						getClass().getResourceAsStream("/" + runnerClassName));
-				jarWriter.writeLoaderClasses();
-			}
-			finally {
-				jarWriter.close();
+		private void deleteIfExists(File file) {
+			if (file.exists() && !file.delete()) {
+				throw new IllegalStateException("Failed to delete existing file "
+						+ file.getPath());
 			}
 		}
 
 		private GroovyCompiler createCompiler(OptionSet options) {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-
 			GroovyCompilerConfiguration configuration = new GroovyCompilerConfigurationAdapter(
 					options, this, repositoryConfiguration);
-
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
-			groovyCompiler.getAstTransformations().add(0, new ASTTransformation() {
-
-				@Override
-				public void visit(ASTNode[] nodes, SourceUnit source) {
-					for (ASTNode node : nodes) {
-						if (node instanceof ModuleNode) {
-							ModuleNode module = (ModuleNode) node;
-							for (ClassNode classNode : module.getClasses()) {
-								AnnotationNode annotation = new AnnotationNode(
-										new ClassNode(Grab.class));
-								annotation.addMember("value", new ConstantExpression(
-										"groovy"));
-								classNode.addAnnotation(annotation);
-							}
-						}
-					}
-				}
-			});
+			groovyCompiler.getAstTransformations().add(0, new GrabAnnotationTransform());
 			return groovyCompiler;
 		}
 
-		private List<MatchedResource> findClasspathEntries(List<URL> classpath,
+		private List<URL> getClassPathUrls(GroovyCompiler compiler) {
+			return new ArrayList<URL>(Arrays.asList(compiler.getLoader().getURLs()));
+		}
+
+		private List<MatchedResource> findMatchingClasspathEntries(List<URL> classpath,
 				OptionSet options) throws IOException {
-			ResourceMatcher resourceCollector = new ResourceMatcher(
+			ResourceMatcher matcher = new ResourceMatcher(
 					options.valuesOf(this.includeOption),
 					options.valuesOf(this.excludeOption));
-
 			List<File> roots = new ArrayList<File>();
-
 			for (URL classpathEntry : classpath) {
 				roots.add(new File(URI.create(classpathEntry.toString())));
 			}
-
-			return resourceCollector.matchResources(roots);
+			return matcher.find(roots);
 		}
 
-		private Manifest createManifest(final Map<String, byte[]> compiledClasses) {
+		private void writeJar(File file, Class<?>[] compiledClasses,
+				List<MatchedResource> classpathEntries, List<URL> dependencies)
+				throws FileNotFoundException, IOException, URISyntaxException {
+			JarWriter writer = new JarWriter(file);
+			try {
+				addManifest(writer, compiledClasses);
+				addCliClasses(writer);
+				for (Class<?> compiledClass : compiledClasses) {
+					addClass(writer, compiledClass);
+				}
+				addClasspathEntries(writer, classpathEntries);
+				addDependencies(writer, dependencies);
+				writer.writeLoaderClasses();
+			}
+			finally {
+				writer.close();
+			}
+		}
+
+		private void addManifest(JarWriter writer, Class<?>[] compiledClasses)
+				throws IOException {
 			Manifest manifest = new Manifest();
 			manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-			manifest.getMainAttributes()
-					.putValue(
-							"Application-Classes",
-							StringUtils.collectionToCommaDelimitedString(compiledClasses
-									.keySet()));
 			manifest.getMainAttributes().putValue("Main-Class",
 					LAYOUT.getLauncherClassName());
 			manifest.getMainAttributes().putValue("Start-Class",
 					PackagedSpringApplicationLauncher.class.getName());
-			return manifest;
+			manifest.getMainAttributes().putValue(
+					PackagedSpringApplicationLauncher.SOURCE_MANIFEST_ENTRY,
+					commaDelimitedClassNames(compiledClasses));
+			writer.writeManifest(manifest);
 		}
 
-		private void addDependencies(JarWriter jarWriter, List<URL> urls)
-				throws IOException, URISyntaxException, FileNotFoundException {
-			for (URL url : urls) {
-				addDependency(jarWriter, new File(url.toURI()));
+		private String commaDelimitedClassNames(Class<?>[] classes) {
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < classes.length; i++) {
+				builder.append(i == 0 ? "" : ",");
+				builder.append(classes[i].getName());
 			}
+			return builder.toString();
 		}
 
-		private void addDependency(JarWriter jarWriter, File dependency)
-				throws FileNotFoundException, IOException {
-			if (dependency.isFile()) {
-				jarWriter.writeNestedLibrary("lib/", dependency);
-			}
+		private void addCliClasses(JarWriter writer) throws IOException {
+			addClass(writer, PackagedSpringApplicationLauncher.class);
 		}
 
-		private void addClasspathEntries(JarWriter jarWriter,
-				List<MatchedResource> classpathEntries) throws IOException {
-			for (MatchedResource classpathEntry : classpathEntries) {
-				if (classpathEntry.isRoot()) {
-					addDependency(jarWriter, classpathEntry.getFile());
+		private void addClass(JarWriter writer, Class<?> sourceClass) throws IOException {
+			String name = sourceClass.getName().replace(".", "/") + ".class";
+			InputStream stream = sourceClass.getResourceAsStream("/" + name);
+			writer.writeEntry(name, stream);
+		}
+
+		private void addClasspathEntries(JarWriter writer, List<MatchedResource> entries)
+				throws IOException {
+			for (MatchedResource entry : entries) {
+				if (entry.isRoot()) {
+					addDependency(writer, entry.getFile());
 				}
 				else {
-					jarWriter.writeEntry(classpathEntry.getPath(), new FileInputStream(
-							classpathEntry.getFile()));
+					writer.writeEntry(entry.getName(),
+							new FileInputStream(entry.getFile()));
 				}
 			}
 		}
 
-		private void addApplicationClasses(JarWriter jarWriter,
-				final Map<String, byte[]> compiledClasses) throws IOException {
-
-			for (Entry<String, byte[]> entry : compiledClasses.entrySet()) {
-				jarWriter.writeEntry(getClassFile(entry.getKey()),
-						new ByteArrayInputStream(entry.getValue()));
+		private void addDependencies(JarWriter writer, List<URL> urls)
+				throws IOException, URISyntaxException, FileNotFoundException {
+			for (URL url : urls) {
+				addDependency(writer, new File(url.toURI()));
 			}
 		}
 
-		private String getClassFile(String className) {
-			return className.replace(".", "/") + ".class";
+		private void addDependency(JarWriter writer, File dependency)
+				throws FileNotFoundException, IOException {
+			if (dependency.isFile()) {
+				writer.writeNestedLibrary("lib/", dependency);
+			}
 		}
 
 	}
+
+	/**
+	 * {@link ASTTransformation} to change {@code @Grab} annotation values.
+	 */
+	private static class GrabAnnotationTransform implements ASTTransformation {
+
+		@Override
+		public void visit(ASTNode[] nodes, SourceUnit source) {
+			for (ASTNode node : nodes) {
+				if (node instanceof ModuleNode) {
+					visitModule((ModuleNode) node);
+				}
+			}
+		}
+
+		private void visitModule(ModuleNode module) {
+			for (ClassNode classNode : module.getClasses()) {
+				AnnotationNode annotation = new AnnotationNode(new ClassNode(Grab.class));
+				annotation.addMember("value", new ConstantExpression("groovy"));
+				classNode.addAnnotation(annotation);
+			}
+		}
+
+	}
+
 }
