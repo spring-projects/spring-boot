@@ -109,9 +109,14 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		applyCglibFilters(mapper);
+	}
 
-		// configure PropertyFiler to make sure Jackson doesn't process CGLIB generated
-		// bean properties
+	/**
+	 * configure PropertyFiler to make sure Jackson doesn't process CGLIB generated bean
+	 * properties
+	 */
+	private void applyCglibFilters(ObjectMapper mapper) {
 		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
 		mapper.setFilters(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
 				new CglibBeanPropertyFilter()));
@@ -161,6 +166,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 			}
 			return id;
 		}
+
 	}
 
 	/**
@@ -182,6 +188,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 		private boolean include(String name) {
 			return !name.startsWith("$$");
 		}
+
 	}
 
 }
