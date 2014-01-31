@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 /**
  * {@link Endpoint} to expose application properties from {@link ConfigurationProperties}
@@ -43,6 +50,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConfigurationProperties(name = "endpoints.configprops", ignoreUnknownFields = false)
 public class ConfigurationPropertiesReportEndpoint extends
 		AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
+
+	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
 	private String[] keysToSanitize = new String[] { "password", "secret" };
 
@@ -72,14 +81,15 @@ public class ConfigurationPropertiesReportEndpoint extends
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> extract(ApplicationContext context) {
-
+	protected Map<String, Object> extract(ApplicationContext context) {
 		Map<String, Object> result = new HashMap<String, Object>();
 		Map<String, Object> beans = context
 				.getBeansWithAnnotation(ConfigurationProperties.class);
 
 		// Serialize beans into map structure and sanitize values
 		ObjectMapper mapper = new ObjectMapper();
+		configureObjectMapper(mapper);
+
 		for (Map.Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
@@ -95,6 +105,16 @@ public class ConfigurationPropertiesReportEndpoint extends
 		}
 
 		return result;
+	}
+
+	protected void configureObjectMapper(ObjectMapper mapper) {
+		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
+		// configure PropertyFiler to make sure Jackson doesn't process CGLIB generated
+		// bean properties
+		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
+		mapper.setFilters(new SimpleFilterProvider().addFilter(CGLIB_FILTER_ID,
+				new CglibBeanPropertyFilter()));
 	}
 
 	private String extractPrefix(Object bean) {
@@ -124,6 +144,44 @@ public class ConfigurationPropertiesReportEndpoint extends
 			}
 		}
 		return object;
+	}
+
+	/**
+	 * Extension to {@link JacksonAnnotationIntrospector} to supporess CGLIB generated
+	 * bean properties.
+	 */
+	private static class CglibAnnotationIntrospector extends
+			JacksonAnnotationIntrospector {
+
+		@Override
+		public Object findFilterId(Annotated a) {
+			Object id = super.findFilterId(a);
+			if (id == null) {
+				id = CGLIB_FILTER_ID;
+			}
+			return id;
+		}
+	}
+
+	/**
+	 * {@link SimpleBeanPropertyFilter} to filter out all bean properties whose names
+	 * start with '$$'.
+	 */
+	private static class CglibBeanPropertyFilter extends SimpleBeanPropertyFilter {
+
+		@Override
+		protected boolean include(BeanPropertyWriter writer) {
+			return include(writer.getFullName().getSimpleName());
+		}
+
+		@Override
+		protected boolean include(PropertyWriter writer) {
+			return include(writer.getFullName().getSimpleName());
+		}
+
+		private boolean include(String name) {
+			return !name.startsWith("$$");
+		}
 	}
 
 }
