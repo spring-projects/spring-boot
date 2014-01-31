@@ -29,7 +29,6 @@ import org.springframework.boot.event.ApplicationPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -124,7 +123,6 @@ public class SecurityAutoConfigurationTests {
 		AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
 		initializer.initialize(context);
 		context.refresh();
-		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
 		return context;
 	}
 
