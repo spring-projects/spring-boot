@@ -36,10 +36,9 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationContextInitializer} and {@link SmartApplicationListener} that writes
- * the {@link AutoConfigurationReport} to the log. Reports are logged at the
- * {@link LogLevel#DEBUG DEBUG} level unless there was a problem, in which case they are
- * the {@link LogLevel#INFO INFO} level is used.
+ * {@link ApplicationContextInitializer} that writes the {@link AutoConfigurationReport}
+ * to the log. Reports are logged at the {@link LogLevel#DEBUG DEBUG} level unless there
+ * was a problem, in which case they are the {@link LogLevel#INFO INFO} level is used.
  * <p>
  * This initializer is not intended to be shared across multiple application context
  * instances.
@@ -49,8 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 public class AutoConfigurationReportLoggingInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		SmartApplicationListener {
+		ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -59,13 +57,9 @@ public class AutoConfigurationReportLoggingInitializer implements
 	private AutoConfigurationReport report;
 
 	@Override
-	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE;
-	}
-
-	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+		applicationContext.addApplicationListener(new AutoConfigurationReportListener());
 		if (applicationContext instanceof GenericApplicationContext) {
 			// Get the report early in case the context fails to load
 			this.report = AutoConfigurationReport.get(this.applicationContext
@@ -73,26 +67,14 @@ public class AutoConfigurationReportLoggingInitializer implements
 		}
 	}
 
-	@Override
-	public boolean supportsEventType(Class<? extends ApplicationEvent> type) {
-		return ContextRefreshedEvent.class.isAssignableFrom(type)
-				|| ApplicationFailedEvent.class.isAssignableFrom(type);
-	}
-
-	@Override
-	public boolean supportsSourceType(Class<?> sourceType) {
-		return true;
-	}
-
-	@Override
-	public void onApplicationEvent(ApplicationEvent event) {
+	protected void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ContextRefreshedEvent) {
-			if (((ApplicationContextEvent) event).getApplicationContext() == this.applicationContext) {
+			if (((ApplicationContextEvent) event).getApplicationContext() == AutoConfigurationReportLoggingInitializer.this.applicationContext) {
 				logAutoConfigurationReport();
 			}
 		}
 		else if (event instanceof ApplicationFailedEvent) {
-			if (((ApplicationFailedEvent) event).getApplicationContext() == this.applicationContext) {
+			if (((ApplicationFailedEvent) event).getApplicationContext() == AutoConfigurationReportLoggingInitializer.this.applicationContext) {
 				logAutoConfigurationReport(true);
 			}
 		}
@@ -171,4 +153,27 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	}
 
+	private class AutoConfigurationReportListener implements SmartApplicationListener {
+
+		@Override
+		public int getOrder() {
+			return Ordered.LOWEST_PRECEDENCE;
+		}
+
+		@Override
+		public boolean supportsEventType(Class<? extends ApplicationEvent> type) {
+			return ContextRefreshedEvent.class.isAssignableFrom(type)
+					|| ApplicationFailedEvent.class.isAssignableFrom(type);
+		}
+
+		@Override
+		public boolean supportsSourceType(Class<?> sourceType) {
+			return true;
+		}
+
+		@Override
+		public void onApplicationEvent(ApplicationEvent event) {
+			AutoConfigurationReportLoggingInitializer.this.onApplicationEvent(event);
+		}
+	}
 }

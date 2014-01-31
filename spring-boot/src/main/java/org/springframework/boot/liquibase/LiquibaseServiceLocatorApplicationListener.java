@@ -16,10 +16,10 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class LiquibaseServiceLocatorInitializer implements
+public class LiquibaseServiceLocatorApplicationListener implements
 		ApplicationListener<ApplicationStartedEvent> {
 
-	static final Log logger = LogFactory.getLog(LiquibaseServiceLocatorInitializer.class);
+	static final Log logger = LogFactory.getLog(LiquibaseServiceLocatorApplicationListener.class);
 
 	@Override
 	public void onApplicationEvent(ApplicationStartedEvent event) {

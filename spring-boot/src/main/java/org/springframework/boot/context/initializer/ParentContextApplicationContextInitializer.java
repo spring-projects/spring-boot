@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2010-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,10 +32,9 @@ import org.springframework.core.Ordered;
  * @author Dave Syer
  */
 public class ParentContextApplicationContextInitializer implements
-		ApplicationContextInitializer<ConfigurableApplicationContext>,
-		ApplicationListener<ContextRefreshedEvent>, Ordered {
+		ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
-	private int order = Integer.MIN_VALUE;
+	private int order = Ordered.HIGHEST_PRECEDENCE;
 
 	private final ApplicationContext parent;
 
@@ -53,17 +52,29 @@ public class ParentContextApplicationContextInitializer implements
 	}
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		ApplicationContext context = event.getApplicationContext();
-		if (context instanceof ConfigurableApplicationContext) {
-			context.publishEvent(new ParentContextAvailableEvent(
-					(ConfigurableApplicationContext) context));
-		}
-	}
-
-	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		applicationContext.setParent(this.parent);
+		applicationContext.addApplicationListener(EventPublisher.INSTANCE);
+	}
+
+	private static class EventPublisher implements
+			ApplicationListener<ContextRefreshedEvent>, Ordered {
+
+		private static EventPublisher INSTANCE = new EventPublisher();
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
+		@Override
+		public void onApplicationEvent(ContextRefreshedEvent event) {
+			ApplicationContext context = event.getApplicationContext();
+			if (context instanceof ConfigurableApplicationContext) {
+				context.publishEvent(new ParentContextAvailableEvent(
+						(ConfigurableApplicationContext) context));
+			}
+		}
 	}
 
 	public static class ParentContextAvailableEvent extends ApplicationEvent {

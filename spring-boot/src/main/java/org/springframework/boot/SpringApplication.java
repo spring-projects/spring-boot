@@ -139,7 +139,6 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
  * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
- * 
  * </ul>
  * 
  * @author Phillip Webb
@@ -183,9 +182,9 @@ public class SpringApplication {
 
 	private boolean headless = true;
 
-	private Set<ApplicationContextInitializer<?>> initializers;
+	private List<ApplicationContextInitializer<?>> initializers;
 
-	private Set<ApplicationListener<?>> listeners;
+	private List<ApplicationListener<?>> listeners;
 
 	private Map<String, Object> defaultProperties;
 
@@ -219,29 +218,14 @@ public class SpringApplication {
 		initialize(sources);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void initialize(Object[] sources) {
 		if (sources != null && sources.length > 0) {
 			this.sources.addAll(Arrays.asList(sources));
 		}
 		this.webEnvironment = deduceWebEnvironment();
-		this.initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
-		this.listeners = new LinkedHashSet<ApplicationListener<?>>();
-		@SuppressWarnings("unchecked")
-		Collection<? extends ApplicationContextInitializer<?>> initializers = (Collection<? extends ApplicationContextInitializer<?>>) getSpringFactoriesInstances(ApplicationContextInitializer.class);
-		this.initializers.addAll(initializers);
-		for (ApplicationContextInitializer<?> initializer : initializers) {
-			if (initializer instanceof ApplicationListener) {
-				addListeners((ApplicationListener<?>) initializer);
-			}
-		}
-		@SuppressWarnings("unchecked")
-		Collection<? extends ApplicationListener<?>> listeners = (Collection<? extends ApplicationListener<?>>) getSpringFactoriesInstances(ApplicationListener.class);
-		this.listeners.addAll(listeners);
-		for (ApplicationListener<?> listener : listeners) {
-			if (listener instanceof ApplicationContextInitializer) {
-				addInitializers((ApplicationContextInitializer<?>) listener);
-			}
-		}
+		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -316,7 +300,7 @@ public class SpringApplication {
 		ApplicationEventMulticaster multicaster = createApplicationEventMulticaster();
 		try {
 			Set<Object> sources = getSources();
-			registerListeners(multicaster, sources);
+			registerListenerAndInitializerSources(multicaster, sources);
 
 			// Allow logging and stuff to initialize very early
 			multicaster.multicastEvent(new ApplicationStartedEvent(this, args));
@@ -341,7 +325,7 @@ public class SpringApplication {
 			}
 
 			// Some sources might be listeners
-			registerListeners(multicaster, sources);
+			registerListenerAndInitializerSources(multicaster, sources);
 
 			// Create, load, refresh and run the ApplicationContext
 			context = createApplicationContext();
@@ -404,8 +388,8 @@ public class SpringApplication {
 		}
 	}
 
-	private void registerListeners(ApplicationEventMulticaster multicaster,
-			Set<Object> sources) {
+	private void registerListenerAndInitializerSources(
+			ApplicationEventMulticaster multicaster, Set<Object> sources) {
 		for (Object object : sources) {
 			if (object instanceof ApplicationListener) {
 				multicaster.addApplicationListener((ApplicationListener<?>) object);
@@ -428,7 +412,7 @@ public class SpringApplication {
 	}
 
 	private ApplicationEventMulticaster createApplicationEventMulticaster() {
-		final ApplicationEventMulticaster multicaster = new SpringApplicationEventMulticaster();
+		ApplicationEventMulticaster multicaster = new SpringApplicationEventMulticaster();
 		for (ApplicationListener<?> listener : getListeners()) {
 			multicaster.addApplicationListener(listener);
 		}
@@ -831,83 +815,50 @@ public class SpringApplication {
 
 	/**
 	 * Sets the {@link ApplicationContextInitializer} that will be applied to the Spring
-	 * {@link ApplicationContext}. Any existing initializers will be replaced. Any
-	 * initializers that are also {@link ApplicationListener} will be added to the
-	 * {@link #addListeners(ApplicationListener...) listeners} automatically
+	 * {@link ApplicationContext}.
 	 * @param initializers the initializers to set
 	 */
 	public void setInitializers(
 			Collection<? extends ApplicationContextInitializer<?>> initializers) {
-		this.initializers = new LinkedHashSet<ApplicationContextInitializer<?>>(
-				initializers);
-		for (ApplicationContextInitializer<?> initializer : initializers) {
-			if (initializer instanceof ApplicationListener) {
-				this.listeners.add((ApplicationListener<?>) initializer);
-			}
-		}
+		this.initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		this.initializers.addAll(initializers);
 	}
 
 	/**
 	 * Add {@link ApplicationContextInitializer}s to be applied to the Spring
-	 * {@link ApplicationContext}. Any initializers that are also
-	 * {@link ApplicationListener} will be added to the
-	 * {@link #addListeners(ApplicationListener...) listeners} automatically.
+	 * {@link ApplicationContext}.
 	 * @param initializers the initializers to add
 	 */
 	public void addInitializers(ApplicationContextInitializer<?>... initializers) {
 		this.initializers.addAll(Arrays.asList(initializers));
-		for (ApplicationContextInitializer<?> initializer : initializers) {
-			if (initializer instanceof ApplicationListener) {
-				this.listeners.add((ApplicationListener<?>) initializer);
-			}
-		}
 	}
 
 	/**
-	 * Returns readonly set of the {@link ApplicationContextInitializer}s that will be
+	 * Returns read-only set of the {@link ApplicationContextInitializer}s that will be
 	 * applied to the Spring {@link ApplicationContext}.
 	 * @return the initializers
 	 */
 	public Set<ApplicationContextInitializer<?>> getInitializers() {
-		ArrayList<ApplicationContextInitializer<?>> list = new ArrayList<ApplicationContextInitializer<?>>(
-				this.initializers);
-		AnnotationAwareOrderComparator.sort(list);
-		return Collections
-				.unmodifiableSet(new LinkedHashSet<ApplicationContextInitializer<?>>(list));
+		return asUnmodifiableSortedSet(this.initializers);
 	}
 
 	/**
 	 * Sets the {@link ApplicationListener}s that will be applied to the SpringApplication
-	 * and registered with the {@link ApplicationContext}. Any existing listeners will be
-	 * replaced. Any listeners that are also {@link ApplicationContextInitializer} will be
-	 * added to the {@link #addInitializers(ApplicationContextInitializer...)
-	 * initializers} automatically.
+	 * and registered with the {@link ApplicationContext}.
 	 * @param listeners the listeners to set
 	 */
 	public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
-		this.listeners = new LinkedHashSet<ApplicationListener<?>>(listeners);
-		for (ApplicationListener<?> listener : listeners) {
-			if (listener instanceof ApplicationContextInitializer) {
-				this.initializers.add((ApplicationContextInitializer<?>) listener);
-			}
-		}
+		this.listeners = new ArrayList<ApplicationListener<?>>();
+		this.listeners.addAll(listeners);
 	}
 
 	/**
 	 * Add {@link ApplicationListener}s to be applied to the SpringApplication and
-	 * registered with the {@link ApplicationContext}. Any listeners that are also
-	 * {@link ApplicationContextInitializer} will be added to the
-	 * {@link #addInitializers(ApplicationContextInitializer...) initializers}
-	 * automatically.
+	 * registered with the {@link ApplicationContext}.
 	 * @param listeners the listeners to add
 	 */
 	public void addListeners(ApplicationListener<?>... listeners) {
 		this.listeners.addAll(Arrays.asList(listeners));
-		for (ApplicationListener<?> listener : listeners) {
-			if (listener instanceof ApplicationContextInitializer) {
-				this.initializers.add((ApplicationContextInitializer<?>) listener);
-			}
-		}
 	}
 
 	/**
@@ -916,11 +867,7 @@ public class SpringApplication {
 	 * @return the listeners
 	 */
 	public Set<ApplicationListener<?>> getListeners() {
-		ArrayList<ApplicationListener<?>> list = new ArrayList<ApplicationListener<?>>(
-				this.listeners);
-		AnnotationAwareOrderComparator.sort(list);
-		return Collections
-				.unmodifiableSet(new LinkedHashSet<ApplicationListener<?>>(list));
+		return asUnmodifiableSortedSet(this.listeners);
 	}
 
 	/**
@@ -1018,6 +965,17 @@ public class SpringApplication {
 		}
 	}
 
+	private static <E> Set<E> asUnmodifiableSortedSet(Collection<E> elemements) {
+		List<E> list = new ArrayList<E>();
+		list.addAll(elemements);
+		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
+		return new LinkedHashSet<E>(list);
+	}
+
+	/**
+	 * {@link ApplicationEventMulticaster} and {@link ApplicationEventPublisher} for
+	 * {@link SpringApplication} events.
+	 */
 	private static class SpringApplicationEventMulticaster extends
 			SimpleApplicationEventMulticaster implements ApplicationEventPublisher {
 

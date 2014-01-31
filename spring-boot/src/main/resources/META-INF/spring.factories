@@ -11,6 +11,6 @@ org.springframework.boot.context.listener.EnvironmentDelegateApplicationListener
 org.springframework.boot.context.listener.FileEncodingApplicationListener,\
 org.springframework.boot.context.listener.LoggingApplicationListener,\
 org.springframework.boot.context.listener.VcapApplicationListener,\
-org.springframework.boot.context.listener.ParentContextCloserListener,\
-org.springframework.boot.liquibase.LiquibaseServiceLocatorInitializer
+org.springframework.boot.context.listener.ParentContextCloserApplicationListener,\
+org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
 
