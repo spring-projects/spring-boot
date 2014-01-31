@@ -138,7 +138,7 @@ refer to an explicit location using the `spring.config.location` environment pro
     $ java -jar myproject.jar --spring.config.name=myproject
 
 
-> **Note:** You can also use '.yaml' files as an alternative to '.properties' (see
+> **Note:** You can also use '.yml' files as an alternative to '.properties' (see
 > [below](#using-yaml-instead-of-properties))_
 
 ### Setting the Default Spring Profile
@@ -316,6 +316,10 @@ spring:
 server:
 	address: 192.168.1.120
 ```
+
+### YAML shortcomings
+YAML files can't (currently) be loaded via the `@PropertySource` annotation. So in the case
+that you need to load values that way, you need to use a properties file.
 
 
 ## Typesafe Configuration Properties
