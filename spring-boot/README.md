@@ -317,6 +317,10 @@ server:
 	address: 192.168.1.120
 ```
 
+### YAML shortcomings
+YAML files can't (currently) be loaded via the `@PropertySource` annotation. So in the case
+of unit tests that need to load values, you need to use a properties file and not YAML.
+
 
 ## Typesafe Configuration Properties
 Use the `@Value("${property}")` annotation to inject configuration properties can
