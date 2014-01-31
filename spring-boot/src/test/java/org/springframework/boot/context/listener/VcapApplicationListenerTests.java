@@ -18,7 +18,7 @@ package org.springframework.boot.context.listener;
 
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -34,8 +34,8 @@ public class VcapApplicationListenerTests {
 
 	private final VcapApplicationListener initializer = new VcapApplicationListener();
 	private final ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
-	private final SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
-			new SpringApplication(), this.context.getEnvironment(), new String[0]);
+	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
+			new SpringApplication(), new String[0], this.context.getEnvironment());
 
 	@Test
 	public void testApplicationProperties() {

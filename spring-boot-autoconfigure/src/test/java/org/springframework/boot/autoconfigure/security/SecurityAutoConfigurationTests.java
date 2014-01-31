@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.security;
 
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationBeforeRefreshEvent;
 import org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -26,6 +25,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.context.listener.LoggingApplicationListener;
+import org.springframework.boot.event.ApplicationPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -119,8 +119,8 @@ public class SecurityAutoConfigurationTests {
 			AnnotationConfigWebApplicationContext context) {
 		EnvironmentTestUtils.addEnvironment(context, "debug:true");
 		LoggingApplicationListener logging = new LoggingApplicationListener();
-		logging.onApplicationEvent(new SpringApplicationBeforeRefreshEvent(
-				new SpringApplication(), context, new String[0]));
+		logging.onApplicationEvent(new ApplicationPreparedEvent(new SpringApplication(),
+				new String[0], context));
 		AutoConfigurationReportLoggingInitializer initializer = new AutoConfigurationReportLoggingInitializer();
 		initializer.initialize(context);
 		context.refresh();

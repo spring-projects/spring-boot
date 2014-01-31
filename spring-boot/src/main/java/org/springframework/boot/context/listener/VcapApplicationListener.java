@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 the original author or authors.
+ * Copyright 2010-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.config.JsonParser;
 import org.springframework.boot.config.JsonParserFactory;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -88,7 +88,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 public class VcapApplicationListener implements
-		ApplicationListener<SpringApplicationEnvironmentAvailableEvent>, Ordered {
+		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static final Log logger = LogFactory.getLog(VcapApplicationListener.class);
 
@@ -112,7 +112,7 @@ public class VcapApplicationListener implements
 	}
 
 	@Override
-	public void onApplicationEvent(SpringApplicationEnvironmentAvailableEvent event) {
+	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 
 		ConfigurableEnvironment environment = event.getEnvironment();
 		if (!environment.containsProperty(VCAP_APPLICATION)

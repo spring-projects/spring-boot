@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.event;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
 
@@ -30,31 +30,14 @@ import org.springframework.core.env.Environment;
  * 
  * @author Dave Syer
  */
-public class SpringApplicationStartEvent extends ApplicationEvent {
-
-	private final String[] args;
+public class ApplicationStartedEvent extends SpringApplicationEvent {
 
 	/**
-	 * @param springApplication the current application
+	 * @param application the current application
 	 * @param args the argumemts the application is running with
 	 */
-	public SpringApplicationStartEvent(SpringApplication springApplication, String[] args) {
-		super(springApplication);
-		this.args = args;
-	}
-
-	/**
-	 * @return the springApplication
-	 */
-	public SpringApplication getSpringApplication() {
-		return (SpringApplication) getSource();
-	}
-
-	/**
-	 * @return the args
-	 */
-	public String[] getArgs() {
-		return this.args;
+	public ApplicationStartedEvent(SpringApplication application, String[] args) {
+		super(application, args);
 	}
 
 }

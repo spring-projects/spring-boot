@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.event;
 
-import org.springframework.context.ApplicationEvent;
+import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
@@ -26,36 +26,19 @@ import org.springframework.core.env.Environment;
  * 
  * @author Dave Syer
  */
-public class SpringApplicationEnvironmentAvailableEvent extends ApplicationEvent {
+public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableEnvironment environment;
-	private final String[] args;
 
 	/**
-	 * @param springApplication the current application
-	 * @param environment the environment that was just created
+	 * @param application the current application
 	 * @param args the argumemts the application is running with
+	 * @param environment the environment that was just created
 	 */
-	public SpringApplicationEnvironmentAvailableEvent(
-			SpringApplication springApplication, ConfigurableEnvironment environment,
-			String[] args) {
-		super(springApplication);
+	public ApplicationEnvironmentPreparedEvent(SpringApplication application,
+			String[] args, ConfigurableEnvironment environment) {
+		super(application, args);
 		this.environment = environment;
-		this.args = args;
-	}
-
-	/**
-	 * @return the springApplication
-	 */
-	public SpringApplication getSpringApplication() {
-		return (SpringApplication) getSource();
-	}
-
-	/**
-	 * @return the args
-	 */
-	public String[] getArgs() {
-		return this.args;
 	}
 
 	/**

@@ -31,12 +31,12 @@ import java.util.Set;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.config.DefaultPropertySourceLoadersFactory;
 import org.springframework.boot.config.PropertySourceLoader;
 import org.springframework.boot.config.PropertySourceLoadersFactory;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.PropertySources;
@@ -81,7 +81,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 public class ConfigFileApplicationListener implements
-		ApplicationListener<SpringApplicationEnvironmentAvailableEvent>, Ordered {
+		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
 
@@ -110,7 +110,7 @@ public class ConfigFileApplicationListener implements
 	 * ("spring.main.show_banner=false").
 	 */
 	@Override
-	public void onApplicationEvent(SpringApplicationEnvironmentAvailableEvent event) {
+	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		Environment environment = event.getEnvironment();
 		if (environment instanceof ConfigurableEnvironment) {
 			configure((ConfigurableEnvironment) environment, event.getSpringApplication());

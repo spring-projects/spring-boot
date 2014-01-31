@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -52,8 +52,8 @@ public class EnvironmentDelegateApplicationListener implements
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof SpringApplicationEnvironmentAvailableEvent) {
-			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(((SpringApplicationEnvironmentAvailableEvent) event)
+		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(((ApplicationEnvironmentPreparedEvent) event)
 					.getEnvironment());
 			if (delegates.isEmpty()) {
 				return;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,49 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot;
+package org.springframework.boot.event;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 /**
  * Event published as when a {@link SpringApplication} is starting up and the
- * {@link ApplicationContext} is about to refresh. The bean definitions will be loaded and
- * the {@link Environment} is ready for use at this stage.
+ * {@link ApplicationContext} is fully prepared but not refreshed. The bean definitions
+ * will be loaded and the {@link Environment} is ready for use at this stage.
  * 
  * @author Dave Syer
  */
-public class SpringApplicationBeforeRefreshEvent extends ApplicationEvent {
+public class ApplicationPreparedEvent extends SpringApplicationEvent {
 
-	private final String[] args;
 	private final ConfigurableApplicationContext context;
 
 	/**
-	 * @param springApplication the current application
-	 * @param context the ApplicationContext about to be refreshed
+	 * @param application the current application
 	 * @param args the argumemts the application is running with
+	 * @param context the ApplicationContext about to be refreshed
 	 */
-	public SpringApplicationBeforeRefreshEvent(SpringApplication springApplication,
-			ConfigurableApplicationContext context, String[] args) {
-		super(springApplication);
+	public ApplicationPreparedEvent(SpringApplication application, String[] args,
+			ConfigurableApplicationContext context) {
+		super(application, args);
 		this.context = context;
-		this.args = args;
-	}
-
-	/**
-	 * @return the springApplication
-	 */
-	public SpringApplication getSpringApplication() {
-		return (SpringApplication) getSource();
-	}
-
-	/**
-	 * @return the args
-	 */
-	public String[] getArgs() {
-		return this.args;
 	}
 
 	/**
