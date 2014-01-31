@@ -29,7 +29,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationStartEvent;
+import org.springframework.boot.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.java.JavaLoggingSystem;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -70,7 +70,7 @@ public class LoggingApplicationListenerTests {
 	public void init() throws SecurityException, IOException {
 		LogManager.getLogManager().readConfiguration(
 				JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		this.initializer.onApplicationEvent(new SpringApplicationStartEvent(
+		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
 				new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
 	}
@@ -190,7 +190,7 @@ public class LoggingApplicationListenerTests {
 	public void parseArgsDoesntReplace() throws Exception {
 		this.initializer.setSpringBootLogging(LogLevel.ERROR);
 		this.initializer.setParseArgs(false);
-		this.initializer.onApplicationEvent(new SpringApplicationStartEvent(
+		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
 				this.springApplication, new String[] { "--debug" }));
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());

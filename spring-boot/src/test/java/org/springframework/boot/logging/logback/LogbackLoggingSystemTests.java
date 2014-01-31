@@ -40,8 +40,8 @@ public class LogbackLoggingSystemTests {
 	@Rule
 	public OutputCapture output = new OutputCapture();
 
-	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(getClass()
-			.getClassLoader());
+	private final LogbackLoggingSystem loggingSystem = new LogbackLoggingSystem(
+			getClass().getClassLoader());
 
 	private Log logger;
 

@@ -36,6 +36,10 @@ import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.event.ApplicationFailedEvent;
+import org.springframework.boot.event.ApplicationPreparedEvent;
+import org.springframework.boot.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
@@ -313,8 +317,9 @@ public class SpringApplication {
 		try {
 			Set<Object> sources = getSources();
 			registerListeners(multicaster, sources);
+
 			// Allow logging and stuff to initialize very early
-			multicaster.multicastEvent(new SpringApplicationStartEvent(this, args));
+			multicaster.multicastEvent(new ApplicationStartedEvent(this, args));
 
 			// Create and configure the environment
 			ConfigurableEnvironment environment = getOrCreateEnvironment();
@@ -324,12 +329,13 @@ public class SpringApplication {
 			}
 
 			// Notify listeners of the environment creation
-			multicaster.multicastEvent(new SpringApplicationEnvironmentAvailableEvent(
-					this, environment, args));
+			multicaster.multicastEvent(new ApplicationEnvironmentPreparedEvent(this,
+					args, environment));
 
 			// Sources might have changed when environment was applied
 			sources = getSources();
 			Assert.notEmpty(sources, "Sources must not be empty");
+
 			if (this.showBanner) {
 				printBanner();
 			}
@@ -349,9 +355,10 @@ public class SpringApplication {
 			}
 
 			load(context, sources.toArray(new Object[sources.size()]));
+
 			// Notify listeners of intention to refresh
-			multicaster.multicastEvent(new SpringApplicationBeforeRefreshEvent(this,
-					context, args));
+			multicaster.multicastEvent(new ApplicationPreparedEvent(this, args, context));
+
 			refresh(context);
 
 			stopWatch.stop();
@@ -364,21 +371,21 @@ public class SpringApplication {
 			return context;
 		}
 		catch (RuntimeException ex) {
-			handleError(context, multicaster, ex, args);
+			handleFailure(context, multicaster, ex, args);
 			throw ex;
 		}
 		catch (Error ex) {
-			handleError(context, multicaster, ex, args);
+			handleFailure(context, multicaster, ex, args);
 			throw ex;
 		}
 
 	}
 
-	protected void handleError(ConfigurableApplicationContext context,
+	protected void handleFailure(ConfigurableApplicationContext context,
 			ApplicationEventMulticaster multicaster, Throwable exception, String... args) {
 		try {
-			multicaster.multicastEvent(new SpringApplicationErrorEvent(this, context,
-					args, exception));
+			multicaster.multicastEvent(new ApplicationFailedEvent(this, args, context,
+					exception));
 		}
 		catch (Exception ex) {
 			// We don't want to fail here and mask the original exception
@@ -1024,7 +1031,7 @@ public class SpringApplication {
 				ApplicationEvent event) {
 			List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
 			listeners.addAll(super.getApplicationListeners(event));
-			if (event instanceof SpringApplicationErrorEvent) {
+			if (event instanceof ApplicationFailedEvent) {
 				Collections.reverse(listeners);
 			}
 			return listeners;

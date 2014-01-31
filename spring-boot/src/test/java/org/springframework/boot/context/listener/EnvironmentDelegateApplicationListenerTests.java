@@ -21,7 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -53,8 +53,8 @@ public class EnvironmentDelegateApplicationListenerTests {
 	public void orderedInitialize() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:"
 				+ MockInitB.class.getName() + "," + MockInitA.class.getName());
-		this.listener.onApplicationEvent(new SpringApplicationEnvironmentAvailableEvent(
-				new SpringApplication(), this.context.getEnvironment(), new String[0]));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 		this.context.getBeanFactory().registerSingleton("testListener", this.listener);
 		this.context.refresh();
 		assertThat(this.context.getBeanFactory().getSingleton("a"), equalTo((Object) "a"));
@@ -63,15 +63,15 @@ public class EnvironmentDelegateApplicationListenerTests {
 
 	@Test
 	public void noInitializers() throws Exception {
-		this.listener.onApplicationEvent(new SpringApplicationEnvironmentAvailableEvent(
-				new SpringApplication(), this.context.getEnvironment(), new String[0]));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
 
 	@Test
 	public void emptyInitializers() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "context.listener.classes:");
-		this.listener.onApplicationEvent(new SpringApplicationEnvironmentAvailableEvent(
-				new SpringApplication(), this.context.getEnvironment(), new String[0]));
+		this.listener.onApplicationEvent(new ApplicationEnvironmentPreparedEvent(
+				new SpringApplication(), new String[0], this.context.getEnvironment()));
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)

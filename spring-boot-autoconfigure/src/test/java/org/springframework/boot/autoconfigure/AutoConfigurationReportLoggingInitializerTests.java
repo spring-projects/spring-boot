@@ -30,9 +30,9 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationErrorEvent;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.event.ApplicationFailedEvent;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -127,8 +127,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			fail("Did not error");
 		}
 		catch (Exception ex) {
-			this.initializer.onApplicationEvent(new SpringApplicationErrorEvent(
-					new SpringApplication(), context, new String[] {}, ex));
+			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+					new SpringApplication(), new String[0], context, ex));
 		}
 
 		assertThat(this.debugLog.size(), not(equalTo(0)));
@@ -146,8 +146,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			fail("Did not error");
 		}
 		catch (Exception ex) {
-			this.initializer.onApplicationEvent(new SpringApplicationErrorEvent(
-					new SpringApplication(), context, new String[] {}, ex));
+			this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+					new SpringApplication(), new String[0], context, ex));
 		}
 
 		assertThat(this.debugLog.size(), equalTo(0));
@@ -190,8 +190,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 	@Test
 	public void noErrorIfNotInitialized() throws Exception {
-		this.initializer.onApplicationEvent(new SpringApplicationErrorEvent(
-				new SpringApplication(), null, new String[0], new RuntimeException(
+		this.initializer.onApplicationEvent(new ApplicationFailedEvent(
+				new SpringApplication(), new String[0], null, new RuntimeException(
 						"Planned")));
 		assertThat(this.infoLog.get(0),
 				containsString("Unable to provide auto-configuration report"));

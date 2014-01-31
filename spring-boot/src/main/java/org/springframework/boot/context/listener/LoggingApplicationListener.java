@@ -26,8 +26,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
-import org.springframework.boot.SpringApplicationStartEvent;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.event.ApplicationStartedEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.ApplicationEvent;
@@ -94,9 +94,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	@SuppressWarnings("unchecked")
 	private static Collection<Class<? extends ApplicationEvent>> EVENT_TYPES = Arrays
-			.<Class<? extends ApplicationEvent>> asList(
-					SpringApplicationStartEvent.class,
-					SpringApplicationEnvironmentAvailableEvent.class);
+			.<Class<? extends ApplicationEvent>> asList(ApplicationStartedEvent.class,
+					ApplicationEnvironmentPreparedEvent.class);
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -123,8 +122,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof SpringApplicationEnvironmentAvailableEvent) {
-			SpringApplicationEnvironmentAvailableEvent available = (SpringApplicationEnvironmentAvailableEvent) event;
+		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+			ApplicationEnvironmentPreparedEvent available = (ApplicationEnvironmentPreparedEvent) event;
 			initialize(available.getEnvironment(), available.getSpringApplication()
 					.getClassLoader());
 		}

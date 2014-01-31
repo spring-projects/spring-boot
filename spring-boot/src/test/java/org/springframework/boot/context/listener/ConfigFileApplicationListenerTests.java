@@ -24,9 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
 import org.springframework.boot.config.PropertySourceLoader;
 import org.springframework.boot.config.PropertySourceLoadersFactory;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -56,8 +56,8 @@ public class ConfigFileApplicationListenerTests {
 
 	private final StandardEnvironment environment = new StandardEnvironment();
 
-	private final SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
-			new SpringApplication(), this.environment, new String[0]);
+	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
+			new SpringApplication(), new String[0], this.environment);
 
 	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
 

@@ -19,7 +19,7 @@ package org.springframework.boot.context.listener;
 import org.junit.Assume;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationEnvironmentAvailableEvent;
+import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
@@ -33,8 +33,8 @@ public class FileEncodingApplicationListenerTests {
 
 	private final FileEncodingApplicationListener initializer = new FileEncodingApplicationListener();
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
-	private final SpringApplicationEnvironmentAvailableEvent event = new SpringApplicationEnvironmentAvailableEvent(
-			new SpringApplication(), this.environment, new String[0]);
+	private final ApplicationEnvironmentPreparedEvent event = new ApplicationEnvironmentPreparedEvent(
+			new SpringApplication(), new String[0], this.environment);
 
 	@Test(expected = IllegalStateException.class)
 	public void testIllegalState() {

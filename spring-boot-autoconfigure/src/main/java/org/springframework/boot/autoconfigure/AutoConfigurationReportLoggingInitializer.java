@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.SpringApplicationErrorEvent;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
+import org.springframework.boot.event.ApplicationFailedEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
@@ -76,7 +76,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 	@Override
 	public boolean supportsEventType(Class<? extends ApplicationEvent> type) {
 		return ContextRefreshedEvent.class.isAssignableFrom(type)
-				|| SpringApplicationErrorEvent.class.isAssignableFrom(type);
+				|| ApplicationFailedEvent.class.isAssignableFrom(type);
 	}
 
 	@Override
@@ -91,8 +91,8 @@ public class AutoConfigurationReportLoggingInitializer implements
 				logAutoConfigurationReport();
 			}
 		}
-		else if (event instanceof SpringApplicationErrorEvent) {
-			if (((SpringApplicationErrorEvent) event).getApplicationContext() == this.applicationContext) {
+		else if (event instanceof ApplicationFailedEvent) {
+			if (((ApplicationFailedEvent) event).getApplicationContext() == this.applicationContext) {
 				logAutoConfigurationReport(true);
 			}
 		}
