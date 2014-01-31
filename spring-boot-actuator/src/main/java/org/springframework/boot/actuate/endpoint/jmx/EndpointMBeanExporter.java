@@ -170,11 +170,11 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 			StringBuilder builder = new StringBuilder();
 			builder.append(this.domain);
 			builder.append(":type=Endpoint");
+			builder.append(",name=" + beanKey);
 			if (parentContextContainsSameBean(this.applicationContext, beanKey)) {
 				builder.append(",context="
 						+ ObjectUtils.getIdentityHexString(this.applicationContext));
 			}
-			builder.append(",name=" + beanKey);
 			if (this.ensureUniqueRuntimeObjectNames) {
 				builder.append(",identity="
 						+ ObjectUtils.getIdentityHexString(((EndpointMBean) bean)
