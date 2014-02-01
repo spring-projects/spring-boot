@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.boot.ProfileDetector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.initializer.ParentContextApplicationContextInitializer;
 import org.springframework.boot.context.initializer.ServletContextApplicationContextInitializer;
@@ -389,14 +390,26 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder profiles(String... profiles) {
 		this.additionalProfiles.addAll(Arrays.asList(profiles));
-		this.application.setAdditionalProfiles(this.additionalProfiles);
+		this.application.setAdditionalProfiles(this.additionalProfiles
+				.toArray(new String[this.additionalProfiles.size()]));
+		return this;
+	}
+
+	/**
+	 * Set the {@link ProfileDetector}s that should be used for this app.
+	 * @param profileDetectors the profile detectors to set
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder profileDetectors(ProfileDetector... profileDetectors) {
+		this.application.setProfileDetectors(profileDetectors);
 		return this;
 	}
 
 	private SpringApplicationBuilder additionalProfiles(
 			Collection<String> additionalProfiles) {
 		this.additionalProfiles = new LinkedHashSet<String>(additionalProfiles);
-		this.application.setAdditionalProfiles(additionalProfiles);
+		this.application.setAdditionalProfiles(additionalProfiles
+				.toArray(new String[additionalProfiles.size()]));
 		return this;
 	}
 

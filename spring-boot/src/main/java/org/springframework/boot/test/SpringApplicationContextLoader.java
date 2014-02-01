@@ -61,8 +61,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		SpringApplication application = new SpringApplication();
 		application.setSources(getSources(mergedConfig));
 		if (!ObjectUtils.isEmpty(mergedConfig.getActiveProfiles())) {
-			application.setAdditionalProfiles(Arrays.asList(mergedConfig
-					.getActiveProfiles()));
+			application.setAdditionalProfiles(mergedConfig.getActiveProfiles());
 		}
 		application.setDefaultProperties(getArgs(mergedConfig));
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(
