@@ -32,6 +32,7 @@ import org.springframework.boot.loader.tools.Repackager;
  * Repackage task.
  * 
  * @author Phillip Webb
+ * @author Janne Valkealahti
  */
 public class Repackage extends DefaultTask {
 
@@ -41,12 +42,18 @@ public class Repackage extends DefaultTask {
 
 	private Object withJarTask;
 
+	private String mainClass;
+
 	public void setCustomConfiguration(String customConfiguration) {
 		this.customConfiguration = customConfiguration;
 	}
 
 	public void setWithJarTask(Object withJarTask) {
 		this.withJarTask = withJarTask;
+	}
+
+	public void setMainClass(String mainClass) {
+		this.mainClass = mainClass;
 	}
 
 	@TaskAction
@@ -64,6 +71,7 @@ public class Repackage extends DefaultTask {
 		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
+
 		project.getTasks().withType(Jar.class, new Action<Jar>() {
 
 			@Override
@@ -99,7 +107,9 @@ public class Repackage extends DefaultTask {
 								}
 							};
 						};
-						repackager.setMainClass(extension.getMainClass());
+						repackager
+								.setMainClass(Repackage.this.mainClass != null ? Repackage.this.mainClass
+										: extension.getMainClass());
 						if (extension.convertLayout() != null) {
 							repackager.setLayout(extension.convertLayout());
 						}
