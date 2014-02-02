@@ -181,5 +181,5 @@ The following configuration options are available for the `spring-boot:run` goal
 
 ## Further Reading
 For more information on how Spring Boot Loader archives work, take a look at the
-[spring-boot-loader](../spring-boot-loader) module. If you prefer using Gradle to
-build your projects we have a [spring-boot-gradle-plugin](../spring-boot-gradle-plugin).
+[spring-boot-loader](../spring-boot-loader/README.md) module. If you prefer using Gradle to
+build your projects we have a [spring-boot-gradle-plugin](../spring-boot-gradle-plugin/README.md).
