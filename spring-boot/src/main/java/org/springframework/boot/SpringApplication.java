@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,28 +32,18 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.event.ApplicationFailedEvent;
-import org.springframework.boot.event.ApplicationPreparedEvent;
-import org.springframework.boot.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.context.event.ApplicationEventMulticaster;
-import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
@@ -72,6 +63,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
@@ -243,36 +235,6 @@ public class SpringApplication {
 		return true;
 	}
 
-	/**
-	 * Returns objects loaded via the {@link SpringFactoriesLoader}.
-	 */
-	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type) {
-		ClassLoader classLoader = SpringApplication.class.getClassLoader();
-
-		// Use names and ensure unique to protect against duplicates
-		Set<String> names = new LinkedHashSet<String>(
-				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
-		List<T> instances = new ArrayList<T>(names.size());
-
-		// Create instances from the names
-		for (String name : names) {
-			try {
-				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
-				Assert.isAssignable(type, instanceClass);
-				@SuppressWarnings("unchecked")
-				T instance = (T) instanceClass.newInstance();
-				instances.add(instance);
-			}
-			catch (Throwable ex) {
-				throw new IllegalArgumentException("Cannot instantiate " + type + " : "
-						+ name, ex);
-			}
-		}
-
-		AnnotationAwareOrderComparator.sort(instances);
-		return instances;
-	}
-
 	private Class<?> deduceMainApplicationClass() {
 		try {
 			StackTraceElement[] stackTrace = new RuntimeException().getStackTrace();
@@ -302,23 +264,19 @@ public class SpringApplication {
 
 		System.setProperty("java.awt.headless", Boolean.toString(this.headless));
 
-		ApplicationEventMulticaster multicaster = createApplicationEventMulticaster();
-		try {
-			// Allow logging and stuff to initialize very early
-			multicaster.multicastEvent(new ApplicationStartedEvent(this, args));
+		Collection<SpringApplicationRunParticipant> participants = createRunParticipants(args);
+		for (SpringApplicationRunParticipant participant : participants) {
+			participant.started();
+		}
 
+		try {
 			// Create and configure the environment
 			ConfigurableEnvironment environment = getOrCreateEnvironment();
 			addPropertySources(environment, args);
 			setupProfiles(environment);
-
-			// Notify listeners of the environment creation
-			multicaster.multicastEvent(new ApplicationEnvironmentPreparedEvent(this,
-					args, environment));
-
-			// Load the sources (might have changed when environment was applied)
-			Set<Object> sources = getSources();
-			Assert.notEmpty(sources, "Sources must not be empty");
+			for (SpringApplicationRunParticipant participant : participants) {
+				participant.environmentPrepared(environment);
+			}
 
 			if (this.showBanner) {
 				printBanner();
@@ -326,48 +284,93 @@ public class SpringApplication {
 
 			// Create, load, refresh and run the ApplicationContext
 			context = createApplicationContext();
-			registerApplicationEventMulticaster(context, multicaster);
 			context.registerShutdownHook();
 			context.setEnvironment(environment);
 			postProcessApplicationContext(context);
 			applyInitializers(context);
+			for (SpringApplicationRunParticipant participant : participants) {
+				participant.contextPrepared(context);
+			}
 			if (this.logStartupInfo) {
 				logStartupInfo(context.getParent() == null);
 			}
 
+			// Load the sources
+			Set<Object> sources = getSources();
+			Assert.notEmpty(sources, "Sources must not be empty");
 			load(context, sources.toArray(new Object[sources.size()]));
+			for (SpringApplicationRunParticipant participant : participants) {
+				participant.contextLoaded(context);
+			}
 
-			// Notify listeners of intention to refresh
-			multicaster.multicastEvent(new ApplicationPreparedEvent(this, args, context));
-
+			// Refresh the context
 			refresh(context);
+			afterRefresh(context, args);
+			for (SpringApplicationRunParticipant participant : participants) {
+				participant.finished(context, null);
+			}
 
 			stopWatch.stop();
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(
 						getApplicationLog(), stopWatch);
 			}
-
-			afterRefresh(context, args);
 			return context;
 		}
-		catch (RuntimeException ex) {
-			handleFailure(context, multicaster, ex, args);
-			throw ex;
+		catch (Exception ex) {
+			for (SpringApplicationRunParticipant participant : participants) {
+				finishWithException(participant, context, ex);
+			}
+			if (context != null) {
+				context.close();
+			}
+			ReflectionUtils.rethrowRuntimeException(ex);
+			return context;
 		}
-		catch (Error ex) {
-			handleFailure(context, multicaster, ex, args);
-			throw ex;
+		finally {
 		}
-
 	}
 
-	private ApplicationEventMulticaster createApplicationEventMulticaster() {
-		ApplicationEventMulticaster multicaster = new SpringApplicationEventMulticaster();
-		for (ApplicationListener<?> listener : getListeners()) {
-			multicaster.addApplicationListener(listener);
+	private Collection<SpringApplicationRunParticipant> createRunParticipants(
+			String[] args) {
+		List<SpringApplicationRunParticipant> participants = new ArrayList<SpringApplicationRunParticipant>();
+		participants.addAll(getSpringFactoriesInstances(
+				SpringApplicationRunParticipant.class, new Class<?>[] {
+						SpringApplication.class, String[].class }, this, args));
+		return participants;
+	}
+
+	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type) {
+		return getSpringFactoriesInstances(type, new Class<?>[] {});
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type,
+			Class<?>[] parameterTypes, Object... args) {
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+		// Use names and ensure unique to protect against duplicates
+		Set<String> names = new LinkedHashSet<String>(
+				SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		List<T> instances = new ArrayList<T>(names.size());
+
+		// Create instances from the names
+		for (String name : names) {
+			try {
+				Class<?> instanceClass = ClassUtils.forName(name, classLoader);
+				Assert.isAssignable(type, instanceClass);
+				Constructor<?> constructor = instanceClass.getConstructor(parameterTypes);
+				T instance = (T) constructor.newInstance(args);
+				instances.add(instance);
+			}
+			catch (Throwable ex) {
+				throw new IllegalArgumentException("Cannot instantiate " + type + " : "
+						+ name, ex);
+			}
 		}
-		return multicaster;
+
+		AnnotationAwareOrderComparator.sort(instances);
+		return instances;
 	}
 
 	private ConfigurableEnvironment getOrCreateEnvironment() {
@@ -448,17 +451,6 @@ public class SpringApplication {
 			}
 		}
 		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
-	}
-
-	private void registerApplicationEventMulticaster(
-			ConfigurableApplicationContext context,
-			ApplicationEventMulticaster multicaster) {
-		context.getBeanFactory().registerSingleton(
-				AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
-				multicaster);
-		if (multicaster instanceof BeanFactoryAware) {
-			((BeanFactoryAware) multicaster).setBeanFactory(context.getBeanFactory());
-		}
 	}
 
 	/**
@@ -624,29 +616,23 @@ public class SpringApplication {
 		((AbstractApplicationContext) applicationContext).refresh();
 	}
 
-	private void afterRefresh(ConfigurableApplicationContext context, String[] args) {
+	protected void afterRefresh(ConfigurableApplicationContext context, String[] args) {
 		runCommandLineRunners(context, args);
 	}
 
-	protected void handleFailure(ConfigurableApplicationContext context,
-			ApplicationEventMulticaster multicaster, Throwable exception, String... args) {
+	private void finishWithException(SpringApplicationRunParticipant participant,
+			ConfigurableApplicationContext context, Exception exception) {
 		try {
-			multicaster.multicastEvent(new ApplicationFailedEvent(this, args, context,
-					exception));
+			participant.finished(context, exception);
 		}
 		catch (Exception ex) {
-			// We don't want to fail here and mask the original exception
 			if (this.log.isDebugEnabled()) {
 				this.log.error("Error handling failed", ex);
 			}
 			else {
-				this.log.warn("Error handling failed (" + ex.getMessage() == null ? "no error message"
-						: ex.getMessage() + ")");
-			}
-		}
-		finally {
-			if (context != null) {
-				context.close();
+				String message = ex.getMessage();
+				message = (message == null ? "no error message" : message);
+				this.log.warn("Error handling failed (" + message + ")");
 			}
 		}
 	}
@@ -972,40 +958,6 @@ public class SpringApplication {
 		list.addAll(elemements);
 		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<E>(list);
-	}
-
-	/**
-	 * {@link ApplicationEventMulticaster} and {@link ApplicationEventPublisher} for
-	 * {@link SpringApplication} events.
-	 */
-	private static class SpringApplicationEventMulticaster extends
-			SimpleApplicationEventMulticaster implements ApplicationEventPublisher {
-
-		@Override
-		public void publishEvent(ApplicationEvent event) {
-			multicastEvent(event);
-		}
-
-		@Override
-		protected Collection<ApplicationListener<?>> getApplicationListeners(
-				ApplicationEvent event) {
-			List<ApplicationListener<?>> listeners = new ArrayList<ApplicationListener<?>>();
-			listeners.addAll(super.getApplicationListeners(event));
-			if (event instanceof ApplicationFailedEvent) {
-				Collections.reverse(listeners);
-			}
-			return listeners;
-		}
-
-		@Override
-		public void addApplicationListener(ApplicationListener<?> listener) {
-			super.addApplicationListener(listener);
-			if (listener instanceof ApplicationEventPublisherAware) {
-				((ApplicationEventPublisherAware) listener)
-						.setApplicationEventPublisher(this);
-			}
-		}
-
 	}
 
 }
