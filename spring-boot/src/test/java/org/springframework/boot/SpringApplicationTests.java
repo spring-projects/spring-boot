@@ -58,6 +58,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -130,7 +131,7 @@ public class SpringApplicationTests {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		this.context = application.run("--spring.application.name=foo");
-		assertEquals("foo", this.context.getId());
+		assertThat(this.context.getId(), startsWith("foo"));
 	}
 
 	@Test

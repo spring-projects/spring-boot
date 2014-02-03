@@ -362,50 +362,12 @@ public class SpringApplication {
 
 	}
 
-	protected void handleFailure(ConfigurableApplicationContext context,
-			ApplicationEventMulticaster multicaster, Throwable exception, String... args) {
-		try {
-			multicaster.multicastEvent(new ApplicationFailedEvent(this, args, context,
-					exception));
-		}
-		catch (Exception ex) {
-			// We don't want to fail here and mask the original exception
-			if (this.log.isDebugEnabled()) {
-				this.log.error("Error handling failed", ex);
-			}
-			else {
-				this.log.warn("Error handling failed (" + ex.getMessage() == null ? "no error message"
-						: ex.getMessage() + ")");
-			}
-		}
-		finally {
-			if (context != null) {
-				context.close();
-			}
-		}
-	}
-
-	private void registerApplicationEventMulticaster(
-			ConfigurableApplicationContext context,
-			ApplicationEventMulticaster multicaster) {
-		context.getBeanFactory().registerSingleton(
-				AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
-				multicaster);
-		if (multicaster instanceof BeanFactoryAware) {
-			((BeanFactoryAware) multicaster).setBeanFactory(context.getBeanFactory());
-		}
-	}
-
 	private ApplicationEventMulticaster createApplicationEventMulticaster() {
 		ApplicationEventMulticaster multicaster = new SpringApplicationEventMulticaster();
 		for (ApplicationListener<?> listener : getListeners()) {
 			multicaster.addApplicationListener(listener);
 		}
 		return multicaster;
-	}
-
-	private void afterRefresh(ConfigurableApplicationContext context, String[] args) {
-		runCommandLineRunners(context, args);
 	}
 
 	private ConfigurableEnvironment getOrCreateEnvironment() {
@@ -465,6 +427,70 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Strategy method used to create the {@link ApplicationContext}. By default this
+	 * method will respect any explicitly set application context or application context
+	 * class before falling back to a suitable default.
+	 * @return the application context (not yet refreshed)
+	 * @see #setApplicationContextClass(Class)
+	 */
+	protected ConfigurableApplicationContext createApplicationContext() {
+		Class<?> contextClass = this.applicationContextClass;
+		if (contextClass == null) {
+			try {
+				contextClass = Class
+						.forName(this.webEnvironment ? DEFAULT_WEB_CONTEXT_CLASS
+								: DEFAULT_CONTEXT_CLASS);
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException(
+						"Unable create a default ApplicationContext, "
+								+ "please specify an ApplicationContextClass", ex);
+			}
+		}
+		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
+	}
+
+	private void registerApplicationEventMulticaster(
+			ConfigurableApplicationContext context,
+			ApplicationEventMulticaster multicaster) {
+		context.getBeanFactory().registerSingleton(
+				AbstractApplicationContext.APPLICATION_EVENT_MULTICASTER_BEAN_NAME,
+				multicaster);
+		if (multicaster instanceof BeanFactoryAware) {
+			((BeanFactoryAware) multicaster).setBeanFactory(context.getBeanFactory());
+		}
+	}
+
+	/**
+	 * Apply any relevant post processing the {@link ApplicationContext}. Subclasses can
+	 * apply additional processing as required.
+	 * @param context the application context
+	 */
+	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
+		if (this.webEnvironment) {
+			if (context instanceof ConfigurableWebApplicationContext) {
+				ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
+				if (this.beanNameGenerator != null) {
+					configurableContext.getBeanFactory().registerSingleton(
+							AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
+							this.beanNameGenerator);
+				}
+			}
+		}
+
+		if (this.resourceLoader != null) {
+			if (context instanceof GenericApplicationContext) {
+				((GenericApplicationContext) context)
+						.setResourceLoader(this.resourceLoader);
+			}
+			if (context instanceof DefaultResourceLoader) {
+				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader
+						.getClassLoader());
+			}
+		}
+	}
+
+	/**
 	 * Apply any {@link ApplicationContextInitializer}s to the context before it is
 	 * refreshed.
 	 * @param context the configured ApplicationContext (not refreshed yet)
@@ -501,59 +527,6 @@ public class SpringApplication {
 			return this.log;
 		}
 		return LogFactory.getLog(this.mainApplicationClass);
-	}
-
-	/**
-	 * Strategy method used to create the {@link ApplicationContext}. By default this
-	 * method will respect any explicitly set application context or application context
-	 * class before falling back to a suitable default.
-	 * @return the application context (not yet refreshed)
-	 * @see #setApplicationContextClass(Class)
-	 */
-	protected ConfigurableApplicationContext createApplicationContext() {
-		Class<?> contextClass = this.applicationContextClass;
-		if (contextClass == null) {
-			try {
-				contextClass = Class
-						.forName(this.webEnvironment ? DEFAULT_WEB_CONTEXT_CLASS
-								: DEFAULT_CONTEXT_CLASS);
-			}
-			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(
-						"Unable create a default ApplicationContext, "
-								+ "please specify an ApplicationContextClass", ex);
-			}
-		}
-		return (ConfigurableApplicationContext) BeanUtils.instantiate(contextClass);
-	}
-
-	/**
-	 * Apply any relevant post processing the {@link ApplicationContext}. Subclasses can
-	 * apply additional processing as required.
-	 * @param context the application context
-	 */
-	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
-		if (this.webEnvironment) {
-			if (context instanceof ConfigurableWebApplicationContext) {
-				ConfigurableWebApplicationContext configurableContext = (ConfigurableWebApplicationContext) context;
-				if (this.beanNameGenerator != null) {
-					configurableContext.getBeanFactory().registerSingleton(
-							AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-							this.beanNameGenerator);
-				}
-			}
-		}
-
-		if (this.resourceLoader != null) {
-			if (context instanceof GenericApplicationContext) {
-				((GenericApplicationContext) context)
-						.setResourceLoader(this.resourceLoader);
-			}
-			if (context instanceof DefaultResourceLoader) {
-				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader
-						.getClassLoader());
-			}
-		}
 	}
 
 	/**
@@ -649,6 +622,33 @@ public class SpringApplication {
 	protected void refresh(ApplicationContext applicationContext) {
 		Assert.isInstanceOf(AbstractApplicationContext.class, applicationContext);
 		((AbstractApplicationContext) applicationContext).refresh();
+	}
+
+	private void afterRefresh(ConfigurableApplicationContext context, String[] args) {
+		runCommandLineRunners(context, args);
+	}
+
+	protected void handleFailure(ConfigurableApplicationContext context,
+			ApplicationEventMulticaster multicaster, Throwable exception, String... args) {
+		try {
+			multicaster.multicastEvent(new ApplicationFailedEvent(this, args, context,
+					exception));
+		}
+		catch (Exception ex) {
+			// We don't want to fail here and mask the original exception
+			if (this.log.isDebugEnabled()) {
+				this.log.error("Error handling failed", ex);
+			}
+			else {
+				this.log.warn("Error handling failed (" + ex.getMessage() == null ? "no error message"
+						: ex.getMessage() + ")");
+			}
+		}
+		finally {
+			if (context != null) {
+				context.close();
+			}
+		}
 	}
 
 	/**
