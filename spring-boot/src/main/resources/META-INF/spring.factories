@@ -1,3 +1,7 @@
+# Run Participants
+org.springframework.boot.SpringApplicationRunParticipant=\
+org.springframework.boot.event.EventPublishingRunParticipant
+
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.context.initializer.ContextIdApplicationContextInitializer,\
