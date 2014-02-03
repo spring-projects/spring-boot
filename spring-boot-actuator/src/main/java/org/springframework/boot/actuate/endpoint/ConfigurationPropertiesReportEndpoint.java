@@ -38,12 +38,13 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 /**
  * {@link Endpoint} to expose application properties from {@link ConfigurationProperties}
- * annotated classes.
+ * annotated beans.
  * 
  * <p>
  * To protect sensitive information from being exposed, certain property values are masked
  * if their names end with a set of configurable values (default "password" and "secret").
- * Configure property names by using {@link #setKeysToSanitize(String[])}.
+ * Configure property names by using <code>endpoints.configprops.keys_to_sanitize</code>
+ * in your Spring Boot application configuration.
  * 
  * @author Christian Dupuis
  */
@@ -61,13 +62,13 @@ public class ConfigurationPropertiesReportEndpoint extends
 		super("configprops");
 	}
 
+	public String[] getKeysToSanitize() {
+		return this.keysToSanitize;
+	}
+
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
-	}
-
-	public String[] getKeysToSanitize() {
-		return this.keysToSanitize;
 	}
 
 	public void setKeysToSanitize(String... keysToSanitize) {
@@ -80,6 +81,10 @@ public class ConfigurationPropertiesReportEndpoint extends
 		return extract(this.context);
 	}
 
+	/**
+	 * Extract beans annotated {@link ConfigurationProperties} and serialize into
+	 * {@link Map}.
+	 */
 	@SuppressWarnings("unchecked")
 	protected Map<String, Object> extract(ApplicationContext context) {
 		Map<String, Object> result = new HashMap<String, Object>();
@@ -107,14 +112,18 @@ public class ConfigurationPropertiesReportEndpoint extends
 		return result;
 	}
 
+	/**
+	 * Configure Jackson's {@link ObjectMapper} to be used to serialize the
+	 * {@link ConfigurationProperties} objects into a {@link Map} structure.
+	 */
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		applyCglibFilters(mapper);
 	}
 
 	/**
-	 * configure PropertyFiler to make sure Jackson doesn't process CGLIB generated bean
-	 * properties
+	 * Configure PropertyFiler to make sure Jackson doesn't process CGLIB generated bean
+	 * properties.
 	 */
 	private void applyCglibFilters(ObjectMapper mapper) {
 		mapper.setAnnotationIntrospector(new CglibAnnotationIntrospector());
@@ -122,6 +131,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 				new CglibBeanPropertyFilter()));
 	}
 
+	/**
+	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
+	 */
 	private String extractPrefix(Object bean) {
 		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
 				bean.getClass(), ConfigurationProperties.class);
@@ -129,6 +141,10 @@ public class ConfigurationPropertiesReportEndpoint extends
 				: annotation.name());
 	}
 
+	/**
+	 * Sanitize all unwanted configuration properties to avoid leaking of sensitive
+	 * information.
+	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> sanitize(Map<String, Object> map) {
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
@@ -152,8 +168,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	}
 
 	/**
-	 * Extension to {@link JacksonAnnotationIntrospector} to supporess CGLIB generated
-	 * bean properties.
+	 * Extension to {@link JacksonAnnotationIntrospector} to suppress CGLIB generated bean
+	 * properties.
 	 */
 	private static class CglibAnnotationIntrospector extends
 			JacksonAnnotationIntrospector {
