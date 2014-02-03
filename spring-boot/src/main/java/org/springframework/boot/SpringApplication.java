@@ -304,9 +304,6 @@ public class SpringApplication {
 
 		ApplicationEventMulticaster multicaster = createApplicationEventMulticaster();
 		try {
-			Set<Object> sources = getSources();
-			registerListenerAndInitializerSources(multicaster, sources);
-
 			// Allow logging and stuff to initialize very early
 			multicaster.multicastEvent(new ApplicationStartedEvent(this, args));
 
@@ -319,16 +316,13 @@ public class SpringApplication {
 			multicaster.multicastEvent(new ApplicationEnvironmentPreparedEvent(this,
 					args, environment));
 
-			// Sources might have changed when environment was applied
-			sources = getSources();
+			// Load the sources (might have changed when environment was applied)
+			Set<Object> sources = getSources();
 			Assert.notEmpty(sources, "Sources must not be empty");
 
 			if (this.showBanner) {
 				printBanner();
 			}
-
-			// Some sources might be listeners
-			registerListenerAndInitializerSources(multicaster, sources);
 
 			// Create, load, refresh and run the ApplicationContext
 			context = createApplicationContext();
@@ -387,18 +381,6 @@ public class SpringApplication {
 		finally {
 			if (context != null) {
 				context.close();
-			}
-		}
-	}
-
-	private void registerListenerAndInitializerSources(
-			ApplicationEventMulticaster multicaster, Set<Object> sources) {
-		for (Object object : sources) {
-			if (object instanceof ApplicationListener) {
-				multicaster.addApplicationListener((ApplicationListener<?>) object);
-			}
-			if (object instanceof ApplicationContextInitializer) {
-				addInitializers((ApplicationContextInitializer<?>) object);
 			}
 		}
 	}
