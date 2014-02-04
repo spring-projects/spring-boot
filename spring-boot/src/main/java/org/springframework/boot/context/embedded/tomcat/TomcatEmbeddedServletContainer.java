@@ -60,11 +60,12 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainer} instance.
 	 * @param tomcat the underlying Tomcat server
+	 * @param autoStart if the server should be started
 	 */
 	public TomcatEmbeddedServletContainer(Tomcat tomcat, boolean autoStart) {
-		this.autoStart = autoStart;
 		Assert.notNull(tomcat, "Tomcat Server must not be null");
 		this.tomcat = tomcat;
+		this.autoStart = autoStart;
 		initialize();
 	}
 

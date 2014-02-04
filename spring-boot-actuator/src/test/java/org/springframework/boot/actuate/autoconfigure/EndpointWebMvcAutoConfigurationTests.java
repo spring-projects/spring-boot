@@ -33,7 +33,11 @@ import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfi
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -46,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -99,6 +104,27 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", 8081, "endpointoutput");
 		this.applicationContext.close();
 		assertAllClosed();
+	}
+
+	@Test
+	public void onRandomPort() throws Exception {
+		this.applicationContext.register(RootConfig.class, RandomPortConfig.class,
+				PropertyPlaceholderAutoConfiguration.class,
+				EmbeddedServletContainerAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				ManagementServerPropertiesAutoConfiguration.class,
+				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+		GrabManagementPort grabManagementPort = new GrabManagementPort(
+				this.applicationContext);
+		this.applicationContext.addApplicationListener(grabManagementPort);
+		this.applicationContext.refresh();
+		int managementPort = grabManagementPort.getServletContainer().getPort();
+		assertThat(managementPort, not(equalTo(8080)));
+		assertContent("/controller", 8080, "controlleroutput");
+		assertContent("/endpoint", 8080, null);
+		assertContent("/controller", managementPort, null);
+		assertContent("/endpoint", managementPort, "endpointoutput");
 	}
 
 	@Test
@@ -230,12 +256,24 @@ public class EndpointWebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	public static class DisableConfig {
+	public static class RandomPortConfig {
 
 		@Bean
 		public ManagementServerProperties managementServerProperties() {
 			ManagementServerProperties properties = new ManagementServerProperties();
 			properties.setPort(0);
+			return properties;
+		}
+
+	}
+
+	@Configuration
+	public static class DisableConfig {
+
+		@Bean
+		public ManagementServerProperties managementServerProperties() {
+			ManagementServerProperties properties = new ManagementServerProperties();
+			properties.setPort(-1);
 			return properties;
 		}
 
@@ -265,6 +303,29 @@ public class EndpointWebMvcAutoConfigurationTests {
 			return Endpoint.class;
 		}
 
+	}
+
+	private static class GrabManagementPort implements
+			ApplicationListener<EmbeddedServletContainerInitializedEvent> {
+
+		private ApplicationContext rootContext;
+
+		private EmbeddedServletContainer servletContainer;
+
+		public GrabManagementPort(ApplicationContext rootContext) {
+			this.rootContext = rootContext;
+		}
+
+		@Override
+		public void onApplicationEvent(EmbeddedServletContainerInitializedEvent event) {
+			if (event.getApplicationContext() != this.rootContext) {
+				this.servletContainer = event.getEmbeddedServletContainer();
+			}
+		}
+
+		public EmbeddedServletContainer getServletContainer() {
+			return this.servletContainer;
+		}
 	}
 
 }

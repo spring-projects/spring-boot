@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,8 +81,6 @@ import org.springframework.web.servlet.DispatcherServlet;
 		ManagementServerPropertiesAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
-
-	private static final Integer DISABLED_PORT = Integer.valueOf(0);
 
 	private ApplicationContext applicationContext;
 
@@ -210,18 +208,18 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 				managementServerProperties = new ManagementServerProperties();
 			}
 
-			if (DISABLED_PORT.equals(managementServerProperties.getPort())) {
+			Integer port = managementServerProperties.getPort();
+			if (port != null && port < 0) {
 				return DISABLE;
 			}
 			if (!(beanFactory instanceof WebApplicationContext)) {
 				// Current context is not a webapp
 				return DIFFERENT;
 			}
-			return managementServerProperties.getPort() == null
-					|| serverProperties.getPort() == null
-					&& managementServerProperties.getPort().equals(8080)
-					|| managementServerProperties.getPort().equals(
-							serverProperties.getPort()) ? SAME : DIFFERENT;
+			return ((port == null)
+					|| (serverProperties.getPort() == null && port.equals(8080))
+					|| (port != 0 && port.equals(serverProperties.getPort())) ? SAME
+					: DIFFERENT);
 		}
 	};
 }
