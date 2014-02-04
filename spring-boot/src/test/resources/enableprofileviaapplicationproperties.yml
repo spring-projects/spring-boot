@@ -1,0 +1,3 @@
+spring:
+  profiles:
+    active: a

@@ -87,8 +87,8 @@ public class ConfigFileApplicationListener implements
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
 
-	private String[] searchLocations = new String[] { "classpath:", "file:./",
-			"classpath:config/", "file:./config/" };
+	private String[] searchLocations = new String[] { "classpath:/", "file:./",
+			"classpath:/config/", "file:./config/" };
 
 	private String names = "${spring.config.name:application}";
 
@@ -147,21 +147,36 @@ public class ConfigFileApplicationListener implements
 		PropertySource<?> defaultProperties = environment.getPropertySources().remove(
 				"defaultProperties");
 
+		addActiveProfiles(environment);
 		String firstPropertySourceName = loadInitial(environment, resourceLoader,
 				candidates);
 
-		if (environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
-			for (String activeProfile : StringUtils.commaDelimitedListToSet(environment
-					.getProperty(ACTIVE_PROFILES_PROPERTY).toString())) {
-				environment.addActiveProfile(activeProfile);
-			}
+		// Repeatedly load property sources in case additional profiles are activated
+		int numberOfPropertySources;
+		do {
+			numberOfPropertySources = environment.getPropertySources().size();
+			addActiveProfiles(environment);
+			loadAgain(environment, resourceLoader, candidates, firstPropertySourceName);
 		}
-
-		// Second load for specific profiles
-		loadAgain(environment, resourceLoader, candidates, firstPropertySourceName);
+		while (environment.getPropertySources().size() > numberOfPropertySources);
 
 		if (defaultProperties != null) {
 			environment.getPropertySources().addLast(defaultProperties);
+		}
+	}
+
+	/**
+	 * @param environment
+	 */
+	private void addActiveProfiles(ConfigurableEnvironment environment) {
+		for (PropertySource<?> propertySource : environment.getPropertySources()) {
+			if (propertySource.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
+				Object profiles = propertySource.getProperty(ACTIVE_PROFILES_PROPERTY);
+				for (String profile : StringUtils.commaDelimitedListToSet(profiles
+						.toString())) {
+					environment.addActiveProfile(profile);
+				}
+			}
 		}
 	}
 
