@@ -186,8 +186,8 @@ public class ConfigFileApplicationListenerTests {
 				"spring.profiles.active:prod");
 		this.initializer.setNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(Arrays.asList(this.environment.getActiveProfiles()).toString(),
-				equalTo("[prod]"));
+		assertThat(this.environment.getActiveProfiles(), equalTo(new String[] { "prod",
+				"dev" }));
 	}
 
 	@Test
@@ -212,7 +212,7 @@ public class ConfigFileApplicationListenerTests {
 		// The default property source is still there
 		assertThat(
 				this.environment.getPropertySources().contains(
-						"classpath:application.properties"), is(true));
+						"classpath:/application.properties"), is(true));
 		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
 	}
 
@@ -348,7 +348,23 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void activateProfileFromProfileSpecificProperties() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application
+				.run("--spring.profiles.active=activateprofile");
+		assertThat(context.getEnvironment().acceptsProfiles("activateprofile"),
+				equalTo(true));
+		assertThat(context.getEnvironment().acceptsProfiles("specific"), equalTo(true));
+	}
+
+	@Test
 	public void defaultApplicationProperties() throws Exception {
+
+	}
+
+	@Configuration
+	protected static class Config {
 
 	}
 
