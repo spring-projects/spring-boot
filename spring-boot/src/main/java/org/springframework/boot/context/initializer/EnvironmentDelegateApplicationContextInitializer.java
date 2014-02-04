@@ -49,62 +49,69 @@ public class EnvironmentDelegateApplicationContextInitializer implements
 	private int order = 0;
 
 	@Override
-	public void initialize(ConfigurableApplicationContext applicationContext) {
-		ConfigurableEnvironment env = applicationContext.getEnvironment();
-		List<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>> initializerClasses = determineContextInitializerClasses(env);
-
-		if (initializerClasses.size() == 0) {
-			// no ApplicationContextInitializers have been declared -> nothing to do
-			return;
-		}
-
-		Class<?> contextClass = applicationContext.getClass();
-		ArrayList<ApplicationContextInitializer<ConfigurableApplicationContext>> initializerInstances = new ArrayList<ApplicationContextInitializer<ConfigurableApplicationContext>>();
-
-		for (Class<ApplicationContextInitializer<ConfigurableApplicationContext>> initializerClass : initializerClasses) {
-			Class<?> initializerContextClass = GenericTypeResolver.resolveTypeArgument(
-					initializerClass, ApplicationContextInitializer.class);
-			Assert.isAssignable(
-					initializerContextClass,
-					contextClass,
-					String.format(
-							"Could not add context initializer [%s] as its generic parameter [%s] "
-									+ "is not assignable from the type of application context used by this "
-									+ "context loader [%s]: ",
-							initializerClass.getName(),
-							initializerContextClass.getName(), contextClass.getName()));
-			initializerInstances.add(BeanUtils.instantiateClass(initializerClass));
-		}
-
-		Collections.sort(initializerInstances, new AnnotationAwareOrderComparator());
-		for (ApplicationContextInitializer<ConfigurableApplicationContext> initializer : initializerInstances) {
-			initializer.initialize(applicationContext);
+	public void initialize(ConfigurableApplicationContext context) {
+		ConfigurableEnvironment environment = context.getEnvironment();
+		List<Class<?>> initializerClasses = getInitializerClasses(environment);
+		if (initializerClasses.size() > 0) {
+			applyInitializerClasses(context, initializerClasses);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>> determineContextInitializerClasses(
-			ConfigurableEnvironment env) {
+	private List<Class<?>> getInitializerClasses(ConfigurableEnvironment env) {
 		String classNames = env.getProperty(PROPERTY_NAME);
-		List<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>> classes = new ArrayList<Class<ApplicationContextInitializer<ConfigurableApplicationContext>>>();
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		if (StringUtils.hasLength(classNames)) {
 			for (String className : StringUtils.tokenizeToStringArray(classNames, ",")) {
-				try {
-					Class<?> clazz = ClassUtils.forName(className,
-							ClassUtils.getDefaultClassLoader());
-					Assert.isAssignable(ApplicationContextInitializer.class, clazz,
-							"class [" + className
-									+ "] must implement ApplicationContextInitializer");
-					classes.add((Class<ApplicationContextInitializer<ConfigurableApplicationContext>>) clazz);
-				}
-				catch (ClassNotFoundException ex) {
-					throw new ApplicationContextException(
-							"Failed to load context initializer class [" + className
-									+ "]", ex);
-				}
+				classes.add(getInitializerClass(className));
 			}
 		}
 		return classes;
+	}
+
+	private Class<?> getInitializerClass(String className) throws LinkageError {
+		try {
+			Class<?> initializerClass = ClassUtils.forName(className,
+					ClassUtils.getDefaultClassLoader());
+			Assert.isAssignable(ApplicationContextInitializer.class, initializerClass);
+			return initializerClass;
+		}
+		catch (ClassNotFoundException ex) {
+			throw new ApplicationContextException(
+					"Failed to load context initializer class [" + className + "]", ex);
+		}
+	}
+
+	private void applyInitializerClasses(ConfigurableApplicationContext context,
+			List<Class<?>> initializerClasses) {
+		Class<?> contextClass = context.getClass();
+		List<ApplicationContextInitializer<?>> initializers = new ArrayList<ApplicationContextInitializer<?>>();
+		for (Class<?> initializerClass : initializerClasses) {
+			initializers.add(instantiateInitializer(contextClass, initializerClass));
+		}
+		applyInitializers(context, initializers);
+	}
+
+	private ApplicationContextInitializer<?> instantiateInitializer(
+			Class<?> contextClass, Class<?> initializerClass) {
+		Class<?> requireContextClass = GenericTypeResolver.resolveTypeArgument(
+				initializerClass, ApplicationContextInitializer.class);
+		Assert.isAssignable(requireContextClass, contextClass, String.format(
+				"Could not add context initializer [%s]"
+						+ " as its generic parameter [%s] is not assignable "
+						+ "from the type of application context used by this "
+						+ "context loader [%s]: ", initializerClass.getName(),
+				requireContextClass.getName(), contextClass.getName()));
+		return (ApplicationContextInitializer<?>) BeanUtils
+				.instantiateClass(initializerClass);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void applyInitializers(ConfigurableApplicationContext context,
+			List<ApplicationContextInitializer<?>> initializers) {
+		Collections.sort(initializers, new AnnotationAwareOrderComparator());
+		for (ApplicationContextInitializer initializer : initializers) {
+			initializer.initialize(context);
+		}
 	}
 
 	public void setOrder(int order) {
