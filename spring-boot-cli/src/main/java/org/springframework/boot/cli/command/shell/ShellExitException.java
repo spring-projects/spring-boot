@@ -16,7 +16,7 @@
 
 package org.springframework.boot.cli.command.shell;
 
-import org.springframework.boot.cli.CommandException;
+import org.springframework.boot.cli.command.CommandException;
 
 /**
  * Exception used to stop the {@link Shell}.

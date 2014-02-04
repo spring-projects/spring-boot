@@ -31,9 +31,10 @@ import jline.console.ConsoleReader;
 import jline.console.completer.CandidateListCompletionHandler;
 
 import org.fusesource.jansi.AnsiRenderer.Code;
-import org.springframework.boot.cli.CommandRunner;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandFactory;
+import org.springframework.boot.cli.command.CommandRunner;
+import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.util.StringUtils;
 
@@ -83,7 +84,7 @@ public class Shell {
 
 	private ShellCommandRunner createCommandRunner() {
 		ShellCommandRunner runner = new ShellCommandRunner();
-		runner.addHelpCommand();
+		runner.addCommand(new HelpCommand(runner));
 		runner.addCommands(getCommands());
 		runner.addAliases("exit", "quit");
 		runner.addAliases("help", "?");

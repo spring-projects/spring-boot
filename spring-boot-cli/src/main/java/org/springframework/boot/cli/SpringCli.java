@@ -19,7 +19,9 @@ package org.springframework.boot.cli;
 import java.util.ServiceLoader;
 
 import org.springframework.boot.cli.command.CommandFactory;
+import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.core.HelpCommand;
+import org.springframework.boot.cli.command.core.HintCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.shell.ShellCommand;
 
@@ -37,10 +39,10 @@ public class SpringCli {
 		System.setProperty("java.awt.headless", Boolean.toString(true));
 
 		CommandRunner runner = new CommandRunner("spring");
-		runner.addHelpCommand();
+		runner.addCommand(new HelpCommand(runner));
 		addServiceLoaderCommands(runner);
 		runner.addCommand(new ShellCommand());
-		runner.addHintCommand();
+		runner.addCommand(new HintCommand(runner));
 		runner.setOptionCommands(HelpCommand.class, VersionCommand.class);
 
 		int exitCode = runner.runAndHandleErrors(args);

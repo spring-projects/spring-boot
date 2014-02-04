@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli;
+package org.springframework.boot.cli.command;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -26,7 +26,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.cli.command.Command;
+import org.springframework.boot.cli.command.core.HelpCommand;
+import org.springframework.boot.cli.command.core.HintCommand;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -95,8 +96,8 @@ public class CommandRunnerTests {
 		given(this.regularCommand.getName()).willReturn("command");
 		given(this.regularCommand.getDescription()).willReturn("A regular command");
 		this.commandRunner.addCommand(this.regularCommand);
-		this.commandRunner.addHelpCommand();
-		this.commandRunner.addHintCommand();
+		this.commandRunner.addCommand(new HelpCommand(this.commandRunner));
+		this.commandRunner.addCommand(new HintCommand(this.commandRunner));
 	}
 
 	@Test

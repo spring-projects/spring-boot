@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.command.options;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -19,6 +19,8 @@ package org.springframework.boot.cli.command;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.boot.cli.command.options.OptionHelp;
+
 /**
  * Abstract {@link Command} implementation.
  * 

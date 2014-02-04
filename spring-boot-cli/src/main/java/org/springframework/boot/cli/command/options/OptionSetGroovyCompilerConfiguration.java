@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler;
+package org.springframework.boot.cli.command.options;
 
 import java.util.List;
 
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import org.springframework.boot.cli.command.CompilerOptionHandler;
+import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
+import org.springframework.boot.cli.compiler.GroovyCompilerScope;
+import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
 /**
@@ -30,7 +32,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
  * 
  * @author Andy Wilkinson
  */
-public class GroovyCompilerConfigurationAdapter implements GroovyCompilerConfiguration {
+public class OptionSetGroovyCompilerConfiguration implements GroovyCompilerConfiguration {
 
 	private final OptionSet options;
 
@@ -38,13 +40,13 @@ public class GroovyCompilerConfigurationAdapter implements GroovyCompilerConfigu
 
 	private final List<RepositoryConfiguration> repositoryConfiguration;
 
-	protected GroovyCompilerConfigurationAdapter(OptionSet optionSet,
+	protected OptionSetGroovyCompilerConfiguration(OptionSet optionSet,
 			CompilerOptionHandler compilerOptionHandler) {
 		this(optionSet, compilerOptionHandler, RepositoryConfigurationFactory
 				.createDefaultRepositoryConfiguration());
 	}
 
-	public GroovyCompilerConfigurationAdapter(OptionSet optionSet,
+	public OptionSetGroovyCompilerConfiguration(OptionSet optionSet,
 			CompilerOptionHandler compilerOptionHandler,
 			List<RepositoryConfiguration> repositoryConfiguration) {
 		this.options = optionSet;

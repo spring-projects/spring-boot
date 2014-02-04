@@ -25,10 +25,10 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.CompilerOptionHandler;
 import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.SourceOptions;
-import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
+import org.springframework.boot.cli.command.options.CompilerOptionHandler;
+import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
+import org.springframework.boot.cli.command.options.SourceOptions;
 import org.springframework.boot.cli.compiler.GroovyCompilerScope;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
@@ -121,7 +121,7 @@ public class RunCommand extends OptionParsingCommand {
 		 * {@link SpringApplicationRunnerConfiguration}.
 		 */
 		private class SpringApplicationRunnerConfigurationAdapter extends
-				GroovyCompilerConfigurationAdapter implements
+				OptionSetGroovyCompilerConfiguration implements
 				SpringApplicationRunnerConfiguration {
 
 			public SpringApplicationRunnerConfigurationAdapter(OptionSet options,

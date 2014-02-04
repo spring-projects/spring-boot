@@ -21,12 +21,12 @@ import java.util.List;
 import joptsimple.OptionSet;
 
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.CompilerOptionHandler;
 import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.SourceOptions;
+import org.springframework.boot.cli.command.options.CompilerOptionHandler;
+import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
+import org.springframework.boot.cli.command.options.SourceOptions;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
-import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
@@ -51,7 +51,7 @@ public class GrabCommand extends OptionParsingCommand {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
 
-			GroovyCompilerConfiguration configuration = new GroovyCompilerConfigurationAdapter(
+			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(
 					options, this, repositoryConfiguration);
 
 			if (System.getProperty("grape.root") == null) {

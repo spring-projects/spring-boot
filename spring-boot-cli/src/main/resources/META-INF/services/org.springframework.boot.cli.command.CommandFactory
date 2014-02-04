@@ -1,1 +1,1 @@
-org.springframework.boot.cli.command.DefaultCommandFactory
+org.springframework.boot.cli.DefaultCommandFactory

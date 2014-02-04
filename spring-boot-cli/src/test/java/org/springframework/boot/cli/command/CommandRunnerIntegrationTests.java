@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli;
+package org.springframework.boot.cli.command;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.util.OutputCapture;
 

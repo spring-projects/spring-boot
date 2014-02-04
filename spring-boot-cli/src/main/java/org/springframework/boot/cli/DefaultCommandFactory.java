@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.boot.cli.command.Command;
+import org.springframework.boot.cli.command.CommandFactory;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
 import org.springframework.boot.cli.command.jar.JarCommand;

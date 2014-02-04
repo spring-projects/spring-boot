@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli;
+package org.springframework.boot.cli.command;
 
 /**
  * Exception used to when the help command is called without arguments.
