@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.autoconfigure.logging;
 
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.event.ApplicationFailedEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContextInitializer;
@@ -36,7 +37,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationContextInitializer} that writes the {@link AutoConfigurationReport}
+ * {@link ApplicationContextInitializer} that writes the {@link ConditionEvaluationReport}
  * to the log. Reports are logged at the {@link LogLevel#DEBUG DEBUG} level unless there
  * was a problem, in which case they are the {@link LogLevel#INFO INFO} level is used.
  * <p>
@@ -54,7 +55,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 
 	private ConfigurableApplicationContext applicationContext;
 
-	private AutoConfigurationReport report;
+	private ConditionEvaluationReport report;
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -62,7 +63,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 		applicationContext.addApplicationListener(new AutoConfigurationReportListener());
 		if (applicationContext instanceof GenericApplicationContext) {
 			// Get the report early in case the context fails to load
-			this.report = AutoConfigurationReport.get(this.applicationContext
+			this.report = ConditionEvaluationReport.get(this.applicationContext
 					.getBeanFactory());
 		}
 	}
@@ -91,7 +92,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 						+ "due to missing ApplicationContext");
 				return;
 			}
-			this.report = AutoConfigurationReport.get(this.applicationContext
+			this.report = ConditionEvaluationReport.get(this.applicationContext
 					.getBeanFactory());
 		}
 		if (this.report.getConditionAndOutcomesBySource().size() > 0) {

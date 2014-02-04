@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -43,7 +42,7 @@ public abstract class SpringBootCondition implements Condition {
 		String classOrMethodName = getClassOrMethodName(metadata);
 		ConditionOutcome outcome = getMatchOutcome(context, metadata);
 		logOutcome(classOrMethodName, outcome);
-		recordInAutoConfigurationReport(context, classOrMethodName, outcome);
+		recordEvaluation(context, classOrMethodName, outcome);
 		return outcome.isMatch();
 	}
 
@@ -77,10 +76,10 @@ public abstract class SpringBootCondition implements Condition {
 		return message;
 	}
 
-	private void recordInAutoConfigurationReport(ConditionContext context,
+	private void recordEvaluation(ConditionContext context,
 			String classOrMethodName, ConditionOutcome outcome) {
 		if (context.getBeanFactory() != null) {
-			AutoConfigurationReport.get(context.getBeanFactory())
+			ConditionEvaluationReport.get(context.getBeanFactory())
 					.recordConditionEvaluation(classOrMethodName, this, outcome);
 		}
 	}

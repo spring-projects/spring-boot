@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,9 +29,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -47,7 +48,7 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link AutoConfigurationReport}.
+ * Tests for {@link ConditionEvaluationReport}.
  * 
  * @author Greg Turnquist
  * @author Phillip Webb
@@ -56,7 +57,7 @@ public class AutoConfigurationReportTests {
 
 	private DefaultListableBeanFactory beanFactory;
 
-	private AutoConfigurationReport report;
+	private ConditionEvaluationReport report;
 
 	@Mock
 	private Condition condition1;
@@ -77,31 +78,31 @@ public class AutoConfigurationReportTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.beanFactory = new DefaultListableBeanFactory();
-		this.report = AutoConfigurationReport.get(this.beanFactory);
+		this.report = ConditionEvaluationReport.get(this.beanFactory);
 	}
 
 	@Test
 	public void get() throws Exception {
 		assertThat(this.report, not(nullValue()));
 		assertThat(this.report,
-				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
+				sameInstance(ConditionEvaluationReport.get(this.beanFactory)));
 	}
 
 	@Test
 	public void parent() throws Exception {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
-		AutoConfigurationReport.get((ConfigurableListableBeanFactory) this.beanFactory
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
 		assertThat(this.report,
-				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
+				sameInstance(ConditionEvaluationReport.get(this.beanFactory)));
 		assertThat(this.report, not(nullValue()));
 		assertThat(this.report.getParent(), not(nullValue()));
-		AutoConfigurationReport.get((ConfigurableListableBeanFactory) this.beanFactory
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
 		assertThat(this.report,
-				sameInstance(AutoConfigurationReport.get(this.beanFactory)));
+				sameInstance(ConditionEvaluationReport.get(this.beanFactory)));
 		assertThat(this.report.getParent(),
-				sameInstance(AutoConfigurationReport
+				sameInstance(ConditionEvaluationReport
 						.get((ConfigurableListableBeanFactory) this.beanFactory
 								.getParentBeanFactory())));
 	}
@@ -110,9 +111,9 @@ public class AutoConfigurationReportTests {
 	public void parentBottomUp() throws Exception {
 		this.beanFactory = new DefaultListableBeanFactory(); // NB: overrides setup
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
-		AutoConfigurationReport.get((ConfigurableListableBeanFactory) this.beanFactory
+		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory
 				.getParentBeanFactory());
-		this.report = AutoConfigurationReport.get(this.beanFactory);
+		this.report = ConditionEvaluationReport.get(this.beanFactory);
 		assertThat(this.report, not(nullValue()));
 		assertThat(this.report, not(sameInstance(this.report.getParent())));
 		assertThat(this.report.getParent(), not(nullValue()));
@@ -174,7 +175,7 @@ public class AutoConfigurationReportTests {
 	@Test
 	@SuppressWarnings("resource")
 	public void springBootConditionPopulatesReport() throws Exception {
-		AutoConfigurationReport report = AutoConfigurationReport
+		ConditionEvaluationReport report = ConditionEvaluationReport
 				.get(new AnnotationConfigApplicationContext(Config.class)
 						.getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size(), not(equalTo(0)));
@@ -206,7 +207,7 @@ public class AutoConfigurationReportTests {
 	public void duplicateOutcomes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				DuplicateConfig.class);
-		AutoConfigurationReport report = AutoConfigurationReport.get(context
+		ConditionEvaluationReport report = ConditionEvaluationReport.get(context
 				.getBeanFactory());
 		String autoconfigKey = MultipartAutoConfiguration.class.getName();
 

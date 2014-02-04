@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.autoconfigure.logging;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +30,9 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
+import org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.event.ApplicationFailedEvent;
@@ -175,7 +178,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		context.register(Config.class);
 		new AutoConfigurationReportLoggingInitializer().initialize(context);
 		context.refresh();
-		assertNotNull(context.getBean(AutoConfigurationReport.class));
+		assertNotNull(context.getBean(ConditionEvaluationReport.class));
 	}
 
 	@Test
@@ -185,7 +188,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 		context.register(Config.class);
 		new AutoConfigurationReportLoggingInitializer().initialize(context);
 		context.refresh();
-		assertNotNull(context.getBean(AutoConfigurationReport.class));
+		assertNotNull(context.getBean(ConditionEvaluationReport.class));
 	}
 
 	@Test

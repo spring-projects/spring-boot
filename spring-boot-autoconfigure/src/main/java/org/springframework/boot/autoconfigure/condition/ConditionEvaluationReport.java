@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure;
+package org.springframework.boot.autoconfigure.condition;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -26,31 +26,30 @@ import java.util.TreeMap;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.Condition;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
- * Records auto-configuration details for reporting and logging.
+ * Records condition evaluation details for reporting and logging.
  * 
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Phillip Webb
  */
-public class AutoConfigurationReport {
+public class ConditionEvaluationReport {
 
 	private static final String BEAN_NAME = "autoConfigurationReport";
 
 	private final SortedMap<String, ConditionAndOutcomes> outcomes = new TreeMap<String, ConditionAndOutcomes>();
 
-	private AutoConfigurationReport parent;
+	private ConditionEvaluationReport parent;
 
 	/**
 	 * Private constructor.
 	 * @see #get(ConfigurableListableBeanFactory)
 	 */
-	private AutoConfigurationReport() {
+	private ConditionEvaluationReport() {
 	}
 
 	/**
@@ -81,23 +80,24 @@ public class AutoConfigurationReport {
 	 * The parent report (from a parent BeanFactory if there is one).
 	 * @return the parent report (or null if there isn't one)
 	 */
-	public AutoConfigurationReport getParent() {
+	public ConditionEvaluationReport getParent() {
 		return this.parent;
 	}
 
 	/**
-	 * Obtain a {@link AutoConfigurationReport} for the specified bean factory.
+	 * Obtain a {@link ConditionEvaluationReport} for the specified bean factory.
 	 * @param beanFactory the bean factory
-	 * @return an existing or new {@link AutoConfigurationReport}
+	 * @return an existing or new {@link ConditionEvaluationReport}
 	 */
-	public static AutoConfigurationReport get(ConfigurableListableBeanFactory beanFactory) {
+	public static ConditionEvaluationReport get(
+			ConfigurableListableBeanFactory beanFactory) {
 		synchronized (beanFactory) {
-			AutoConfigurationReport report;
+			ConditionEvaluationReport report;
 			if (beanFactory.containsSingleton(BEAN_NAME)) {
-				report = beanFactory.getBean(BEAN_NAME, AutoConfigurationReport.class);
+				report = beanFactory.getBean(BEAN_NAME, ConditionEvaluationReport.class);
 			}
 			else {
-				report = new AutoConfigurationReport();
+				report = new ConditionEvaluationReport();
 				beanFactory.registerSingleton(BEAN_NAME, report);
 			}
 			locateParent(beanFactory.getParentBeanFactory(), report);
@@ -106,10 +106,11 @@ public class AutoConfigurationReport {
 	}
 
 	private static void locateParent(BeanFactory beanFactory,
-			AutoConfigurationReport report) {
+			ConditionEvaluationReport report) {
 		if (beanFactory != null && report.parent == null
 				&& beanFactory.containsBean(BEAN_NAME)) {
-			report.parent = beanFactory.getBean(BEAN_NAME, AutoConfigurationReport.class);
+			report.parent = beanFactory.getBean(BEAN_NAME,
+					ConditionEvaluationReport.class);
 		}
 	}
 
