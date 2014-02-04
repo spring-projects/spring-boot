@@ -19,7 +19,8 @@ import org.springframework.util.ClassUtils;
 public class LiquibaseServiceLocatorApplicationListener implements
 		ApplicationListener<ApplicationStartedEvent> {
 
-	static final Log logger = LogFactory.getLog(LiquibaseServiceLocatorApplicationListener.class);
+	static final Log logger = LogFactory
+			.getLog(LiquibaseServiceLocatorApplicationListener.class);
 
 	@Override
 	public void onApplicationEvent(ApplicationStartedEvent event) {
@@ -35,7 +36,7 @@ public class LiquibaseServiceLocatorApplicationListener implements
 
 		public void replaceServiceLocator() {
 			ServiceLocator.setInstance(new CustomResolverServiceLocator(
-					new SpringPackageScanClassResolver()));
+					new SpringPackageScanClassResolver(logger)));
 		}
 
 	}

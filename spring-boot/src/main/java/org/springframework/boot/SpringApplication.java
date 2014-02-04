@@ -411,6 +411,10 @@ public class SpringApplication {
 		}
 	}
 
+	/**
+	 * Setup any active profiles on the environment.
+	 * @param environment the environment to configure
+	 */
 	protected void setupProfiles(ConfigurableEnvironment environment) {
 		for (String profile : this.profiles) {
 			environment.addActiveProfile(profile);

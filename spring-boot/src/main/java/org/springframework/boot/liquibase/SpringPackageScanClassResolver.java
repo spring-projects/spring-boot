@@ -23,6 +23,7 @@ import liquibase.servicelocator.DefaultPackageScanClassResolver;
 import liquibase.servicelocator.PackageScanClassResolver;
 import liquibase.servicelocator.PackageScanFilter;
 
+import org.apache.commons.logging.Log;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -39,6 +40,12 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  */
 public class SpringPackageScanClassResolver extends DefaultPackageScanClassResolver {
+
+	private final Log logger;
+
+	public SpringPackageScanClassResolver(Log logger) {
+		this.logger = logger;
+	}
 
 	@Override
 	protected void find(PackageScanFilter test, String packageName, ClassLoader loader,
@@ -74,9 +81,8 @@ public class SpringPackageScanClassResolver extends DefaultPackageScanClassResol
 			return ClassUtils.forName(reader.getClassMetadata().getClassName(), loader);
 		}
 		catch (Exception ex) {
-			if (LiquibaseServiceLocatorApplicationListener.logger.isWarnEnabled()) {
-				LiquibaseServiceLocatorApplicationListener.logger.warn(
-						"Ignoring cadidate class resource " + resource, ex);
+			if (this.logger.isWarnEnabled()) {
+				this.logger.warn("Ignoring cadidate class resource " + resource, ex);
 			}
 			return null;
 		}

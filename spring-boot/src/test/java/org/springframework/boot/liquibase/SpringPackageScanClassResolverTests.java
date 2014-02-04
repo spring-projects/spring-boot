@@ -20,6 +20,7 @@ import java.util.Set;
 
 import liquibase.logging.Logger;
 
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.greaterThan;
@@ -34,7 +35,8 @@ public class SpringPackageScanClassResolverTests {
 
 	@Test
 	public void testScan() {
-		SpringPackageScanClassResolver resolver = new SpringPackageScanClassResolver();
+		SpringPackageScanClassResolver resolver = new SpringPackageScanClassResolver(
+				LogFactory.getLog(getClass()));
 		resolver.addClassLoader(getClass().getClassLoader());
 		Set<Class<?>> implementations = resolver.findImplementations(Logger.class,
 				"liquibase.logging.core");
