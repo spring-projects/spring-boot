@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.Stack;
 
 import jline.console.ConsoleReader;
 import jline.console.completer.CandidateListCompletionHandler;
@@ -61,15 +60,13 @@ public class Shell {
 
 	private static final Signal SIG_INT = new Signal("INT");
 
-	private static final String DEFAULT_PROMPT = "$ ";
-
 	private final ShellCommandRunner commandRunner;
 
 	private final ConsoleReader consoleReader;
 
 	private final EscapeAwareWhiteSpaceArgumentDelimiter argumentDelimiter = new EscapeAwareWhiteSpaceArgumentDelimiter();
 
-	private final Stack<String> prompts = new Stack<String>();
+	private final ShellPrompts prompts = new ShellPrompts();
 
 	/**
 	 * Create a new {@link Shell} instance.
@@ -101,7 +98,7 @@ public class Shell {
 				commands.add(convertToForkCommand(command));
 			}
 		}
-		commands.add(new PromptCommand(this));
+		commands.add(new PromptCommand(this.prompts));
 		commands.add(new ClearCommand(this.consoleReader));
 		commands.add(new ExitCommand());
 		return commands;
@@ -135,23 +132,6 @@ public class Shell {
 	}
 
 	/**
-	 * Push a new prompt to be used by the shell.
-	 * @param prompt the prompt
-	 * @see #popPrompt()
-	 */
-	public void pushPrompt(String prompt) {
-		this.prompts.push(prompt);
-	}
-
-	/**
-	 * Pop a previously pushed prompt, returning to the previous value.
-	 * @see #pushPrompt(String)
-	 */
-	public void popPrompt() {
-		this.prompts.pop();
-	}
-
-	/**
 	 * Run the shell until the user exists.
 	 * @throws Exception on error
 	 */
@@ -168,7 +148,7 @@ public class Shell {
 	}
 
 	private void printBanner() {
-		String version = ShellCommand.class.getPackage().getImplementationVersion();
+		String version = getClass().getPackage().getImplementationVersion();
 		version = (version == null ? "" : " (v" + version + ")");
 		System.out.println(ansi("Spring Boot", Code.BOLD).append(version, Code.FAINT));
 		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit "
@@ -190,7 +170,7 @@ public class Shell {
 	}
 
 	private String getPrompt() {
-		String prompt = this.prompts.isEmpty() ? DEFAULT_PROMPT : this.prompts.peek();
+		String prompt = this.prompts.getPrompt();
 		return ansi(prompt, Code.FG_BLUE).toString();
 	}
 
