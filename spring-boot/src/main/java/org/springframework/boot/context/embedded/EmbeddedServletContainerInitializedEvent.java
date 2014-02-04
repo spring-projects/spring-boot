@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,15 @@ public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 	}
 
 	/**
+	 * Access the {@link EmbeddedServletContainer}.
+	 * @return the embedded servlet container
+	 */
+	public EmbeddedServletContainer getEmbeddedServletContainer() {
+		return getSource();
+	}
+
+	/**
 	 * Access the source of the event (an {@link EmbeddedServletContainer}).
-	 * 
 	 * @return the embedded servlet container
 	 */
 	@Override
@@ -51,7 +58,6 @@ public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 	 * Access the application context that the container was created in. Sometimes it is
 	 * prudent to check that this matches expectations (like being equal to the current
 	 * context) before acting on the server container itself.
-	 * 
 	 * @return the applicationContext that the container was created from
 	 */
 	public ApplicationContext getApplicationContext() {
