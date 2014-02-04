@@ -147,15 +147,24 @@ public class ConfigFileApplicationListener implements
 		PropertySource<?> defaultProperties = environment.getPropertySources().remove(
 				"defaultProperties");
 
-		addActiveProfiles(environment);
+		// Load to allow a file that defines active profiles to be considered
 		String firstPropertySourceName = loadInitial(environment, resourceLoader,
 				candidates);
+
+		// Apply the active profiles (if any) from the first property source
+		if (environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
+			activeProfilesFromProperty(environment,
+					environment.getProperty(ACTIVE_PROFILES_PROPERTY), true);
+		}
+
+		// Apply any profile additions from any source
+		activeProfileAdditionsFromAnySource(environment);
 
 		// Repeatedly load property sources in case additional profiles are activated
 		int numberOfPropertySources;
 		do {
 			numberOfPropertySources = environment.getPropertySources().size();
-			addActiveProfiles(environment);
+			activeProfileAdditionsFromAnySource(environment);
 			loadAgain(environment, resourceLoader, candidates, firstPropertySourceName);
 		}
 		while (environment.getPropertySources().size() > numberOfPropertySources);
@@ -165,17 +174,22 @@ public class ConfigFileApplicationListener implements
 		}
 	}
 
-	/**
-	 * @param environment
-	 */
-	private void addActiveProfiles(ConfigurableEnvironment environment) {
+	private void activeProfileAdditionsFromAnySource(ConfigurableEnvironment environment) {
 		for (PropertySource<?> propertySource : environment.getPropertySources()) {
 			if (propertySource.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
-				Object profiles = propertySource.getProperty(ACTIVE_PROFILES_PROPERTY);
-				for (String profile : StringUtils.commaDelimitedListToSet(profiles
-						.toString())) {
-					environment.addActiveProfile(profile);
-				}
+				activeProfilesFromProperty(environment,
+						propertySource.getProperty(ACTIVE_PROFILES_PROPERTY), false);
+			}
+		}
+	}
+
+	private void activeProfilesFromProperty(ConfigurableEnvironment environment,
+			Object property, boolean addAll) {
+		for (String profile : StringUtils.commaDelimitedListToSet(property.toString())) {
+			boolean addition = profile.startsWith("+");
+			profile = (addition ? profile.substring(1) : profile);
+			if (addAll || addition) {
+				environment.addActiveProfile(profile);
 			}
 		}
 	}
