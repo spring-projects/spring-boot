@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.transformation;
+package org.springframework.boot.cli.compiler;
 
 import groovy.lang.GroovyClassLoader;
 
@@ -23,9 +23,7 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
-import org.springframework.boot.cli.compiler.ArtifactCoordinatesResolver;
-import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
-import org.springframework.boot.cli.compiler.DependencyCustomizer;
+import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 
 /**
  * {@link ASTTransformation} to apply

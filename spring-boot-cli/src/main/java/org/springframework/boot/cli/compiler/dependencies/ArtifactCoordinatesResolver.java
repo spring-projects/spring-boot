@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler;
+package org.springframework.boot.cli.compiler.dependencies;
 
 /**
  * A resolver for artifacts' Maven coordinates, allowing a group id or version to be

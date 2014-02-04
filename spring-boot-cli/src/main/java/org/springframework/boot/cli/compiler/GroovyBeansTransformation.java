@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.transformation;
+package org.springframework.boot.cli.compiler;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
