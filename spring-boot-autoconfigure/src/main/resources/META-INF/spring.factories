@@ -1,3 +1,7 @@
+# Initializers
+org.springframework.context.ApplicationContextInitializer=\
+org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer
+
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration,\
@@ -24,6 +28,3 @@ org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration
-
-org.springframework.context.ApplicationContextInitializer=\
-org.springframework.boot.autoconfigure.AutoConfigurationReportLoggingInitializer

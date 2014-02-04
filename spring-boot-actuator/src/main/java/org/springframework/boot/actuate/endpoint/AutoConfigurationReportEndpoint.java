@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint.Report;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcome;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport.ConditionAndOutcomes;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Condition;
 import org.springframework.util.ClassUtils;
@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * {@link Endpoint} to expose the {@link AutoConfigurationReport}.
+ * {@link Endpoint} to expose the {@link ConditionEvaluationReport}.
  * 
  * @author Greg Turnquist
  * @author Phillip Webb
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 	@Autowired
-	private AutoConfigurationReport autoConfigurationReport;
+	private ConditionEvaluationReport autoConfigurationReport;
 
 	public AutoConfigurationReportEndpoint() {
 		super("autoconfig");
@@ -59,7 +59,7 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 	}
 
 	/**
-	 * Adapts {@link AutoConfigurationReport} to a JSON friendly structure.
+	 * Adapts {@link ConditionEvaluationReport} to a JSON friendly structure.
 	 */
 	@JsonPropertyOrder({ "positiveMatches", "negativeMatches" })
 	@JsonInclude(Include.NON_EMPTY)
@@ -71,7 +71,7 @@ public class AutoConfigurationReportEndpoint extends AbstractEndpoint<Report> {
 
 		private Report parent;
 
-		public Report(AutoConfigurationReport report) {
+		public Report(ConditionEvaluationReport report) {
 			this.positiveMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
 			this.negativeMatches = new LinkedMultiValueMap<String, MessageAndCondition>();
 			for (Map.Entry<String, ConditionAndOutcomes> entry : report

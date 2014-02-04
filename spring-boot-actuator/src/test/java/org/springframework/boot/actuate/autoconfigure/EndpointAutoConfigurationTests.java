@@ -30,7 +30,7 @@ import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
-import org.springframework.boot.autoconfigure.AutoConfigurationReport;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -96,7 +96,7 @@ public class EndpointAutoConfigurationTests {
 	public void autoconfigurationAuditEndpoints() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(EndpointAutoConfiguration.class,
-				AutoConfigurationReport.class);
+				ConditionEvaluationReport.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
 	}
