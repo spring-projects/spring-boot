@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.AsciiBytes;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * Decorator to apply an {@link Archive.EntryFilter} to an existing {@link Archive}.

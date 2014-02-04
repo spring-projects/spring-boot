@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.AsciiBytes;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by an exploded archive directory.

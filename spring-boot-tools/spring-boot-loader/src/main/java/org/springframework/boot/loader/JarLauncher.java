@@ -19,6 +19,7 @@ package org.springframework.boot.loader;
 import java.util.List;
 
 import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Launcher} for JAR based archives. This launcher assumes that dependency jars are

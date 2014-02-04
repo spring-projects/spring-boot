@@ -19,6 +19,7 @@ package org.springframework.boot.loader;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;

@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.jar.JarEntryData;
 import org.springframework.boot.loader.jar.JarEntryFilter;
 import org.springframework.boot.loader.jar.JarFile;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by a {@link JarFile}.

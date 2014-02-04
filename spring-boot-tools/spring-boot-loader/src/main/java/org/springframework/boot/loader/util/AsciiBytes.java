@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader;
+package org.springframework.boot.loader.util;
 
 import java.nio.charset.Charset;
 

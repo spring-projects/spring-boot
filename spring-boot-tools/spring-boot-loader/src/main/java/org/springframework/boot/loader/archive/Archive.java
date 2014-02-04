@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.jar.Manifest;
 
-import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.Launcher;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * An archive that can be launched by the {@link Launcher}.

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.

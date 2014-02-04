@@ -42,6 +42,7 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.FilteredArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
+import org.springframework.boot.loader.util.AsciiBytes;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
 
 /**
