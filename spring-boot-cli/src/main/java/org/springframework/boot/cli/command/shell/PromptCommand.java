@@ -26,23 +26,23 @@ import org.springframework.boot.cli.command.Command;
  */
 public class PromptCommand extends AbstractCommand {
 
-	private final Shell shell;
+	private final ShellPrompts prompts;
 
-	public PromptCommand(Shell shell) {
+	public PromptCommand(ShellPrompts shellPrompts) {
 		super("prompt", "Change the prompt used with the current 'shell' command. "
 				+ "Execute with no arguments to return to the previous value.");
-		this.shell = shell;
+		this.prompts = shellPrompts;
 	}
 
 	@Override
 	public void run(String... strings) throws Exception {
 		if (strings.length > 0) {
 			for (String string : strings) {
-				this.shell.pushPrompt(string + " ");
+				this.prompts.pushPrompt(string + " ");
 			}
 		}
 		else {
-			this.shell.popPrompt();
+			this.prompts.popPrompt();
 		}
 	}
 
