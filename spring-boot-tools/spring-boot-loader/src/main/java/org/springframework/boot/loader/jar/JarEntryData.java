@@ -21,9 +21,9 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.util.zip.ZipEntry;
 
-import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * Holds the underlying data of a {@link JarEntry}, allowing creation to be deferred until

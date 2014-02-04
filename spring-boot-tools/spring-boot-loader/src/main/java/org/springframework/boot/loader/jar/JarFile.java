@@ -34,10 +34,10 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.springframework.boot.loader.AsciiBytes;
 import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but
