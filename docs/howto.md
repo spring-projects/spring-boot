@@ -538,7 +538,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void init(AuthenticationManagerBuilder builder) {
         builder.inMemoryAuthentication().withUser("barry"); // ...  etc.
     }
-    
+
     // ... other stuff for application security
 
 }
@@ -1026,22 +1026,18 @@ additional ones:
   `META-INF/spring.factories` and packaging a jar file that the
   applications all use as a library
 
-Any `ApplicationContextInitializer` registered programmatically or via
-`spring.factories` that is also an `ApplicationListener` will be
-automatically cross registered (and vice versa for listeners that are
-also initializers).  The `SpringApplication` sends some special
-`ApplicationEvents` to the listeners (even some before the context is
-created), and then registers the listeners for events published by the
-`ApplicationContext` as well:
+The `SpringApplication` sends some special `ApplicationEvents` to the
+listeners (even some before the context is created), and then registers
+the listeners for events published by the `ApplicationContext` as well:
 
-* `SpringApplicationStartEvent` at the start of a run, but before any
+* `ApplicationStartedEvent` at the start of a run, but before any
   processing except the registration of listeners and initializers.
-* `SpringApplicationEnvironmentAvailableEvent` when the `Environment`
+* `ApplicationEnvironmentPreparedEvent` when the `Environment`
   to be used in the context is known, but before the context is
   created.
-* `SpringApplicationBeforeRefreshEvent` just before the refresh is
+* `ApplicationPreparedEvent` just before the refresh is
   started, but after bean definitions have been loaded.
-* `SpringApplicationErrorEvent` if there is an exception on startup.
+* `ApplicationFailedEvent` if there is an exception on startup.
 
 
 ## Build An Executable Archive with Ant
