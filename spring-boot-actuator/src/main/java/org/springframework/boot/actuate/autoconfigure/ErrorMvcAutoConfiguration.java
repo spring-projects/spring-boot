@@ -115,10 +115,11 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	}
 
 	private static class ErrorTemplateMissingCondition extends SpringBootCondition {
+
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			if (ClassUtils.isPresent("org.thymeleaf.spring3.SpringTemplateEngine",
+			if (ClassUtils.isPresent("org.thymeleaf.spring4.SpringTemplateEngine",
 					context.getClassLoader())) {
 				if (DefaultTemplateResolverConfiguration.templateExists(
 						context.getEnvironment(), context.getResourceLoader(), "error")) {
@@ -135,6 +136,7 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 			}
 			return ConditionOutcome.match("no error template view detected");
 		};
+
 	}
 
 	private static class SpelView implements View {
