@@ -894,13 +894,14 @@ In Spring Boot you can also set the active profile in
 `application.properties`, e.g.
 
 ```properties
-spring.profiles.active: production
+spring.profiles.active=production
 ```
 
 A value set this way is replaced by the System property or environment
 variable setting, but not by the `SpringApplicationBuilder.profiles()`
 method. Thus the latter Java API can be used to augment the profiles
 without changing the defaults.
+
 
 ## Change the Location of External Properties of an Application
 

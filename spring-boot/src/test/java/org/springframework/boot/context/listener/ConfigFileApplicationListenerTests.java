@@ -186,8 +186,7 @@ public class ConfigFileApplicationListenerTests {
 				"spring.profiles.active:prod");
 		this.initializer.setNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment.getActiveProfiles(), equalTo(new String[] { "prod",
-				"dev" }));
+		assertThat(this.environment.getActiveProfiles(), equalTo(new String[] { "prod" }));
 	}
 
 	@Test
@@ -356,6 +355,11 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(context.getEnvironment().acceptsProfiles("activateprofile"),
 				equalTo(true));
 		assertThat(context.getEnvironment().acceptsProfiles("specific"), equalTo(true));
+		assertThat(context.getEnvironment().acceptsProfiles("morespecific"),
+				equalTo(true));
+		assertThat(context.getEnvironment().acceptsProfiles("yetmorespecific"),
+				equalTo(true));
+		assertThat(context.getEnvironment().acceptsProfiles("missing"), equalTo(false));
 	}
 
 	@Test

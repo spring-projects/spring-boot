@@ -157,6 +157,26 @@ spring.profiles.active=dev,hsqldb
 
 or specify on the command line using the switch `--spring.profiles.active=dev,hsqldb`.
 
+#### Adding active profiles
+The `spring.profiles.active` property follows the same ordering rules as other
+properties, the highest `PropertySource` will win. This means that you can specify
+active profiles in `application.properties` then **replace** them using the command line
+switch.
+
+Sometimes it is useful to have profile specific properties that **add** to the active
+profiles rather than replace them. The `+` prefix can be used to add active profiles.
+
+For example, when an application with following properties is run using the switch
+`--spring.profiles.active=prod` the `proddb` and `prodmq` profiles will also be activated:
+
+```yaml
+---
+my.property: fromyamlfile
+---
+spring.profiles: prod
+spring.profiles.active: +proddb,+prodmq
+```
+
 ### Application Context Initializers
 Spring provides a convenient `ApplicationContextInitializer` interface that can be used
 to customize an `ApplicationContext` before it is used. If you need to use an initializer
@@ -451,7 +471,7 @@ to specify:
 * The Tomcat `base directory` (`server.tomcat.basedir`)
 
 ## Customizing Logging
-Spring Boot uses [Commons Logging](commons.apache.org/logging/‎) for all internal logging,
+Spring Boot uses [Commons Logging](commons.apache.org/logging) for all internal logging,
 but leaves the underlying log implementation open. Default configurations are provided for
 [Java Util Logging](http://docs.oracle.com/javase/7/docs/api/java/util/logging/package-summary.html),
 [Log4J](http://logging.apache.org/log4j/) and [Logback](http://logback.qos.ch/).
