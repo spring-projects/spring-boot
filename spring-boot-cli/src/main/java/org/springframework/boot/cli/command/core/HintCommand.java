@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.boot.cli.CommandRunner;
-import org.springframework.boot.cli.Log;
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.OptionHelp;
+import org.springframework.boot.cli.command.CommandRunner;
+import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.util.Log;
 
 /**
  * Internal {@link Command} to provide hints for shell auto-completion. Expects to be

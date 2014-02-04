@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.command;
+package org.springframework.boot.cli.command.options;
 
 import groovy.lang.Closure;
 
@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.springframework.boot.cli.command.OptionParsingCommand;
 
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.HelpFormatter;

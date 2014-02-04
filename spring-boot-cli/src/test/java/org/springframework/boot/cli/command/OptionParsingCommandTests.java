@@ -17,6 +17,7 @@
 package org.springframework.boot.cli.command;
 
 import org.junit.Test;
+import org.springframework.boot.cli.command.options.OptionHandler;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;

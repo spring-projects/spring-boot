@@ -30,9 +30,9 @@ import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 
-import org.springframework.boot.cli.Log;
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.OptionHelp;
+import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.util.Log;
 
 /**
  * JLine {@link Completer} for Spring Boot {@link Command}s.

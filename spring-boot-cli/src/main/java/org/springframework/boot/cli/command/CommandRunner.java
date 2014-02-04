@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli;
+package org.springframework.boot.cli.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,9 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.core.HelpCommand;
-import org.springframework.boot.cli.command.core.HintCommand;
+import org.springframework.boot.cli.util.Log;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -62,20 +60,6 @@ public class CommandRunner implements Iterable<Command> {
 	 */
 	public String getName() {
 		return this.name;
-	}
-
-	/**
-	 * Add 'help' support.
-	 */
-	public void addHelpCommand() {
-		this.commands.add(new HelpCommand(this));
-	}
-
-	/**
-	 * Add 'hint' support for command line completion.
-	 */
-	public void addHintCommand() {
-		this.commands.add(new HintCommand(this));
 	}
 
 	/**

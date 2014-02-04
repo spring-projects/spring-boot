@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.OptionHelp;
+import org.springframework.boot.cli.command.options.OptionHelp;
 import org.springframework.boot.cli.util.JavaExecutable;
 
 /**

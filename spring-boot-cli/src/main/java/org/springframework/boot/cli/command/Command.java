@@ -18,6 +18,8 @@ package org.springframework.boot.cli.command;
 
 import java.util.Collection;
 
+import org.springframework.boot.cli.command.options.OptionHelp;
+
 /**
  * A single command that can be run from the CLI.
  * 

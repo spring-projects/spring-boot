@@ -42,13 +42,13 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.CompilerOptionHandler;
 import org.springframework.boot.cli.command.OptionParsingCommand;
-import org.springframework.boot.cli.command.SourceOptions;
 import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
+import org.springframework.boot.cli.command.options.CompilerOptionHandler;
+import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
+import org.springframework.boot.cli.command.options.SourceOptions;
 import org.springframework.boot.cli.compiler.GroovyCompiler;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
-import org.springframework.boot.cli.compiler.GroovyCompilerConfigurationAdapter;
 import org.springframework.boot.cli.compiler.RepositoryConfigurationFactory;
 import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
@@ -137,7 +137,7 @@ public class JarCommand extends OptionParsingCommand {
 		private GroovyCompiler createCompiler(OptionSet options) {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
-			GroovyCompilerConfiguration configuration = new GroovyCompilerConfigurationAdapter(
+			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(
 					options, this, repositoryConfiguration);
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
 			groovyCompiler.getAstTransformations().add(0, new GrabAnnotationTransform());

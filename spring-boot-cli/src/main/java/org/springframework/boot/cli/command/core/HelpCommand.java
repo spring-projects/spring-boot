@@ -22,13 +22,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.boot.cli.CommandRunner;
-import org.springframework.boot.cli.Log;
-import org.springframework.boot.cli.NoHelpCommandArgumentsException;
-import org.springframework.boot.cli.NoSuchCommandException;
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
-import org.springframework.boot.cli.command.OptionHelp;
+import org.springframework.boot.cli.command.CommandRunner;
+import org.springframework.boot.cli.command.NoHelpCommandArgumentsException;
+import org.springframework.boot.cli.command.NoSuchCommandException;
+import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.util.Log;
 
 /**
  * Internal {@link Command} used for 'help' requests.
