@@ -42,12 +42,11 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.ASTTransformationVisitor;
+import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
+import org.springframework.boot.cli.compiler.dependencies.ManagedDependenciesArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngine;
 import org.springframework.boot.cli.compiler.grape.AetherGrapeEngineFactory;
 import org.springframework.boot.cli.compiler.grape.GrapeEngineInstaller;
-import org.springframework.boot.cli.compiler.transformation.DependencyAutoConfigurationTransformation;
-import org.springframework.boot.cli.compiler.transformation.GroovyBeansTransformation;
-import org.springframework.boot.cli.compiler.transformation.ResolveDependencyCoordinatesTransformation;
 import org.springframework.boot.cli.util.ResourceUtils;
 
 /**

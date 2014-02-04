@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler.transformation;
+package org.springframework.boot.cli.compiler;
 
 import groovy.lang.Grab;
 
@@ -35,10 +35,11 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
-import org.springframework.boot.cli.compiler.ArtifactCoordinatesResolver;
+import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 
 /**
  * {@link ASTTransformation} to resolve {@link Grab} artifact coordinates.
+ * 
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
