@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,21 +41,23 @@ import com.mongodb.MongoClientURI;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Mongo
  * Repositories.
- * 
+ *
  * @author Dave Syer
+ * @author Oliver Gierke
  * @see EnableMongoRepositories
  */
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoRepository.class })
 public class MongoRepositoriesAutoConfiguration {
 
-	@Import(MongoRepositoriesAutoConfigureRegistrar.class)
 	@Configuration
+	@Import(MongoRepositoriesAutoConfigureRegistrar.class)
 	@EnableConfigurationProperties(MongoProperties.class)
 	protected static class MongoRepositoriesConfiguration {
 
 		@Autowired
 		private MongoProperties config;
+
 		private Mongo mongo;
 
 		@PreDestroy
@@ -67,20 +69,20 @@ public class MongoRepositoriesAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(Mongo.class)
-		Mongo mongo() throws UnknownHostException {
+		public Mongo mongo() throws UnknownHostException {
 			this.mongo = this.config.mongo();
 			return this.mongo;
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(MongoTemplate.class)
-		MongoTemplate mongoTemplate(Mongo mongo) throws UnknownHostException {
+		public MongoTemplate mongoTemplate(Mongo mongo) throws UnknownHostException {
 			return new MongoTemplate(mongo, this.config.database());
 		}
 
 	}
 
-	@ConfigurationProperties(name = "spring.data.mongo")
+	@ConfigurationProperties(name = "spring.data.mongodb")
 	public static class MongoProperties {
 
 		private String host;

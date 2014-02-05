@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package org.springframework.boot.autoconfigure.data;
 
 import java.lang.annotation.Annotation;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.mongodb.repository.config.MongoRepositoryConfigurationExtension;
+import org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
@@ -29,6 +31,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * 
  * @author Dave Syer
  */
+@ConditionalOnMissingBean(MongoRepositoryFactoryBean.class)
 class MongoRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 

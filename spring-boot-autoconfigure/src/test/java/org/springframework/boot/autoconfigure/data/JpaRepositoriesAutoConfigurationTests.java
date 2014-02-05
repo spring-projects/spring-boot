@@ -36,6 +36,7 @@ import static org.junit.Assert.assertNotNull;
  * Tests for {@link JpaRepositoriesAutoConfiguration}.
  * 
  * @author Dave Syer
+ * @author Oliver Gierke
  */
 public class JpaRepositoriesAutoConfigurationTests {
 
@@ -65,7 +66,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context
-				.getBean(org.springframework.boot.autoconfigure.data.alt.CityRepository.class));
+				.getBean(org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class));
 		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
 		assertNotNull(this.context.getBean(EntityManagerFactory.class));
 	}
@@ -77,7 +78,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.CityRepository.class)
+	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class)
 	@TestAutoConfigurationPackage(City.class)
 	protected static class CustomConfiguration {
 
