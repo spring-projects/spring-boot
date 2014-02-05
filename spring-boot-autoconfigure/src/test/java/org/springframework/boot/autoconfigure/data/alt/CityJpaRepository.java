@@ -19,6 +19,6 @@ package org.springframework.boot.autoconfigure.data.alt;
 import org.springframework.boot.autoconfigure.data.jpa.City;
 import org.springframework.data.repository.Repository;
 
-public interface CityRepository extends Repository<City, Long> {
+public interface CityJpaRepository extends Repository<City, Long> {
 
 }
