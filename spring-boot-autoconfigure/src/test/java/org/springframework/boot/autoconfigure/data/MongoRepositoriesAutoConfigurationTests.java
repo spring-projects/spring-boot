@@ -19,19 +19,25 @@ package org.springframework.boot.autoconfigure.data;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.data.alt.MongoDbCityRepository;
 import org.springframework.boot.autoconfigure.data.mongo.City;
 import org.springframework.boot.autoconfigure.data.mongo.CityRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
  * 
  * @author Dave Syer
+ * @author Oliver Gierke
  */
 public class MongoRepositoriesAutoConfigurationTests {
 
@@ -45,7 +51,9 @@ public class MongoRepositoriesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
-		assertNotNull(this.context.getBean(Mongo.class));
+		
+		Mongo mongo = this.context.getBean(Mongo.class);
+		assertThat(mongo, is(instanceOf(MongoClient.class)));
 	}
 
 	@Test
@@ -55,7 +63,20 @@ public class MongoRepositoriesAutoConfigurationTests {
 				MongoRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(Mongo.class));
+		
+		Mongo mongo = this.context.getBean(Mongo.class);
+		assertThat(mongo, is(instanceOf(MongoClient.class)));
+	}
+	
+	@Test
+	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+		
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomizedConfiguration.class,
+				MongoRepositoriesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(MongoDbCityRepository.class));
 	}
 
 	@Configuration
@@ -70,4 +91,10 @@ public class MongoRepositoriesAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	@TestAutoConfigurationPackage(MongoRepositoriesAutoConfigurationTests.class)
+	@EnableMongoRepositories(basePackageClasses = MongoDbCityRepository.class)
+	protected static class CustomizedConfiguration {
+		
+	}
 }
