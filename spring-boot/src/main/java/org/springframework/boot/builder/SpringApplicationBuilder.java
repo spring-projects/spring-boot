@@ -31,7 +31,6 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.ProfileDetector;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.ParentContextApplicationContextInitializer;
-import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -80,8 +79,6 @@ public class SpringApplicationBuilder {
 
 	private Set<String> additionalProfiles = new LinkedHashSet<String>();
 
-	private Set<ApplicationContextInitializer<?>> initializers = new LinkedHashSet<ApplicationContextInitializer<?>>();
-
 	public SpringApplicationBuilder(Object... sources) {
 		this.application = new SpringApplication(sources);
 	}
@@ -114,7 +111,7 @@ public class SpringApplicationBuilder {
 		if (this.parent != null) {
 			// If there is a parent initialize it and make sure it is added to the current
 			// context
-			addInitializers(true, new ParentContextApplicationContextInitializer(
+			initializers(new ParentContextApplicationContextInitializer(
 					this.parent.run(args)));
 		}
 
@@ -203,7 +200,7 @@ public class SpringApplicationBuilder {
 		this.parent = new SpringApplicationBuilder();
 		this.parent.context = parent;
 		this.parent.running.set(true);
-		addInitializers(true, new ParentContextApplicationContextInitializer(parent));
+		initializers(new ParentContextApplicationContextInitializer(parent));
 		return this;
 	}
 
@@ -454,14 +451,7 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder initializers(
 			ApplicationContextInitializer<?>... initializers) {
-		for (ApplicationContextInitializer<?> initializer : initializers) {
-			boolean prepend = false;
-			if (initializer instanceof ParentContextApplicationContextInitializer
-					|| initializer instanceof ServletContextApplicationContextInitializer) {
-				prepend = true;
-			}
-			addInitializers(prepend, initializer);
-		}
+		this.application.addInitializers(initializers);
 		return this;
 	}
 
@@ -476,25 +466,6 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder listeners(ApplicationListener<?>... listeners) {
 		this.application.addListeners(listeners);
 		return this;
-	}
-
-	/**
-	 * @param initializers the initializers to add
-	 */
-	private void addInitializers(boolean prepend,
-			ApplicationContextInitializer<?>... initializers) {
-		Set<ApplicationContextInitializer<?>> target = new LinkedHashSet<ApplicationContextInitializer<?>>();
-		if (prepend) {
-			target.addAll(Arrays.asList(initializers));
-			target.addAll(this.initializers);
-		}
-		else {
-			target.addAll(this.initializers);
-			target.addAll(Arrays.asList(initializers));
-		}
-		this.initializers = target;
-		this.application.addInitializers(target
-				.toArray(new ApplicationContextInitializer[0]));
 	}
 
 }

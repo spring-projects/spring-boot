@@ -826,12 +826,12 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns read-only set of the {@link ApplicationContextInitializer}s that will be
-	 * applied to the Spring {@link ApplicationContext}.
+	 * Returns read-only ordered Set of the {@link ApplicationContextInitializer}s that
+	 * will be applied to the Spring {@link ApplicationContext}.
 	 * @return the initializers
 	 */
 	public Set<ApplicationContextInitializer<?>> getInitializers() {
-		return asUnmodifiableSortedSet(this.initializers);
+		return asUnmodifiableOrderedSet(this.initializers);
 	}
 
 	/**
@@ -854,12 +854,13 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Returns readonly set of the {@link ApplicationListener}s that will be applied to
-	 * the SpringApplication and registered with the {@link ApplicationContext}.
+	 * Returns read-only ordered Set of the {@link ApplicationListener}s that will be
+	 * applied to the SpringApplication and registered with the {@link ApplicationContext}
+	 * .
 	 * @return the listeners
 	 */
 	public Set<ApplicationListener<?>> getListeners() {
-		return asUnmodifiableSortedSet(this.listeners);
+		return asUnmodifiableOrderedSet(this.listeners);
 	}
 
 	/**
@@ -957,7 +958,7 @@ public class SpringApplication {
 		}
 	}
 
-	private static <E> Set<E> asUnmodifiableSortedSet(Collection<E> elemements) {
+	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elemements) {
 		List<E> list = new ArrayList<E>();
 		list.addAll(elemements);
 		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
