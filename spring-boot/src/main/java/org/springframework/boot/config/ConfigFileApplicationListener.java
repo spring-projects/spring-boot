@@ -84,12 +84,14 @@ public class ConfigFileApplicationListener implements
 
 	private static final String LOCATION_VARIABLE = "${spring.config.location}";
 
+	public static final int DEFAULT_CONFIG_LISTENER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+
 	private String[] searchLocations = new String[] { "classpath:/", "file:./",
 			"classpath:/config/", "file:./config/" };
 
 	private String names = "${spring.config.name:application}";
 
-	private int order = Integer.MIN_VALUE + 10;
+	private int order = DEFAULT_CONFIG_LISTENER_ORDER;
 
 	private final ConversionService conversionService = new DefaultConversionService();
 

@@ -25,6 +25,7 @@ import org.springframework.boot.event.ApplicationFailedEvent;
 import org.springframework.boot.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.core.Ordered;
 
 /**
  * A {@link SmartApplicationListener} that reacts to {@link ApplicationStartedEvent start
@@ -37,7 +38,7 @@ import org.springframework.context.event.SmartApplicationListener;
 public final class ClasspathLoggingApplicationListener implements
 		SmartApplicationListener {
 
-	private static final int ORDER = Integer.MIN_VALUE + 12;
+	private static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 12;
 
 	private final Log logger = LogFactory.getLog(getClass());
 

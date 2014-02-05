@@ -31,6 +31,7 @@ import org.springframework.boot.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.SmartApplicationListener;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
@@ -97,7 +98,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-	private int order = Integer.MIN_VALUE + 11;
+	private int order = Ordered.HIGHEST_PRECEDENCE + 11;
 
 	private boolean parseArgs = true;
 

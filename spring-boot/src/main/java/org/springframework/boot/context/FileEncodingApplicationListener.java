@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.Ordered;
 
 /**
  * An {@link ApplicationListener}that halts application startup if the system file
@@ -42,9 +43,14 @@ import org.springframework.context.ApplicationListener;
  * @author Dave Syer
  */
 public class FileEncodingApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
 	private static Log logger = LogFactory.getLog(FileEncodingApplicationListener.class);
+
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE;
+	}
 
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
