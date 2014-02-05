@@ -4,17 +4,17 @@ org.springframework.boot.event.EventPublishingRunParticipant
 
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\
-org.springframework.boot.context.initializer.ContextIdApplicationContextInitializer,\
-org.springframework.boot.context.initializer.EnvironmentDelegateApplicationContextInitializer
+org.springframework.boot.context.ContextIdApplicationContextInitializer,\
+org.springframework.boot.context.env.EnvironmentDelegateApplicationContextInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
-org.springframework.boot.context.listener.ClasspathLoggingApplicationListener,\
-org.springframework.boot.context.listener.ConfigFileApplicationListener,\
-org.springframework.boot.context.listener.EnvironmentDelegateApplicationListener,\
-org.springframework.boot.context.listener.FileEncodingApplicationListener,\
-org.springframework.boot.context.listener.LoggingApplicationListener,\
-org.springframework.boot.context.listener.VcapApplicationListener,\
-org.springframework.boot.context.listener.ParentContextCloserApplicationListener,\
-org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
+org.springframework.boot.cloudfoundry.VcapApplicationListener,\
+org.springframework.boot.config.ConfigFileApplicationListener,\
+org.springframework.boot.context.FileEncodingApplicationListener,\
+org.springframework.boot.context.ParentContextCloserApplicationListener,\
+org.springframework.boot.context.env.EnvironmentDelegateApplicationListener,\
+org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener,\
+org.springframework.boot.logging.ClasspathLoggingApplicationListener,\
+org.springframework.boot.logging.LoggingApplicationListener
 
