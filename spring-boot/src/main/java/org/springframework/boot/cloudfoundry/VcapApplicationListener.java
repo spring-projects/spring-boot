@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.config.ConfigFileApplicationListener;
 import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -96,9 +97,8 @@ public class VcapApplicationListener implements
 
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
-	// Intentionally before ConfigFileApplicationContextInitializer so values there can
-	// use these ones
-	private int order = Integer.MIN_VALUE + 9;
+	// Before ConfigFileApplicationListener so values there can use these ones
+	private int order = ConfigFileApplicationListener.DEFAULT_CONFIG_LISTENER_ORDER - 1;;
 
 	private final JsonParser parser = JsonParserFactory.getJsonParser();
 
