@@ -22,8 +22,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.boot.config.YamlProcessor.DocumentMatcher;
-import org.springframework.boot.config.YamlProcessor.MatchStatus;
+import org.springframework.boot.yaml.DefaultProfileDocumentMatcher;
+import org.springframework.boot.yaml.SpringProfileDocumentMatcher;
+import org.springframework.boot.yaml.YamlPropertiesFactoryBean;
+import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
+import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;

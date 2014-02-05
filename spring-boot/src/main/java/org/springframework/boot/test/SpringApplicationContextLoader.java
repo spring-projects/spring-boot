@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.initializer.ServletContextApplicationContextInitializer;
+import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.mock.web.MockServletContext;

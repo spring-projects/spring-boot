@@ -19,9 +19,9 @@ package org.springframework.boot.actuate.endpoint;
 import java.util.List;
 
 import org.springframework.beans.BeansException;
-import org.springframework.boot.config.JsonParser;
-import org.springframework.boot.config.JsonParserFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.LiveBeansView;
