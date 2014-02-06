@@ -19,7 +19,6 @@ package org.springframework.boot.context.embedded;
 /**
  * Simple interface that represents a fully configured embedded servlet container (for
  * example Tomcat or Jetty). Allows the container to be {@link #stop() stopped}.
- * 
  * <p>
  * Instances of this class are usually obtained via a
  * {@link EmbeddedServletContainerFactory}.

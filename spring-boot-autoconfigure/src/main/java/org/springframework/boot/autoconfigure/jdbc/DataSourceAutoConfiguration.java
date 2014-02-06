@@ -142,18 +142,21 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 	@ConditionalOnMissingBean(DataSource.class)
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedConfiguration {
+
 	}
 
 	@Conditional(DataSourceAutoConfiguration.TomcatDatabaseCondition.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@Import(TomcatDataSourceConfiguration.class)
 	protected static class TomcatConfiguration {
+
 	}
 
 	@Conditional(DataSourceAutoConfiguration.BasicDatabaseCondition.class)
 	@ConditionalOnMissingBean(DataSource.class)
 	@Import(CommonsDataSourceConfiguration.class)
 	protected static class DbcpConfiguration {
+
 	}
 
 	@Configuration
@@ -244,6 +247,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 			}
 			return url;
 		}
+
 	}
 
 	/**
@@ -267,6 +271,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 			}
 			return super.getMatchOutcome(context, metadata);
 		}
+
 	}
 
 	/**
@@ -304,6 +309,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 			}
 			return ConditionOutcome.match("embedded database " + type + " detected");
 		}
+
 	}
 
 	/**
@@ -334,5 +340,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 			return ConditionOutcome.noMatch("no existing bean configured database");
 		}
+
 	}
+
 }

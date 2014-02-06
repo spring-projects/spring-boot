@@ -124,4 +124,5 @@ class OnClassCondition extends SpringBootCondition {
 		public abstract boolean matches(String className, ConditionContext context);
 
 	};
+
 }

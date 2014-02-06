@@ -38,7 +38,6 @@ public final class RelaxedNames implements Iterable<String> {
 
 	/**
 	 * Create a new {@link RelaxedNames} instance.
-	 * 
 	 * @param name the source name. For the maximum number of variations specify the name
 	 * using dashed notation (e.g. {@literal my-property-name}
 	 */
@@ -68,18 +67,21 @@ public final class RelaxedNames implements Iterable<String> {
 	}
 
 	static enum Variation {
+
 		NONE {
 			@Override
 			public String apply(String value) {
 				return value;
 			}
 		},
+
 		LOWERCASE {
 			@Override
 			public String apply(String value) {
 				return value.toLowerCase();
 			}
 		},
+
 		UPPERCASE {
 			@Override
 			public String apply(String value) {
@@ -91,30 +93,35 @@ public final class RelaxedNames implements Iterable<String> {
 	}
 
 	static enum Manipulation {
+
 		NONE {
 			@Override
 			public String apply(String value) {
 				return value;
 			}
 		},
+
 		HYPHEN_TO_UNDERSCORE {
 			@Override
 			public String apply(String value) {
 				return value.replace("-", "_");
 			}
 		},
+
 		UNDERSCORE_TO_PERIOD {
 			@Override
 			public String apply(String value) {
 				return value.replace("_", ".");
 			}
 		},
+
 		PERIOD_TO_UNDERSCORE {
 			@Override
 			public String apply(String value) {
 				return value.replace(".", "_");
 			}
 		},
+
 		CAMELCASE_TO_UNDERSCORE {
 			@Override
 			public String apply(String value) {
@@ -131,6 +138,7 @@ public final class RelaxedNames implements Iterable<String> {
 				return builder.toString();
 			}
 		},
+
 		SEPARATED_TO_CAMELCASE {
 			@Override
 			public String apply(String value) {

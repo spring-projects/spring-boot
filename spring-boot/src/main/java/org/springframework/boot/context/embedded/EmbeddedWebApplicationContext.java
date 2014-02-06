@@ -56,14 +56,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 /**
  * A {@link WebApplicationContext} that can be used to bootstrap itself from a contained
  * {@link EmbeddedServletContainerFactory} bean.
- * 
  * <p>
  * This context will create, initialize and run an {@link EmbeddedServletContainer} by
  * searching for a single {@link EmbeddedServletContainerFactory} bean within the
  * {@link ApplicationContext} itself. The {@link EmbeddedServletContainerFactory} is free
  * to use standard Spring concepts (such as dependency injection, lifecycle callbacks and
  * property placeholder variables).
- * 
  * <p>
  * In addition, any {@link Servlet} or {@link Filter} beans defined in the context will be
  * automatically registered with the embedded Servlet container. In the case of a single
@@ -71,14 +69,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * the lowercase bean name will be used as a mapping prefix. Any Servlet named
  * 'dispatcherServlet' will always be mapped to '/'. Filter beans will be mapped to all
  * URLs ('/*').
- * 
  * <p>
  * For more advanced configuration, the context can instead define beans that implement
  * the {@link ServletContextInitializer} interface (most often
  * {@link ServletRegistrationBean}s and/or {@link FilterRegistrationBean}s). To prevent
  * double registration, the use of {@link ServletContextInitializer} beans will disable
  * automatic Servlet and Filter bean registration.
- * 
  * <p>
  * Although this context can be used directly, most developers should consider using the
  * {@link AnnotationConfigEmbeddedWebApplicationContext} or

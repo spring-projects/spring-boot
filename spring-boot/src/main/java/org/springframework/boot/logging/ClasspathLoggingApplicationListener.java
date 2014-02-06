@@ -79,8 +79,7 @@ public final class ClasspathLoggingApplicationListener implements
 		if (classLoader instanceof URLClassLoader) {
 			return Arrays.toString(((URLClassLoader) classLoader).getURLs());
 		}
-		else {
-			return "unknown";
-		}
+		return "unknown";
 	}
+
 }

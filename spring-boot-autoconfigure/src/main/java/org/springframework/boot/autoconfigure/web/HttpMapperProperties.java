@@ -34,4 +34,5 @@ public class HttpMapperProperties {
 	public boolean isJsonPrettyPrint() {
 		return this.jsonPrettyPrint;
 	}
+
 }

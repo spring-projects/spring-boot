@@ -30,7 +30,7 @@ public interface PropertySourceLoader {
 	 * Returns {@code true} if the {@link Resource} is supported.
 	 * @return if the resource is supported
 	 */
-	public boolean supports(Resource resource);
+	boolean supports(Resource resource);
 
 	/**
 	 * Load the resource into a property source.

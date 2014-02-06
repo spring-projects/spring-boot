@@ -122,4 +122,5 @@ public class EnvironmentDelegateApplicationContextInitializer implements
 	public int getOrder() {
 		return this.order;
 	}
+
 }

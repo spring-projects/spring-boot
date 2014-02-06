@@ -74,4 +74,5 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		Logger logger = Logger.getLogger(loggerName == null ? "" : loggerName);
 		logger.setLevel(LEVELS.get(level));
 	}
+
 }

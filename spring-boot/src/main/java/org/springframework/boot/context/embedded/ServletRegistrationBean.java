@@ -34,7 +34,6 @@ import org.springframework.util.Assert;
  * container. Similar to the {@link ServletContext#addServlet(String, Servlet)
  * registration} features provided by {@link ServletContext} but with a Spring Bean
  * friendly design.
- * 
  * <p>
  * The {@link #setServlet(Servlet) servlet} must be specified before calling
  * {@link #onStartup}. URL mapping can be configured used {@link #setUrlMappings} or
@@ -173,4 +172,5 @@ public class ServletRegistrationBean extends RegistrationBean {
 			registration.setMultipartConfig(this.multipartConfig);
 		}
 	}
+
 }

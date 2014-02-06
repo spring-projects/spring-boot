@@ -42,7 +42,7 @@ import org.springframework.jms.core.JmsTemplate;
 public class JmsTemplateAutoConfiguration {
 
 	@Autowired
-	private JmsTemplateProperties config;
+	private JmsTemplateProperties properties;
 
 	@Autowired
 	private ConnectionFactory connectionFactory;
@@ -51,7 +51,7 @@ public class JmsTemplateAutoConfiguration {
 	@ConditionalOnMissingBean(JmsTemplate.class)
 	public JmsTemplate jmsTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
-		jmsTemplate.setPubSubDomain(this.config.isPubSubDomain());
+		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
 		return jmsTemplate;
 	}
 

@@ -30,7 +30,6 @@ import org.springframework.util.Assert;
  * A value object representing an audit event: at a particular time, a particular user or
  * agent carried out an action of a particular type. This object records the details of
  * such an event.
- * 
  * <p>
  * Users can inject a {@link AuditEventRepository} to publish their own events or
  * alternatively use Springs {@link AuthenticationEventPublisher} (usually obtained by

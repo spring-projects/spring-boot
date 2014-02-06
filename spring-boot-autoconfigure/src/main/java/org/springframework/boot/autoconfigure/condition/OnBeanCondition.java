@@ -292,5 +292,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			string.append(")");
 			return string.toString();
 		}
+
 	}
+
 }

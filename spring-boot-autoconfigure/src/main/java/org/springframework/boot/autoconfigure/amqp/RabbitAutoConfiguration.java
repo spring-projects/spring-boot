@@ -63,21 +63,22 @@ public class RabbitAutoConfiguration {
 	protected static class RabbitConnectionFactoryCreator {
 
 		@Bean
-		public ConnectionFactory rabbitConnectionFactory(
-				RabbitProperties config) {
-			CachingConnectionFactory connectionFactory = new CachingConnectionFactory(
+		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) {
+			CachingConnectionFactory factory = new CachingConnectionFactory(
 					config.getHost());
-			connectionFactory.setPort(config.getPort());
+			factory.setPort(config.getPort());
 			if (config.getUsername() != null) {
-				connectionFactory.setUsername(config.getUsername());
+				factory.setUsername(config.getUsername());
 			}
 			if (config.getPassword() != null) {
-				connectionFactory.setPassword(config.getPassword());
+				factory.setPassword(config.getPassword());
 			}
 			if (config.getVirtualHost() != null) {
-				connectionFactory.setVirtualHost(config.getVirtualHost());
+				factory.setVirtualHost(config.getVirtualHost());
 			}
-			return connectionFactory;
+			return factory;
 		}
+
 	}
+
 }

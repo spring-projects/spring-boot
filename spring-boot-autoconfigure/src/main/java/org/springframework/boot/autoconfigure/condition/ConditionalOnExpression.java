@@ -39,4 +39,5 @@ public @interface ConditionalOnExpression {
 	 * condition passes or {@code false} if it fails.
 	 */
 	String value() default "true";
+
 }

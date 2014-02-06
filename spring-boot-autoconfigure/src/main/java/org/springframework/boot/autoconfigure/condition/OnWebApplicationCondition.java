@@ -76,4 +76,5 @@ class OnWebApplicationCondition extends SpringBootCondition {
 
 		return ConditionOutcome.noMatch("not a web application");
 	}
+
 }

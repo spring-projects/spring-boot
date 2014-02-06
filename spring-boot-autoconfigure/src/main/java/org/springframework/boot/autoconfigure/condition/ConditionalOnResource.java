@@ -41,4 +41,5 @@ public @interface ConditionalOnResource {
 	 * @return the resource paths that must be present.
 	 */
 	public String[] resources() default {};
+
 }

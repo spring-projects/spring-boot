@@ -57,8 +57,8 @@ public class FileEncodingApplicationListener implements
 		RelaxedPropertyResolver resolver = new RelaxedPropertyResolver(
 				event.getEnvironment(), "spring.");
 		if (resolver.containsProperty("mandatoryFileEncoding")) {
-			final String encoding = System.getProperty("file.encoding");
-			final String desired = resolver.getProperty("mandatoryFileEncoding");
+			String encoding = System.getProperty("file.encoding");
+			String desired = resolver.getProperty("mandatoryFileEncoding");
 			if (encoding != null && !desired.equalsIgnoreCase(encoding)) {
 				logger.error("System property 'file.encoding' is currently '" + encoding
 						+ "'. It should be '" + desired
@@ -70,9 +70,8 @@ public class FileEncodingApplicationListener implements
 						+ "'. You could use a locale setting that matches encoding='"
 						+ desired + "'.");
 				throw new IllegalStateException(
-						"The Java Virtual Machine has not "
-								+ " been configured to use the desired default character encoding ("
-								+ desired + ").");
+						"The Java Virtual Machine has not been configured to use the "
+								+ "desired default character encoding (" + desired + ").");
 			}
 		}
 	}

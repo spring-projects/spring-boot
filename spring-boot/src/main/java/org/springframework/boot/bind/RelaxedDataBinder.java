@@ -43,25 +43,18 @@ public class RelaxedDataBinder extends DataBinder {
 
 	private String namePrefix;
 
-	private boolean ignoreNestedProperties = false;
+	private boolean ignoreNestedProperties;
 
 	/**
+	 * Create a new {@link RelaxedDataBinder} instance.
 	 * @param target the target into which properties are bound
 	 */
 	public RelaxedDataBinder(Object target) {
 		super(wrapTarget(target));
 	}
 
-	private static Object wrapTarget(Object target) {
-		if (target instanceof Map) {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> map = (Map<String, Object>) target;
-			target = new MapHolder(map);
-		}
-		return target;
-	}
-
 	/**
+	 * Create a new {@link RelaxedDataBinder} instance.
 	 * @param target the target into which properties are bound
 	 * @param namePrefix An optional prefix to be used when reading properties
 	 */
@@ -131,13 +124,13 @@ public class RelaxedDataBinder extends DataBinder {
 			return propertyValues;
 		}
 		MutablePropertyValues rtn = new MutablePropertyValues();
-		for (PropertyValue pv : propertyValues.getPropertyValues()) {
-			String name = pv.getName();
+		for (PropertyValue value : propertyValues.getPropertyValues()) {
+			String name = value.getName();
 			for (String candidate : new RelaxedNames(this.namePrefix)) {
 				if (name.startsWith(candidate)) {
 					name = name.substring(candidate.length());
 					if (!(this.ignoreNestedProperties && name.contains("."))) {
-						rtn.add(name, pv.getValue());
+						rtn.add(name, value.getValue());
 					}
 				}
 			}
@@ -211,7 +204,6 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		return initializePath(wrapper, path, index);
-
 	}
 
 	private void extendCollectionIfNecessary(BeanWrapper wrapper, BeanPath path, int index) {
@@ -262,7 +254,20 @@ public class RelaxedDataBinder extends DataBinder {
 		return name;
 	}
 
+	private static Object wrapTarget(Object target) {
+		if (target instanceof Map) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) target;
+			target = new MapHolder(map);
+		}
+		return target;
+	}
+
+	/**
+	 * Holder to allow Map targets to be bound.
+	 */
 	static class MapHolder {
+
 		private Map<String, Object> map;
 
 		public MapHolder(Map<String, Object> map) {
@@ -276,6 +281,7 @@ public class RelaxedDataBinder extends DataBinder {
 		public Map<String, Object> getMap() {
 			return this.map;
 		}
+
 	}
 
 	private static class BeanPath {
@@ -284,6 +290,29 @@ public class RelaxedDataBinder extends DataBinder {
 
 		public BeanPath(String path) {
 			this.nodes = splitPath(path);
+		}
+
+		private List<PathNode> splitPath(String path) {
+			List<PathNode> nodes = new ArrayList<PathNode>();
+			for (String name : StringUtils.delimitedListToStringArray(path, ".")) {
+				for (String sub : StringUtils.delimitedListToStringArray(name, "[")) {
+					if (StringUtils.hasText(sub)) {
+						if (sub.endsWith("]")) {
+							sub = sub.substring(0, sub.length() - 1);
+							if (sub.matches("[0-9]+")) {
+								nodes.add(new ArrayIndexNode(sub));
+							}
+							else {
+								nodes.add(new MapIndexNode(sub));
+							}
+						}
+						else {
+							nodes.add(new PropertyNode(sub));
+						}
+					}
+				}
+			}
+			return nodes;
 		}
 
 		public void collapseKeys(int index) {
@@ -399,29 +428,6 @@ public class RelaxedDataBinder extends DataBinder {
 			public String toString() {
 				return "." + this.name;
 			}
-		}
-
-		private List<PathNode> splitPath(String path) {
-			List<PathNode> nodes = new ArrayList<PathNode>();
-			for (String name : StringUtils.delimitedListToStringArray(path, ".")) {
-				for (String sub : StringUtils.delimitedListToStringArray(name, "[")) {
-					if (StringUtils.hasText(sub)) {
-						if (sub.endsWith("]")) {
-							sub = sub.substring(0, sub.length() - 1);
-							if (sub.matches("[0-9]+")) {
-								nodes.add(new ArrayIndexNode(sub));
-							}
-							else {
-								nodes.add(new MapIndexNode(sub));
-							}
-						}
-						else {
-							nodes.add(new PropertyNode(sub));
-						}
-					}
-				}
-			}
-			return nodes;
 		}
 
 	}
