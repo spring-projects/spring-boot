@@ -1,11 +1,11 @@
 # Spring Boot - Loader Tools
 The Spring Boot Loader Tools module provides support utilities to help when creating
-[Spring Boot Loader](../spring-boot-loader) compatible archives. This module is
+[Spring Boot Loader](../spring-boot-loader/README.md) compatible archives. This module is
 used by the various build system plugins that we provide.
 
 > **Note:** The quickest way to build a compatible archive is to use the
-> [spring-boot-maven-plugin](../spring-boot-maven-plugin) or
-> [spring-boot-gradle-plugin](../spring-boot-gradle-plugin).
+> [spring-boot-maven-plugin](../spring-boot-maven-plugin/README.md) or
+> [spring-boot-gradle-plugin](../spring-boot-gradle-plugin/README.md).
 
 ## Repackaging archives
 To repackage an existing archive so that it becomes a self-contained executable archive
@@ -47,6 +47,6 @@ repackager.repackage(new Libraries() {
 
 ## Further Reading
 For more information on how Spring Boot Loader archives work take a look at the
-[spring-boot-loader](../spring-boot-loader) module. If you want to see how we use this
-library the [Maven](../spring-boot-maven-plugin) and
-[Gradle](../spring-boot-gradle-plugin) plugins are good place to start.
+[spring-boot-loader](../spring-boot-loader/README.md) module. If you want to see how we use this
+library the [Maven](../spring-boot-maven-plugin/README.md) and
+[Gradle](../spring-boot-gradle-plugin/README.md) plugins are good place to start.
