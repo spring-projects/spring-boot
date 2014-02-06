@@ -42,7 +42,6 @@ import org.codehaus.groovy.control.io.ReaderSource;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.cli.compiler.ResolveDependencyCoordinatesTransformation;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 
 import static org.junit.Assert.assertEquals;

@@ -31,7 +31,8 @@ public class MetricCopyExporterTests {
 
 	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
 	private final InMemoryMetricRepository reader = new InMemoryMetricRepository();
-	private final MetricCopyExporter exporter = new MetricCopyExporter(this.reader, this.writer);
+	private final MetricCopyExporter exporter = new MetricCopyExporter(this.reader,
+			this.writer);
 
 	@Test
 	public void export() {

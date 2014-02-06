@@ -21,7 +21,6 @@ import java.util.Properties;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.yaml.YamlProcessor;
 import org.springframework.boot.yaml.YamlProcessor.MatchCallback;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;

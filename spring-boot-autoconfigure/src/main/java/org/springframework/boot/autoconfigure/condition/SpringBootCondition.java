@@ -76,8 +76,8 @@ public abstract class SpringBootCondition implements Condition {
 		return message;
 	}
 
-	private void recordEvaluation(ConditionContext context,
-			String classOrMethodName, ConditionOutcome outcome) {
+	private void recordEvaluation(ConditionContext context, String classOrMethodName,
+			ConditionOutcome outcome) {
 		if (context.getBeanFactory() != null) {
 			ConditionEvaluationReport.get(context.getBeanFactory())
 					.recordConditionEvaluation(classOrMethodName, this, outcome);

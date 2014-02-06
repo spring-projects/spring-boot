@@ -16,7 +16,6 @@
 
 package org.springframework.boot.cli.command;
 
-
 /**
  * Exception used to indicate that no arguemnts were specified.
  * 

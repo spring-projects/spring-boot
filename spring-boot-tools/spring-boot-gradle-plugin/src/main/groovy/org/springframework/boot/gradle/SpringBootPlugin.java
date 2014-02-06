@@ -29,7 +29,7 @@ import org.springframework.boot.gradle.task.RunApp;
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
- *
+ * 
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -59,7 +59,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 	private void applyRun(Project project) {
 		addRunAppTask(project);
 		// register BootRepackage so that we can use task foo(type: BootRepackage) {}
-		project.getExtensions().getExtraProperties().set("BootRepackage", Repackage.class);
+		project.getExtensions().getExtraProperties()
+				.set("BootRepackage", Repackage.class);
 	}
 
 	private void applyResolutionStrategy(Project project) {
@@ -80,14 +81,16 @@ public class SpringBootPlugin implements Plugin<Project> {
 				+ "archives so that they can be executed from the command "
 				+ "line using 'java -jar'");
 		packageTask.setGroup(BasePlugin.BUILD_GROUP);
-		packageTask.dependsOn(project.getConfigurations().getByName(
-				Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts().getBuildDependencies());
+		packageTask.dependsOn(project.getConfigurations()
+				.getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
+				.getBuildDependencies());
 		return packageTask;
 	}
 
 	private void addRunAppTask(Project project) {
 		RunApp runJarTask = project.getTasks().create(RUN_APP_TASK_NAME, RunApp.class);
-		runJarTask.setDescription("Run the project with support for auto-detecting main class and reloading static resources");
+		runJarTask.setDescription("Run the project with support for "
+				+ "auto-detecting main class and reloading static resources");
 		runJarTask.setGroup("Execution");
 		runJarTask.dependsOn("assemble");
 	}

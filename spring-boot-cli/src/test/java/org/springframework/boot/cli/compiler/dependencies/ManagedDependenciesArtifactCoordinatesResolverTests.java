@@ -18,7 +18,6 @@ package org.springframework.boot.cli.compiler.dependencies;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.cli.compiler.dependencies.ManagedDependenciesArtifactCoordinatesResolver;
 import org.springframework.boot.dependency.tools.Dependency;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 

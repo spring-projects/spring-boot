@@ -1,4 +1,3 @@
-
 package org.springframework.boot.gradle;
 
 import org.gradle.api.Action;
@@ -11,7 +10,7 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 /**
  * A resolution strategy to resolve missing version numbers using the
  * 'spring-boot-dependencies' POM.
- *
+ * 
  * @author Phillip Webb
  */
 public class SpringBootResolutionStrategy {

@@ -24,7 +24,6 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.yaml.YamlPropertiesFactoryBean;
 import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
 import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
 import org.springframework.boot.yaml.YamlProcessor.ResolutionMethod;

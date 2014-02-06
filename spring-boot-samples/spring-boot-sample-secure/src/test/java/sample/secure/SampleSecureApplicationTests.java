@@ -16,8 +16,6 @@
 
 package sample.secure;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +34,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import sample.secure.SampleSecureApplicationTests.TestConfiguration;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for demo application.
@@ -57,9 +57,10 @@ public class SampleSecureApplicationTests {
 
 	@Before
 	public void init() {
-		AuthenticationManager authenticationManager = context.getBean(AuthenticationManager.class);
-		authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-				"user", "password"));
+		AuthenticationManager authenticationManager = context
+				.getBean(AuthenticationManager.class);
+		authentication = authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
 	}
 
 	@After

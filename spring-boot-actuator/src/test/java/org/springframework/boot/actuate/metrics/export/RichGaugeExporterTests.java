@@ -31,7 +31,8 @@ public class RichGaugeExporterTests {
 
 	private final InMemoryRichGaugeRepository reader = new InMemoryRichGaugeRepository();
 	private final InMemoryMetricRepository writer = new InMemoryMetricRepository();
-	private final RichGaugeExporter exporter = new RichGaugeExporter(this.reader, this.writer);
+	private final RichGaugeExporter exporter = new RichGaugeExporter(this.reader,
+			this.writer);
 
 	@Test
 	public void prefixedMetricsCopied() {

@@ -31,14 +31,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.springframework.boot.cli.command.OptionParsingCommand;
-
 import joptsimple.BuiltinHelpFormatter;
 import joptsimple.HelpFormatter;
 import joptsimple.OptionDescriptor;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
+
+import org.springframework.boot.cli.command.OptionParsingCommand;
 
 /**
  * Delegate used by {@link OptionParsingCommand} to parse options and run the command.

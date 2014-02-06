@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.junit.Test;
-import org.springframework.boot.yaml.ArrayDocumentMatcher;
 import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
