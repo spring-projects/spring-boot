@@ -177,6 +177,8 @@ public class SpringApplication {
 
 	private boolean headless = true;
 
+	private boolean registerShutdownHook = true;
+
 	private List<ApplicationContextInitializer<?>> initializers;
 
 	private List<ApplicationListener<?>> listeners;
@@ -284,7 +286,9 @@ public class SpringApplication {
 
 			// Create, load, refresh and run the ApplicationContext
 			context = createApplicationContext();
-			context.registerShutdownHook();
+			if (this.registerShutdownHook) {
+				context.registerShutdownHook();
+			}
 			context.setEnvironment(environment);
 			postProcessApplicationContext(context);
 			applyInitializers(context);
@@ -667,6 +671,15 @@ public class SpringApplication {
 	 */
 	public void setHeadless(boolean headless) {
 		this.headless = headless;
+	}
+
+	/**
+	 * Sets if the created {@link ApplicationContext} should have a shutdown hook
+	 * registered. Defaults to {@code true} to ensure that JVM shutdowns are handled
+	 * gracefully.
+	 */
+	public void setRegisterShutdownHook(boolean registerShutdownHook) {
+		this.registerShutdownHook = registerShutdownHook;
 	}
 
 	/**
