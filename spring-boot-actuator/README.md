@@ -160,8 +160,9 @@ on a class and run it.
 Spring Boot likes you to externalize your configuration so you
 can work with the same application code in different environments.  To
 get started with this you create a file in the root of your classpath
-(`src/main/resources` if using Maven) - if you like YAML you can call
-it `application.yml`, e.g.:
+(`src/main/resources` if using Maven) - if you like YAML, you can include
+`org.yaml:snakeyaml` on your runtime class path, and call the file `application.yml`,
+e.g.:
 
     server:
       port: 9000
