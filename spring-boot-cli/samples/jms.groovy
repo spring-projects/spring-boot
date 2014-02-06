@@ -32,6 +32,7 @@ class JmsExample implements CommandLineRunner {
 		} as MessageCreator
 		log.info "Sending JMS message..."
 		jmsTemplate.send("spring-boot", messageCreator)
+		log.info "Send JMS message, waiting..."
 		latch.await()
 	}
 }
