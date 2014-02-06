@@ -41,12 +41,18 @@ public class Repackage extends DefaultTask {
 
 	private Object withJarTask;
 
+	private String mainClass;
+
 	public void setCustomConfiguration(String customConfiguration) {
 		this.customConfiguration = customConfiguration;
 	}
 
 	public void setWithJarTask(Object withJarTask) {
 		this.withJarTask = withJarTask;
+	}
+
+	public void setMainClass(String mainClass) {
+		this.mainClass = mainClass;
 	}
 
 	@TaskAction
@@ -60,7 +66,8 @@ public class Repackage extends DefaultTask {
 		}
 		if (this.customConfiguration != null) {
 			libraries.setCustomConfigurationName(this.customConfiguration);
-		} else if (extension.getCustomConfiguration() != null) {
+		}
+		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
 		project.getTasks().withType(Jar.class, new Action<Jar>() {
@@ -85,25 +92,29 @@ public class Repackage extends DefaultTask {
 								long startTime = System.currentTimeMillis();
 								try {
 									return super.findMainMethod(source);
-								} finally {
+								}
+								finally {
 									long duration = System.currentTimeMillis()
 											- startTime;
 									if (duration > FIND_WARNING_TIMEOUT) {
-										getLogger().warn(
-												"Searching for the main-class is taking some time, "
+										getLogger()
+												.warn("Searching for the main-class is taking some time, "
 														+ "consider using setting 'springBoot.mainClass'");
 									}
 								}
 							};
 						};
-						repackager.setMainClass(extension.getMainClass());
+						repackager
+								.setMainClass(Repackage.this.mainClass != null ? Repackage.this.mainClass
+										: extension.getMainClass());
 						if (extension.convertLayout() != null) {
 							repackager.setLayout(extension.convertLayout());
 						}
 						repackager.setBackupSource(extension.isBackupSource());
 						try {
 							repackager.repackage(libraries);
-						} catch (IOException ex) {
+						}
+						catch (IOException ex) {
 							throw new IllegalStateException(ex.getMessage(), ex);
 						}
 					}
