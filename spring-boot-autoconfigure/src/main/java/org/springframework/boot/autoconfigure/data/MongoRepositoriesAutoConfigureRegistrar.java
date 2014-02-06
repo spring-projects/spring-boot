@@ -18,11 +18,9 @@ package org.springframework.boot.autoconfigure.data;
 
 import java.lang.annotation.Annotation;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.mongodb.repository.config.MongoRepositoryConfigurationExtension;
-import org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
@@ -31,7 +29,6 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * 
  * @author Dave Syer
  */
-@ConditionalOnMissingBean(MongoRepositoryFactoryBean.class)
 class MongoRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
