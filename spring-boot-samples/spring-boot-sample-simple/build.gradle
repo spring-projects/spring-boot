@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '0.5.0.BUILD-SNAPSHOT'
+		springBootVersion = '1.0.0.BUILD-SNAPSHOT'
 	}
     repositories {
     	mavenLocal()
@@ -19,17 +19,18 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'spring-boot-sample-simple'
-    version =  '0.5.0'
+    version =  '1.0.0'
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "http://repo.springsource.org/libs-snapshot" }
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
-    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
 task wrapper(type: Wrapper) {
