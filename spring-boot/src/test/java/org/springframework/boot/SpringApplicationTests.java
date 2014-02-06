@@ -394,6 +394,17 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void registerShutdownHookOff() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setApplicationContextClass(SpyApplicationContext.class);
+		application.setRegisterShutdownHook(false);
+		this.context = application.run();
+		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
+		verify(applicationContext.getApplicationContext(), never())
+				.registerShutdownHook();
+	}
+
+	@Test
 	public void headless() throws Exception {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);

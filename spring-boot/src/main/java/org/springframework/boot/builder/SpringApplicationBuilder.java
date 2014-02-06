@@ -79,6 +79,8 @@ public class SpringApplicationBuilder {
 
 	private Set<String> additionalProfiles = new LinkedHashSet<String>();
 
+	private boolean registerShutdownHookApplied;
+
 	public SpringApplicationBuilder(Object... sources) {
 		this.application = new SpringApplication(sources);
 	}
@@ -109,8 +111,11 @@ public class SpringApplicationBuilder {
 	public ConfigurableApplicationContext run(String... args) {
 
 		if (this.parent != null) {
-			// If there is a parent initialize it and make sure it is added to the current
-			// context
+			// If there is a parent don't register a shutdown hook
+			if (!this.registerShutdownHookApplied) {
+				this.application.setRegisterShutdownHook(false);
+			}
+			// initialize it and make sure it is added to the current context
 			initializers(new ParentContextApplicationContextInitializer(
 					this.parent.run(args)));
 		}
@@ -201,6 +206,7 @@ public class SpringApplicationBuilder {
 		this.parent.context = parent;
 		this.parent.running.set(true);
 		initializers(new ParentContextApplicationContextInitializer(parent));
+
 		return this;
 	}
 
@@ -297,6 +303,16 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder headless(boolean headless) {
 		this.application.setHeadless(headless);
+		return this;
+	}
+
+	/**
+	 * Sets if the created {@link ApplicationContext} should have a shutdown hook
+	 * registered.
+	 */
+	public SpringApplicationBuilder registerShutdownHook(boolean registerShutdownHook) {
+		this.registerShutdownHookApplied = true;
+		this.application.setRegisterShutdownHook(registerShutdownHook);
 		return this;
 	}
 

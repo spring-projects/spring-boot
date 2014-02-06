@@ -108,6 +108,21 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(
 				any(ApplicationContext.class));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
+				equalTo(false));
+	}
+
+	@Test
+	public void parentContextCreationWithChildShutdown() throws Exception {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(
+				ChildConfig.class).contextClass(SpyApplicationContext.class)
+				.registerShutdownHook(true);
+		application.parent(ExampleConfig.class);
+		this.context = application.run();
+		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(
+				any(ApplicationContext.class));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
+				equalTo(true));
 	}
 
 	@Test
@@ -143,6 +158,8 @@ public class SpringApplicationBuilderTests {
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(
 				any(ApplicationContext.class));
+		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook(),
+				equalTo(false));
 	}
 
 	@Test
@@ -216,7 +233,10 @@ public class SpringApplicationBuilderTests {
 	public static class SpyApplicationContext extends AnnotationConfigApplicationContext {
 
 		private final ConfigurableApplicationContext applicationContext = spy(new AnnotationConfigApplicationContext());
+
 		private ResourceLoader resourceLoader;
+
+		private boolean registeredShutdownHook;
 
 		@Override
 		public void setParent(ApplicationContext parent) {
@@ -237,5 +257,14 @@ public class SpringApplicationBuilderTests {
 			return this.resourceLoader;
 		}
 
+		@Override
+		public void registerShutdownHook() {
+			super.registerShutdownHook();
+			this.registeredShutdownHook = true;
+		}
+
+		public boolean getRegisteredShutdownHook() {
+			return this.registeredShutdownHook;
+		}
 	}
 }
