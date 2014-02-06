@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,11 +73,11 @@ public class JmsTemplateAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(ActiveMQConnectionFactory.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
-	@EnableConfigurationProperties(ActiveMQConnectionFactoryProperties.class)
+	@EnableConfigurationProperties(ActiveMQProperties.class)
 	protected static class ActiveMQConnectionFactoryCreator {
 
 		@Autowired
-		private ActiveMQConnectionFactoryProperties config;
+		private ActiveMQProperties config;
 
 		@Bean
 		public ConnectionFactory jmsConnectionFactory() {
@@ -88,45 +88,6 @@ public class JmsTemplateAutoConfiguration {
 				return pool;
 			}
 			return new ActiveMQConnectionFactory(this.config.getBrokerURL());
-		}
-
-	}
-
-	@ConfigurationProperties(name = "spring.activemq")
-	public static class ActiveMQConnectionFactoryProperties {
-
-		private String brokerURL = "tcp://localhost:61616";
-
-		private boolean inMemory = true;
-
-		private boolean pooled = false;
-
-		// Will override brokerURL if inMemory is set to true
-		public String getBrokerURL() {
-			if (this.inMemory) {
-				return "vm://localhost";
-			}
-			return this.brokerURL;
-		}
-
-		public void setBrokerURL(String brokerURL) {
-			this.brokerURL = brokerURL;
-		}
-
-		public boolean isInMemory() {
-			return this.inMemory;
-		}
-
-		public void setInMemory(boolean inMemory) {
-			this.inMemory = inMemory;
-		}
-
-		public boolean isPooled() {
-			return this.pooled;
-		}
-
-		public void setPooled(boolean pooled) {
-			this.pooled = pooled;
 		}
 
 	}
