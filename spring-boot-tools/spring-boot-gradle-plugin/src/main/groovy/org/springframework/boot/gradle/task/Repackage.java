@@ -59,9 +59,9 @@ public class Repackage extends DefaultTask {
 	@TaskAction
 	public void repackage() {
 		Project project = getProject();
-		final SpringBootPluginExtension extension = project.getExtensions().getByType(
+		SpringBootPluginExtension extension = project.getExtensions().getByType(
 				SpringBootPluginExtension.class);
-		final ProjectLibraries libraries = new ProjectLibraries(project);
+		ProjectLibraries libraries = new ProjectLibraries(project);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
@@ -71,59 +71,73 @@ public class Repackage extends DefaultTask {
 		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
+		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
+	}
 
-		project.getTasks().withType(Jar.class, new Action<Jar>() {
+	private class RepackageAction implements Action<Jar> {
 
-			@Override
-			public void execute(Jar archive) {
-				// if withJarTask is set, compare tasks
-				// and bail out if we didn't match
-				if (Repackage.this.withJarTask != null
-						&& !archive.equals(Repackage.this.withJarTask)) {
-					return;
-				}
+		private final SpringBootPluginExtension extension;
 
-				if ("".equals(archive.getClassifier())) {
-					File file = archive.getArchivePath();
-					if (file.exists()) {
-						Repackager repackager = new Repackager(file) {
+		private final ProjectLibraries libraries;
 
-							@Override
-							protected String findMainMethod(java.util.jar.JarFile source)
-									throws IOException {
-								long startTime = System.currentTimeMillis();
-								try {
-									return super.findMainMethod(source);
-								}
-								finally {
-									long duration = System.currentTimeMillis()
-											- startTime;
-									if (duration > FIND_WARNING_TIMEOUT) {
-										getLogger()
-												.warn("Searching for the "
-														+ "main-class is taking some time, "
-														+ "consider using setting 'springBoot.mainClass'");
-									}
-								}
-							};
-						};
-						repackager
-								.setMainClass(Repackage.this.mainClass != null ? Repackage.this.mainClass
-										: extension.getMainClass());
-						if (extension.convertLayout() != null) {
-							repackager.setLayout(extension.convertLayout());
-						}
-						repackager.setBackupSource(extension.isBackupSource());
-						try {
-							repackager.repackage(libraries);
-						}
-						catch (IOException ex) {
-							throw new IllegalStateException(ex.getMessage(), ex);
-						}
+		public RepackageAction(SpringBootPluginExtension extension,
+				ProjectLibraries libraries) {
+			this.extension = extension;
+			this.libraries = libraries;
+		}
+
+		@Override
+		public void execute(Jar archive) {
+			// if withJarTask is set, compare tasks and bail out if we didn't match
+			if (Repackage.this.withJarTask != null
+					&& !archive.equals(Repackage.this.withJarTask)) {
+				return;
+			}
+
+			if ("".equals(archive.getClassifier())) {
+				File file = archive.getArchivePath();
+				if (file.exists()) {
+					Repackager repackager = new LoggingRepackager(file);
+					repackager.setMainClass(this.extension.getMainClass());
+					if (Repackage.this.mainClass != null) {
+						repackager.setMainClass(Repackage.this.mainClass);
+					}
+					if (this.extension.convertLayout() != null) {
+						repackager.setLayout(this.extension.convertLayout());
+					}
+					repackager.setBackupSource(this.extension.isBackupSource());
+					try {
+						repackager.repackage(this.libraries);
+					}
+					catch (IOException ex) {
+						throw new IllegalStateException(ex.getMessage(), ex);
 					}
 				}
 			}
-		});
+		}
 	}
 
+	private class LoggingRepackager extends Repackager {
+
+		public LoggingRepackager(File source) {
+			super(source);
+		}
+
+		@Override
+		protected String findMainMethod(java.util.jar.JarFile source) throws IOException {
+			long startTime = System.currentTimeMillis();
+			try {
+				return super.findMainMethod(source);
+			}
+			finally {
+				long duration = System.currentTimeMillis() - startTime;
+				if (duration > FIND_WARNING_TIMEOUT) {
+					getLogger().warn(
+							"Searching for the main-class is taking "
+									+ "some time, consider using setting "
+									+ "'springBoot.mainClass'");
+				}
+			}
+		};
+	}
 }
