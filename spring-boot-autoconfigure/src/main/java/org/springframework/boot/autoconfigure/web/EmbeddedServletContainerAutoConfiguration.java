@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.eclipse.jetty.util.Loader;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -45,6 +44,7 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet containers.
@@ -107,15 +107,17 @@ public class EmbeddedServletContainerAutoConfiguration {
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 				BeanDefinitionRegistry registry) {
-			if (this.beanFactory != null
-					&& this.beanFactory.getBeansOfType(
-							EmbeddedServletContainerCustomizerBeanPostProcessor.class)
-							.size() == 0) {
-				BeanDefinition beanDefinition = new RootBeanDefinition(
-						EmbeddedServletContainerCustomizerBeanPostProcessor.class);
+			if (this.beanFactory == null) {
+				return;
+			}
+			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(
+					EmbeddedServletContainerCustomizerBeanPostProcessor.class, true,
+					false))) {
 				registry.registerBeanDefinition(
 						"embeddedServletContainerCustomizerBeanPostProcessor",
-						beanDefinition);
+						new RootBeanDefinition(
+								EmbeddedServletContainerCustomizerBeanPostProcessor.class));
+
 			}
 		}
 	}
