@@ -14,31 +14,50 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.mongo;
 
+import java.net.UnknownHostException;
+
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean;
 
 import com.mongodb.Mongo;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Mongo
- * Repositories.
+ * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
  * 
  * @author Dave Syer
  * @author Oliver Gierke
- * @see EnableMongoRepositories
+ * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass({ Mongo.class, MongoRepository.class })
-@ConditionalOnMissingBean(MongoRepositoryFactoryBean.class)
-@Import(MongoRepositoriesAutoConfigureRegistrar.class)
-public class MongoRepositoriesAutoConfiguration {
+@ConditionalOnClass(Mongo.class)
+@EnableConfigurationProperties(MongoProperties.class)
+public class MongoAutoConfiguration {
 
+	@Autowired
+	private MongoProperties config;
+
+	private Mongo mongo;
+
+	@PreDestroy
+	public void close() throws UnknownHostException {
+		if (this.mongo != null) {
+			this.mongo.close();
+		}
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Mongo mongo() throws UnknownHostException {
+		this.mongo = this.config.createMongoClient();
+		return this.mongo;
+	}
 }
