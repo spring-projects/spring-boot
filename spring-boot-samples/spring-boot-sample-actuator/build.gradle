@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '0.5.0.BUILD-SNAPSHOT'
+		springBootVersion = '1.0.0.BUILD-SNAPSHOT'
 	}
     repositories {
     	mavenLocal()
@@ -18,10 +18,11 @@ apply plugin: 'spring-boot'
 
 jar {
     baseName = 'spring-boot-sample-actuator'
-    version =  '0.5.0'
+    version =  '1.0.0'
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "http://repo.springsource.org/libs-snapshot" }
 }
@@ -30,10 +31,10 @@ dependencies {
 	configurations {
 		insecure.exclude module: 'spring-boot-starter-security'
 	}
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-security:${springBootVersion}")
-    testCompile("junit:junit:4.11")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-actuator")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    testCompile("junit:junit")
     insecure configurations.runtime
 }
 
