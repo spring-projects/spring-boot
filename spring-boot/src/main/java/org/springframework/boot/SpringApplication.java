@@ -150,9 +150,6 @@ public class SpringApplication {
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
-	private static final List<ProfileDetector> DEFAULT_PROFILE_DETECTORS = Arrays
-			.<ProfileDetector> asList(new DevelopmentProfileDetector());
-
 	private final Log log = LogFactory.getLog(getClass());
 
 	private final Set<Object> sources = new LinkedHashSet<Object>();
@@ -186,8 +183,6 @@ public class SpringApplication {
 	private Map<String, Object> defaultProperties;
 
 	private Set<String> profiles = new HashSet<String>();
-
-	private List<ProfileDetector> profileDetectors = DEFAULT_PROFILE_DETECTORS;
 
 	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
@@ -422,9 +417,6 @@ public class SpringApplication {
 	protected void setupProfiles(ConfigurableEnvironment environment) {
 		for (String profile : this.profiles) {
 			environment.addActiveProfile(profile);
-		}
-		for (ProfileDetector profileDetector : this.profileDetectors) {
-			profileDetector.addDetectedProfiles(environment);
 		}
 	}
 
@@ -737,19 +729,6 @@ public class SpringApplication {
 	 */
 	public void setAdditionalProfiles(String... profiles) {
 		this.profiles = new LinkedHashSet<String>(Arrays.asList(profiles));
-	}
-
-	/**
-	 * Sets the {@link ProfileDetector}s that will be used to attempt to detect
-	 * {@link Environment#acceptsProfiles(String...) active profiles}.
-	 * {@link DevelopmentProfileDetector} is used.
-	 * @param profileDetectors the profile detectors
-	 * @see #setAdditionalProfiles(String...)
-	 */
-	public void setProfileDetectors(ProfileDetector... profileDetectors) {
-		Assert.notNull(profileDetectors, "Profile detectors must not be null");
-		this.profileDetectors = new ArrayList<ProfileDetector>(
-				Arrays.asList(profileDetectors));
 	}
 
 	/**

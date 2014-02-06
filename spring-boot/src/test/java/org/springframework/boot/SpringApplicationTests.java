@@ -421,29 +421,6 @@ public class SpringApplicationTests {
 		assertThat(System.getProperty("java.awt.headless"), equalTo("false"));
 	}
 
-	@Test
-	public void setAdditionalProfiles() throws Exception {
-		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
-		application.setWebEnvironment(false);
-		application.setAdditionalProfiles("mine");
-		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("mine"), equalTo(true));
-	}
-
-	@Test
-	public void setProfileDetectors() throws Exception {
-		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
-		application.setWebEnvironment(false);
-		application.setProfileDetectors(new ProfileDetector() {
-			@Override
-			public void addDetectedProfiles(ConfigurableEnvironment environment) {
-				environment.addActiveProfile("mine");
-			}
-		});
-		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles("mine"), equalTo(true));
-	}
-
 	private boolean hasPropertySource(ConfigurableEnvironment environment,
 			Class<?> propertySourceClass, String name) {
 		for (PropertySource<?> source : environment.getPropertySources()) {
