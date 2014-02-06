@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.properties;
+package org.springframework.boot.actuate.autoconfigure;
 
 import java.net.InetAddress;
 
