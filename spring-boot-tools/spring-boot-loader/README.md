@@ -200,7 +200,8 @@ The `ZipEntry` for a nested jar must be saved using the `ZipEntry.STORED` method
 is required so that we can seek directly to individual content within the nested jar.
 The content of the nested jar file itself can still be compressed, as can any other
 entries in the outer jar. You can use the Spring Boot
-[Maven](../spring-boot-maven-plugin) or [Gradle](../spring-boot-gradle-plugin) plugins
+[Maven](../spring-boot-maven-plugin/README.md) or
+[Gradle](../spring-boot-gradle-plugin/README.md) plugins
 to ensure that your archives are written correctly.
 
 ### System ClassLoader
@@ -221,7 +222,7 @@ alternatives could be considered:
 ## Further Reading
 For more information about any of the classes or interfaces discussed in the document
 please refer to the project Javadoc. If you need to build a compatible archives see the
-[spring-boot-maven-plugin](../spring-boot-maven-plugin) or
-[spring-boot-gradle-plugin](../spring-boot-gradle-plugin). If you are not using Maven
-or Gradle [spring-boot-loader-tools](../spring-boot-loader-tools) provides some useful
-utilities to rewite existing zip files.
+[spring-boot-maven-plugin](../spring-boot-maven-plugin/README.md) or
+[spring-boot-gradle-plugin](../spring-boot-gradle-plugin/README.md). If you are not using
+Maven or Gradle [spring-boot-loader-tools](../spring-boot-loader-tools/README.md) provides
+some useful utilities to rewite existing zip files.
