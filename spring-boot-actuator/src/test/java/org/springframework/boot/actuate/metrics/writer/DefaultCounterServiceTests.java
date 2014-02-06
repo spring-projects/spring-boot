@@ -30,7 +30,8 @@ public class DefaultCounterServiceTests {
 
 	private final MetricWriter repository = mock(MetricWriter.class);
 
-	private final DefaultCounterService service = new DefaultCounterService(this.repository);
+	private final DefaultCounterService service = new DefaultCounterService(
+			this.repository);
 
 	@Test
 	public void incrementPrependsCounter() {

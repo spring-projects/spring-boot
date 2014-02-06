@@ -16,9 +16,6 @@
 
 package org.springframework.boot.json;
 
-import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.json.JsonParser;
-
 /**
  * Tests for {@link JsonParser}.
  * 

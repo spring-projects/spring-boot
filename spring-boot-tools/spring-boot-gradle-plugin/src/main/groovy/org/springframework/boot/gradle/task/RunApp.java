@@ -36,7 +36,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
  * Run the project from Gradle.
- *
+ * 
  * @author Dave Syer
  */
 public class RunApp extends DefaultTask {
@@ -54,15 +54,15 @@ public class RunApp extends DefaultTask {
 			@Override
 			public void execute(SourceSet set) {
 				if (SourceSet.MAIN_SOURCE_SET_NAME.equals(set.getName())) {
-					main = set;
+					RunApp.this.main = set;
 				}
 			};
 
 		});
 
 		final Set<File> allResources = new LinkedHashSet<File>();
-		if (main != null) {
-			SourceDirectorySet resources = main.getResources();
+		if (this.main != null) {
+			SourceDirectorySet resources = this.main.getResources();
 			allResources.addAll(resources.getSrcDirs());
 		}
 
@@ -70,13 +70,13 @@ public class RunApp extends DefaultTask {
 
 			@Override
 			public void execute(JavaExec exec) {
-				ArrayList<File> files = new ArrayList<File>(
-						exec.getClasspath().getFiles());
+				ArrayList<File> files = new ArrayList<File>(exec.getClasspath()
+						.getFiles());
 				files.addAll(0, allResources);
 				getLogger().info("Adding classpath: " + allResources);
 				exec.setClasspath(new SimpleFileCollection(files));
 				if (exec.getMain() == null) {
-					final String mainClass = findMainClass(main);
+					final String mainClass = findMainClass(RunApp.this.main);
 					exec.setMain(mainClass);
 					exec.getConventionMapping().map("main", new Callable<String>() {
 
@@ -84,6 +84,7 @@ public class RunApp extends DefaultTask {
 						public String call() throws Exception {
 							return mainClass;
 						}
+
 					});
 					getLogger().info("Found main: " + mainClass);
 				}
@@ -100,7 +101,8 @@ public class RunApp extends DefaultTask {
 		getLogger().info("Looking for main in: " + main.getOutput().getClassesDir());
 		try {
 			return MainClassFinder.findMainClass(main.getOutput().getClassesDir());
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new IllegalStateException("Cannot find main class", ex);
 		}
 	}

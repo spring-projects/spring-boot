@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.json.JsonParser;
-import org.springframework.boot.json.SimpleJsonParser;
 
 import static org.junit.Assert.assertEquals;
 

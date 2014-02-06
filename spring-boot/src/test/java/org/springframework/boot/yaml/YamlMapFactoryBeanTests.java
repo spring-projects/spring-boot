@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.boot.yaml.YamlMapFactoryBean;
 import org.springframework.boot.yaml.YamlProcessor.ResolutionMethod;
 import org.springframework.core.io.AbstractResource;
 import org.springframework.core.io.ByteArrayResource;
