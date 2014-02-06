@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.properties;
+package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,11 +27,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration;
-import org.springframework.boot.actuate.properties.ShellProperties.CrshShellProperties;
-import org.springframework.boot.actuate.properties.ShellProperties.JaasAuthenticationProperties;
-import org.springframework.boot.actuate.properties.ShellProperties.KeyAuthenticationProperties;
-import org.springframework.boot.actuate.properties.ShellProperties.SimpleAuthenticationProperties;
-import org.springframework.boot.actuate.properties.ShellProperties.SpringAuthenticationProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties.KeyAuthenticationProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties.SimpleAuthenticationProperties;
+import org.springframework.boot.actuate.autoconfigure.ShellProperties.SpringAuthenticationProperties;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
