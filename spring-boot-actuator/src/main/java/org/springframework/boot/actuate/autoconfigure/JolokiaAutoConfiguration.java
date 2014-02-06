@@ -16,13 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.jolokia.http.AgentServlet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.JolokiaAutoConfiguration.JolokiaProperties;
 import org.springframework.boot.actuate.endpoint.mvc.JolokiaMvcEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -32,7 +29,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,20 +75,6 @@ public class JolokiaAutoConfiguration {
 		Properties initParameters = new Properties();
 		initParameters.putAll(this.properties.getConfig());
 		return initParameters;
-	}
-
-	@ConfigurationProperties(name = "jolokia")
-	public static class JolokiaProperties {
-
-		private Map<String, String> config = new HashMap<String, String>();
-
-		public Map<String, String> getConfig() {
-			return this.config;
-		}
-
-		public void setConfig(Map<String, String> config) {
-			this.config = config;
-		}
 	}
 
 }

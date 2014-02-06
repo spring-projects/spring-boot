@@ -16,16 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
-import java.util.Properties;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration.EndpointMBeanExportProperties;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,51 +55,6 @@ public class EndpointMBeanExportAutoConfiguration {
 		mbeanExporter.setObjectNameStaticProperties(this.properties.getStaticNames());
 
 		return mbeanExporter;
-	}
-
-	@ConfigurationProperties(name = "endpoints.jmx")
-	public static class EndpointMBeanExportProperties {
-
-		private String domain;
-
-		private boolean uniqueNames = false;
-
-		private boolean enabled = true;
-
-		private Properties staticNames = new Properties();
-
-		public boolean isEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
-		public String getDomain() {
-			return this.domain;
-		}
-
-		public void setDomain(String domain) {
-			this.domain = domain;
-		}
-
-		public boolean isUniqueNames() {
-			return this.uniqueNames;
-		}
-
-		public void setUniqueNames(boolean uniqueNames) {
-			this.uniqueNames = uniqueNames;
-		}
-
-		public Properties getStaticNames() {
-			return this.staticNames;
-		}
-
-		public void setStaticNames(String[] staticNames) {
-			this.staticNames = StringUtils.splitArrayElementsIntoProperties(staticNames,
-					"=");
-		}
 	}
 
 }

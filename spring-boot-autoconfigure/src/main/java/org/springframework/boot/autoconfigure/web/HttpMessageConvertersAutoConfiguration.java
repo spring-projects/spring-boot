@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,11 +62,11 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(ObjectMapper.class)
-	@EnableConfigurationProperties(ObjectMappersProperties.class)
+	@EnableConfigurationProperties(HttpMapperProperties.class)
 	protected static class ObjectMappers {
 
 		@Autowired
-		private ObjectMappersProperties properties = new ObjectMappersProperties();
+		private HttpMapperProperties properties = new HttpMapperProperties();
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -101,23 +100,6 @@ public class HttpMessageConvertersAutoConfiguration {
 			return converter;
 		}
 
-	}
-
-	/**
-	 * {@link ConfigurationProperties} to configure {@link HttpMessageConverter}s.
-	 */
-	@ConfigurationProperties(name = "http.mappers", ignoreUnknownFields = false)
-	public static class ObjectMappersProperties {
-
-		private boolean jsonPrettyPrint = false;
-
-		public void setJsonPrettyPrint(boolean jsonPrettyPrint) {
-			this.jsonPrettyPrint = jsonPrettyPrint;
-		}
-
-		public boolean isJsonPrettyPrint() {
-			return this.jsonPrettyPrint;
-		}
 	}
 
 }
