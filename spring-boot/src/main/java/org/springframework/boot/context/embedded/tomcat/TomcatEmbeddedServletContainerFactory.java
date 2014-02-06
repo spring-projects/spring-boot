@@ -59,7 +59,6 @@ import org.springframework.util.StreamUtils;
  * {@link EmbeddedServletContainerFactory} that can be used to create
  * {@link TomcatEmbeddedServletContainer}s. Can be initialized using Spring's
  * {@link ServletContextInitializer}s or Tomcat {@link LifecycleListener}s.
- * 
  * <p>
  * Unless explicitly configured otherwise this factory will created containers that
  * listens for HTTP requests on port 8080.

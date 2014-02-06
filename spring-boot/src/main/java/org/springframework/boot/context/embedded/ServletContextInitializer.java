@@ -28,11 +28,9 @@ import org.springframework.web.WebApplicationInitializer;
  * interface (and do not implement {@link WebApplicationInitializer}) will <b>not</b> be
  * detected by {@link SpringServletContainerInitializer} and hence will not be
  * automatically bootstrapped by the Servlet container.
- * 
  * <p>
  * This interface is primarily designed to allow {@link ServletContextInitializer}s to be
  * managed by Spring and not the Servlet container.
- * 
  * <p>
  * For configuration examples see {@link WebApplicationInitializer}.
  * 

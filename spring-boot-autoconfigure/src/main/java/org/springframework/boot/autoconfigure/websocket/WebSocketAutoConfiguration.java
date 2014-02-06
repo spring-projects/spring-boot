@@ -116,6 +116,7 @@ public class WebSocketAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(name = "org.apache.tomcat.websocket.server.WsSci")
 	protected static class TomcatWebSocketConfiguration {
+
 		@Bean
 		public TomcatEmbeddedServletContainerFactory tomcatEmbeddedServletContainerFactory() {
 			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory() {
@@ -130,6 +131,7 @@ public class WebSocketAutoConfiguration {
 			};
 			return factory;
 		}
+
 	}
 
 }

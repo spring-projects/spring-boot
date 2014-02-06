@@ -53,4 +53,5 @@ public class WebApplicationContextServletContextAwareProcessor extends
 		ServletConfig servletConfig = this.webApplicationContext.getServletConfig();
 		return (servletConfig != null ? servletConfig : super.getServletConfig());
 	}
+
 }

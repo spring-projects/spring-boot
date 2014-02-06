@@ -105,4 +105,5 @@ public class YamlPropertiesFactoryBean extends YamlProcessor implements
 	public boolean isSingleton() {
 		return this.singleton;
 	}
+
 }

@@ -34,7 +34,6 @@ import org.springframework.util.Assert;
  * A {@link ServletContextInitializer} to register {@link Filter}s in a Servlet 3.0+
  * container. Similar to the {@link ServletContext#addFilter(String, Filter) registration}
  * features provided by {@link ServletContext} but with a Spring Bean friendly design.
- * 
  * <p>
  * The {@link #setFilter(Filter) Filter} must be specified before calling
  * {@link #onStartup(ServletContext)}. Registrations can be associated with
@@ -263,4 +262,5 @@ public class FilterRegistrationBean extends RegistrationBean {
 			}
 		}
 	}
+
 }

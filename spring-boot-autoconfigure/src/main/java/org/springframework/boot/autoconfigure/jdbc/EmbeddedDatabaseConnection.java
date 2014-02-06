@@ -121,4 +121,5 @@ public enum EmbeddedDatabaseConnection {
 		}
 		return NONE;
 	}
+
 }

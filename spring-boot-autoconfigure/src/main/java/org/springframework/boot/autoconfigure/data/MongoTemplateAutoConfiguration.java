@@ -43,12 +43,12 @@ import com.mongodb.Mongo;
 public class MongoTemplateAutoConfiguration {
 
 	@Autowired
-	private MongoProperties config;
+	private MongoProperties properties;
 
 	@Bean
 	@ConditionalOnMissingBean
 	public MongoTemplate mongoTemplate(Mongo mongo) throws UnknownHostException {
-		return new MongoTemplate(mongo, this.config.getMongoClientDatabase());
+		return new MongoTemplate(mongo, this.properties.getMongoClientDatabase());
 	}
 
 }

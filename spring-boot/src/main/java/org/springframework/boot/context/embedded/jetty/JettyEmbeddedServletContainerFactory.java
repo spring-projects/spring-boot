@@ -49,7 +49,6 @@ import org.springframework.util.StringUtils;
  * {@link EmbeddedServletContainerFactory} that can be used to create
  * {@link JettyEmbeddedServletContainer}s. Can be initialized using Spring's
  * {@link ServletContextInitializer}s or Jetty {@link Configuration}s.
- * 
  * <p>
  * Unless explicitly configured otherwise this factory will created containers that
  * listens for HTTP requests on port 8080.
@@ -302,4 +301,5 @@ public class JettyEmbeddedServletContainerFactory extends
 			}
 		}
 	}
+
 }

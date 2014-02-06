@@ -41,6 +41,7 @@ public class JmxAutoConfiguration {
 	@Configuration
 	@EnableMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:}")
 	public static class MBeanExport {
+
 	}
 
 }

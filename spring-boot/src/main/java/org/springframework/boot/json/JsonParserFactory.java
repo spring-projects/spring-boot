@@ -42,4 +42,5 @@ public abstract class JsonParserFactory {
 		}
 		return new SimpleJsonParser();
 	}
+
 }

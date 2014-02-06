@@ -36,7 +36,6 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * JSR-330 compliant classes using {@code javax.inject} annotations. Allows for
  * registering classes one by one (specifying class names as config location) as well as
  * for classpath scanning (specifying base packages as config location).
- * 
  * <p>
  * Note: In case of multiple {@code @Configuration} classes, later {@code @Bean}
  * definitions will override ones defined in earlier loaded files. This can be leveraged

@@ -31,22 +31,21 @@ import org.yaml.snakeyaml.nodes.NodeId;
  * 
  * @author Luke Taylor
  */
-public class CustomPropertyConstructor extends Constructor {
+public class YamlJavaBeanPropertyConstructor extends Constructor {
 
 	private final Map<Class<?>, Map<String, Property>> properties = new HashMap<Class<?>, Map<String, Property>>();
 
 	private final PropertyUtils propertyUtils = new PropertyUtils();
 
-	public CustomPropertyConstructor(Class<?> theRoot) {
+	public YamlJavaBeanPropertyConstructor(Class<?> theRoot) {
 		super(theRoot);
 		this.yamlClassConstructors.put(NodeId.mapping,
 				new CustomPropertyConstructMapping());
 	}
 
-	public CustomPropertyConstructor(Class<?> theRoot,
+	public YamlJavaBeanPropertyConstructor(Class<?> theRoot,
 			Map<Class<?>, Map<String, String>> propertyAliases) {
 		this(theRoot);
-
 		for (Class<?> key : propertyAliases.keySet()) {
 			Map<String, String> map = propertyAliases.get(key);
 			if (map != null) {
@@ -85,7 +84,7 @@ public class CustomPropertyConstructor extends Constructor {
 		@Override
 		protected Property getProperty(Class<?> type, String name)
 				throws IntrospectionException {
-			Map<String, Property> forType = CustomPropertyConstructor.this.properties
+			Map<String, Property> forType = YamlJavaBeanPropertyConstructor.this.properties
 					.get(type);
 			Property property = (forType == null ? null : forType.get(name));
 			return (property == null ? super.getProperty(type, name) : property);

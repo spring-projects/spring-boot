@@ -176,5 +176,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 		public void onApplicationEvent(ApplicationEvent event) {
 			AutoConfigurationReportLoggingInitializer.this.onApplicationEvent(event);
 		}
+
 	}
+
 }

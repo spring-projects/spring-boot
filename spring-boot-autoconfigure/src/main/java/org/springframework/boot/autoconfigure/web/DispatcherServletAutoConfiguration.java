@@ -97,6 +97,7 @@ public class DispatcherServletAutoConfiguration {
 					.match("one or more DispatcherServlets found and none is named "
 							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 		}
+
 	}
 
 }

@@ -35,4 +35,5 @@ import org.springframework.context.annotation.Conditional;
 @Documented
 @Conditional(OnWebApplicationCondition.class)
 public @interface ConditionalOnNotWebApplication {
+
 }

@@ -66,7 +66,6 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  * password=password)</code> but can easily be customized by providing a bean definition
  * of type {@link AuthenticationManager}. Also provides audit logging of authentication
  * events.
- * 
  * <p>
  * Some common simple customizations:
  * <ul>
@@ -168,6 +167,7 @@ public class SpringBootWebSecurityConfiguration {
 		@Configuration
 		@EnableWebMvcSecurity
 		protected static class DefaultWebMvcSecurityConfiguration {
+
 		}
 
 	}
@@ -179,6 +179,7 @@ public class SpringBootWebSecurityConfiguration {
 	@Configuration
 	@EnableWebSecurity
 	protected static class DefaultWebSecurityConfiguration {
+
 	}
 
 	@ConditionalOnExpression("${security.basic.enabled:true}")

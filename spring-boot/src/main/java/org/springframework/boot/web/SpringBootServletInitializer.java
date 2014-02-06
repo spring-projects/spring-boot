@@ -36,8 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
  * one Spring servlet, and no more than a single filter (which itself is only enabled when
  * Spring Security is detected). If your application is more complicated consider using
  * one of the other WebApplicationInitializers.
- * 
- * <p/>
+ * <p>
  * Note that a WebApplicationInitializer is only needed if you are building a war file and
  * deploying it. If you prefer to run an embedded container (we do) then you won't need
  * this at all.
@@ -95,7 +94,6 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 	 * config classes) because other settings have sensible defaults. You might choose
 	 * (for instance) to add default command line arguments, or set an active Spring
 	 * profile.
-	 * 
 	 * @param application a builder for the application context
 	 * @see SpringApplicationBuilder
 	 */

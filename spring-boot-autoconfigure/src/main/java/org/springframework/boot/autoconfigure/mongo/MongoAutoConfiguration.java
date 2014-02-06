@@ -43,7 +43,7 @@ import com.mongodb.Mongo;
 public class MongoAutoConfiguration {
 
 	@Autowired
-	private MongoProperties config;
+	private MongoProperties properties;
 
 	private Mongo mongo;
 
@@ -57,7 +57,7 @@ public class MongoAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Mongo mongo() throws UnknownHostException {
-		this.mongo = this.config.createMongoClient();
+		this.mongo = this.properties.createMongoClient();
 		return this.mongo;
 	}
 }

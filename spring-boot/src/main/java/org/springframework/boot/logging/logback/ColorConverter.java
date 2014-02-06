@@ -71,4 +71,5 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 	protected String toAnsiString(String in, AnsiElement element) {
 		return AnsiOutput.toString(element, in);
 	}
+
 }

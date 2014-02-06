@@ -56,6 +56,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 public class ThymeleafAutoConfiguration {
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";
+
 	public static final String DEFAULT_SUFFIX = ".html";
 
 	@Configuration
@@ -108,7 +109,8 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafDefaultConfiguration {
 
 		@Autowired
-		private final Collection<ITemplateResolver> templateResolvers = Collections.emptySet();
+		private final Collection<ITemplateResolver> templateResolvers = Collections
+				.emptySet();
 
 		@Autowired(required = false)
 		private final Collection<IDialect> dialects = Collections.emptySet();

@@ -77,4 +77,5 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 			DatabasePopulatorUtils.execute(populator, this.dataSource);
 		}
 	}
+
 }

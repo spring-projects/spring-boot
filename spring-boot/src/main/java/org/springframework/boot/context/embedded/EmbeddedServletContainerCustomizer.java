@@ -22,7 +22,6 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * Strategy interface for customizing auto-configured embedded servlet containers. Any
  * beans of this type will get a callback with the container factory before the container
  * itself is started, so you can set the port, address, error pages etc.
- * 
  * <p>
  * Beware: calls to this interface are usually made from a
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} which is a

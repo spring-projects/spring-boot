@@ -40,6 +40,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	private final Log logger = LogFactory.getLog(JettyEmbeddedServletContainer.class);
 
 	private final Server server;
+
 	private final boolean autoStart;
 
 	/**
@@ -144,4 +145,5 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 	public Server getServer() {
 		return this.server;
 	}
+
 }

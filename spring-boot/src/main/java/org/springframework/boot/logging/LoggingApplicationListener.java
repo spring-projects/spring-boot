@@ -17,8 +17,6 @@
 package org.springframework.boot.logging;
 
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +44,6 @@ import org.springframework.util.ResourceUtils;
  * system, otherwise a default location is used. The classpath is probed for log4j and
  * logback and if those are present they will be reconfigured, otherwise vanilla
  * <code>java.util.logging</code> will be used. </p>
- * 
  * <p>
  * The default config locations are <code>classpath:log4j.properties</code> or
  * <code>classpath:log4j.xml</code> for log4j; <code>classpath:logback.xml</code> for
@@ -54,8 +51,6 @@ import org.springframework.util.ResourceUtils;
  * <code>java.util.logging</code>. If the correct one of those files is not found then
  * some sensible defaults are adopted from files of the same name but in the package
  * containing {@link LoggingApplicationListener}.
- * </p>
- * 
  * <p>
  * Some system properties may be set as side effects, and these can be useful if the
  * logging configuration supports placeholders (i.e. log4j or logback):
@@ -91,10 +86,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		LOG_LEVEL_LOGGERS.add(LogLevel.TRACE, "org.hibernate.tool.hbm2ddl");
 	}
 
-	@SuppressWarnings("unchecked")
-	private static Collection<Class<? extends ApplicationEvent>> EVENT_TYPES = Arrays
-			.<Class<? extends ApplicationEvent>> asList(ApplicationStartedEvent.class,
-					ApplicationEnvironmentPreparedEvent.class);
+	private static Class<?>[] EVENT_TYPES = { ApplicationStartedEvent.class,
+			ApplicationEnvironmentPreparedEvent.class };
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -106,7 +99,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 
 	@Override
 	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		for (Class<? extends ApplicationEvent> type : EVENT_TYPES) {
+		for (Class<?> type : EVENT_TYPES) {
 			if (type.isAssignableFrom(eventType)) {
 				return true;
 			}
@@ -230,4 +223,5 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	public void setParseArgs(boolean parseArgs) {
 		this.parseArgs = parseArgs;
 	}
+
 }

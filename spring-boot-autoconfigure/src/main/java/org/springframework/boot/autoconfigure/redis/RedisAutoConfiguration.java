@@ -54,15 +54,15 @@ public class RedisAutoConfiguration {
 	protected static class RedisConnectionConfiguration {
 
 		@Autowired
-		private RedisProperties config;
+		private RedisProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
 			LettuceConnectionFactory factory = new LettuceConnectionFactory(
-					this.config.getHost(), this.config.getPort());
-			if (this.config.getPassword() != null) {
-				factory.setPassword(this.config.getPassword());
+					this.properties.getHost(), this.properties.getPort());
+			if (this.properties.getPassword() != null) {
+				factory.setPassword(this.properties.getPassword());
 			}
 			return factory;
 		}
@@ -74,20 +74,20 @@ public class RedisAutoConfiguration {
 	protected static class RedisPooledConnectionConfiguration {
 
 		@Autowired
-		private RedisProperties config;
+		private RedisProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-			if (this.config.getPool() != null) {
+			if (this.properties.getPool() != null) {
 				LettuceConnectionFactory factory = new LettuceConnectionFactory(
 						lettucePool());
 				return factory;
 			}
 			LettuceConnectionFactory factory = new LettuceConnectionFactory(
-					this.config.getHost(), this.config.getPort());
-			if (this.config.getPassword() != null) {
-				factory.setPassword(this.config.getPassword());
+					this.properties.getHost(), this.properties.getPort());
+			if (this.properties.getPassword() != null) {
+				factory.setPassword(this.properties.getPassword());
 			}
 			return factory;
 		}
@@ -95,13 +95,13 @@ public class RedisAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public LettucePool lettucePool() {
-			return new DefaultLettucePool(this.config.getHost(), this.config.getPort(),
-					poolConfig());
+			return new DefaultLettucePool(this.properties.getHost(),
+					this.properties.getPort(), poolConfig());
 		}
 
 		private PoolConfig poolConfig() {
 			PoolConfig pool = new PoolConfig();
-			RedisProperties.Pool props = this.config.getPool();
+			RedisProperties.Pool props = this.properties.getPool();
 			if (props != null) {
 				pool.setMaxActive(props.getMaxActive());
 				pool.setMaxIdle(props.getMaxIdle());
@@ -110,19 +110,22 @@ public class RedisAutoConfiguration {
 			}
 			return pool;
 		}
+
 	}
 
 	@Bean(name = "org.springframework.autoconfigure.redis.RedisProperties")
 	@ConditionalOnMissingBean
 	public RedisProperties redisProperties() {
+
 		return new RedisProperties();
+
 	}
 
 	@Configuration
 	protected static class RedisConfiguration {
 
 		@Autowired
-		private RedisProperties config;
+		private RedisProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisTemplate")

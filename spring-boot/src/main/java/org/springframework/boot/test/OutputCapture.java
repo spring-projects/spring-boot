@@ -28,7 +28,7 @@ import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 /**
- * Capture output from System.out and System.err.
+ * JUnit {@code @Rule} to capture output from System.out and System.err.
  * 
  * @author Phillip Webb
  */
@@ -126,6 +126,7 @@ public class OutputCapture implements TestRule {
 			this.copy.flush();
 			this.original.flush();
 		}
+
 	}
 
 	/**
@@ -148,6 +149,7 @@ public class OutputCapture implements TestRule {
 				return new AnsiOutputControl();
 			}
 		}
+
 	}
 
 	private static class AnsiPresentOutputControl extends AnsiOutputControl {

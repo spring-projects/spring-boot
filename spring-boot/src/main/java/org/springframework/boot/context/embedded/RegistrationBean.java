@@ -112,4 +112,5 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 			registration.setInitParameters(this.initParameters);
 		}
 	}
+
 }

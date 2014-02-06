@@ -135,7 +135,7 @@ public class YamlConfigurationFactory<T> implements FactoryBean<T>, MessageSourc
 			if (this.logger.isTraceEnabled()) {
 				this.logger.trace("Yaml document is\n" + this.yaml);
 			}
-			Constructor constructor = new CustomPropertyConstructor(this.type,
+			Constructor constructor = new YamlJavaBeanPropertyConstructor(this.type,
 					this.propertyAliases);
 			this.configuration = (T) (new Yaml(constructor)).load(this.yaml);
 			if (this.validator != null) {

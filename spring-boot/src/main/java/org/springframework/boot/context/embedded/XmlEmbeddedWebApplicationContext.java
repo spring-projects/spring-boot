@@ -25,7 +25,6 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 /**
  * {@link EmbeddedWebApplicationContext} which takes its configuration from XML documents,
  * understood by an {@link org.springframework.beans.factory.xml.XmlBeanDefinitionReader}.
- * 
  * <p>
  * Note: In case of multiple config locations, later bean definitions will override ones
  * defined in earlier loaded files. This can be leveraged to deliberately override certain
