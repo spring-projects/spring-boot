@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
+import java.io.IOException;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
@@ -26,9 +28,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
-import org.springframework.boot.config.PropertiesPropertySourceLoader;
-import org.springframework.boot.config.PropertySourceLoader;
-import org.springframework.boot.config.YamlPropertySourceLoader;
+import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -332,26 +332,22 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		return this.validator;
 	}
 
-	private PropertySources loadPropertySources(String[] path) {
-		MutablePropertySources propertySources = new MutablePropertySources();
-		PropertySourceLoader[] loaders = {
-				new PropertiesPropertySourceLoader(),
-				YamlPropertySourceLoader.springProfileAwareLoader(this.environment
-						.getActiveProfiles()) };
-		for (String location : path) {
-			location = this.environment.resolvePlaceholders(location);
-			Resource resource = this.resourceLoader.getResource(location);
-			if (resource != null && resource.exists()) {
-				for (PropertySourceLoader loader : loaders) {
-					if (loader.supports(resource)) {
-						PropertySource<?> propertySource = loader.load(
-								resource.getDescription(), resource);
-						propertySources.addFirst(propertySource);
-					}
+	private PropertySources loadPropertySources(String[] locations) {
+		try {
+			PropertySourcesLoader loader = new PropertySourcesLoader();
+			for (String location : locations) {
+				Resource resource = this.resourceLoader.getResource(this.environment
+						.resolvePlaceholders(location));
+				for (String profile : this.environment.getActiveProfiles()) {
+					loader.load(resource, null, profile);
 				}
+				loader.load(resource, null, null);
 			}
+			return loader.getPropertySources();
 		}
-		return propertySources;
+		catch (IOException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	private ConversionService getDefaultConversionService() {

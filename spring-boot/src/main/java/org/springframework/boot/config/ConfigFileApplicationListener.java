@@ -16,40 +16,41 @@
 
 package org.springframework.boot.config;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.Queue;
 import java.util.Set;
 
-import org.springframework.beans.PropertyValues;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.event.ApplicationPreparedEvent;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
-import org.springframework.context.annotation.PropertySources;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.DigestUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -63,254 +64,99 @@ import org.springframework.util.StringUtils;
  * <li>file:./config/:</li>
  * </ul>
  * <p>
- * Alternative locations and names can be specified using
- * {@link #setSearchLocations(String[])} and {@link #setNames(String)}.
+ * Alternative search locations and names can be specified using
+ * {@link #setSearchLocations(String)} and {@link #setSearchNames(String)}.
  * <p>
  * Additional files will also be loaded based on active profiles. For example if a 'web'
  * profile is active 'application-web.properties' and 'application-web.yml' will be
  * considered.
  * <p>
- * The 'spring.config.name' property can be used to specify an alternative name to load or
- * alternatively the 'spring.config.location' property can be used to specify an exact
- * resource location.
+ * The 'spring.config.name' property can be used to specify an alternative name to load
+ * and the 'spring.config.location' property can be used to specify alternative search
+ * locations or specific files.
+ * <p>
+ * Configuration properties are also bound to the {@link SpringApplication}. This makes it
+ * possible to set {@link SpringApplication} properties dynamically, like the sources
+ * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
+ * ("spring.main.web_environment=true") or the flag to switch off the banner
+ * ("spring.main.show_banner=false").
  * 
  * @author Dave Syer
  * @author Phillip Webb
  */
 public class ConfigFileApplicationListener implements
-		ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+		ApplicationListener<ApplicationEvent>, Ordered {
+
+	private static final String DEFAULT_PROPERTIES = "defaultProperties";
 
 	private static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
 
-	private static final String LOCATION_VARIABLE = "${spring.config.location}";
+	private static final String CONFIG_NAME_PROPERTY = "spring.config.name";
 
-	public static final int DEFAULT_CONFIG_LISTENER_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+	private static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
-	private String[] searchLocations = new String[] { "classpath:/", "file:./",
-			"classpath:/config/", "file:./config/" };
+	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,file:./,"
+			+ "classpath:/config/,file:./config/";
 
-	private String names = "${spring.config.name:application}";
+	private static final String DEFAULT_NAMES = "application";
 
-	private int order = DEFAULT_CONFIG_LISTENER_ORDER;
+	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
+
+	private String searchLocations;
+
+	private String names;
+
+	private int order = DEFAULT_ORDER;
 
 	private final ConversionService conversionService = new DefaultConversionService();
 
-	private final Map<String, PropertySource<?>> cache = new HashMap<String, PropertySource<?>>();
-
-	private final PropertySourceAnnotations annotations = new PropertySourceAnnotations();
-
-	private PropertySourceLoadersFactory propertySourceLoadersFactory = new DefaultPropertySourceLoadersFactory();
-
-	/**
-	 * Binds the early {@link Environment} to the {@link SpringApplication}. This makes it
-	 * possible to set {@link SpringApplication} properties dynamically, like the sources
-	 * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
-	 * ("spring.main.web_environment=true") or the flag to switch off the banner
-	 * ("spring.main.show_banner=false").
-	 */
 	@Override
-	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+	public void onApplicationEvent(ApplicationEvent event) {
+		if (event instanceof ApplicationEnvironmentPreparedEvent) {
+			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+		}
+		if (event instanceof ApplicationPreparedEvent) {
+			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		}
+	};
+
+	private void onApplicationEnvironmentPreparedEvent(
+			ApplicationEnvironmentPreparedEvent event) {
 		Environment environment = event.getEnvironment();
 		if (environment instanceof ConfigurableEnvironment) {
-			configure((ConfigurableEnvironment) environment, event.getSpringApplication());
+			onApplicationEnvironmentPreparedEvent((ConfigurableEnvironment) environment,
+					event.getSpringApplication());
 		}
 	}
 
-	private void configure(ConfigurableEnvironment environment,
-			SpringApplication springApplication) {
-		for (Object source : springApplication.getSources()) {
-			this.annotations.addFromSource(source);
+	private void onApplicationEnvironmentPreparedEvent(
+			ConfigurableEnvironment environment, SpringApplication application) {
+		RandomValuePropertySource.addToEnvironment(environment);
+		try {
+			PropertySource<?> defaultProperties = environment.getPropertySources()
+					.remove(DEFAULT_PROPERTIES);
+			new Loader(environment).load();
+			if (defaultProperties != null) {
+				environment.getPropertySources().addLast(defaultProperties);
+			}
 		}
-		load(environment, new DefaultResourceLoader());
-		environment.getPropertySources().addAfter(
-				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				new RandomValuePropertySource("random"));
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to load configuration files", ex);
+		}
+		bindToSpringApplication(application, environment);
+	}
 
-		int sourcesSizeBefore = springApplication.getSources().size();
-		// Set bean properties from the early environment
-		PropertyValues propertyValues = new PropertySourcesPropertyValues(
-				environment.getPropertySources());
-		RelaxedDataBinder binder = new RelaxedDataBinder(springApplication, "spring.main");
+	private void bindToSpringApplication(SpringApplication application,
+			ConfigurableEnvironment environment) {
+		RelaxedDataBinder binder = new RelaxedDataBinder(application, "spring.main");
 		binder.setConversionService(this.conversionService);
-		binder.bind(propertyValues);
-
-		if (springApplication.getSources().size() > sourcesSizeBefore) {
-			// Configure again in case there are new @PropertySources
-			configure(environment, springApplication);
-		}
+		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
 	}
 
-	private void load(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
-
-		LoadCandidates candidates = new LoadCandidates(environment, resourceLoader);
-		PropertySource<?> defaultProperties = environment.getPropertySources().remove(
-				"defaultProperties");
-
-		// Load to allow a file that defines active profiles to be considered
-		String firstPropertySourceName = loadInitial(environment, resourceLoader,
-				candidates);
-
-		// Apply the active profiles (if any) from the first property source
-		if (environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
-			activeProfilesFromProperty(environment,
-					environment.getProperty(ACTIVE_PROFILES_PROPERTY), true);
-		}
-
-		// Apply any profile additions from any source
-		activeProfileAdditionsFromAnySource(environment);
-
-		// Repeatedly load property sources in case additional profiles are activated
-		int numberOfPropertySources;
-		do {
-			numberOfPropertySources = environment.getPropertySources().size();
-			activeProfileAdditionsFromAnySource(environment);
-			loadAgain(environment, resourceLoader, candidates, firstPropertySourceName);
-		}
-		while (environment.getPropertySources().size() > numberOfPropertySources);
-
-		if (defaultProperties != null) {
-			environment.getPropertySources().addLast(defaultProperties);
-		}
-	}
-
-	private void activeProfileAdditionsFromAnySource(ConfigurableEnvironment environment) {
-		for (PropertySource<?> propertySource : environment.getPropertySources()) {
-			if (propertySource.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
-				activeProfilesFromProperty(environment,
-						propertySource.getProperty(ACTIVE_PROFILES_PROPERTY), false);
-			}
-		}
-	}
-
-	private void activeProfilesFromProperty(ConfigurableEnvironment environment,
-			Object property, boolean addAll) {
-		for (String profile : StringUtils.commaDelimitedListToSet(property.toString())) {
-			boolean addition = profile.startsWith("+");
-			profile = (addition ? profile.substring(1) : profile);
-			if (addAll || addition) {
-				environment.addActiveProfile(profile);
-			}
-		}
-	}
-
-	private String loadInitial(ConfigurableEnvironment environment,
-			ResourceLoader resourceLoader, LoadCandidates candidates) {
-		String firstSourceName = null;
-		// Initial load allows profiles to be activated
-		for (String candidate : candidates) {
-			for (String path : StringUtils.commaDelimitedListToStringArray(environment
-					.resolvePlaceholders(candidate))) {
-
-				if (LOCATION_VARIABLE.equals(candidate) && !path.contains("$")) {
-					if (!path.contains(":")) {
-						path = "file:" + path;
-					}
-					path = StringUtils.cleanPath(path);
-				}
-
-				PropertySource<?> source = loadPropertySource(environment,
-						resourceLoader, path, null);
-				if (source != null) {
-					if (firstSourceName == null) {
-						firstSourceName = source.getName();
-					}
-					environment.getPropertySources().addLast(source);
-				}
-			}
-		}
-		return firstSourceName;
-	}
-
-	private void loadAgain(ConfigurableEnvironment environment,
-			ResourceLoader resourceLoader, LoadCandidates candidates,
-			String firstPropertySourceName) {
-		for (String profile : environment.getActiveProfiles()) {
-			for (String candidate : candidates) {
-				PropertySource<?> source = loadPropertySource(environment,
-						resourceLoader, candidate, profile);
-				addBeforeOrLast(environment, firstPropertySourceName, source);
-			}
-		}
-	}
-
-	private void addBeforeOrLast(ConfigurableEnvironment environment,
-			String relativePropertySourceName, PropertySource<?> source) {
-		if (source != null) {
-			MutablePropertySources propertySources = environment.getPropertySources();
-			// Originals go at the end so they don't override the specific profiles
-			if (relativePropertySourceName != null) {
-				propertySources.addBefore(relativePropertySourceName, source);
-			}
-			else {
-				propertySources.addLast(source);
-			}
-		}
-	}
-
-	private PropertySource<?> loadPropertySource(ConfigurableEnvironment environment,
-			ResourceLoader resourceLoader, String location, String profile) {
-
-		Class<?> type = this.annotations.configuration(location);
-
-		String suffix = "." + StringUtils.getFilenameExtension(location);
-		if (StringUtils.hasLength(profile)) {
-			location = location.replace(suffix, "-" + profile + suffix);
-		}
-
-		if (isPropertySourceAnnotationOnExcludedType(environment, profile, type, location)) {
-			return null;
-		}
-
-		Resource resource = resourceLoader.getResource(location);
-		String name = this.annotations.name(location);
-		name = (name != null ? name : location);
-		return getPropertySource(environment, name, resource, profile);
-	}
-
-	private boolean isPropertySourceAnnotationOnExcludedType(Environment environment,
-			String profile, Class<?> type, String location) {
-
-		if (type == null) {
-			// No configuration class to worry about, just a vanilla properties location
-			return false;
-		}
-
-		if (StringUtils.hasText(profile)
-				&& !this.annotations.getLocations().contains(location)) {
-			// We are looking for profile specific properties and this one isn't
-			// explicitly asked for in propertySourceAnnotations
-			return true;
-		}
-
-		AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(
-				new DefaultListableBeanFactory(), environment);
-		int before = reader.getRegistry().getBeanDefinitionCount();
-		reader.register(type);
-		int after = reader.getRegistry().getBeanDefinitionCount();
-
-		// Return if the configuration class was @Conditional and excluded
-		return (after == before);
-	}
-
-	private PropertySource<?> getPropertySource(Environment environment, String name,
-			Resource resource, String profile) {
-		if (resource == null || !resource.exists()) {
-			return null;
-		}
-		String key = resource.getDescription() + (profile == null ? "" : "#" + profile);
-		if (this.cache.containsKey(key)) {
-			return this.cache.get(key);
-		}
-		for (PropertySourceLoader loader : this.propertySourceLoadersFactory
-				.getLoaders(environment)) {
-			if (loader.supports(resource)) {
-				PropertySource<?> propertySource = loader.load(name, resource);
-				this.cache.put(key, propertySource);
-				return propertySource;
-			}
-		}
-		throw new IllegalStateException("No supported loader found for "
-				+ "configuration resource: " + resource);
+	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		ConfigurableApplicationContext context = event.getApplicationContext();
+		context.addBeanFactoryPostProcessor(new PropertySourceOrderingPostProcessor(
+				context));
 	}
 
 	public void setOrder(int order) {
@@ -323,181 +169,233 @@ public class ConfigFileApplicationListener implements
 	}
 
 	/**
-	 * Sets the names of the files that should be loaded (excluding file extension) as a
-	 * comma separated list. Defaults to "application".
+	 * Set the search locations that will be considered as a comma-separated list.
 	 */
-	public void setNames(String names) {
+	public void setSearchLocations(String locations) {
+		Assert.hasLength(locations, "Locations must not be empty");
+		this.searchLocations = locations;
+	}
+
+	/**
+	 * Sets the names of the files that should be loaded (excluding file extension) as a
+	 * comma-separated list.
+	 */
+	public void setSearchNames(String names) {
+		Assert.hasLength(names, "Names must not be empty");
 		this.names = names;
 	}
 
 	/**
-	 * Set the search locations that will be considered.
+	 * {@link BeanFactoryPostProcessor} to re-order our property sources below any
+	 * {@code @ProperySource} items added by the {@link ConfigurationClassPostProcessor}.
 	 */
-	public void setSearchLocations(String[] searchLocations) {
-		this.searchLocations = (searchLocations == null ? null : searchLocations.clone());
-	}
+	private class PropertySourceOrderingPostProcessor implements
+			BeanFactoryPostProcessor, Ordered {
 
-	/**
-	 * Set the {@link PropertySourceLoadersFactory} that will be used to create
-	 * {@link PropertySourceLoader}s.
-	 */
-	public void setPropertySourceLoadersFactory(
-			PropertySourceLoadersFactory propertySourceLoaderFactory) {
-		this.propertySourceLoadersFactory = propertySourceLoaderFactory;
-	}
+		private ConfigurableApplicationContext context;
 
-	/**
-	 * Provides {@link Iterable} access to candidate property sources.
-	 */
-	private class LoadCandidates implements Iterable<String> {
-
-		private final List<String> candidates;
-
-		public LoadCandidates(ConfigurableEnvironment environment,
-				ResourceLoader resourceLoader) {
-			Set<String> candidates = new LinkedHashSet<String>();
-			addLoadCandidatesFromSearchLocations(environment, candidates);
-			candidates.add(LOCATION_VARIABLE);
-			// @PropertySource annotation locations go last here (eventually highest
-			// priority). This unfortunately isn't the same semantics as @PropertySource
-			// in Spring and it's hard to change that (so the property source gets added
-			// again in last position by Spring later in the cycle).
-			addLoadCandidatesFromAnnotations(environment, resourceLoader, candidates);
-			this.candidates = new ArrayList<String>(candidates);
-			Collections.reverse(this.candidates);
-		}
-
-		private void addLoadCandidatesFromSearchLocations(
-				ConfigurableEnvironment environment, Set<String> candidates) {
-			String[] names = StringUtils.commaDelimitedListToStringArray(environment
-					.resolvePlaceholders(ConfigFileApplicationListener.this.names));
-			for (String location : ConfigFileApplicationListener.this.searchLocations) {
-				for (String extension : new String[] { ".properties", ".yml" }) {
-					for (int i = names.length - 1; i >= 0; i--) {
-						candidates.add(location + names[i] + extension);
-					}
-				}
-			}
-		}
-
-		private void addLoadCandidatesFromAnnotations(
-				ConfigurableEnvironment environment, ResourceLoader resourceLoader,
-				Set<String> candidates) {
-			for (String location : ConfigFileApplicationListener.this.annotations
-					.getLocations()) {
-				Resource resource = resourceLoader.getResource(environment
-						.resolvePlaceholders(location));
-				if (!ConfigFileApplicationListener.this.annotations
-						.ignoreResourceNotFound(location) && !resource.exists()) {
-					throw new IllegalStateException("Resource not found: " + location);
-				}
-				candidates.add(location);
-			}
+		public PropertySourceOrderingPostProcessor(ConfigurableApplicationContext context) {
+			this.context = context;
 		}
 
 		@Override
-		public Iterator<String> iterator() {
-			return this.candidates.iterator();
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
+				throws BeansException {
+			reorderSources(this.context.getEnvironment());
+		}
+
+		private void reorderSources(ConfigurableEnvironment environment) {
+			ConfigurationPropertySources.finishAndRelocate(environment
+					.getPropertySources());
+			PropertySource<?> defaultProperties = environment.getPropertySources()
+					.remove(DEFAULT_PROPERTIES);
+			if (defaultProperties != null) {
+				environment.getPropertySources().addLast(defaultProperties);
+			}
 		}
 
 	}
 
 	/**
-	 * {@link PropertySource} that returns a random value for any property that starts
-	 * with {@literal "random."}. Return a {@code byte[]} unless the property name ends
-	 * with {@literal ".int} or {@literal ".long"}.
+	 * Loads candidate property sources and configures the active profiles.
 	 */
-	private static class RandomValuePropertySource extends PropertySource<Random> {
+	private class Loader {
 
-		public RandomValuePropertySource(String name) {
-			super(name, new Random());
+		private final ConfigurableEnvironment environment;
+
+		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+
+		private PropertySourcesLoader propertiesLoader;
+
+		private Queue<String> profiles;
+
+		private boolean activatedProfiles;
+
+		public Loader(ConfigurableEnvironment environment) {
+			this.environment = environment;
+		}
+
+		public void load() throws IOException {
+			this.propertiesLoader = new PropertySourcesLoader();
+			this.profiles = new LinkedList<String>();
+			this.profiles.add(null);
+			this.profiles.addAll(Arrays.asList(this.environment.getActiveProfiles()));
+			this.activatedProfiles = false;
+			addActiveProfiles(this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
+
+			while (!this.profiles.isEmpty()) {
+				String profile = this.profiles.poll();
+				for (String location : getSearchLocations()) {
+					for (String name : getSearchNames()) {
+						load(location, name, profile);
+					}
+				}
+			}
+
+			addConfigurationProperties(this.propertiesLoader.getPropertySources());
+		}
+
+		private void load(String location, String name, String profile)
+				throws IOException {
+
+			// Try to load directly from the location
+			PropertySource<?> locationPropertySource = load(location, profile);
+
+			// If that fails, try a search
+			if (locationPropertySource == null) {
+				for (String ext : this.propertiesLoader.getAllFileExtensions()) {
+					if (profile != null) {
+						// Try the profile specific file (with a null profile section)
+						load(location + name + "-" + profile + "." + ext, null);
+					}
+					// Try the profile (if any) specific section of the normal file
+					load(location + name + "." + ext, profile);
+				}
+			}
+		}
+
+		private PropertySource<?> load(String resourceLocation, String profile)
+				throws IOException {
+			Resource resource = this.resourceLoader.getResource(resourceLocation);
+			if (resource != null && resource.exists()) {
+				String name = "applicationConfig: " + resource.getDescription();
+				if (StringUtils.hasLength(profile)) {
+					name += " " + profile;
+				}
+				PropertySource<?> propertySource = this.propertiesLoader.load(resource,
+						name, profile);
+				if (propertySource != null) {
+					addActiveProfiles(propertySource
+							.getProperty(ACTIVE_PROFILES_PROPERTY));
+				}
+				return propertySource;
+			}
+			return null;
+		}
+
+		private void addActiveProfiles(Object property) {
+			String profiles = (property == null ? null : property.toString());
+			boolean profilesNotActivatedWhenCalled = !this.activatedProfiles;
+			for (String profile : asResolvedSet(profiles, null)) {
+				boolean addition = profile.startsWith("+");
+				profile = (addition ? profile.substring(1) : profile);
+				if (profilesNotActivatedWhenCalled || addition) {
+					this.profiles.add(profile);
+					this.environment.addActiveProfile(profile);
+					this.activatedProfiles = true;
+				}
+			}
+		}
+
+		public Set<String> getSearchLocations() {
+			Set<String> locations = new LinkedHashSet<String>();
+			locations.addAll(asResolvedSet(
+					ConfigFileApplicationListener.this.searchLocations,
+					DEFAULT_SEARCH_LOCATIONS));
+			if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
+				for (String path : asResolvedSet(
+						this.environment.getProperty(CONFIG_LOCATION_PROPERTY), null)) {
+					if (!path.contains("$")) {
+						if (!path.contains(":")) {
+							path = "file:" + path;
+						}
+						path = StringUtils.cleanPath(path);
+					}
+					locations.add(path);
+				}
+			}
+			return locations;
+		}
+
+		public Set<String> getSearchNames() {
+			if (this.environment.containsProperty(CONFIG_NAME_PROPERTY)) {
+				return asResolvedSet(this.environment.getProperty(CONFIG_NAME_PROPERTY),
+						null);
+			}
+			return asResolvedSet(ConfigFileApplicationListener.this.names, DEFAULT_NAMES);
+		}
+
+		private Set<String> asResolvedSet(String value, String fallback) {
+			List<String> list = Arrays.asList(StringUtils
+					.commaDelimitedListToStringArray(value != null ? this.environment
+							.resolvePlaceholders(value) : fallback));
+			Collections.reverse(list);
+			return new LinkedHashSet<String>(list);
+		}
+
+		private void addConfigurationProperties(MutablePropertySources sources) {
+			List<PropertySource<?>> reorderedSources = new ArrayList<PropertySource<?>>();
+			for (PropertySource<?> item : sources) {
+				reorderedSources.add(item);
+			}
+			Collections.reverse(reorderedSources);
+			this.environment.getPropertySources().addLast(
+					new ConfigurationPropertySources(reorderedSources));
+		}
+
+	}
+
+	/**
+	 * Holds the configuration {@link PropertySource}s as they are loaded can relocate
+	 * them once configuration classes have been processed.
+	 */
+	static class ConfigurationPropertySources extends PropertySource<Object> {
+
+		private static final String NAME = "applicationConfigurationProperties";
+
+		private final Collection<PropertySource<?>> sources;
+
+		public ConfigurationPropertySources(Collection<PropertySource<?>> sources) {
+			super(NAME);
+			this.sources = sources;
 		}
 
 		@Override
 		public Object getProperty(String name) {
-			if (!name.startsWith("random.")) {
-				return null;
-			}
-			if (name.endsWith("int")) {
-				return getSource().nextInt();
-			}
-			if (name.endsWith("long")) {
-				return getSource().nextLong();
-			}
-			byte[] bytes = new byte[32];
-			getSource().nextBytes(bytes);
-			return DigestUtils.md5DigestAsHex(bytes);
-		}
-
-	}
-
-	/**
-	 * Holds details collected from
-	 * {@link org.springframework.context.annotation.PropertySource} annotations.
-	 */
-	private static class PropertySourceAnnotations {
-
-		private final Collection<String> locations = new LinkedHashSet<String>();
-
-		private final Map<String, String> names = new HashMap<String, String>();
-
-		private final Map<String, Class<?>> configs = new HashMap<String, Class<?>>();
-
-		private final Map<String, Boolean> ignores = new HashMap<String, Boolean>();
-
-		public void addFromSource(Object source) {
-			if (source instanceof Class<?>) {
-				addFromSource((Class<?>) source);
-			}
-		}
-
-		private void addFromSource(Class<?> source) {
-			for (org.springframework.context.annotation.PropertySource propertySource : AnnotationUtils
-					.getRepeatableAnnotation(source, PropertySources.class,
-							org.springframework.context.annotation.PropertySource.class)) {
-				add(source, propertySource);
-			}
-		}
-
-		private void add(Class<?> source,
-				org.springframework.context.annotation.PropertySource annotation) {
-			this.locations.addAll(Arrays.asList(annotation.value()));
-			if (StringUtils.hasText(annotation.name())) {
-				for (String location : annotation.value()) {
-					this.names.put(location, annotation.name());
+			for (PropertySource<?> propertySource : this.sources) {
+				Object value = propertySource.getProperty(name);
+				if (value != null) {
+					return value;
 				}
 			}
-			for (String location : annotation.value()) {
-				boolean reallyIgnore = annotation.ignoreResourceNotFound();
-				if (this.ignores.containsKey(location)) {
-					// Only if they all ignore this location will it be ignored
-					reallyIgnore &= this.ignores.get(location);
+			return null;
+		}
+
+		public static void finishAndRelocate(MutablePropertySources propertySources) {
+			ConfigurationPropertySources removed = (ConfigurationPropertySources) propertySources
+					.remove(ConfigurationPropertySources.NAME);
+			if (removed != null) {
+				for (PropertySource<?> propertySource : removed.sources) {
+					propertySources.addLast(propertySource);
 				}
-				this.ignores.put(location, reallyIgnore);
-				this.configs.put(location, source);
 			}
 		}
 
-		public Class<?> configuration(String location) {
-			return this.configs.get(location);
-		}
-
-		public boolean ignoreResourceNotFound(String location) {
-			return Boolean.TRUE.equals(this.ignores.get(location));
-		}
-
-		public String name(String location) {
-			String name = this.names.get(location);
-			if (name == null || Collections.frequency(this.names.values(), name) > 1) {
-				return null;
-			}
-			// Only if there is a unique name for this location
-			return "boot." + name;
-		}
-
-		public Collection<String> getLocations() {
-			return this.locations;
-		}
 	}
 
 }

@@ -14,29 +14,39 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.config;
+package org.springframework.boot.env;
+
+import java.io.IOException;
 
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * Strategy interface used to load a {@link PropertySource}.
+ * Strategy interface located via {@link SpringFactoriesLoader} and used to load a
+ * {@link PropertySource}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public interface PropertySourceLoader {
 
 	/**
-	 * Returns {@code true} if the {@link Resource} is supported.
-	 * @return if the resource is supported
+	 * Returns the file extensions that the loader supports (excluding the '.').
 	 */
-	boolean supports(Resource resource);
+	String[] getFileExtensions();
 
 	/**
 	 * Load the resource into a property source.
 	 * @param name the name of the property source
-	 * @return a property source
+	 * @param resource the resource to load
+	 * @param profile the name of the profile to load or {@code null}. The profile can be
+	 * used to load multi-document files (such as YAML). Simple property formats should
+	 * {@code null} when asked to load a profile.
+	 * @return a property source or {@code null}
+	 * @throws IOException
 	 */
-	PropertySource<?> load(String name, Resource resource);
+	PropertySource<?> load(String name, Resource resource, String profile)
+			throws IOException;
 
 }

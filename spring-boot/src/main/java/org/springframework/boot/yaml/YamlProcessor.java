@@ -17,6 +17,8 @@
 package org.springframework.boot.yaml;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -37,7 +39,7 @@ import org.yaml.snakeyaml.Yaml;
  * 
  * @author Dave Syer
  */
-public class YamlProcessor {
+public abstract class YamlProcessor {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -75,14 +77,15 @@ public class YamlProcessor {
 	 * </pre>
 	 * @param matchers a map of keys to value patterns (regular expressions)
 	 */
-	public void setDocumentMatchers(List<? extends DocumentMatcher> matchers) {
-		this.documentMatchers = Collections.unmodifiableList(matchers);
+	public void setDocumentMatchers(DocumentMatcher... matchers) {
+		this.documentMatchers = Collections
+				.unmodifiableList(new ArrayList<DocumentMatcher>(Arrays.asList(matchers)));
 	}
 
 	/**
 	 * Flag indicating that a document for which all the
-	 * {@link #setDocumentMatchers(List) document matchers} abstain will nevertheless
-	 * match.
+	 * {@link #setDocumentMatchers(DocumentMatcher...) document matchers} abstain will
+	 * nevertheless match.
 	 * @param matchDefault the flag to set (default true)
 	 */
 	public void setMatchDefault(boolean matchDefault) {
@@ -111,10 +114,10 @@ public class YamlProcessor {
 	/**
 	 * Provides an opportunity for subclasses to process the Yaml parsed from the supplied
 	 * resources. Each resource is parsed in turn and the documents inside checked against
-	 * the {@link #setDocumentMatchers(List) matchers}. If a document matches it is passed
-	 * into the callback, along with its representation as Properties. Depending on the
-	 * {@link #setResolutionMethod(ResolutionMethod)} not all of the documents will be
-	 * parsed.
+	 * the {@link #setDocumentMatchers(DocumentMatcher...) matchers}. If a document
+	 * matches it is passed into the callback, along with its representation as
+	 * Properties. Depending on the {@link #setResolutionMethod(ResolutionMethod)} not all
+	 * of the documents will be parsed.
 	 * @param callback a callback to delegate to once matching documents are found
 	 */
 	protected void process(MatchCallback callback) {
@@ -172,6 +175,7 @@ public class YamlProcessor {
 			result.put("document", object);
 			return result;
 		}
+
 		Map<Object, Object> map = (Map<Object, Object>) object;
 		for (Entry<Object, Object> entry : map.entrySet()) {
 			Object value = entry.getValue();
@@ -191,43 +195,42 @@ public class YamlProcessor {
 	}
 
 	private boolean process(Map<String, Object> map, MatchCallback callback) {
+
 		Properties properties = new Properties();
 		assignProperties(properties, map, null);
+
 		if (this.documentMatchers.isEmpty()) {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug("Merging document (no matchers set)" + map);
 			}
 			callback.process(properties, map);
+			return true;
 		}
-		else {
-			boolean valueFound = false;
-			MatchStatus result = MatchStatus.ABSTAIN;
-			for (DocumentMatcher matcher : this.documentMatchers) {
-				MatchStatus match = matcher.matches(properties);
-				result = MatchStatus.getMostSpecific(match, result);
-				if (match == MatchStatus.FOUND) {
-					if (this.logger.isDebugEnabled()) {
-						this.logger.debug("Matched document with document matcher: "
-								+ properties);
-					}
-					callback.process(properties, map);
-					valueFound = true;
-					// No need to check for more matches
-					break;
-				}
-			}
-			if (result == MatchStatus.ABSTAIN && this.matchDefault) {
+
+		MatchStatus result = MatchStatus.ABSTAIN;
+		for (DocumentMatcher matcher : this.documentMatchers) {
+			MatchStatus match = matcher.matches(properties);
+			result = MatchStatus.getMostSpecific(match, result);
+			if (match == MatchStatus.FOUND) {
 				if (this.logger.isDebugEnabled()) {
-					this.logger.debug("Matched document with default matcher: " + map);
+					this.logger.debug("Matched document with document matcher: "
+							+ properties);
 				}
 				callback.process(properties, map);
-			}
-			else if (!valueFound) {
-				this.logger.debug("Unmatched document");
-				return false;
+				return true;
 			}
 		}
-		return true;
+
+		if (result == MatchStatus.ABSTAIN && this.matchDefault) {
+			if (this.logger.isDebugEnabled()) {
+				this.logger.debug("Matched document with default matcher: " + map);
+			}
+			callback.process(properties, map);
+			return true;
+		}
+
+		this.logger.debug("Unmatched document");
+		return false;
 	}
 
 	private void assignProperties(Properties properties, Map<String, Object> input,
@@ -300,7 +303,21 @@ public class YamlProcessor {
 	 * Status returned from {@link DocumentMatcher#matches(Properties)}
 	 */
 	public static enum MatchStatus {
-		FOUND, NOT_FOUND, ABSTAIN;
+
+		/**
+		 * A match was found.
+		 */
+		FOUND,
+
+		/**
+		 * No match was found.
+		 */
+		NOT_FOUND,
+
+		/**
+		 * The matcher should not be considered.
+		 */
+		ABSTAIN;
 
 		/**
 		 * Compare two {@link MatchStatus} items, returning the most specific status.

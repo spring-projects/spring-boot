@@ -43,6 +43,36 @@ public class ReproTests {
 		assertThat(context.getEnvironment().acceptsProfiles("a"), equalTo(true));
 	}
 
+	@Test
+	public void activeProfilesWithYaml() throws Exception {
+		// gh-322
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro";
+		assertVersionProperty(application.run(configName, "--spring.profiles.active=B"),
+				"B", "B");
+		assertVersionProperty(application.run(configName), "B", "B");
+		assertVersionProperty(application.run(configName, "--spring.profiles.active=A"),
+				"A", "A");
+		assertVersionProperty(application.run(configName, "--spring.profiles.active=C"),
+				"C", "C");
+		assertVersionProperty(
+				application.run(configName, "--spring.profiles.active=A,C"), "A", "A",
+				"C");
+		assertVersionProperty(
+				application.run(configName, "--spring.profiles.active=C,A"), "C", "C",
+				"A");
+	}
+
+	private void assertVersionProperty(ConfigurableApplicationContext context,
+			String expectedVersion, String... expectedActiveProfiles) {
+		assertThat(context.getEnvironment().getActiveProfiles(),
+				equalTo(expectedActiveProfiles));
+		assertThat("version mismatch", context.getEnvironment().getProperty("version"),
+				equalTo(expectedVersion));
+		context.close();
+	}
+
 	@Configuration
 	public static class Config {
 
