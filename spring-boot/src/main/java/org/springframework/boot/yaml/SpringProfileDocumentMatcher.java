@@ -37,6 +37,13 @@ public class SpringProfileDocumentMatcher implements DocumentMatcher {
 
 	private String[] activeProfiles = new String[0];
 
+	public SpringProfileDocumentMatcher() {
+	}
+
+	public SpringProfileDocumentMatcher(String... profiles) {
+		addActiveProfiles(profiles);
+	}
+
 	public void addActiveProfiles(String... profiles) {
 		LinkedHashSet<String> set = new LinkedHashSet<String>(
 				Arrays.asList(this.activeProfiles));

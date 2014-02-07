@@ -17,7 +17,6 @@
 package org.springframework.boot.config;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -27,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.config.ConfigFileApplicationListener.ConfigurationPropertySources;
 import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -34,10 +34,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.io.Resource;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -72,7 +71,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void loadPropertiesFile() throws Exception {
-		this.initializer.setNames("testproperties");
+		this.initializer.setSearchNames("testproperties");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
@@ -108,7 +107,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void loadTwoPropertiesFiles() throws Exception {
-		this.initializer.setNames("moreproperties,testproperties");
+		this.initializer.setSearchNames("moreproperties,testproperties");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));
@@ -116,7 +115,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void loadYamlFile() throws Exception {
-		this.initializer.setNames("testyaml");
+		this.initializer.setSearchNames("testyaml");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromyamlfile"));
@@ -128,7 +127,7 @@ public class ConfigFileApplicationListenerTests {
 	public void commandLineWins() throws Exception {
 		this.environment.getPropertySources().addFirst(
 				new SimpleCommandLinePropertySource("--my.property=fromcommandline"));
-		this.initializer.setNames("testproperties");
+		this.initializer.setSearchNames("testproperties");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromcommandline"));
@@ -137,7 +136,7 @@ public class ConfigFileApplicationListenerTests {
 	@Test
 	public void systemPropertyWins() throws Exception {
 		System.setProperty("my.property", "fromsystem");
-		this.initializer.setNames("testproperties");
+		this.initializer.setSearchNames("testproperties");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromsystem"));
@@ -145,7 +144,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void loadPropertiesThenProfileProperties() throws Exception {
-		this.initializer.setNames("enableprofile");
+		this.initializer.setSearchNames("enableprofile");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromprofilepropertiesfile"));
@@ -153,7 +152,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void profilePropertiesUsedInPlaceholders() throws Exception {
-		this.initializer.setNames("enableprofile");
+		this.initializer.setSearchNames("enableprofile");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("one.more");
 		assertThat(property, equalTo("fromprofilepropertiesfile"));
@@ -161,7 +160,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void yamlProfiles() throws Exception {
-		this.initializer.setNames("testprofiles");
+		this.initializer.setSearchNames("testprofiles");
 		this.environment.setActiveProfiles("dev");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
@@ -172,7 +171,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void yamlSetsProfiles() throws Exception {
-		this.initializer.setNames("testsetprofiles");
+		this.initializer.setSearchNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(Arrays.asList(this.environment.getActiveProfiles()), contains("dev"));
@@ -183,7 +182,7 @@ public class ConfigFileApplicationListenerTests {
 	public void yamlProfileCanBeChanged() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.profiles.active:prod");
-		this.initializer.setNames("testsetprofiles");
+		this.initializer.setSearchNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
 		assertThat(this.environment.getActiveProfiles(), equalTo(new String[] { "prod" }));
 	}
@@ -206,10 +205,11 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(this.environment, containsProperySource(location));
+		assertThat(this.environment, containsProperySource("applicationConfig: "
+				+ "class path resource [specificlocation.properties]"));
 		// The default property source is still there
-		assertThat(this.environment, containsProperySource("classpath:"
-				+ "/application.properties"));
+		assertThat(this.environment, containsProperySource("applicationConfig: "
+				+ "class path resource [application.properties]"));
 		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
 	}
 
@@ -219,35 +219,8 @@ public class ConfigFileApplicationListenerTests {
 		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment, containsProperySource(location));
-	}
-
-	@Test
-	public void unsupportedResource() throws Exception {
-		this.initializer
-				.setPropertySourceLoadersFactory(new PropertySourceLoadersFactory() {
-					@Override
-					public List<PropertySourceLoader> getLoaders(Environment environment) {
-						return Arrays
-								.<PropertySourceLoader> asList(new PropertySourceLoader() {
-
-									@Override
-									public boolean supports(Resource resource) {
-										return false;
-									}
-
-									@Override
-									public org.springframework.core.env.PropertySource<?> load(
-											String name, Resource resource) {
-										return null;
-									}
-
-								});
-					}
-				});
-		this.expected.expect(IllegalStateException.class);
-		this.expected.expectMessage("No supported loader");
-		this.initializer.onApplicationEvent(this.event);
+		assertThat(this.environment, containsProperySource("applicationConfig: "
+				+ "URL [" + location + "]"));
 	}
 
 	@Test
@@ -256,7 +229,8 @@ public class ConfigFileApplicationListenerTests {
 		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment, containsProperySource("file:" + location));
+		assertThat(this.environment, containsProperySource("applicationConfig: "
+				+ "URL [file:" + location + "]"));
 	}
 
 	@Test
@@ -266,8 +240,8 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(context.getEnvironment(), containsProperySource("classpath:"
-				+ "/specificlocation.properties"));
+		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+				+ "[specificlocation.properties]"));
 		context.close();
 	}
 
@@ -282,8 +256,8 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(context.getEnvironment(), containsProperySource("classpath:"
-				+ "/specificlocation.properties"));
+		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+				+ "[specificlocation.properties]"));
 		context.close();
 	}
 
@@ -295,10 +269,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		// In this case "foo" should be the specificlocation.properties source, but Spring
-		// will have shifted it to the back of the line.
-		assertThat(context.getEnvironment().getPropertySources().get("boot.foo"),
-				notNullValue());
+		assertThat(context.getEnvironment(), containsProperySource("foo"));
 		context.close();
 	}
 
@@ -311,10 +282,10 @@ public class ConfigFileApplicationListenerTests {
 				.run("--spring.profiles.active=myprofile");
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
-		assertThat(context.getEnvironment(), containsProperySource("classpath:"
-				+ "/enableprofile.properties"));
-		assertThat(context.getEnvironment(), not(containsProperySource("classpath:"
-				+ "/enableprofile-myprofile.properties")));
+		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+				+ "[enableprofile.properties]"));
+		assertThat(context.getEnvironment(), not(containsProperySource("classpath:/"
+				+ "enableprofile-myprofile.properties")));
 		context.close();
 	}
 
@@ -339,8 +310,8 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));
-		assertThat(context.getEnvironment(),
-				containsProperySource("classpath:/specificlocation.properties"));
+		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+				+ "[specificlocation.properties]"));
 		context.close();
 	}
 
@@ -352,12 +323,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));
-		// foo is there but it is a dead rubber because the individual sources get higher
-		// priority (and are named after the resource locations)
-		assertThat(context.getEnvironment().getPropertySources().get("foo"),
-				notNullValue());
-		assertThat(context.getEnvironment(),
-				containsProperySource("classpath:/specificlocation.properties"));
+		assertThat(context.getEnvironment(), containsProperySource("foo"));
 		context.close();
 	}
 
@@ -377,7 +343,6 @@ public class ConfigFileApplicationListenerTests {
 	private static Matcher<? super ConfigurableEnvironment> containsProperySource(
 			final String sourceName) {
 		return new TypeSafeDiagnosingMatcher<ConfigurableEnvironment>() {
-
 			@Override
 			public void describeTo(Description description) {
 				description.appendText("environment containing property source ")
@@ -387,9 +352,12 @@ public class ConfigFileApplicationListenerTests {
 			@Override
 			protected boolean matchesSafely(ConfigurableEnvironment item,
 					Description mismatchDescription) {
-				mismatchDescription.appendText("Not matched against: ").appendValue(
+				MutablePropertySources sources = new MutablePropertySources(
 						item.getPropertySources());
-				return item.getPropertySources().contains(sourceName);
+				ConfigurationPropertySources.finishAndRelocate(sources);
+				mismatchDescription.appendText("Not matched against: ").appendValue(
+						sources);
+				return sources.contains(sourceName);
 			}
 		};
 	}
