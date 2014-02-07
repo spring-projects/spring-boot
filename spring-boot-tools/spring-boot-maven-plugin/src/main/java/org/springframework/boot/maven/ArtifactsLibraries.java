@@ -17,8 +17,10 @@
 package org.springframework.boot.maven;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +35,10 @@ import org.springframework.boot.loader.tools.LibraryScope;
  * @author Phillip Webb
  */
 public class ArtifactsLibraries implements Libraries {
+
+	private static final Set<String> SUPPORTED_TYPES = Collections
+			.unmodifiableSet(new HashSet<String>(Arrays.asList("jar", "ejb",
+					"ejb-client", "test-jar", "bundle")));
 
 	private static final Map<String, LibraryScope> SCOPES;
 	static {
@@ -52,9 +58,11 @@ public class ArtifactsLibraries implements Libraries {
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
 		for (Artifact artifact : this.artifacts) {
-			LibraryScope scope = SCOPES.get(artifact.getScope());
-			if (scope != null && artifact.getFile() != null) {
-				callback.library(artifact.getFile(), scope);
+			if (SUPPORTED_TYPES.contains(artifact.getType())) {
+				LibraryScope scope = SCOPES.get(artifact.getScope());
+				if (scope != null && artifact.getFile() != null) {
+					callback.library(artifact.getFile(), scope);
+				}
 			}
 		}
 	}
