@@ -134,6 +134,7 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
+	@Ignore("Intermittent failure on CI. See #323")
 	public void jmsSample() throws Exception {
 		String output = this.cli.run("jms.groovy");
 		assertTrue("Wrong output: " + output,
@@ -142,8 +143,7 @@ public class SampleIntegrationTests {
 	}
 
 	@Test
-	@Ignore
-	// this test requires RabbitMQ to be run, so disable it be default
+	@Ignore("Requires RabbitMQ to be run, so disable it be default")
 	public void rabbitSample() throws Exception {
 		String output = this.cli.run("rabbit.groovy");
 		assertTrue("Wrong output: " + output,
