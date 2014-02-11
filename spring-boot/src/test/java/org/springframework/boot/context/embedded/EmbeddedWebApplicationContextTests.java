@@ -45,7 +45,6 @@ import org.springframework.web.context.request.SessionScope;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -109,14 +108,17 @@ public class EmbeddedWebApplicationContextTests {
 	}
 
 	@Test
-	public void registersShutdownHook() throws Exception {
+	public void doesNotRegistersShutdownHook() throws Exception {
+		// See gh-314 for background. We no longer register the shutdown hook
+		// since it is really the callers responsibility. The shutdown hook could
+		// also be problematic in a classic WAR deployment.
 		addEmbeddedServletContainerFactoryBean();
 		this.context.refresh();
 		Field shutdownHookField = AbstractApplicationContext.class
 				.getDeclaredField("shutdownHook");
 		shutdownHookField.setAccessible(true);
 		Object shutdownHook = shutdownHookField.get(this.context);
-		assertThat(shutdownHook, not(nullValue()));
+		assertThat(shutdownHook, nullValue());
 	}
 
 	@Test
