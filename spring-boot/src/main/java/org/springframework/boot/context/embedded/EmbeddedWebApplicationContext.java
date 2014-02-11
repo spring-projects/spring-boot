@@ -128,7 +128,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	@Override
 	protected void onRefresh() {
 		super.onRefresh();
-		registerShutdownHook();
 		try {
 			createEmbeddedServletContainer();
 		}
