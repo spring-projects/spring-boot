@@ -54,7 +54,7 @@ public class YamlProcessor {
 	 * documents in a YAML resource. In YAML documents are separated by
 	 * <code>---<code> lines, and each document is converted to properties before the match is made. E.g.
 	 * 
-	 * <pre>
+	 * <pre class="code">
 	 * environment: dev
 	 * url: http://dev.bar.com
 	 * name: Developer Setup
@@ -67,7 +67,7 @@ public class YamlProcessor {
 	 * when mapped with <code>documentMatchers = YamlProcessor.mapMatcher({"environment": "prod"})</code>
 	 * would end up as
 	 * 
-	 * <pre>
+	 * <pre class="code">
 	 * environment=prod
 	 * url=http://foo.bar.com
 	 * name=My Cool App

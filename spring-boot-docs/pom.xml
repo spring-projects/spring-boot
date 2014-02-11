@@ -56,6 +56,12 @@
 										<dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
 									</dependencySourceIncludes>
 									<attach>false</attach>
+									<quiet>true</quiet>
+									<stylesheetfile>${basedir}/src/main/javadoc/spring-javadoc.css</stylesheetfile>
+									<links>
+										<link>http://docs.spring.io/spring-framework/docs/4.0.x/javadoc-api/</link>
+										<link>http://docs.oracle.com/javase/7/docs/api/</link>
+									</links>
 								</configuration>
 							</execution>
 						</executions>

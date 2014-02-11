@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
  * index, etc.), and VCAP_SERVICES is a hash of lists where the keys are service labels
  * and the values are lists of hashes of service instance meta data. Examples are:
  * 
- * <pre>
+ * <pre class="code">
  * VCAP_APPLICATION: {"instance_id":"2ce0ac627a6c8e47e936d829a3a47b5b","instance_index":0,
  *   "version":"0138c4a6-2a73-416b-aca0-572c09f7ca53","name":"foo",
  *   "uris":["foo.cfapps.io"], ...}
@@ -66,7 +66,7 @@ import org.springframework.util.StringUtils;
  * instance name (e.g. "mysql" in the example above), and value equal to that instances
  * properties, and then flattened in the same way. E.g.
  * 
- * <pre>
+ * <pre class="code">
  * vcap.application.instance_id: 2ce0ac627a6c8e47e936d829a3a47b5b
  * vcap.application.version: 0138c4a6-2a73-416b-aca0-572c09f7ca53
  * vcap.application.name: foo

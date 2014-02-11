@@ -42,14 +42,14 @@ import org.springframework.core.io.ResourceLoader;
  * convenient fluent API and context hierarchy support. Simple example of a context
  * hierarchy:
  * 
- * <pre>
+ * <pre class="code">
  * new SpringApplicationBuilder(ParentConfig.class).child(ChildConfig.class).run(args);
  * </pre>
  * 
  * Another common use case is setting default arguments, e.g. active Spring profiles, to
  * set up the environment for an application:
  * 
- * <pre>
+ * <pre class="code">
  * new SpringApplicationBuilder(Application.class).profiles(&quot;server&quot;)
  * 		.defaultArgs(&quot;--transport=local&quot;).run(args);
  * </pre>

@@ -31,7 +31,7 @@ import org.springframework.beans.factory.FactoryBean;
  * is all entries with the same nested key of type Map at any depth are merged. For
  * example:
  * 
- * <pre>
+ * <pre class="code">
  * foo:
  *   bar:
  *    one: two
@@ -41,7 +41,7 @@ import org.springframework.beans.factory.FactoryBean;
  * 
  * plus (later in the list)
  * 
- * <pre>
+ * <pre class="code">
  * foo:
  *   bar:
  *    one: 2
@@ -51,7 +51,7 @@ import org.springframework.beans.factory.FactoryBean;
  * 
  * results in an effecive input of
  * 
- * <pre>
+ * <pre class="code">
  * foo:
  *   bar:
  *    one: 2
