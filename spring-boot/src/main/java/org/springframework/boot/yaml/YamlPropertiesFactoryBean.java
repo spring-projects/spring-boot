@@ -28,7 +28,7 @@ import org.springframework.beans.factory.FactoryBean;
  * The Properties created by this factory have nested paths for hierarchical objects, so
  * for instance this YAML
  * 
- * <pre>
+ * <pre class="code">
  * environments:
  *   dev:
  *     url: http://dev.bar.com
@@ -40,7 +40,7 @@ import org.springframework.beans.factory.FactoryBean;
  * 
  * is transformed into these Properties:
  * 
- * <pre>
+ * <pre class="code">
  * environments.dev.url=http://dev.bar.com
  * environments.dev.name=Developer Setup
  * environments.prod.url=http://foo.bar.com
@@ -50,7 +50,7 @@ import org.springframework.beans.factory.FactoryBean;
  * Lists are represented as comma-separated values (useful for simple String values) and
  * also as property keys with <code>[]</code> dereferencers, for example this YAML:
  * 
- * <pre>
+ * <pre class="code">
  * servers:
  * - dev.bar.com
  * - foo.bar.com
@@ -58,7 +58,7 @@ import org.springframework.beans.factory.FactoryBean;
  * 
  * becomes java Properties like this:
  * 
- * <pre>
+ * <pre class="code">
  * servers=dev.bar.com,foo.bar.com
  * servers[0]=dev.bar.com
  * servers[1]=foo.bar.com
