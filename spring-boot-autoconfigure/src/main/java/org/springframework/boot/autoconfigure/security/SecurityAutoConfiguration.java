@@ -16,28 +16,15 @@
 
 package org.springframework.boot.autoconfigure.security;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.AbstractConfiguredSecurityBuilder;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security. Provides an
@@ -58,68 +45,9 @@ import org.springframework.util.ReflectionUtils;
 @Import({ SpringBootWebSecurityConfiguration.class,
 		AuthenticationManagerConfiguration.class })
 public class SecurityAutoConfiguration {
-
-	private static Log logger = LogFactory.getLog(SecurityAutoConfiguration.class);
-
 	@Bean
 	@ConditionalOnMissingBean
 	public SecurityProperties securityProperties() {
 		return new SecurityProperties();
-	}
-
-	@Bean
-	@ConditionalOnBean(AuthenticationManagerBuilder.class)
-	@ConditionalOnMissingBean
-	public AuthenticationManager authenticationManager(
-			AuthenticationManagerBuilder builder, ObjectPostProcessor<Object> processor)
-			throws Exception {
-		if (!isBuilt(builder)) {
-			authentication(builder, securityProperties());
-		}
-		else if (builder.getOrBuild() == null) {
-			builder = new AuthenticationManagerBuilder(processor);
-			authentication(builder, securityProperties());
-		}
-		return builder.getOrBuild();
-	}
-
-	/**
-	 * Convenience method for building the default AuthenticationManager from
-	 * SecurityProperties.
-	 * 
-	 * @param builder the AuthenticationManagerBuilder to use
-	 * @param security the SecurityProperties in use
-	 */
-	public static void authentication(AuthenticationManagerBuilder builder,
-			SecurityProperties security) throws Exception {
-
-		if (isBuilt(builder)) {
-			return;
-		}
-
-		User user = security.getUser();
-
-		if (user.isDefaultPassword()) {
-			logger.info("\n\nUsing default password for application endpoints: "
-					+ user.getPassword() + "\n\n");
-		}
-
-		Set<String> roles = new LinkedHashSet<String>(user.getRole());
-
-		builder.inMemoryAuthentication().withUser(user.getName())
-				.password(user.getPassword())
-				.roles(roles.toArray(new String[roles.size()]));
-
-	}
-
-	private static boolean isBuilt(AuthenticationManagerBuilder builder) {
-		Method configurers = ReflectionUtils.findMethod(
-				AbstractConfiguredSecurityBuilder.class, "getConfigurers");
-		Method unbuilt = ReflectionUtils.findMethod(
-				AbstractConfiguredSecurityBuilder.class, "isUnbuilt");
-		ReflectionUtils.makeAccessible(configurers);
-		ReflectionUtils.makeAccessible(unbuilt);
-		return !((Collection<?>) ReflectionUtils.invokeMethod(configurers, builder))
-				.isEmpty() || !((Boolean) ReflectionUtils.invokeMethod(unbuilt, builder));
 	}
 }
