@@ -18,6 +18,7 @@ package org.springframework.boot.bind;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -232,11 +233,19 @@ public class RelaxedDataBinder extends DataBinder {
 				&& !descriptor.getType().equals(Object.class)) {
 			return;
 		}
+		String extensionName = path.prefix(index + 1);
+		if (wrapper.isReadableProperty(extensionName)) {
+			Object currentValue = wrapper.getPropertyValue(extensionName);
+			if ((descriptor.isCollection() && currentValue instanceof Collection)
+					|| (!descriptor.isCollection() && currentValue instanceof Map)) {
+				return;
+			}
+		}
 		Object extend = new LinkedHashMap<String, Object>();
 		if (descriptor.isCollection()) {
 			extend = new ArrayList<Object>();
 		}
-		wrapper.setPropertyValue(path.prefix(index + 1), extend);
+		wrapper.setPropertyValue(extensionName, extend);
 	}
 
 	private String getActualPropertyName(BeanWrapper target, String prefix, String name) {
