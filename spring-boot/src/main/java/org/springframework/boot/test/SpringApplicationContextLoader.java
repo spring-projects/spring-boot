@@ -58,7 +58,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig)
 			throws Exception {
 
-		SpringApplication application = new SpringApplication();
+		SpringApplication application = getSpringApplication();
 		application.setSources(getSources(mergedConfig));
 		if (!ObjectUtils.isEmpty(mergedConfig.getActiveProfiles())) {
 			application.setAdditionalProfiles(mergedConfig.getActiveProfiles());
@@ -75,6 +75,15 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		application.setInitializers(initializers);
 
 		return application.run();
+	}
+
+	/**
+	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can override
+	 * this method to add custom behaviour
+	 * @return {@link org.springframework.boot.SpringApplication} instance
+	 */
+	protected SpringApplication getSpringApplication() {
+		return new SpringApplication();
 	}
 
 	private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
