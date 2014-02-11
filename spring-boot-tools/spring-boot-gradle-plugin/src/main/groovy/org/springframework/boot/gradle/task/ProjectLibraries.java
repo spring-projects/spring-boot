@@ -94,12 +94,10 @@ class ProjectLibraries implements Libraries {
 	}
 
 	private Set<ResolvedArtifact> getResolvedArtifacts(Configuration configuration) {
-		if (configuration != null) {
-			return configuration.getResolvedConfiguration().getResolvedArtifacts();
-		}
-		else {
+		if (configuration == null) {
 			return Collections.emptySet();
 		}
+		return configuration.getResolvedConfiguration().getResolvedArtifacts();
 	}
 
 	private Set<ResolvedArtifact> getResolvedArtifacts(String configurationName) {

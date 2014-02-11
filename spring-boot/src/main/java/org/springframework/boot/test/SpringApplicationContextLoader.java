@@ -78,8 +78,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 	}
 
 	/**
-	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can override
-	 * this method to add custom behaviour
+	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can
+	 * override this method to add custom behaviour
 	 * @return {@link org.springframework.boot.SpringApplication} instance
 	 */
 	protected SpringApplication getSpringApplication() {
