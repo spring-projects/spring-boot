@@ -360,11 +360,9 @@ public class ConfigFileApplicationListener implements
 			candidates.add(LOCATION_VARIABLE);
 			// @PropertySource annotation locations go last here (eventually highest
 			// priority). This unfortunately isn't the same semantics as @PropertySource
-			// in
-			// Spring and it's hard to change that (so the property source gets added
-			// again in
-			// last position by Spring later in the cycle).
-			addLoadCandidatesFromAnnotations(resourceLoader, candidates);
+			// in Spring and it's hard to change that (so the property source gets added
+			// again in last position by Spring later in the cycle).
+			addLoadCandidatesFromAnnotations(environment, resourceLoader, candidates);
 			this.candidates = new ArrayList<String>(candidates);
 			Collections.reverse(this.candidates);
 		}
@@ -382,11 +380,13 @@ public class ConfigFileApplicationListener implements
 			}
 		}
 
-		private void addLoadCandidatesFromAnnotations(ResourceLoader resourceLoader,
+		private void addLoadCandidatesFromAnnotations(
+				ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 				Set<String> candidates) {
 			for (String location : ConfigFileApplicationListener.this.annotations
 					.getLocations()) {
-				Resource resource = resourceLoader.getResource(location);
+				Resource resource = resourceLoader.getResource(environment
+						.resolvePlaceholders(location));
 				if (!ConfigFileApplicationListener.this.annotations
 						.ignoreResourceNotFound(location) && !resource.exists()) {
 					throw new IllegalStateException("Resource not found: " + location);

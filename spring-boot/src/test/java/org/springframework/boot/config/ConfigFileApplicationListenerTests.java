@@ -273,6 +273,22 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void propertySourceAnnotationWithPlaceholder() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"source.location:specificlocation");
+		SpringApplication application = new SpringApplication(
+				WithPropertySourcePlaceholders.class);
+		application.setEnvironment(this.environment);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application.run();
+		String property = context.getEnvironment().getProperty("my.property");
+		assertThat(property, equalTo("fromspecificlocation"));
+		assertNotNull(context.getEnvironment().getPropertySources()
+				.get("classpath:/specificlocation.properties"));
+		context.close();
+	}
+
+	@Test
 	public void propertySourceAnnotationWithName() throws Exception {
 		SpringApplication application = new SpringApplication(
 				WithPropertySourceAndName.class);
@@ -373,6 +389,12 @@ public class ConfigFileApplicationListenerTests {
 	@Configuration
 	@PropertySource("classpath:/specificlocation.properties")
 	protected static class WithPropertySource {
+
+	}
+
+	@Configuration
+	@PropertySource("classpath:/${source.location}.properties")
+	protected static class WithPropertySourcePlaceholders {
 
 	}
 
