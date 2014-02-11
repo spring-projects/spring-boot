@@ -292,16 +292,21 @@ Try it out:
 The default auto configuration has an in-memory user database with one
 entry, and the `<password>` value has to be read from the logs (at
 INFO level) by default.  If you want to extend or expand that, or
-point to a database or directory server, you only need to provide a
-`@Bean` definition for an `AuthenticationManager`, e.g. in your
-`SampleController`:
+point to a database or directory server, you can add the `@EnableGlobalAuthentication`
+annotation and configure the global `AuthenticationManagerBuilder` as shown below:
 
+    @Controller
+    @EnableAutoConfiguration
+    @EnableGlobalAuthentication
+    public class SampleController {
 
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+            auth.inMemoryAuthentication()
+                    .withUser("client").password("secret").roles("USER");
+        }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("client").password("secret").roles("USER");
+        ...
     }
 
 Try it out:
