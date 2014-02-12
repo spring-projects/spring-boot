@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.config;
+package org.springframework.boot.context.config;
 
 import java.util.Arrays;
 
@@ -26,8 +26,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.config.ConfigFileApplicationListener.ConfigurationPropertySources;
-import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;

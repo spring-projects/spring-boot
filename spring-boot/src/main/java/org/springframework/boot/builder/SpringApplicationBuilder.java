@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.ParentContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -205,7 +204,6 @@ public class SpringApplicationBuilder {
 		this.parent.context = parent;
 		this.parent.running.set(true);
 		initializers(new ParentContextApplicationContextInitializer(parent));
-
 		return this;
 	}
 

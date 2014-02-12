@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.web.SpringBootServletInitializer;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;

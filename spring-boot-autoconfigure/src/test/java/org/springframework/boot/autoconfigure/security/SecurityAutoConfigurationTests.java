@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.logging.AutoConfigurationReportLoggingInitializer;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
-import org.springframework.boot.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;

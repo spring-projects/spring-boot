@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.env;
+package org.springframework.boot.context.config;
 
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.config.EnvironmentDelegateApplicationListener;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;

@@ -14,38 +14,40 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.event;
+package org.springframework.boot.context.event;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 /**
- * Event published when a {@link SpringApplication} is starting up and the
- * {@link Environment} is first available for inspection and modification.
+ * Event published as when a {@link SpringApplication} is starting up and the
+ * {@link ApplicationContext} is fully prepared but not refreshed. The bean definitions
+ * will be loaded and the {@link Environment} is ready for use at this stage.
  * 
  * @author Dave Syer
  */
-public class ApplicationEnvironmentPreparedEvent extends SpringApplicationEvent {
+public class ApplicationPreparedEvent extends SpringApplicationEvent {
 
-	private final ConfigurableEnvironment environment;
+	private final ConfigurableApplicationContext context;
 
 	/**
 	 * @param application the current application
 	 * @param args the argumemts the application is running with
-	 * @param environment the environment that was just created
+	 * @param context the ApplicationContext about to be refreshed
 	 */
-	public ApplicationEnvironmentPreparedEvent(SpringApplication application,
-			String[] args, ConfigurableEnvironment environment) {
+	public ApplicationPreparedEvent(SpringApplication application, String[] args,
+			ConfigurableApplicationContext context) {
 		super(application, args);
-		this.environment = environment;
+		this.context = context;
 	}
 
 	/**
-	 * @return the environment
+	 * @return the context
 	 */
-	public ConfigurableEnvironment getEnvironment() {
-		return this.environment;
+	public ConfigurableApplicationContext getApplicationContext() {
+		return this.context;
 	}
 
 }

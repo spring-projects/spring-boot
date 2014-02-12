@@ -19,12 +19,12 @@ package org.springframework.boot.context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.boot.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 
 /**
- * An {@link ApplicationListener}that halts application startup if the system file
+ * An {@link ApplicationListener} that halts application startup if the system file
  * encoding does not match an expected value set in the environment. By default has no
  * effect, but if you set <code>spring.mandatory_file_encoding</code> (or some camelCase
  * or UPPERCASE variant of that) to the name of a character encoding (e.g. "UTF-8") then

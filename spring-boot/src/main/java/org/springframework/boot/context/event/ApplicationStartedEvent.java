@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.event;
+package org.springframework.boot.context.event;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;

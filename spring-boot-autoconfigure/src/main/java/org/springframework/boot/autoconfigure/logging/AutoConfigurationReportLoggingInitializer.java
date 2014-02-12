@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
-import org.springframework.boot.event.ApplicationFailedEvent;
+import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
