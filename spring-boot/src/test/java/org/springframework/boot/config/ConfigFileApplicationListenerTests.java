@@ -108,7 +108,7 @@ public class ConfigFileApplicationListenerTests {
 
 	@Test
 	public void loadTwoPropertiesFiles() throws Exception {
-		this.initializer.setNames("testproperties,moreproperties");
+		this.initializer.setNames("moreproperties,testproperties");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));

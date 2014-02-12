@@ -369,12 +369,12 @@ public class ConfigFileApplicationListener implements
 
 		private void addLoadCandidatesFromSearchLocations(
 				ConfigurableEnvironment environment, Set<String> candidates) {
+			String[] names = StringUtils.commaDelimitedListToStringArray(environment
+					.resolvePlaceholders(ConfigFileApplicationListener.this.names));
 			for (String location : ConfigFileApplicationListener.this.searchLocations) {
 				for (String extension : new String[] { ".properties", ".yml" }) {
-					for (String name : StringUtils
-							.commaDelimitedListToStringArray(environment
-									.resolvePlaceholders(ConfigFileApplicationListener.this.names))) {
-						candidates.add(location + name + extension);
+					for (int i = names.length - 1; i >= 0; i--) {
+						candidates.add(location + names[i] + extension);
 					}
 				}
 			}
