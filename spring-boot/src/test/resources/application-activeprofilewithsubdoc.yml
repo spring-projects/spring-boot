@@ -1,0 +1,2 @@
+spring.profiles: activeprofilewithsubdoc
+foobar: baz

@@ -270,8 +270,9 @@ public class ConfigFileApplicationListener implements
 			if (locationPropertySource == null) {
 				for (String ext : this.propertiesLoader.getAllFileExtensions()) {
 					if (profile != null) {
-						// Try the profile specific file (with a null profile section)
+						// Try the profile specific file
 						load(location + name + "-" + profile + "." + ext, null);
+						load(location + name + "-" + profile + "." + ext, profile);
 					}
 					// Try the profile (if any) specific section of the normal file
 					load(location + name + "." + ext, profile);

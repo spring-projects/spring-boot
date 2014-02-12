@@ -17,6 +17,7 @@
 package org.springframework.boot.env;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -39,10 +40,12 @@ public class PropertiesPropertySourceLoader implements PropertySourceLoader {
 	@Override
 	public PropertySource<?> load(String name, Resource resource, String profile)
 			throws IOException {
-		if (profile != null) {
-			return null;
+		if (profile == null) {
+			Properties properties = PropertiesLoaderUtils.loadProperties(resource);
+			if (!properties.isEmpty()) {
+				return new PropertiesPropertySource(name, properties);
+			}
 		}
-		return new PropertiesPropertySource(name,
-				PropertiesLoaderUtils.loadProperties(resource));
+		return null;
 	}
 }
