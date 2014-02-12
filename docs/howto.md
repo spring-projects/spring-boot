@@ -13,7 +13,8 @@ context fails to start, and also if you enable DEBUG logging for
 Spring Boot. If you use the Actuator there is also an endpoint
 `/autoconfig` that renders the report in JSON. Use that to debug the
 application and see what features have been added (and which not) by
-Spring Boot at runtime.
+Spring Boot at runtime. Also [see here](./autoconfig.md) for a list of
+auto configuration classes with links.
 
 Many more questions can be answered by looking at the source code and
 Javadocs. Some rules of thumb:
