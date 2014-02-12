@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.event;
+package org.springframework.boot.context.event;
 
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringApplication;

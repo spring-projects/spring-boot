@@ -5,20 +5,20 @@ org.springframework.boot.env.YamlPropertySourceLoader
 
 # Run Participants
 org.springframework.boot.SpringApplicationRunParticipant=\
-org.springframework.boot.event.EventPublishingRunParticipant
+org.springframework.boot.context.event.EventPublishingRunParticipant
 
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.context.ContextIdApplicationContextInitializer,\
-org.springframework.boot.context.env.EnvironmentDelegateApplicationContextInitializer
+org.springframework.boot.context.config.EnvironmentDelegateApplicationContextInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
+org.springframework.boot.builder.ParentContextCloserApplicationListener,\
 org.springframework.boot.cloudfoundry.VcapApplicationListener,\
-org.springframework.boot.config.ConfigFileApplicationListener,\
 org.springframework.boot.context.FileEncodingApplicationListener,\
-org.springframework.boot.context.ParentContextCloserApplicationListener,\
-org.springframework.boot.context.env.EnvironmentDelegateApplicationListener,\
+org.springframework.boot.context.config.ConfigFileApplicationListener,\
+org.springframework.boot.context.config.EnvironmentDelegateApplicationListener,\
 org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener,\
 org.springframework.boot.logging.ClasspathLoggingApplicationListener,\
 org.springframework.boot.logging.LoggingApplicationListener

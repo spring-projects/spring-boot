@@ -14,33 +14,33 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.event;
+package org.springframework.boot.context.event;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.Environment;
 
 /**
- * Event published as when a {@link SpringApplication} is starting up and the
- * {@link ApplicationContext} is fully prepared but not refreshed. The bean definitions
- * will be loaded and the {@link Environment} is ready for use at this stage.
+ * Event published by a {@link SpringApplication} when it fails to start.
  * 
  * @author Dave Syer
  */
-public class ApplicationPreparedEvent extends SpringApplicationEvent {
+public class ApplicationFailedEvent extends SpringApplicationEvent {
 
 	private final ConfigurableApplicationContext context;
 
+	private final Throwable exception;
+
 	/**
 	 * @param application the current application
-	 * @param args the argumemts the application is running with
-	 * @param context the ApplicationContext about to be refreshed
+	 * @param context the context that was being created (maybe null)
+	 * @param args the arguments the application was running with
+	 * @param exception the exception that caused the error
 	 */
-	public ApplicationPreparedEvent(SpringApplication application, String[] args,
-			ConfigurableApplicationContext context) {
+	public ApplicationFailedEvent(SpringApplication application, String[] args,
+			ConfigurableApplicationContext context, Throwable exception) {
 		super(application, args);
 		this.context = context;
+		this.exception = exception;
 	}
 
 	/**
@@ -48,6 +48,13 @@ public class ApplicationPreparedEvent extends SpringApplicationEvent {
 	 */
 	public ConfigurableApplicationContext getApplicationContext() {
 		return this.context;
+	}
+
+	/**
+	 * @return the exception
+	 */
+	public Throwable getException() {
+		return this.exception;
 	}
 
 }

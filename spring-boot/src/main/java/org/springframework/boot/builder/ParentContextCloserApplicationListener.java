@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context;
+package org.springframework.boot.builder;
 
-import org.springframework.boot.context.ParentContextApplicationContextInitializer.ParentContextAvailableEvent;
+import org.springframework.boot.builder.ParentContextApplicationContextInitializer.ParentContextAvailableEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
