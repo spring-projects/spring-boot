@@ -70,7 +70,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 			try {
 				SLF4JBridgeHandler.removeHandlersForRootLogger();
 			}
-			catch (NoSuchMethodError e) {
+			catch (NoSuchMethodError ex) {
 				// Method missing in older versions of SLF4J like in JBoss AS 7.1
 				SLF4JBridgeHandler.uninstall();
 			}
