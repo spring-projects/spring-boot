@@ -17,26 +17,21 @@
 package org.springframework.boot.autoconfigure.data;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
-import org.springframework.data.repository.config.RepositoryBeanDefinitionBuilder;
-import org.springframework.data.repository.config.RepositoryBeanNameGenerator;
-import org.springframework.data.repository.config.RepositoryConfiguration;
+import org.springframework.data.repository.config.RepositoryConfigurationDelegate;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
@@ -48,11 +43,11 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Oliver Gierke
  */
 public abstract class AbstractRepositoryConfigurationSourceSupport implements
-		BeanFactoryAware, ImportBeanDefinitionRegistrar, BeanClassLoaderAware,
+		BeanFactoryAware, ImportBeanDefinitionRegistrar, ResourceLoaderAware,
 		EnvironmentAware {
 
-	private ClassLoader beanClassLoader;
-
+	private ResourceLoader resourceLoader;
+	
 	private BeanFactory beanFactory;
 
 	private Environment environment;
@@ -61,29 +56,11 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			final BeanDefinitionRegistry registry) {
 
-		ResourceLoader resourceLoader = new DefaultResourceLoader();
 		AnnotationRepositoryConfigurationSource configurationSource = getConfigurationSource();
 		RepositoryConfigurationExtension extension = getRepositoryConfigurationExtension();
-		extension.registerBeansForRoot(registry, configurationSource);
-
-		RepositoryBeanNameGenerator generator = new RepositoryBeanNameGenerator();
-		generator.setBeanClassLoader(this.beanClassLoader);
-
-		Collection<RepositoryConfiguration<AnnotationRepositoryConfigurationSource>> repositoryConfigurations = extension
-				.getRepositoryConfigurations(configurationSource, resourceLoader);
-
-		for (RepositoryConfiguration<AnnotationRepositoryConfigurationSource> repositoryConfiguration : repositoryConfigurations) {
-			RepositoryBeanDefinitionBuilder builder = new RepositoryBeanDefinitionBuilder(
-					repositoryConfiguration, extension);
-			BeanDefinitionBuilder definitionBuilder = builder.build(registry,
-					resourceLoader);
-			extension.postProcess(definitionBuilder, configurationSource);
-
-			String beanName = generator.generateBeanName(
-					definitionBuilder.getBeanDefinition(), registry);
-			registry.registerBeanDefinition(beanName,
-					definitionBuilder.getBeanDefinition());
-		}
+		
+		RepositoryConfigurationDelegate delegate = new RepositoryConfigurationDelegate(configurationSource, resourceLoader);
+		delegate.registerRepositoriesIn(registry, extension);
 	}
 
 	private AnnotationRepositoryConfigurationSource getConfigurationSource() {
@@ -121,8 +98,8 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	protected abstract RepositoryConfigurationExtension getRepositoryConfigurationExtension();
 
 	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.beanClassLoader = classLoader;
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
 	}
 
 	@Override
