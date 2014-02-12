@@ -340,6 +340,17 @@ public class ConfigFileApplicationListenerTests {
 		assertThat(context.getEnvironment(), not(acceptsProfiles("missing")));
 	}
 
+	@Test
+	public void profileSubDocumentInProfileSpecificFile() throws Exception {
+		// gh-340
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		ConfigurableApplicationContext context = application
+				.run("--spring.profiles.active=activeprofilewithsubdoc");
+		String property = context.getEnvironment().getProperty("foobar");
+		assertThat(property, equalTo("baz"));
+	}
+
 	private static Matcher<? super ConfigurableEnvironment> containsProperySource(
 			final String sourceName) {
 		return new TypeSafeDiagnosingMatcher<ConfigurableEnvironment>() {

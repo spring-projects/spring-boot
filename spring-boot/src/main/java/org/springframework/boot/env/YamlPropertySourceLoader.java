@@ -54,7 +54,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 			}
 			factory.setResources(new Resource[] { resource });
 			Properties properties = factory.getObject();
-			if (profile == null || !properties.isEmpty()) {
+			if (!properties.isEmpty()) {
 				return new PropertiesPropertySource(name, properties);
 			}
 		}
