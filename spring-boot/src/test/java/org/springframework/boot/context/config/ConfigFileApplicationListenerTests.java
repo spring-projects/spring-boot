@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import org.hamcrest.Description;
@@ -26,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.boot.context.config.ConfigFileApplicationListener.ConfigurationPropertySources;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -38,6 +38,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.ReflectionUtils;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -350,6 +351,17 @@ public class ConfigFileApplicationListenerTests {
 				.run("--spring.profiles.active=activeprofilewithsubdoc");
 		String property = context.getEnvironment().getProperty("foobar");
 		assertThat(property, equalTo("baz"));
+	}
+
+	@Test
+	public void bindsToSpringApplication() throws Exception {
+		// gh-346
+		this.initializer.setSearchNames("bindtoapplication");
+		this.initializer.onApplicationEvent(this.event);
+		SpringApplication application = this.event.getSpringApplication();
+		Field field = ReflectionUtils.findField(SpringApplication.class, "showBanner");
+		field.setAccessible(true);
+		assertThat((Boolean) field.get(application), equalTo(false));
 	}
 
 	private static Matcher<? super ConfigurableEnvironment> containsProperySource(
