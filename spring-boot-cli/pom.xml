@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.0.0.RC3</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-cli</artifactId>
@@ -249,30 +248,21 @@
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 								<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
 								<var name="version-type" value="${project.version}" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp=".*\.(.*)" replace="\1" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
-								<propertyregex property="version-type" override="true"
-									input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+								<propertyregex property="version-type" override="true" input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+								<propertyregex property="version-type" override="true" input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+								<propertyregex property="version-type" override="true" input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+								<propertyregex property="version-type" override="true" input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
 								<stringutil string="${version-type}" property="repo">
 									<lowercase />
 								</stringutil>
-								<checksum algorithm="sha-1"
-									file="${project.build.directory}/spring-boot-cli-${project.version}-bin.tar.gz"
-									property="checksum" />
-								<echo
-									message="Customizing homebrew for ${project.version} with checksum ${checksum} in ${repo} repo" />
-								<copy file="${basedir}/src/main/homebrew/springboot.rb"
-									tofile="${project.build.directory}/springboot.rb" overwrite="true">
+								<checksum algorithm="sha-1" file="${project.build.directory}/spring-boot-cli-${project.version}-bin.tar.gz" property="checksum" />
+								<echo message="Customizing homebrew for ${project.version} with checksum ${checksum} in ${repo} repo" />
+								<copy file="${basedir}/src/main/homebrew/springboot.rb" tofile="${project.build.directory}/springboot.rb" overwrite="true">
 									<filterchain>
 										<expandproperties />
 									</filterchain>
 								</copy>
-								<attachartifact file="${project.build.directory}/springboot.rb"
-									classifier="homebrew" type="rb" />
+								<attachartifact file="${project.build.directory}/springboot.rb" classifier="homebrew" type="rb" />
 							</target>
 						</configuration>
 					</execution>
@@ -339,7 +329,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
