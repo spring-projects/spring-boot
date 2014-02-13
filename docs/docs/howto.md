@@ -16,7 +16,8 @@ context fails to start, and also if you enable DEBUG logging for
 Spring Boot. If you use the Actuator there is also an endpoint
 `/autoconfig` that renders the report in JSON. Use that to debug the
 application and see what features have been added (and which not) by
-Spring Boot at runtime.
+Spring Boot at runtime. Also [see here](./autoconfig.html) for a list of
+auto configuration classes with links.
 
 Many more questions can be answered by looking at the source code and
 Javadocs. Some rules of thumb:
@@ -541,7 +542,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void init(AuthenticationManagerBuilder builder) {
         builder.inMemoryAuthentication().withUser("barry"); // ...  etc.
     }
-    
+
     // ... other stuff for application security
 
 }
@@ -897,13 +898,14 @@ In Spring Boot you can also set the active profile in
 `application.properties`, e.g.
 
 ```properties
-spring.profiles.active: production
+spring.profiles.active=production
 ```
 
 A value set this way is replaced by the System property or environment
 variable setting, but not by the `SpringApplicationBuilder.profiles()`
 method. Thus the latter Java API can be used to augment the profiles
 without changing the defaults.
+
 
 ## Change the Location of External Properties of an Application
 
@@ -1029,22 +1031,18 @@ additional ones:
   `META-INF/spring.factories` and packaging a jar file that the
   applications all use as a library
 
-Any `ApplicationContextInitializer` registered programmatically or via
-`spring.factories` that is also an `ApplicationListener` will be
-automatically cross registered (and vice versa for listeners that are
-also initializers).  The `SpringApplication` sends some special
-`ApplicationEvents` to the listeners (even some before the context is
-created), and then registers the listeners for events published by the
-`ApplicationContext` as well:
+The `SpringApplication` sends some special `ApplicationEvents` to the
+listeners (even some before the context is created), and then registers
+the listeners for events published by the `ApplicationContext` as well:
 
-* `SpringApplicationStartEvent` at the start of a run, but before any
+* `ApplicationStartedEvent` at the start of a run, but before any
   processing except the registration of listeners and initializers.
-* `SpringApplicationEnvironmentAvailableEvent` when the `Environment`
+* `ApplicationEnvironmentPreparedEvent` when the `Environment`
   to be used in the context is known, but before the context is
   created.
-* `SpringApplicationBeforeRefreshEvent` just before the refresh is
+* `ApplicationPreparedEvent` just before the refresh is
   started, but after bean definitions have been loaded.
-* `SpringApplicationErrorEvent` if there is an exception on startup.
+* `ApplicationFailedEvent` if there is an exception on startup.
 
 
 ## Build An Executable Archive with Ant

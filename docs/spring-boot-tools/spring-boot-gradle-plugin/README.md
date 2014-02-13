@@ -144,8 +144,8 @@ The following configuration options are available:
 
 ## Further Reading
 For more information on how Spring Boot Loader archives work, take a look at the
-[spring-boot-loader](../spring-boot-loader) module. If you prefer using Maven to
-build your projects we have a [spring-boot-maven-plugin](../spring-boot-maven-plugin).
+[spring-boot-loader](../spring-boot-loader/README.html) module. If you prefer using Maven to
+build your projects we have a [spring-boot-maven-plugin](../spring-boot-maven-plugin/README.html).
 
 ### Understanding how Boot Gradle Plugin Works
 When `spring-boot` is applied to your Gradle project a default task
