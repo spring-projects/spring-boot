@@ -131,6 +131,20 @@ public class ConfigFileApplicationListener implements
 
 	private void onApplicationEnvironmentPreparedEvent(
 			ConfigurableEnvironment environment, SpringApplication application) {
+		addProperySources(environment);
+		bindToSpringApplication(environment, application);
+	}
+
+	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		addPostProcessors(event.getApplicationContext());
+	}
+
+	/**
+	 * Add config file property sources to the specified environment.
+	 * @param environment the environment to add source to
+	 * @see #addPostProcessors(ConfigurableApplicationContext)
+	 */
+	protected void addProperySources(ConfigurableEnvironment environment) {
 		RandomValuePropertySource.addToEnvironment(environment);
 		try {
 			PropertySource<?> defaultProperties = environment.getPropertySources()
@@ -143,18 +157,25 @@ public class ConfigFileApplicationListener implements
 		catch (IOException ex) {
 			throw new IllegalStateException("Unable to load configuration files", ex);
 		}
-		bindToSpringApplication(application, environment);
 	}
 
-	private void bindToSpringApplication(SpringApplication application,
-			ConfigurableEnvironment environment) {
+	/**
+	 * Bind the environment to the {@link SpringApplication}.
+	 * @param environment the environment to bind
+	 * @param application the application to bind to
+	 */
+	protected void bindToSpringApplication(ConfigurableEnvironment environment,
+			SpringApplication application) {
 		RelaxedDataBinder binder = new RelaxedDataBinder(application, "spring.main");
 		binder.setConversionService(this.conversionService);
 		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
 	}
 
-	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		ConfigurableApplicationContext context = event.getApplicationContext();
+	/**
+	 * Add appropriate post-processors to post-configure the property-sources.
+	 * @param context the context to configure
+	 */
+	protected void addPostProcessors(ConfigurableApplicationContext context) {
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingPostProcessor(
 				context));
 	}
