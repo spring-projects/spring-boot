@@ -44,8 +44,8 @@ before you begin:
 ### Manual installation
 You can download the Spring CLI distribution from the Spring software repository:
 
-* [spring-boot-cli-1.0.0.RC1-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/1.0.0.RC1/spring-boot-cli-1.0.0.RC1-bin.zip)
-* [spring-boot-cli-1.0.0.RC1-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/1.0.0.RC1/spring-boot-cli-1.0.0.RC1-bin.tar.gz)
+* [spring-boot-cli-1.0.0.RC2-bin.zip](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/1.0.0.RC2/spring-boot-cli-1.0.0.RC2-bin.zip)
+* [spring-boot-cli-1.0.0.RC2-bin.tar.gz](http://repo.spring.io/milestone/org/springframework/boot/spring-boot-cli/1.0.0.RC2/spring-boot-cli-1.0.0.RC2-bin.tar.gz)
 
 Cutting edge [snapshot distributions](http://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/)
 are also available.
@@ -66,7 +66,7 @@ itself and the Spring Boot CLI. Get `gvm` from
 
     $ gvm install springboot
     $ spring --version
-    Spring Boot v1.0.0.RC1
+    Spring Boot v1.0.0.RC2
 
 > **Note:** If you are developing features for the CLI and want easy access to the version you just built, follow these extra instructions.
 
@@ -86,7 +86,7 @@ You can see it by doing this:
 Available Springboot Versions
 ================================================================================
  > + dev
-   * 1.0.0.RC1
+   * 1.0.0.RC2
 
 ================================================================================
 + - local version
@@ -163,7 +163,7 @@ Create a `pom.xml` to import the appropriate Spring Boot starters:
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.0.0.RC1</version>
+		<version>1.0.0.RC2</version>
 	</parent>
 
 	<!-- Add typical dependencies for a web application -->
