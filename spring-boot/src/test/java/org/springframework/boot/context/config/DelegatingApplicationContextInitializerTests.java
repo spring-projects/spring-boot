@@ -19,7 +19,7 @@ package org.springframework.boot.context.config;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.boot.context.config.EnvironmentDelegateApplicationContextInitializer;
+import org.springframework.boot.context.config.DelegatingApplicationContextInitializer;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.ApplicationContextInitializer;
@@ -33,16 +33,16 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link EnvironmentDelegateApplicationContextInitializer}.
+ * Tests for {@link DelegatingApplicationContextInitializer}.
  * 
  * @author Phillip Webb
  */
-public class EnvironmentDelegateApplicationContextInitializerTests {
+public class DelegatingApplicationContextInitializerTests {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 
-	private final EnvironmentDelegateApplicationContextInitializer initializer = new EnvironmentDelegateApplicationContextInitializer();
+	private final DelegatingApplicationContextInitializer initializer = new DelegatingApplicationContextInitializer();
 
 	@Test
 	public void orderedInitialize() throws Exception {
