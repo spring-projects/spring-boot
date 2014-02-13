@@ -44,6 +44,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -386,15 +387,26 @@ public class ConfigFileApplicationListener implements
 	 * Holds the configuration {@link PropertySource}s as they are loaded can relocate
 	 * them once configuration classes have been processed.
 	 */
-	static class ConfigurationPropertySources extends PropertySource<Object> {
+	static class ConfigurationPropertySources extends
+			EnumerablePropertySource<Collection<PropertySource<?>>> {
 
 		private static final String NAME = "applicationConfigurationProperties";
 
 		private final Collection<PropertySource<?>> sources;
 
+		private final String[] names;
+
 		public ConfigurationPropertySources(Collection<PropertySource<?>> sources) {
-			super(NAME);
+			super(NAME, sources);
 			this.sources = sources;
+			List<String> names = new ArrayList<String>();
+			for (PropertySource<?> source : sources) {
+				if (source instanceof EnumerablePropertySource) {
+					names.addAll(Arrays.asList(((EnumerablePropertySource<?>) source)
+							.getPropertyNames()));
+				}
+			}
+			this.names = names.toArray(new String[names.size()]);
 		}
 
 		@Override
@@ -416,6 +428,11 @@ public class ConfigFileApplicationListener implements
 					propertySources.addLast(propertySource);
 				}
 			}
+		}
+
+		@Override
+		public String[] getPropertyNames() {
+			return this.names;
 		}
 
 	}
