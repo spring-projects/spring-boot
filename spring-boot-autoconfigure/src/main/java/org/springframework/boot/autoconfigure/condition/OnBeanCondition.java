@@ -106,7 +106,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					context.getClassLoader(), considerHierarchy)));
 			// add beans available through bean factory
 			beanNames.addAll(getBeanNamesFromBeanFactories(type,
-					context.getBeanFactory().getBeansOfType(FactoryBean.class).values()));
+					beanFactory.getBeansOfType(FactoryBean.class).values()));
 		}
 
 		for (String annotation : beans.getAnnotations()) {
