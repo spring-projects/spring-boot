@@ -20,10 +20,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -102,6 +104,9 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		for (String type : beans.getTypes()) {
 			beanNames.addAll(Arrays.asList(getBeanNamesForType(beanFactory, type,
 					context.getClassLoader(), considerHierarchy)));
+			// add beans available through bean factory
+			beanNames.addAll(getBeanNamesFromBeanFactories(type,
+					beanFactory.getBeansOfType(FactoryBean.class).values()));
 		}
 
 		for (String annotation : beans.getAnnotations()) {
@@ -115,6 +120,17 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 			}
 		}
 
+		return beanNames;
+	}
+
+	private Collection<? extends String> getBeanNamesFromBeanFactories(String type,
+			Collection<FactoryBean> factoryBeans) {
+		List<String> beanNames = new ArrayList<String>();
+		for (FactoryBean factoryBean : factoryBeans) {
+			if (type.equals(factoryBean.getObjectType().getName())) {
+				beanNames.add(factoryBean.getClass().getSimpleName());
+			}
+		}
 		return beanNames;
 	}
 
