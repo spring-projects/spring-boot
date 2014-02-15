@@ -24,11 +24,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
@@ -43,6 +46,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Jakub Kubrynski
  */
 class OnBeanCondition extends SpringBootCondition implements ConfigurationCondition {
 
@@ -102,6 +106,8 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		for (String type : beans.getTypes()) {
 			beanNames.addAll(Arrays.asList(getBeanNamesForType(beanFactory, type,
 					context.getClassLoader(), considerHierarchy)));
+			// add beans available through bean factory
+			beanNames.addAll(Arrays.asList(getBeanNamesFromBeanFactories(beanFactory, type)));
 		}
 
 		for (String annotation : beans.getAnnotations()) {
@@ -116,6 +122,48 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 		}
 
 		return beanNames;
+	}
+
+	private String[] getBeanNamesFromBeanFactories(ConfigurableListableBeanFactory beanFactory,
+			String type) {
+		List<String> beanNames = new ArrayList<String>();
+
+		String[] factoryBeanNames = beanFactory.getBeanNamesForType(FactoryBean.class,
+				false, false);
+
+		for (String factoryBeanName : factoryBeanNames) {
+			factoryBeanName = BeanFactoryUtils.transformedBeanName(factoryBeanName);
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(factoryBeanName);
+			if (beanDefinition.getBeanClassName() == null) {
+				BeanDefinition beanFactoryBeanDefinition = beanFactory.getBeanDefinition(
+						beanDefinition.getFactoryBeanName());
+				String beanFactoryClassName = beanFactoryBeanDefinition.getBeanClassName();
+				Class<?> beanFactoryClass;
+				try {
+					beanFactoryClass = ClassUtils.forName(beanFactoryClassName, beanFactory.getBeanClassLoader());
+				} catch (ClassNotFoundException e) {
+					return NO_BEANS;
+				}
+
+				try {
+					Method declaredMethod = beanFactoryClass.getDeclaredMethod(
+							beanDefinition.getFactoryMethodName());
+					Class<?> factoryBeanType = GenericTypeResolver.resolveTypeArgument(
+							declaredMethod.getReturnType(), FactoryBean.class);
+					if (factoryBeanType == null) {
+						factoryBeanType = GenericTypeResolver.resolveReturnTypeArgument(
+								declaredMethod, FactoryBean.class);
+					}
+					if (type.equals(factoryBeanType.getName())) {
+						beanNames.add(factoryBeanName);
+					}
+				} catch (NoSuchMethodException e) {
+					return NO_BEANS;
+				}
+			}
+		}
+
+		return StringUtils.toStringArray(beanNames);
 	}
 
 	private boolean containsBean(ConfigurableListableBeanFactory beanFactory,
