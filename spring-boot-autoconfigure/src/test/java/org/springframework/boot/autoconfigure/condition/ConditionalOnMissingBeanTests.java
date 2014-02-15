@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -38,6 +37,7 @@ import static org.junit.Assert.assertTrue;
  * 
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Jakub Kubrynski
  */
 @SuppressWarnings("resource")
 public class ConditionalOnMissingBeanTests {
@@ -102,7 +102,7 @@ public class ConditionalOnMissingBeanTests {
 	@Test
 	public void testAnnotationOnMissingBeanConditionWithEagerFactoryBean() {
 		this.context.register(FooConfiguration.class, OnAnnotationConfiguration.class,
-				ConfigurationWithFactoryBean.class,
+				FactoryBeanXmlConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertFalse(this.context.containsBean("bar"));
@@ -111,22 +111,44 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	@Ignore("This will never work - you need to use XML for FactoryBeans, or else call getObject() inside the @Bean method")
 	public void testOnMissingBeanConditionWithFactoryBean() {
-		this.context.register(ExampleBeanAndFactoryBeanConfiguration.class,
+		this.context.register(FactoryBeanConfiguration.class,
+				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		// There should be only one
-		this.context.getBean(ExampleBean.class);
+		assertThat(this.context.getBean(ExampleBean.class).toString(),
+				equalTo("fromFactory"));
+	}
+
+	@Test
+	public void testOnMissingBeanConditionWithConcreteFactoryBean() {
+		this.context.register(ConcreteFactoryBeanConfiguration.class,
+				ConditionalOnFactoryBean.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(ExampleBean.class).toString(),
+				equalTo("fromFactory"));
+	}
+
+	@Test
+	public void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
+		this.context.register(UnhelpfulFactoryBeanConfiguration.class,
+				ConditionalOnFactoryBean.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		// We could not tell that the FactoryBean would ultimately create an ExampleBean
+		assertThat(this.context.getBeansOfType(ExampleBean.class).values().size(),
+				equalTo(2));
 	}
 
 	@Test
 	public void testOnMissingBeanConditionWithFactoryBeanInXml() {
-		this.context.register(ConfigurationWithFactoryBean.class,
+		this.context.register(FactoryBeanXmlConfiguration.class,
+				ConditionalOnFactoryBean.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		// There should be only one
-		this.context.getBean(ExampleBean.class);
+		assertThat(this.context.getBean(ExampleBean.class).toString(),
+				equalTo("fromFactory"));
 	}
 
 	@Configuration
@@ -139,17 +161,41 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
-	protected static class ExampleBeanAndFactoryBeanConfiguration {
-
+	protected static class FactoryBeanConfiguration {
 		@Bean
 		public FactoryBean<ExampleBean> exampleBeanFactoryBean() {
 			return new ExampleFactoryBean("foo");
 		}
+	}
 
+	@Configuration
+	protected static class ConcreteFactoryBeanConfiguration {
+		@Bean
+		public ExampleFactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean("foo");
+		}
+	}
+
+	@Configuration
+	protected static class UnhelpfulFactoryBeanConfiguration {
+		@Bean
+		@SuppressWarnings("rawtypes")
+		public FactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean("foo");
+		}
+	}
+
+	@Configuration
+	@ImportResource("org/springframework/boot/autoconfigure/condition/factorybean.xml")
+	protected static class FactoryBeanXmlConfiguration {
+	}
+
+	@Configuration
+	protected static class ConditionalOnFactoryBean {
 		@Bean
 		@ConditionalOnMissingBean(ExampleBean.class)
 		public ExampleBean createExampleBean() {
-			return new ExampleBean();
+			return new ExampleBean("direct");
 		}
 	}
 
@@ -160,11 +206,6 @@ public class ConditionalOnMissingBeanTests {
 		public String bar() {
 			return "bar";
 		}
-	}
-
-	@Configuration
-	@ImportResource("org/springframework/boot/autoconfigure/condition/factorybean.xml")
-	protected static class ConfigurationWithFactoryBean {
 	}
 
 	@Configuration
@@ -198,7 +239,7 @@ public class ConditionalOnMissingBeanTests {
 	protected static class ExampleBeanConfiguration {
 		@Bean
 		public ExampleBean exampleBean() {
-			return new ExampleBean();
+			return new ExampleBean("test");
 		}
 	}
 
@@ -208,12 +249,24 @@ public class ConditionalOnMissingBeanTests {
 		@Bean
 		@ConditionalOnMissingBean
 		public ExampleBean exampleBean2() {
-			return new ExampleBean();
+			return new ExampleBean("test");
 		}
 
 	}
 
 	public static class ExampleBean {
+
+		private String value;
+
+		public ExampleBean(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
 	}
 
 	public static class ExampleFactoryBean implements FactoryBean<ExampleBean> {
@@ -224,7 +277,7 @@ public class ConditionalOnMissingBeanTests {
 
 		@Override
 		public ExampleBean getObject() throws Exception {
-			return new ExampleBean();
+			return new ExampleBean("fromFactory");
 		}
 
 		@Override
