@@ -43,7 +43,9 @@ public class ShellPrompts {
 	 * @see #pushPrompt(String)
 	 */
 	public void popPrompt() {
-		this.prompts.pop();
+		if (!this.prompts.isEmpty()) {
+			this.prompts.pop();
+		}
 	}
 
 	/**
