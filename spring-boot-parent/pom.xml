@@ -14,7 +14,7 @@
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.version>3.0.5</maven.version>
+		<maven.version>3.1.1</maven.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.0</maven>
@@ -36,7 +36,7 @@
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>
 				<artifactId>jopt-simple</artifactId>
-				<version>4.5</version>
+				<version>4.6</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ivy</groupId>
@@ -46,7 +46,7 @@
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-aether-provider</artifactId>
-				<version>3.1.0</version>
+				<version>3.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>

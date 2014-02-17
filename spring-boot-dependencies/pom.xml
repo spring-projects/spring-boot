@@ -32,17 +32,17 @@
 		<lettuce.version>2.3.3</lettuce.version>
 		<liquibase.version>3.1.1</liquibase.version>
 		<log4j.version>1.2.17</log4j.version>
-		<logback.version>1.1.0</logback.version>
+		<logback.version>1.1.1</logback.version>
 		<mockito.version>1.9.5</mockito.version>
 		<mongodb.version>2.11.3</mongodb.version>
 		<mysql.version>5.1.28</mysql.version>
 		<reactor.version>1.0.0.RELEASE</reactor.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
-		<slf4j.version>1.7.5</slf4j.version>
+		<slf4j.version>1.7.6</slf4j.version>
 		<snakeyaml.version>1.13</snakeyaml.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
 		<spring.version>4.0.1.RELEASE</spring.version>
-		<spring-integration.version>3.0.0.RELEASE</spring-integration.version>
+		<spring-integration.version>3.0.1.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.4.RELEASE</spring-batch.version>
 		<spring-data-jpa.version>1.5.0.RC1</spring-data-jpa.version>
 		<spring-data-mongodb.version>1.4.0.RC1</spring-data-mongodb.version>
