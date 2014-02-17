@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -24,6 +23,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.Assert;
 
@@ -38,6 +38,7 @@ import static org.junit.Assert.assertTrue;
  * 
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Jakub Kubrynski
  */
 @SuppressWarnings("resource")
 public class ConditionalOnMissingBeanTests {
@@ -111,20 +112,23 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
-	@Ignore("This will never work - you need to use XML for FactoryBeans, or else call getObject() inside the @Bean method")
-	public void testOnMissingBeanConditionWithFactoryBean() {
-		this.context.register(ExampleBeanAndFactoryBeanConfiguration.class,
+	public void testAnnotationOnMissingBeanConditionWithConcreteFactoryBeanMethod() {
+		this.context.register(ExampleBeanFactoryBeanConcreteConfiguration.class,
+				ExampleBeanMissingConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+
 		// There should be only one
 		this.context.getBean(ExampleBean.class);
 	}
 
 	@Test
-	public void testOnMissingBeanConditionWithFactoryBeanInXml() {
-		this.context.register(ConfigurationWithFactoryBean.class,
+	public void testAnnotationOnMissingBeanConditionWithGenericFactoryBeanMethod() {
+		this.context.register(ExampleBeanFactoryBeanGenericConfiguration.class,
+				ExampleBeanMissingConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+
 		// There should be only one
 		this.context.getBean(ExampleBean.class);
 	}
@@ -139,13 +143,31 @@ public class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration
-	protected static class ExampleBeanAndFactoryBeanConfiguration {
+	@Order(1)
+	protected static class ExampleBeanFactoryBeanConcreteConfiguration {
 
 		@Bean
 		public FactoryBean<ExampleBean> exampleBeanFactoryBean() {
 			return new ExampleFactoryBean("foo");
 		}
 
+	}
+
+	@Configuration
+	@Order(1)
+	protected static class ExampleBeanFactoryBeanGenericConfiguration {
+
+		@Bean
+		public FactoryBean<ExampleBean> exampleBeanFactoryBean() {
+			return new ExampleFactoryBean("foo");
+		}
+
+	}
+
+
+	@Configuration
+	@Order(2)
+	protected static class ExampleBeanMissingConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(ExampleBean.class)
 		public ExampleBean createExampleBean() {
