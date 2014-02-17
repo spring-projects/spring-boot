@@ -415,9 +415,14 @@ public class SpringApplication {
 	 * @param environment the environment to configure
 	 */
 	protected void setupProfiles(ConfigurableEnvironment environment) {
+		Set<String> profiles = new LinkedHashSet<String>();
+		environment.getActiveProfiles(); // ensure they are initialized
+		// But these ones should go first (last wins in a property key clash)
 		for (String profile : this.profiles) {
-			environment.addActiveProfile(profile);
+			profiles.add(profile);
 		}
+		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
+		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 	}
 
 	/**

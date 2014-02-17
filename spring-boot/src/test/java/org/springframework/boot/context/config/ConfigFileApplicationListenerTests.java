@@ -208,30 +208,6 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void yamlProfileOrdering() throws Exception {
-		this.initializer.setSearchNames("threeprofiles");
-		this.environment.setActiveProfiles("A", "C");
-		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment.getProperty("version"), equalTo("C"));
-	}
-
-	@Test
-	public void yamlProfileOrderingReverse() throws Exception {
-		this.initializer.setSearchNames("threeprofiles");
-		this.environment.setActiveProfiles("C", "A");
-		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment.getProperty("version"), equalTo("A"));
-	}
-
-	@Test
-	public void yamlProfileOrderingOverride() throws Exception {
-		this.initializer.setSearchNames("threeprofiles-with-override");
-		this.environment.setActiveProfiles("C", "A");
-		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment.getProperty("version"), equalTo("B"));
-	}
-
-	@Test
 	public void specificNameAndProfileFromExistingSource() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment,
 				"spring.profiles.active=specificprofile",

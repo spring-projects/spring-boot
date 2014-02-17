@@ -1,5 +1,4 @@
----
-spring.profiles.active: B
+spring.profiles.active: A,B
 ---
 spring.profiles: A
 version: A

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThat;
  * Tests to reproduce reported issues.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class ReproTests {
 
@@ -44,23 +45,113 @@ public class ReproTests {
 	}
 
 	@Test
-	public void activeProfilesWithYaml() throws Exception {
-		// gh-322
+	public void activeProfilesWithYamlAndCommandLine() throws Exception {
+		// gh-322, gh-342
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebEnvironment(false);
 		String configName = "--spring.config.name=activeprofilerepro";
 		assertVersionProperty(application.run(configName, "--spring.profiles.active=B"),
 				"B", "B");
+	}
+
+	@Test
+	public void activeProfilesWithYamlOnly() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro";
 		assertVersionProperty(application.run(configName), "B", "B");
-		assertVersionProperty(application.run(configName, "--spring.profiles.active=A"),
-				"A", "A");
+	}
+
+	@Test
+	public void orderActiveProfilesWithYamlOnly() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro-ordered";
+		assertVersionProperty(application.run(configName), "B", "A", "B");
+	}
+
+	@Test
+	public void commandLineBeatsProfilesWithYaml() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro";
 		assertVersionProperty(application.run(configName, "--spring.profiles.active=C"),
 				"C", "C");
+	}
+
+	@Test
+	public void orderProfilesWithYaml() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro";
 		assertVersionProperty(
-				application.run(configName, "--spring.profiles.active=A,C"), "A", "A",
+				application.run(configName, "--spring.profiles.active=A,C"), "C", "A",
 				"C");
+	}
+
+	@Test
+	public void reverseOrderOfProfilesWithYaml() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro";
 		assertVersionProperty(
-				application.run(configName, "--spring.profiles.active=C,A"), "C", "C",
+				application.run(configName, "--spring.profiles.active=C,A"), "A", "C",
+				"A");
+	}
+
+	@Test
+	public void activeProfilesWithYamlAndCommandLineAndNoOverride() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro-without-override";
+		assertVersionProperty(application.run(configName, "--spring.profiles.active=B"),
+				"B", "B");
+	}
+
+	@Test
+	public void activeProfilesWithYamlOnlyAndNoOverride() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro-without-override";
+		assertVersionProperty(application.run(configName), null);
+	}
+
+	@Test
+	public void commandLineBeatsProfilesWithYamlAndNoOverride() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro-without-override";
+		assertVersionProperty(application.run(configName, "--spring.profiles.active=C"),
+				"C", "C");
+	}
+
+	@Test
+	public void orderProfilesWithYamlAndNoOverride() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro-without-override";
+		assertVersionProperty(
+				application.run(configName, "--spring.profiles.active=A,C"), "C", "A",
+				"C");
+	}
+
+	@Test
+	public void reverseOrderOfProfilesWithYamlAndNoOverride() throws Exception {
+		// gh-322, gh-342
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		String configName = "--spring.config.name=activeprofilerepro-without-override";
+		assertVersionProperty(
+				application.run(configName, "--spring.profiles.active=C,A"), "A", "C",
 				"A");
 	}
 
