@@ -297,8 +297,8 @@ public class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		application.run("--spring.profiles.active=bar");
-		// Command line arguably should always come last (not the case currently)
-		assertArrayEquals(new String[] { "bar", "foo" }, environment.getActiveProfiles());
+		// Command line should always come last
+		assertArrayEquals(new String[] { "foo", "bar" }, environment.getActiveProfiles());
 	}
 
 	@Test

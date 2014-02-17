@@ -264,11 +264,15 @@ public class ConfigFileApplicationListener implements
 
 		public void load() throws IOException {
 			this.propertiesLoader = new PropertySourcesLoader();
-			this.profiles = new LinkedList<String>();
-			this.profiles.add(null);
-			this.profiles.addAll(Arrays.asList(this.environment.getActiveProfiles()));
+			this.profiles = Collections.asLifoQueue(new LinkedList<String>());
 			this.activatedProfiles = false;
-			addActiveProfiles(this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
+
+			// Any pre-existing active profiles take precedence over those added in
+			// config files (unless latter are prefixed with "+").
+			addActiveProfiles(StringUtils.arrayToCommaDelimitedString(this.environment
+					.getActiveProfiles()));
+
+			this.profiles.add(null);
 
 			while (!this.profiles.isEmpty()) {
 				String profile = this.profiles.poll();
@@ -322,14 +326,27 @@ public class ConfigFileApplicationListener implements
 			String profiles = (property == null ? null : property.toString());
 			boolean profilesNotActivatedWhenCalled = !this.activatedProfiles;
 			for (String profile : asResolvedSet(profiles, null)) {
+				// A profile name prefixed with "+" is always added even if it is
+				// activated in a config file (without the "+" it can be disabled
+				// by an explicit Environment property set before the file was
+				// processed).
 				boolean addition = profile.startsWith("+");
 				profile = (addition ? profile.substring(1) : profile);
 				if (profilesNotActivatedWhenCalled || addition) {
 					this.profiles.add(profile);
-					this.environment.addActiveProfile(profile);
+					prependProfile(this.environment, profile);
 					this.activatedProfiles = true;
 				}
 			}
+		}
+
+		private void prependProfile(ConfigurableEnvironment environment, String profile) {
+			Set<String> profiles = new LinkedHashSet<String>();
+			environment.getActiveProfiles(); // ensure they are initialized
+			// But this one should go first (last wins in a property key clash)
+			profiles.add(profile);
+			profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
+			environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 		}
 
 		public Set<String> getSearchLocations() {
@@ -361,10 +378,16 @@ public class ConfigFileApplicationListener implements
 		}
 
 		private Set<String> asResolvedSet(String value, String fallback) {
+			return asResolvedSet(value, fallback, true);
+		}
+
+		private Set<String> asResolvedSet(String value, String fallback, boolean reverse) {
 			List<String> list = Arrays.asList(StringUtils
 					.commaDelimitedListToStringArray(value != null ? this.environment
 							.resolvePlaceholders(value) : fallback));
-			Collections.reverse(list);
+			if (reverse) {
+				Collections.reverse(list);
+			}
 			return new LinkedHashSet<String>(list);
 		}
 
