@@ -59,6 +59,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -278,14 +279,36 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void addProfiles() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		application.setAdditionalProfiles("foo");
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		application.setEnvironment(environment);
+		application.run();
+		assertTrue(environment.acceptsProfiles("foo"));
+	}
+
+	@Test
+	public void addProfilesOrder() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		application.setAdditionalProfiles("foo");
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		application.setEnvironment(environment);
+		application.run("--spring.profiles.active=bar");
+		// Command line arguably should always come last (not the case currently)
+		assertArrayEquals(new String[] { "bar", "foo" }, environment.getActiveProfiles());
+	}
+
+	@Test
 	public void emptyCommandLinePropertySourceNotAdded() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		application.run();
-		assertFalse(hasPropertySource(environment, PropertySource.class,
-				"commandLineArgs"));
+		assertEquals("bucket", environment.getProperty("foo"));
 	}
 
 	@Test
