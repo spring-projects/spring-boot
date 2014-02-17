@@ -119,8 +119,9 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	}
 
 	private static Security maybeCreateSecurity() {
-		return (ClassUtils.isPresent("org.springframework.security.core.Authentication",
-				null) ? new Security() : null);
+		return (ClassUtils.isPresent(
+				"org.springframework.security.config.http.SessionCreationPolicy", null) ? new Security()
+				: null);
 	}
 
 }
