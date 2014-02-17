@@ -17,7 +17,10 @@
 package org.springframework.boot.context.config;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -45,6 +48,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -178,6 +182,20 @@ public class ConfigFileApplicationListenerTests {
 		String property = this.environment.getProperty("my.property");
 		assertThat(Arrays.asList(this.environment.getActiveProfiles()), contains("dev"));
 		assertThat(property, equalTo("fromdevprofile"));
+		ConfigurationPropertySources propertySource = (ConfigurationPropertySources) this.environment
+				.getPropertySources().get("applicationConfigurationProperties");
+		Collection<org.springframework.core.env.PropertySource<?>> sources = propertySource
+				.getSource();
+		assertEquals(2, sources.size());
+		List<String> names = new ArrayList<String>();
+		for (org.springframework.core.env.PropertySource<?> source : sources) {
+			names.add(source.getName());
+		}
+		assertThat(
+				names,
+				contains(
+						"applicationConfig: class path resource [testsetprofiles.yml]#dev",
+						"applicationConfig: class path resource [testsetprofiles.yml]"));
 	}
 
 	@Test
@@ -187,6 +205,30 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testsetprofiles");
 		this.initializer.onApplicationEvent(this.event);
 		assertThat(this.environment.getActiveProfiles(), equalTo(new String[] { "prod" }));
+	}
+
+	@Test
+	public void yamlProfileOrdering() throws Exception {
+		this.initializer.setSearchNames("threeprofiles");
+		this.environment.setActiveProfiles("A", "C");
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(this.environment.getProperty("version"), equalTo("C"));
+	}
+
+	@Test
+	public void yamlProfileOrderingReverse() throws Exception {
+		this.initializer.setSearchNames("threeprofiles");
+		this.environment.setActiveProfiles("C", "A");
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(this.environment.getProperty("version"), equalTo("A"));
+	}
+
+	@Test
+	public void yamlProfileOrderingOverride() throws Exception {
+		this.initializer.setSearchNames("threeprofiles-with-override");
+		this.environment.setActiveProfiles("C", "A");
+		this.initializer.onApplicationEvent(this.event);
+		assertThat(this.environment.getProperty("version"), equalTo("B"));
 	}
 
 	@Test
