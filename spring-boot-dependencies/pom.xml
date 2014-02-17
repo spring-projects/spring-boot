@@ -45,8 +45,8 @@
 		<spring.version>4.0.1.RELEASE</spring.version>
 		<spring-integration.version>3.0.1.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.4.RELEASE</spring-batch.version>
-		<spring-data-jpa.version>1.5.0.RC1</spring-data-jpa.version>
-		<spring-data-mongodb.version>1.4.0.RC1</spring-data-mongodb.version>
+		<spring-data-jpa.version>1.5.0.RELEASE</spring-data-jpa.version>
+		<spring-data-mongodb.version>1.4.0.RELEASE</spring-data-mongodb.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-rabbit.version>1.2.1.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.0.RELEASE</spring-mobile.version>
