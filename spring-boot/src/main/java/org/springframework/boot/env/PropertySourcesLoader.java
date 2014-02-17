@@ -27,6 +27,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Utiltiy that can be used to {@link MutablePropertySources} using
@@ -70,7 +71,7 @@ public class PropertySourcesLoader {
 	 */
 	public PropertySource<?> load(Resource resource, String name, String profile)
 			throws IOException {
-		if (resource != null && resource.exists()) {
+		if (isFile(resource)) {
 			name = generatePropertySourceName(resource, name, profile);
 			for (PropertySourceLoader loader : this.loaders) {
 				if (canLoadFileExtension(loader, resource)) {
@@ -81,6 +82,13 @@ public class PropertySourcesLoader {
 			}
 		}
 		return null;
+	}
+
+	private boolean isFile(Resource resource) {
+		return resource != null
+				&& resource.exists()
+				&& StringUtils.hasText(StringUtils.getFilenameExtension(resource
+						.getFilename()));
 	}
 
 	private String generatePropertySourceName(Resource resource, String name,

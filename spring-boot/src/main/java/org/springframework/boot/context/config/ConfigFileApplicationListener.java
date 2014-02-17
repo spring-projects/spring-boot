@@ -305,11 +305,8 @@ public class ConfigFileApplicationListener implements
 		private PropertySource<?> load(String resourceLocation, String profile)
 				throws IOException {
 			Resource resource = this.resourceLoader.getResource(resourceLocation);
-			if (resource != null && resource.exists()) {
+			if (resource != null) {
 				String name = "applicationConfig: " + resource.getDescription();
-				if (StringUtils.hasLength(profile)) {
-					name += " " + profile;
-				}
 				PropertySource<?> propertySource = this.propertiesLoader.load(resource,
 						name, profile);
 				if (propertySource != null) {
