@@ -62,7 +62,7 @@ class AutoConfigurationSorter {
 
 		List<String> orderedClassNames = new ArrayList<String>(classNames);
 
-		// Sort initially by order
+		// Initially sort alphabetically
 		Collections.sort(orderedClassNames);
 
 		// Then sort by order
