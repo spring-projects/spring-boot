@@ -131,7 +131,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		File root = getValidDocumentRoot();
 		if (root != null) {
 			try {
-				handler.setBaseResource(Resource.newResource(root));
+				if (!root.isDirectory()) {
+					handler.setBaseResource(Resource.newClassPathResource(""));
+				}
+				else {
+					handler.setBaseResource(Resource.newResource(root));
+				}
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
