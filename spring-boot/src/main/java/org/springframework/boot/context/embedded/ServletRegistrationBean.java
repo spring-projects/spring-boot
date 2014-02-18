@@ -27,6 +27,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -44,6 +46,8 @@ import org.springframework.util.Assert;
  * @see ServletContext#addServlet(String, Servlet)
  */
 public class ServletRegistrationBean extends RegistrationBean {
+
+	private static Log logger = LogFactory.getLog(ServletRegistrationBean.class);
 
 	private static final String[] DEFAULT_MAPPINGS = { "/*" };
 
@@ -152,6 +156,7 @@ public class ServletRegistrationBean extends RegistrationBean {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.servlet, "Servlet must not be null");
+		logger.info("Mapping servlet: '" + getServletName() + "' to " + this.urlMappings);
 		configure(servletContext.addServlet(getServletName(), this.servlet));
 	}
 

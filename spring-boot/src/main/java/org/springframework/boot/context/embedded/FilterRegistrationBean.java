@@ -28,6 +28,8 @@ import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 
 /**
@@ -47,6 +49,8 @@ import org.springframework.util.Assert;
  * @see ServletContext#addFilter(String, Filter)
  */
 public class FilterRegistrationBean extends RegistrationBean {
+
+	private static Log logger = LogFactory.getLog(FilterRegistrationBean.class);
 
 	static final EnumSet<DispatcherType> ASYNC_DISPATCHER_TYPES = EnumSet.of(
 			DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.REQUEST,
@@ -248,15 +252,21 @@ public class FilterRegistrationBean extends RegistrationBean {
 		servletNames.addAll(this.servletNames);
 
 		if (servletNames.isEmpty() && this.urlPatterns.isEmpty()) {
+			logger.info("Mapping filter: '" + registration.getName() + "' to: "
+					+ Arrays.asList(DEFAULT_URL_MAPPINGS));
 			registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 					DEFAULT_URL_MAPPINGS);
 		}
 		else {
 			if (servletNames.size() > 0) {
+				logger.info("Mapping filter: '" + registration.getName()
+						+ "' to servlets: " + servletNames);
 				registration.addMappingForServletNames(dispatcherTypes, this.matchAfter,
 						servletNames.toArray(new String[servletNames.size()]));
 			}
 			if (this.urlPatterns.size() > 0) {
+				logger.info("Mapping filter: '" + registration.getName() + "' to urls: "
+						+ this.urlPatterns);
 				registration.addMappingForUrlPatterns(dispatcherTypes, this.matchAfter,
 						this.urlPatterns.toArray(new String[this.urlPatterns.size()]));
 			}
