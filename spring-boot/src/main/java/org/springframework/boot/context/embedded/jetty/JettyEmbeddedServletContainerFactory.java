@@ -64,6 +64,8 @@ public class JettyEmbeddedServletContainerFactory extends
 
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
+	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<JettyServerCustomizer>();
+
 	private ResourceLoader resourceLoader;
 
 	/**
@@ -124,6 +126,10 @@ public class JettyEmbeddedServletContainerFactory extends
 
 		server.setHandler(context);
 		this.logger.info("Server initialized with port: " + port);
+		for (JettyServerCustomizer customizer : getServerCustomizers()) {
+			customizer.customize(server);
+		}
+
 		return getJettyEmbeddedServletContainer(server);
 	}
 
@@ -247,6 +253,36 @@ public class JettyEmbeddedServletContainerFactory extends
 	@Override
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
+	}
+
+	/**
+	 * Sets {@link JettyServerCustomizer}s that will be applied to the {@link Server}
+	 * before it is started. Calling this method will replace any existing configurations.
+	 * @param customizers the Jetty customizers to apply
+	 */
+	public void setServerCustomizers(
+			Collection<? extends JettyServerCustomizer> customizers) {
+		Assert.notNull(customizers, "JettyServerCustomizers must not be null");
+		this.jettyServerCustomizers = new ArrayList<JettyServerCustomizer>(customizers);
+	}
+
+	/**
+	 * Returns a mutable collection of Jetty {@link Configuration}s that will be applied
+	 * to the {@link WebAppContext} before the server is created.
+	 * @return the Jetty {@link Configuration}s
+	 */
+	public Collection<JettyServerCustomizer> getServerCustomizers() {
+		return this.jettyServerCustomizers;
+	}
+
+	/**
+	 * Add {@link JettyServerCustomizer}s that will be applied to the {@link Server}
+	 * before it is started.
+	 * @param customizers the customizers to add
+	 */
+	public void addServerCustomizers(JettyServerCustomizer... customizers) {
+		Assert.notNull(customizers, "Configurations must not be null");
+		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 
 	/**
