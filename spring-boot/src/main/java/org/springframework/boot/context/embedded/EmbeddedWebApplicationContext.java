@@ -234,12 +234,12 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			ServletContextInitializer initializer = initializerBean.getValue();
 			initializers.add(initializer);
 			if (initializer instanceof ServletRegistrationBean) {
-				servletRegistrations.add(((ServletRegistrationBean) initializer)
-						.getServlet());
+				ServletRegistrationBean servlet = (ServletRegistrationBean) initializer;
+				servletRegistrations.add(servlet.getServlet());
 			}
 			if (initializer instanceof FilterRegistrationBean) {
-				filterRegistrations.add(((FilterRegistrationBean) initializer)
-						.getFilter());
+				FilterRegistrationBean filter = (FilterRegistrationBean) initializer;
+				filterRegistrations.add(filter.getFilter());
 			}
 			if (initializer instanceof ServletListenerRegistrationBean) {
 				listenerRegistrations
