@@ -304,7 +304,7 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 		// Or maybe there is a document root in a well-known location
 		file = file != null ? file : getCommonDocumentRoot();
 		if (file == null && this.logger.isWarnEnabled()) {
-			this.logger.debug("None of the document roots "
+			this.logger.info("None of the document roots "
 					+ Arrays.asList(COMMON_DOC_ROOTS)
 					+ " point to a directory and will be ignored.");
 		}
@@ -340,7 +340,11 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	}
 
 	private File getWarFileDocumentRoot() {
-		return getArchiveFileDocumentRoot(".war");
+		File file = getArchiveFileDocumentRoot(".war");
+		if (file != null) {
+			return file;
+		}
+		return getArchiveFileDocumentRoot(".jar");
 	}
 
 	private File getCommonDocumentRoot() {
