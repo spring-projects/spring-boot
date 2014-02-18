@@ -954,8 +954,9 @@ server:
 ```
 
 Create a file called `application.yml` and stick it in the root of
-your classpath, and also add `snake-yaml` to your classpath (Maven
-co-ordinates `org.yaml:snake-yaml`). A YAML file is parsed to a Java
+your classpath, and also add `snakeyaml` to your classpath (Maven
+co-ordinates `org.yaml:snakeyaml`, already included if you use a
+Spring Boot Starter). A YAML file is parsed to a Java
 `Map<String,Object>` (like a JSON object), and Spring Boot flattens
 the maps so that it is 1-level deep and has period-separated keys, a
 lot like people are used to with `Properties` files in Java.
