@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-dependencies</artifactId>
@@ -215,11 +216,11 @@
 				<artifactId>groovy-xml</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
-            <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-templates</artifactId>
-                <version>${groovy.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy-templates</artifactId>
+				<version>${groovy.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
@@ -286,11 +287,11 @@
 				<artifactId>mongo-java-driver</artifactId>
 				<version>${mongodb.version}</version>
 			</dependency>
-            <dependency>
-                <groupId>org.projectreactor</groupId>
-                <artifactId>reactor-core</artifactId>
-                <version>${reactor.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.projectreactor</groupId>
+				<artifactId>reactor-core</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.projectreactor</groupId>
 				<artifactId>reactor-spring</artifactId>

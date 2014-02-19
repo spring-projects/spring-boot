@@ -3,14 +3,14 @@ buildscript {
 		springBootVersion = '1.0.0.BUILD-SNAPSHOT'
 		springLoadedVersion = '1.1.5.RELEASE'
 	}
-    repositories {
-    	mavenLocal()
-        maven { url "http://repo.springsource.org/libs-snapshot" }
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.springsource.loaded:springloaded:${springLoadedVersion}")
-    }
+	repositories {
+		mavenLocal()
+		maven { url "http://repo.springsource.org/libs-snapshot" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.springsource.loaded:springloaded:${springLoadedVersion}")
+	}
 }
 
 
@@ -22,21 +22,19 @@ apply plugin: 'spring-boot'
 mainClassName = "sample.ui.SampleWebUiApplication"
 
 jar {
-    baseName = 'spring-boot-sample-simple'
-    version =  '0.5.0'
+	baseName = 'spring-boot-sample-simple'
+	version =  '0.5.0'
 }
 
 repositories {
-    mavenCentral()
-    maven { url "http://repo.springsource.org/libs-snapshot" }
+	mavenCentral()
+	maven { url "http://repo.springsource.org/libs-snapshot" }
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-    compile("org.hibernate:hibernate-validator")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+	compile("org.hibernate:hibernate-validator")
+	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
-}
+task wrapper(type: Wrapper) { gradleVersion = '1.6' }

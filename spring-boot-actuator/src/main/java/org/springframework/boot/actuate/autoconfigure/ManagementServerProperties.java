@@ -35,6 +35,8 @@ import org.springframework.util.ClassUtils;
 @ConfigurationProperties(name = "management", ignoreUnknownFields = false)
 public class ManagementServerProperties implements SecurityPrequisite {
 
+	private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
+
 	private Integer port;
 
 	private InetAddress address;
@@ -119,9 +121,9 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	}
 
 	private static Security maybeCreateSecurity() {
-		return (ClassUtils.isPresent(
-				"org.springframework.security.config.http.SessionCreationPolicy", null) ? new Security()
-				: null);
+		if (ClassUtils.isPresent(SECURITY_CHECK_CLASS, null)) {
+			return new Security();
+		}
+		return null;
 	}
-
 }

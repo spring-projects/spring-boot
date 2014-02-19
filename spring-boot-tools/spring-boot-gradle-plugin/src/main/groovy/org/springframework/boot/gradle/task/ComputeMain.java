@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class ComputeMain implements Action<Task> {
 	public void execute(Task task) {
 		if (task instanceof JavaExec) {
 			final JavaExec exec = (JavaExec) task;
-			project.afterEvaluate(new Action<Project>() {
+			this.project.afterEvaluate(new Action<Project>() {
 				@Override
 				public void execute(Project project) {
 					addMain(exec);
@@ -54,9 +54,9 @@ public class ComputeMain implements Action<Task> {
 	}
 
 	private void addMain(JavaExec exec) {
-		if (exec.getMain()==null) {
-			project.getLogger().debug("Computing main for: " + exec);
-			project.setProperty("mainClassName", findMainClass(project));
+		if (exec.getMain() == null) {
+			this.project.getLogger().debug("Computing main for: " + exec);
+			this.project.setProperty("mainClassName", findMainClass(this.project));
 		}
 	}
 
@@ -65,9 +65,11 @@ public class ComputeMain implements Action<Task> {
 		if (main == null) {
 			return null;
 		}
-		project.getLogger().debug("Looking for main in: " + main.getOutput().getClassesDir());
+		project.getLogger().debug(
+				"Looking for main in: " + main.getOutput().getClassesDir());
 		try {
-			String mainClass = MainClassFinder.findMainClass(main.getOutput().getClassesDir());
+			String mainClass = MainClassFinder.findMainClass(main.getOutput()
+					.getClassesDir());
 			project.getLogger().info("Computed main class: " + mainClass);
 			return mainClass;
 		}
