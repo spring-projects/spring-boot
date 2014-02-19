@@ -54,10 +54,12 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 				return;
 			}
 		}
+		// Fallback to the non-prefixed value
+		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]));
 	}
 
 	protected void initializeWithSensibleDefaults() {
-		initialize(getPackagedConfigFile(this.paths[this.paths.length - 1]));
+		initialize(getPackagedConfigFile("basic-" + this.paths[this.paths.length - 1]));
 	}
 
 	protected final String getPackagedConfigFile(String fileName) {
