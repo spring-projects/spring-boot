@@ -856,6 +856,69 @@ See
 [`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)
 for the default settings.
 
+## Initialize a Database
+
+An SQL database can be initialized in different ways depending on what
+your stack is. Or of course you can do it manually as long as the
+database is in a server.
+
+### JPA
+
+JPA has features for DDL generation, and these can be set up to
+run on startup against the database. This is controlled through two
+external properties: 
+
+* `spring.jpa.generate-ddl` (boolean) switches the feature on and off
+  and is vendor independent
+* `spring.jpa.hibernate.ddl-auto` (enum) is a Hibernate feature that
+  controls the behaviour in a more fine-grained way. See below for
+  more detail.
+
+### Hibernate
+
+You can set `spring.jpa.hibernate.ddl-auto` explicitly and the
+standard Hibernate property values are "none", "validate", "update",
+"create-drop". Spring Boot chooses a default value for you based on
+whether it thinks your database is embedded (default "create-drop") or
+not (default "none"). An embedded database is detected by looking at
+the `Connection` type: `hsqldb`, `h2` and `derby` are embedded, the
+rest are not. Be careful when switching from in-memory to a "real"
+database that you don't make assumptions about the existence of the
+tables and data in the new platform. You either have to set "ddl-auto"
+expicitly, or use one of the other mechanisms to initialize the
+database.
+
+In addition, a file named "import.sql" in the root of the classpath
+will be executed on startup. This can be useful for demos and for
+testing if you are carefuil, but probably not something you want to be
+on the classpath in production. It is a Hibernate feature (nothing to
+do with Spring).
+
+### Spring JDBC
+
+Spring JDBC has a `DataSource` initializer feature. Spring Boot
+enables it by default and loads SQL from the standard locations
+`schema.sql` and `data.sql` (in the root of the classpath). In
+addition Spring Boot will load a file `schema-${platform}.sql` where
+`platform` is the vendor name of the database (`hsqldb`, `h2,
+`oracle`, `mysql`, `postgresql` etc.). Spring Boot *disables* the
+failfast feature of the Spring JDBC initializer, so if the scripts
+cause exceptions they will be logged, but the application will still
+start. This is so that they can be used as "poor man's migrations"
+(inserts that fail mean that the data is already there, so no need to
+fail for instance), but it does mean that you need to test the state
+of your database on startup if you want to be sure that it was
+successful (or else monitor the Spring JDBC DEBUG logs).
+
+### Higher Level Migration Tools
+
+Spring Boot works fine with higher level migration tools
+[Flyway](http://flywaydb.org/) (SQL-based) and
+[Liquibase](http://www.liquibase.org/) (XML). In general we prefer
+Flyway because it is easier on the eyes, and it isn't very common to
+need platform independence: usually only one or at most couple of
+platforms is needed.
+
 <span id="discover.options"/>
 ## Discover Built-in Options for External Properties
 
