@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.jar.Manifest;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -43,6 +44,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private String contentType;
 
+	private URL jarFileUrl;
+
 	protected JarURLConnection(URL url, JarFile jarFile) throws MalformedURLException {
 		super(new URL(buildRootUrl(jarFile)));
 		this.jarFile = jarFile;
@@ -53,9 +56,25 @@ class JarURLConnection extends java.net.JarURLConnection {
 			throw new MalformedURLException("no " + SEPARATOR + " found in url spec:"
 					+ spec);
 		}
-		if (separator + 2 != spec.length()) {
+		/*
+		 * The superclass constructor creates a jarFileUrl which is equal to the root URL
+		 * of the containing archive (therefore not unique if we are connecting to
+		 * multiple nested jars in the same archive). Therefore we need to make something
+		 * sensible for #getJarFileURL().
+		 */
+		if (separator + SEPARATOR.length() != spec.length()) {
+			this.jarFileUrl = new URL("jar:" + spec);
 			this.jarEntryName = spec.substring(separator + 2);
 		}
+		else {
+			// The root of the archive (!/)
+			this.jarFileUrl = new URL("jar:" + spec.substring(0, separator));
+		}
+	}
+
+	@Override
+	public URL getJarFileURL() {
+		return this.jarFileUrl;
 	}
 
 	@Override
@@ -68,6 +87,16 @@ class JarURLConnection extends java.net.JarURLConnection {
 			}
 		}
 		this.connected = true;
+	}
+
+	@Override
+	public Manifest getManifest() throws IOException {
+		try {
+			return super.getManifest();
+		}
+		finally {
+			this.connected = false;
+		}
 	}
 
 	@Override
