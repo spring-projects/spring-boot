@@ -96,8 +96,8 @@ public class ConfigFileApplicationListener implements
 
 	private static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
-	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,file:./,"
-			+ "classpath:/config/,file:./config/";
+	private static final String DEFAULT_SEARCH_LOCATIONS = "file:./,file:./config/,"
+			+ "classpath:/,classpath:/config/";
 
 	private static final String DEFAULT_NAMES = "application";
 
@@ -192,6 +192,8 @@ public class ConfigFileApplicationListener implements
 
 	/**
 	 * Set the search locations that will be considered as a comma-separated list.
+	 * Locations are considered in the order specified, with earlier items taking
+	 * precedence.
 	 */
 	public void setSearchLocations(String locations) {
 		Assert.hasLength(locations, "Locations must not be empty");
