@@ -72,6 +72,7 @@ public class LoggingApplicationListenerTests {
 		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
 				new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
+		new File("/tmp/spring.log").delete();
 	}
 
 	@After
@@ -85,13 +86,14 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void testDefaultConfigLocation() {
+	public void testBaseConfigLocation() {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
+		assertTrue(new File("/tmp/spring.log").exists());
 	}
 
 	@Test

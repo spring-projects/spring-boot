@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.File;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.junit.After;
@@ -27,6 +29,7 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -48,6 +51,7 @@ public class LogbackLoggingSystemTests {
 	@Before
 	public void setup() {
 		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
+		new File("/tmp/spring.log").delete();
 	}
 
 	@After
@@ -65,6 +69,7 @@ public class LogbackLoggingSystemTests {
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertTrue("Wrong output:\n" + output, output.contains("/tmp/spring.log"));
+		assertFalse(new File("/tmp/spring.log").exists());
 	}
 
 	@Test(expected = IllegalStateException.class)
