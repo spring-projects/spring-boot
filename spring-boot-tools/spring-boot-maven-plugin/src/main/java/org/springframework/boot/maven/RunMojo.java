@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,11 @@ import org.springframework.boot.loader.tools.MainClassFinder;
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractMojo {
+
+	/**
+	 *
+	 */
+	private static final String SPRING_LOADED_AGENT_CLASSNAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
 	/**
 	 * The Maven project.
@@ -120,8 +125,7 @@ public class RunMojo extends AbstractMojo {
 
 	private void findAgent() {
 		try {
-			Class<?> loaded = Class
-					.forName("org.springsource.loaded.agent.SpringLoadedAgent");
+			Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
 			if (this.agent == null && loaded != null) {
 				if (this.noverify == null) {
 					this.noverify = true;
@@ -132,7 +136,7 @@ public class RunMojo extends AbstractMojo {
 				}
 			}
 		}
-		catch (ClassNotFoundException e) {
+		catch (ClassNotFoundException ex) {
 			// ignore;
 		}
 	}

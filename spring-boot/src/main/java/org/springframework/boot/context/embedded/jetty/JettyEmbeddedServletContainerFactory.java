@@ -262,7 +262,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	 */
 	public void setServerCustomizers(
 			Collection<? extends JettyServerCustomizer> customizers) {
-		Assert.notNull(customizers, "JettyServerCustomizers must not be null");
+		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers = new ArrayList<JettyServerCustomizer>(customizers);
 	}
 
@@ -281,7 +281,7 @@ public class JettyEmbeddedServletContainerFactory extends
 	 * @param customizers the customizers to add
 	 */
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
-		Assert.notNull(customizers, "Configurations must not be null");
+		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
 	}
 

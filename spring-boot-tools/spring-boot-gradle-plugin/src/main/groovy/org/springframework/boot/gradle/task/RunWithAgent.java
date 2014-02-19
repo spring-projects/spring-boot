@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@ import org.springframework.core.task.TaskRejectedException;
  */
 public class RunWithAgent implements Action<Task> {
 
+	private static final String SPRING_LOADED_AGENT_CLASSNAME = "org.springsource.loaded.agent.SpringLoadedAgent";
+
 	private File agent;
 
 	private Project project;
@@ -52,39 +54,40 @@ public class RunWithAgent implements Action<Task> {
 	}
 
 	@Override
-	public void execute(Task task) {
+	public void execute(final Task task) {
 		if (task instanceof JavaExec) {
-			final JavaExec exec = (JavaExec) task;
-			project.afterEvaluate(new Action<Project>() {
+			this.project.afterEvaluate(new Action<Project>() {
 				@Override
 				public void execute(Project project) {
-					addAgent(exec);
+					addAgent((JavaExec) task);
 				}
 			});
 		}
 		if (task instanceof RunApp) {
-			final RunApp exec = (RunApp) task;
-			project.beforeEvaluate(new Action<Project>() {
+			this.project.beforeEvaluate(new Action<Project>() {
 				@Override
 				public void execute(Project project) {
-					addAgent(exec);
+					addAgent((RunApp) task);
 				}
 			});
 		}
 	}
 
 	private void addAgent(RunApp exec) {
-		project.getLogger().debug("Attaching to: " + exec);
-		findAgent(project.getExtensions().getByType(SpringBootPluginExtension.class));
+		this.project.getLogger().debug("Attaching to: " + exec);
+		findAgent(this.project.getExtensions().getByType(SpringBootPluginExtension.class));
 		if (this.agent != null) {
 			exec.doFirst(new Action<Task>() {
 				@Override
 				public void execute(Task task) {
-					project.getLogger().info(
+					RunWithAgent.this.project.getLogger().info(
 							"Attaching agent: " + RunWithAgent.this.agent);
-					if (RunWithAgent.this.noverify!=null && RunWithAgent.this.noverify && !AgentAttacher.hasNoVerify()) {
+					if (RunWithAgent.this.noverify != null && RunWithAgent.this.noverify
+							&& !AgentAttacher.hasNoVerify()) {
 						throw new TaskRejectedException(
-								"The JVM must be started with -noverify for this agent to work. You can use JAVA_OPTS to add that flag.");
+								"The JVM must be started with -noverify for this "
+										+ "agent to work. You can use JAVA_OPTS "
+										+ "to add that flag.");
 					}
 					AgentAttacher.attach(RunWithAgent.this.agent);
 				}
@@ -93,10 +96,10 @@ public class RunWithAgent implements Action<Task> {
 	}
 
 	private void addAgent(JavaExec exec) {
-		project.getLogger().debug("Attaching to: " + exec);
-		findAgent(project.getExtensions().getByType(SpringBootPluginExtension.class));
+		this.project.getLogger().debug("Attaching to: " + exec);
+		findAgent(this.project.getExtensions().getByType(SpringBootPluginExtension.class));
 		if (this.agent != null) {
-			project.getLogger().info("Attaching agent: " + this.agent);
+			this.project.getLogger().info("Attaching agent: " + this.agent);
 			exec.jvmArgs("-javaagent:" + this.agent.getAbsolutePath());
 			if (this.noverify != null && this.noverify) {
 				exec.jvmArgs("-noverify");
@@ -108,20 +111,20 @@ public class RunWithAgent implements Action<Task> {
 		if (this.agent != null) {
 			return;
 		}
-		this.noverify = project.getExtensions()
+		this.noverify = this.project.getExtensions()
 				.getByType(SpringBootPluginExtension.class).getNoverify();
-		project.getLogger().info("Finding agent");
-		if (project.hasProperty("run.agent")) {
-			this.agent = project.file(project.property("run.agent"));
-		} else if (extension.getAgent() != null) {
+		this.project.getLogger().info("Finding agent");
+		if (this.project.hasProperty("run.agent")) {
+			this.agent = this.project.file(this.project.property("run.agent"));
+		}
+		else if (extension.getAgent() != null) {
 			this.agent = extension.getAgent();
 		}
 		if (this.agent == null) {
 			try {
-				Class<?> loaded = Class
-						.forName("org.springsource.loaded.agent.SpringLoadedAgent");
+				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
 				if (this.agent == null && loaded != null) {
-					if (this.noverify==null) {
+					if (this.noverify == null) {
 						this.noverify = true;
 					}
 					CodeSource source = loaded.getProtectionDomain().getCodeSource();
@@ -129,11 +132,12 @@ public class RunWithAgent implements Action<Task> {
 						this.agent = new File(source.getLocation().getFile());
 					}
 				}
-			} catch (ClassNotFoundException e) {
+			}
+			catch (ClassNotFoundException ex) {
 				// ignore;
 			}
 		}
-		project.getLogger().debug("Agent: " + this.agent);
+		this.project.getLogger().debug("Agent: " + this.agent);
 	}
 
 }

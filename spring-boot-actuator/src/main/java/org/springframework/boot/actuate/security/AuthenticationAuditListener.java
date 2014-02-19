@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ import org.springframework.util.ClassUtils;
 public class AuthenticationAuditListener implements
 		ApplicationListener<AbstractAuthenticationEvent>, ApplicationEventPublisherAware {
 
+	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
+
 	private ApplicationEventPublisher publisher;
 
 	private WebAuditListener webListener = maybeCreateWebListener();
@@ -48,10 +50,7 @@ public class AuthenticationAuditListener implements
 	}
 
 	private static WebAuditListener maybeCreateWebListener() {
-		if (ClassUtils
-				.isPresent(
-						"org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent",
-						null)) {
+		if (ClassUtils.isPresent(WEB_LISTENER_CHECK_CLASS, null)) {
 			return new WebAuditListener();
 		}
 		return null;

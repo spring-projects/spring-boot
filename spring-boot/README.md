@@ -257,7 +257,7 @@ archive, there are some limitations in the JSP support.
   executable WAR will work, and will also be deployable to a standard
   container (Tomcat included). An executable JAR will not work because
   of a hard coded file patter in Tomcat itself.
-  
+
 * Jetty does not currently work as an embedded container with
   JSPs. There should be a way to make it work, so hopefully someone
   can figure it out (pull requests always welcome).

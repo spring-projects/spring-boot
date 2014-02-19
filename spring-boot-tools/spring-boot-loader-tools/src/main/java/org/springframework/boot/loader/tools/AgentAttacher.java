@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,22 @@ import java.util.List;
 import com.sun.tools.attach.VirtualMachine;
 
 /**
+ * Utility class to attach an instrumentation agent to the running JVM.
+ * 
  * @author Dave Syer
  */
 public abstract class AgentAttacher {
 
 	public static void attach(File agent) {
-		String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
-		int p = nameOfRunningVM.indexOf('@');
-		String pid = nameOfRunningVM.substring(0, p);
-
+		String name = ManagementFactory.getRuntimeMXBean().getName();
+		String pid = name.substring(0, name.indexOf('@'));
 		try {
 			VirtualMachine vm = VirtualMachine.attach(pid);
 			vm.loadAgent(agent.getAbsolutePath());
 			vm.detach();
 		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 

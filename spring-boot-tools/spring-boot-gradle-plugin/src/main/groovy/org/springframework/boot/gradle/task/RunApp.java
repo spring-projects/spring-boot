@@ -42,7 +42,7 @@ public class RunApp extends DefaultTask {
 
 	@TaskAction
 	public void runApp() {
-		
+
 		final Project project = getProject();
 		final SourceSet main = ComputeMain.findMainSourceSet(project);
 
@@ -52,7 +52,8 @@ public class RunApp extends DefaultTask {
 			SourceDirectorySet resources = main.getResources();
 			allResources.addAll(resources.getSrcDirs());
 			outputs = main.getOutput().getResourcesDir();
-		} else {
+		}
+		else {
 			outputs = null;
 		}
 
