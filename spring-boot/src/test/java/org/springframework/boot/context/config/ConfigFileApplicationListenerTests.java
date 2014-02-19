@@ -16,11 +16,15 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -91,6 +95,29 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
+	}
+
+	@Test
+	public void localFileTakesPrecedenceOverClasspath() throws Exception {
+		File localFile = new File(new File("."), "application.properties");
+		assertThat(localFile.exists(), equalTo(false));
+		try {
+			Properties properties = new Properties();
+			properties.put("my.property", "fromlocalfile");
+			OutputStream out = new FileOutputStream(localFile);
+			try {
+				properties.store(out, "");
+			}
+			finally {
+				out.close();
+			}
+			this.initializer.onApplicationEvent(this.event);
+			String property = this.environment.getProperty("my.property");
+			assertThat(property, equalTo("fromlocalfile"));
+		}
+		finally {
+			localFile.delete();
+		}
 	}
 
 	@Test
