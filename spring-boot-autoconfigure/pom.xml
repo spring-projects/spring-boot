@@ -195,6 +195,11 @@
 			<artifactId>aspectjweaver</artifactId>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.fusesource.scalate</groupId>
+			<artifactId>scalate-spring-mvc_2.10</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>

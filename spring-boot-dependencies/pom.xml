@@ -55,6 +55,7 @@
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.2.1</thymeleaf-layout-dialect.version>
 		<tomcat.version>7.0.47</tomcat.version>
+		<scalate.version>1.6.1</scalate.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.0</maven>
@@ -246,6 +247,11 @@
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-annotations</artifactId>
 				<version>${jetty.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.fusesource.scalate</groupId>
+				<artifactId>scalate-spring-mvc_2.10</artifactId>
+				<version>${scalate.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
