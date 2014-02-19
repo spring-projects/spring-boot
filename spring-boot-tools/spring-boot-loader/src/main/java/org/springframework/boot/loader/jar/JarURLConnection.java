@@ -63,12 +63,12 @@ class JarURLConnection extends java.net.JarURLConnection {
 		 * sensible for #getJarFileURL().
 		 */
 		if (separator + SEPARATOR.length() != spec.length()) {
-			this.jarFileUrl = new URL("jar:" + spec);
+			this.jarFileUrl = new URL(spec);
 			this.jarEntryName = spec.substring(separator + 2);
 		}
 		else {
 			// The root of the archive (!/)
-			this.jarFileUrl = new URL("jar:" + spec.substring(0, separator));
+			this.jarFileUrl = new URL(spec.substring(0, separator));
 		}
 	}
 
