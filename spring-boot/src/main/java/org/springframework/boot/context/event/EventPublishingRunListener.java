@@ -18,7 +18,7 @@ package org.springframework.boot.context.event;
 
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringApplicationRunParticipant;
+import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationEventMulticaster;
@@ -27,11 +27,11 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
- * {@link SpringApplicationRunParticipant} to publish {@link SpringApplicationEvent}s.
+ * {@link SpringApplicationRunListener} to publish {@link SpringApplicationEvent}s.
  * 
  * @author Phillip Webb
  */
-public class EventPublishingRunParticipant implements SpringApplicationRunParticipant {
+public class EventPublishingRunListener implements SpringApplicationRunListener {
 
 	private final ApplicationEventMulticaster multicaster;
 
@@ -39,7 +39,7 @@ public class EventPublishingRunParticipant implements SpringApplicationRunPartic
 
 	private String[] args;
 
-	public EventPublishingRunParticipant(SpringApplication application, String[] args) {
+	public EventPublishingRunListener(SpringApplication application, String[] args) {
 		this.application = application;
 		this.args = args;
 		this.multicaster = new SimpleApplicationEventMulticaster();
