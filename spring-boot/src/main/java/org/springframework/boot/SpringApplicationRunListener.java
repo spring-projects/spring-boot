@@ -26,11 +26,12 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * {@code run} method is called. Participants are loaded via the
  * {@link SpringFactoriesLoader} and should declare a public constructor that accepts a
  * {@link SpringApplication} instance and a {@code String[]} of arguments. A new
- * {@link SpringApplicationRunParticipant} instance will be created for each run.
+ * {@link SpringApplicationRunListener} instance will be created for each run.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
-public interface SpringApplicationRunParticipant {
+public interface SpringApplicationRunListener {
 
 	/**
 	 * Called immediately when the run method has first started. Can be used for very
