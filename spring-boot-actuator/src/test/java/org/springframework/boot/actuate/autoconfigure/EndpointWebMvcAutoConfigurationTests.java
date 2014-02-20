@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -71,12 +72,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 
 	@Test
 	public void onSamePort() throws Exception {
-		this.applicationContext.register(RootConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
@@ -90,12 +86,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void onDifferentPort() throws Exception {
 		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
 		assertContent("/endpoint", 8080, null);
@@ -108,12 +100,8 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void onRandomPort() throws Exception {
 		this.applicationContext.register(RootConfig.class, RandomPortConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
 		GrabManagementPort grabManagementPort = new GrabManagementPort(
 				this.applicationContext);
 		this.applicationContext.addApplicationListener(grabManagementPort);
@@ -129,12 +117,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void disabled() throws Exception {
 		this.applicationContext.register(RootConfig.class, DisableConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				EndpointWebMvcAutoConfiguration.class);
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 8080, "controlleroutput");
 		assertContent("/endpoint", 8080, null);
@@ -148,13 +131,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	public void specificPortsViaProperties() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.applicationContext, "server.port:7070",
 				"management.port:7071");
-		this.applicationContext.register(RootConfig.class,
-				PropertyPlaceholderAutoConfiguration.class,
-				ManagementServerPropertiesAutoConfiguration.class,
-				ServerPropertiesAutoConfiguration.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
 				EndpointWebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", 7070, "controlleroutput");
@@ -215,6 +192,17 @@ public class EndpointWebMvcAutoConfigurationTests {
 			}
 			throw ex;
 		}
+	}
+
+	@Configuration
+	@Import({ PropertyPlaceholderAutoConfiguration.class,
+			EmbeddedServletContainerAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			ManagementServerPropertiesAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class, WebMvcAutoConfiguration.class })
+	protected static class BaseConfiguration {
+
 	}
 
 	@Configuration

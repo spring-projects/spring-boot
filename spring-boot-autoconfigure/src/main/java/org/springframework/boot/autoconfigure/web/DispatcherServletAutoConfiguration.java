@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -57,10 +59,24 @@ public class DispatcherServletAutoConfiguration {
 	 */
 	public static final String DEFAULT_DISPATCHER_SERVLET_BEAN_NAME = "dispatcherServlet";
 
-	@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+	@Configuration
 	@Conditional(DefaultDispatcherServletCondition.class)
-	public DispatcherServlet dispatcherServlet() {
-		return new DispatcherServlet();
+	protected static class DispatcherServletConfiguration {
+
+		@Autowired
+		private ServerProperties server;
+
+		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
+		public DispatcherServlet dispatcherServlet() {
+			return new DispatcherServlet();
+		}
+
+		@Bean
+		public ServletRegistrationBean dispatcherServletRegistration() {
+			return new ServletRegistrationBean(dispatcherServlet(),
+					this.server.getServletPath());
+		}
+
 	}
 
 	private static class DefaultDispatcherServletCondition extends SpringBootCondition {
