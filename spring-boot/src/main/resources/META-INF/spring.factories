@@ -3,9 +3,9 @@ org.springframework.boot.env.PropertySourceLoader=\
 org.springframework.boot.env.PropertiesPropertySourceLoader,\
 org.springframework.boot.env.YamlPropertySourceLoader
 
-# Run Participants
-org.springframework.boot.SpringApplicationRunParticipant=\
-org.springframework.boot.context.event.EventPublishingRunParticipant
+# Run Listeners
+org.springframework.boot.SpringApplicationRunListener=\
+org.springframework.boot.context.event.EventPublishingRunListener
 
 # Application Context Initializers
 org.springframework.context.ApplicationContextInitializer=\
