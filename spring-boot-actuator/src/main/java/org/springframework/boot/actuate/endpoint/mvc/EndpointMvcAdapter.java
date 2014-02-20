@@ -16,7 +16,12 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,7 +48,16 @@ public class EndpointMvcAdapter implements MvcEndpoint {
 	@RequestMapping(method = RequestMethod.GET)
 	@ResponseBody
 	public Object invoke() {
+		if (!this.delegate.isEnabled()) {
+			// Shouldn't happen
+			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
+					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
+		}
 		return this.delegate.invoke();
+	}
+
+	public Endpoint<?> getDelegate() {
+		return this.delegate;
 	}
 
 	@Override

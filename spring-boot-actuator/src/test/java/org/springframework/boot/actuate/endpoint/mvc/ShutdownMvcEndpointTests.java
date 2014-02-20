@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2014 the original author or authors.
+ * Copyright 2012-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,37 @@
 
 package org.springframework.boot.actuate.endpoint.mvc;
 
-import java.util.Collections;
 import java.util.Map;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
- * Adapter to expose {@link ShutdownEndpoint} as an {@link MvcEndpoint}.
- * 
  * @author Dave Syer
  */
-public class ShutdownMvcEndpoint extends EndpointMvcAdapter {
+public class ShutdownMvcEndpointTests {
 
-	public ShutdownMvcEndpoint(ShutdownEndpoint delegate) {
-		super(delegate);
+	private ShutdownEndpoint endpoint = mock(ShutdownEndpoint.class);
+	private ShutdownMvcEndpoint mvc = new ShutdownMvcEndpoint(this.endpoint);
+
+	@Before
+	public void init() {
+		when(this.endpoint.isEnabled()).thenReturn(false);
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	@ResponseBody
-	@Override
-	public Object invoke() {
-		if (!getDelegate().isEnabled()) {
-			return new ResponseEntity<Map<String, String>>(Collections.singletonMap(
-					"message", "This endpoint is disabled"), HttpStatus.NOT_FOUND);
-		}
-		return super.invoke();
+	@Test
+	public void disabled() {
+		@SuppressWarnings("unchecked")
+		ResponseEntity<Map<String, String>> response = (ResponseEntity<Map<String, String>>) this.mvc
+				.invoke();
+		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
+
 }
