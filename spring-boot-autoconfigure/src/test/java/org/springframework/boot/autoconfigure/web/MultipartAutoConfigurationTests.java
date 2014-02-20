@@ -27,6 +27,7 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,10 +65,7 @@ public class MultipartAutoConfigurationTests {
 	@Test
 	public void containerWithNothing() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ContainerWithNothing.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class,
-				MultipartAutoConfiguration.class);
+				ContainerWithNothing.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		assertNull(servlet.getMultipartResolver());
 		assertEquals(0,
@@ -83,10 +81,7 @@ public class MultipartAutoConfigurationTests {
 	@Test
 	public void containerWithNoMultipartJettyConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ContainerWithNoMultipartJetty.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class,
-				MultipartAutoConfiguration.class);
+				ContainerWithNoMultipartJetty.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		assertNull(servlet.getMultipartResolver());
 		assertEquals(0,
@@ -112,10 +107,7 @@ public class MultipartAutoConfigurationTests {
 	@Test
 	public void containerWithNoMultipartTomcatConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ContainerWithNoMultipartTomcat.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class,
-				MultipartAutoConfiguration.class);
+				ContainerWithNoMultipartTomcat.class, BaseConfiguration.class);
 		DispatcherServlet servlet = this.context.getBean(DispatcherServlet.class);
 		assertNull(servlet.getMultipartResolver());
 		assertEquals(0,
@@ -128,10 +120,7 @@ public class MultipartAutoConfigurationTests {
 	@Test
 	public void containerWithAutomatedMultipartJettyConfiguration() {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ContainerWithEverythingJetty.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class,
-				MultipartAutoConfiguration.class);
+				ContainerWithEverythingJetty.class, BaseConfiguration.class);
 		this.context.getBean(MultipartConfigElement.class);
 		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
 				this.context.getBean(StandardServletMultipartResolver.class));
@@ -141,10 +130,7 @@ public class MultipartAutoConfigurationTests {
 	@Test
 	public void containerWithAutomatedMultipartTomcatConfiguration() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				ContainerWithEverythingTomcat.class,
-				EmbeddedServletContainerAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class,
-				MultipartAutoConfiguration.class);
+				ContainerWithEverythingTomcat.class, BaseConfiguration.class);
 		new RestTemplate().getForObject("http://localhost:8080/", String.class);
 		this.context.getBean(MultipartConfigElement.class);
 		assertSame(this.context.getBean(DispatcherServlet.class).getMultipartResolver(),
@@ -156,6 +142,14 @@ public class MultipartAutoConfigurationTests {
 		RestTemplate restTemplate = new RestTemplate();
 		assertEquals(restTemplate.getForObject("http://localhost:8080/", String.class),
 				"Hello");
+	}
+
+	@Configuration
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, MultipartAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class })
+	protected static class BaseConfiguration {
+
 	}
 
 	@Configuration

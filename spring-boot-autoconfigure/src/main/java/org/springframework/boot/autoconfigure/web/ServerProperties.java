@@ -56,6 +56,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	@NotNull
 	private String contextPath = "";
 
+	@NotNull
+	private String servletPath = "/";
+
 	private final Tomcat tomcat = new Tomcat();
 
 	public Tomcat getTomcat() {
@@ -68,6 +71,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = contextPath;
+	}
+
+	public String getServletPath() {
+		return this.servletPath;
+	}
+
+	public void setServletPath(String servletPath) {
+		this.servletPath = servletPath;
 	}
 
 	public Integer getPort() {
