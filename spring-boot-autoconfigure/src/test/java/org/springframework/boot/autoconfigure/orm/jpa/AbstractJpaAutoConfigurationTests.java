@@ -23,7 +23,10 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -60,6 +63,9 @@ import static org.junit.Assert.assertTrue;
  */
 public abstract class AbstractJpaAutoConfigurationTests {
 
+	@Rule
+	public ExpectedException expected = ExpectedException.none();
+
 	protected AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@After
@@ -68,6 +74,16 @@ public abstract class AbstractJpaAutoConfigurationTests {
 	}
 
 	protected abstract Class<?> getAutoConfigureClass();
+
+	@Test
+	public void testNoDataSource() throws Exception {
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				getAutoConfigureClass());
+		this.expected.expect(BeanCreationException.class);
+		this.expected.expectMessage("No qualifying bean");
+		this.expected.expectMessage("DataSource");
+		this.context.refresh();
+	}
 
 	@Test
 	public void testEntityManagerCreated() throws Exception {
