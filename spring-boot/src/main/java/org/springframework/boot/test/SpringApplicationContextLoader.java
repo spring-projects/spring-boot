@@ -116,6 +116,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		Map<String, Object> args = new LinkedHashMap<String, Object>();
 		// Not running an embedded server, just setting up web context
 		args.put("server.port", "-1");
+		// JMX bean names will clash if the same bean is used in multiple contexts
+		args.put("spring.jmx.enabled", "false");
 		return args;
 	}
 
