@@ -19,6 +19,7 @@ package org.springframework.boot.test;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.SpringApplicationConfigurationJmxTests.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertFalse;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration
+@SpringApplicationConfiguration(classes = Config.class)
 public class SpringApplicationConfigurationJmxTests {
 
 	@Value("${spring.jmx.enabled}")
