@@ -32,7 +32,9 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -112,6 +114,36 @@ public class BatchAutoConfigurationTests {
 		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
 				"job", new JobParameters()));
 	}
+	
+	@Test
+	public void testDefinesAndLaunchesNamedJob() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.batch.job.names:discreteRegisteredJob");
+		this.context.register(NamedJobConfigurationWithRegisteredJob.class, BatchAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(JobLauncher.class));
+		this.context.getBean(JobLauncherCommandLineRunner.class).run();
+		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
+				"discreteRegisteredJob", new JobParameters()));
+	}
+	
+	@Test
+	public void testDefinesAndLaunchesLocalJob() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.batch.job.names:discreteLocalJob");
+		this.context.register(NamedJobConfigurationWithLocalJob.class, BatchAutoConfiguration.class,
+				EmbeddedDataSourceConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(JobLauncher.class));
+		this.context.getBean(JobLauncherCommandLineRunner.class).run();
+		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
+				"discreteLocalJob", new JobParameters()));
+	}
 
 	@Test
 	public void testDisableLaunchesJob() throws Exception {
@@ -170,6 +202,77 @@ public class BatchAutoConfigurationTests {
 	protected static class TestConfiguration {
 	}
 
+	@EnableBatchProcessing
+	protected static class NamedJobConfigurationWithRegisteredJob {
+		@Autowired
+		private JobRegistry jobRegistry;
+		
+		@Autowired
+		private JobRepository jobRepository;
+		
+		@Bean
+		public JobRegistryBeanPostProcessor registryProcessor() {
+			JobRegistryBeanPostProcessor processor = new JobRegistryBeanPostProcessor();
+			processor.setJobRegistry(jobRegistry);
+			return processor;
+		}
+		
+		@Bean
+		public Job discreteJob() {
+			AbstractJob job = new AbstractJob("discreteRegisteredJob") {
+
+				@Override
+				public Collection<String> getStepNames() {
+					return Collections.emptySet();
+				}
+
+				@Override
+				public Step getStep(String stepName) {
+					return null;
+				}
+
+				@Override
+				protected void doExecute(JobExecution execution)
+						throws JobExecutionException {
+					execution.setStatus(BatchStatus.COMPLETED);
+				}
+			};
+			job.setJobRepository(this.jobRepository);
+			return job;
+		}
+	}
+	
+	@EnableBatchProcessing
+	protected static class NamedJobConfigurationWithLocalJob {
+		
+		@Autowired
+		private JobRepository jobRepository;
+		
+		@Bean
+		public Job discreteJob() {
+			AbstractJob job = new AbstractJob("discreteLocalJob") {
+
+				@Override
+				public Collection<String> getStepNames() {
+					return Collections.emptySet();
+				}
+
+				@Override
+				public Step getStep(String stepName) {
+					return null;
+				}
+
+				@Override
+				protected void doExecute(JobExecution execution)
+						throws JobExecutionException {
+					execution.setStatus(BatchStatus.COMPLETED);
+				}
+			};
+			job.setJobRepository(this.jobRepository);
+			return job;
+		}
+	}
+	
 	@EnableBatchProcessing
 	protected static class JobConfiguration {
 		@Autowired

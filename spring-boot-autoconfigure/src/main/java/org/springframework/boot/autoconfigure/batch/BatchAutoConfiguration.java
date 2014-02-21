@@ -44,10 +44,14 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. By default all
- * jobs in the context will be executed on startup (disable this behaviour with
- * <code>spring.boot.exec.enabled=false</code>). User can supply a job name to execute on
- * startup with <code>spring.batch.exec.name=...</code>.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. By default a Runner 
+ * will be created and all jobs in the context will be executed on startup.
+ * 
+ * Disable this behaviour with <code>spring.batch.job.enabled=false</code>). 
+ * 
+ * Alternatively, discrete Job names to execute on startup can be supplied by the User with
+ * a comma-delimited list: <code>spring.batch.job.names=job1,job2</code>.  In this case the 
+ * Runner will first find jobs registered as Beans, then those in the existing JobRegistry.
  * 
  * @author Dave Syer
  */
@@ -57,8 +61,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnBean(JobLauncher.class)
 public class BatchAutoConfiguration {
 
-	@Value("${spring.batch.job.name:}")
-	private String jobName;
+	@Value("${spring.batch.job.names:}")
+	private String jobNames;
 
 	@Autowired(required = false)
 	private JobParametersConverter jobParametersConverter;
@@ -74,8 +78,8 @@ public class BatchAutoConfiguration {
 	@ConditionalOnExpression("${spring.batch.job.enabled:true}")
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner() {
 		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner();
-		if (StringUtils.hasText(this.jobName)) {
-			runner.setJobName(this.jobName);
+		if (StringUtils.hasText(this.jobNames)) {
+			runner.setJobNames(this.jobNames);
 		}
 		return runner;
 	}
