@@ -102,6 +102,16 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testNestedOsEnvironmentVariableWithUnderscore() {
+		EnvironmentTestUtils.addEnvironment(this.context, "NAME:foo", "NESTED_NAME:bar");
+		this.context.register(NestedConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
+		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
+		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+	}
+
+	@Test
 	public void testStrictPropertiesBinding() {
 		removeSystemProperties();
 		this.context.register(StrictTestConfiguration.class);
@@ -116,6 +126,16 @@ public class EnableConfigurationPropertiesTests {
 	public void testPropertiesEmbeddedBinding() {
 		this.context.register(EmbeddedTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring_foo_name:foo");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
+	public void testOsEnvironmentVariableEmbeddedBinding() {
+		EnvironmentTestUtils.addEnvironment(this.context, "SPRING_FOO_NAME:foo");
+		this.context.register(EmbeddedTestConfiguration.class);
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
