@@ -36,6 +36,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.mock.env.MockPropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 
@@ -44,7 +46,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link EnableConfigurationProperties}.
- * 
+ *
  * @author Dave Syer
  */
 public class EnableConfigurationPropertiesTests {
@@ -102,6 +104,19 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testNestedOsEnvironmentVariableWithUnderscore() {
+		MockPropertySource systemEnvironmentPropertySource = new MockPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		systemEnvironmentPropertySource.withProperty("NAME", "foo");
+		systemEnvironmentPropertySource.withProperty("NESTED_NAME", "bar");
+		this.context.getEnvironment().getPropertySources().replace(systemEnvironmentPropertySource.getName(), systemEnvironmentPropertySource);
+		this.context.register(NestedConfiguration.class);
+		this.context.refresh();
+		assertEquals(1, this.context.getBeanNamesForType(NestedProperties.class).length);
+		assertEquals("foo", this.context.getBean(NestedProperties.class).name);
+		assertEquals("bar", this.context.getBean(NestedProperties.class).nested.name);
+	}
+
+	@Test
 	public void testStrictPropertiesBinding() {
 		removeSystemProperties();
 		this.context.register(StrictTestConfiguration.class);
@@ -116,6 +131,18 @@ public class EnableConfigurationPropertiesTests {
 	public void testPropertiesEmbeddedBinding() {
 		this.context.register(EmbeddedTestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring_foo_name:foo");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);
+		assertEquals("foo", this.context.getBean(TestProperties.class).name);
+	}
+
+	@Test
+	public void testOsEnvironmentVariableEmbeddedBinding() {
+		MockPropertySource systemEnvironmentPropertySource = new MockPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+		systemEnvironmentPropertySource.withProperty("SPRING_FOO_NAME", "foo");
+		this.context.getEnvironment().getPropertySources().replace(systemEnvironmentPropertySource.getName(), systemEnvironmentPropertySource);
+		this.context.register(EmbeddedTestConfiguration.class);
 		this.context.refresh();
 		assertEquals(1,
 				this.context.getBeanNamesForType(EmbeddedTestProperties.class).length);

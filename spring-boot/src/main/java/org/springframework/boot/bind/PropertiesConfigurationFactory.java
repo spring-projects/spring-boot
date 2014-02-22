@@ -253,17 +253,16 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		if (this.target != null) {
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
-			String[] prefixes = this.targetName != null ? new String[] {
-					this.targetName + ".", this.targetName + "_" } : new String[] { "" };
+			String prefix = this.targetName != null ? this.targetName + "." : "";
 			String[] suffixes = new String[] { ".*", "_*" };
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
 				if (!name.equals("class")) {
-					for (String prefix : prefixes) {
-						names.add(prefix + name);
-						patterns.add(prefix + name);
+					for(String relaxedName : new RelaxedNames(prefix + name)) {
+						names.add(relaxedName);
+						patterns.add(relaxedName);
 						for (String suffix : suffixes) {
-							patterns.add(prefix + name + suffix);
+							patterns.add(relaxedName + suffix);
 						}
 					}
 				}
