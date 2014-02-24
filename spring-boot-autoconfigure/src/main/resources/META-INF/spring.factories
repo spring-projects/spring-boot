@@ -21,6 +21,7 @@ org.springframework.boot.autoconfigure.mobile.DeviceResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
+org.springframework.boot.autoconfigure.scalate.ScalateAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
