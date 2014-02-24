@@ -34,6 +34,7 @@ import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
+import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
@@ -47,6 +48,7 @@ import org.springframework.boot.actuate.trace.TraceRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
@@ -56,6 +58,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
@@ -158,6 +161,19 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ShutdownEndpoint shutdownEndpoint() {
 		return new ShutdownEndpoint();
+	}
+
+	@Configuration
+	@ConditionalOnClass(AbstractHandlerMethodMapping.class)
+	protected static class RequestMappingEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public RequestMappingEndpoint requestMappingEndpoint() {
+			RequestMappingEndpoint endpoint = new RequestMappingEndpoint();
+			return endpoint;
+		}
+
 	}
 
 	@Bean

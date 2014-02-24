@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -75,6 +76,7 @@ public class EndpointAutoConfigurationTests {
 		assertNotNull(this.context.getBean(MetricsEndpoint.class));
 		assertNotNull(this.context.getBean(ShutdownEndpoint.class));
 		assertNotNull(this.context.getBean(TraceEndpoint.class));
+		assertNotNull(this.context.getBean(RequestMappingEndpoint.class));
 	}
 
 	@Test
