@@ -901,14 +901,16 @@ enables it by default and loads SQL from the standard locations
 `schema.sql` and `data.sql` (in the root of the classpath). In
 addition Spring Boot will load a file `schema-${platform}.sql` where
 `platform` is the vendor name of the database (`hsqldb`, `h2,
-`oracle`, `mysql`, `postgresql` etc.). Spring Boot *disables* the
-failfast feature of the Spring JDBC initializer, so if the scripts
-cause exceptions they will be logged, but the application will still
-start. This is so that they can be used as "poor man's migrations"
-(inserts that fail mean that the data is already there, so no need to
-fail for instance), but it does mean that you need to test the state
-of your database on startup if you want to be sure that it was
-successful (or else monitor the Spring JDBC DEBUG logs).
+`oracle`, `mysql`, `postgresql` etc.). Spring Boot enables the
+failfast feature of the Spring JDBC initializer by default, so if 
+the scripts cause exceptions the application will fail.
+
+To disable the failfast you can set
+`spring.datasource.continueOnError=true`. This can be useful once an
+application has matured and been deployed a few times, since the
+scripts can act as "poor man's migrations" - inserts that fail mean
+that the data is already there, so there would be no need to prevent
+the application from running, for instance.
 
 ### Higher Level Migration Tools
 

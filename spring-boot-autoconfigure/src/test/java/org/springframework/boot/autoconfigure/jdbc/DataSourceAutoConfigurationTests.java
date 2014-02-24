@@ -24,11 +24,13 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -55,6 +57,13 @@ import static org.junit.Assert.assertTrue;
 public class DataSourceAutoConfigurationTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@Before
+	public void init() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb-" + new Random().nextInt());
+	}
 
 	@Test
 	public void testDefaultDataSourceExists() throws Exception {
@@ -85,8 +94,7 @@ public class DataSourceAutoConfigurationTests {
 				.addEnvironment(
 						this.context,
 						"spring.datasource.driverClassName:org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfigurationTests$DatabaseDriver",
-						"spring.datasource.url:jdbc:foo://localhost",
-						"spring.datasource.initialize:false");
+						"spring.datasource.url:jdbc:foo://localhost");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -141,6 +149,8 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testDataSourceInitialized() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:true");
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -172,16 +182,17 @@ public class DataSourceAutoConfigurationTests {
 
 	@Test
 	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put(DataSourceAutoConfiguration.CONFIGURATION_PREFIX + ".schema",
-				ClassUtils.addResourcePathToPackagePath(getClass(), "schema.sql")
+		EnvironmentTestUtils.addEnvironment(
+				this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.schema:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"schema.sql")
 						+ ","
 						+ ClassUtils.addResourcePathToPackagePath(getClass(),
 								"another.sql"));
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("test", map));
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
