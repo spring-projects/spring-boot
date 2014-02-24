@@ -304,7 +304,7 @@
 									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.handlers</resource>
 									</transformer>
-									<transformer implementation="org.springframework.maven.packaging.PropertiesMergingResourceTransformer">
+									<transformer implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
 										<resource>META-INF/spring.factories</resource>
 									</transformer>
 									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
