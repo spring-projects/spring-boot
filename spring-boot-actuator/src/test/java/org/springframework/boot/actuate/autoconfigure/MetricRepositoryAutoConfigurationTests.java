@@ -30,6 +30,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.messaging.support.ExecutorSubscribableChannel;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
@@ -38,6 +40,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -49,6 +52,17 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  */
 public class MetricRepositoryAutoConfigurationTests {
+
+	@Test
+	public void defaultExecutor() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				MetricRepositoryAutoConfiguration.class);
+		ExecutorSubscribableChannel channel = context
+				.getBean(ExecutorSubscribableChannel.class);
+		ThreadPoolTaskExecutor executor = (ThreadPoolTaskExecutor) channel.getExecutor();
+		context.close();
+		assertTrue(executor.getThreadPoolExecutor().isShutdown());
+	}
 
 	@Test
 	public void createServices() throws Exception {
