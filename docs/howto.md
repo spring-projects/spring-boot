@@ -912,6 +912,19 @@ scripts can act as "poor man's migrations" - inserts that fail mean
 that the data is already there, so there would be no need to prevent
 the application from running, for instance.
 
+### Spring Batch
+
+If you are using Spring Batch then it comes pre-packaged with SQL
+initialization scripts for most popular database platforms. Spring
+Boot will detect your database type, and execute those scripts by
+default, and in this case will switch the fail fast setting to false
+(errors are logged but do not prevent the application from
+starting). This is because the scripts are known to be reliable and
+generally do not contain bugs, so errors are ignorable, and ignoring
+them makes the scripts idempotent. You can switch off the
+initialization explicitly using
+`spring.batch.initializer.enabled=false`.
+
 ### Higher Level Migration Tools
 
 Spring Boot works fine with higher level migration tools
@@ -920,6 +933,31 @@ Spring Boot works fine with higher level migration tools
 Flyway because it is easier on the eyes, and it isn't very common to
 need platform independence: usually only one or at most couple of
 platforms is needed.
+
+## Execute Spring Batch Jobs on Startup
+
+Spring Batch autoconfiguration is enabled by adding
+`@EnableBatchProcessing` (from Spring Batch) somewhere in your
+context.
+
+By default it executes *all* `Jobs` in the application context on
+startup (see
+[JobLauncherCommandLineRunner](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/JobLauncherCommandLineRunner.java)
+for details). You can narrow down to a specific job or jobs by
+specifying `spring.batch.job.names` (comma separated job name
+patterns). 
+
+If the application context includes a `JobRegistry` then
+the jobs in `spring.batch.job.names` are looked up in the regsitry
+instead of bein autowired from the context. This is a common pattern
+with more complex systems where multiple jobs are defined in child
+contexts and registered centrally.
+
+See
+[BatchAutoConfiguration](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/BatchAutoConfiguration.java)
+and
+[@EnableBatchProcessing](https://github.com/spring-projects/spring-batch/blob/master/spring-batch-core/src/main/java/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.java)
+for more details.
 
 <span id="discover.options"/>
 ## Discover Built-in Options for External Properties

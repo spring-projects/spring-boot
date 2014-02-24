@@ -114,29 +114,30 @@ public class BatchAutoConfigurationTests {
 		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
 				"job", new JobParameters()));
 	}
-	
+
 	@Test
 	public void testDefinesAndLaunchesNamedJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.batch.job.names:discreteRegisteredJob");
-		this.context.register(NamedJobConfigurationWithRegisteredJob.class, BatchAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(NamedJobConfigurationWithRegisteredJob.class,
+				BatchAutoConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+		JobRepository repository = this.context.getBean(JobRepository.class);
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		this.context.getBean(JobLauncherCommandLineRunner.class).run();
-		assertNotNull(this.context.getBean(JobRepository.class).getLastJobExecution(
-				"discreteRegisteredJob", new JobParameters()));
+		assertNotNull(repository.getLastJobExecution("discreteRegisteredJob",
+				new JobParameters()));
 	}
-	
+
 	@Test
 	public void testDefinesAndLaunchesLocalJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.batch.job.names:discreteLocalJob");
-		this.context.register(NamedJobConfigurationWithLocalJob.class, BatchAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(NamedJobConfigurationWithLocalJob.class,
+				BatchAutoConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
@@ -206,17 +207,17 @@ public class BatchAutoConfigurationTests {
 	protected static class NamedJobConfigurationWithRegisteredJob {
 		@Autowired
 		private JobRegistry jobRegistry;
-		
+
 		@Autowired
 		private JobRepository jobRepository;
-		
+
 		@Bean
 		public JobRegistryBeanPostProcessor registryProcessor() {
 			JobRegistryBeanPostProcessor processor = new JobRegistryBeanPostProcessor();
-			processor.setJobRegistry(jobRegistry);
+			processor.setJobRegistry(this.jobRegistry);
 			return processor;
 		}
-		
+
 		@Bean
 		public Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteRegisteredJob") {
@@ -241,13 +242,13 @@ public class BatchAutoConfigurationTests {
 			return job;
 		}
 	}
-	
+
 	@EnableBatchProcessing
 	protected static class NamedJobConfigurationWithLocalJob {
-		
+
 		@Autowired
 		private JobRepository jobRepository;
-		
+
 		@Bean
 		public Job discreteJob() {
 			AbstractJob job = new AbstractJob("discreteLocalJob") {
@@ -272,7 +273,7 @@ public class BatchAutoConfigurationTests {
 			return job;
 		}
 	}
-	
+
 	@EnableBatchProcessing
 	protected static class JobConfiguration {
 		@Autowired
