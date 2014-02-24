@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -44,6 +43,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.ExecutorSubscribableChannel;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -121,14 +121,21 @@ public class MetricRepositoryAutoConfiguration {
 	@ConditionalOnClass(MessageChannel.class)
 	static class MetricsChannelConfiguration {
 
-		@Autowired(required = false)
+		@Autowired
 		@Qualifier("metricsExecutor")
-		private final Executor executor = Executors.newSingleThreadExecutor();
+		private Executor executor;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "metricsChannel")
 		public SubscribableChannel metricsChannel() {
 			return new ExecutorSubscribableChannel(this.executor);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(name = "metricsExecutor")
+		protected Executor metricsExecutor() {
+			ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+			return executor;
 		}
 
 		@Bean
