@@ -17,14 +17,14 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
+import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -47,41 +47,50 @@ import static org.junit.Assert.assertTrue;
  */
 public class ThymeleafAutoConfigurationTests {
 
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@After
+	public void close() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void createFromConfigClass() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(ThymeleafAutoConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.thymeleaf.mode:XHTML",
+				"spring.thymeleaf.suffix:");
+		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.thymeleaf.mode", "XHTML");
-		map.put("spring.thymeleaf.suffix", "");
-		context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("test", map));
-		context.refresh();
-		TemplateEngine engine = context.getBean(TemplateEngine.class);
+		this.context.refresh();
+		TemplateEngine engine = this.context.getBean(TemplateEngine.class);
 		Context attrs = new Context(Locale.UK, Collections.singletonMap("foo", "bar"));
 		String result = engine.process("template.txt", attrs);
 		assertEquals("<html>bar</html>", result);
-		context.close();
 	}
 
 	@Test
 	public void overrideCharacterEncoding() throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(ThymeleafAutoConfiguration.class,
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.thymeleaf.encoding:UTF-16");
+		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("spring.thymeleaf.encoding", "UTF-16");
-		context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("test", map));
-		context.refresh();
-		context.getBean(TemplateEngine.class).initialize();
-		ITemplateResolver resolver = context.getBean(ITemplateResolver.class);
+		this.context.refresh();
+		this.context.getBean(TemplateEngine.class).initialize();
+		ITemplateResolver resolver = this.context.getBean(ITemplateResolver.class);
 		assertTrue(resolver instanceof TemplateResolver);
 		assertEquals("UTF-16", ((TemplateResolver) resolver).getCharacterEncoding());
-		ThymeleafViewResolver views = context.getBean(ThymeleafViewResolver.class);
+		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertEquals("UTF-16", views.getCharacterEncoding());
-		context.close();
+	}
+
+	@Test(expected = BeanCreationException.class)
+	public void templateLocationDoesNotExist() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
 	}
 
 	@Test

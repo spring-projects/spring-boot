@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 import java.util.Collection;
 import java.util.Collections;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import nz.net.ultraq.thymeleaf.LayoutDialect;
@@ -36,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
@@ -72,6 +74,19 @@ public class ThymeleafAutoConfiguration {
 		public void setEnvironment(Environment environment) {
 			this.environment = new RelaxedPropertyResolver(environment,
 					"spring.thymeleaf.");
+		}
+
+		@PostConstruct
+		public void checkTemplateLocationExists() {
+			if (this.environment
+					.getProperty("checkTemplateLocation", Boolean.class, true)) {
+				Resource resource = this.resourceLoader.getResource(this.environment
+						.getProperty("prefix", DEFAULT_PREFIX));
+				if (!resource.exists()) {
+					throw new IllegalStateException("Cannot find template location: "
+							+ resource + " (are you really using Thymeleaf?)");
+				}
+			}
 		}
 
 		@Bean
