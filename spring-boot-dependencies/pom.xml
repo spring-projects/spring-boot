@@ -54,7 +54,7 @@
 		<thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.2.1</thymeleaf-layout-dialect.version>
-		<tomcat.version>7.0.47</tomcat.version>
+		<tomcat.version>7.0.52</tomcat.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.0</maven>
@@ -184,6 +184,11 @@
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-jasper</artifactId>
+				<version>${tomcat.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-websocket</artifactId>
 				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
