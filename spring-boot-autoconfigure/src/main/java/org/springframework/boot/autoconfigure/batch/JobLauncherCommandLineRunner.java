@@ -23,17 +23,20 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.NoSuchJobException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -63,7 +66,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 
 	@Autowired(required = false)
 	private JobRegistry jobRegistry;
-	
+
 	@Autowired
 	private JobRepository jobRepository;
 
@@ -103,17 +106,29 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 			for (String jobName : jobsToRun) {
 				try {
 					Job job = this.jobRegistry.getJob(jobName);
-					JobExecution previousExecution = jobRepository.getLastJobExecution(jobName, jobParameters);
-					if (previousExecution == null || previousExecution.getStatus() != BatchStatus.COMPLETED) {
-						JobExecution execution = this.jobLauncher.run(job, jobParameters);
-						if (this.publisher != null) {
-							this.publisher.publishEvent(new JobExecutionEvent(execution));
-						}
+					if (this.jobs.contains(job)) {
+						continue;
 					}
-				} catch (NoSuchJobException nsje) {
+					execute(job, jobParameters);
+				}
+				catch (NoSuchJobException nsje) {
 					logger.debug("No job found in registry for job name: " + jobName);
 					continue;
 				}
+			}
+		}
+	}
+
+	protected void execute(Job job, JobParameters jobParameters)
+			throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+		String jobName = job.getName();
+		JobExecution previousExecution = this.jobRepository.getLastJobExecution(jobName,
+				jobParameters);
+		if (previousExecution == null || previousExecution.getStatus().isUnsuccessful()) {
+			JobExecution execution = this.jobLauncher.run(job, jobParameters);
+			if (this.publisher != null) {
+				this.publisher.publishEvent(new JobExecutionEvent(execution));
 			}
 		}
 	}
@@ -128,10 +143,7 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 					continue;
 				}
 			}
-			JobExecution execution = this.jobLauncher.run(job, jobParameters);
-			if (this.publisher != null) {
-				this.publisher.publishEvent(new JobExecutionEvent(execution));
-			}
+			execute(job, jobParameters);
 		}
 	}
 
