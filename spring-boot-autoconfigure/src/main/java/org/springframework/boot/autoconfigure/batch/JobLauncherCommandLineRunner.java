@@ -19,23 +19,32 @@ package org.springframework.boot.autoconfigure.batch;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
+import org.springframework.batch.core.JobInstance;
+import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersIncrementer;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.JobParametersNotFoundException;
 import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -58,24 +67,24 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 
 	private static Log logger = LogFactory.getLog(JobLauncherCommandLineRunner.class);
 
-	@Autowired(required = false)
-	private final JobParametersConverter converter = new DefaultJobParametersConverter();
+	private JobParametersConverter converter = new DefaultJobParametersConverter();
 
-	@Autowired
 	private JobLauncher jobLauncher;
 
-	@Autowired(required = false)
 	private JobRegistry jobRegistry;
 
-	@Autowired
-	private JobRepository jobRepository;
+	private JobExplorer jobExplorer;
 
 	private String jobNames;
 
-	@Autowired(required = false)
-	private final Collection<Job> jobs = Collections.emptySet();
+	private Collection<Job> jobs = Collections.emptySet();
 
 	private ApplicationEventPublisher publisher;
+
+	public JobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer) {
+		this.jobLauncher = jobLauncher;
+		this.jobExplorer = jobExplorer;
+	}
 
 	public void setJobNames(String jobNames) {
 		this.jobNames = jobNames;
@@ -84,6 +93,21 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	@Override
 	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
 		this.publisher = publisher;
+	}
+
+	@Autowired(required = false)
+	public void setJobRegistry(JobRegistry jobRegistry) {
+		this.jobRegistry = jobRegistry;
+	}
+
+	@Autowired(required = false)
+	public void setJobParametersConverter(JobParametersConverter converter) {
+		this.converter = converter;
+	}
+
+	@Autowired(required = false)
+	public void setJobs(Collection<Job> jobs) {
+		this.jobs = jobs;
 	}
 
 	@Override
@@ -97,6 +121,61 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 		JobParameters jobParameters = this.converter.getJobParameters(properties);
 		executeLocalJobs(jobParameters);
 		executeRegisteredJobs(jobParameters);
+	}
+
+	private JobParameters getNextJobParameters(Job job, JobParameters additionalParameters) {
+
+		String jobIdentifier = job.getName();
+		JobParameters jobParameters = new JobParameters();
+		List<JobInstance> lastInstances = this.jobExplorer.getJobInstances(jobIdentifier,
+				0, 1);
+
+		JobParametersIncrementer incrementer = job.getJobParametersIncrementer();
+
+		Map<String, JobParameter> additionals = additionalParameters.getParameters();
+		if (lastInstances.isEmpty()) {
+			// Start from a completely clean sheet
+			if (incrementer != null) {
+				jobParameters = incrementer.getNext(new JobParameters());
+			}
+		}
+		else {
+			List<JobExecution> lastExecutions = this.jobExplorer
+					.getJobExecutions(lastInstances.get(0));
+			JobExecution previousExecution = lastExecutions.get(0);
+			if (previousExecution == null) {
+				// Normally this will not happen - an instance exists with no executions
+				if (incrementer != null) {
+					jobParameters = incrementer.getNext(new JobParameters());
+				}
+			}
+			else if (previousExecution.getStatus() == BatchStatus.STOPPED
+					|| previousExecution.getStatus() == BatchStatus.FAILED) {
+				// Retry a failed or stopped execution
+				jobParameters = previousExecution.getJobParameters();
+				for (Entry<String, JobParameter> parameter : additionals.entrySet()) {
+					// Non-identifying additional parameters can be added to a retry
+					if (!parameter.getValue().isIdentifying()) {
+						additionals.remove(parameter.getKey());
+					}
+				}
+			}
+			else if (incrementer != null) {
+				// New instance so increment the parameters if we can
+				if (incrementer != null) {
+					jobParameters = incrementer.getNext(previousExecution
+							.getJobParameters());
+				}
+			}
+		}
+
+		Map<String, JobParameter> map = new HashMap<String, JobParameter>(
+				jobParameters.getParameters());
+		map.putAll(additionals);
+		jobParameters = new JobParameters(map);
+
+		return jobParameters;
+
 	}
 
 	private void executeRegisteredJobs(JobParameters jobParameters)
@@ -121,12 +200,11 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 
 	protected void execute(Job job, JobParameters jobParameters)
 			throws JobExecutionAlreadyRunningException, JobRestartException,
-			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		String jobName = job.getName();
-		JobExecution previousExecution = this.jobRepository.getLastJobExecution(jobName,
-				jobParameters);
-		if (previousExecution == null || previousExecution.getStatus().isUnsuccessful()) {
-			JobExecution execution = this.jobLauncher.run(job, jobParameters);
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException,
+			JobParametersNotFoundException {
+		JobParameters nextParameters = getNextJobParameters(job, jobParameters);
+		if (nextParameters != null) {
+			JobExecution execution = this.jobLauncher.run(job, nextParameters);
 			if (this.publisher != null) {
 				this.publisher.publishEvent(new JobExecutionEvent(execution));
 			}
