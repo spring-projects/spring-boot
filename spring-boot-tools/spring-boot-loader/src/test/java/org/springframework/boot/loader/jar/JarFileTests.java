@@ -150,7 +150,7 @@ public class JarFileTests {
 		assertThat(jarURLConnection.getContentLength(), greaterThan(1));
 		assertThat(jarURLConnection.getContent(), sameInstance((Object) this.jarFile));
 		assertThat(jarURLConnection.getContentType(), equalTo("x-java/jar"));
-		assertThat(jarURLConnection.getJarFileURL().toString(), equalTo("file:"
+		assertThat(jarURLConnection.getJarFileURL().toString(), equalTo("jar:file:"
 				+ this.rootJarFile));
 	}
 
@@ -216,8 +216,8 @@ public class JarFileTests {
 				+ "!/nested.jar!/"));
 		JarURLConnection conn = (JarURLConnection) url.openConnection();
 		assertThat(conn.getJarFile(), sameInstance(nestedJarFile));
-		assertThat(conn.getJarFileURL().toString(),
-				equalTo("file:" + this.rootJarFile.getPath() + "!/nested.jar"));
+		assertThat(conn.getJarFileURL().toString(), equalTo("jar:file:"
+				+ this.rootJarFile.getPath() + "!/nested.jar"));
 	}
 
 	@Test
