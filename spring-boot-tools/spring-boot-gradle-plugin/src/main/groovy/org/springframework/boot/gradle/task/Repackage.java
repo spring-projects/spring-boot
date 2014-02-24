@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
@@ -70,6 +71,11 @@ public class Repackage extends DefaultTask {
 		}
 		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
+		}
+		JavaExec runner = (JavaExec) project.getTasks().findByName("run");
+		if (runner!=null && mainClass==null) {
+			getLogger().info("Found main in run task: " + runner.getMain());
+			setMainClass(runner.getMain());
 		}
 		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
 	}
