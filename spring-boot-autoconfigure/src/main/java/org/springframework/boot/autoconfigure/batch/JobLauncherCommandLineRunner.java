@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
@@ -31,6 +32,8 @@ import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.NoSuchJobException;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
@@ -60,16 +63,19 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 
 	@Autowired(required = false)
 	private JobRegistry jobRegistry;
+	
+	@Autowired
+	private JobRepository jobRepository;
 
-	private String jobName;
+	private String jobNames;
 
 	@Autowired(required = false)
 	private final Collection<Job> jobs = Collections.emptySet();
 
 	private ApplicationEventPublisher publisher;
 
-	public void setJobName(String jobName) {
-		this.jobName = jobName;
+	public void setJobNames(String jobNames) {
+		this.jobNames = jobNames;
 	}
 
 	@Override
@@ -86,17 +92,28 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	protected void launchJobFromProperties(Properties properties)
 			throws JobExecutionException {
 		JobParameters jobParameters = this.converter.getJobParameters(properties);
-		executeRegisteredJobs(jobParameters);
 		executeLocalJobs(jobParameters);
+		executeRegisteredJobs(jobParameters);
 	}
 
 	private void executeRegisteredJobs(JobParameters jobParameters)
 			throws JobExecutionException {
-		if (this.jobRegistry != null && StringUtils.hasText(this.jobName)) {
-			Job job = this.jobRegistry.getJob(this.jobName);
-			JobExecution execution = this.jobLauncher.run(job, jobParameters);
-			if (this.publisher != null) {
-				this.publisher.publishEvent(new JobExecutionEvent(execution));
+		if (this.jobRegistry != null && StringUtils.hasText(this.jobNames)) {
+			String[] jobsToRun = this.jobNames.split(",");
+			for (String jobName : jobsToRun) {
+				try {
+					Job job = this.jobRegistry.getJob(jobName);
+					JobExecution previousExecution = jobRepository.getLastJobExecution(jobName, jobParameters);
+					if (previousExecution == null || previousExecution.getStatus() != BatchStatus.COMPLETED) {
+						JobExecution execution = this.jobLauncher.run(job, jobParameters);
+						if (this.publisher != null) {
+							this.publisher.publishEvent(new JobExecutionEvent(execution));
+						}
+					}
+				} catch (NoSuchJobException nsje) {
+					logger.debug("No job found in registry for job name: " + jobName);
+					continue;
+				}
 			}
 		}
 	}
@@ -104,8 +121,9 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 	private void executeLocalJobs(JobParameters jobParameters)
 			throws JobExecutionException {
 		for (Job job : this.jobs) {
-			if (StringUtils.hasText(this.jobName)) {
-				if (!PatternMatchUtils.simpleMatch(this.jobName, job.getName())) {
+			if (StringUtils.hasText(this.jobNames)) {
+				String[] jobsToRun = this.jobNames.split(",");
+				if (!PatternMatchUtils.simpleMatch(jobsToRun, job.getName())) {
 					logger.debug("Skipped job: " + job.getName());
 					continue;
 				}
