@@ -106,13 +106,15 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 					.getResources(schemaLocation)));
 		}
 
+		boolean continueOnError = this.environment.getProperty("continueOnError",
+				Boolean.class, false);
 		boolean exists = false;
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		for (Resource resource : resources) {
 			if (resource.exists()) {
 				exists = true;
 				populator.addScript(resource);
-				populator.setContinueOnError(true);
+				populator.setContinueOnError(continueOnError);
 			}
 		}
 

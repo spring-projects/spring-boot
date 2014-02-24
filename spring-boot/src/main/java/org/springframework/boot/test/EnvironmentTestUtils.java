@@ -24,6 +24,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 
 /**
  * Test utilities for setting environment values.
@@ -54,7 +55,19 @@ public abstract class EnvironmentTestUtils {
 	 */
 	public static void addEnvironment(ConfigurableEnvironment environment,
 			String... pairs) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		MutablePropertySources sources = environment.getPropertySources();
+		Map<String, Object> map;
+		if (!sources.contains("test")) {
+			map = new HashMap<String, Object>();
+			MapPropertySource source = new MapPropertySource("test", map);
+			sources.addFirst(source);
+		}
+		else {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> value = (Map<String, Object>) sources.get("test")
+					.getSource();
+			map = value;
+		}
 		for (String pair : pairs) {
 			int index = pair.indexOf(":");
 			index = index < 0 ? index = pair.indexOf("=") : index;
@@ -62,7 +75,6 @@ public abstract class EnvironmentTestUtils {
 			String value = index > 0 ? pair.substring(index + 1) : "";
 			map.put(key.trim(), value.trim());
 		}
-		environment.getPropertySources().addFirst(new MapPropertySource("test", map));
 	}
 
 }
