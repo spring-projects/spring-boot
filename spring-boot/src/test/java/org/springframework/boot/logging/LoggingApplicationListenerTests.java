@@ -86,7 +86,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void testBaseConfigLocation() {
+	public void baseConfigLocation() {
 		this.initializer.initialize(this.context.getEnvironment(),
 				this.context.getClassLoader());
 		this.logger.info("Hello world");
@@ -97,7 +97,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void testOverrideConfigLocation() {
+	public void overrideConfigLocation() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -110,7 +110,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void testOverrideConfigDoesNotExist() throws Exception {
+	public void overrideConfigDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: doesnotexist.xml");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -119,7 +119,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void testAddLogFileProperty() {
+	public void addLogFileProperty() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml",
 				"logging.file: target/foo.log");
@@ -132,7 +132,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void testAddLogFilePropertyWithDefault() {
+	public void addLogFilePropertyWithDefault() {
 		assertFalse(new File("target/foo.log").exists());
 		EnvironmentTestUtils.addEnvironment(this.context, "logging.file: target/foo.log");
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -143,7 +143,7 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	public void testAddLogPathProperty() {
+	public void addLogPathProperty() {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"logging.config: classpath:logback-nondefault.xml",
 				"logging.path: target/foo/");

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <included>
 
-	<include resource="org/springframework/boot/logging/logback/basic-logback.xml"/>	
+	<include resource="org/springframework/boot/logging/logback/basic-logback.xml"/>
 
 	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-/tmp/}spring.log}"/>
 	<property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%t] --- %-40.40logger{39} : %m%n%wex"/>

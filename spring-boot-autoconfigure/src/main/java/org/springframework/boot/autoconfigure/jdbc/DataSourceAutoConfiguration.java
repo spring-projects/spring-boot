@@ -64,7 +64,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 @Configuration
-@ConditionalOnClass(EmbeddedDatabaseType.class /* Spring JDBC */)
+@ConditionalOnClass(EmbeddedDatabaseType.class)
 public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
@@ -77,26 +77,27 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private RelaxedPropertyResolver environment;
+	private RelaxedPropertyResolver datasourceProperties;
 
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment, CONFIGURATION_PREFIX
-				+ ".");
+		this.datasourceProperties = new RelaxedPropertyResolver(environment,
+				CONFIGURATION_PREFIX + ".");
 	}
 
 	@PostConstruct
 	protected void initialize() throws Exception {
-		if (this.dataSource == null
-				|| !this.environment.getProperty("initialize", Boolean.class, true)) {
+		boolean initialize = this.datasourceProperties.getProperty("initialize",
+				Boolean.class, true);
+		if (this.dataSource == null || !initialize) {
 			logger.debug("No DataSource found so not initializing");
 			return;
 		}
 
-		String schema = this.environment.getProperty("schema");
+		String schema = this.datasourceProperties.getProperty("schema");
 		if (schema == null) {
 			schema = "classpath*:schema-"
-					+ this.environment.getProperty("platform", "all")
+					+ this.datasourceProperties.getProperty("platform", "all")
 					+ ".sql,classpath*:schema.sql,classpath*:data.sql";
 		}
 
@@ -106,8 +107,8 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 					.getResources(schemaLocation)));
 		}
 
-		boolean continueOnError = this.environment.getProperty("continueOnError",
-				Boolean.class, false);
+		boolean continueOnError = this.datasourceProperties.getProperty(
+				"continueOnError", Boolean.class, false);
 		boolean exists = false;
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		for (Resource resource : resources) {

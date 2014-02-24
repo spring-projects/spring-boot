@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.Assert;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
@@ -78,14 +79,13 @@ public class ThymeleafAutoConfiguration {
 
 		@PostConstruct
 		public void checkTemplateLocationExists() {
-			if (this.environment
-					.getProperty("checkTemplateLocation", Boolean.class, true)) {
+			Boolean checkTemplateLocation = this.environment.getProperty(
+					"checkTemplateLocation", Boolean.class, true);
+			if (checkTemplateLocation) {
 				Resource resource = this.resourceLoader.getResource(this.environment
 						.getProperty("prefix", DEFAULT_PREFIX));
-				if (!resource.exists()) {
-					throw new IllegalStateException("Cannot find template location: "
-							+ resource + " (are you really using Thymeleaf?)");
-				}
+				Assert.state(resource.exists(), "Cannot find template location: "
+						+ resource + " (are you really using Thymeleaf?)");
 			}
 		}
 
