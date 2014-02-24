@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 /**
+ * {@link Endpoint} to expose Spring MVC mappings.
+ * 
  * @author Dave Syer
  */
 public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>>
@@ -118,10 +120,10 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 			Map<String, Object> result) {
 		for (AbstractUrlHandlerMapping mapping : handlerMappings) {
 			Map<String, Object> handlers = mapping.getHandlerMap();
-			for (String key : handlers.keySet()) {
-				Object handler = handlers.get(key);
-				result.put(key,
-						Collections.singletonMap("type", handler.getClass().getName()));
+			for (Map.Entry<String, Object> entry : handlers.entrySet()) {
+				Class<? extends Object> handlerClass = entry.getValue().getClass();
+				result.put(entry.getKey(),
+						Collections.singletonMap("type", handlerClass.getName()));
 			}
 		}
 	}
@@ -131,9 +133,11 @@ public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>
 			Map<String, Object> result) {
 		for (AbstractHandlerMethodMapping<?> mapping : methodMappings) {
 			Map<?, HandlerMethod> methods = mapping.getHandlerMethods();
-			for (Object key : methods.keySet()) {
-				result.put(key.toString(),
-						Collections.singletonMap("method", methods.get(key).toString()));
+			for (Map.Entry<?, HandlerMethod> entry : methods.entrySet()) {
+				result.put(
+						String.valueOf(entry.getKey()),
+						Collections.singletonMap("method",
+								String.valueOf(entry.getValue())));
 			}
 		}
 	}

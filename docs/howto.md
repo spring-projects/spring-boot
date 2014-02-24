@@ -866,7 +866,7 @@ database is in a server.
 
 JPA has features for DDL generation, and these can be set up to
 run on startup against the database. This is controlled through two
-external properties: 
+external properties:
 
 * `spring.jpa.generate-ddl` (boolean) switches the feature on and off
   and is vendor independent
@@ -902,7 +902,7 @@ enables it by default and loads SQL from the standard locations
 addition Spring Boot will load a file `schema-${platform}.sql` where
 `platform` is the vendor name of the database (`hsqldb`, `h2,
 `oracle`, `mysql`, `postgresql` etc.). Spring Boot enables the
-failfast feature of the Spring JDBC initializer by default, so if 
+failfast feature of the Spring JDBC initializer by default, so if
 the scripts cause exceptions the application will fail.
 
 To disable the failfast you can set
@@ -945,7 +945,7 @@ startup (see
 [JobLauncherCommandLineRunner](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/JobLauncherCommandLineRunner.java)
 for details). You can narrow down to a specific job or jobs by
 specifying `spring.batch.job.names` (comma separated job name
-patterns). 
+patterns).
 
 If the application context includes a `JobRegistry` then
 the jobs in `spring.batch.job.names` are looked up in the regsitry

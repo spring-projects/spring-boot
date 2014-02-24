@@ -46,12 +46,12 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Batch. By default a
  * Runner will be created and all jobs in the context will be executed on startup.
- * 
- * Disable this behaviour with <code>spring.batch.job.enabled=false</code>).
- * 
+ * <p>
+ * Disable this behavior with {@literal spring.batch.job.enabled=false}).
+ * <p>
  * Alternatively, discrete Job names to execute on startup can be supplied by the User
- * with a comma-delimited list: <code>spring.batch.job.names=job1,job2</code>. In this
- * case the Runner will first find jobs registered as Beans, then those in the existing
+ * with a comma-delimited list: {@literal spring.batch.job.names=job1,job2}. In this case
+ * the Runner will first find jobs registered as Beans, then those in the existing
  * JobRegistry.
  * 
  * @author Dave Syer

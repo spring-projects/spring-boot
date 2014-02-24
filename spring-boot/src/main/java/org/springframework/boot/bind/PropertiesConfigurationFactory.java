@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -253,12 +253,12 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>,
 		if (this.target != null) {
 			PropertyDescriptor[] descriptors = BeanUtils
 					.getPropertyDescriptors(this.target.getClass());
-			String prefix = this.targetName != null ? this.targetName + "." : "";
+			String prefix = (this.targetName != null ? this.targetName + "." : "");
 			String[] suffixes = new String[] { ".*", "_*" };
 			for (PropertyDescriptor descriptor : descriptors) {
 				String name = descriptor.getName();
 				if (!name.equals("class")) {
-					for(String relaxedName : new RelaxedNames(prefix + name)) {
+					for (String relaxedName : new RelaxedNames(prefix + name)) {
 						names.add(relaxedName);
 						patterns.add(relaxedName);
 						for (String suffix : suffixes) {

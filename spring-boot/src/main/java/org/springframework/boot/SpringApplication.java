@@ -261,9 +261,9 @@ public class SpringApplication {
 
 		System.setProperty("java.awt.headless", Boolean.toString(this.headless));
 
-		Collection<SpringApplicationRunListener> participants = createRunParticipants(args);
-		for (SpringApplicationRunListener participant : participants) {
-			participant.started();
+		Collection<SpringApplicationRunListener> runListeners = getRunListeners(args);
+		for (SpringApplicationRunListener runListener : runListeners) {
+			runListener.started();
 		}
 
 		try {
@@ -271,8 +271,8 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = getOrCreateEnvironment();
 			addPropertySources(environment, args);
 			setupProfiles(environment);
-			for (SpringApplicationRunListener participant : participants) {
-				participant.environmentPrepared(environment);
+			for (SpringApplicationRunListener runListener : runListeners) {
+				runListener.environmentPrepared(environment);
 			}
 
 			if (this.showBanner) {
@@ -287,8 +287,8 @@ public class SpringApplication {
 			context.setEnvironment(environment);
 			postProcessApplicationContext(context);
 			applyInitializers(context);
-			for (SpringApplicationRunListener participant : participants) {
-				participant.contextPrepared(context);
+			for (SpringApplicationRunListener runListener : runListeners) {
+				runListener.contextPrepared(context);
 			}
 			if (this.logStartupInfo) {
 				logStartupInfo(context.getParent() == null);
@@ -298,15 +298,15 @@ public class SpringApplication {
 			Set<Object> sources = getSources();
 			Assert.notEmpty(sources, "Sources must not be empty");
 			load(context, sources.toArray(new Object[sources.size()]));
-			for (SpringApplicationRunListener participant : participants) {
-				participant.contextLoaded(context);
+			for (SpringApplicationRunListener runListener : runListeners) {
+				runListener.contextLoaded(context);
 			}
 
 			// Refresh the context
 			refresh(context);
 			afterRefresh(context, args);
-			for (SpringApplicationRunListener participant : participants) {
-				participant.finished(context, null);
+			for (SpringApplicationRunListener runListener : runListeners) {
+				runListener.finished(context, null);
 			}
 
 			stopWatch.stop();
@@ -317,8 +317,8 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Exception ex) {
-			for (SpringApplicationRunListener participant : participants) {
-				finishWithException(participant, context, ex);
+			for (SpringApplicationRunListener runListener : runListeners) {
+				finishWithException(runListener, context, ex);
 			}
 			if (context != null) {
 				context.close();
@@ -330,13 +330,11 @@ public class SpringApplication {
 		}
 	}
 
-	private Collection<SpringApplicationRunListener> createRunParticipants(
-			String[] args) {
-		List<SpringApplicationRunListener> participants = new ArrayList<SpringApplicationRunListener>();
-		participants.addAll(getSpringFactoriesInstances(
-				SpringApplicationRunListener.class, new Class<?>[] {
-						SpringApplication.class, String[].class }, this, args));
-		return participants;
+	private Collection<SpringApplicationRunListener> getRunListeners(String[] args) {
+		List<SpringApplicationRunListener> listeners = new ArrayList<SpringApplicationRunListener>();
+		listeners.addAll(getSpringFactoriesInstances(SpringApplicationRunListener.class,
+				new Class<?>[] { SpringApplication.class, String[].class }, this, args));
+		return listeners;
 	}
 
 	private <T> Collection<? extends T> getSpringFactoriesInstances(Class<T> type) {
@@ -625,10 +623,10 @@ public class SpringApplication {
 		runCommandLineRunners(context, args);
 	}
 
-	private void finishWithException(SpringApplicationRunListener participant,
+	private void finishWithException(SpringApplicationRunListener runListener,
 			ConfigurableApplicationContext context, Exception exception) {
 		try {
-			participant.finished(context, exception);
+			runListener.finished(context, exception);
 		}
 		catch (Exception ex) {
 			if (this.log.isDebugEnabled()) {
