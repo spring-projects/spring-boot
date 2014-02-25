@@ -83,7 +83,14 @@ public class PropertiesLauncherTests {
 	}
 
 	@Test
-	public void testUserSpecifiedPath() throws Exception {
+	public void testUserSpecifiedDotPath() throws Exception {
+		System.setProperty("loader.path", ".");
+		PropertiesLauncher launcher = new PropertiesLauncher();
+		assertEquals("[.]", ReflectionTestUtils.getField(launcher, "paths").toString());
+	}
+
+	@Test
+	public void testUserSpecifiedWildcardPath() throws Exception {
 		System.setProperty("loader.path", "jars/*");
 		System.setProperty("loader.main", "demo.Application");
 		PropertiesLauncher launcher = new PropertiesLauncher();

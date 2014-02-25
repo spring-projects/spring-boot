@@ -64,7 +64,7 @@ public class JarCommandIT {
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
 				"jar.groovy");
 		invocation.await();
-		assertEquals(0, invocation.getErrorOutput().length());
+		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
 		assertTrue(jar.exists());
 
 		Process process = new JavaExecutable().processBuilder("-jar",
