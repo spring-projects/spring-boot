@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
+@Ignore("Ignore until gh-380, SPR-11455 can be resolved")
 public class SpringApplicationConfigurationDefaultConfigurationTests {
 
 	@Autowired
