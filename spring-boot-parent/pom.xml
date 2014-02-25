@@ -11,7 +11,7 @@
 	<artifactId>spring-boot-parent</artifactId>
 	<packaging>pom</packaging>
 	<properties>
-		<aether.version>0.9.0.M3</aether.version>
+		<aether.version>0.9.0.M4</aether.version>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -47,7 +47,7 @@
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-aether-provider</artifactId>
-				<version>3.1.1</version>
+				<version>3.2.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
@@ -102,7 +102,7 @@
 			<dependency>
 				<groupId>org.codehaus.plexus</groupId>
 				<artifactId>plexus-utils</artifactId>
-				<version>3.0.15</version>
+				<version>3.0.17</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.aether</groupId>
