@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -37,6 +39,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.junit.Assert.assertEquals;
@@ -60,8 +63,9 @@ public class SecurityAutoConfigurationTests {
 		debugRefresh(this.context);
 		assertNotNull(this.context.getBean(AuthenticationManagerBuilder.class));
 		// 4 for static resources and one for the rest
-		assertEquals(5, this.context.getBean(FilterChainProxy.class).getFilterChains()
-				.size());
+		List<SecurityFilterChain> filterChains = this.context.getBean(
+				FilterChainProxy.class).getFilterChains();
+		assertEquals(5, filterChains.size());
 	}
 
 	@Test
