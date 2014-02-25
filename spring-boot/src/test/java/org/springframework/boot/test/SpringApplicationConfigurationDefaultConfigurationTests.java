@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
-@Ignore("Ignore until gh-380, SPR-11455 can be resolved")
+@Ignore("Ignore until SPR-11455 is resolved (Spring 4.0.3)")
 public class SpringApplicationConfigurationDefaultConfigurationTests {
 
 	@Autowired

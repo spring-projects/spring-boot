@@ -16,7 +16,6 @@
 
 package org.springframework.boot;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -29,9 +28,9 @@ import org.springframework.boot.test.SpringApplicationConfigurationJmxTests;
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ SpringApplicationConfigurationDefaultConfigurationTests.class,
-		SpringApplicationConfigurationJmxTests.class })
-@Ignore
+@SuiteClasses({ SpringApplicationConfigurationJmxTests.class,
+		SpringApplicationConfigurationDefaultConfigurationTests.class })
+// @Ignore
 public class AdhocTestSuite {
 
 }
