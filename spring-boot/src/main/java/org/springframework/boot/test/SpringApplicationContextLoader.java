@@ -29,7 +29,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.web.ServletContextApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.core.SpringVersion;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.support.AbstractContextLoader;
@@ -77,6 +79,16 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		return application.run();
 	}
 
+	@Override
+	public void processContextConfiguration(
+			ContextConfigurationAttributes configAttributes) {
+		if (!configAttributes.hasLocations() && !configAttributes.hasClasses()) {
+			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(configAttributes
+					.getDeclaringClass());
+			configAttributes.setClasses(defaultConfigClasses);
+		}
+	}
+
 	/**
 	 * Builds new {@link org.springframework.boot.SpringApplication} instance. You can
 	 * override this method to add custom behaviour
@@ -92,8 +104,9 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
 		if (sources.isEmpty()) {
 			throw new IllegalStateException(
-					"No configuration resources found (use classes= or locations= in @SpringApplicationConfiguration). "
-							+ "Default configuration detection is not supported with this loader (see SPR-11455 for details)");
+					"No configuration classes or locations found in @SpringApplicationConfiguration. "
+							+ "For default configuration detection to work you need Spring 4.0.3 or better (found "
+							+ SpringVersion.getVersion() + ").");
 		}
 		return sources;
 	}
