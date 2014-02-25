@@ -91,9 +91,9 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
 		if (sources.isEmpty()) {
-			Class<?>[] defaultConfigClasses = detectDefaultConfigurationClasses(mergedConfig
-					.getTestClass());
-			sources.addAll(Arrays.asList(defaultConfigClasses));
+			throw new IllegalStateException(
+					"No configuration resources found (use classes= or locations= in @SpringApplicationConfiguration). "
+							+ "Default configuration detection is not supported with this loader (see SPR-11455 for details)");
 		}
 		return sources;
 	}
