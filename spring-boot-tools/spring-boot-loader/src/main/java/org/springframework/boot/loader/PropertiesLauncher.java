@@ -310,11 +310,17 @@ public class PropertiesLauncher extends Launcher {
 		List<String> paths = new ArrayList<String>();
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
-			// Empty path is always on the classpath so no need for it to be explicitly
-			// listed here
+			// Empty path (i.e. the archive itself if running from a JAR) is always added
+			// to the classpath so no need for it to be explicitly listed
 			if (!(path.equals(".") || path.equals(""))) {
 				paths.add(path);
 			}
+		}
+		if (paths.isEmpty()) {
+			// On the other hand, we don't want a completely empty path. If the app is
+			// running from an archive (java -jar) then this will make sure the archive
+			// itself is included at the very least.
+			paths.add(".");
 		}
 		return paths;
 	}
@@ -453,12 +459,12 @@ public class PropertiesLauncher extends Launcher {
 		}
 		if (file.isDirectory()) {
 			this.logger.info("Adding classpath entries from " + file);
-			Archive archive = new ExplodedArchive(file);
+			Archive archive = new ExplodedArchive(file, false);
 			lib.add(archive);
 		}
 		Archive archive = getArchive(file);
 		if (archive != null) {
-			this.logger.info("Adding classpath entries from nested " + archive.getUrl()
+			this.logger.info("Adding classpath entries from archive " + archive.getUrl()
 					+ root);
 			lib.add(archive);
 		}
