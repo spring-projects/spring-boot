@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
@@ -45,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.SecurityConfigurer;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
@@ -77,7 +76,7 @@ public class ManagementSecurityAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
-	public SecurityConfigurer<Filter, WebSecurity> ignoredPathsWebSecurityConfigurerAdapter() {
+	public WebSecurityConfigurer<WebSecurity> ignoredPathsWebSecurityConfigurerAdapter() {
 		return new IgnoredPathsWebSecurityConfigurerAdapter();
 	}
 
@@ -104,7 +103,7 @@ public class ManagementSecurityAutoConfiguration {
 	// Get the ignored paths in early
 	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 	private static class IgnoredPathsWebSecurityConfigurerAdapter implements
-			SecurityConfigurer<Filter, WebSecurity> {
+			WebSecurityConfigurer<WebSecurity> {
 
 		@Autowired(required = false)
 		private ErrorController errorController;
