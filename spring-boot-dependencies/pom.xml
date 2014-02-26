@@ -25,6 +25,7 @@
 		<httpasyncclient.version>4.0.1</httpasyncclient.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<jackson.version>2.3.1</jackson.version>
+		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<jetty.version>8.1.14.v20131031</jetty.version>
 		<joda-time.version>2.3</joda-time.version>
 		<jolokia.version>1.2.0</jolokia.version>
@@ -286,6 +287,11 @@
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
 				<version>${hsqldb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>${javassist.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
