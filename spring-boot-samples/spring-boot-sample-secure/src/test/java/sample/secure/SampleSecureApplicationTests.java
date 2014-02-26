@@ -16,6 +16,8 @@
 
 package sample.secure;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,14 +30,13 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import sample.secure.SampleSecureApplicationTests.TestConfiguration;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for demo application.
@@ -58,7 +59,7 @@ public class SampleSecureApplicationTests {
 	@Before
 	public void init() {
 		AuthenticationManager authenticationManager = context
-				.getBean(AuthenticationManager.class);
+				.getBean(AuthenticationManagerBuilder.class).getOrBuild();
 		authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken("user", "password"));
 	}
@@ -94,7 +95,6 @@ public class SampleSecureApplicationTests {
 	@PropertySource("classpath:test.properties")
 	@Configuration
 	protected static class TestConfiguration {
-
 	}
 
 }

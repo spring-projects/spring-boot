@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.AuthenticationManagerConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
@@ -43,12 +44,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity.IgnoredRequestConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -146,9 +147,16 @@ public class ManagementSecurityAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnExpression("${management.security.enabled:true} && !${security.basic.enabled:true}")
+	@ConditionalOnMissingBean(WebSecurityConfiguration.class)
+	@EnableWebSecurity
+	protected static class WebSecurityEnabler extends AuthenticationManagerConfiguration {
+	}
+
+	@Configuration
 	@ConditionalOnMissingBean({ ManagementWebSecurityConfigurerAdapter.class })
 	@ConditionalOnExpression("${management.security.enabled:true}")
-	@EnableWebSecurity
+	@ConditionalOnWebApplication
 	// Give user-supplied filters a chance to be last in line
 	@Order(Ordered.LOWEST_PRECEDENCE - 10)
 	protected static class ManagementWebSecurityConfigurerAdapter extends
@@ -196,13 +204,6 @@ public class ManagementSecurityAutoConfiguration {
 			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
 			entryPoint.setRealmName(this.security.getBasic().getRealm());
 			return entryPoint;
-		}
-
-		@Configuration
-		@ConditionalOnMissingBean(AuthenticationManager.class)
-		@Order(Ordered.LOWEST_PRECEDENCE - 4)
-		protected static class ManagementAuthenticationManagerConfiguration extends
-				AuthenticationManagerConfiguration {
 		}
 
 	}
