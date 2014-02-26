@@ -175,6 +175,47 @@ are quite rich so once you have access to the
 of ways. Or the nuclear option is to add your own
 `JettyEmbeddedServletContainerFactory`.
 
+## Use Jetty instead of Tomcat
+
+The Spring Boot starters ("spring-boot-starter-web" in particular) use
+Tomcat as an embedded container by default. You need to exclude those
+dependencies and include the Jetty ones to use that container. Spring
+Boot provides Tomcat and Jetty dependencies bundled together as
+separate startes to help make this process as easy as possible.
+
+Example in Maven:
+
+```xml
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+        </dependency>
+```
+
+Example in Gradle:
+
+```groovy
+configurations {
+    compile.exclude module: 'spring-boot-starter-tomcat'
+}
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC3")
+	compile("org.springframework.boot:spring-boot-starter-jetty:1.0.0.RC3")
+    ...
+}
+```
+
 ## Use Jetty 9
 
 Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so
