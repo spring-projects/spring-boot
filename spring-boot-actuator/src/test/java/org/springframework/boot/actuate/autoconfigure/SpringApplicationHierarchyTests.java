@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -61,9 +59,8 @@ public class SpringApplicationHierarchyTests {
 	public static class Child {
 	}
 
-	@EnableAutoConfiguration(exclude = { ServerPropertiesAutoConfiguration.class,
-			JolokiaAutoConfiguration.class, EndpointMBeanExportAutoConfiguration.class,
-			SecurityAutoConfiguration.class })
+	@EnableAutoConfiguration(exclude = { JolokiaAutoConfiguration.class,
+			EndpointMBeanExportAutoConfiguration.class })
 	public static class Parent {
 	}
 

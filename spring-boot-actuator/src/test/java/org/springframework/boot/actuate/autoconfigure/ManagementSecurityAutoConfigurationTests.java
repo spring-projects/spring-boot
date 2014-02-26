@@ -98,8 +98,8 @@ public class ManagementSecurityAutoConfigurationTests {
 
 	private UserDetails getUser() {
 		ProviderManager manager = this.context.getBean(ProviderManager.class);
-		ProviderManager parent = (ProviderManager) ReflectionTestUtils.getField(
-				manager, "parent");
+		ProviderManager parent = (ProviderManager) ReflectionTestUtils.getField(manager,
+				"parent");
 		DaoAuthenticationProvider provider = (DaoAuthenticationProvider) parent
 				.getProviders().get(0);
 		UserDetailsService service = (UserDetailsService) ReflectionTestUtils.getField(
@@ -159,7 +159,7 @@ public class ManagementSecurityAutoConfigurationTests {
 	public void testSecurityPropertiesNotAvailable() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
-		this.context.register(TestConfiguration.class,
+		this.context.register(TestConfiguration.class, SecurityAutoConfiguration.class,
 				ManagementSecurityAutoConfiguration.class,
 				EndpointAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
