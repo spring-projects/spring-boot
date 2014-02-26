@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -45,11 +44,12 @@ import org.springframework.security.config.annotation.authentication.configurers
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean(AuthenticationManager.class)
-@ConditionalOnWebApplication
 @Order(Ordered.LOWEST_PRECEDENCE - 3)
-public class AuthenticationManagerConfiguration extends GlobalAuthenticationConfigurerAdapter {
+public class AuthenticationManagerConfiguration extends
+		GlobalAuthenticationConfigurerAdapter {
 
-	private static Log logger = LogFactory.getLog(AuthenticationManagerConfiguration.class);
+	private static Log logger = LogFactory
+			.getLog(AuthenticationManagerConfiguration.class);
 
 	@Autowired
 	private List<SecurityPrequisite> dependencies;
@@ -60,41 +60,41 @@ public class AuthenticationManagerConfiguration extends GlobalAuthenticationConf
 	@Autowired
 	private SecurityProperties security;
 
+	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
 		auth.apply(new BootDefaultingAuthenticationConfigurerAdapter());
 	}
 
 	/**
-	 * We must add {@link BootDefaultingAuthenticationConfigurerAdapter} in the
-	 * init phase of the last {@link GlobalAuthenticationConfigurerAdapter}. The
-	 * reason is that the typical flow is something like:
-	 *
+	 * We must add {@link BootDefaultingAuthenticationConfigurerAdapter} in the init phase
+	 * of the last {@link GlobalAuthenticationConfigurerAdapter}. The reason is that the
+	 * typical flow is something like:
+	 * 
 	 * <ul>
 	 * <li>A
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}
 	 * exists that adds a {@link SecurityConfigurer} to the
 	 * {@link AuthenticationManagerBuilder}</li>
 	 * <li>
-	 * {@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)}
-	 * adds BootDefaultingAuthenticationConfigurerAdapter so it is after the
+	 * {@link AuthenticationManagerConfiguration#init(AuthenticationManagerBuilder)} adds
+	 * BootDefaultingAuthenticationConfigurerAdapter so it is after the
 	 * {@link SecurityConfigurer} in the first step</li>
-	 * <li>We then can default an {@link AuthenticationProvider} if necessary.
-	 * Note we can only invoke the
+	 * <li>We then can default an {@link AuthenticationProvider} if necessary. Note we can
+	 * only invoke the
 	 * {@link AuthenticationManagerBuilder#authenticationProvider(AuthenticationProvider)}
-	 * method since all other methods add a {@link SecurityConfigurer} which is
-	 * not allowed in the configure stage. It is not allowed because we
-	 * guarantee all init methods are invoked before configure, which cannot be
-	 * guaranteed at this point.</li>
+	 * method since all other methods add a {@link SecurityConfigurer} which is not
+	 * allowed in the configure stage. It is not allowed because we guarantee all init
+	 * methods are invoked before configure, which cannot be guaranteed at this point.</li>
 	 * </ul>
-	 *
+	 * 
 	 * @author Rob Winch
 	 */
-	private class BootDefaultingAuthenticationConfigurerAdapter extends GlobalAuthenticationConfigurerAdapter {
+	private class BootDefaultingAuthenticationConfigurerAdapter extends
+			GlobalAuthenticationConfigurerAdapter {
 
 		@Override
-		public void configure(AuthenticationManagerBuilder auth)
-				throws Exception {
-			if(auth.isConfigured()) {
+		public void configure(AuthenticationManagerBuilder auth) throws Exception {
+			if (auth.isConfigured()) {
 				return;
 			}
 
@@ -104,18 +104,14 @@ public class AuthenticationManagerConfiguration extends GlobalAuthenticationConf
 						+ user.getPassword() + "\n\n");
 			}
 
-			AuthenticationManagerBuilder defaultAuth = new AuthenticationManagerBuilder(objectPostProcessor);
+			AuthenticationManagerBuilder defaultAuth = new AuthenticationManagerBuilder(
+					AuthenticationManagerConfiguration.this.objectPostProcessor);
 
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
 
-			AuthenticationManager parent = defaultAuth.
-				inMemoryAuthentication()
-					.withUser(user.getName())
-						.password(user.getPassword())
-						.roles(roles.toArray(new String[roles.size()]))
-						.and()
-					.and()
-				.build();
+			AuthenticationManager parent = defaultAuth.inMemoryAuthentication()
+					.withUser(user.getName()).password(user.getPassword())
+					.roles(roles.toArray(new String[roles.size()])).and().and().build();
 
 			auth.parentAuthenticationManager(parent);
 		}
