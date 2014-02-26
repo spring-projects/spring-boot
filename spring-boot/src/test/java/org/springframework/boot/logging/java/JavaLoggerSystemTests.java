@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.java;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.junit.After;
@@ -47,8 +48,12 @@ public class JavaLoggerSystemTests {
 
 	private Jdk14Logger logger;
 
+	private Locale defaultLocale;
+
 	@Before
 	public void init() throws SecurityException, IOException {
+		defaultLocale = Locale.getDefault();
+		Locale.setDefault(Locale.ENGLISH);
 		this.logger = new Jdk14Logger(getClass().getName());
 	}
 
@@ -57,6 +62,7 @@ public class JavaLoggerSystemTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
+		Locale.setDefault(defaultLocale);
 	}
 
 	@Test
