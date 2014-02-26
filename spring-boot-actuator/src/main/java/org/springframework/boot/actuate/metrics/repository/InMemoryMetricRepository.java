@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
@@ -39,6 +40,10 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 	private final SimpleInMemoryRepository<Metric<?>> metrics = new SimpleInMemoryRepository<Metric<?>>();
 
 	private final Collection<String> groups = new HashSet<String>();
+
+	public void setValues(ConcurrentNavigableMap<String, Metric<?>> values) {
+		this.metrics.setValues(values);
+	}
 
 	@Override
 	public void increment(Delta<?> delta) {

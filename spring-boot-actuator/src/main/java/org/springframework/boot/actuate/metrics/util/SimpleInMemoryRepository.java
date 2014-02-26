@@ -18,10 +18,11 @@ package org.springframework.boot.actuate.metrics.util;
 
 import java.util.ArrayList;
 import java.util.NavigableMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+
+import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * Repository utility that stores stuff in memory with period-separated String keys.
@@ -30,9 +31,9 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class SimpleInMemoryRepository<T> {
 
-	private final ConcurrentNavigableMap<String, T> values = new ConcurrentSkipListMap<String, T>();
+	private ConcurrentNavigableMap<String, T> values = new ConcurrentSkipListMap<String, T>();
 
-	private final ConcurrentMap<String, Object> locks = new ConcurrentHashMap<String, Object>();
+	private final ConcurrentMap<String, Object> locks = new ConcurrentReferenceHashMap<String, Object>();
 
 	public static interface Callback<T> {
 		T modify(T current);
@@ -94,6 +95,10 @@ public class SimpleInMemoryRepository<T> {
 		}
 		return new ArrayList<T>(this.values.subMap(prefix, false, prefix + "~", true)
 				.values());
+	}
+
+	public void setValues(ConcurrentNavigableMap<String, T> values) {
+		this.values = values;
 	}
 
 	protected NavigableMap<String, T> getValues() {
