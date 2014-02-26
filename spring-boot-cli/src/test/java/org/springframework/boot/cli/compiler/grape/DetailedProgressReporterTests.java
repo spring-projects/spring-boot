@@ -69,7 +69,7 @@ public final class DetailedProgressReporterTests {
 		this.session.getTransferListener().transferSucceeded(completedEvent);
 
 		assertTrue(new String(this.baos.toByteArray()).matches(String.format(
-				"Downloaded: %s%s \\(4KB at [0-9]+\\.[0-9]KB/sec\\)\\n", REPOSITORY,
+				"Downloaded: %s%s \\(4KB at [0-9]+(\\.|,)[0-9]KB/sec\\)\\n", REPOSITORY,
 				ARTIFACT)));
 	}
 }
