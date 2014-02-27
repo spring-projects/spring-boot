@@ -95,8 +95,11 @@ public abstract class MainClassFinder {
 	 */
 	public static <T> T doWithMainClasses(File rootFolder, ClassNameCallback<T> callback)
 			throws IOException {
+		if (!rootFolder.exists()) {
+			return null; // nothing to do
+		}
 		if (!rootFolder.isDirectory()) {
-			throw new IllegalArgumentException("Inavlid root folder '" + rootFolder + "'");
+			throw new IllegalArgumentException("Invalid root folder '" + rootFolder + "'");
 		}
 		String prefix = rootFolder.getAbsolutePath() + "/";
 		Deque<File> stack = new ArrayDeque<File>();
