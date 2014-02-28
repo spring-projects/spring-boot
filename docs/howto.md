@@ -771,6 +771,27 @@ dependencies are marked as "provided" in Maven or Gradle. Here's a
 Maven example
 [in the Boot Samples](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-traditional/pom.xml).
 
+A Spring Boot application deployed as a WAR file has most of the same
+features as one executed from an archive, or from source code. For
+example, `@Beans` of type `Servlet` and `Filter` will be detected and
+mapped on startup. An exception is error page declarations, which is
+essentially a consequence of the fact that there is no Java API in the
+Servlet spec for adding error pages. You have to add a `web.xml` with
+a global error page mapped to "/error" for the deployed WAR to work
+the same way if it has error page mappings (all Actuator apps have an
+error page by default). Example:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<error-page>
+		<location>/error</location>
+	</error-page>
+</web-app>
+```
+
 [gs-war]: http://spring.io/guides/gs/convert-jar-to-war
 
 ## Create a Deployable WAR File for older Servlet Containers
