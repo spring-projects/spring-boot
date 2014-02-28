@@ -249,14 +249,16 @@ can also register items directly if your bean implements the `ServletContextInit
 interface.
 
 
-### JSP limitations When running a Spring Boot application that uses
-an embedded servlet container and is packaged as an executable
-archive, there are some limitations in the JSP support.
+### JSP limitations
 
-* With Tomcat it should work if you use WAR packaging. I.e. an
+When running a Spring Boot application that uses
+an embedded servlet container (and is packaged as an executable
+archive), there are some limitations in the JSP support.
+
+* With Tomcat it should work if you use WAR packaging, i.e. an
   executable WAR will work, and will also be deployable to a standard
-  container (Tomcat included). An executable JAR will not work because
-  of a hard coded file patter in Tomcat itself.
+  container (not limited to, but including Tomcat). An executable JAR
+  will not work because of a hard coded file pattern in Tomcat.
 
 * Jetty does not currently work as an embedded container with
   JSPs. There should be a way to make it work, so hopefully someone
