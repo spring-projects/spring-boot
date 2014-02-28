@@ -149,6 +149,11 @@
 				<artifactId>spring-boot-starter-websocket</artifactId>
 				<version>${spring-boot.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-ws</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
