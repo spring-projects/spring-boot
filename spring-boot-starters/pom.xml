@@ -54,6 +54,7 @@
 		<module>spring-boot-starter-velocity</module>
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>
+        <module>spring-boot-starter-ws</module>
 	</modules>
 	<build>
 		<plugins>
