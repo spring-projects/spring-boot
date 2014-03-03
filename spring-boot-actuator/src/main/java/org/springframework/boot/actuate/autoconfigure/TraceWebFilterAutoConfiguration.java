@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletRegistration;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * 
  * @author Dave Syer
  */
-@ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
+@ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })
 @AutoConfigureAfter(TraceRepositoryAutoConfiguration.class)
 public class TraceWebFilterAutoConfiguration {
 

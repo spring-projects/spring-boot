@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.ServletRegistration;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -61,6 +63,7 @@ public class DispatcherServletAutoConfiguration {
 
 	@Configuration
 	@Conditional(DefaultDispatcherServletCondition.class)
+	@ConditionalOnClass(ServletRegistration.class)
 	protected static class DispatcherServletConfiguration {
 
 		@Autowired
