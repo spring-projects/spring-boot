@@ -22,6 +22,7 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,7 +50,7 @@ import org.springframework.web.util.UrlPathHelper;
  */
 @Configuration
 @ConditionalOnBean({ CounterService.class, GaugeService.class })
-@ConditionalOnClass({ Servlet.class })
+@ConditionalOnClass({ Servlet.class, ServletRegistration.class })
 @AutoConfigureAfter(MetricRepositoryAutoConfiguration.class)
 public class MetricFilterAutoConfiguration {
 
