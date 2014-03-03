@@ -51,7 +51,7 @@ public class ManagementErrorEndpoint implements MvcEndpoint {
 	@ResponseBody
 	public Map<String, Object> invoke() {
 		RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-		return this.controller.extract(attributes, false);
+		return this.controller.extract(attributes, false, true);
 	}
 
 	@Override

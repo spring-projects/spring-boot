@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.web.BasicErrorController;
 import org.springframework.core.Ordered;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -159,7 +160,8 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 				.getAttribute("javax.servlet.error.exception");
 		if (error != null) {
 			if (this.errorController != null) {
-				trace.put("error", this.errorController.error(request));
+				trace.put("error", this.errorController.extract(
+						new ServletRequestAttributes(request), true, false));
 			}
 		}
 		return trace;

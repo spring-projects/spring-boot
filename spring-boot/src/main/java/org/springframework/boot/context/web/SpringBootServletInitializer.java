@@ -84,6 +84,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 				servletContext));
 		application.contextClass(AnnotationConfigEmbeddedWebApplicationContext.class);
 		application = configure(application);
+		// Ensure error pages ar registered
+		application.sources(ErrorWrapperEmbeddedServletContainerFactory.class);
 		return (WebApplicationContext) application.run();
 	}
 
