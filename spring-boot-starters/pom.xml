@@ -36,5 +36,6 @@
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>
 		<module>spring-boot-starter-data-rest</module>
-	</modules>
+        <module>spring-boot-starter-ws</module>
+    </modules>
 </project>
