@@ -38,8 +38,10 @@ public interface ErrorController {
 	 * Extract a useful model of the error from the request attributes.
 	 * @param attributes the request attributes
 	 * @param trace flag to indicate that stack trace information should be included
+	 * @param log flag to indicate that an error should be logged
 	 * @return a model containing error messages and codes etc.
 	 */
-	public Map<String, Object> extract(RequestAttributes attributes, boolean trace);
+	public Map<String, Object> extract(RequestAttributes attributes, boolean trace,
+			boolean log);
 
 }

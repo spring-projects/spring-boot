@@ -72,11 +72,13 @@ public class BasicErrorController implements ErrorController {
 	public Map<String, Object> error(HttpServletRequest request) {
 		ServletRequestAttributes attributes = new ServletRequestAttributes(request);
 		String trace = request.getParameter("trace");
-		return extract(attributes, trace != null && !"false".equals(trace.toLowerCase()));
+		return extract(attributes, trace != null && !"false".equals(trace.toLowerCase()),
+				true);
 	}
 
 	@Override
-	public Map<String, Object> extract(RequestAttributes attributes, boolean trace) {
+	public Map<String, Object> extract(RequestAttributes attributes, boolean trace,
+			boolean log) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put("timestamp", new Date());
 		try {
@@ -105,7 +107,9 @@ public class BasicErrorController implements ErrorController {
 					stackTrace.flush();
 					map.put("trace", stackTrace.toString());
 				}
-				this.logger.error(error);
+				if (log) {
+					this.logger.error(error);
+				}
 			}
 			else {
 				Object message = attributes.getAttribute("javax.servlet.error.message",
@@ -117,7 +121,9 @@ public class BasicErrorController implements ErrorController {
 		catch (Exception ex) {
 			map.put(ERROR_KEY, ex.getClass().getName());
 			map.put("message", ex.getMessage());
-			this.logger.error(ex);
+			if (log) {
+				this.logger.error(ex);
+			}
 			return map;
 		}
 	}
