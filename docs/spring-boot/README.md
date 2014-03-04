@@ -253,28 +253,23 @@ interface.
 
 
 ### JSP limitations
-When running a Spring Boot application that uses an embedded servlet container and is
-packaged as an executable JAR or WAR, there are some limitations in the JSP support.
 
-Due to the way that Jasper (Tomcat and Jetty's JSP engine) loads tag libraries, tag
-libraries packaged in JAR files nested within the JAR or WAR will not work correctly.
-When packaged and run as an executable JAR, you will see an error message produced during
-application startup that is similar to the following:
+When running a Spring Boot application that uses
+an embedded servlet container (and is packaged as an executable
+archive), there are some limitations in the JSP support.
 
-> org.apache.jasper.JasperException: The absolute uri: http://www.springframework.org/tags
-> cannot be resolved in either web.xml or the jar files deployed with this application
+* With Tomcat it should work if you use WAR packaging, i.e. an
+  executable WAR will work, and will also be deployable to a standard
+  container (not limited to, but including Tomcat). An executable JAR
+  will not work because of a hard coded file pattern in Tomcat.
 
-When packaged and run as an executable WAR, you will see an error message produced during
-application startup that is similar to the following:
+* Jetty does not currently work as an embedded container with
+  JSPs. There should be a way to make it work, so hopefully someone
+  can figure it out (pull requests always welcome).
 
-> java.io.FileNotFoundException: JAR entry
-> WEB-INF/lib-provided/tomcat-embed-jasper-7.0.47.jar!/javax/servlet/jsp/resources/web-jsptaglibrary_1_2.dtd
-> not found in my-app.war
-
-To avoid these limitations, rather than using the embedded servlet container support,
-package your application as a traditional (non-executable) WAR file and deploy it to a
-servlet container. Alternatively, you may want to consider using an alternative view
-technology.
+There is a
+[JSP sample](https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-web-jsp)
+so you can see how to set things up.
 
 ## Using YAML instead of Properties
 [YAML](http://yaml.org) is a superset of JSON, and as such is a very convenient format

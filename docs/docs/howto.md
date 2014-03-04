@@ -178,6 +178,47 @@ are quite rich so once you have access to the
 of ways. Or the nuclear option is to add your own
 `JettyEmbeddedServletContainerFactory`.
 
+## Use Jetty instead of Tomcat
+
+The Spring Boot starters ("spring-boot-starter-web" in particular) use
+Tomcat as an embedded container by default. You need to exclude those
+dependencies and include the Jetty ones to use that container. Spring
+Boot provides Tomcat and Jetty dependencies bundled together as
+separate startes to help make this process as easy as possible.
+
+Example in Maven:
+
+```xml
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jetty</artifactId>
+        </dependency>
+```
+
+Example in Gradle:
+
+```groovy
+configurations {
+    compile.exclude module: 'spring-boot-starter-tomcat'
+}
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC4")
+	compile("org.springframework.boot:spring-boot-starter-jetty:1.0.0.RC4")
+    ...
+}
+```
+
 ## Use Jetty 9
 
 Jetty 9 works with Spring Boot, but the default is to use Jetty 8 (so
@@ -733,6 +774,27 @@ dependencies are marked as "provided" in Maven or Gradle. Here's a
 Maven example
 [in the Boot Samples](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-traditional/pom.xml).
 
+A Spring Boot application deployed as a WAR file has most of the same
+features as one executed from an archive, or from source code. For
+example, `@Beans` of type `Servlet` and `Filter` will be detected and
+mapped on startup. An exception is error page declarations, which is
+essentially a consequence of the fact that there is no Java API in the
+Servlet spec for adding error pages. You have to add a `web.xml` with
+a global error page mapped to "/error" for the deployed WAR to work
+the same way if it has error page mappings (all Actuator apps have an
+error page by default). Example:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<error-page>
+		<location>/error</location>
+	</error-page>
+</web-app>
+```
+
 [gs-war]: http://spring.io/guides/gs/convert-jar-to-war
 
 ## Create a Deployable WAR File for older Servlet Containers
@@ -859,6 +921,109 @@ See
 [`JpaBaseConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java)
 for the default settings.
 
+## Initialize a Database
+
+An SQL database can be initialized in different ways depending on what
+your stack is. Or of course you can do it manually as long as the
+database is in a server.
+
+### JPA
+
+JPA has features for DDL generation, and these can be set up to
+run on startup against the database. This is controlled through two
+external properties:
+
+* `spring.jpa.generate-ddl` (boolean) switches the feature on and off
+  and is vendor independent
+* `spring.jpa.hibernate.ddl-auto` (enum) is a Hibernate feature that
+  controls the behaviour in a more fine-grained way. See below for
+  more detail.
+
+### Hibernate
+
+You can set `spring.jpa.hibernate.ddl-auto` explicitly and the
+standard Hibernate property values are "none", "validate", "update",
+"create-drop". Spring Boot chooses a default value for you based on
+whether it thinks your database is embedded (default "create-drop") or
+not (default "none"). An embedded database is detected by looking at
+the `Connection` type: `hsqldb`, `h2` and `derby` are embedded, the
+rest are not. Be careful when switching from in-memory to a "real"
+database that you don't make assumptions about the existence of the
+tables and data in the new platform. You either have to set "ddl-auto"
+expicitly, or use one of the other mechanisms to initialize the
+database.
+
+In addition, a file named "import.sql" in the root of the classpath
+will be executed on startup. This can be useful for demos and for
+testing if you are carefuil, but probably not something you want to be
+on the classpath in production. It is a Hibernate feature (nothing to
+do with Spring).
+
+### Spring JDBC
+
+Spring JDBC has a `DataSource` initializer feature. Spring Boot
+enables it by default and loads SQL from the standard locations
+`schema.sql` and `data.sql` (in the root of the classpath). In
+addition Spring Boot will load a file `schema-${platform}.sql` where
+`platform` is the vendor name of the database (`hsqldb`, `h2,
+`oracle`, `mysql`, `postgresql` etc.). Spring Boot enables the
+failfast feature of the Spring JDBC initializer by default, so if
+the scripts cause exceptions the application will fail.
+
+To disable the failfast you can set
+`spring.datasource.continueOnError=true`. This can be useful once an
+application has matured and been deployed a few times, since the
+scripts can act as "poor man's migrations" - inserts that fail mean
+that the data is already there, so there would be no need to prevent
+the application from running, for instance.
+
+### Spring Batch
+
+If you are using Spring Batch then it comes pre-packaged with SQL
+initialization scripts for most popular database platforms. Spring
+Boot will detect your database type, and execute those scripts by
+default, and in this case will switch the fail fast setting to false
+(errors are logged but do not prevent the application from
+starting). This is because the scripts are known to be reliable and
+generally do not contain bugs, so errors are ignorable, and ignoring
+them makes the scripts idempotent. You can switch off the
+initialization explicitly using
+`spring.batch.initializer.enabled=false`.
+
+### Higher Level Migration Tools
+
+Spring Boot works fine with higher level migration tools
+[Flyway](http://flywaydb.org/) (SQL-based) and
+[Liquibase](http://www.liquibase.org/) (XML). In general we prefer
+Flyway because it is easier on the eyes, and it isn't very common to
+need platform independence: usually only one or at most couple of
+platforms is needed.
+
+## Execute Spring Batch Jobs on Startup
+
+Spring Batch autoconfiguration is enabled by adding
+`@EnableBatchProcessing` (from Spring Batch) somewhere in your
+context.
+
+By default it executes *all* `Jobs` in the application context on
+startup (see
+[JobLauncherCommandLineRunner](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/JobLauncherCommandLineRunner.java)
+for details). You can narrow down to a specific job or jobs by
+specifying `spring.batch.job.names` (comma separated job name
+patterns).
+
+If the application context includes a `JobRegistry` then
+the jobs in `spring.batch.job.names` are looked up in the regsitry
+instead of bein autowired from the context. This is a common pattern
+with more complex systems where multiple jobs are defined in child
+contexts and registered centrally.
+
+See
+[BatchAutoConfiguration](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/batch/BatchAutoConfiguration.java)
+and
+[@EnableBatchProcessing](https://github.com/spring-projects/spring-batch/blob/master/spring-batch-core/src/main/java/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.java)
+for more details.
+
 <span id="discover.options"/>
 ## Discover Built-in Options for External Properties
 
@@ -957,8 +1122,9 @@ server:
 ```
 
 Create a file called `application.yml` and stick it in the root of
-your classpath, and also add `snake-yaml` to your classpath (Maven
-co-ordinates `org.yaml:snake-yaml`). A YAML file is parsed to a Java
+your classpath, and also add `snakeyaml` to your classpath (Maven
+co-ordinates `org.yaml:snakeyaml`, already included if you use a
+Spring Boot Starter). A YAML file is parsed to a Java
 `Map<String,Object>` (like a JSON object), and Spring Boot flattens
 the maps so that it is 1-level deep and has period-separated keys, a
 lot like people are used to with `Properties` files in Java.
