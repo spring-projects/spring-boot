@@ -37,7 +37,7 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.DefaultTemplateResolverConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.context.annotation.Bean;
@@ -80,8 +80,8 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	}
 
 	@Override
-	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-		factory.addErrorPages(new ErrorPage(this.errorPath));
+	public void customize(ConfigurableEmbeddedServletContainer container) {
+		container.addErrorPages(new ErrorPage(this.errorPath));
 	}
 
 	@Configuration

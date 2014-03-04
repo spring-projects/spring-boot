@@ -24,7 +24,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -73,14 +73,14 @@ public class ServerPropertiesTests {
 
 	@Test
 	public void testCustomizeTomcat() throws Exception {
-		ConfigurableEmbeddedServletContainerFactory factory = mock(ConfigurableEmbeddedServletContainerFactory.class);
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
 		verify(factory).setContextPath("");
 	}
 
 	@Test
 	public void testCustomizeTomcatPort() throws Exception {
-		ConfigurableEmbeddedServletContainerFactory factory = mock(ConfigurableEmbeddedServletContainerFactory.class);
+		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.setPort(8080);
 		this.properties.customize(factory);
 		verify(factory).setPort(8080);

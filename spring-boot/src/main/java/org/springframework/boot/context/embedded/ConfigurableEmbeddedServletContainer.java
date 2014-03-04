@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer
  */
-public interface ConfigurableEmbeddedServletContainerFactory {
+public interface ConfigurableEmbeddedServletContainer {
 
 	/**
 	 * Sets the context path for the embedded servlet container. The context should start
