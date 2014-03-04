@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.0.0.RC4</version>
 		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
@@ -14,7 +12,7 @@
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring-boot.version>1.0.0.BUILD-SNAPSHOT</spring-boot.version>
+		<spring-boot.version>1.0.0.RC4</spring-boot.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -309,22 +307,17 @@
 							</goals>
 							<configuration>
 								<transformers>
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.handlers</resource>
 									</transformer>
-									<transformer
-										implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+									<transformer implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
 										<resource>META-INF/spring.factories</resource>
 									</transformer>
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 										<resource>META-INF/spring.schemas</resource>
 									</transformer>
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-									<transformer
-										implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+									<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 										<mainClass>${start-class}</mainClass>
 									</transformer>
 								</transformers>
