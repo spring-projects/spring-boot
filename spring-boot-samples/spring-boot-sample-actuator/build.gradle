@@ -4,7 +4,7 @@ buildscript {
 	}
     repositories {
     	mavenLocal()
-        maven { url "http://repo.springsource.org/libs-snapshot" }
+        maven { url "http://repo.spring.io/libs-snapshot" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -24,7 +24,7 @@ jar {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "http://repo.springsource.org/libs-snapshot" }
+    maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
 dependencies {
