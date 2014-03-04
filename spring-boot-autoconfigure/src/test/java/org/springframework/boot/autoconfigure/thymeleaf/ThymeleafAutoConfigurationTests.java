@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -88,6 +89,16 @@ public class ThymeleafAutoConfigurationTests {
 	public void templateLocationDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.thymeleaf.prefix:classpath:/no-such-directory/");
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+	}
+
+	@Test
+	@Ignore("Fix this for gh-424")
+	public void templateLocationEmpty() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
 		this.context.register(ThymeleafAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
