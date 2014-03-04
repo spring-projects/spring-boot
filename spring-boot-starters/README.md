@@ -121,7 +121,7 @@ not the plugin management) using
 ### Samples
 
 All the
-[Spring Boot Samples](https://github.com/spring-projects/spring-boot-samples)
+[Spring Boot Samples](../spring-boot-samples)
 come with a `pom.xml`, but they use a different parent to
 spring-boot-starter-parent (although that pom is one of their
 ancestors). Other useful places to get clean projects with a
@@ -193,7 +193,7 @@ numbers. This works for Spring Boot dependencies, but also anything
 else that is explicitly managed by the Spring Boot Starter parent.
 
 Versionless dependency resolution is a feature of the
-[Spring Boot Gradle Plugin](../spring-boot-tools/spring-boot-maven-plugin/README.md),
+[Spring Boot Gradle Plugin](../spring-boot-tools/spring-boot-gradle-plugin/README.md),
 which also gives you a "run from source" feature ("gradle bootRun")
 and an enhanced JAR/WAR packaging feature for executable archives
 ("gradle build").
@@ -202,7 +202,7 @@ and an enhanced JAR/WAR packaging feature for executable archives
 
 Most of the samples mentioned above for Maven users are also buildable
 using Gradle. Only some of the
-[Spring Boot Samples](https://github.com/spring-projects/spring-boot-samples)
+[Spring Boot Samples](../spring-boot-samples)
 come with a `build.gradle`. The Spring Starter Project feature in STS
 produces a Maven project. But web application at
 [start.spring.io](http://start.spring.io) can generate Gradle build
