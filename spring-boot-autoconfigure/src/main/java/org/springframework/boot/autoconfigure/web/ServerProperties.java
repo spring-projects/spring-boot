@@ -27,7 +27,7 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -110,22 +110,22 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	}
 
 	@Override
-	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-		Integer port = getPort();
-		if (port != null) {
-			factory.setPort(port);
+	public void customize(ConfigurableEmbeddedServletContainer container) {
+		if (getPort() != null) {
+			container.setPort(getPort());
 		}
 		if (getAddress() != null) {
-			factory.setAddress(getAddress());
+			container.setAddress(getAddress());
 		}
 		if (getContextPath() != null) {
-			factory.setContextPath(getContextPath());
+			container.setContextPath(getContextPath());
 		}
 		if (getSessionTimeout() != null) {
-			factory.setSessionTimeout(getSessionTimeout());
+			container.setSessionTimeout(getSessionTimeout());
 		}
-		if (factory instanceof TomcatEmbeddedServletContainerFactory) {
-			getTomcat().customizeTomcat((TomcatEmbeddedServletContainerFactory) factory);
+		if (container instanceof TomcatEmbeddedServletContainerFactory) {
+			getTomcat()
+					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
 		}
 	}
 

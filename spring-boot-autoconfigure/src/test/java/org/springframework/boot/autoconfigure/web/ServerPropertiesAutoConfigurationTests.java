@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -177,9 +177,10 @@ public class ServerPropertiesAutoConfigurationTests {
 			return new EmbeddedServletContainerCustomizer() {
 
 				@Override
-				public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-					factory.setPort(3000);
+				public void customize(ConfigurableEmbeddedServletContainer container) {
+					container.setPort(3000);
 				}
+
 			};
 		}
 

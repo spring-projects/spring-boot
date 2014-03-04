@@ -29,7 +29,7 @@ import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 /**
  * {@link BeanPostProcessor} that apply all {@link EmbeddedServletContainerCustomizer}s
- * from the bean factory to {@link ConfigurableEmbeddedServletContainerFactory} beans.
+ * from the bean factory to {@link ConfigurableEmbeddedServletContainer} beans.
  * 
  * @author Dave Syer
  * @author Phillip Webb
@@ -50,8 +50,8 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName)
 			throws BeansException {
-		if (bean instanceof ConfigurableEmbeddedServletContainerFactory) {
-			postProcessBeforeInitialization((ConfigurableEmbeddedServletContainerFactory) bean);
+		if (bean instanceof ConfigurableEmbeddedServletContainer) {
+			postProcessBeforeInitialization((ConfigurableEmbeddedServletContainer) bean);
 		}
 		return bean;
 	}
@@ -63,7 +63,7 @@ public class EmbeddedServletContainerCustomizerBeanPostProcessor implements
 	}
 
 	private void postProcessBeforeInitialization(
-			ConfigurableEmbeddedServletContainerFactory bean) {
+			ConfigurableEmbeddedServletContainer bean) {
 		for (EmbeddedServletContainerCustomizer customizer : getCustomizers()) {
 			customizer.customize(bean);
 		}

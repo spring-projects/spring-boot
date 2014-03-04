@@ -25,7 +25,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
@@ -211,7 +211,7 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName)
 				throws BeansException {
-			if (bean instanceof ConfigurableEmbeddedServletContainerFactory) {
+			if (bean instanceof ConfigurableEmbeddedServletContainer) {
 				MockEmbeddedServletContainerFactory containerFactory = (MockEmbeddedServletContainerFactory) bean;
 				assertNull(containerFactory.getServletContext());
 			}
@@ -229,8 +229,8 @@ public class EmbeddedServletContainerAutoConfigurationTests {
 	public static class CallbackEmbeddedContainerCustomizer implements
 			EmbeddedServletContainerCustomizer {
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
-			factory.setPort(9000);
+		public void customize(ConfigurableEmbeddedServletContainer container) {
+			container.setPort(9000);
 		}
 	}
 

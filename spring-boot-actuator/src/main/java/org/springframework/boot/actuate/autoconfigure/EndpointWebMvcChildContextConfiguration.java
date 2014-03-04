@@ -36,7 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
@@ -76,16 +76,16 @@ public class EndpointWebMvcChildContextConfiguration {
 		private ManagementServerProperties managementServerProperties;
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+		public void customize(ConfigurableEmbeddedServletContainer container) {
 			if (this.managementServerProperties == null) {
 				this.managementServerProperties = BeanFactoryUtils
 						.beanOfTypeIncludingAncestors(this.beanFactory,
 								ManagementServerProperties.class);
 			}
-			factory.setPort(this.managementServerProperties.getPort());
-			factory.setAddress(this.managementServerProperties.getAddress());
-			factory.setContextPath(this.managementServerProperties.getContextPath());
-			factory.addErrorPages(new ErrorPage(this.errorPath));
+			container.setPort(this.managementServerProperties.getPort());
+			container.setAddress(this.managementServerProperties.getAddress());
+			container.setContextPath(this.managementServerProperties.getContextPath());
+			container.addErrorPages(new ErrorPage(this.errorPath));
 		}
 
 	}
