@@ -519,6 +519,66 @@ For more detail look at the
 [`ManagementServerProperties`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-actuator/src/main/java/org/springframework/boot/actuate/properties/ManagementServerProperties.java?source=c)
 source code.
 
+## Customize ViewResolvers
+
+A `ViewResolver` is a core components of Spring MVC, translating view
+names in `@Controllers` to actual `View` implementations.  Note that
+`ViewResolvers` are mainly used in UI applications, rather than
+REST-style services (a `View` is not used to render a
+`@ResponseBody`). There are many implementations of `ViewResolver` to
+choose from, and Spring on its own is not opinionated about which ones
+you should use. Spring Boot, on the other hand, installs one or two
+for you depending on what it finds on the classpath and in the
+application context. The `DispatcherServlet` uses all the resolvers it
+finds in the application context, trying each one in turn until it
+gets a result, so if you are adding your own you have to be aware of
+the order and in which position your resolver is added.
+
+`WebMvcAutoConfiguration` adds the following `ViewResolvers` to your
+context:
+
+* An `InternalResourceViewResolver` with bean id
+"defaultViewResolver". This one locates physical resources that can be
+rendered using the `DefaultServlet` (e.g. static resources and JSP
+pages if you are using those). It applies a prefix and a suffix to the
+view name and then looks for a physical resource with that path in the
+servlet context (defaults are both empty, but accessible for external
+configuration via `spring.view.prefix` and `spring.view.suffix`).  It
+can be overridden by providing a bean of the same type.
+
+* A `BeanNameViewResolver` with id "beanNameViewResolver". This is a
+useful member of the view resolver chain and will pick up any beans
+with the same name as the `View` being resolved. It can be overridden
+by providing a bean of the same type, but it's unlikely you will need
+to do that.
+
+* A `ContentNegotiatingViewResolver` with id "viewResolver" is only
+added if there *are* actually beans of type `View` present. This is a
+"master" resolver, delegating to all the others and attempting to find
+a match to the "Accept" HTTP header sent by the client. There is a
+useful
+[blog about `ContentNegotiatingViewResolver`](https://spring.io/blog/2013/06/03/content-negotiation-using-views)
+that you might like to study to learn more, and also look at the
+source code for detail.
+
+    Be careful not to define your own `ViewResolver` with id
+"viewResolver" (like the `ContentNegotiatingViewResolver`) otherwise,
+in that case, your bean will be ovewritten, not the other way round.
+
+* If you use Thymeleaf you will also have a `ThymeleafViewResolver`
+with id "thymeleafViewResolver". It looks for resources by surrounding
+the view name with a prefix and suffix (externalized to
+`spring.thymeleaf.prefix` and `spring.thymeleaf.suffix`, defaults
+"classpath:/templates/" and ".html" respectively). It can be
+overridden by providing a bean of the same name.
+
+Checkout
+[`WebMvcAutoConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/web/WebMvcAutoConfiguration.java?source=c)
+and
+[`ThymeleafAutoConfiguration`](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/thymeleaf/ThymeleafAutoConfiguration.java?source=c)
+source code for more detail.
+
+
 ## Customize "Whitelabel" Error Page
 
 The Actuator installs a "whitelabel" error page that you will see in
