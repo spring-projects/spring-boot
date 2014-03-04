@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  */
 public abstract class AbstractEmbeddedServletContainerFactory implements
-		ConfigurableEmbeddedServletContainerFactory {
+		EmbeddedServletContainerFactory, ConfigurableEmbeddedServletContainerFactory {
 
 	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
 			"static" };
