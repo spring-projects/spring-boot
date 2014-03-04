@@ -49,12 +49,6 @@ public interface ConfigurableEmbeddedServletContainerFactory extends
 	void setPort(int port);
 
 	/**
-	 * The port that the embedded server listens on.
-	 * @return the port
-	 */
-	int getPort();
-
-	/**
 	 * The session timeout in seconds (default 30). If 0 or negative then sessions never
 	 * expire.
 	 * @param sessionTimeout the session timeout
