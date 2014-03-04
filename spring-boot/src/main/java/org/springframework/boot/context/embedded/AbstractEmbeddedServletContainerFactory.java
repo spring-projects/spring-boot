@@ -131,9 +131,9 @@ public abstract class AbstractEmbeddedServletContainerFactory implements
 	}
 
 	/**
-	 * Returns the port that the embedded servlet container should listen on.
+	 * The port that the embedded server listens on.
+	 * @return the port
 	 */
-	@Override
 	public int getPort() {
 		return this.port;
 	}

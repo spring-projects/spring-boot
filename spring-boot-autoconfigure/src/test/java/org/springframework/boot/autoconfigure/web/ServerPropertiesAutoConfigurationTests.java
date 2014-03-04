@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -108,7 +109,8 @@ public class ServerPropertiesAutoConfigurationTests {
 		assertNotNull(server);
 		// The server.port environment property was not explicitly set so the container
 		// factory should take precedence...
-		assertEquals(3000, containerFactory.getPort());
+		assertEquals(3000,
+				((AbstractEmbeddedServletContainerFactory) containerFactory).getPort());
 	}
 
 	@Test
