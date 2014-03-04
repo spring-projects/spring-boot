@@ -161,9 +161,20 @@ of ways. Or the nuclear option is to add your own
 
 Tomcat 8 works with Spring Boot, but the default is to use Tomcat 7
 (so we can support Java 1.6 out of the box). You should only need to
-change the classpath to use Tomcat 8 for it to work. The
-[websocket sample](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-websocket/pom.xml)
-shows you how to do that in Maven.
+change the classpath to use Tomcat 8 for it to work. For example, using
+the starter poms in Maven:
+
+```xml
+	<properties>
+		<tomcat.version>8.0.3</tomcat.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+    ...
+```
 
 ## Configure Jetty
 
