@@ -24,8 +24,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * @author Dave Syer
+ * Test for application hierarchies created using {@link SpringApplicationBuilder}.
  * 
+ * @author Dave Syer
  */
 public class SpringApplicationHierarchyTests {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,18 +51,28 @@ import org.springframework.stereotype.Component;
  * of that type in the context will be applied to this container).
  * 
  * @author Dave Syer
- * 
+ * @author Phillip Webb
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ErrorWrapperEmbeddedServletContainerFactory extends
 		AbstractEmbeddedServletContainerFactory implements Filter {
 
+	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
+
+	private static final String ERROR_EXCEPTION = "javax.servlet.error.exception";
+
+	private static final String ERROR_EXCEPTION_TYPE = "javax.servlet.error.exception_type";
+
+	private static final String ERROR_MESSAGE = "javax.servlet.error.message";
+
+	private static final String ERROR_STATUS_CODE = "javax.servlet.error.status_code";
+
 	private String global;
 
-	private Map<Integer, String> statuses = new HashMap<Integer, String>();
+	private final Map<Integer, String> statuses = new HashMap<Integer, String>();
 
-	private Map<Class<? extends Throwable>, String> exceptions = new HashMap<Class<? extends Throwable>, String>();
+	private final Map<Class<?>, String> exceptions = new HashMap<Class<?>, String>();
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -71,65 +81,90 @@ public class ErrorWrapperEmbeddedServletContainerFactory extends
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		String errorPath;
-		ErrorWrapperResponse wrapped = new ErrorWrapperResponse(
-				(HttpServletResponse) response);
+		if (request instanceof HttpServletRequest
+				&& response instanceof HttpServletResponse) {
+			doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
+		}
+		else {
+			chain.doFilter(request, response);
+		}
+	}
+
+	private void doFilter(HttpServletRequest request, HttpServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
+		ErrorWrapperResponse wrapped = new ErrorWrapperResponse(response);
 		try {
 			chain.doFilter(request, wrapped);
 			int status = wrapped.getStatus();
 			if (status >= 400) {
-				errorPath = this.statuses.containsKey(status) ? this.statuses.get(status)
-						: this.global;
-				if (errorPath != null) {
-					request.setAttribute("javax.servlet.error.status_code", status);
-					request.setAttribute("javax.servlet.error.message",
-							wrapped.getMessage());
-					((HttpServletRequest) request).getRequestDispatcher(errorPath)
-							.forward(request, response);
-				}
-				else {
-					((HttpServletResponse) response).sendError(status,
-							wrapped.getMessage());
-				}
+				handleErrorStatus(request, response, status, wrapped.getMessage());
 			}
 		}
-		catch (Throwable e) {
-			Class<? extends Throwable> cls = e.getClass();
-			errorPath = this.exceptions.containsKey(cls) ? this.exceptions.get(cls)
-					: this.global;
-			if (errorPath != null) {
-				request.setAttribute("javax.servlet.error.status_code", 500);
-				request.setAttribute("javax.servlet.error.exception", e);
-				request.setAttribute("javax.servlet.error.message", e.getMessage());
-				wrapped.sendError(500, e.getMessage());
-				((HttpServletRequest) request).getRequestDispatcher(errorPath).forward(
-						request, response);
-			}
-			else {
-				rethrow(e);
-			}
+		catch (Throwable ex) {
+			handleException(request, response, wrapped, ex);
 		}
+
 	}
 
-	private void rethrow(Throwable e) throws IOException, ServletException {
-		if (e instanceof RuntimeException) {
-			throw (RuntimeException) e;
+	private void handleErrorStatus(HttpServletRequest request,
+			HttpServletResponse response, int status, String message)
+			throws ServletException, IOException {
+		String errorPath = getErrorPath(this.statuses, status);
+		if (errorPath == null) {
+			response.sendError(status, message);
+			return;
 		}
-		if (e instanceof Error) {
-			throw (Error) e;
+		setErrorAttributes(request, status, message);
+		request.getRequestDispatcher(errorPath).forward(request, response);
+	}
+
+	private void handleException(HttpServletRequest request,
+			HttpServletResponse response, ErrorWrapperResponse wrapped, Throwable ex)
+			throws IOException, ServletException {
+		String errorPath = getErrorPath(this.exceptions, ex.getClass());
+		if (errorPath == null) {
+			rethrow(ex);
+			return;
 		}
-		if (e instanceof IOException) {
-			throw (IOException) e;
+		setErrorAttributes(request, 500, ex.getMessage());
+		request.setAttribute(ERROR_EXCEPTION, ex);
+		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass().getName());
+		wrapped.sendError(500, ex.getMessage());
+		request.getRequestDispatcher(errorPath).forward(request, response);
+	}
+
+	private String getErrorPath(Map<?, String> map, Object key) {
+		if (map.containsKey(key)) {
+			return map.get(key);
 		}
-		if (e instanceof ServletException) {
-			throw (ServletException) e;
+		return this.global;
+	}
+
+	private void setErrorAttributes(ServletRequest request, int status, String message) {
+		request.setAttribute(ERROR_STATUS_CODE, status);
+		request.setAttribute(ERROR_MESSAGE, message);
+	}
+
+	private void rethrow(Throwable ex) throws IOException, ServletException {
+		if (ex instanceof RuntimeException) {
+			throw (RuntimeException) ex;
 		}
-		throw new IllegalStateException("Unidentified Exception", e);
+		if (ex instanceof Error) {
+			throw (Error) ex;
+		}
+		if (ex instanceof IOException) {
+			throw (IOException) ex;
+		}
+		if (ex instanceof ServletException) {
+			throw (ServletException) ex;
+		}
+		throw new IllegalStateException(ex);
 	}
 
 	@Override
 	public EmbeddedServletContainer getEmbeddedServletContainer(
 			ServletContextInitializer... initializers) {
+
 		return new EmbeddedServletContainer() {
 
 			@Override
@@ -145,6 +180,7 @@ public class ErrorWrapperEmbeddedServletContainerFactory extends
 				return -1;
 			}
 		};
+
 	}
 
 	@Override
@@ -169,6 +205,7 @@ public class ErrorWrapperEmbeddedServletContainerFactory extends
 	private static class ErrorWrapperResponse extends HttpServletResponseWrapper {
 
 		private int status;
+
 		private String message;
 
 		public ErrorWrapperResponse(HttpServletResponse response) {

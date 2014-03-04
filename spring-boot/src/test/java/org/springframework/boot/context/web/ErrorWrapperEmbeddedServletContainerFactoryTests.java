@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.web;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -31,24 +32,30 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
+ * Tests for {@link ErrorWrapperEmbeddedServletContainerFactory}.
+ * 
  * @author Dave Syer
  */
 public class ErrorWrapperEmbeddedServletContainerFactoryTests {
 
 	private ErrorWrapperEmbeddedServletContainerFactory filter = new ErrorWrapperEmbeddedServletContainerFactory();
+
 	private MockHttpServletRequest request = new MockHttpServletRequest();
+
 	private MockHttpServletResponse response = new MockHttpServletResponse();
+
 	private MockFilterChain chain = new MockFilterChain();
 
 	@Test
 	public void notAnError() throws Exception {
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertEquals(this.request, this.chain.getRequest());
-		assertEquals(this.response,
-				((HttpServletResponseWrapper) this.chain.getResponse()).getResponse());
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
 	}
 
 	@Test
@@ -63,10 +70,12 @@ public class ErrorWrapperEmbeddedServletContainerFactoryTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertEquals(400,
-				((HttpServletResponseWrapper) this.chain.getResponse()).getStatus());
-		assertEquals(400, this.request.getAttribute("javax.servlet.error.status_code"));
-		assertEquals("BAD", this.request.getAttribute("javax.servlet.error.message"));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(400));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE),
+				equalTo((Object) 400));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
+				equalTo((Object) "BAD"));
 	}
 
 	@Test
@@ -81,10 +90,12 @@ public class ErrorWrapperEmbeddedServletContainerFactoryTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertEquals(400,
-				((HttpServletResponseWrapper) this.chain.getResponse()).getStatus());
-		assertEquals(400, this.request.getAttribute("javax.servlet.error.status_code"));
-		assertEquals("BAD", this.request.getAttribute("javax.servlet.error.message"));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(400));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE),
+				equalTo((Object) 400));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
+				equalTo((Object) "BAD"));
 	}
 
 	@Test
@@ -99,9 +110,13 @@ public class ErrorWrapperEmbeddedServletContainerFactoryTests {
 			}
 		};
 		this.filter.doFilter(this.request, this.response, this.chain);
-		assertEquals(500,
-				((HttpServletResponseWrapper) this.chain.getResponse()).getStatus());
-		assertEquals(500, this.request.getAttribute("javax.servlet.error.status_code"));
-		assertEquals("BAD", this.request.getAttribute("javax.servlet.error.message"));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(500));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE),
+				equalTo((Object) 500));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
+				equalTo((Object) "BAD"));
+		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
+				equalTo((Object) RuntimeException.class.getName()));
 	}
 }

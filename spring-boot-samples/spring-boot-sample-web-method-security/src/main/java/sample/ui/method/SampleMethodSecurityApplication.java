@@ -76,26 +76,20 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 		@Override
 		protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 			// @formatter:off
-			auth.inMemoryAuthentication()
-				.withUser("admin").password("admin").roles("ADMIN", "USER")
-			.and()
-				.withUser("user").password("user").roles("USER");
+			auth.inMemoryAuthentication().withUser("admin").password("admin")
+					.roles("ADMIN", "USER").and().withUser("user").password("user")
+					.roles("USER");
 			// @formatter:on
 		}
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-			http
-				.authorizeRequests()
-					.antMatchers("/login").permitAll()
-					.anyRequest().fullyAuthenticated()
-			.and()
-				.formLogin().loginPage("/login").failureUrl("/login?error")
-			.and()
-				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-			.and()
-				.exceptionHandling().accessDeniedPage("/access?error");
+			http.authorizeRequests().antMatchers("/login").permitAll().anyRequest()
+					.fullyAuthenticated().and().formLogin().loginPage("/login")
+					.failureUrl("/login?error").and().logout()
+					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
+					.exceptionHandling().accessDeniedPage("/access?error");
 			// @formatter:on
 		}
 

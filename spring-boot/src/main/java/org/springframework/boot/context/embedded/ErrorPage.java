@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,25 +27,26 @@ import org.springframework.util.ObjectUtils;
  */
 public class ErrorPage {
 
+	private final HttpStatus status;
+
+	private final Class<? extends Throwable> exception;
+
 	private final String path;
 
-	private Class<? extends Throwable> exception = null;
-
-	private HttpStatus status = null;
-
 	public ErrorPage(String path) {
-		super();
+		this.status = null;
+		this.exception = null;
 		this.path = path;
 	}
 
 	public ErrorPage(HttpStatus status, String path) {
-		super();
 		this.status = status;
+		this.exception = null;
 		this.path = path;
 	}
 
 	public ErrorPage(Class<? extends Throwable> exception, String path) {
-		super();
+		this.status = null;
 		this.exception = exception;
 		this.path = path;
 	}
@@ -61,15 +62,17 @@ public class ErrorPage {
 	}
 
 	/**
-	 * @return the exception type (or null for a page that matches by status)
+	 * Returns the exception type (or {@code null} for a page that matches by status)
+	 * @return the exception type or {@code null}
 	 */
 	public Class<? extends Throwable> getException() {
 		return this.exception;
 	}
 
 	/**
-	 * The HTTP status value that this error page matches.
-	 * @return the status
+	 * The HTTP status value that this error page matches (or {@code null} for a page that
+	 * matches by exception).
+	 * @return the status or {@code null}
 	 */
 	public HttpStatus getStatus() {
 		return this.status;
@@ -80,7 +83,7 @@ public class ErrorPage {
 	 * @return the status value (or 0 for a page that matches any status)
 	 */
 	public int getStatusCode() {
-		return this.status == null ? 0 : this.status.value();
+		return (this.status == null ? 0 : this.status.value());
 	}
 
 	/**
@@ -88,15 +91,15 @@ public class ErrorPage {
 	 * @return the exception type name (or {@code null} if there is none)
 	 */
 	public String getExceptionName() {
-		return this.exception == null ? null : this.exception.getName();
+		return (this.exception == null ? null : this.exception.getName());
 	}
 
 	/**
 	 * @return is this error page a global one (matches all unmatched status and exception
-	 * types)?
+	 * types)
 	 */
 	public boolean isGlobal() {
-		return this.status == null && this.exception == null;
+		return (this.status == null && this.exception == null);
 	}
 
 	@Override

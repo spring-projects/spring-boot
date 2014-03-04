@@ -124,8 +124,8 @@ public class WebMvcAutoConfiguration {
 
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not
 	// on the classpath
-	@EnableWebMvc
 	@Configuration
+	@EnableWebMvc
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
 		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
