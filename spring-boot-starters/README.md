@@ -30,12 +30,12 @@ The parent pom adds two main fetaures to your project:
 * dependency management configuration, so you don't have to specify
   versions or excludes with your own dependencies, as long as they are
   part of the Spring Boot stack
-  
+
 * plugin configuration, so you don't have to configure some common
   settings in the main Maven plugins used to get a project off the
   ground (e.g. the
   [Spring Boot Maven plugin](../spring-boot-tools/spring-boot-maven-plugin/README.md))
-  
+
 As an example, if you want to build a simple RESTful web service with
 embedded Tomcat, you only need one dependency:
 

@@ -52,7 +52,7 @@ public class JavaLoggerSystemTests {
 
 	@Before
 	public void init() throws SecurityException, IOException {
-		defaultLocale = Locale.getDefault();
+		this.defaultLocale = Locale.getDefault();
 		Locale.setDefault(Locale.ENGLISH);
 		this.logger = new Jdk14Logger(getClass().getName());
 	}
@@ -62,7 +62,7 @@ public class JavaLoggerSystemTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
-		Locale.setDefault(defaultLocale);
+		Locale.setDefault(this.defaultLocale);
 	}
 
 	@Test
