@@ -28,9 +28,9 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author Dave Syer
  * @see EmbeddedServletContainerFactory
+ * @see EmbeddedServletContainerCustomizer
  */
-public interface ConfigurableEmbeddedServletContainerFactory extends
-		EmbeddedServletContainerFactory {
+public interface ConfigurableEmbeddedServletContainerFactory {
 
 	/**
 	 * Sets the context path for the embedded servlet container. The context should start
@@ -122,8 +122,8 @@ public interface ConfigurableEmbeddedServletContainerFactory extends
 
 	/**
 	 * Sets {@link ServletContextInitializer} that should be applied in addition to
-	 * {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters. This
-	 * method will replace any previously set or added initializers.
+	 * {@link EmbeddedServletContainerFactory#getEmbeddedServletContainer(ServletContextInitializer...)}
+	 * parameters. This method will replace any previously set or added initializers.
 	 * @param initializers the initializers to set
 	 * @see #addInitializers
 	 */
@@ -131,7 +131,9 @@ public interface ConfigurableEmbeddedServletContainerFactory extends
 
 	/**
 	 * Add {@link ServletContextInitializer}s to those that should be applied in addition
-	 * to {@link #getEmbeddedServletContainer(ServletContextInitializer...)} parameters.
+	 * to
+	 * {@link EmbeddedServletContainerFactory#getEmbeddedServletContainer(ServletContextInitializer...)}
+	 * parameters.
 	 * @param initializers the initializers to add
 	 * @see #setInitializers
 	 */

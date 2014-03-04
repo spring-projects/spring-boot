@@ -60,6 +60,8 @@ public class ServerPropertiesAutoConfiguration implements ApplicationContextAwar
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+		// ServerProperties handles customization, this just checks we only have
+		// a single bean
 		String[] serverPropertiesBeans = this.applicationContext
 				.getBeanNamesForType(ServerProperties.class);
 		Assert.state(

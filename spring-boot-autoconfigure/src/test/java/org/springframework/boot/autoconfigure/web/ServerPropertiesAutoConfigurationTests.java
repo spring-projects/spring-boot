@@ -48,7 +48,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ServerPropertiesAutoConfigurationTests {
 
-	private static ConfigurableEmbeddedServletContainerFactory containerFactory;
+	private static AbstractEmbeddedServletContainerFactory containerFactory;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -57,8 +57,7 @@ public class ServerPropertiesAutoConfigurationTests {
 
 	@Before
 	public void init() {
-		containerFactory = Mockito
-				.mock(ConfigurableEmbeddedServletContainerFactory.class);
+		containerFactory = Mockito.mock(AbstractEmbeddedServletContainerFactory.class);
 	}
 
 	@After
@@ -104,13 +103,12 @@ public class ServerPropertiesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		containerFactory = this.context
-				.getBean(ConfigurableEmbeddedServletContainerFactory.class);
+				.getBean(AbstractEmbeddedServletContainerFactory.class);
 		ServerProperties server = this.context.getBean(ServerProperties.class);
 		assertNotNull(server);
 		// The server.port environment property was not explicitly set so the container
 		// factory should take precedence...
-		assertEquals(3000,
-				((AbstractEmbeddedServletContainerFactory) containerFactory).getPort());
+		assertEquals(3000, containerFactory.getPort());
 	}
 
 	@Test
