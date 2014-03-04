@@ -45,9 +45,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Import({ SpringBootWebSecurityConfiguration.class,
 		AuthenticationManagerConfiguration.class })
 public class SecurityAutoConfiguration {
+
 	@Bean
 	@ConditionalOnMissingBean
 	public SecurityProperties securityProperties() {
 		return new SecurityProperties();
 	}
+
 }
