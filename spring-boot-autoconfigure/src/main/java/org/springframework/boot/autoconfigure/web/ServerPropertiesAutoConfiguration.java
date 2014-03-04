@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that configures the
- * {@link ConfigurableEmbeddedServletContainerFactory} from a {@link ServerProperties}
+ * {@link ConfigurableEmbeddedServletContainer} from a {@link ServerProperties}
  * bean.
  * 
  * @author Dave Syer
@@ -59,7 +59,7 @@ public class ServerPropertiesAutoConfiguration implements ApplicationContextAwar
 	}
 
 	@Override
-	public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+	public void customize(ConfigurableEmbeddedServletContainer container) {
 		// ServerProperties handles customization, this just checks we only have
 		// a single bean
 		String[] serverPropertiesBeans = this.applicationContext

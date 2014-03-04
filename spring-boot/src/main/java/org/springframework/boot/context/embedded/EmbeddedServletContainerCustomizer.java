@@ -35,9 +35,9 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 public interface EmbeddedServletContainerCustomizer {
 
 	/**
-	 * Customize the specified {@link ConfigurableEmbeddedServletContainerFactory}.
-	 * @param factory the factory to customize
+	 * Customize the specified {@link ConfigurableEmbeddedServletContainer}.
+	 * @param container the container to customize
 	 */
-	void customize(ConfigurableEmbeddedServletContainerFactory factory);
+	void customize(ConfigurableEmbeddedServletContainer container);
 
 }
