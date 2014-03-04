@@ -23,6 +23,9 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.handler.PerConnectionWebSocketHandler;
 
 import samples.websocket.client.GreetingService;
@@ -34,7 +37,15 @@ import samples.websocket.snake.SnakeWebSocketHandler;
 
 @Configuration
 @EnableAutoConfiguration
-public class SampleWebSocketsApplication extends SpringBootServletInitializer {
+@EnableWebSocket
+public class SampleWebSocketsApplication extends SpringBootServletInitializer implements
+		WebSocketConfigurer {
+
+	@Override
+	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+		registry.addHandler(echoWebSocketHandler(), "/echo").withSockJS();
+		registry.addHandler(snakeWebSocketHandler(), "/snake").withSockJS();
+	}
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -55,12 +66,12 @@ public class SampleWebSocketsApplication extends SpringBootServletInitializer {
 		return new SimpleGreetingService();
 	}
 
-	@Bean(name = "/echo")
+	@Bean
 	public WebSocketHandler echoWebSocketHandler() {
 		return new EchoWebSocketHandler(echoService());
 	}
 
-	@Bean(name = "/snake")
+	@Bean
 	public WebSocketHandler snakeWebSocketHandler() {
 		return new PerConnectionWebSocketHandler(SnakeWebSocketHandler.class);
 	}
