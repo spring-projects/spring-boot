@@ -21,7 +21,7 @@ spring-boot-starter-parent, e.g.
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.0.0.RC3</version>
+		<version>1.0.0.RC4</version>
 	</parent>
 ```
 
@@ -108,7 +108,7 @@ not the plugin management) using
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.0.0.RC3</version>
+		<version>1.0.0.RC4</version>
         <scope>import</scope>
 	</dependency>
   </dependencies>
@@ -153,7 +153,7 @@ exactly the same way, for instance, so a typical project might have a
 buildscript {
 
     ext {
-		springBootVersion = '1.0.0.RC3'
+		springBootVersion = '1.0.0.RC4'
 	}
 
     repositories {

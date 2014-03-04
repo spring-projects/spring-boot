@@ -210,8 +210,8 @@ configurations {
 }
 
 dependencies {
-	compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC3")
-	compile("org.springframework.boot:spring-boot-starter-jetty:1.0.0.RC3")
+	compile("org.springframework.boot:spring-boot-starter-web:1.0.0.RC4")
+	compile("org.springframework.boot:spring-boot-starter-jetty:1.0.0.RC4")
     ...
 }
 ```
