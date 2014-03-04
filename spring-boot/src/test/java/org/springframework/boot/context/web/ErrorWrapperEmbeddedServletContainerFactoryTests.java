@@ -36,13 +36,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link ErrorWrapperEmbeddedServletContainerFactory}.
+ * Tests for {@link ErrorPageFilter}.
  * 
  * @author Dave Syer
  */
 public class ErrorWrapperEmbeddedServletContainerFactoryTests {
 
-	private ErrorWrapperEmbeddedServletContainerFactory filter = new ErrorWrapperEmbeddedServletContainerFactory();
+	private ErrorPageFilter filter = new ErrorPageFilter();
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 

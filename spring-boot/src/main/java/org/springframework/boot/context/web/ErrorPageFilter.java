@@ -30,33 +30,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.EmbeddedServletContainer;
+import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.ErrorPage;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * A special {@link EmbeddedServletContainerFactory} for non-embedded applications (i.e.
- * deployed WAR files). It registers error pages and handles application errors by
- * filtering requests and forwarding to the error pages instead of letting the container
- * handle them. Error pages are a feature of the servlet spec but there is no Java API for
- * registering them in the spec. This filter works around that by accepting error page
- * registrations from Spring Boot's {@link EmbeddedServletContainerCustomizer} (any beans
- * of that type in the context will be applied to this container).
+ * A special {@link AbstractConfigurableEmbeddedServletContainer} for non-embedded
+ * applications (i.e. deployed WAR files). It registers error pages and handles
+ * application errors by filtering requests and forwarding to the error pages instead of
+ * letting the container handle them. Error pages are a feature of the servlet spec but
+ * there is no Java API for registering them in the spec. This filter works around that by
+ * accepting error page registrations from Spring Boot's
+ * {@link EmbeddedServletContainerCustomizer} (any beans of that type in the context will
+ * be applied to this container).
  * 
  * @author Dave Syer
  * @author Phillip Webb
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class ErrorWrapperEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements Filter {
+class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
+		Filter {
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 
@@ -159,28 +156,6 @@ public class ErrorWrapperEmbeddedServletContainerFactory extends
 			throw (ServletException) ex;
 		}
 		throw new IllegalStateException(ex);
-	}
-
-	@Override
-	public EmbeddedServletContainer getEmbeddedServletContainer(
-			ServletContextInitializer... initializers) {
-
-		return new EmbeddedServletContainer() {
-
-			@Override
-			public void start() throws EmbeddedServletContainerException {
-			}
-
-			@Override
-			public void stop() throws EmbeddedServletContainerException {
-			}
-
-			@Override
-			public int getPort() {
-				return -1;
-			}
-		};
-
 	}
 
 	@Override
