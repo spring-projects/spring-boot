@@ -191,7 +191,10 @@ public class ConfigFileApplicationListener implements
 	}
 
 	/**
-	 * Set the search locations that will be considered as a comma-separated list.
+	 * Set the search locations that will be considered as a comma-separated list. Each
+	 * search location should be a directory path (ending in "/") and it will be prefixed
+	 * by the file names constructed from {@link #setSearchNames(String) search names} and
+	 * profiles (if any) plus file extensions supported by the properties loaders.
 	 * Locations are considered in the order specified, with earlier items taking
 	 * precedence.
 	 */
@@ -269,10 +272,18 @@ public class ConfigFileApplicationListener implements
 			this.profiles = Collections.asLifoQueue(new LinkedList<String>());
 			this.activatedProfiles = false;
 
-			// Any pre-existing active profiles take precedence over those added in
-			// config files (unless latter are prefixed with "+").
-			addActiveProfiles(StringUtils.arrayToCommaDelimitedString(this.environment
-					.getActiveProfiles()));
+			if (this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
+				// Any pre-existing active profiles set via property sources (e.g. System
+				// properties) take precedence over those added in config files (unless
+				// latter are prefixed with "+").
+				addActiveProfiles(this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
+			}
+			else {
+				// Pre-existing active profiles set via Environment.setActiveProfiles()
+				// are additional profiles and config files are allowed to add more if
+				// they want to, so don't call addActiveProfiles() here.
+				this.profiles.addAll(Arrays.asList(this.environment.getActiveProfiles()));
+			}
 
 			this.profiles.add(null);
 
@@ -336,7 +347,11 @@ public class ConfigFileApplicationListener implements
 				profile = (addition ? profile.substring(1) : profile);
 				if (profilesNotActivatedWhenCalled || addition) {
 					this.profiles.add(profile);
-					prependProfile(this.environment, profile);
+					if (!this.environment.acceptsProfiles(profile)) {
+						// If it's already accepted we assume the order was set
+						// intentionally
+						prependProfile(this.environment, profile);
+					}
 					this.activatedProfiles = true;
 				}
 			}
