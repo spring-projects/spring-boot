@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.thymeleaf;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -95,8 +95,8 @@ public class ThymeleafAutoConfigurationTests {
 	}
 
 	@Test
-	@Ignore("Fix this for gh-424")
 	public void templateLocationEmpty() throws Exception {
+		new File("target/test-classes/templates/empty-directory").mkdir();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.thymeleaf.prefix:classpath:/templates/empty-directory/");
 		this.context.register(ThymeleafAutoConfiguration.class,
