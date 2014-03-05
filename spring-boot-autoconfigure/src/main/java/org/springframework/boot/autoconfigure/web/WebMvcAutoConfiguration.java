@@ -54,6 +54,7 @@ import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -177,8 +178,9 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnBean(View.class)
-		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
+		@ConditionalOnBean(ViewResolver.class)
+		public ContentNegotiatingViewResolver contentNegotiatingViewResolver(
+				BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
 			resolver.setContentNegotiationManager(beanFactory
 					.getBean(ContentNegotiationManager.class));
