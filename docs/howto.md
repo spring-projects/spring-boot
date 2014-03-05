@@ -557,24 +557,33 @@ servlet context (defaults are both empty, but accessible for external
 configuration via `spring.view.prefix` and `spring.view.suffix`).  It
 can be overridden by providing a bean of the same type.
 
-* A `BeanNameViewResolver` with id "beanNameViewResolver". This is a
-useful member of the view resolver chain and will pick up any beans
-with the same name as the `View` being resolved. It can be overridden
-by providing a bean of the same type, but it's unlikely you will need
-to do that.
+* A `BeanNameViewResolver` with id "beanNameViewResolver" is added if
+there are beans of type `View`. This is a useful member of the view
+resolver chain and will pick up any beans with the same name as the
+`View` being resolved. It can be overridden by providing a bean of the
+same type, but it's unlikely you will need to do that.
 
-* A `ContentNegotiatingViewResolver` with id "viewResolver" is only
-added if there *are* actually beans of type `View` present. This is a
-"master" resolver, delegating to all the others and attempting to find
-a match to the "Accept" HTTP header sent by the client. There is a
-useful
+* A `ContentNegotiatingViewResolver` with id
+"contentNegotiatingViewResolver" is only added if there are already
+beans of type `ViewResolver` present. This is a "master" resolver,
+delegating to all the others and attempting to find a match to the
+"Accept" HTTP header sent by the client, so it is added with highest
+precedence (it is always consulted bythe `DispatcherServlet`). There
+is a useful
 [blog about `ContentNegotiatingViewResolver`](https://spring.io/blog/2013/06/03/content-negotiation-using-views)
 that you might like to study to learn more, and also look at the
 source code for detail.
 
-    Be careful not to define your own `ViewResolver` with id
-"viewResolver" (like the `ContentNegotiatingViewResolver`) otherwise,
-in that case, your bean will be ovewritten, not the other way round.
+    Bear in mind that any custom `ViewResolvers` that you add to your
+own application will be consulted by the
+`ContentNegotiatingViewResolver`, so make sure they yield `View`
+instances that give accurate responses in their `getContentType()`
+method.
+
+    Also be careful not to define your own `ViewResolver` with id
+"contentNegotiatingViewResolver" (like the
+`ContentNegotiatingViewResolver`) otherwise, in that case, your bean
+will be ovewritten, not the other way round.
 
 * If you use Thymeleaf you will also have a `ThymeleafViewResolver`
 with id "thymeleafViewResolver". It looks for resources by surrounding
