@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,9 @@ public class DispatcherServletAutoConfiguration {
 		@Autowired
 		private ServerProperties server;
 
+		@Autowired(required = false)
+		private MultipartConfigElement multipartConfig;
+
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
 		public DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
@@ -76,8 +80,12 @@ public class DispatcherServletAutoConfiguration {
 
 		@Bean
 		public ServletRegistrationBean dispatcherServletRegistration() {
-			return new ServletRegistrationBean(dispatcherServlet(),
-					this.server.getServletPath());
+			ServletRegistrationBean registration = new ServletRegistrationBean(
+					dispatcherServlet(), this.server.getServletPath());
+			if (this.multipartConfig != null) {
+				registration.setMultipartConfig(this.multipartConfig);
+			}
+			return registration;
 		}
 
 	}
