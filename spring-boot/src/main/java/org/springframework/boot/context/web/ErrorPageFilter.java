@@ -71,6 +71,8 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 	private final Map<Class<?>, String> exceptions = new HashMap<Class<?>, String>();
 
+	private final Map<Class<?>, Class<?>> subtypes = new HashMap<Class<?>, Class<?>>();
+
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
@@ -118,14 +120,34 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 	private void handleException(HttpServletRequest request,
 			HttpServletResponse response, ErrorWrapperResponse wrapped, Throwable ex)
 			throws IOException, ServletException {
-		String errorPath = getErrorPath(this.exceptions, ex.getClass());
+		Class<?> type = ex.getClass();
+		String errorPath = this.global;
+		if (this.exceptions.containsKey(type)) {
+			errorPath = this.exceptions.get(type);
+		}
+		else {
+			if (this.subtypes.containsKey(type)) {
+				errorPath = this.exceptions.get(this.subtypes.get(type));
+			}
+			else {
+				Class<?> subtype = type;
+				while (subtype != Object.class) {
+					subtype = subtype.getSuperclass();
+					if (this.exceptions.containsKey(subtype)) {
+						this.subtypes.put(subtype, type);
+						errorPath = this.exceptions.get(subtype);
+						break;
+					}
+				}
+			}
+		}
 		if (errorPath == null) {
 			rethrow(ex);
 			return;
 		}
 		setErrorAttributes(request, 500, ex.getMessage());
 		request.setAttribute(ERROR_EXCEPTION, ex);
-		request.setAttribute(ERROR_EXCEPTION_TYPE, ex.getClass().getName());
+		request.setAttribute(ERROR_EXCEPTION_TYPE, type.getName());
 		wrapped.sendError(500, ex.getMessage());
 		request.getRequestDispatcher(errorPath).forward(request, response);
 	}
