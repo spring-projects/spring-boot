@@ -16,15 +16,21 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.junit.Test;
+import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests for {@link DispatcherServletAutoConfiguration}.
@@ -60,6 +66,33 @@ public class DispatcherServletAutoConfigurationTests {
 		ServletRegistrationBean registration = this.context
 				.getBean(ServletRegistrationBean.class);
 		assertEquals("[/spring]", registration.getUrlMappings().toString());
+		assertNull(registration.getMultipartConfig());
+	}
+
+	@Test
+	public void multipartConfig() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.setServletContext(new MockServletContext());
+		this.context.register(MultipartConfiguration.class,
+				ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		this.context.refresh();
+		ServletRegistrationBean registration = this.context
+				.getBean(ServletRegistrationBean.class);
+		assertNotNull(registration.getMultipartConfig());
+	}
+
+	@Configuration
+	protected static class MultipartConfiguration {
+
+		@Bean
+		public MultipartConfigElement multipartConfig() {
+			MultiPartConfigFactory factory = new MultiPartConfigFactory();
+			factory.setMaxFileSize("128KB");
+			factory.setMaxRequestSize("128KB");
+			return factory.createMultipartConfig();
+		}
+
 	}
 
 }
