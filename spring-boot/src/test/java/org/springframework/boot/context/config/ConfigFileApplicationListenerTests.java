@@ -46,6 +46,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
@@ -95,6 +96,18 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
+	}
+
+	@Test
+	public void loadTwoPropertiesFilesWithProfiles() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
+				+ "classpath:enableprofile.properties,"
+				+ "classpath:enableother.properties");
+		this.initializer.onApplicationEvent(this.event);
+		assertEquals("other", StringUtils.arrayToCommaDelimitedString(this.environment
+				.getActiveProfiles()));
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("fromotherpropertiesfile"));
 	}
 
 	@Test
@@ -180,6 +193,25 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("enableprofile");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
+		// The "myprofile" profile is activated in enableprofile.properties so its value
+		// should show up here
+		assertThat(property, equalTo("fromprofilepropertiesfile"));
+	}
+
+	@Test
+	public void loadPropertiesThenProfilePropertiesWithOverride() throws Exception {
+		this.environment.setActiveProfiles("other");
+		// EnvironmentTestUtils.addEnvironment(this.environment,
+		// "spring.profiles.active:other");
+		this.initializer.setSearchNames("enableprofile");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("other.property");
+		// The "other" profile is activated before any processing starts
+		assertThat(property, equalTo("fromotherpropertiesfile"));
+		property = this.environment.getProperty("my.property");
+		// The "myprofile" profile is activated in enableprofile.properties and "other"
+		// was not activated by setting spring.profiles.active so "myprofile" should still
+		// be activated
 		assertThat(property, equalTo("fromprofilepropertiesfile"));
 	}
 
