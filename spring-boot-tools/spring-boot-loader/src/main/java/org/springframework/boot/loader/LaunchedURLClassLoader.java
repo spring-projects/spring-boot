@@ -21,6 +21,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 
 import org.springframework.boot.loader.jar.JarFile;
@@ -61,6 +63,28 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			url = this.rootClassLoader.getResource(name);
 		}
 		return (url == null ? findResource(name) : url);
+	}
+
+	@Override
+	public URL findResource(String name) {
+		if (name.equals("")) {
+			URL[] urls = getURLs();
+			if (urls.length > 0) {
+				return urls[0];
+			}
+		}
+		return super.findResource(name);
+	}
+
+	@Override
+	public Enumeration<URL> findResources(String name) throws IOException {
+		if (name.equals("")) {
+			URL[] urls = getURLs();
+			if (urls.length > 0) {
+				return Collections.enumeration(Arrays.asList(urls));
+			}
+		}
+		return super.findResources(name);
 	}
 
 	@Override
