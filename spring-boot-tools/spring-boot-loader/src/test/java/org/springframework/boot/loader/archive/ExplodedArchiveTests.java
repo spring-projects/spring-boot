@@ -126,7 +126,6 @@ public class ExplodedArchiveTests {
 	}
 
 	@Test
-	@SuppressWarnings("resource")
 	public void getFilteredArchive() throws Exception {
 		Archive filteredArchive = this.archive
 				.getFilteredArchive(new Archive.EntryRenameFilter() {

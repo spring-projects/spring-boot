@@ -75,6 +75,8 @@ public abstract class Launcher {
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<URL>(archives.size());
 		for (Archive archive : archives) {
+			// Add the current archive at end (it will be reversed and end up taking
+			// precedence)
 			urls.add(archive.getUrl());
 		}
 		return createClassLoader(urls.toArray(new URL[urls.size()]));
