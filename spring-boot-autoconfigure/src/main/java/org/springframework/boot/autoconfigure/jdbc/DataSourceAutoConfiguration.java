@@ -177,7 +177,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 
 		@Bean
 		@ConditionalOnMissingBean(NamedParameterJdbcOperations.class)
-		public NamedParameterJdbcOperations namedParameterJdbcTemplate() {
+		public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
 			return new NamedParameterJdbcTemplate(this.dataSource);
 		}
 
