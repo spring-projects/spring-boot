@@ -72,7 +72,7 @@ public class LoggingApplicationListenerTests {
 		this.initializer.onApplicationEvent(new ApplicationStartedEvent(
 				new SpringApplication(), NO_ARGS));
 		new File("target/foo.log").delete();
-		new File("/tmp/spring.log").delete();
+		new File(tmpDir() + "/spring.log").delete();
 	}
 
 	@After
@@ -85,6 +85,10 @@ public class LoggingApplicationListenerTests {
 		}
 	}
 
+	private String tmpDir() {
+		return this.context.getEnvironment().resolvePlaceholders("${java.io.tmpdir}");
+	}
+
 	@Test
 	public void baseConfigLocation() {
 		this.initializer.initialize(this.context.getEnvironment(),
@@ -93,7 +97,7 @@ public class LoggingApplicationListenerTests {
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue(new File("/tmp/spring.log").exists());
+		assertTrue(new File(tmpDir() + "/spring.log").exists());
 	}
 
 	@Test
@@ -106,7 +110,8 @@ public class LoggingApplicationListenerTests {
 		String output = this.outputCapture.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
 		assertFalse("Wrong output:\n" + output, output.contains("???"));
-		assertTrue("Wrong output:\n" + output, output.startsWith("/tmp/spring.log"));
+		assertTrue("Wrong output:\n" + output,
+				output.startsWith(tmpDir() + "/spring.log"));
 	}
 
 	@Test
