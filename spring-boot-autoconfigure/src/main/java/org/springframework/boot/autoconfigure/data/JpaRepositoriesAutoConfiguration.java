@@ -35,8 +35,18 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
- * 
+ *
+ * <p> Activates when there is a bean of type {@link javax.sql.DataSource} configured in the context,
+ * the Spring Data JPA {@link org.springframework.data.jpa.repository.JpaRepository} type is on the classpath,
+ * and there is no other, existing {@link org.springframework.data.jpa.repository.JpaRepository} configured.
+ *
+ * <p> Once in effect, the auto-configuration is the equivalent of enabling JPA repositories using
+ * the {@link org.springframework.data.jpa.repository.config.EnableJpaRepositories} annotation.
+ *
+ * <p> This configuration class will activate <em>after</em> the Hibernate auto-configuration.
+ *
  * @author Phillip Webb
+ * @author Josh Long
  * @see EnableJpaRepositories
  */
 @Configuration
