@@ -53,8 +53,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	private Environment environment;
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-			final BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader)
 				.registerRepositoriesIn(registry, getRepositoryConfigurationExtension());
 	}
@@ -68,7 +67,7 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 			public java.lang.Iterable<String> getBasePackages() {
 				return AbstractRepositoryConfigurationSourceSupport.this
 						.getBasePackages();
-			};
+			}
 		};
 	}
 

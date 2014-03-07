@@ -25,9 +25,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring AOP.
- * 
+ *
+ * <p> {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration}
+ * for Spring's  AOP support. Equivalent to enabling {@link org.springframework.context.annotation.EnableAspectJAutoProxy}
+ * in your configuration. The configuration will not be activated if {@literal spring.aop.auto=false}.
+ * The {@literal proxyTargetClass} attribute will be {@literal false}, by default, but can be overridden by
+ * specifying {@literal spring.aop.proxyTargetClass=true}.
+ *
  * @author Dave Syer
+ * @author Josh Long
  * @see EnableAspectJAutoProxy
  */
 @Configuration
