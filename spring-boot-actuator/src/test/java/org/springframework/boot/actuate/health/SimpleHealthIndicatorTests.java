@@ -24,9 +24,11 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -56,6 +58,28 @@ public class SimpleHealthIndicatorTests {
 		Map<String, Object> health = this.indicator.health();
 		assertNotNull(health.get("database"));
 		assertNotNull(health.get("hello"));
+	}
+
+	@Test
+	public void customQuery() {
+		this.indicator.setDataSource(this.dataSource);
+		new JdbcTemplate(this.dataSource)
+				.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
+		this.indicator.setQuery("SELECT COUNT(*) from FOO");
+		Map<String, Object> health = this.indicator.health();
+		System.err.println(health);
+		assertNotNull(health.get("database"));
+		assertEquals("ok", health.get("status"));
+		assertNotNull(health.get("hello"));
+	}
+
+	@Test
+	public void error() {
+		this.indicator.setDataSource(this.dataSource);
+		this.indicator.setQuery("SELECT COUNT(*) from BAR");
+		Map<String, Object> health = this.indicator.health();
+		assertNotNull(health.get("database"));
+		assertEquals("error", health.get("status"));
 	}
 
 	@Test

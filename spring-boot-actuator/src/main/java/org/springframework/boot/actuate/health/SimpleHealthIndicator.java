@@ -78,7 +78,7 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 			if (StringUtils.hasText(query)) {
 				try {
 					health.put("hello",
-							this.jdbcTemplate.queryForObject(query, String.class));
+							this.jdbcTemplate.queryForObject(query, Object.class));
 				}
 				catch (Exception ex) {
 					health.put("status", "error");
