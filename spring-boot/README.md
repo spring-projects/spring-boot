@@ -300,15 +300,15 @@ environments.prod.name=My Cool App
  YAML lists are represented as comma-separated values (useful for simple String values)
  and also as property keys with `[index]` dereferencers, for example this YAML:
 
- ```yaml
+```yaml
  servers:
  	- dev.bar.com
  	- foo.bar.com
- ```
+```
 
 Would be transformed into these properties:
 
-```text
+```
 servers=dev.bar.com,foo.bar.com
 servers[0]=dev.bar.com
 servers[1]=foo.bar.com
