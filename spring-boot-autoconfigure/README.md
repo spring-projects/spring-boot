@@ -5,7 +5,7 @@ classpath, and you have not manually configured any database connection beans, t
 will auto-configure an in-memory database.
 
 ##Enabling auto-configuration
-Add an `@EnableAutoConfiguration` annotation to your primary `@Configration` class to
+Add an `@EnableAutoConfiguration` annotation to your primary `@Configuration` class to
 enable auto-configuration:
 
 ```java
