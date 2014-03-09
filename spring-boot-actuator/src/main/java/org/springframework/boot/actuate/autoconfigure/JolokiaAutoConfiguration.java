@@ -44,7 +44,7 @@ import org.springframework.context.annotation.Configuration;
  * 
  * <p>
  * Additional configuration parameters for Jolokia can be provided by specifying
- * <code>jolokia.config. ...</code> properties. See the <a
+ * <code>jolokia.config.*</code> properties. See the <a
  * href="http://jolokia.org">http://jolokia.org</a> web site for more information on
  * supported configuration parameters.
  * 

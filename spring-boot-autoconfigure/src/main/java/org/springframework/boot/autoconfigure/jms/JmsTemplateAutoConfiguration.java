@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jms.JmsTemplateAutoConfiguration.JmsTemplateProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,21 +53,6 @@ public class JmsTemplateAutoConfiguration {
 		return jmsTemplate;
 	}
 
-	@ConfigurationProperties(name = "spring.jms")
-	public static class JmsTemplateProperties {
-
-		private boolean pubSubDomain = true;
-
-		public boolean isPubSubDomain() {
-			return this.pubSubDomain;
-		}
-
-		public void setPubSubDomain(boolean pubSubDomain) {
-			this.pubSubDomain = pubSubDomain;
-		}
-
-	}
-
 	@Configuration
 	@ConditionalOnClass(ActiveMQConnectionFactory.class)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
@@ -84,10 +67,10 @@ public class JmsTemplateAutoConfiguration {
 			if (this.config.isPooled()) {
 				PooledConnectionFactory pool = new PooledConnectionFactory();
 				pool.setConnectionFactory(new ActiveMQConnectionFactory(this.config
-						.getBrokerURL()));
+						.getBrokerUrl()));
 				return pool;
 			}
-			return new ActiveMQConnectionFactory(this.config.getBrokerURL());
+			return new ActiveMQConnectionFactory(this.config.getBrokerUrl());
 		}
 
 	}

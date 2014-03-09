@@ -20,27 +20,28 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for ActiveMQ
+ * 
  * @author Greg Turnquist
  */
 @ConfigurationProperties(name = "spring.activemq")
 public class ActiveMQProperties {
 
-	private String brokerURL = "tcp://localhost:61616";
+	private String brokerUrl = "tcp://localhost:61616";
 
 	private boolean inMemory = true;
 
 	private boolean pooled = false;
 
 	// Will override brokerURL if inMemory is set to true
-	public String getBrokerURL() {
+	public String getBrokerUrl() {
 		if (this.inMemory) {
 			return "vm://localhost";
 		}
-		return this.brokerURL;
+		return this.brokerUrl;
 	}
 
-	public void setBrokerURL(String brokerURL) {
-		this.brokerURL = brokerURL;
+	public void setBrokerUrl(String brokerUrl) {
+		this.brokerUrl = brokerUrl;
 	}
 
 	public boolean isInMemory() {
