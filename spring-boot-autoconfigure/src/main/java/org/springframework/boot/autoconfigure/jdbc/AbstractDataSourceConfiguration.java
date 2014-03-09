@@ -59,7 +59,9 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
     private int timeBetweenEvictionRunsMillis = getDefaultTimeBetweenEvictionRunsMillis();
 
-	private ClassLoader classLoader;
+    private int minEvictableIdleTimeMillis = getDefaultMinEvictableIdleTimeMillis();
+
+    private ClassLoader classLoader;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
@@ -174,6 +176,10 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
         this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
     }
 
+    public void setMinEvictableIdleTimeMillis(int minEvictableIdleTimeMillis) {
+        this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+    }
+
     public int getInitialSize() {
 		return this.initialSize;
 	}
@@ -206,5 +212,10 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
     protected int getTimeBetweenEvictionRunsMillis() { return this.timeBetweenEvictionRunsMillis; }
 
+    protected int getMinEvictableIdleTimeMillis() { return this.minEvictableIdleTimeMillis; }
+
     protected abstract int getDefaultTimeBetweenEvictionRunsMillis();
+
+    protected abstract int getDefaultMinEvictableIdleTimeMillis();
+
 }
