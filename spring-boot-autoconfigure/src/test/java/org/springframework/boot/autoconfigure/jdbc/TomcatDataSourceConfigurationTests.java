@@ -20,6 +20,9 @@ import java.lang.reflect.Field;
 
 import javax.sql.DataSource;
 
+import org.apache.tomcat.jdbc.pool.DataSourceProxy;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
+import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
@@ -30,6 +33,7 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
@@ -63,6 +67,7 @@ public class TomcatDataSourceConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxWait:1234");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.jdbcInterceptors:SlowQueryReport");
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
@@ -72,6 +77,17 @@ public class TomcatDataSourceConfigurationTests {
 		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
 		assertEquals(1234, ds.getMaxWait());
+		assertDataSourceHasInterceptors(ds);
+	}
+
+	private void assertDataSourceHasInterceptors(DataSourceProxy ds) throws ClassNotFoundException {
+		PoolProperties.InterceptorDefinition[] interceptors = ds.getJdbcInterceptorsAsArray();
+		for (PoolProperties.InterceptorDefinition interceptor : interceptors) {
+			if (SlowQueryReport.class == interceptor.getInterceptorClass()) {
+				return;
+			}
+		}
+		fail("SlowQueryReport interceptor should have been set.");
 	}
 
 	@Test

@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TomcatDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
+	private String jdbcInterceptors;
 	private org.apache.tomcat.jdbc.pool.DataSource pool;
 
 	@Bean(destroyMethod = "close")
@@ -56,6 +57,7 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
 		this.pool.setValidationQuery(getValidationQuery());
 		this.pool.setMaxWait(getMaxWaitMillis());
+		this.pool.setJdbcInterceptors(jdbcInterceptors);
 		return this.pool;
 	}
 
@@ -80,4 +82,6 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 	protected int getDefaultMaxWaitMillis() {
 		return 30000;
 	}
+
+	public void setJdbcInterceptors(String jdbcInterceptors) { this.jdbcInterceptors = jdbcInterceptors; }
 }
