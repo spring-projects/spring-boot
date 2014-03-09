@@ -57,6 +57,8 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
     private boolean testWhileIdle = false;
 
+    private int timeBetweenEvictionRunsMillis = getDefaultTimeBetweenEvictionRunsMillis();
+
 	private ClassLoader classLoader;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
@@ -168,6 +170,10 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
     public void setTestWhileIdle(boolean testWhileIdle) { this.testWhileIdle = testWhileIdle; }
 
+    public void setTimeBetweenEvictionRunsMillis(int timeBetweenEvictionRunsMillis) {
+        this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+    }
+
     public int getInitialSize() {
 		return this.initialSize;
 	}
@@ -197,4 +203,8 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 	}
 
     protected boolean isTestWhileIdle() { return this.testWhileIdle; }
+
+    protected int getTimeBetweenEvictionRunsMillis() { return this.timeBetweenEvictionRunsMillis; }
+
+    protected abstract int getDefaultTimeBetweenEvictionRunsMillis();
 }

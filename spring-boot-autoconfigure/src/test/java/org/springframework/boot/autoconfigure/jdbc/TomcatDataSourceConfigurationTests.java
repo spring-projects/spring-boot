@@ -60,13 +60,23 @@ public class TomcatDataSourceConfigurationTests {
         EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testWhileIdle:true");
         EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnBorrow:true");
         EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
 		this.context.refresh();
         org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
         assertEquals("jdbc:foo//bar/spam", ds.getUrl());
         assertEquals(true, ds.isTestWhileIdle());
         assertEquals(true, ds.isTestOnBorrow());
         assertEquals(true, ds.isTestOnReturn());
+        assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
 	}
+
+    @Test
+    public void testDataSourceDefaultsPreserved() throws Exception {
+        this.context.register(TomcatDataSourceConfiguration.class);
+        this.context.refresh();
+        org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+        assertEquals(5000, ds.getTimeBetweenEvictionRunsMillis());
+    }
 
 	@Test(expected = BeanCreationException.class)
 	public void testBadUrl() throws Exception {

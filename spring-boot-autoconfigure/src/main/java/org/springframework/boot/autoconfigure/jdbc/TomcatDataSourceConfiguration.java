@@ -52,6 +52,7 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setTestOnBorrow(isTestOnBorrow());
 		this.pool.setTestOnReturn(isTestOnReturn());
         this.pool.setTestWhileIdle(isTestWhileIdle());
+        this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
 		this.pool.setValidationQuery(getValidationQuery());
 		return this.pool;
 	}
@@ -63,4 +64,8 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		}
 	}
 
+    @Override
+    protected int getDefaultTimeBetweenEvictionRunsMillis() {
+        return 5000;
+    }
 }

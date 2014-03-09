@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -67,7 +68,9 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		this.pool.setTestOnBorrow(isTestOnBorrow());
 		this.pool.setTestOnReturn(isTestOnReturn());
         this.pool.setTestWhileIdle(isTestWhileIdle());
+        this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
 		this.pool.setValidationQuery(getValidationQuery());
+
 		return this.pool;
 	}
 
@@ -84,4 +87,8 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		}
 	}
 
+    @Override
+    protected int getDefaultTimeBetweenEvictionRunsMillis() {
+        return (int) GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+    }
 }
