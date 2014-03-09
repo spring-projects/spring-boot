@@ -55,6 +55,8 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	private boolean testOnReturn = false;
 
+    private boolean testWhileIdle = false;
+
 	private ClassLoader classLoader;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
@@ -164,7 +166,9 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		this.testOnReturn = testOnReturn;
 	}
 
-	public int getInitialSize() {
+    public void setTestWhileIdle(boolean testWhileIdle) { this.testWhileIdle = testWhileIdle; }
+
+    public int getInitialSize() {
 		return this.initialSize;
 	}
 
@@ -192,4 +196,5 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		return this.testOnReturn;
 	}
 
+    protected boolean isTestWhileIdle() { return this.testWhileIdle; }
 }

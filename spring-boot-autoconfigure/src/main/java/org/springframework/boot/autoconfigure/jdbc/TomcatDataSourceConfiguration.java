@@ -51,6 +51,7 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setMinIdle(getMinIdle());
 		this.pool.setTestOnBorrow(isTestOnBorrow());
 		this.pool.setTestOnReturn(isTestOnReturn());
+        this.pool.setTestWhileIdle(isTestWhileIdle());
 		this.pool.setValidationQuery(getValidationQuery());
 		return this.pool;
 	}
