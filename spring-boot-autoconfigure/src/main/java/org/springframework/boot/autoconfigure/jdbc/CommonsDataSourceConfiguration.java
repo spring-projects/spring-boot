@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -31,7 +32,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 /**
  * Configuration for a Commons DBCP database pool. The DBCP pool is popular but not
  * recommended in high volume environments (the Tomcat DataSource is more reliable).
- * 
+ *
  * @author Dave Syer
  * @see DataSourceAutoConfiguration
  */
@@ -66,7 +67,11 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		this.pool.setMinIdle(getMinIdle());
 		this.pool.setTestOnBorrow(isTestOnBorrow());
 		this.pool.setTestOnReturn(isTestOnReturn());
+		this.pool.setTestWhileIdle(isTestWhileIdle());
+		this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
+		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
 		this.pool.setValidationQuery(getValidationQuery());
+
 		return this.pool;
 	}
 
@@ -75,12 +80,20 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		if (this.pool != null) {
 			try {
 				this.pool.close();
-			}
-			catch (SQLException ex) {
+			} catch (SQLException ex) {
 				throw new DataAccessResourceFailureException(
 						"Could not close data source", ex);
 			}
 		}
 	}
 
+	@Override
+	protected int getDefaultTimeBetweenEvictionRunsMillis() {
+		return (int) GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+	}
+
+	@Override
+	protected int getDefaultMinEvictableIdleTimeMillis() {
+		return (int) GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+	}
 }
