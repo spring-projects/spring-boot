@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link CommonsDataSourceConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class CommonsDataSourceConfigurationTests {
@@ -44,32 +44,32 @@ public class CommonsDataSourceConfigurationTests {
 		this.context.close();
 	}
 
-    @Test
-    public void testDataSourcePropertiesOverridden() throws Exception {
-        this.context.register(CommonsDataSourceConfiguration.class);
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testWhileIdle:true");
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnBorrow:true");
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
-        EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
-        this.context.refresh();
-        BasicDataSource ds = this.context.getBean(BasicDataSource.class);
-        assertEquals("jdbc:foo//bar/spam", ds.getUrl());
-        assertEquals(true, ds.getTestWhileIdle());
-        assertEquals(true, ds.getTestOnBorrow());
-        assertEquals(true, ds.getTestOnReturn());
-        assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
-        assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
-    }
+	@Test
+	public void testDataSourcePropertiesOverridden() throws Exception {
+		this.context.register(CommonsDataSourceConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testWhileIdle:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnBorrow:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
+		this.context.refresh();
+		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
+		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
+		assertEquals(true, ds.getTestWhileIdle());
+		assertEquals(true, ds.getTestOnBorrow());
+		assertEquals(true, ds.getTestOnReturn());
+		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
+		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
+	}
 
-    @Test
-    public void testDataSourceDefaultsPreserved() throws Exception {
-        this.context.register(CommonsDataSourceConfiguration.class);
-        this.context.refresh();
-        BasicDataSource ds = this.context.getBean(BasicDataSource.class);
-        assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, ds.getTimeBetweenEvictionRunsMillis());
-        assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, ds.getMinEvictableIdleTimeMillis());
-    }
+	@Test
+	public void testDataSourceDefaultsPreserved() throws Exception {
+		this.context.register(CommonsDataSourceConfiguration.class);
+		this.context.refresh();
+		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
+		assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, ds.getTimeBetweenEvictionRunsMillis());
+		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, ds.getMinEvictableIdleTimeMillis());
+	}
 
 }
