@@ -75,7 +75,7 @@ import com.codahale.metrics.MetricRegistry;
  * By default all metric updates go to all {@link MetricWriter} instances in the
  * application context. To change this behaviour define your own metric writer bean called
  * "primaryMetricWriter", mark it <code>@Primary</code>, and this one will receive all
- * updates from the default counter and gauge services. ALternatively you can provide your
+ * updates from the default counter and gauge services. Alternatively you can provide your
  * own counter and gauge services and wire them to whichever writer you choose.
  * </p>
  * 

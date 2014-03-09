@@ -187,6 +187,7 @@ public class EndpointAutoConfiguration {
 
 		@Autowired
 		private final ConfigurableEnvironment environment = new StandardEnvironment();
+
 		@Value("${spring.git.properties:classpath:git.properties}")
 		private Resource gitProperties;
 
@@ -213,7 +214,9 @@ public class EndpointAutoConfiguration {
 	}
 
 	public static class GitInfo {
+
 		private String branch;
+
 		private final Commit commit = new Commit();
 
 		public String getBranch() {
@@ -229,7 +232,9 @@ public class EndpointAutoConfiguration {
 		}
 
 		public static class Commit {
+
 			private String id;
+
 			private String time;
 
 			public String getId() {
@@ -248,7 +253,9 @@ public class EndpointAutoConfiguration {
 			public void setTime(String time) {
 				this.time = time;
 			}
+
 		}
+
 	}
 
 }
