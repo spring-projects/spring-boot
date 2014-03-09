@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class InMemoryMessageRespository implements MessageRepository {
 
 	private static AtomicLong counter = new AtomicLong();
+
 	private final ConcurrentMap<Long, Message> messages = new ConcurrentHashMap<Long, Message>();
 
 	@Override
