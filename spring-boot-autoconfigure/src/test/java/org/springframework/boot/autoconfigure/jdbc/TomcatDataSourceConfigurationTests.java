@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class TomcatDataSourceConfigurationTests {
@@ -56,12 +56,29 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.url:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testWhileIdle:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnBorrow:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
 		this.context.refresh();
-		assertEquals("jdbc:foo//bar/spam",
-				this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class)
-						.getUrl());
+		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
+		assertEquals(true, ds.isTestWhileIdle());
+		assertEquals(true, ds.isTestOnBorrow());
+		assertEquals(true, ds.isTestOnReturn());
+		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
+		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
+	}
+
+	@Test
+	public void testDataSourceDefaultsPreserved() throws Exception {
+		this.context.register(TomcatDataSourceConfiguration.class);
+		this.context.refresh();
+		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+		assertEquals(5000, ds.getTimeBetweenEvictionRunsMillis());
+		assertEquals(60000, ds.getMinEvictableIdleTimeMillis());
 	}
 
 	@Test(expected = BeanCreationException.class)

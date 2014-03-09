@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Configuration for a Tomcat database pool. The Tomcat pool provides superior performance
  * and tends not to deadlock in high volume environments.
- * 
+ *
  * @author Dave Syer
  * @see DataSourceAutoConfiguration
  */
@@ -51,6 +51,9 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setMinIdle(getMinIdle());
 		this.pool.setTestOnBorrow(isTestOnBorrow());
 		this.pool.setTestOnReturn(isTestOnReturn());
+		this.pool.setTestWhileIdle(isTestWhileIdle());
+		this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
+		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
 		this.pool.setValidationQuery(getValidationQuery());
 		return this.pool;
 	}
@@ -62,4 +65,13 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		}
 	}
 
+	@Override
+	protected int getDefaultTimeBetweenEvictionRunsMillis() {
+		return 5000;
+	}
+
+	@Override
+	protected int getDefaultMinEvictableIdleTimeMillis() {
+		return 60000;
+	}
 }
