@@ -57,7 +57,9 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
 		this.pool.setValidationQuery(getValidationQuery());
 		this.pool.setMaxWait(getMaxWaitMillis());
-		this.pool.setJdbcInterceptors(jdbcInterceptors);
+		if (jdbcInterceptors != null) {
+			this.pool.setJdbcInterceptors(this.jdbcInterceptors);
+		}
 		return this.pool;
 	}
 
