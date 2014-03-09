@@ -55,6 +55,7 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
 		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
 		this.pool.setValidationQuery(getValidationQuery());
+		this.pool.setMaxWait(getMaxWaitMillis());
 		return this.pool;
 	}
 
@@ -73,5 +74,10 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 	@Override
 	protected int getDefaultMinEvictableIdleTimeMillis() {
 		return 60000;
+	}
+
+	@Override
+	protected int getDefaultMaxWaitMillis() {
+		return 30000;
 	}
 }

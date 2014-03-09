@@ -62,6 +62,7 @@ public class TomcatDataSourceConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxWait:1234");
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
@@ -70,6 +71,7 @@ public class TomcatDataSourceConfigurationTests {
 		assertEquals(true, ds.isTestOnReturn());
 		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
+		assertEquals(1234, ds.getMaxWait());
 	}
 
 	@Test
@@ -79,6 +81,7 @@ public class TomcatDataSourceConfigurationTests {
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertEquals(5000, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(60000, ds.getMinEvictableIdleTimeMillis());
+		assertEquals(30000, ds.getMaxWait());
 	}
 
 	@Test(expected = BeanCreationException.class)
