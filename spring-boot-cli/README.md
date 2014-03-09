@@ -19,7 +19,7 @@ Cutting edge [snapshot distributions](http://repo.spring.io/snapshot/org/springf
 are also available.
 
 Once downloaded, follow the
-[INSTALL](spring-boot-cli/src/main/content/INSTALL.txt) instructions
+[INSTALL](https://github.com/spring-projects/spring-boot/blob/master/spring-boot-cli/src/main/content/INSTALL.txt) instructions
 from the unpacked archive. In summary: there is a `spring` script
 (`spring.bat` for Windows) in a `bin/` directory in the `.zip` file,
 or alternatively you can use `java -jar` with the `.jar` file (the
