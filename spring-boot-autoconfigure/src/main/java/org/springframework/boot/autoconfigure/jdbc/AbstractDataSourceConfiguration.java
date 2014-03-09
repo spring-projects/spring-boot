@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Base class for configuration of a database pool.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(name = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
@@ -54,6 +54,12 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 	private boolean testOnBorrow = false;
 
 	private boolean testOnReturn = false;
+
+	private boolean testWhileIdle = false;
+
+	private int timeBetweenEvictionRunsMillis = getDefaultTimeBetweenEvictionRunsMillis();
+
+	private int minEvictableIdleTimeMillis = getDefaultMinEvictableIdleTimeMillis();
 
 	private ClassLoader classLoader;
 
@@ -164,6 +170,18 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		this.testOnReturn = testOnReturn;
 	}
 
+	public void setTestWhileIdle(boolean testWhileIdle) {
+		this.testWhileIdle = testWhileIdle;
+	}
+
+	public void setTimeBetweenEvictionRunsMillis(int timeBetweenEvictionRunsMillis) {
+		this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+	}
+
+	public void setMinEvictableIdleTimeMillis(int minEvictableIdleTimeMillis) {
+		this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+	}
+
 	public int getInitialSize() {
 		return this.initialSize;
 	}
@@ -191,5 +209,17 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 	protected boolean isTestOnReturn() {
 		return this.testOnReturn;
 	}
+
+	protected boolean isTestWhileIdle() {
+		return this.testWhileIdle;
+	}
+
+	protected int getTimeBetweenEvictionRunsMillis() { return this.timeBetweenEvictionRunsMillis; }
+
+	protected int getMinEvictableIdleTimeMillis() { return this.minEvictableIdleTimeMillis; }
+
+	protected abstract int getDefaultTimeBetweenEvictionRunsMillis();
+
+	protected abstract int getDefaultMinEvictableIdleTimeMillis();
 
 }
