@@ -16,6 +16,8 @@
 
 package sample.actuator;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +42,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for endpoints configuration.
@@ -78,6 +78,12 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 		testError();
 	}
 
+	@Test
+	public void testCustomContextPath() throws Exception {
+		start(SampleActuatorApplication.class, "--management.contextPath=/admin");
+		testHealth();
+	}
+
 	private void testError() {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
@@ -87,6 +93,18 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 		Map<String, Object> body = entity.getBody();
 		assertEquals("None", body.get("error"));
 		assertEquals(999, body.get("status"));
+	}
+
+	private void testHealth() {
+		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+				"http://localhost:8080/admin/health", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		String body = entity.getBody();
+		assertEquals("ok", body);
+	}
+
+	private RestTemplate getRestTemplate() {
+		return getRestTemplate(null, null);
 	}
 
 	private RestTemplate getRestTemplate(final String username, final String password) {
@@ -122,5 +140,4 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 		return restTemplate;
 
 	}
-
 }

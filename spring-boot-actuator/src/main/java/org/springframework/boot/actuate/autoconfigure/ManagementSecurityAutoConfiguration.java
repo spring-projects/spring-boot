@@ -218,7 +218,7 @@ public class ManagementSecurityAutoConfiguration {
 		List<String> paths = new ArrayList<String>(endpoints.size());
 		for (MvcEndpoint endpoint : endpoints) {
 			if (endpoint.isSensitive() == secure) {
-				paths.add(endpoint.getPath());
+				paths.add(endpointHandlerMapping.getPrefix() + endpoint.getPath());
 			}
 		}
 		return paths.toArray(new String[paths.size()]);
