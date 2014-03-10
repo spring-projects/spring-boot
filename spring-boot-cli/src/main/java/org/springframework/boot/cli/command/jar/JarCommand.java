@@ -65,8 +65,8 @@ import org.springframework.util.Assert;
  */
 public class JarCommand extends OptionParsingCommand {
 
-	private static final String[] DEFAULT_INCLUDES = { "public/**", "static/**",
-			"resources/**", "META-INF/**", "*" };
+	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**",
+			"static/**", "templates/**", "META-INF/**", "*" };
 
 	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
 			"target/**", "**/*.jar", "**/*.groovy" };
