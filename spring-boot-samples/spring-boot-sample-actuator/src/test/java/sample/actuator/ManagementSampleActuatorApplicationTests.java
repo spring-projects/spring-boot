@@ -51,7 +51,7 @@ public class ManagementSampleActuatorApplicationTests {
 	@BeforeClass
 	public static void start() throws Exception {
 		final String[] args = new String[] { "--server.port=" + port,
-				"--management.port=" + managementPort, "--management.address=127.0.0.1" };
+				"--management.port=" + managementPort, "--management.address=127.0.0.1", "--management.contextPath=/admin" };
 		Future<ConfigurableApplicationContext> future = Executors
 				.newSingleThreadExecutor().submit(
 						new Callable<ConfigurableApplicationContext>() {
@@ -82,7 +82,7 @@ public class ManagementSampleActuatorApplicationTests {
 	@Test
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/health", String.class);
+				"http://localhost:" + managementPort + "/admin/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}

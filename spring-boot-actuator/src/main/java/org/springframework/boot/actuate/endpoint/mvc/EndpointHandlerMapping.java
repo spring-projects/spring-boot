@@ -139,6 +139,13 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	}
 
 	/**
+	 * @return the prefix used in mappings
+	 */
+	public String getPrefix() {
+		return this.prefix;
+	}
+
+	/**
 	 * Sets if this mapping is disabled.
 	 */
 	public void setDisabled(boolean disabled) {
@@ -158,4 +165,5 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	public Set<? extends MvcEndpoint> getEndpoints() {
 		return this.endpoints;
 	}
+
 }
