@@ -61,6 +61,8 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	private int minEvictableIdleTimeMillis = getDefaultMinEvictableIdleTimeMillis();
 
+	private int maxWaitMillis = getDefaultMaxWaitMillis();
+
 	private ClassLoader classLoader;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
@@ -182,6 +184,8 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
 	}
 
+	public void setMaxWait(int maxWaitMillis) { this.maxWaitMillis = maxWaitMillis; }
+
 	public int getInitialSize() {
 		return this.initialSize;
 	}
@@ -218,8 +222,11 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	protected int getMinEvictableIdleTimeMillis() { return this.minEvictableIdleTimeMillis; }
 
+	protected int getMaxWaitMillis() { return this.maxWaitMillis; }
+
 	protected abstract int getDefaultTimeBetweenEvictionRunsMillis();
 
 	protected abstract int getDefaultMinEvictableIdleTimeMillis();
 
+	protected abstract int getDefaultMaxWaitMillis();
 }
