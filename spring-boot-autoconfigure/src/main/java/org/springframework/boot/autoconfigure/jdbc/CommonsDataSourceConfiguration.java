@@ -71,7 +71,7 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 		this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
 		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
 		this.pool.setValidationQuery(getValidationQuery());
-
+		this.pool.setMaxWait(getMaxWaitMillis());
 		return this.pool;
 	}
 
@@ -95,5 +95,10 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 	@Override
 	protected int getDefaultMinEvictableIdleTimeMillis() {
 		return (int) GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+	}
+
+	@Override
+	protected int getDefaultMaxWaitMillis() {
+		return (int) GenericObjectPool.DEFAULT_MAX_WAIT;
 	}
 }
