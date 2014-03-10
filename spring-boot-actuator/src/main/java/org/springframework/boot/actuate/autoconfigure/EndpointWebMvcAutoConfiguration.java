@@ -97,8 +97,11 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	public EndpointHandlerMapping endpointHandlerMapping() {
 		EndpointHandlerMapping mapping = new EndpointHandlerMapping(mvcEndpoints()
 				.getEndpoints());
-		mapping.setDisabled(ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME);
-		mapping.setPrefix(this.managementServerProperties.getContextPath());
+		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
+		mapping.setDisabled(disabled);
+		if (!disabled) {
+			mapping.setPrefix(this.managementServerProperties.getContextPath());
+		}
 		return mapping;
 	}
 
