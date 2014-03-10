@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 public class TomcatDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
 	private String jdbcInterceptors;
+	private long validationInterval = 30000;
 	private org.apache.tomcat.jdbc.pool.DataSource pool;
 
 	@Bean(destroyMethod = "close")
@@ -56,6 +57,7 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
 		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
 		this.pool.setValidationQuery(getValidationQuery());
+		this.pool.setValidationInterval(this.validationInterval);
 		this.pool.setMaxWait(getMaxWaitMillis());
 		if (jdbcInterceptors != null) {
 			this.pool.setJdbcInterceptors(this.jdbcInterceptors);
@@ -86,4 +88,6 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 	}
 
 	public void setJdbcInterceptors(String jdbcInterceptors) { this.jdbcInterceptors = jdbcInterceptors; }
+
+	public void setValidationInterval(long validationInterval) { this.validationInterval = validationInterval; }
 }
