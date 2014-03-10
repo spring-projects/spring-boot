@@ -53,6 +53,7 @@ public class CommonsDataSourceConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxWait:1234");
 		this.context.refresh();
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
@@ -61,6 +62,7 @@ public class CommonsDataSourceConfigurationTests {
 		assertEquals(true, ds.getTestOnReturn());
 		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
+		assertEquals(1234, ds.getMaxWait());
 	}
 
 	@Test
@@ -70,6 +72,7 @@ public class CommonsDataSourceConfigurationTests {
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
 		assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, ds.getMinEvictableIdleTimeMillis());
+		assertEquals(GenericObjectPool.DEFAULT_MAX_WAIT, ds.getMaxWait());
 	}
 
 }
