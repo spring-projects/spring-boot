@@ -52,8 +52,7 @@ public class RunApp extends DefaultTask {
 			SourceDirectorySet resources = main.getResources();
 			allResources.addAll(resources.getSrcDirs());
 			outputs = main.getOutput().getResourcesDir();
-		}
-		else {
+		} else {
 			outputs = null;
 		}
 
@@ -80,11 +79,16 @@ public class RunApp extends DefaultTask {
 					getLogger().info("Found main: " + mainClass);
 				}
 				if (outputs != null) {
-					// Special case: this file causes logback to worry that it has been
-					// configured twice, so remove it from the target directory...
-					File logback = new File(outputs, "logback.xml");
-					if (logback.exists()) {
-						logback.delete();
+					// remove duplicates from resources and build
+					for (File directory : allResources) {
+						if (directory.isDirectory()) {
+							for (String name : directory.list()) {
+								File file = new File(outputs, name);
+								if (file.exists() && file.canWrite()) {
+									getProject().delete(file);
+								}
+							}
+						}
 					}
 				}
 				exec.exec();
@@ -100,8 +104,7 @@ public class RunApp extends DefaultTask {
 		getLogger().info("Looking for main in: " + main.getOutput().getClassesDir());
 		try {
 			return MainClassFinder.findMainClass(main.getOutput().getClassesDir());
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new IllegalStateException("Cannot find main class", ex);
 		}
 	}

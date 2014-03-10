@@ -37,6 +37,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.FileUtils;
 import org.springframework.boot.loader.tools.AgentAttacher;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
@@ -62,10 +63,7 @@ public class RunMojo extends AbstractMojo {
 
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing or
-	 * resources. Since resources will be added directly, and via the target/classes
-	 * folder they will appear twice if ClassLoader.getResources() is called. In practice
-	 * however most applications call ClassLoader.getResource() which will always return
-	 * the first resource.
+	 * resources.
 	 */
 	@Parameter(property = "run.addResources", defaultValue = "true")
 	private boolean addResources;
@@ -185,6 +183,9 @@ public class RunMojo extends AbstractMojo {
 		catch (MalformedURLException ex) {
 			throw new MojoExecutionException("Unable to build classpath", ex);
 		}
+		catch (IOException ex) {
+			throw new MojoExecutionException("Unable to build classpath", ex);
+		}
 	}
 
 	private void addUserDefinedFolders(List<URL> urls) throws MalformedURLException {
@@ -195,16 +196,25 @@ public class RunMojo extends AbstractMojo {
 		}
 	}
 
-	private void addResources(List<URL> urls) throws MalformedURLException {
+	private void addResources(List<URL> urls) throws MalformedURLException, IOException {
 		if (this.addResources) {
 			for (Resource resource : this.project.getResources()) {
-				urls.add(new File(resource.getDirectory()).toURI().toURL());
-			}
-			// Special case: this file causes logback to worry that it has been configured
-			// twice, so remove it from the target directory...
-			File logback = new File(this.classesDirectory, "logback.xml");
-			if (logback.exists() && logback.canWrite()) {
-				logback.delete();
+				File directory = new File(resource.getDirectory());
+				urls.add(directory.toURI().toURL());
+				if (directory.isDirectory()) {
+					// Remove duplicates from the target directory...
+					for (String name : directory.list()) {
+						File file = new File(this.classesDirectory, name);
+						if (file.exists() && file.canWrite()) {
+							if (file.isDirectory()) {
+								FileUtils.deleteDirectory(file);
+							}
+							else {
+								file.delete();
+							}
+						}
+					}
+				}
 			}
 		}
 	}
