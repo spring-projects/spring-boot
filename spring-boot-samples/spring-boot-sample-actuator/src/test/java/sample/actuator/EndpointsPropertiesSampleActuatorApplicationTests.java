@@ -18,75 +18,37 @@ package sample.actuator;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpRequest;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.security.crypto.codec.Base64;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Integration tests for endpoints configuration.
  * 
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
+@WebAppConfiguration
+@IntegrationTest
+@DirtiesContext
+@ActiveProfiles("endpoints")
 public class EndpointsPropertiesSampleActuatorApplicationTests {
-
-	private ConfigurableApplicationContext context;
-
-	private void start(final Class<?> configuration, final String... args)
-			throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication.run(configuration, args);
-							}
-						});
-		this.context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@After
-	public void stop() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
 
 	@Test
 	public void testCustomErrorPath() throws Exception {
-		start(SampleActuatorApplication.class, "--error.path=/oops");
-		testError();
-	}
-
-	@Test
-	public void testCustomContextPath() throws Exception {
-		start(SampleActuatorApplication.class, "--management.contextPath=/admin");
-		testHealth();
-	}
-
-	private void testError() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", "password").getForEntity(
+		ResponseEntity<Map> entity = RestTemplates.get("user", "password").getForEntity(
 				"http://localhost:8080/oops", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -95,49 +57,12 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 		assertEquals(999, body.get("status"));
 	}
 
-	private void testHealth() {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+	@Test
+	public void testCustomContextPath() throws Exception {
+		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
 				"http://localhost:8080/admin/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
 		assertEquals("ok", body);
-	}
-
-	private RestTemplate getRestTemplate() {
-		return getRestTemplate(null, null);
-	}
-
-	private RestTemplate getRestTemplate(final String username, final String password) {
-
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-
-		if (username != null) {
-
-			interceptors.add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					request.getHeaders().add(
-							"Authorization",
-							"Basic "
-									+ new String(Base64
-											.encode((username + ":" + password)
-													.getBytes())));
-					return execution.execute(request, body);
-				}
-			});
-		}
-
-		RestTemplate restTemplate = new RestTemplate(
-				new InterceptingClientHttpRequestFactory(
-						new SimpleClientHttpRequestFactory(), interceptors));
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
 	}
 }

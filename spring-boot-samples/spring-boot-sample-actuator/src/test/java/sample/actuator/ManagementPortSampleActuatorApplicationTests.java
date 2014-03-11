@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.RestTemplates;
@@ -33,9 +34,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * Integration tests for switching off management endpoints.
+ * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  */
@@ -44,17 +46,23 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext
-@ActiveProfiles("nomanagement")
-public class NoManagementSampleActuatorApplicationTests {
+@ActiveProfiles("management-port")
+public class ManagementPortSampleActuatorApplicationTests {
 
 	@Autowired
 	private SecurityProperties security;
 
+	@Value("${server.port}")
+	private int port = 9010;
+
+	@Value("${management.port}")
+	private int managementPort = 9011;
+
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword()).getForEntity(
-				"http://localhost:8080", Map.class);
+		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
+				"http://localhost:" + port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -62,16 +70,43 @@ public class NoManagementSampleActuatorApplicationTests {
 	}
 
 	@Test
-	public void testMetricsNotAvailable() throws Exception {
+	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword()).getForEntity(
-				"http://localhost:8080/metrics", Map.class);
-		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
+		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/metrics", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+	}
+
+	@Test
+	public void testHealth() throws Exception {
+		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/health", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertEquals("ok", entity.getBody());
+	}
+
+	@Test
+	public void testErrorPage() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+				"http://localhost:" + managementPort + "/error", Map.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> body = entity.getBody();
+		assertEquals(999, body.get("status"));
 	}
 
 	private String getPassword() {
 		return security.getUser().getPassword();
+	}
+
+	private RestTemplate getRestTemplate() {
+		return RestTemplates.get();
+	}
+
+	private RestTemplate getRestTemplate(final String username, final String password) {
+		return RestTemplates.get(username, password);
 	}
 
 }

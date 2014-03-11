@@ -16,26 +16,22 @@
 
 package sample.actuator;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
@@ -43,36 +39,18 @@ import static org.junit.Assert.assertFalse;
  * 
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes=SampleActuatorApplication.class)
+@WebAppConfiguration
+@IntegrationTest
+@DirtiesContext
+@ActiveProfiles("unsecure")
 public class UnsecureSampleActuatorApplicationTests {
-
-	private static ConfigurableApplicationContext context;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication.run(
-										SampleActuatorApplication.class,
-										"--security.basic.enabled=false");
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
 
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
 				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -80,17 +58,6 @@ public class UnsecureSampleActuatorApplicationTests {
 		assertEquals("Hello Phil", body.get("message"));
 		assertFalse("Wrong headers: " + entity.getHeaders(), entity.getHeaders()
 				.containsKey("Set-Cookie"));
-	}
-
-	private RestTemplate getRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
 	}
 
 }

@@ -16,70 +16,43 @@
 
 package sample.actuator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.security.crypto.codec.Base64;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes=SampleActuatorApplication.class)
+@WebAppConfiguration
+@IntegrationTest
+@DirtiesContext
 public class ShutdownSampleActuatorApplicationTests {
 
-	private static ConfigurableApplicationContext context;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(SampleActuatorApplication.class);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Autowired
+	private SecurityProperties security;
 
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
+		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword()).getForEntity(
 				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -90,7 +63,7 @@ public class ShutdownSampleActuatorApplicationTests {
 	@Test
 	public void testShutdown() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword())
+		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword())
 				.postForEntity("http://localhost:8080/shutdown", null, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -100,41 +73,7 @@ public class ShutdownSampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return context.getBean(SecurityProperties.class).getUser().getPassword();
-	}
-
-	private RestTemplate getRestTemplate(final String username, final String password) {
-
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-
-		if (username != null) {
-
-			interceptors.add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					request.getHeaders().add(
-							"Authorization",
-							"Basic "
-									+ new String(Base64
-											.encode((username + ":" + password)
-													.getBytes())));
-					return execution.execute(request, body);
-				}
-			});
-		}
-
-		RestTemplate restTemplate = new RestTemplate(
-				new InterceptingClientHttpRequestFactory(
-						new SimpleClientHttpRequestFactory(), interceptors));
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
+		return security.getUser().getPassword();
 	}
 
 }
