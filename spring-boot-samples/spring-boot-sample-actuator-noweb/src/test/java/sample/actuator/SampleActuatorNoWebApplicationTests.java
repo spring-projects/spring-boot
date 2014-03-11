@@ -16,53 +16,32 @@
 
 package sample.actuator;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
-import org.springframework.context.ConfigurableApplicationContext;
-
 import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Basic integration tests for service demo application.
  * 
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes=SampleActuatorNoWebApplication.class)
+@DirtiesContext
 public class SampleActuatorNoWebApplicationTests {
-
-	private static ConfigurableApplicationContext context;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(SampleActuatorNoWebApplication.class);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	
+	@Autowired
+	private MetricsEndpoint endpoint;
 
 	@Test
 	public void endpointsExist() throws Exception {
-		assertNotNull(context.getBean(MetricsEndpoint.class));
+		assertNotNull(endpoint);
 	}
 
 }

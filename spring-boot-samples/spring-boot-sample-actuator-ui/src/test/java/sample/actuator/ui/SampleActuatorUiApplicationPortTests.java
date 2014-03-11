@@ -16,64 +16,50 @@
 
 package sample.actuator.ui;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import java.util.Map;
+
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
-
-import static org.junit.Assert.assertEquals;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes=SampleActuatorUiApplication.class)
+@WebAppConfiguration
+@IntegrationTest
+@DirtiesContext
+@ActiveProfiles("management-port")
 public class SampleActuatorUiApplicationPortTests {
 
-	private static ConfigurableApplicationContext context;
+	@Autowired
+	private SecurityProperties security;
 
-	private static int port = 9010;
-	private static int managementPort = 9011;
+	@Value("${server.port}")
+	private int port = 9010;
 
-	@BeforeClass
-	public static void start() throws Exception {
-		final String[] args = new String[] { "--server.port=" + port,
-				"--management.port=" + managementPort, "--management.address=127.0.0.1" };
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication.run(
-										SampleActuatorUiApplication.class, args);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
+	@Value("${management.port}")
+	private int managementPort = 9011;
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
 				"http://localhost:" + port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
@@ -81,29 +67,17 @@ public class SampleActuatorUiApplicationPortTests {
 	@Test
 	public void testMetrics() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
 				"http://localhost:" + managementPort + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
 				"http://localhost:" + managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
-	}
-
-	private RestTemplate getRestTemplate() {
-
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
 	}
 
 }

@@ -18,8 +18,7 @@ package sample.simple;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationContextLoader;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
@@ -28,7 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SampleSimpleApplication.class, loader = SpringApplicationContextLoader.class)
+@SpringApplicationConfiguration(classes = SampleSimpleApplication.class)
 public class SpringTestSampleSimpleApplicationTests {
 
 	@Test
