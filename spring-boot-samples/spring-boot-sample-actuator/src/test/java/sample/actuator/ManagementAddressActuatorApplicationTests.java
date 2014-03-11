@@ -14,39 +14,63 @@
  * limitations under the License.
  */
 
-package sample.tomcat;
+package sample.actuator;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.RestTemplates;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
- * Basic integration tests for demo application.
+ * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=SampleTomcatApplication.class)
+@SpringApplicationConfiguration(classes=SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext
-public class SampleTomcatApplicationTests {
+@ActiveProfiles("management-address")
+public class ManagementAddressActuatorApplicationTests {
+
+	@Autowired
+	private SecurityProperties security;
+
+	@Value("${server.port}")
+	private int port = 9010;
+
+	@Value("${management.port}")
+	private int managementPort = 9011;
 
 	@Test
 	public void testHome() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
+				"http://localhost:" + port, Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+	}
+
+	@Test
+	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
-				"http://localhost:8080", String.class);
+				"http://localhost:" + managementPort + "/admin/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertEquals("Hello World", entity.getBody());
+		assertEquals("ok", entity.getBody());
 	}
 
 }

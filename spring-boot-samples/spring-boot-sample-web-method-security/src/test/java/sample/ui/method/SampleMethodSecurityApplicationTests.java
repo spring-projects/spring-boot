@@ -16,70 +16,47 @@
 
 package sample.ui.method;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
  * 
  * @author Dave Syer
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes=SampleMethodSecurityApplication.class)
+@WebAppConfiguration
+@IntegrationTest
+@DirtiesContext
 public class SampleMethodSecurityApplicationTests {
-
-	private static ConfigurableApplicationContext context;
-
-	@BeforeClass
-	public static void start() throws Exception {
-		Future<ConfigurableApplicationContext> future = Executors
-				.newSingleThreadExecutor().submit(
-						new Callable<ConfigurableApplicationContext>() {
-							@Override
-							public ConfigurableApplicationContext call() throws Exception {
-								return SpringApplication
-										.run(SampleMethodSecurityApplication.class);
-							}
-						});
-		context = future.get(60, TimeUnit.SECONDS);
-	}
-
-	@AfterClass
-	public static void stop() {
-		if (context != null) {
-			context.close();
-		}
-	}
 
 	@Test
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = getRestTemplate().exchange(
+		ResponseEntity<String> entity = RestTemplates.get().exchange(
 				"http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
 				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
@@ -95,7 +72,7 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("username", "admin");
 		form.set("password", "admin");
 		getCsrf(form, headers);
-		ResponseEntity<String> entity = getRestTemplate().exchange(
+		ResponseEntity<String> entity = RestTemplates.get().exchange(
 				"http://localhost:8080/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
@@ -112,14 +89,14 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("username", "user");
 		form.set("password", "user");
 		getCsrf(form, headers);
-		ResponseEntity<String> entity = getRestTemplate().exchange(
+		ResponseEntity<String> entity = RestTemplates.get().exchange(
 				"http://localhost:8080/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
 		String cookie = entity.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
-		ResponseEntity<String> page = getRestTemplate().exchange(
+		ResponseEntity<String> page = RestTemplates.get().exchange(
 				entity.getHeaders().getLocation(), HttpMethod.GET,
 				new HttpEntity<Void>(headers), String.class);
 		assertEquals(HttpStatus.FORBIDDEN, page.getStatusCode());
@@ -128,7 +105,7 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
-		ResponseEntity<String> page = getRestTemplate().getForEntity(
+		ResponseEntity<String> page = RestTemplates.get().getForEntity(
 				"http://localhost:8080/login", String.class);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
@@ -137,17 +114,6 @@ public class SampleMethodSecurityApplicationTests {
 				.matcher(body);
 		matcher.find();
 		form.set("_csrf", matcher.group(1));
-	}
-
-	private RestTemplate getRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) throws IOException {
-			}
-		});
-		return restTemplate;
-
 	}
 
 }
