@@ -17,22 +17,33 @@
 package org.springframework.boot.test;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.protocol.HttpContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Convenient static factory for {@link RestTemplate} instances that are suitable for
- * integration tests. They are fault tolerant, ignore cookies, and optionally can carry
- * Basic authentication headers.
+ * integration tests. They are fault tolerant, and optionally can carry Basic
+ * authentication headers. If Apache Http Client 4.3.2 or better is available
+ * (recommended) it will be used as the client, and configured to ignore cookies and
+ * redirects.
  * 
  * @author Dave Syer
  */
@@ -80,12 +91,33 @@ public class RestTemplates {
 		RestTemplate restTemplate = new RestTemplate(
 				new InterceptingClientHttpRequestFactory(
 						new SimpleClientHttpRequestFactory(), interceptors));
+		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
+			new HttpComponentsCustomizer().customize(restTemplate);
+		}
 		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			public void handleError(ClientHttpResponse response) throws IOException {
 			}
 		});
 		return restTemplate;
+
+	}
+
+	private static class HttpComponentsCustomizer {
+
+		public void customize(RestTemplate restTemplate) {
+			restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory() {
+				@Override
+				protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
+					HttpClientContext context = HttpClientContext.create();
+					Builder builder = RequestConfig.custom()
+							.setCookieSpec(CookieSpecs.IGNORE_COOKIES)
+							.setAuthenticationEnabled(false).setRedirectsEnabled(false);
+					context.setRequestConfig(builder.build());
+					return context;
+				}
+			});
+		}
 
 	}
 
