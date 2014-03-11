@@ -132,7 +132,7 @@ public class ConfigFileApplicationListener implements
 
 	private void onApplicationEnvironmentPreparedEvent(
 			ConfigurableEnvironment environment, SpringApplication application) {
-		addProperySources(environment);
+		addPropertySources(environment);
 		bindToSpringApplication(environment, application);
 	}
 
@@ -145,7 +145,7 @@ public class ConfigFileApplicationListener implements
 	 * @param environment the environment to add source to
 	 * @see #addPostProcessors(ConfigurableApplicationContext)
 	 */
-	protected void addProperySources(ConfigurableEnvironment environment) {
+	protected void addPropertySources(ConfigurableEnvironment environment) {
 		RandomValuePropertySource.addToEnvironment(environment);
 		try {
 			PropertySource<?> defaultProperties = environment.getPropertySources()
