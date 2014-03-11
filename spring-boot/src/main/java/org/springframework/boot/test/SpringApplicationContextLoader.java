@@ -30,6 +30,7 @@ import org.springframework.boot.context.web.ServletContextApplicationContextInit
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.core.SpringVersion;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
@@ -127,8 +128,11 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
 		Map<String, Object> args = new LinkedHashMap<String, Object>();
-		// Not running an embedded server, just setting up web context
-		args.put("server.port", "-1");
+		if (AnnotationUtils.findAnnotation(mergedConfig.getTestClass(),
+				IntegrationTest.class) == null) {
+			// Not running an embedded server, just setting up web context
+			args.put("server.port", "-1");
+		}
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		args.put("spring.jmx.enabled", "false");
 		return args;
@@ -161,11 +165,15 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webConfig = (WebMergedContextConfiguration) mergedConfig;
-			MockServletContext servletContext = new MockServletContext(
-					webConfig.getResourceBasePath());
-			initializers.add(0, new ServletContextApplicationContextInitializer(
-					servletContext));
-			application.setApplicationContextClass(GenericWebApplicationContext.class);
+			if (AnnotationUtils.findAnnotation(webConfig.getTestClass(),
+					IntegrationTest.class) == null) {
+				MockServletContext servletContext = new MockServletContext(
+						webConfig.getResourceBasePath());
+				initializers.add(0, new ServletContextApplicationContextInitializer(
+						servletContext));
+				application
+						.setApplicationContextClass(GenericWebApplicationContext.class);
+			}
 		}
 	}
 
