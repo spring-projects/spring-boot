@@ -16,11 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.annotation.PreDestroy;
-import javax.sql.DataSource;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.annotation.PreDestroy;
+import javax.sql.DataSource;
 
 /**
  * Configuration for a Tomcat database pool. The Tomcat pool provides superior performance
@@ -32,36 +32,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TomcatDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
-	private String jdbcInterceptors;
-	private long validationInterval = 30000;
 	private org.apache.tomcat.jdbc.pool.DataSource pool;
 
 	@Bean(destroyMethod = "close")
-	public DataSource dataSource() {
+	public DataSource dataSource() throws Exception {
 		this.pool = new org.apache.tomcat.jdbc.pool.DataSource();
 		this.pool.setDriverClassName(getDriverClassName());
-		this.pool.setUrl(getUrl());
 		if (getUsername() != null) {
 			this.pool.setUsername(getUsername());
 		}
 		if (getPassword() != null) {
 			this.pool.setPassword(getPassword());
 		}
-		this.pool.setInitialSize(getInitialSize());
-		this.pool.setMaxActive(getMaxActive());
-		this.pool.setMaxIdle(getMaxIdle());
-		this.pool.setMinIdle(getMinIdle());
-		this.pool.setTestOnBorrow(isTestOnBorrow());
-		this.pool.setTestOnReturn(isTestOnReturn());
-		this.pool.setTestWhileIdle(isTestWhileIdle());
-		this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
-		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
-		this.pool.setValidationQuery(getValidationQuery());
-		this.pool.setValidationInterval(this.validationInterval);
-		this.pool.setMaxWait(getMaxWaitMillis());
-		if (jdbcInterceptors != null) {
-			this.pool.setJdbcInterceptors(this.jdbcInterceptors);
-		}
+		configurePoolUsingJavaBeanProperties(pool);
 		return this.pool;
 	}
 
@@ -71,23 +54,4 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 			this.pool.close();
 		}
 	}
-
-	@Override
-	protected int getDefaultTimeBetweenEvictionRunsMillis() {
-		return 5000;
-	}
-
-	@Override
-	protected int getDefaultMinEvictableIdleTimeMillis() {
-		return 60000;
-	}
-
-	@Override
-	protected int getDefaultMaxWaitMillis() {
-		return 30000;
-	}
-
-	public void setJdbcInterceptors(String jdbcInterceptors) { this.jdbcInterceptors = jdbcInterceptors; }
-
-	public void setValidationInterval(long validationInterval) { this.validationInterval = validationInterval; }
 }
