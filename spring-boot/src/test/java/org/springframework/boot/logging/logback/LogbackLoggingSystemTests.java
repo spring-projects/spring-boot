@@ -51,7 +51,11 @@ public class LogbackLoggingSystemTests {
 	@Before
 	public void setup() {
 		this.logger = new SLF4JLogFactory().getInstance(getClass().getName());
-		new File("/tmp/spring.log").delete();
+		new File(tmpDir() + "/spring.log").delete();
+	}
+
+	private String tmpDir() {
+		return System.getProperty("java.io.tmpdir");
 	}
 
 	@After
@@ -68,8 +72,9 @@ public class LogbackLoggingSystemTests {
 		this.logger.info("Hello world");
 		String output = this.output.toString().trim();
 		assertTrue("Wrong output:\n" + output, output.contains("Hello world"));
-		assertTrue("Wrong output:\n" + output, output.contains("/tmp/spring.log"));
-		assertFalse(new File("/tmp/spring.log").exists());
+		assertTrue("Wrong output (not " + tmpDir() + " :\n" + output,
+				output.contains(tmpDir() + "/tmp.log"));
+		assertFalse(new File(tmpDir() + "/tmp.log").exists());
 	}
 
 	@Test(expected = IllegalStateException.class)
