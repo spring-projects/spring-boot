@@ -18,20 +18,22 @@ package org.springframework.boot.autoconfigure.aop;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.Advice;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
- *
- * <p> {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration}
- * for Spring's  AOP support. Equivalent to enabling {@link org.springframework.context.annotation.EnableAspectJAutoProxy}
- * in your configuration. The configuration will not be activated if {@literal spring.aop.auto=false}.
- * The {@literal proxyTargetClass} attribute will be {@literal false}, by default, but can be overridden by
- * specifying {@literal spring.aop.proxyTargetClass=true}.
- *
+ * 
+ * <p>
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
+ * Auto-configuration} for Spring's AOP support. Equivalent to enabling
+ * {@link org.springframework.context.annotation.EnableAspectJAutoProxy} in your
+ * configuration. The configuration will not be activated if
+ * {@literal spring.aop.auto=false}. The {@literal proxyTargetClass} attribute will be
+ * {@literal false}, by default, but can be overridden by specifying
+ * {@literal spring.aop.proxyTargetClass=true}.
+ * 
  * @author Dave Syer
  * @author Josh Long
  * @see EnableAspectJAutoProxy

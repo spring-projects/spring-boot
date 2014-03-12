@@ -29,6 +29,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -75,7 +76,7 @@ public class ServerPropertiesTests {
 	public void testCustomizeTomcat() throws Exception {
 		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
-		verify(factory).setContextPath("");
+		verify(factory, times(0)).setContextPath("");
 	}
 
 	@Test
