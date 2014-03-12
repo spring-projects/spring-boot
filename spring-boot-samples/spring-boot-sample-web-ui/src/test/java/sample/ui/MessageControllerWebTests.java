@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * A Basic Spring MVC Test for the Sample Controller"
  * 
  * @author Biju Kunjummen
+ * @author Doo-Hwan, Kwak
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -54,6 +55,13 @@ public class MessageControllerWebTests {
 				.andExpect(status().isMovedTemporarily())
 				.andExpect(header().string("location", RegexMatcher.matches("/[0-9]+")));
 	}
+
+    @Test
+    public void testCreateValidation() throws Exception{
+        this.mockMvc.perform(post("/").param("text", "").param("summary", ""))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("is required")));
+    }
 
 	private static class RegexMatcher extends TypeSafeMatcher<String> {
 		private final String regex;
