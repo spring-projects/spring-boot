@@ -53,8 +53,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	private Integer sessionTimeout;
 
-	@NotNull
-	private String contextPath = "";
+	private String contextPath;
 
 	@NotNull
 	private String servletPath = "/";
