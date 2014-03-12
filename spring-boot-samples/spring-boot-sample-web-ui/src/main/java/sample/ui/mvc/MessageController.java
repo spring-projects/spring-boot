@@ -30,6 +30,7 @@ import sample.ui.MessageRepository;
 
 /**
  * @author Rob Winch
+ * @author Doo-Hwan, Kwak
  */
 @Controller
 @RequestMapping("/")
@@ -57,7 +58,7 @@ public class MessageController {
 		return "messages/form";
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(params = "form", method = RequestMethod.POST)
 	public ModelAndView create(@Valid Message message, BindingResult result,
 			RedirectAttributes redirect) {
 		if (result.hasErrors()) {
