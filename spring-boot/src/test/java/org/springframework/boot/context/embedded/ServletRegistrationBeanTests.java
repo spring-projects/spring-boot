@@ -38,6 +38,7 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -77,6 +78,16 @@ public class ServletRegistrationBeanTests {
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);
 		verify(this.registration).setAsyncSupported(true);
 		verify(this.registration).addMapping("/*");
+	}
+
+	@Test
+	public void startupWithDoubleRegistration() throws Exception {
+		ServletRegistrationBean bean = new ServletRegistrationBean(this.servlet);
+		given(this.servletContext.addServlet(anyString(), (Servlet) anyObject()))
+				.willReturn(null);
+		bean.onStartup(this.servletContext);
+		verify(this.servletContext).addServlet("mockServlet", this.servlet);
+		verify(this.registration, times(0)).setAsyncSupported(true);
 	}
 
 	@Test
