@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JmsTemplateAutoConfiguration}.
- * 
+ *
  * @author Greg Turnquist
  */
 public class JmsTemplateAutoConfigurationTests {
@@ -157,7 +157,7 @@ public class JmsTemplateAutoConfigurationTests {
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.activemq.inMemory:false",
-				"spring.activemq.brokerURL:tcp://remote-host:10000");
+				"spring.activemq.brokerUrl:tcp://remote-host:10000");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
@@ -215,7 +215,7 @@ public class JmsTemplateAutoConfigurationTests {
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true",
 				"spring.activemq.inMemory:false",
-				"spring.activemq.brokerURL:tcp://remote-host:10000");
+				"spring.activemq.brokerUrl:tcp://remote-host:10000");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		PooledConnectionFactory pool = this.context
