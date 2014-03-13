@@ -1,0 +1,42 @@
+= Spring Boot Reference Guide
+Phillip Webb; Dave Syer; Josh Long;
+:doctype: book
+:toc:
+:toclevels: 4
+:source-highlighter: prettify
+:numbered:
+:icons: font
+:spring-boot-repo: snapshot
+:github-tag: master
+:spring-boot-docs-version: current
+:github-repo: spring-projects/spring-boot
+:github-raw: http://raw.github.com/{github-repo}/{github-tag}
+:github-code: http://github.com/{github-repo}/tree/{github-tag}
+:sc-ext: java
+:sc-spring-boot: {github-code}/spring-boot/src/main/java/org/springframework/boot
+:sc-spring-boot-autoconfigure: {github-code}/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
+:sc-spring-boot-actuator: {github-code}/spring-boot-actuator/src/main/java/org/springframework/boot/actuate
+:sc-spring-boot-cli: {github-code}/spring-boot-cli/src/main/java/org/springframework/boot/cli
+:dc-ext: html
+:dc-root: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/api
+:dc-spring-boot: {dc-root}/org/springframework/boot
+:dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
+:dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
+:spring-reference: http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle
+:spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
+:spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
+:spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
+// ======================================================================================
+
+include::documentation-overview.adoc[]
+include::getting-started.adoc[]
+include::using-spring-boot.adoc[]
+include::spring-boot-features.adoc[]
+include::production-ready-features.adoc[]
+include::cloud-deployment.adoc[]
+include::spring-boot-cli.adoc[]
+include::build-tool-plugins.adoc[]
+include::howto.adoc[]
+include::appendix.adoc[]
+
+// ======================================================================================

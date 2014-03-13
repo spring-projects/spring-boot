@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -41,7 +42,6 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<executions>
 							<execution>
@@ -66,8 +66,182 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.asciidoctor</groupId>
+						<artifactId>asciidoctor-maven-plugin</artifactId>
+						<version>0.1.4</version>
+						<executions>
+							<execution>
+								<id>generate-docbook</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>process-asciidoc</goal>
+								</goals>
+								<configuration>
+									<sourceDocumentName>index.adoc</sourceDocumentName>
+									<backend>docbook5</backend>
+									<doctype>book</doctype>
+									<attributes>
+										<docinfo>true</docinfo>
+										<spring-boot-version>${project.version}</spring-boot-version>
+										<spring-boot-docs-version>${project.version}</spring-boot-docs-version>
+										<spring-boot-repo>${spring-boot-repo}</spring-boot-repo>
+										<github-tag>${github-tag}</github-tag>
+									</attributes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>com.agilejava.docbkx</groupId>
+						<artifactId>docbkx-maven-plugin</artifactId>
+						<version>2.0.15</version>
+						<configuration>
+							<sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
+							<includes>index.xml</includes>
+							<xincludeSupported>true</xincludeSupported>
+							<chunkedOutput>false</chunkedOutput>
+							<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
+							<useExtensions>1</useExtensions>
+							<highlightSource>1</highlightSource>
+							<highlightXslthlConfig>${basedir}/src/main/docbook/xsl/xslthl-config.xml</highlightXslthlConfig>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>net.sf.xslthl</groupId>
+								<artifactId>xslthl</artifactId>
+								<version>2.1.0</version>
+							</dependency>
+							<dependency>
+								<groupId>net.sf.docbook</groupId>
+								<artifactId>docbook-xml</artifactId>
+								<version>5.0-all</version>
+								<classifier>resources</classifier>
+								<type>zip</type>
+								<scope>runtime</scope>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>html-single</id>
+								<goals>
+									<goal>generate-html</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl</htmlCustomization>
+									<targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
+									<postProcess>
+										<copy todir="${basedir}/target/contents/reference/htmlsingle">
+											<fileset dir="${basedir}/target/docbook/htmlsingle">
+												<include name="**/*.html" />
+											</fileset>
+										</copy>
+										<copy todir="${basedir}/target/contents/reference/htmlsingle">
+											<fileset dir="${basedir}/src/main/docbook">
+												<include name="**/*.css" />
+												<include name="**/*.png" />
+												<include name="**/*.gif" />
+												<include name="**/*.jpg" />
+											</fileset>
+										</copy>
+									</postProcess>
+								</configuration>
+							</execution>
+							<execution>
+								<id>html</id>
+								<goals>
+									<goal>generate-html</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl</htmlCustomization>
+									<targetDirectory>${basedir}/target/docbook/html</targetDirectory>
+									<chunkedOutput>true</chunkedOutput>
+									<postProcess>
+										<copy todir="${basedir}/target/contents/reference/html">
+											<fileset dir="${basedir}/target/docbook/html">
+												<include name="**/*.html" />
+											</fileset>
+										</copy>
+										<copy todir="${basedir}/target/contents/reference/html">
+											<fileset dir="${basedir}/src/main/docbook">
+												<include name="**/*.css" />
+												<include name="**/*.png" />
+												<include name="**/*.gif" />
+												<include name="**/*.jpg" />
+											</fileset>
+										</copy>
+									</postProcess>
+								</configuration>
+							</execution>
+							<execution>
+								<id>pdf</id>
+								<goals>
+									<goal>generate-pdf</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
+									<targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
+									<postProcess>
+										<copy todir="${basedir}/target/contents/reference">
+											<fileset dir="${basedir}/target/docbook">
+												<include name="**/*.pdf" />
+											</fileset>
+										</copy>
+										<move file="${basedir}/target/contents/reference/pdf/index.pdf"
+											tofile="${basedir}/target/contents/reference/pdf/spring-boot-reference.pdf" />
+									</postProcess>
+								</configuration>
+							</execution>
+							<execution>
+								<id>epub</id>
+								<goals>
+									<goal>generate-epub3</goal>
+								</goals>
+								<phase>generate-resources</phase>
+								<configuration>
+									<epubCustomization>${basedir}/src/main/docbook/xsl/epub.xsl</epubCustomization>
+									<targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
+									<postProcess>
+										<copy todir="${basedir}/target/contents/reference/epub">
+											<fileset dir="${basedir}/target/docbook">
+												<include name="**/*.epub" />
+											</fileset>
+										</copy>
+										<move file="${basedir}/target/contents/reference/epub/index.epub"
+											tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
+									</postProcess>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<dependencies>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<groupId>ant</groupId>
+										<artifactId>ant</artifactId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-nodeps</artifactId>
+								<version>1.8.1</version>
+							</dependency>
+							<dependency>
+								<groupId>org.tigris.antelope</groupId>
+								<artifactId>antelopetasks</artifactId>
+								<version>3.2.10</version>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<id>package-and-attach-docs-zip</id>
@@ -77,10 +251,42 @@
 								</goals>
 								<configuration>
 									<target>
-										<zip destfile="${project.build.directory}/${project.name}-${project.version}.zip">
-											<zipfileset src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar" prefix="api" />
+										<zip
+											destfile="${project.build.directory}/${project.name}-${project.version}.zip">
+											<zipfileset
+												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
+												prefix="api" />
+											<fileset dir="${project.build.directory}/contents" />
 										</zip>
-
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>setup-maven-properties</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<exportAntProperties>true</exportAntProperties>
+									<target>
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+										<var name="version-type" value="${project.version}" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<stringutil string="${version-type}" property="spring-boot-repo">
+											<lowercase />
+										</stringutil>
+										<var name="github-tag" value="v1.0.0.RELEASE" />
+										<propertyregex property="github-tag" override="true"
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
 									</target>
 								</configuration>
 							</execution>
