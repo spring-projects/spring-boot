@@ -62,6 +62,11 @@ public class DispatcherServletAutoConfiguration {
 	 */
 	public static final String DEFAULT_DISPATCHER_SERVLET_BEAN_NAME = "dispatcherServlet";
 
+	/*
+	 * The bean name for a ServletRegistrationBean for the DispatcherServlet "/"
+	 */
+	public static final String DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME = "dispatcherServletRegistration";
+
 	@Configuration
 	@Conditional(DefaultDispatcherServletCondition.class)
 	@ConditionalOnClass(ServletRegistration.class)
@@ -78,10 +83,11 @@ public class DispatcherServletAutoConfiguration {
 			return new DispatcherServlet();
 		}
 
-		@Bean
+		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		public ServletRegistrationBean dispatcherServletRegistration() {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
 					dispatcherServlet(), this.server.getServletPath());
+			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			if (this.multipartConfig != null) {
 				registration.setMultipartConfig(this.multipartConfig);
 			}
@@ -97,6 +103,17 @@ public class DispatcherServletAutoConfiguration {
 				AnnotatedTypeMetadata metadata) {
 
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+
+			ConditionOutcome outcome = checkServlets(beanFactory);
+
+			if (!outcome.isMatch()) {
+				return outcome;
+			}
+
+			return checkServletRegistrations(beanFactory);
+		}
+
+		private ConditionOutcome checkServlets(ConfigurableListableBeanFactory beanFactory) {
 			List<String> servlets = Arrays.asList(beanFactory.getBeanNamesForType(
 					DispatcherServlet.class, false, false));
 			boolean containsDispatcherBean = beanFactory
@@ -117,9 +134,46 @@ public class DispatcherServletAutoConfiguration {
 				return ConditionOutcome.noMatch("found non-DispatcherServlet named "
 						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			}
+
 			return ConditionOutcome
 					.match("one or more DispatcherServlets found and none is named "
 							+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+
+		}
+
+		/**
+		 */
+		protected ConditionOutcome checkServletRegistrations(
+				ConfigurableListableBeanFactory beanFactory) {
+
+			List<String> registrations = Arrays.asList(beanFactory.getBeanNamesForType(
+					ServletRegistrationBean.class, false, false));
+			boolean containsDispatcherRegistrationBean = beanFactory
+					.containsBean(DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+
+			if (registrations.isEmpty()) {
+				if (containsDispatcherRegistrationBean) {
+					return ConditionOutcome
+							.noMatch("found no ServletRegistrationBean but a non-ServletRegistrationBean named "
+									+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+				}
+				return ConditionOutcome.match("no ServletRegistrationBean found");
+			}
+
+			if (registrations.contains(DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)) {
+				return ConditionOutcome.noMatch("found ServletRegistrationBean named "
+						+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+			}
+			if (containsDispatcherRegistrationBean) {
+				return ConditionOutcome
+						.noMatch("found non-ServletRegistrationBean named "
+								+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+			}
+
+			return ConditionOutcome
+					.match("one or more ServletRegistrationBeans is found and none is named "
+							+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+
 		}
 
 	}

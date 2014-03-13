@@ -55,6 +55,21 @@ public class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
+	public void registrationOverride() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(CustomDispatcherRegistration.class,
+				ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		this.context.setServletContext(new MockServletContext());
+		this.context.refresh();
+		ServletRegistrationBean registration = this.context
+				.getBean(ServletRegistrationBean.class);
+		assertEquals("[/foo]", registration.getUrlMappings().toString());
+		assertEquals("customDispatcher", registration.getServletName());
+		assertEquals(0, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+	}
+
+	@Test
 	public void servletPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.setServletContext(new MockServletContext());
@@ -93,6 +108,17 @@ public class DispatcherServletAutoConfigurationTests {
 			return factory.createMultipartConfig();
 		}
 
+	}
+
+	@Configuration
+	protected static class CustomDispatcherRegistration {
+		@Bean
+		public ServletRegistrationBean dispatcherServletRegistration() {
+			ServletRegistrationBean registration = new ServletRegistrationBean(
+					new DispatcherServlet(), "/foo");
+			registration.setName("customDispatcher");
+			return registration;
+		}
 	}
 
 }
