@@ -26,6 +26,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRegistration.Dynamic;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -156,8 +157,15 @@ public class ServletRegistrationBean extends RegistrationBean {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.servlet, "Servlet must not be null");
-		logger.info("Mapping servlet: '" + getServletName() + "' to " + this.urlMappings);
-		configure(servletContext.addServlet(getServletName(), this.servlet));
+		String name = getServletName();
+		logger.info("Mapping servlet: '" + name + "' to " + this.urlMappings);
+		Dynamic added = servletContext.addServlet(name, this.servlet);
+		if (added == null) {
+			logger.info("Servlet " + name
+					+ " was not registered (possibly already registered?)");
+			return;
+		}
+		configure(added);
 	}
 
 	/**

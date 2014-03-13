@@ -230,7 +230,14 @@ public class FilterRegistrationBean extends RegistrationBean {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		Assert.notNull(this.filter, "Filter must not be null");
-		configure(servletContext.addFilter(getOrDeduceName(this.filter), this.filter));
+		String name = getOrDeduceName(this.filter);
+		FilterRegistration.Dynamic added = servletContext.addFilter(name, this.filter);
+		if (added == null) {
+			logger.info("Filter " + name
+					+ " was not registered (possibly already registered?)");
+			return;
+		}
+		configure(added);
 	}
 
 	/**
