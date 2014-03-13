@@ -28,7 +28,14 @@ Phillip Webb; Dave Syer;
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
 // ======================================================================================
 
-= Spring Boot
-== Reference Documentation
+include::documentation-overview.adoc[]
+include::getting-started.adoc[]
+include::using-spring-boot.adoc[]
+include::spring-boot-features.adoc[]
+include::production-ready-features.adoc[]
+include::spring-boot-cli.adoc[]
+include::build-tool-plugins.adoc[]
+include::howto.adoc[]
+include::appendix.adoc[]
 
 // ======================================================================================
