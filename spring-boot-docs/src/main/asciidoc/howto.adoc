@@ -1,0 +1,17 @@
+[[howto]]
+= ``How-to'' guides
+
+[partintro]
+--
+This section provides answers to some common '``how do I do that...''' type of questions
+that often arise when using Spring Boot. This is by no means an exhaustive list, but it
+does cover quite a lot.
+
+If you are having a specific problem that we don't cover here, you might want to check out
+http://stackoverflow.com/tags/spring-boot[stackoverflow.com] to see if someone has
+already provided an answer; this is also a great place to ask new questions (please use
+the `spring-boot` tag).
+
+We're also more than happy to extend this section; If you want to add a ``how-to'' you
+can send us a {github-code}[pull request].
+--

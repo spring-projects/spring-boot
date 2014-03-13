@@ -1,0 +1,597 @@
+[[using-boot]]
+= Using Spring Boot
+
+[partintro]
+--
+This section goes into more detail about how you should use Spring Boot. It covers topics
+such as build systems, auto-configuration and run/deployment options. We also cover some
+Spring Boot ``best practices''. Although there is nothing particularly special about
+Spring Boot (it is just another library that you can consume). There are a few
+recommendations that, when followed, will make your development process just a
+little easier.
+
+If you're just starting out with Spring Boot, you should probably read the
+``<<getting-started.adoc#getting-started, Getting Started>>'' guide before diving into
+this section.
+--
+
+
+
+[[using-boot-build-systems]]
+== Build systems
+It is strongly recommended that you choose a build system that supports _dependency
+management_, and one that can consume artifacts published to the ``Maven Central''
+repository. We would recommend that you choose Maven or Gradle. It is possible to get
+Spring Boot to work with other build systems (Ant for example), but they will not be
+particularly well supported.
+
+
+
+[[using-boot-maven]]
+=== Maven
+Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible
+defaults. The parent project provides the following features:
+
+* Java 1.6 as the default compiler level.
+* UTF-8 source encoding.
+* A Dependency Management section, allowing you to omit `<version>` tags for common
+  dependencies.
+* Generally useful test dependencies (http://junit.org/[JUnit],
+  https://code.google.com/p/hamcrest/[Hamcrest],
+  https://code.google.com/p/mockito/[Mockito]).
+* Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
+* Sensible plugin configuration (http://mojo.codehaus.org/exec-maven-plugin/[exec plugin],
+  http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
+  https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID],
+  http://maven.apache.org/plugins/maven-shade-plugin/[shade]).
+
+
+
+[[using-boot-maven-parent-pom]]
+==== Inheriting the starter parent
+To configure your project to inherit from the `spring-boot-starter-parent` simply set
+the `parent`:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<!-- Inherit defaults from Spring Boot -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>{spring-boot-version}</version>
+	</parent>
+----
+
+NOTE: You should only need to specify the Spring Boot version number on this dependency.
+if you import additional starters, you can safely omit the version number.
+
+
+
+[[using-boot-maven-your-own-parent]]
+==== Using your own parent POM
+If you don't want to use the Spring Boot starter parent, you can use your own and still
+keep the benefit of the dependency management (but not the plugin management) using a
+`scope=import` dependency:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependencyManagement>
+ 		<dependencies>
+			<dependency>
+				<!-- Import dependency management from Spring Boot -->
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-parent</artifactId>
+				<version>{spring-boot-version}</version>
+		        <scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+----
+
+
+
+[[using-boot-maven-java-version]]
+==== Changing the Java version
+The `spring-boot-starter-parent` chooses fairly conservative Java compatibility. If you
+want to follow our recommendation and use a later Java version you can add a
+`java.version` property:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+----
+
+
+
+[[using-boot-maven-plugin]]
+==== Using the Spring Boot Maven plugin
+Spring Boot includes a <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>>
+that can package the project as an executable jar. Add the plugin to your `<plugins>`
+section if you want to use it:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+NOTE: You only need to add the plugin, there is no need for to configure it unless you
+want to change the settings defined in the parent.
+
+
+
+[[using-boot-gradle]]
+=== Gradle
+Gradle users can directly import ``starter POMs'' in their `dependencies` section. Unlike
+Maven, there is no ``super parent'' to import.
+
+[source,groovy,indent=0,subs="attributes"]
+----
+	apply plugin: 'java'
+
+	repositories { mavenCentral() }
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web:{spring-boot-version}")
+	}
+----
+
+The <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, `spring-boot-gradle-plugin`>>
+is also available and provides tasks to create executable jars and run projects from
+source. It also adds a `ResolutionStrategy` that enables you to omit the version number
+for ``blessed'' dependencies:
+
+[source,groovy,indent=0,subs="attributes"]
+----
+	buildscript {
+		repositories { mavenCentral() }
+		dependencies {
+			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
+		}
+	}
+
+	apply plugin: 'java'
+	apply plugin: 'spring-boot'
+
+	repositories { mavenCentral() }
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web")
+		testCompile("org.springframework.boot:spring-boot-starter-test")
+	}
+----
+
+
+
+[[using-boot-ant]]
+===  Ant
+It is possible to build a Spring Boot project using Apache Ant, however, no special
+support or plugins are provided. Ant scripts can use the Ivy dependency system to import
+starter POMs.
+
+See the ``<<howto.adoc#howto-build-an-executable-archive-with-ant>>'' ``How-to'' for more
+complete instructions.
+
+
+
+[[using-boot-starter-poms]]
+=== Starter POMs
+Starter POMs are a set of convenient dependency descriptors that you can include in your
+application. You get a one-stop-shop for all the Spring and related technology that you
+need, without having to hunt through sample code and copy paste loads of dependency
+descriptors. For example, if you want to get started using Spring and JPA for database
+access, just include the `spring-boot-starter-data-jpa` dependency in your project, and
+you are good to go.
+
+The starters contain a lot of the dependencies that you need to get a project up and
+running quickly and with a consistent, supported set of managed transitive dependencies.
+
+.What's in a name
+****
+All starters follow a similar naming pattern; `spring-boot-starter-*`, where `*` is
+a particular type of application. This naming structure is intended to help when you need
+to find a starter. The Maven integration in many IDEs allow you to search dependencies by
+name. For example, with the appropriate Eclipse or STS plugin installed, you can simply
+hit `ctrl-space` in the POM editor and type ''spring-boot-starter'' for a complete list.
+****
+
+The following application starters are provided by Spring Boot under the
+`org.springframework.boot` group:
+
+.Spring Boot application starters
+|===
+| Name | Description
+
+|`spring-boot-starter`
+|The core Spring Boot starter, including auto-configuration support, logging and YAML.
+
+|`spring-boot-starter-amqp`
+|Support for the ``Advanced Message Queuing Protocol'' via `spring-rabbit`.
+
+|`spring-boot-starter-aop`
+|Full AOP programming support including `spring-aop` and AspectJ.
+
+|`spring-boot-starter-batch`
+|Support for ``Spring Batch'' including HSQLDB database.
+
+|`spring-boot-starter-data-jpa`
+|Full support for the ``Java Persistence API'' including `spring-data-jpa`, `spring-orm`
+and Hibernate.
+
+|`spring-boot-starter-data-mongodb`
+|Support for the MongoDB NoSQL Database, including `spring-data-mongodb`.
+
+|`spring-boot-starter-data-rest`
+|Support for exposing Spring Data repositories over REST via `spring-data-rest-webmvc`.
+
+|`spring-boot-starter-integration`
+|Support for common `spring-integration` modules.
+
+|`spring-boot-starter-jdbc`
+|JDBC Database support.
+
+|`spring-boot-starter-mobile`
+|Support for `spring-mobile`
+
+|`spring-boot-starter-redis`
+|Support for the REDIS key-value data store, including `spring-redis`.
+
+|`spring-boot-starter-security`
+|Support for `spring-security`.
+
+|`spring-boot-starter-test`
+|Support for common test dependencies, including JUnit, Hamcrest and Mockito along with
+ the `spring-test` module.
+
+|`spring-boot-starter-thymeleaf`
+|Support for the Thymeleaf templating engine, including integration with Spring.
+
+|`spring-boot-starter-web`
+|Support for full-stack web development, including Tomcat and `spring-webmvc`.
+
+|`spring-boot-starter-websocket`
+|Support for websocket development with Tomcat.
+|===
+
+In addition to the application starters, the following starters can be used to
+add ``<<production-ready-features.adoc#production-ready, production ready>>'' features.
+
+.Spring Boot production ready starters
+|===
+| Name | Description
+
+|`spring-boot-starter-actuator`
+|Adds production ready features such as metrics and monitoring.
+
+|`spring-boot-starter-shell-remote`
+|Adds remote `ssh` shell support.
+|===
+
+Finally, Spring Boot includes some starters that can be used if you want to exclude or
+swap specific technical facets.
+
+.Spring Boot technical starters
+|===
+| Name | Description
+
+|`spring-boot-starter-jetty`
+|Imports the Jetty HTTP engine (to be used as an alternative to Tomcat)
+
+|`spring-boot-starter-log4j`
+|Support the Log4J looggin framework
+
+|`spring-boot-starter-logging`
+|Import Spring Boot's default logging framework (Logback).
+
+|`spring-boot-starter-tomcat`
+|Import Spring Boot's default HTTP engine (Tomcat).
+|===
+
+
+
+[[using-boot-structuring-your-code]]
+== Structuring your code
+Spring Boot does not require any specific code layout to work, however, there are some
+best practices that help.
+
+
+
+[[using-boot-using-the-default-package]]
+=== Using the ``default'' package
+When a class doesn't include a `package` declaration it is considered to be in the
+``default package''. The use of the ``default package'' is generally discouraged, and
+should be avoided. It can cause particular problems for Spring Boot applications that
+use `@ComponentScan` or `@EntityScan` annotations, since every class from every jar,
+will be read.
+
+TIP: We recommend that you use the follow Java's recommended package naming conventions
+and use a reversed domain name (for example, `com.example.project`).
+
+
+
+[[using-boot-locating-the-main-class]]
+=== Locating the main application class
+We generally recommend that you locate your main application class in a root package
+above other classes. The `@EnableAutoConfiguration` annotation is often placed on your
+main class, and it implicitly defines a base ``search package'' for certain items. For
+example, if you are writing a JPA application, the package of the
+`@EnableAutoConfiguration` annotated class will be used to search for `@Entity` items.
+
+Using a root package also allows the `@ComponentScan` annotation to be used without
+needing to specify a `basePackage` attribute.
+
+Here is a typical layout:
+
+[indent=0]
+----
+	com
+	 +- example
+	     +- myproject
+	         +- Application.java
+	         |
+	         +- domain
+	         |   +- Customer.java
+	         |   +- CustomerRepository.java
+	         |
+	         +- service
+	         |   +- CustomerService.java
+	         |
+	         +- web
+	             +- CustomerController.java
+----
+
+The `Application.java` file would declare the `main` method, along with the basic
+`@Configuration`.
+
+[source,java,indent=0]
+----
+	package com.example.myproject;
+
+	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+	import org.springframework.context.annotation.ComponentScan;
+	import org.springframework.context.annotation.Configuration;
+
+	@Configuration
+	@EnableAutoConfiguration
+	@ComponentScan
+	public class Application {
+
+		public static void main(String[] args) {
+			SpringApplication.run(Application.class, args);
+		}
+
+	}
+----
+
+
+
+[[using-boot-configuration-classes]]
+== Configuration classes
+Spring Boot favors Java-based configuration. Although it is possible to call
+`SpringApplication.run()` with an XML source, we generally recommend that your primary
+source is a `@Configuration` class. Usually the class that defines the `main` method
+is also a good candidate as the primary `@Configuration`.
+
+TIP: Many Spring configuration examples have been published on the Internet that use XML
+configuration. Always try to use the equivalent Java-base configuration if possible.
+Searching for `enable*` annotations can be a good starting point.
+
+
+
+[[using-boot-importing-configuration]]
+=== Importing additional configuration classes
+You don't need to put all your `@Configuration` into a single class. The `@Import`
+annotation can be used to import additional configuration classes. Alternatively, you
+can use `@ComponentScan` to automatically pickup all Spring components, including
+`@Configuration` classes.
+
+
+
+[[using-boot-importing-xml-configuration]]
+=== Importing XML configuration
+If you absolutely must use XML based configuration, we recommend that you still start
+with a `@Configuration` class. You can then use an additional `@ImportResource`
+annotation to load XML configuration files.
+
+
+
+[[using-boot-auto-configuration]]
+== Auto-configuration
+Spring Boot auto-configuration attempts to automatically configure your Spring
+application based on the jar dependencies that you have added. For example, If
+`HSQLDB` is on your classpath, and you have not manually configured any database
+connection beans, then we will auto-configure an in-memory database.
+
+You need to opt-in to auto-configuration by adding the `@EnableAutoConfiguration`
+annotation to one of your `@Configuration` classes.
+
+TIP: You should only ever add one `@EnableAutoConfiguration` annotation. We generally
+recommend that you add it to your primary `@Configuration` class.
+
+
+
+[[using-boot-replacing-auto-configuration]]
+=== Gradually replacing auto-configuration
+Auto-configuration is noninvasive,  at any point you can start to define your own
+configuration to replace specific parts of the auto-configuration. For example, if
+you add your own `DataSource` bean, the default embedded database support will back away.
+
+If you need to find out what auto-configuration is currently being applied, and why,
+starting your application with the `--debug` switch. This will log an auto-configuration
+report to the console.
+
+
+
+[[using-boot-disabling-specific-auto-configutation]]
+=== Disabling specific auto-configuration
+If you find that specific auto-configure classes are being applied that you don't want,
+you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
+
+[source,java,indent=0]
+----
+	import org.springframework.boot.autoconfigure.*;
+	import org.springframework.boot.autoconfigure.jdbc.*;
+	import org.springframework.context.annotation.*;
+
+	@Configuration
+	@EnableAutoConfiguration(exclude={EmbeddedDatabaseConfiguration.class})
+	public class MyConfiguration {
+	}
+----
+
+
+
+[[using-boot-spring-beans-and-dependency-injection]]
+== Spring Beans and dependency injection
+You are free to use any the standard Spring Framework techniques to defines your beans
+and their injected dependencies. For simplicity, we often find that using `@ComponentScan`
+to find your beans, in combination with `@Autowired` constructor injection works well.
+
+If you structure your code as suggested above (locating your application class in a root
+package), you can add `@ComponentScan` without any arguments. All of your application
+components (`@Component`, `@Service`, `@Repoistory`, `@Controller` etc.) will be
+automatically registered as Spring Beans.
+
+Here is an example `@Service` Bean that uses constructor injection to obtain a
+required `RiskAssessor` bean.
+
+[source,java,indent=0]
+----
+	package com.example.service;
+
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Service;
+
+	@Service
+	public class DatabaseAccountService implements AccountService {
+
+		private final RiskAssessor riskAssessor;
+
+		@Autowired
+		public DatabaseAccountService(RiskAssessor riskAssessor) {
+			this.riskAssessor = riskAssessor;
+		}
+
+		// ...
+
+	}
+----
+
+TIP: Notice how using constructor injection allows the `riskAssessor` field to be marked
+as `final`, indicating that it cannot be subsequently changed.
+
+[[using-boot-running-your-application]]
+== Running your application
+One of the biggest advantages of packaging your application as jar and using an embedded
+HTTP server is that you can run your application as you would any other. Debugging Spring
+Boot applications is also easy; you don't need any special IDE plugins or extensions.
+
+NOTE: This section only covers jar based packaging, If you choose to package your
+application as a war file you should refer to your server and IDE documentation.
+
+
+
+[[using-boot-running-from-an-ide]]
+=== Running from an IDE
+You can run a Spring Boot application from your IDE as a simple Java application, however,
+first you will need to import your project. Import steps will vary depending on your IDE
+and build system. Most IDEs can import Maven projects directly, for example Eclipse users
+can select `Import...` -> `Existing Maven Projects` from the `File` menu.
+
+If you can't directly import your project into your IDE, you may be able to generate IDE
+meta-data using a build plugin. Maven includes plugins for
+http://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] and
+http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]; Gradle offers plugins
+for http://www.gradle.org/docs/current/userguide/ide_support.html[various IDEs].
+
+TIP: If you accidentally run a web application twice you will see a ``Port already in
+use'' error. STS users can use the `Relauch` button rather than `Run` to ensure that
+any existing instance is closed.
+
+
+
+[[using-boot-running-as-a-packaged-application]]
+=== Running as a packaged application
+If you use the Spring Boot Maven or Gradle plugins to create an executable jar you can
+run your application using `java -jar`. For example:
+
+[indent=0,subs="attributes"]
+----
+	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+----
+
+It is also possible to run a packaged application with remote debugging support enabled.
+This allows you to attach a debugger to your packaged application:
+
+[indent=0,subs="attributes"]
+----
+	$ java -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n \
+	       -jar target/myproject-0.0.1-SNAPSHOT.jar
+----
+
+
+
+[[using-boot-running-with-the-maven-plugin]]
+=== Using the Maven plugin
+The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
+and run your application. Applications run in an exploded form, and you can edit
+resources for instant ``hot'' reload.
+
+[indent=0,subs="attributes"]
+----
+	$ mvn spring-boot:run
+----
+
+
+
+[[using-boot-running-with-the-gradle-plugin]]
+=== Using the Gradle plugin
+The Spring Boot Gradle plugin also includes a `run` goal which can be used to run
+your application in an exploded form. The `bootRun` task is added whenever you import
+the `spring-boot-plugin`
+
+[indent=0,subs="attributes"]
+----
+	$ gradle bootRun
+----
+
+
+
+[[using-boot-hot-swapping]]
+=== Hot swapping
+Since Spring Boot applications are just plain Java application, JVM hot-swapping should
+work out of the box. JVM hot swapping is somewhat limited with the bytecode that it can
+replace, for a more complete solution the
+https://github.com/spring-projects/spring-loaded[Spring Loaded] project, or
+http://zeroturnaround.com/software/jrebel/[JRebel] can be used.
+
+See the <<howto.adoc#howto-hotswapping, Hot swapping ``How-to''>> section for details.
+
+
+
+[[using-boot-packaging-for-production]]
+== Packaging your application for production
+Executable jars can be used for production deployment. As they are self contained, they
+are also ideally suited for cloud-based deployment.
+
+For additional ``production ready'' features, such as health, auditing and metric REST
+or JMX end-points; consider adding `spring-boot-actuator`. See
+``<<production-ready-features.adoc#production-ready>>'' for details.
+
+
+
+[[using-boot-whats-next]]
+== What to read next
+You should now have good understanding of how you can use Spring Boot along with some best
+practices that you should follow. You can now go on to learn about specific
+``<<spring-boot-features#boot-features, Spring Boot features>>'' in depth, or you
+could skip ahead and read about the
+``<<production-ready-features#production-ready, production ready>>'' aspects of Spring
+Boot.
