@@ -1,0 +1,249 @@
+:numbered!:
+[appendix]
+[[common-application-properties]]
+== Common application properties
+Various properties can be specified inside your `application.properties`/`application.yml`
+file or as command line switches. This section provides a list common Spring Boot
+properties and references to the underlying classes that consume them.
+
+NOTE: Property contributions can come from additional jar files on your classpath so
+you should not consider this an exhaustive list. It is also perfectly legal to define
+your own properties.
+
+WARNING: This sample file is meant as a guide only. Do **not** copy/paste the entire
+content into your application; rather pick only the properties that you need.
+
+[source,properties,indent=0,subs="verbatim,attributes"]
+----
+# ===================================================================
+# COMMON SPRING BOOT PROPERTIES
+#
+# This sample file is provided as a guideline. Do NOT copy it in its
+# entirety to your own application.               ^^^
+# ===================================================================
+
+# ----------------------------------------
+# CORE PROPERTIES
+# ----------------------------------------
+
+# SPRING CONFIG (ConfigFileApplicationListner)
+spring.config.name= # config file name (default to 'application')
+spring.config.location= # location of config file
+
+# PROFILES
+spring.profiles= # comma list of active profiles
+
+# APPLICATION SETTINGS (SpringApplication_
+spring.main.sources=
+spring.main.web-environment= # detect by default
+spring.main.show-bannder=true
+spring.main.... # see class for all properties
+
+# LOGGING
+logging.path=/var/logs
+logging.file=myapp.log
+logging.config=
+
+# IDENTITY (ContextIdApplicationContextInitializer)
+spring.application.name=
+vcap.application.name=
+
+# EMBEDDED SERVER CONFIGURATION (ServerProperties)
+server.port=8080
+server.address= # bind to a specific NIC
+server.session-timeout= # session timeout in sections
+server.context-path= # the context path, defaults to '/'
+server.servlet-path= # the servlet path, defaults to '/'
+server.tomcat.access-log-pattern= # log pattern of the access log
+server.tomcat.access-log-enabled=false # is access logging enabled
+server.tomcat.protocol-header="x-forwarded-proto" # ssl forward headers
+server.tomcat.remote-ip-header="x-forwarded-for"
+server.tomcat.basedir="/tmp" # base dir (usually not needed, defaults to tmp)
+server.tomcat.background-processor-delay=30; # in seconds
+server.tomcat.max-threads = 0 # number of threads in protocol handler
+
+# SPRING MVC (HttpMapperProperties)
+http.mappers.json-pretty-print=false # pretty print JSON
+spring.view.prefix= # MVC view prefix
+spring.view.suffix= # ... and suffix
+spring.resources.cache-period # cache timeouts in headers sent to browser
+
+# THYMELEAF (ThymeleafAutoConfiguration)
+spring.thymeleaf.prefix="classpath:/templates/"
+spring.thymeleaf.suffix=".html"
+spring.thymeleaf.mode="HTML5"
+spring.thymeleaf.encoding="UTF-8"
+spring.thymeleaf.cache=true # set to false for hot refresh
+
+# INTERNATIONALIZATION (MessageSourceAutoConfiguration)
+spring.messages.basename="messages"
+spring.messages.encoding="UTF-8"
+
+# SECURITY (SecurityProperties)
+security.user.name="user" # login username
+security.user.password= # login password
+security.user.role="USER" # role assigned to the user
+security.require-ssl=false # advanced settings ...
+security.enable-csrf=false
+security.basic.enabled=true
+security.basic.realm="Spring"
+security.basic.path="/**"
+security.headers.xss=false
+security.headers.cache=false
+security.headers.frame=false
+security.headers.contentType=false
+security.headers.hsts=all # none / domain / all
+security.sessions=stateless # always / never / if_required / stateless
+security.ignored=false
+
+# DATASOURCE (DataSourceAutoConfiguration & AbstractDataSourceConfiguration)
+spring.datasource.name= # name of the data source
+spring.datasource.intialize=true # populate using data.sql
+spring.datasource.schema= # a schema resource reference
+spring.datasource.continueOnError=false # continue even if can't be initialized
+spring.datasource.driverClassName= # JDBC Settings...
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+spring.datasource.max-active=100 # Advanced configuration...
+spring.datasource.max-idle=8
+spring.datasource.min-idle=8
+spring.datasource.initial-size=10
+spring.datasource.validation-query
+spring.datasource.test-on-borrow=false
+spring.datasource.test-on-return=false
+
+# MONGODB (MongoProperties)
+spring.data.mongodb.host= # the db host
+spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
+spring.data.mongodb.uri=mongodb://localhost/test # connection URL
+
+# JPA (JpaBaseConfiguration, HibernateJpaAutoConfiguration)
+spring.jpa.properties.*= # properties to set on the JPA connection
+spring.jpa.openInView=true
+spring.jpa.show-sql=true
+spring.jpa.database-platform=
+spring.jpa.database=
+spring.jpa.generate-ddl=
+spring.jpa.hibernate.naming-strategy= # naming classname
+spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
+
+# JMX
+spring.jmx.enabled=true # Expose MBeans from Spring
+
+# RABBIT (RabbitProperties)
+spring.rabbitmq.host= # connection host
+spring.rabbitmq.port= # connection port
+spring.rabbitmq.username= # login user
+spring.rabbitmq.password= # login password
+spring.rabbitmq.virtualhost=
+spring.rabbitmq.dynamic=
+
+# REDIS (RedisProperties)
+spring.redis.host="localhost" # server host
+spring.redis.password= # server password
+spring.redis.port=6379 # connection port
+spring.redis.pool.max-idle=8 # pool settings ...
+spring.redis.pool.min-idle=0
+spring.redis.pool.max-active=8
+spring.redis.pool.max-wait=-1
+
+# ACTIVEMQ (ActiveMQProperties)
+spring.activemq.broker-url="tcp://localhost:61616" # connection URL
+spring.activemq.in-memory=true
+spring.activemq.pooled=false
+
+# JMS (JmsTemplateProperties)
+spring.jms.pub-sub-domain=
+
+# SPRING BATCH (BatchDatabaseInitializer)
+spring.batch.job.names="job1,job2"
+spring.batch.job.enabled=true
+spring.batch.initializer.enabled=true
+spring.batch.schema= # batch schema to load
+
+# AOP
+spring.aop.auto=
+spring.aop.proxyTargetClass=
+
+# FILE ENCODING (FileEncodingApplicationListener)
+spring.mandatory-file-encoding=false
+
+# ----------------------------------------
+# ACTUATOR PROPERTIES
+# ----------------------------------------
+
+# MANAGEMENT HTTP SERVER (ManagementServerProperties)
+management.port= # defaults to 'server.port'
+management.address= # bind to a specific NIC
+management.contextPath= # default to '/'
+
+# ENDPOINTS (AbstractEndpoint subclasses)
+endpoints.autoconfig.id="autoconfig"
+endpoints.autoconfig.sensitive=true
+endpoints.autoconfig.enabled=true
+endpoints.beans.id="beans"
+endpoints.beans.sensitive=true
+endpoints.beans.enabled=true
+endpoints.configprops.id="configprops"
+endpoints.configprops.sensitive=true
+endpoints.configprops.enabled=true
+endpoints.configprops.keys-to-sanitize="password,secret"
+endpoints.dump.id="dump"
+endpoints.dump.sensitive=true
+endpoints.dump.enabled=true
+endpoints.env.id="env"
+endpoints.env.sensitive=true
+endpoints.env.enabled=true
+endpoints.health.id="health"
+endpoints.health.sensitive=false
+endpoints.health.enabled=true
+endpoints.info.id="info"
+endpoints.info.sensitive=false
+endpoints.info.enabled=true
+endpoints.metrics.id="metrics"
+endpoints.metrics.sensitive=true
+endpoints.metrics.enabled=true
+endpoints.shutdown.id="shutdown"
+endpoints.shutdown.sensitive=true
+endpoints.shutdown.enabled=false
+endpoints.trace.id="trace"
+endpoints.trace.sensitive=true
+endpoints.trace.enabled=true
+
+# MVC ONLY ENDPOINTS
+endpoints.jolokia.path="jolokia"
+endpoints.jolokia.sensitive=true
+endpoints.jolokia.enabled=true # when using Jolokia
+endpoints.error.path="/error"
+
+# JMX ENDPOINT (EndpointMBeanExportProperties)
+endpoints.jmx.enabled=true
+endpoints.jmx.domain= # the JMX domain, defaults to 'org.springboot'
+endpoints.jmx.unique-names=false
+endpoints.jmx.enabled=true
+endpoints.jmx.staticNames=
+
+# JOLOKIA (JolokiaProperties)
+jolokia.config.*= # See Jolokia manual
+
+# REMOTE SHELL
+shell.auth=simple # jaas, key, simple, spring
+shell.command-refresh-interval=-1
+shell.command-path-pattern="classpath*:/commands/**, classpath*:/crash/commands/**"
+shell.config-path-patterns="classpath*:/crash/*"
+shell.disabled-plugins=false # don't expose plugins
+shell.ssh.enabled= # ssh settings ...
+shell.ssh.keyPath=
+shell.ssh.port=
+shell.telnet.enabled= # telnet settings ...
+shell.telnet.port=
+shell.auth.jaas.domain= # authentication settings ...
+shell.auth.key.path=
+shell.auth.simple.user.name=
+shell.auth.simple.user.password=
+shell.auth.spring.roles=
+
+# GIT INFO
+spring.git.properties= # resource ref to generated git info properties file
+----

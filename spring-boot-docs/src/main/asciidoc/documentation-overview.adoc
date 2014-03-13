@@ -1,0 +1,127 @@
+[[boot-documentation]]
+= Spring Boot Documentation
+
+[partintro]
+--
+This section provides a brief overview of Spring Boot reference documentation. Think of
+it as map for the rest of the document. You can read this reference guide in a linear
+fashion, or you can skip sections if something doesn't interest you.
+
+--
+
+
+[[boot-documentation-getting-help]]
+== Getting help
+Having trouble with Spring Boot, We'd like to help!
+
+* Try the <<howto.adoc#howto, How-to's>> -- they provide solutions to the most common
+  questions
+* Learn the Spring basics -- Spring Boot is builds on many other Spring projects, check
+  the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
+  you are just starting out with Spring, try one of the http://spring.io/guides[guides]
+* Ask a questions - we monitor http://stackoverflow.com[stackoverflow.com] for questions
+  tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`]
+* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues
+
+NOTE: All of Spring Boot is open source, including the documentation! If you find problems
+with the docs; or if you just want to improve them, please <<github-code, get involved>>.
+
+[[boot-documentation-first-steps]]
+== First steps
+If your just getting started with Spring Boot, or 'Spring' in general,
+<<getting-started.adoc#getting-started, this is the place to start!>>
+
+* *From scratch:*
+  <<getting-started.adoc#getting-started-introducing-spring-boot, Overview>> |
+  <<getting-started.adoc#getting-started-installing-spring-boot, Installation>>
+* *Tutorial:*
+  <<getting-started.adoc#getting-started-first-application, Part 1>> |
+  <<getting-started.adoc#getting-started-first-application-code, Part 2>>
+* *Running your example:*
+  <<getting-started.adoc#getting-started-first-application-run, Part 1>> |
+  <<getting-started.adoc#getting-started-first-application-executable-jar, Part 2>>
+
+
+
+== Working with Spring Boot
+Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, We've
+got you covered>>.
+
+* *Build systems:*
+  <<using-spring-boot.adoc#using-boot-maven, Maven>> |
+  <<using-spring-boot.adoc#using-boot-gradle, Gradle>> |
+  <<using-spring-boot.adoc#using-boot-ant, Ant>> |
+  <<using-spring-boot.adoc#using-boot-starter-poms, Starter POMs>>
+* *Best practices:*
+  <<using-spring-boot.adoc#using-boot-structuring-your-code, Code Structure>> |
+  <<using-spring-boot.adoc#using-boot-configuration-classes, @Configuration>> |
+  <<using-spring-boot.adoc#using-boot-auto-configuration, @EnableAutoConfiguration>> |
+  <<using-spring-boot.adoc#using-boot-spring-beans-and-dependency-injection, Beans and Dependency Injection>>
+* *Running your code*
+  <<using-spring-boot.adoc#using-boot-running-from-an-ide, IDE>> |
+  <<using-spring-boot.adoc#using-boot-running-as-a-packaged-application, Packaged>> |
+  <<using-spring-boot.adoc#using-boot-running-with-the-maven-plugin, Maven>> |
+  <<using-spring-boot.adoc#using-boot-running-with-the-gradle-plugin, Gradle>>
+* *Packaging your app:*
+  <<using-spring-boot.adoc#using-boot-packaging-for-production, Production jars>>
+* *Spring Boot CLI:*
+<<using-spring-boot-cli.adoc#cli, Using the CLI>>
+
+== Learning about Spring Boot features
+Need more details about Spring Boot's core features?
+<<spring-boot-features.adoc#boot-features, This is for you>>!
+
+* *Core Features:*
+  <<spring-boot-features.adoc#boot-features-spring-application, SpringApplication>> |
+  <<spring-boot-features.adoc#boot-features-external-config, External Configuration>> |
+  <<spring-boot-features.adoc#boot-features-profiles, Profiles>> |
+  <<spring-boot-features.adoc#boot-features-logging, Logging>>
+* *Web Applications:*
+  <<spring-boot-features.adoc#boot-features-spring-mvc, MVC>> |
+  <<spring-boot-features.adoc#boot-features-embedded-container, Embedded Containers>>
+* *Working with data:*
+  <<spring-boot-features.adoc#boot-features-sql, SQL>> |
+  <<spring-boot-features.adoc#boot-features-nosql, NO-SQL>>
+* *Testing:*
+  <<spring-boot-features.adoc#boot-features-testing, Overview>> |
+  <<spring-boot-features.adoc#boot-features-testing-spring-boot-applications, Boot Applications>> |
+  <<spring-boot-features.adoc#boot-features-test-utilities, Utils>>
+* *Extending:*
+  <<spring-boot-features.adoc#boot-features-developing-auto-configuration, Auto-configuration>> |
+  <<spring-boot-features.adoc#boot-features-condition-annotations, @Conditions>>
+
+
+== Moving to production
+When your ready to push your Spring Boot application to production, we've got
+<<production-ready-features.adoc#production-ready, some tricks that you might like>>!
+
+* *Management endpoints:*
+<<production-ready-features.adoc#production-ready-endpoints, Overview>> |
+<<production-ready-features.adoc#production-ready-customizing-endpoints, Customization>>
+* *Connection options:*
+<<production-ready-features.adoc#production-ready-monitoring, HTTP>> |
+<<production-ready-features.adoc#production-ready-jmx, JMX>> |
+<<production-ready-features.adoc#production-ready-remote-shell, SSH>>
+* *Monitoring:*
+<<production-ready-features.adoc#production-ready-metrics, Metrics>> |
+<<production-ready-features.adoc#production-ready-auditing, Auditing>> |
+<<production-ready-features.adoc#production-ready-tracing, Tracing>>
+
+== Advanced topics
+Lastly, we have a few topics for the more advanced user.
+
+* *Deploy to the cloud:*
+<<cloud-deployment.adoc#cloud-deployment-cloud-foundry, Cloud Foundry>> |
+<<cloud-deployment.adoc#cloud-deployment-heroku, Heroku>> |
+<<cloud-deployment.adoc#cloud-deployment-cloudbees, CloudBees>>
+* *Build tool plugins:*
+<<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven>> |
+<<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle>>
+* *Appendix:*
+<<appendix-application-properties.adoc#common-application-properties, Application Properties>> |
+<<appendix-auto-configuration-classes.adoc#auto-configuration-classes, Auto-configuration classes>> |
+<<appendix-executable-jar-format.adoc#executable-jar, Executable Jars>>
+
+
+
+
