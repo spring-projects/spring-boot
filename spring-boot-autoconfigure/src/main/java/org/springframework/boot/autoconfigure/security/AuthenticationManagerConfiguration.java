@@ -26,7 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,9 +65,25 @@ public class AuthenticationManagerConfiguration extends
 	@Autowired
 	private SecurityProperties security;
 
+	private BootDefaultingAuthenticationConfigurerAdapter configurer = new BootDefaultingAuthenticationConfigurerAdapter();
+
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
-		auth.apply(new BootDefaultingAuthenticationConfigurerAdapter());
+		auth.apply(this.configurer);
+	}
+
+	@Bean
+	// avoid issues with scopedTarget (SPR-11548)
+	@Primary
+	public AuthenticationManager authenticationManager() {
+		return lazyAuthenticationManager();
+	}
+
+	@Bean
+	@Lazy
+	@Scope(proxyMode = ScopedProxyMode.INTERFACES)
+	protected AuthenticationManager lazyAuthenticationManager() {
+		return this.configurer.getAuthenticationManagerBuilder().getOrBuild();
 	}
 
 	/**
@@ -92,9 +113,16 @@ public class AuthenticationManagerConfiguration extends
 	private class BootDefaultingAuthenticationConfigurerAdapter extends
 			GlobalAuthenticationConfigurerAdapter {
 
+		private AuthenticationManagerBuilder defaultAuth;
+
+		public AuthenticationManagerBuilder getAuthenticationManagerBuilder() {
+			return this.defaultAuth;
+		}
+
 		@Override
 		public void configure(AuthenticationManagerBuilder auth) throws Exception {
 			if (auth.isConfigured()) {
+				this.defaultAuth = auth;
 				return;
 			}
 
@@ -104,12 +132,12 @@ public class AuthenticationManagerConfiguration extends
 						+ user.getPassword() + "\n\n");
 			}
 
-			AuthenticationManagerBuilder defaultAuth = new AuthenticationManagerBuilder(
+			this.defaultAuth = new AuthenticationManagerBuilder(
 					AuthenticationManagerConfiguration.this.objectPostProcessor);
 
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
 
-			AuthenticationManager parent = defaultAuth.inMemoryAuthentication()
+			AuthenticationManager parent = this.defaultAuth.inMemoryAuthentication()
 					.withUser(user.getName()).password(user.getPassword())
 					.roles(roles.toArray(new String[roles.size()])).and().and().build();
 
