@@ -1,5 +1,5 @@
 = Spring Boot Reference Guide
-Phillip Webb; Dave Syer;
+Phillip Webb; Dave Syer; Josh Long;
 :doctype: book
 :toc:
 :toclevels: 4
@@ -33,6 +33,7 @@ include::getting-started.adoc[]
 include::using-spring-boot.adoc[]
 include::spring-boot-features.adoc[]
 include::production-ready-features.adoc[]
+include::cloud-deployment.adoc[]
 include::spring-boot-cli.adoc[]
 include::build-tool-plugins.adoc[]
 include::howto.adoc[]

@@ -1,0 +1,245 @@
+[[cloud-deployment]]
+= Deploying to the cloud
+
+[partintro]
+--
+Spring Boot's executable jars are ready-made for most popular cloud PaaS
+(platform-as-a-service) providers. These providers tend to require that you
+_`bring your own container'_; they manage application processes (not Java applications
+specifically), so they need some intermediary layer that adapts _your_ application to the
+_cloud's_ notion of a running process.
+
+Two popular cloud providers, Heroku and Cloud Foundry, employ a ``buildpack'' approach.
+The buildpack wraps your deployed code in whatever is needed to _start_ your
+application: it might be a JDK and a call to `java`, it might be an embedded webserver,
+or it might be a full fledged application server. A buildpack is pluggable, but ideally
+you should be able to get by with as few customizations to it as possible.
+This reduces the footprint of functionality that is not under your control. It minimizes
+divergence between deployment and production environments.
+
+Ideally, your application, like a Spring Boot executable jar, has everything that it needs
+to run packaged within it.
+
+In this section we'll look at what it takes to get the
+<<getting-started.adoc#getting-started-first-application, simple application that we
+developed>> in the ``Getting Started'' section up and running in the Cloud.
+--
+
+
+
+[[cloud-deployment-cloud-foundry]]
+== Cloud Foundry
+Cloud Foundry provides default buildpacks that come into play if no other buildpack is
+specified. The Cloud Foundry buildpack has excellent support for Spring applications,
+including Spring Boot.  You can deploy stand-alone executable jar applications, as well as
+traditional `war` packaged applications.
+
+Once you've built your application (using, for example, `mvn clean install`) and
+http://docs.cloudfoundry.org/devguide/installcf/[installed the `cf` command line tool],
+simply answer the `cf push` command's prompts as follows:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ cf push --path target/demo-0.0.1-SNAPSHOT.jar
+
+	Name> *_$YOURAPP_*
+	Instances> *1*
+	Memory Limit> *256M*
+
+	Creating _$YOURAPP_... *OK*
+
+	1: _$YOURAPP_
+	2: none
+	Subdomain> *_$YOURAPP_*
+
+	1: cfapps.io
+	2: none
+	Domain> *cfapps.io*
+
+	Creating route _$YOURAPP_.cfapps.io... OK
+	Binding _$YOURAPP_.cfapps.io to _$YOURAPP_... OK
+
+	Create services for application?> *n*
+	Bind other services to application?> *n*
+	Save configuration?> *y*
+----
+
+At this point `cf` will start uploading your application:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	Saving to manifest.yml... *OK*
+	Uploading $YOURAPP... *OK*
+	Preparing to start _$YOURAPP_... *OK*
+	-----> Downloaded app package (8.7M)
+	-----> Java Buildpack source: system
+	-----> Downloading Open JDK 1.7.0_51 from .../openjdk-1.7.0_51.tar.gz (*1.4s*)
+	       Expanding Open JDK to .java-buildpack/open_jdk (*1.3s*)
+	-----> Downloading Spring Auto Reconfiguration 0.8.7 from .../auto-reconfiguration-0.8.7.jar (*0.0s*)
+	-----> Uploading droplet (*43M*)
+	Checking status of app '_$YOURAPP_'...
+	 0 of 1 instances running (1 starting)
+	 0 of 1 instances running (1 starting)
+	 1 of 1 instances running (1 running)
+	Push successful! App '_$YOURAPP_' available at http://_$YOURAPP_.cfapps.io
+----
+
+NOTE: Here we are substituting `$YOURAPP` for whatever value you give `cf` when it asks
+for the `name` of your application.
+
+Once Cloud Foundry acknowledges that your application has been deployed, you should be
+able to hit the application at the URI provided:
+`http://$YOURAPP.cfapps.io/`.
+
+
+
+[[cloud-deployment-cloud-foundry-services]]
+=== Binding to services
+By default, meta-data about the running application as well as service connection
+information is exposed to the application as environment variables (for example:
+`$VCAP_SERVICES`). This architecture decision is due to Cloud Foundry's polyglot
+(any language and platform can be supported as a buildpack) nature; process-scoped
+environment variables are language agnostic.
+
+Environment variables don't always make for the easiest API so Spring Boot automatically
+extracts then and flattens the data into properties that can be accessed through
+Spring's `Environment` abstraction:
+
+[source,java,indent=0]
+----
+	@Component
+	class MyBean implements EnvironmentAware {
+
+		private String instanceId;
+
+		@Override
+		public void setEnvironment(Environment environment) {
+			this.instanceId = environment.getProperty("vcap.application.instance_id");
+		}
+
+		// ...
+
+	}
+----
+
+All Cloud Foundry properties are prefixed with `vcap`. You can use vcap properties to
+access application information (such as the public URL of the application) and service
+information (such as database credentials). See `VcapApplicationListener` Javdoc for
+complete details.
+
+TIP: The http://spring.io/projects/spring-cloud[Spring Cloud] project is a better fit
+for tasks such as configuring a DataSource; and you can also use Spring Cloud with
+Heroku too!
+
+
+
+[[cloud-deployment-heroku]]
+== Heroku
+Heroku is another popular PaaS platform. To customize Heroku builds, you provide a
+`Procfile`, which provides the incantation required to deploy an application. Heroku
+assigns a `port` for the Java application to use and then ensures that routing to the
+external URI works.
+
+You must configure your application to listen on the correct port. This is a breeze with
+Spring Boot. Here's the `Procfile` for our starter REST application:
+
+[indent=0]
+----
+	web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
+----
+
+Spring Boot makes `-D` arguments available as properties accessible from a Spring
+`Environment` instance. The `server.port` configuration property is fed to the embedded
+Tomcat or Jetty instance which then uses it when it starts up. The `$PORT` environment
+variable is assigned to us by the Heroku PaaS.
+
+Heroku by default will use Java 1.6. This is fine as long as your Maven or Gradle build
+is set to use the same version (Maven users can use the `java.version` property). If you
+want to use JDK 1.7, create a new file adjacent to your `pom.xml` and `Procfile`,
+called `system.properties`. In this file add the following:
+
+[source,java]
+----
+java.runtime.version=1.7
+----
+
+This should be everything you need. The most common workflow for Heroku deployments is to
+`git push` the code to production.
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ git push heroku master
+
+	Initializing repository, *done*.
+	Counting objects: 95, *done*.
+	Delta compression using up to 8 threads.
+	Compressing objects: 100% (78/78), *done*.
+	Writing objects: 100% (95/95), 8.66 MiB | 606.00 KiB/s, *done*.
+	Total 95 (delta 31), reused 0 (delta 0)
+
+	-----> Java app detected
+	-----> Installing OpenJDK 1.7... *done*
+	-----> Installing Maven 3.0.3... *done*
+	-----> Installing settings.xml... *done*
+	-----> executing /app/tmp/cache/.maven/bin/mvn -B
+	       -Duser.home=/tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229
+	       -Dmaven.repo.local=/app/tmp/cache/.m2/repository
+	       -s /app/tmp/cache/.m2/settings.xml -DskipTests=true clean install
+
+	       [INFO] Scanning for projects...
+	       Downloading: http://repo.spring.io/...
+	       Downloaded: http://repo.spring.io/... (818 B at 1.8 KB/sec)
+			....
+	       Downloaded: http://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
+	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
+	       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/pom.xml ...
+	       [INFO] ------------------------------------------------------------------------
+	       [INFO] *BUILD SUCCESS*
+	       [INFO] ------------------------------------------------------------------------
+	       [INFO] Total time: 59.358s
+	       [INFO] Finished at: Fri Mar 07 07:28:25 UTC 2014
+	       [INFO] Final Memory: 20M/493M
+	       [INFO] ------------------------------------------------------------------------
+
+	-----> Discovering process types
+	       Procfile declares types -> *web*
+
+	-----> Compressing... *done*, 70.4MB
+	-----> Launching... *done*, v6
+	       http://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
+
+	To git@heroku.com:agile-sierra-1405.git
+	 * [new branch]      master -> master
+----
+
+That should be it! Your application should be up and running on Heroku.
+
+
+
+[[cloud-deployment-cloudbees]]
+== CloudBees
+CloudBees provides cloud-based ``continuous integration'' and ``continuous delevery''
+services as well as Java PaaS hosting. https://github.com/msgilligan[Sean Gilligan]
+has contributed an excellent
+https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample[Spring Boot
+sample application] to the CloudBees community GitHub repository. The project includes
+an extensive  https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample/blob/master/README.asciidoc[README]
+that covers the steps that you need to follow when deploying to CloudBees.
+
+
+
+[[cloud-deployment-whats-next]]
+== What to read next
+Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]
+and http://www.cloudbees.com[CloudBees] web sites for more information about the kinds of
+features that a PaaS can offer. These are just three of the more popular Java PaaS
+providers, since Spring Boot is so amenable to cloud-based deployment you free to
+consider other providers as well.
+
+The next section goes on to cover the <<spring-boot-cli.adoc#cli, ``Spring Boot CLI''>>;
+or you can jump ahead to read about
+<<build-tool-plugins.adoc#build-tool-plugins, ``build tool plugins''>>.
+
+
+
+
