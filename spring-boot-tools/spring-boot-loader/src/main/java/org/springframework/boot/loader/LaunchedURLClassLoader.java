@@ -73,7 +73,12 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 				return urls[0];
 			}
 		}
-		return super.findResource(name);
+		try {
+			return super.findResource(name);
+		}
+		catch (IllegalArgumentException e) {
+			return null;
+		}
 	}
 
 	@Override
