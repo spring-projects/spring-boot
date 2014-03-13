@@ -291,7 +291,8 @@ properties).
 ----
 
 TIP: You can also use this technique to create ``short'' variants of existing Spring Boot
-properties.
+properties. See the ``<<howto.adoc#howto-use-short-command-line-arguments>>'' how-to
+for details.
 
 
 
