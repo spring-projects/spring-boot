@@ -1,0 +1,7 @@
+[[appendix]]
+= Appendices
+
+include::appendix-application-properties.adoc[]
+include::appendix-auto-configuration-classes.adoc[]
+include::appendix-executable-jar-format.adoc[]
+
