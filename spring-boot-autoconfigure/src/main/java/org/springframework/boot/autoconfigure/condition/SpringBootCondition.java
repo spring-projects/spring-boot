@@ -40,10 +40,19 @@ public abstract class SpringBootCondition implements Condition {
 	@Override
 	public final boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String classOrMethodName = getClassOrMethodName(metadata);
-		ConditionOutcome outcome = getMatchOutcome(context, metadata);
-		logOutcome(classOrMethodName, outcome);
-		recordEvaluation(context, classOrMethodName, outcome);
-		return outcome.isMatch();
+		try {
+			ConditionOutcome outcome = getMatchOutcome(context, metadata);
+			logOutcome(classOrMethodName, outcome);
+			recordEvaluation(context, classOrMethodName, outcome);
+			return outcome.isMatch();
+		}
+		catch (NoClassDefFoundError e) {
+			throw new IllegalStateException(
+					"Could not evaluate condition owing to internal class not found. "
+							+ "This can happen if you are @ComponentScanning a springframework package "
+							+ "(e.g. if you put a @ComponentScan in the default package by mistake)",
+					e);
+		}
 	}
 
 	private static String getClassOrMethodName(AnnotatedTypeMetadata metadata) {
