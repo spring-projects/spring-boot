@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import javax.servlet.MultipartConfigElement;
 
 import org.junit.Test;
+import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -69,6 +70,23 @@ public class DispatcherServletAutoConfigurationTests {
 		assertEquals(0, this.context.getBeanNamesForType(DispatcherServlet.class).length);
 	}
 
+	// If you override either the dispatcherServlet or its registration you have to
+	// provide both...
+	@Test(expected = UnsatisfiedDependencyException.class)
+	public void registrationOverrideWithAutowiredServlet() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(CustomAutowiredRegistration.class,
+				ServerPropertiesAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class);
+		this.context.setServletContext(new MockServletContext());
+		this.context.refresh();
+		ServletRegistrationBean registration = this.context
+				.getBean(ServletRegistrationBean.class);
+		assertEquals("[/foo]", registration.getUrlMappings().toString());
+		assertEquals("customDispatcher", registration.getServletName());
+		assertEquals(1, this.context.getBeanNamesForType(DispatcherServlet.class).length);
+	}
+
 	@Test
 	public void servletPath() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
@@ -116,6 +134,18 @@ public class DispatcherServletAutoConfigurationTests {
 		public ServletRegistrationBean dispatcherServletRegistration() {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
 					new DispatcherServlet(), "/foo");
+			registration.setName("customDispatcher");
+			return registration;
+		}
+	}
+
+	@Configuration
+	protected static class CustomAutowiredRegistration {
+		@Bean
+		public ServletRegistrationBean dispatcherServletRegistration(
+				DispatcherServlet dispatcherServlet) {
+			ServletRegistrationBean registration = new ServletRegistrationBean(
+					dispatcherServlet, "/foo");
 			registration.setName("customDispatcher");
 			return registration;
 		}
