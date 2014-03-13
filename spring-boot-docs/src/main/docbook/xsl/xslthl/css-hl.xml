@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+Syntax highlighting definition for CSS files
+
+xslthl - XSLT Syntax Highlighting
+http://sourceforge.net/projects/xslthl/
+Copyright (C) 2011-2012 Martin Hujer, Michiel Hendriks
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+Martin Hujer <mhujer at users.sourceforge.net>
+Michiel Hendriks <elmuerte at users.sourceforge.net>
+
+Reference: http://www.w3.org/TR/CSS21/propidx.html
+
+-->
+<highlighters>
+    <highlighter type="multiline-comment">
+        <start>/*</start>
+        <end>*/</end>
+    </highlighter>
+    <highlighter type="string">
+		<string>"</string>
+        <escape>\</escape>
+        <spanNewLines/>
+    </highlighter>
+    <highlighter type="string">
+		<string>'</string>
+		<escape>\</escape>
+        <spanNewLines/>
+    </highlighter>
+    <highlighter type="number">
+        <point>.</point>
+        <pointStarts />
+    </highlighter>
+    <highlighter type="word">
+    	<word>@charset</word>
+    	<word>@import</word>
+    	<word>@media</word>
+    	<word>@page</word>
+    	<style>directive</style>
+    </highlighter>
+    <highlighter type="keywords">
+        <partChars>-</partChars>
+        <keyword>azimuth</keyword>
+        <keyword>background-attachment</keyword>
+        <keyword>background-color</keyword>
+        <keyword>background-image</keyword>
+        <keyword>background-position</keyword>
+        <keyword>background-repeat</keyword>
+        <keyword>background</keyword>
+        <keyword>border-collapse</keyword>
+        <keyword>border-color</keyword>
+        <keyword>border-spacing</keyword>
+        <keyword>border-style</keyword>
+        <keyword>border-top</keyword>
+        <keyword>border-right</keyword>
+        <keyword>border-bottom</keyword>
+        <keyword>border-left</keyword>
+        <keyword>border-top-color</keyword>
+        <keyword>border-right-color</keyword>
+        <keyword>border-bottom-color</keyword>
+        <keyword>border-left-color</keyword>
+        <keyword>border-top-style</keyword>
+        <keyword>border-right-style</keyword>
+        <keyword>border-bottom-style</keyword>
+        <keyword>border-left-style</keyword>
+        <keyword>border-top-width</keyword>
+        <keyword>border-right-width</keyword>
+        <keyword>border-bottom-width</keyword>
+        <keyword>border-left-width</keyword>
+        <keyword>border-width</keyword>
+        <keyword>border</keyword>
+        <keyword>bottom</keyword>
+        <keyword>caption-side</keyword>
+        <keyword>clear</keyword>
+        <keyword>clip</keyword>
+        <keyword>color</keyword>
+        <keyword>content</keyword>
+        <keyword>counter-increment</keyword>
+        <keyword>counter-reset</keyword>
+        <keyword>cue-after</keyword>
+        <keyword>cue-before</keyword>
+        <keyword>cue</keyword>
+        <keyword>cursor</keyword>
+        <keyword>direction</keyword>
+        <keyword>display</keyword>
+        <keyword>elevation</keyword>
+        <keyword>empty-cells</keyword>
+        <keyword>float</keyword>
+        <keyword>font-family</keyword>
+        <keyword>font-size</keyword>
+        <keyword>font-style</keyword>
+        <keyword>font-variant</keyword>
+        <keyword>font-weight</keyword>
+        <keyword>font</keyword>
+        <keyword>height</keyword>
+        <keyword>left</keyword>
+        <keyword>letter-spacing</keyword>
+        <keyword>line-height</keyword>
+        <keyword>list-style-image</keyword>
+        <keyword>list-style-position</keyword>
+        <keyword>list-style-type</keyword>
+        <keyword>list-style</keyword>
+        <keyword>margin-right</keyword>
+        <keyword>margin-left</keyword>
+        <keyword>margin-top</keyword>
+        <keyword>margin-bottom</keyword>
+        <keyword>margin</keyword>
+        <keyword>max-height</keyword>
+        <keyword>max-width</keyword>
+        <keyword>min-height</keyword>
+        <keyword>min-width</keyword>
+        <keyword>orphans</keyword>
+        <keyword>outline-color</keyword>
+        <keyword>outline-style</keyword>
+        <keyword>outline-width</keyword>
+        <keyword>outline</keyword>
+        <keyword>overflow</keyword>
+        <keyword>padding-top</keyword>
+        <keyword>padding-right</keyword>
+        <keyword>padding-bottom</keyword>
+        <keyword>padding-left</keyword>
+        <keyword>padding</keyword>
+        <keyword>page-break-after</keyword>
+        <keyword>page-break-before</keyword>
+        <keyword>page-break-inside</keyword>
+        <keyword>pause-after</keyword>
+        <keyword>pause-before</keyword>
+        <keyword>pause</keyword>
+        <keyword>pitch-range</keyword>
+        <keyword>pitch</keyword>
+        <keyword>play-during</keyword>
+        <keyword>position</keyword>
+        <keyword>quotes</keyword>
+        <keyword>richness</keyword>
+        <keyword>right</keyword>
+        <keyword>speak-header</keyword>
+        <keyword>speak-numeral</keyword>
+        <keyword>speak-punctuation</keyword>
+        <keyword>speak</keyword>
+        <keyword>speech-rate</keyword>
+        <keyword>stress</keyword>
+        <keyword>table-layout</keyword>
+        <keyword>text-align</keyword>
+        <keyword>text-decoration</keyword>
+        <keyword>text-indent</keyword>
+        <keyword>text-transform</keyword>
+        <keyword>top</keyword>
+        <keyword>unicode-bidi</keyword>
+        <keyword>vertical-align</keyword>
+        <keyword>visibility</keyword>
+        <keyword>voice-family</keyword>
+        <keyword>volume</keyword>
+        <keyword>white-space</keyword>
+        <keyword>widows</keyword>
+        <keyword>width</keyword>
+        <keyword>word-spacing</keyword>
+        <keyword>z-index</keyword>
+    </highlighter>
+</highlighters>
