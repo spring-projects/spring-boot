@@ -16,12 +16,23 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.StringUtils;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Base class for configuration of a database pool.
@@ -31,41 +42,27 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(name = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 @EnableConfigurationProperties
 public abstract class AbstractDataSourceConfiguration implements BeanClassLoaderAware,
-		InitializingBean {
+		InitializingBean, ApplicationContextAware {
+
+	public static final String DEFAULT_TRANSACTION_ISOLATION_PROPERTY = "defaultTransactionIsolation";
+	public static final String URL_PROPERTY = "url";
+
+	private ApplicationContext applicationContext;
 
 	private String driverClassName;
-
-	private String url;
 
 	private String username;
 
 	private String password;
 
-	private int maxActive = 100;
-
-	private int maxIdle = 8;
-
-	private int minIdle = 8;
-
-	private int initialSize = 10;
-
-	private String validationQuery;
-
-	private boolean testOnBorrow = false;
-
-	private boolean testOnReturn = false;
-
-	private boolean testWhileIdle = false;
-
-	private int timeBetweenEvictionRunsMillis = getDefaultTimeBetweenEvictionRunsMillis();
-
-	private int minEvictableIdleTimeMillis = getDefaultMinEvictableIdleTimeMillis();
-
-	private int maxWaitMillis = getDefaultMaxWaitMillis();
-
 	private ClassLoader classLoader;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
@@ -74,8 +71,7 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection
-				.get(this.classLoader);
+		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(this.classLoader);
 	}
 
 	protected String getDriverClassName() {
@@ -91,21 +87,6 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 							+ "database please put a supported one on the classpath.");
 		}
 		return driverClassName;
-	}
-
-	protected String getUrl() {
-		if (StringUtils.hasText(this.url)) {
-			return this.url;
-		}
-		String url = this.embeddedDatabaseConnection.getUrl();
-		if (!StringUtils.hasText(url)) {
-			throw new BeanCreationException(
-					"Cannot determine embedded database url for database type "
-							+ this.embeddedDatabaseConnection
-							+ ". If you want an embedded "
-							+ "database please put a supported on on the classpath.");
-		}
-		return url;
 	}
 
 	protected String getUsername() {
@@ -128,17 +109,7 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		return null;
 	}
 
-	public void setDriverClassName(String driverClassName) {
-		this.driverClassName = driverClassName;
-	}
-
-	public void setInitialSize(int initialSize) {
-		this.initialSize = initialSize;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
+	public void setDriverClassName(String driverClassName) { this.driverClassName = driverClassName; }
 
 	public void setUsername(String username) {
 		this.username = username;
@@ -148,85 +119,75 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		this.password = password;
 	}
 
-	public void setMaxActive(int maxActive) {
-		this.maxActive = maxActive;
+	protected Integer getDefaultTransactionIsolationLevel(String tx) {
+		if ("NONE".equals(tx)) {
+			return Connection.TRANSACTION_NONE;
+		}
+		if ("READ_COMMITTED".equals(tx)) {
+			return Connection.TRANSACTION_READ_COMMITTED;
+		}
+		if ("READ_UNCOMMITTED".equals(tx)) {
+			return Connection.TRANSACTION_READ_UNCOMMITTED;
+		}
+		if ("REPEATABLE_READ".equals(tx)) {
+			return Connection.TRANSACTION_REPEATABLE_READ;
+		}
+		if ("SERIALIZABLE".equals(tx)) {
+			return Connection.TRANSACTION_SERIALIZABLE;
+		}
+		throw new IllegalArgumentException("Unsupported transaction isolation level: " + tx);
 	}
 
-	public void setMaxIdle(int maxIdle) {
-		this.maxIdle = maxIdle;
+	protected void configurePoolUsingJavaBeanProperties(Object pool) throws InvocationTargetException, IllegalAccessException {
+		PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(pool.getClass());
+		Set<String> ignoredProperties = new HashSet<String>();
+		ignoredProperties.add("username");
+		ignoredProperties.add("password");
+		ignoredProperties.add("driverClassName");
+		for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+			if (ignoredProperties.contains(propertyDescriptor.getName())) {
+				continue;
+			}
+			configureProperty(pool, propertyDescriptor);
+		}
 	}
 
-	public void setMinIdle(int minIdle) {
-		this.minIdle = minIdle;
+	private void configureProperty(Object pool, PropertyDescriptor propertyDescriptor) throws IllegalAccessException, InvocationTargetException {
+		String property = propertyDescriptor.getName();
+		Method writeMethod = propertyDescriptor.getWriteMethod();
+		Object propertyValue = null;
+		if (DEFAULT_TRANSACTION_ISOLATION_PROPERTY.equals(propertyDescriptor.getName())) {
+			String txIsolationLevel = (String) getDataSourcePropertyValue(DEFAULT_TRANSACTION_ISOLATION_PROPERTY, String.class);
+			if (txIsolationLevel != null) {
+				propertyValue = getDefaultTransactionIsolationLevel(txIsolationLevel);
+			}
+		} else if (URL_PROPERTY.equals(property)) {
+			propertyValue = getUrlProperty(property);
+		} else {
+			propertyValue = getDataSourcePropertyValue(property, propertyDescriptor.getPropertyType());
+		}
+		if (propertyValue != null) {
+			writeMethod.invoke(pool, propertyValue);
+		}
 	}
 
-	public void setValidationQuery(String validationQuery) {
-		this.validationQuery = validationQuery;
+	private String getUrlProperty(String property) {
+		String url = (String) getDataSourcePropertyValue(property, String.class);
+		if (!StringUtils.hasText(url)) {
+			url = this.embeddedDatabaseConnection.getUrl();
+			if (!StringUtils.hasText(url)) {
+				throw new BeanCreationException(
+					"Cannot determine embedded database url for database type "
+							+ this.embeddedDatabaseConnection
+							+ ". If you want an embedded "
+							+ "database please put a supported on on the classpath.");
+			}
+		}
+		return url;
 	}
 
-	public void setTestOnBorrow(boolean testOnBorrow) {
-		this.testOnBorrow = testOnBorrow;
+	private Object getDataSourcePropertyValue(String property, Class<?> propertyEditorClass) {
+		String finalName = DataSourceAutoConfiguration.CONFIGURATION_PREFIX + "." + property;
+		return applicationContext.getEnvironment().getProperty(finalName, propertyEditorClass);
 	}
-
-	public void setTestOnReturn(boolean testOnReturn) {
-		this.testOnReturn = testOnReturn;
-	}
-
-	public void setTestWhileIdle(boolean testWhileIdle) {
-		this.testWhileIdle = testWhileIdle;
-	}
-
-	public void setTimeBetweenEvictionRunsMillis(int timeBetweenEvictionRunsMillis) {
-		this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
-	}
-
-	public void setMinEvictableIdleTimeMillis(int minEvictableIdleTimeMillis) {
-		this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
-	}
-
-	public void setMaxWait(int maxWaitMillis) { this.maxWaitMillis = maxWaitMillis; }
-
-	public int getInitialSize() {
-		return this.initialSize;
-	}
-
-	protected int getMaxActive() {
-		return this.maxActive;
-	}
-
-	protected int getMaxIdle() {
-		return this.maxIdle;
-	}
-
-	protected int getMinIdle() {
-		return this.minIdle;
-	}
-
-	protected String getValidationQuery() {
-		return this.validationQuery;
-	}
-
-	protected boolean isTestOnBorrow() {
-		return this.testOnBorrow;
-	}
-
-	protected boolean isTestOnReturn() {
-		return this.testOnReturn;
-	}
-
-	protected boolean isTestWhileIdle() {
-		return this.testWhileIdle;
-	}
-
-	protected int getTimeBetweenEvictionRunsMillis() { return this.timeBetweenEvictionRunsMillis; }
-
-	protected int getMinEvictableIdleTimeMillis() { return this.minEvictableIdleTimeMillis; }
-
-	protected int getMaxWaitMillis() { return this.maxWaitMillis; }
-
-	protected abstract int getDefaultTimeBetweenEvictionRunsMillis();
-
-	protected abstract int getDefaultMinEvictableIdleTimeMillis();
-
-	protected abstract int getDefaultMaxWaitMillis();
 }

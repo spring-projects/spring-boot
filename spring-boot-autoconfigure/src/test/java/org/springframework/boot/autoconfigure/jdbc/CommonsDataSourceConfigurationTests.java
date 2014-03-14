@@ -16,16 +16,18 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CommonsDataSourceConfiguration}.
@@ -54,8 +56,20 @@ public class CommonsDataSourceConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxWait:1234");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.defaultAutoCommit:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.defaultReadOnly:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.defaultTransactionIsolation:SERIALIZABLE");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.defaultCatalog:blah");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.validationQueryTimeout:5544");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.removeAbandoned:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.removeAbandonedTimeout:6666");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.logAbandoned:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxActive:1000");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minIdle:100");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxIdle:1000");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.initialSize:100");
 		this.context.refresh();
-		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
+		BasicDataSource ds = (BasicDataSource) this.context.getBean(DataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
 		assertEquals(true, ds.getTestWhileIdle());
 		assertEquals(true, ds.getTestOnBorrow());
@@ -63,6 +77,20 @@ public class CommonsDataSourceConfigurationTests {
 		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
 		assertEquals(1234, ds.getMaxWait());
+		assertTrue(ds.getDefaultAutoCommit());
+		assertTrue(ds.getDefaultReadOnly());
+		assertEquals(Connection.TRANSACTION_SERIALIZABLE, ds.getDefaultTransactionIsolation());
+		assertEquals("blah", ds.getDefaultCatalog());
+		assertEquals(5544, ds.getValidationQueryTimeout());
+		assertTrue(ds.getRemoveAbandoned());
+		assertEquals(6666, ds.getRemoveAbandonedTimeout());
+		assertTrue(ds.getLogAbandoned());
+		assertEquals(1000, ds.getMaxActive());
+		assertEquals(100, ds.getMinIdle());
+		assertEquals(1000, ds.getMaxIdle());
+		assertEquals(100, ds.getInitialSize());
+
+
 	}
 
 	@Test
@@ -73,6 +101,7 @@ public class CommonsDataSourceConfigurationTests {
 		assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, ds.getMinEvictableIdleTimeMillis());
 		assertEquals(GenericObjectPool.DEFAULT_MAX_WAIT, ds.getMaxWait());
+		assertEquals(300, ds.getRemoveAbandonedTimeout());
 	}
 
 }
