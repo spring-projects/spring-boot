@@ -16,9 +16,6 @@
 
 package sample.ui.secure;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -36,13 +33,16 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Basic integration tests for demo application.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=SampleSecureApplication.class)
+@SpringApplicationConfiguration(classes = SampleSecureApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext

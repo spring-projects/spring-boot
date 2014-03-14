@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package sample.actuator;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,22 +24,24 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Basic integration tests for service demo application.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=SampleActuatorNoWebApplication.class)
+@SpringApplicationConfiguration(classes = SampleActuatorNoWebApplication.class)
 @DirtiesContext
 public class SampleActuatorNoWebApplicationTests {
-	
+
 	@Autowired
 	private MetricsEndpoint endpoint;
 
 	@Test
 	public void endpointsExist() throws Exception {
-		assertNotNull(endpoint);
+		assertNotNull(this.endpoint);
 	}
 
 }

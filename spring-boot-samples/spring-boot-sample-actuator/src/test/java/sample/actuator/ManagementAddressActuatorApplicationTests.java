@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package sample.actuator;
-
-import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
@@ -35,13 +33,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=SampleActuatorApplication.class)
+@SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext
@@ -61,14 +61,16 @@ public class ManagementAddressActuatorApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
-				"http://localhost:" + port, Map.class);
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
-				"http://localhost:" + managementPort + "/admin/health", String.class);
+		ResponseEntity<String> entity = RestTemplates.get()
+				.getForEntity(
+						"http://localhost:" + this.managementPort + "/admin/health",
+						String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}

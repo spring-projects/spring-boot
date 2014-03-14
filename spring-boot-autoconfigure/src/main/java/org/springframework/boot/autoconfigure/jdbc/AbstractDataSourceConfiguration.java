@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Base class for configuration of a database pool.
- *
+ * 
  * @author Dave Syer
  */
 @ConfigurationProperties(name = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
@@ -51,17 +51,17 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	private String validationQuery;
 
-	private boolean testOnBorrow = false;
+	private boolean testOnBorrow;
 
-	private boolean testOnReturn = false;
+	private boolean testOnReturn;
 
-	private boolean testWhileIdle = false;
+	private boolean testWhileIdle;
 
-	private int timeBetweenEvictionRunsMillis = getDefaultTimeBetweenEvictionRunsMillis();
+	private Integer timeBetweenEvictionRunsMillis;
 
-	private int minEvictableIdleTimeMillis = getDefaultMinEvictableIdleTimeMillis();
+	private Integer minEvictableIdleTimeMillis;
 
-	private int maxWaitMillis = getDefaultMaxWaitMillis();
+	private Integer maxWaitMillis;
 
 	private ClassLoader classLoader;
 
@@ -184,7 +184,9 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
 	}
 
-	public void setMaxWait(int maxWaitMillis) { this.maxWaitMillis = maxWaitMillis; }
+	public void setMaxWait(int maxWaitMillis) {
+		this.maxWaitMillis = maxWaitMillis;
+	}
 
 	public int getInitialSize() {
 		return this.initialSize;
@@ -218,15 +220,16 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		return this.testWhileIdle;
 	}
 
-	protected int getTimeBetweenEvictionRunsMillis() { return this.timeBetweenEvictionRunsMillis; }
+	protected Integer getTimeBetweenEvictionRunsMillis() {
+		return this.timeBetweenEvictionRunsMillis;
+	}
 
-	protected int getMinEvictableIdleTimeMillis() { return this.minEvictableIdleTimeMillis; }
+	protected Integer getMinEvictableIdleTimeMillis() {
+		return this.minEvictableIdleTimeMillis;
+	}
 
-	protected int getMaxWaitMillis() { return this.maxWaitMillis; }
+	protected Integer getMaxWaitMillis() {
+		return this.maxWaitMillis;
+	}
 
-	protected abstract int getDefaultTimeBetweenEvictionRunsMillis();
-
-	protected abstract int getDefaultMinEvictableIdleTimeMillis();
-
-	protected abstract int getDefaultMaxWaitMillis();
 }
