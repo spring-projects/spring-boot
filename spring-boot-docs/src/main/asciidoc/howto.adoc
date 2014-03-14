@@ -1259,7 +1259,7 @@ remove later and let Spring Boot provide its own defaults for them, but it shoul
 possible to get something working first.
 
 Static resources can be moved to `/public` (or `/static` or `/resources` or
-`/META-INFO/resources`) in the classpath root. Same for `messages.properties` (Spring Boot
+`/META-INF/resources`) in the classpath root. Same for `messages.properties` (Spring Boot
 detects this automatically in the root of the classpath).
 
 Vanilla usage of Spring `DispatcherServlet` and Spring Security should require no further
