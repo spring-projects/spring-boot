@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
- * 
- * <p>
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
  * Auto-configuration} for Spring's AOP support. Equivalent to enabling
  * {@link org.springframework.context.annotation.EnableAspectJAutoProxy} in your
- * configuration. The configuration will not be activated if
- * {@literal spring.aop.auto=false}. The {@literal proxyTargetClass} attribute will be
- * {@literal false}, by default, but can be overridden by specifying
- * {@literal spring.aop.proxyTargetClass=true}.
+ * configuration.
+ * <p>
+ * The configuration will not be activated if {@literal spring.aop.auto=false}. The
+ * {@literal proxyTargetClass} attribute will be {@literal false}, by default, but can be
+ * overridden by specifying {@literal spring.aop.proxyTargetClass=true}.
  * 
  * @author Dave Syer
  * @author Josh Long
