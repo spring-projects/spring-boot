@@ -53,7 +53,8 @@ public abstract class AbstractRepositoryConfigurationSourceSupport implements
 	private Environment environment;
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+			BeanDefinitionRegistry registry) {
 		new RepositoryConfigurationDelegate(getConfigurationSource(), this.resourceLoader)
 				.registerRepositoriesIn(registry, getRepositoryConfigurationExtension());
 	}

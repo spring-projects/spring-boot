@@ -31,13 +31,15 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import com.mongodb.Mongo;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's {@link MongoTemplate}.
- *
- * <p> Registers a {@link org.springframework.data.mongodb.core.MongoTemplate} bean if no other bean of the same type is configured.
- *
- * <P> Honors the {@literal spring.data.mongodb.database} property if set, otherwise connects to
- * the {@literal test} database.
- *
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's
+ * {@link MongoTemplate}.
+ * <p>
+ * Registers a {@link org.springframework.data.mongodb.core.MongoTemplate} bean if no
+ * other bean of the same type is configured.
+ * <P>
+ * Honors the {@literal spring.data.mongodb.database} property if set, otherwise connects
+ * to the {@literal test} database.
+ * 
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long
