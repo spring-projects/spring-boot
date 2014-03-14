@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ public class RestTemplates {
 	/**
 	 * Basic factory method for a RestTemplate that does not follow redirects, ignores
 	 * cookies and does not throw exceptions on server side errors.
-	 * 
 	 * @return a basic RestTemplate with no authentication
 	 */
 	public static RestTemplate get() {
@@ -63,7 +62,6 @@ public class RestTemplates {
 	 * Factory method for a secure RestTemplate with Basic authentication that does not
 	 * follow redirects, ignores cookies and does not throw exceptions on server side
 	 * errors.
-	 * 
 	 * @return a basic RestTemplate with Basic authentication
 	 */
 	public static RestTemplate get(final String username, final String password) {
@@ -71,20 +69,17 @@ public class RestTemplates {
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
 
 		if (username != null) {
-
 			interceptors.add(new ClientHttpRequestInterceptor() {
 
 				@Override
 				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
 						ClientHttpRequestExecution execution) throws IOException {
-					request.getHeaders().add(
-							"Authorization",
-							"Basic "
-									+ new String(Base64
-											.encode((username + ":" + password)
-													.getBytes())));
+					byte[] token = Base64.encode((username + ":" + password).getBytes());
+					request.getHeaders().add("Authorization",
+							"Basic " + new String(token));
 					return execution.execute(request, body);
 				}
+
 			});
 		}
 

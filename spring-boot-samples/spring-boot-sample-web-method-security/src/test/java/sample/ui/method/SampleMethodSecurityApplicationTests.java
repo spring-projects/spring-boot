@@ -16,9 +16,6 @@
 
 package sample.ui.method;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,13 +37,16 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Basic integration tests for demo application.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=SampleMethodSecurityApplication.class)
+@SpringApplicationConfiguration(classes = SampleMethodSecurityApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext

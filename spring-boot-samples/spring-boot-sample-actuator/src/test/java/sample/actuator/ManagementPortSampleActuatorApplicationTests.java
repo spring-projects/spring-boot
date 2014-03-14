@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package sample.actuator;
-
-import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
@@ -36,13 +34,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Integration tests for separate management and main service ports.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=SampleActuatorApplication.class)
+@SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext
@@ -62,7 +62,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:" + port, Map.class);
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -74,14 +74,14 @@ public class ManagementPortSampleActuatorApplicationTests {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/metrics", Map.class);
+				"http://localhost:" + this.managementPort + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/health", String.class);
+				"http://localhost:" + this.managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}
@@ -90,7 +90,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	public void testErrorPage() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
-				"http://localhost:" + managementPort + "/error", Map.class);
+				"http://localhost:" + this.managementPort + "/error", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -98,7 +98,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return security.getUser().getPassword();
+		return this.security.getUser().getPassword();
 	}
 
 	private RestTemplate getRestTemplate() {

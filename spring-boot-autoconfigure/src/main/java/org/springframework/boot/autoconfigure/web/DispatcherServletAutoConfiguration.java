@@ -101,15 +101,11 @@ public class DispatcherServletAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-
 			ConditionOutcome outcome = checkServlets(beanFactory);
-
 			if (!outcome.isMatch()) {
 				return outcome;
 			}
-
 			return checkServletRegistrations(beanFactory);
 		}
 
@@ -123,9 +119,9 @@ public class DispatcherServletAutoConfiguration {
 				.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 		if (servlets.isEmpty()) {
 			if (containsDispatcherBean) {
-				return ConditionOutcome
-						.noMatch("found no DispatcherServlet but a non-DispatcherServlet named "
-								+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+				return ConditionOutcome.noMatch("found no DispatcherServlet "
+						+ "but a non-DispatcherServlet named "
+						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			}
 			return ConditionOutcome.match("no DispatcherServlet found");
 		}
@@ -138,9 +134,8 @@ public class DispatcherServletAutoConfiguration {
 					+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 		}
 
-		return ConditionOutcome
-				.match("one or more DispatcherServlets found and none is named "
-						+ DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+		return ConditionOutcome.match("one or more DispatcherServlets "
+				+ "found and none is named " + DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 
 	}
 
@@ -154,9 +149,9 @@ public class DispatcherServletAutoConfiguration {
 
 		if (registrations.isEmpty()) {
 			if (containsDispatcherRegistrationBean) {
-				return ConditionOutcome
-						.noMatch("found no ServletRegistrationBean but a non-ServletRegistrationBean named "
-								+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
+				return ConditionOutcome.noMatch("found no ServletRegistrationBean "
+						+ "but a non-ServletRegistrationBean named "
+						+ DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
 			}
 			return ConditionOutcome.match("no ServletRegistrationBean found");
 		}

@@ -37,10 +37,12 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
- *
+ * 
  * @author Dave Syer
  */
 public class TomcatDataSourceConfigurationTests {
+
+	private static final String PREFIX = "spring.datasource.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -60,17 +62,23 @@ public class TomcatDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testWhileIdle:true");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnBorrow:true");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxWait:1234");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.jdbcInterceptors:SlowQueryReport");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.validationInterval:9999");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "url:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "timeBetweenEvictionRunsMillis:10000");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "minEvictableIdleTimeMillis:12345");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "jdbcInterceptors:SlowQueryReport");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "validationInterval:9999");
 		this.context.refresh();
-		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
+				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
 		assertEquals(true, ds.isTestWhileIdle());
 		assertEquals(true, ds.isTestOnBorrow());
@@ -82,8 +90,10 @@ public class TomcatDataSourceConfigurationTests {
 		assertDataSourceHasInterceptors(ds);
 	}
 
-	private void assertDataSourceHasInterceptors(DataSourceProxy ds) throws ClassNotFoundException {
-		PoolProperties.InterceptorDefinition[] interceptors = ds.getJdbcInterceptorsAsArray();
+	private void assertDataSourceHasInterceptors(DataSourceProxy ds)
+			throws ClassNotFoundException {
+		PoolProperties.InterceptorDefinition[] interceptors = ds
+				.getJdbcInterceptorsAsArray();
 		for (PoolProperties.InterceptorDefinition interceptor : interceptors) {
 			if (SlowQueryReport.class == interceptor.getInterceptorClass()) {
 				return;
@@ -96,7 +106,8 @@ public class TomcatDataSourceConfigurationTests {
 	public void testDataSourceDefaultsPreserved() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		this.context.refresh();
-		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
+		org.apache.tomcat.jdbc.pool.DataSource ds = this.context
+				.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertEquals(5000, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(60000, ds.getMinEvictableIdleTimeMillis());
 		assertEquals(30000, ds.getMaxWait());

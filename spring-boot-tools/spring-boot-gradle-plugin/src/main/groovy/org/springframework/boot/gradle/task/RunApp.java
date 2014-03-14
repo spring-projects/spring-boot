@@ -26,7 +26,6 @@ import java.util.concurrent.Callable;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.internal.file.collections.SimpleFileCollection;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
@@ -45,15 +44,10 @@ public class RunApp extends DefaultTask {
 
 		final Project project = getProject();
 		final SourceSet main = ComputeMain.findMainSourceSet(project);
-
+		final File outputDir = (main == null ? null : main.getOutput().getResourcesDir());
 		final Set<File> allResources = new LinkedHashSet<File>();
-		final File outputs;
 		if (main != null) {
-			SourceDirectorySet resources = main.getResources();
-			allResources.addAll(resources.getSrcDirs());
-			outputs = main.getOutput().getResourcesDir();
-		} else {
-			outputs = null;
+			allResources.addAll(main.getResources().getSrcDirs());
 		}
 
 		project.getTasks().withType(JavaExec.class, new Action<JavaExec>() {
@@ -78,21 +72,25 @@ public class RunApp extends DefaultTask {
 					});
 					getLogger().info("Found main: " + mainClass);
 				}
-				if (outputs != null) {
-					// remove duplicates from resources and build
+				if (outputDir != null) {
 					for (File directory : allResources) {
-						if (directory.isDirectory()) {
-							for (String name : directory.list()) {
-								File file = new File(outputs, name);
-								if (file.exists() && file.canWrite()) {
-									getProject().delete(file);
-								}
-							}
-						}
+						removeDuplicatesFromOutputDir(directory, outputDir);
 					}
 				}
 				exec.exec();
 			}
+
+			private void removeDuplicatesFromOutputDir(File directory, File outputDir) {
+				if (directory.isDirectory()) {
+					for (String name : directory.list()) {
+						File outputFile = new File(outputDir, name);
+						if (outputFile.exists() && outputFile.canWrite()) {
+							getProject().delete(outputFile);
+						}
+					}
+				}
+			}
+
 		});
 
 	}
@@ -104,7 +102,8 @@ public class RunApp extends DefaultTask {
 		getLogger().info("Looking for main in: " + main.getOutput().getClassesDir());
 		try {
 			return MainClassFinder.findMainClass(main.getOutput().getClassesDir());
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new IllegalStateException("Cannot find main class", ex);
 		}
 	}

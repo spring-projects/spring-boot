@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,12 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link CommonsDataSourceConfiguration}.
- *
+ * 
  * @author Dave Syer
  */
 public class CommonsDataSourceConfigurationTests {
+
+	private static final String PREFIX = "spring.datasource.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -47,13 +49,16 @@ public class CommonsDataSourceConfigurationTests {
 	@Test
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(CommonsDataSourceConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.url:jdbc:foo//bar/spam");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testWhileIdle:true");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnBorrow:true");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.testOnReturn:true");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.timeBetweenEvictionRunsMillis:10000");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.minEvictableIdleTimeMillis:12345");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.datasource.maxWait:1234");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "url:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testWhileIdle:true");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnBorrow:true");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "testOnReturn:true");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "timeBetweenEvictionRunsMillis:10000");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
+				+ "minEvictableIdleTimeMillis:12345");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
 		this.context.refresh();
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
@@ -70,8 +75,10 @@ public class CommonsDataSourceConfigurationTests {
 		this.context.register(CommonsDataSourceConfiguration.class);
 		this.context.refresh();
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
-		assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS, ds.getTimeBetweenEvictionRunsMillis());
-		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS, ds.getMinEvictableIdleTimeMillis());
+		assertEquals(GenericObjectPool.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS,
+				ds.getTimeBetweenEvictionRunsMillis());
+		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
+				ds.getMinEvictableIdleTimeMillis());
 		assertEquals(GenericObjectPool.DEFAULT_MAX_WAIT, ds.getMaxWait());
 	}
 

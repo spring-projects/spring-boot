@@ -50,9 +50,6 @@ import org.springframework.boot.loader.tools.MainClassFinder;
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractMojo {
 
-	/**
-	 *
-	 */
 	private static final String SPRING_LOADED_AGENT_CLASSNAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
 	/**
@@ -201,18 +198,21 @@ public class RunMojo extends AbstractMojo {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
 				urls.add(directory.toURI().toURL());
-				if (directory.isDirectory()) {
-					// Remove duplicates from the target directory...
-					for (String name : directory.list()) {
-						File file = new File(this.classesDirectory, name);
-						if (file.exists() && file.canWrite()) {
-							if (file.isDirectory()) {
-								FileUtils.deleteDirectory(file);
-							}
-							else {
-								file.delete();
-							}
-						}
+				removeDuplicatesFromTarget(directory);
+			}
+		}
+	}
+
+	private void removeDuplicatesFromTarget(File directory) throws IOException {
+		if (directory.isDirectory()) {
+			for (String name : directory.list()) {
+				File targetFile = new File(this.classesDirectory, name);
+				if (targetFile.exists() && targetFile.canWrite()) {
+					if (targetFile.isDirectory()) {
+						FileUtils.deleteDirectory(targetFile);
+					}
+					else {
+						targetFile.delete();
 					}
 				}
 			}

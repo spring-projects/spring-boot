@@ -17,10 +17,7 @@
 package org.springframework.boot.test;
 
 /**
- * @author dsyer
- */
-/**
- * Copied from Spring Security Crypto.
+ * Base64 Encoding Support. Copied from Spring Security Crypto.
  * 
  * @author Luke Taylor
  */

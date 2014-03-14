@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,6 @@
  */
 
 package sample.actuator;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,13 +37,18 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Basic integration tests for service demo application.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=SampleActuatorApplication.class)
+@SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext
@@ -73,8 +73,8 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword()).getForEntity(
-				"http://localhost:8080", Map.class);
+		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword())
+				.getForEntity("http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -85,8 +85,8 @@ public class SampleActuatorApplicationTests {
 	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword()).getForEntity(
-				"http://localhost:8080/metrics", Map.class);
+		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword())
+				.getForEntity("http://localhost:8080/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -96,8 +96,8 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testEnv() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword()).getForEntity(
-				"http://localhost:8080/env", Map.class);
+		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword())
+				.getForEntity("http://localhost:8080/env", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -127,8 +127,9 @@ public class SampleActuatorApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = RestTemplates.get("user", getPassword()).exchange(
-				"http://localhost:8080/foo", HttpMethod.GET, request, String.class);
+		ResponseEntity<String> entity = RestTemplates.get("user", getPassword())
+				.exchange("http://localhost:8080/foo", HttpMethod.GET, request,
+						String.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		String body = entity.getBody();
 		assertNotNull("Body was null", body);
@@ -178,7 +179,7 @@ public class SampleActuatorApplicationTests {
 	}
 
 	private String getPassword() {
-		return security.getUser().getPassword();
+		return this.security.getUser().getPassword();
 	}
 
 }

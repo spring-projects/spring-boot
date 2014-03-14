@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,8 +161,8 @@ public class ServletRegistrationBean extends RegistrationBean {
 		logger.info("Mapping servlet: '" + name + "' to " + this.urlMappings);
 		Dynamic added = servletContext.addServlet(name, this.servlet);
 		if (added == null) {
-			logger.info("Servlet " + name
-					+ " was not registered (possibly already registered?)");
+			logger.info("Servlet " + name + " was not registered "
+					+ "(possibly already registered?)");
 			return;
 		}
 		configure(added);

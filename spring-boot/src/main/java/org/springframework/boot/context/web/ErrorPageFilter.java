@@ -121,26 +121,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			HttpServletResponse response, ErrorWrapperResponse wrapped, Throwable ex)
 			throws IOException, ServletException {
 		Class<?> type = ex.getClass();
-		String errorPath = this.global;
-		if (this.exceptions.containsKey(type)) {
-			errorPath = this.exceptions.get(type);
-		}
-		else {
-			if (this.subtypes.containsKey(type)) {
-				errorPath = this.exceptions.get(this.subtypes.get(type));
-			}
-			else {
-				Class<?> subtype = type;
-				while (subtype != Object.class) {
-					subtype = subtype.getSuperclass();
-					if (this.exceptions.containsKey(subtype)) {
-						this.subtypes.put(subtype, type);
-						errorPath = this.exceptions.get(subtype);
-						break;
-					}
-				}
-			}
-		}
+		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
 			rethrow(ex);
 			return;
@@ -152,9 +133,27 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		request.getRequestDispatcher(errorPath).forward(request, response);
 	}
 
-	private String getErrorPath(Map<?, String> map, Object key) {
-		if (map.containsKey(key)) {
-			return map.get(key);
+	private String getErrorPath(Map<Integer, String> map, Integer status) {
+		if (map.containsKey(status)) {
+			return map.get(status);
+		}
+		return this.global;
+	}
+
+	private String getErrorPath(Class<?> type) {
+		if (this.exceptions.containsKey(type)) {
+			return this.exceptions.get(type);
+		}
+		if (this.subtypes.containsKey(type)) {
+			return this.exceptions.get(this.subtypes.get(type));
+		}
+		Class<?> subtype = type;
+		while (subtype != Object.class) {
+			subtype = subtype.getSuperclass();
+			if (this.exceptions.containsKey(subtype)) {
+				this.subtypes.put(subtype, type);
+				return this.exceptions.get(subtype);
+			}
 		}
 		return this.global;
 	}

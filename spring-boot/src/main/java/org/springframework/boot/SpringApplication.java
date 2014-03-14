@@ -383,9 +383,9 @@ public class SpringApplication {
 	/**
 	 * Template method delegating to
 	 * {@link #configurePropertySources(ConfigurableEnvironment, String[])} and
-	 * {@link #configureProfiles(ConfigurableEnvironment, String[])} in that order. Override
-	 * this method for complete control over Environment customization, or one of the above
-	 * for fine-grained control over property sources or profiles, respectively.
+	 * {@link #configureProfiles(ConfigurableEnvironment, String[])} in that order.
+	 * Override this method for complete control over Environment customization, or one of
+	 * the above for fine-grained control over property sources or profiles, respectively.
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configurePropertySources(ConfigurableEnvironment, String[])
@@ -397,12 +397,14 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Add, remove or re-order any {@link PropertySource}s in this application's environment.
+	 * Add, remove or re-order any {@link PropertySource}s in this application's
+	 * environment.
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])
 	 */
-	protected void configurePropertySources(ConfigurableEnvironment environment, String[] args) {
+	protected void configurePropertySources(ConfigurableEnvironment environment,
+			String[] args) {
 		MutablePropertySources sources = environment.getPropertySources();
 		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
 			sources.addLast(new MapPropertySource("defaultProperties",
@@ -425,9 +427,10 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Configure which profiles are active (or active by default) for this application environment.
-	 * Consider overriding this method to programmatically enforce profile rules and semantics,
-	 * such as ensuring mutual exclusivity of profiles (e.g. 'dev' OR 'prod', but never both).
+	 * Configure which profiles are active (or active by default) for this application
+	 * environment. Consider overriding this method to programmatically enforce profile
+	 * rules and semantics, such as ensuring mutual exclusivity of profiles (e.g. 'dev' OR
+	 * 'prod', but never both).
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])

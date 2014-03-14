@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.loader.jar.JarFile;
  * {@link ClassLoader} used by the {@link Launcher}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
@@ -67,29 +68,27 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	@Override
 	public URL findResource(String name) {
-		if (name.equals("")) {
-			URL[] urls = getURLs();
-			if (urls.length > 0) {
-				return urls[0];
-			}
-		}
 		try {
+			if (name.equals("") && hasURLs()) {
+				return getURLs()[0];
+			}
 			return super.findResource(name);
 		}
-		catch (IllegalArgumentException e) {
+		catch (IllegalArgumentException ex) {
 			return null;
 		}
 	}
 
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
-		if (name.equals("")) {
-			URL[] urls = getURLs();
-			if (urls.length > 0) {
-				return Collections.enumeration(Arrays.asList(urls));
-			}
+		if (name.equals("") && hasURLs()) {
+			return Collections.enumeration(Arrays.asList(getURLs()));
 		}
 		return super.findResources(name);
+	}
+
+	private boolean hasURLs() {
+		return getURLs().length > 0;
 	}
 
 	@Override
