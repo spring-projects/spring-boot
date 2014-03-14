@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Configuration for a Tomcat database pool. The Tomcat pool provides superior performance
  * and tends not to deadlock in high volume environments.
- *
+ * 
  * @author Dave Syer
  * @see DataSourceAutoConfiguration
  */
@@ -54,12 +54,19 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		this.pool.setTestOnBorrow(isTestOnBorrow());
 		this.pool.setTestOnReturn(isTestOnReturn());
 		this.pool.setTestWhileIdle(isTestWhileIdle());
-		this.pool.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
-		this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
+		if (getTimeBetweenEvictionRunsMillis() != null) {
+			this.pool
+					.setTimeBetweenEvictionRunsMillis(getTimeBetweenEvictionRunsMillis());
+		}
+		if (getMinEvictableIdleTimeMillis() != null) {
+			this.pool.setMinEvictableIdleTimeMillis(getMinEvictableIdleTimeMillis());
+		}
 		this.pool.setValidationQuery(getValidationQuery());
 		this.pool.setValidationInterval(this.validationInterval);
-		this.pool.setMaxWait(getMaxWaitMillis());
-		if (jdbcInterceptors != null) {
+		if (getMaxWaitMillis() != null) {
+			this.pool.setMaxWait(getMaxWaitMillis());
+		}
+		if (this.jdbcInterceptors != null) {
 			this.pool.setJdbcInterceptors(this.jdbcInterceptors);
 		}
 		return this.pool;
@@ -72,22 +79,11 @@ public class TomcatDataSourceConfiguration extends AbstractDataSourceConfigurati
 		}
 	}
 
-	@Override
-	protected int getDefaultTimeBetweenEvictionRunsMillis() {
-		return 5000;
+	public void setJdbcInterceptors(String jdbcInterceptors) {
+		this.jdbcInterceptors = jdbcInterceptors;
 	}
 
-	@Override
-	protected int getDefaultMinEvictableIdleTimeMillis() {
-		return 60000;
+	public void setValidationInterval(long validationInterval) {
+		this.validationInterval = validationInterval;
 	}
-
-	@Override
-	protected int getDefaultMaxWaitMillis() {
-		return 30000;
-	}
-
-	public void setJdbcInterceptors(String jdbcInterceptors) { this.jdbcInterceptors = jdbcInterceptors; }
-
-	public void setValidationInterval(long validationInterval) { this.validationInterval = validationInterval; }
 }

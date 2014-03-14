@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,12 +46,12 @@ public abstract class SpringBootCondition implements Condition {
 			recordEvaluation(context, classOrMethodName, outcome);
 			return outcome.isMatch();
 		}
-		catch (NoClassDefFoundError e) {
+		catch (NoClassDefFoundError ex) {
 			throw new IllegalStateException(
 					"Could not evaluate condition owing to internal class not found. "
-							+ "This can happen if you are @ComponentScanning a springframework package "
-							+ "(e.g. if you put a @ComponentScan in the default package by mistake)",
-					e);
+							+ "This can happen if you are @ComponentScanning a "
+							+ "springframework package (e.g. if you put a @ComponentScan "
+							+ "in the default package by mistake)", ex);
 		}
 	}
 

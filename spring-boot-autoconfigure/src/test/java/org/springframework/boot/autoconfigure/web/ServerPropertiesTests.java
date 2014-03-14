@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -76,7 +76,7 @@ public class ServerPropertiesTests {
 	public void testCustomizeTomcat() throws Exception {
 		ConfigurableEmbeddedServletContainer factory = mock(ConfigurableEmbeddedServletContainer.class);
 		this.properties.customize(factory);
-		verify(factory, times(0)).setContextPath("");
+		verify(factory, never()).setContextPath("");
 	}
 
 	@Test

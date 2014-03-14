@@ -16,8 +16,6 @@
 
 package sample.tomcat;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.SpringApplication;
@@ -43,13 +41,15 @@ import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoCon
 import sample.tomcat.service.HelloWorldService;
 import sample.tomcat.web.SampleController;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Basic integration tests for demo application.
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes=NonAutoConfigurationSampleTomcatApplication.class)
+@SpringApplicationConfiguration(classes = NonAutoConfigurationSampleTomcatApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext

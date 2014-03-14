@@ -84,11 +84,9 @@ public class ThymeleafAutoConfiguration {
 			if (checkTemplateLocation) {
 				Resource resource = this.resourceLoader.getResource(this.environment
 						.getProperty("prefix", DEFAULT_PREFIX));
-				Assert.state(
-						resource.exists(),
-						"Cannot find template location: "
-								+ resource
-								+ " (please add some templates or check your Thymeleaf configuration)");
+				Assert.state(resource.exists(), "Cannot find template location: "
+						+ resource + " (please add some templates "
+						+ "or check your Thymeleaf configuration)");
 			}
 		}
 
