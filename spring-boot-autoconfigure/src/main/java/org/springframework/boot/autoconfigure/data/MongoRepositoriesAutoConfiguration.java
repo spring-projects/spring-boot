@@ -30,14 +30,19 @@ import com.mongodb.Mongo;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Mongo
  * Repositories.
- *
- * <p> Activates when there is no bean of type {@link org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean} configured in the context,
- * the Spring Data Mongo {@link org.springframework.data.mongodb.repository.MongoRepository} type is on the classpath,
- * the Mongo client driver API is on the classpath, and there is no other configured {@link org.springframework.data.mongodb.repository.MongoRepository}.
- *
- * <p> Once in effect, the auto-configuration is the equivalent of enabling Mongo repositories using
- * the {@link org.springframework.data.mongodb.repository.config.EnableMongoRepositories} annotation.
- *
+ * <p>
+ * Activates when there is no bean of type
+ * {@link org.springframework.data.mongodb.repository.support.MongoRepositoryFactoryBean}
+ * configured in the context, the Spring Data Mongo
+ * {@link org.springframework.data.mongodb.repository.MongoRepository} type is on the
+ * classpath, the Mongo client driver API is on the classpath, and there is no other
+ * configured {@link org.springframework.data.mongodb.repository.MongoRepository}.
+ * <p>
+ * Once in effect, the auto-configuration is the equivalent of enabling Mongo repositories
+ * using the
+ * {@link org.springframework.data.mongodb.repository.config.EnableMongoRepositories}
+ * annotation.
+ * 
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long
