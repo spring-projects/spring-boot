@@ -9,6 +9,9 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-docs</artifactId>
+	<properties>
+		<main.basedir>${basedir}/..</main.basedir>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
