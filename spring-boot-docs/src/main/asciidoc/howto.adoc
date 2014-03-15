@@ -746,7 +746,7 @@ If Groovy is on the classpath you should be able to configure Logback with
 
 [[howto-configure-log4j-for-logging]]
 === Configure Log4j for logging
-Spring Boot supports http://logging.apache.org/log4j/1.x/[Log4j] for logging
+Spring Boot supports http://logging.apache.org/log4j[Log4j] for logging
 configuration, but it has to be on the classpath. If you are using the starter poms for
 assembling dependencies that means you have to exclude logback and then include log4j
 back. If you aren't using the starter poms then you need to provide `commons-logging`

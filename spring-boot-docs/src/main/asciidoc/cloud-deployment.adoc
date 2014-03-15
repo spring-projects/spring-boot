@@ -127,8 +127,8 @@ access application information (such as the public URL of the application) and s
 information (such as database credentials). See `VcapApplicationListener` Javdoc for
 complete details.
 
-TIP: The http://spring.io/projects/spring-cloud[Spring Cloud] project is a better fit
-for tasks such as configuring a DataSource; and you can also use Spring Cloud with
+TIP: The https://github.com/spring-projects/spring-cloud[Spring Cloud] project is a better
+fit for tasks such as configuring a DataSource; and you can also use Spring Cloud with
 Heroku too!
 
 
