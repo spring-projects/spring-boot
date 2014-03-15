@@ -11,6 +11,30 @@
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
+	<profiles>
+		<profile>
+			<id>standard-jdk</id>
+			<activation>
+				<file>
+					<exists>${java.home}/../lib/tools.jar</exists>
+				</file>
+			</activation>
+			<properties>
+				<tools-jar>${java.home}/../lib/tools.jar</tools-jar>
+			</properties>
+		</profile>
+		<profile>
+			<id>apple-jdk</id>
+			<activation>
+				<file>
+					<exists>${java.home}/../Classes/classes.jar</exists>
+				</file>
+			</activation>
+			<properties>
+				<tools-jar>${java.home}/../Classes/classes.jar</tools-jar>
+			</properties>
+		</profile>
+	</profiles>
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
@@ -18,7 +42,7 @@
 			<artifactId>tools</artifactId>
 			<version>${java.version}</version>
 			<scope>system</scope>
-			<systemPath>${java.home}/../lib/tools.jar</systemPath>
+			<systemPath>${tools-jar}</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
