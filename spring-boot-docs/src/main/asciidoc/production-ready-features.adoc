@@ -163,7 +163,7 @@ To provide custom health information you can register a Spring bean that impleme
 ----
 
 Spring Boot also provides a
-{sc-spring-boot-actuator}/health/SimpleHealthIndicator/{sc-ext}[`SimpleHealthIndicator`]
+{sc-spring-boot-actuator}/health/SimpleHealthIndicator.{sc-ext}[`SimpleHealthIndicator`]
 implementation that attempts a simple database test.
 
 
