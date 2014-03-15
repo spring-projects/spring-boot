@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,9 @@ public class HttpMessageConvertersAutoConfiguration {
 		@ConditionalOnMissingBean
 		@Primary
 		public ObjectMapper jacksonObjectMapper() {
-			return new ObjectMapper();
+			ObjectMapper objectMapper = new ObjectMapper();
+			configureObjectMapper(objectMapper);
+			return objectMapper;
 		}
 
 		@Bean
@@ -100,6 +103,11 @@ public class HttpMessageConvertersAutoConfiguration {
 			return converter;
 		}
 
+		private void configureObjectMapper(ObjectMapper objectMapper) {
+			if (this.properties.isJsonSortKeys()) {
+				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+			}
+		}
 	}
 
 }

@@ -27,6 +27,8 @@ public class HttpMapperProperties {
 
 	private boolean jsonPrettyPrint = false;
 
+	private boolean jsonSortKeys = false;
+
 	public void setJsonPrettyPrint(boolean jsonPrettyPrint) {
 		this.jsonPrettyPrint = jsonPrettyPrint;
 	}
@@ -35,4 +37,12 @@ public class HttpMapperProperties {
 		return this.jsonPrettyPrint;
 	}
 
+
+	public boolean isJsonSortKeys() {
+		return this.jsonSortKeys;
+	}
+
+	public void setJsonSortKeys(boolean jsonSortKeys) {
+		this.jsonSortKeys = jsonSortKeys;
+	}
 }
