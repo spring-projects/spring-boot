@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>com.sun</groupId>
 			<artifactId>tools</artifactId>
-			<version>1.6</version>
+			<version>${java.version}</version>
 			<scope>system</scope>
 			<systemPath>${tools-jar}</systemPath>
 		</dependency>
@@ -143,7 +143,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-plugin-plugin</artifactId>
-				<version>3.1</version>
 				<configuration>
 					<goalPrefix>spring-boot</goalPrefix>
 				</configuration>
