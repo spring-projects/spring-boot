@@ -79,16 +79,16 @@ than one way to register additional ones:
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (even
 some before the context is created), and then registers the listeners for events published
 by the `ApplicationContext` as well. See
-``<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>'' in the
-``<<spring-boot-features.adoc#boot-features>>'' section for a complete list.
+'<<spring-boot-features.adoc#boot-features-application-events-and-listeners>>' in the
+``Spring Boot features'' section for a complete list.
 
 
 
 [[howto-build-an-application-context-hierarchy]]
 === Build an ApplicationContext hierarchy (adding a parent or root context)
 You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext`
-hierarchies. See ``<<spring-boot-features.adoc#boot-features-fluent-builder-api>>''
-in the ``<<spring-boot-features.adoc#boot-features>>'' section for more information.
+hierarchies. See '<<spring-boot-features.adoc#boot-features-fluent-builder-api>>'
+in the ``Spring Boot features'' section for more information.
 
 
 
@@ -132,8 +132,8 @@ not be a web application.
 [[howto-change-the-location-of-external-properties]]
 === Change the location of external properties of an application
 By default properties from different sources are added to the Spring `Environment` in a
-defined order (see ``<<spring-boot-features.adoc#boot-features-external-config>>'' in
-the ``<<spring-boot-features.adoc#boot-features>>'' section for the exact order).
+defined order (see '<<spring-boot-features.adoc#boot-features-external-config>>' in
+the ``Spring Boot features'' section for the exact order).
 
 A nice way to augment and modify this is to add `@PropertySource` annotations to your
 application sources. Classes passed to the `SpringApplication` static convenience
@@ -212,8 +212,8 @@ The example YAML above corresponds to an `application.properties` file
 	server.port=9000
 ----
 
-See ``<<spring-boot-features.adoc#boot-features-external-config-yaml>>'' in
-the ``<<spring-boot-features.adoc#boot-features>>'' section for more information
+See '<<spring-boot-features.adoc#boot-features-external-config-yaml>>' in
+the ``Spring Boot features'' section for more information
 about YAML.
 
 [[howto-set-active-spring-profiles]]
@@ -239,8 +239,8 @@ A value set this way is replaced by the System property or environment variable 
 but not by the `SpringApplicationBuilder.profiles()` method. Thus the latter Java API can
 be used to augment the profiles without changing the defaults.
 
-See ``<<spring-boot-features.adoc#boot-features-profiles>>'' in
-the ``<<spring-boot-features.adoc#boot-features>>'' section for more information.
+See '<<spring-boot-features.adoc#boot-features-profiles>>' in
+the ``Spring Boot features'' section for more information.
 
 
 
@@ -335,8 +335,8 @@ environment variable).
 To switch off the HTTP endpoints completely, but still create a `WebApplicationContext`,
 use `server.port=-1` (this is sometimes useful for testing).
 
-For more details look at ``<<spring-boot-features.adoc#boot-features-customizing-embedded-containers>>''
-in the ``<<spring-boot-features.adoc#boot-features>>'' section, or the
+For more details look at '<<spring-boot-features.adoc#boot-features-customizing-embedded-containers>>'
+in the ``Spring Boot features'' section, or the
 {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`] source
 code.
 
@@ -360,7 +360,7 @@ out of the event wehen it is published.
 [[howto-configure-tomcat]]
 === Configure Tomcat
 Generally you can follow the advice from
-``<<howto-discover-build-in-options-for-external-properties>>'' about
+'<<howto-discover-build-in-options-for-external-properties>>' about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
 `EmbeddedServletContainerCustomizer` and various Tomcat specific `*Customizers` that you
 can add in one of those. The Tomcat APIs are quite rich so once you have access to the
@@ -466,7 +466,7 @@ Example in Gradle:
 [[howto-configure-jetty]]
 === Configure Jetty
 Generally you can follow the advice from
-``<<howto-discover-build-in-options-for-external-properties>>'' about
+'<<howto-discover-build-in-options-for-external-properties>>' about
 `@ConfigurationProperties` (`ServerProperties` is the main one here), but also look at
 `EmbeddedServletContainerCustomizer`. The Jetty APIs are quite rich so once you have
 access to the `JettyEmbeddedServletContainerFactory` you can modify it in a number
@@ -590,7 +590,7 @@ provided of type `HttpMessageConverters` (always available if you use the defaul
 configuration) which has some useful methods to access the default and user-enhanced
 message converters.
 
-See also the ``<<howto-customize-the-responsebody-rendering>>'' section and the
+See also the '<<howto-customize-the-responsebody-rendering>>' section and the
 {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
 
@@ -788,8 +788,8 @@ action.
 [[howto-configure-a-datasource]]
 === Configure a DataSource
 To override the default settings just define a `@Bean` of your own of type `DataSource`.
-See ``<<spring-boot-features.adoc#boot-features-configure-datasource>>'' in the
-``<<spring-boot-features.adoc#boot-features>>'' section and the
+See '<<spring-boot-features.adoc#boot-features-configure-datasource>>' in the
+``Spring Boot features'' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
 
@@ -992,8 +992,8 @@ also set `management.address` to a valid IP address that the server is able to b
 For more detail look at the
 {sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[`ManagementServerProperties`]
 source code and
-``<<production-ready-features.adoc#production-ready-customizing-management-server-port>>''
-in the ``<<production-ready-features.adoc#production-ready>>'' section.
+'<<production-ready-features.adoc#production-ready-customizing-management-server-port>>'
+in the ``Production-ready features'' section.
 
 
 
