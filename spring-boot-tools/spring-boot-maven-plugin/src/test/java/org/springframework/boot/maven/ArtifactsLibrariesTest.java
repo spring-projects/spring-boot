@@ -30,7 +30,6 @@ import org.springframework.boot.loader.tools.LibraryScope;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link ArtifactsLibraries}.
@@ -66,13 +65,4 @@ public class ArtifactsLibrariesTest {
 		this.libs.doWithLibraries(this.callback);
 		verify(this.callback).library(this.file, LibraryScope.COMPILE);
 	}
-
-	@Test
-	public void doesNotIncludePoms() throws Exception {
-		given(this.artifact.getType()).willReturn("pom");
-		given(this.artifact.getScope()).willReturn("compile");
-		this.libs.doWithLibraries(this.callback);
-		verifyZeroInteractions(this.callback);
-	}
-
 }
