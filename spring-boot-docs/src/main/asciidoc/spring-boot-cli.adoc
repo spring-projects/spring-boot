@@ -14,7 +14,7 @@ familiar Java-like syntax, without so much boilerplate code.
 == Installing the CLI
 The Spring Boot CLI can be installed manually; using GVM (the Groovy Environment
 Manually) or using Homebrew if you are an OSX user. See
-``<<getting-started.adoc#getting-started-installing-the-cli>>''
+'<<getting-started.adoc#getting-started-installing-the-cli>>'
 in the ``Getting started'' section for comprehensive installation instructions.
 
 
@@ -319,5 +319,5 @@ Spring Boot CLI. There is also extensive javadoc throughout the
 If you find that you reach the limit of the CLI tool, you will probably want to look
 at converting your application to full Gradle or Maven built ``groovy project''. The
 next section covers Spring Boot's
-``<<build-tool-plugins.adoc#build-tool-plugins, Build tool plugins>>'' that you can
+'<<build-tool-plugins.adoc#build-tool-plugins, Build tool plugins>>' that you can
 use with Gradle or Maven.

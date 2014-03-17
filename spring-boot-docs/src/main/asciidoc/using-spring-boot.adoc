@@ -5,13 +5,13 @@
 --
 This section goes into more detail about how you should use Spring Boot. It covers topics
 such as build systems, auto-configuration and run/deployment options. We also cover some
-Spring Boot ``best practices''. Although there is nothing particularly special about
+Spring Boot best practices. Although there is nothing particularly special about
 Spring Boot (it is just another library that you can consume). There are a few
 recommendations that, when followed, will make your development process just a
 little easier.
 
 If you're just starting out with Spring Boot, you should probably read the
-``<<getting-started.adoc#getting-started, Getting Started>>'' guide before diving into
+'<<getting-started.adoc#getting-started, Getting Started>>' guide before diving into
 this section.
 --
 
@@ -175,7 +175,7 @@ It is possible to build a Spring Boot project using Apache Ant, however, no spec
 support or plugins are provided. Ant scripts can use the Ivy dependency system to import
 starter POMs.
 
-See the ``<<howto.adoc#howto-build-an-executable-archive-with-ant>>'' ``How-to'' for more
+See the '<<howto.adoc#howto-build-an-executable-archive-with-ant>>' ``How-to'' for more
 complete instructions.
 
 
@@ -260,7 +260,7 @@ and Hibernate.
 |===
 
 In addition to the application starters, the following starters can be used to
-add ``<<production-ready-features.adoc#production-ready, production ready>>'' features.
+add '<<production-ready-features.adoc#production-ready, production ready>>' features.
 
 .Spring Boot production ready starters
 |===
@@ -583,7 +583,7 @@ are also ideally suited for cloud-based deployment.
 
 For additional ``production ready'' features, such as health, auditing and metric REST
 or JMX end-points; consider adding `spring-boot-actuator`. See
-``<<production-ready-features.adoc#production-ready>>'' for details.
+'<<production-ready-features.adoc#production-ready>>' for details.
 
 
 
@@ -591,7 +591,7 @@ or JMX end-points; consider adding `spring-boot-actuator`. See
 == What to read next
 You should now have good understanding of how you can use Spring Boot along with some best
 practices that you should follow. You can now go on to learn about specific
-``<<spring-boot-features#boot-features, Spring Boot features>>'' in depth, or you
+'<<spring-boot-features#boot-features, Spring Boot features>>' in depth, or you
 could skip ahead and read about the
 ``<<production-ready-features#production-ready, production ready>>'' aspects of Spring
 Boot.
