@@ -747,4 +747,4 @@ might want to read about graphing tools such as http://graphite.wikidot.com/[Gra
 Otherwise, you can continue on, to read about <<cloud-deployment.adoc#cloud-deployment,
 ``cloud deployment options''>> or jump ahead
 for some in depth information about Spring Boot's
-<<build-tool-plugins.adoc#build-tool-plugins, ``build tool plugins''>>.
+'<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>'.

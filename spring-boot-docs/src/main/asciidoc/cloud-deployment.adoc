@@ -218,7 +218,7 @@ That should be it! Your application should be up and running on Heroku.
 
 [[cloud-deployment-cloudbees]]
 == CloudBees
-CloudBees provides cloud-based ``continuous integration'' and ``continuous delevery''
+CloudBees provides cloud-based ``continuous integration'' and ``continuous delivery''
 services as well as Java PaaS hosting. https://github.com/msgilligan[Sean Gilligan]
 has contributed an excellent
 https://github.com/CloudBees-community/springboot-gradle-cloudbees-sample[Spring Boot
@@ -236,9 +236,9 @@ features that a PaaS can offer. These are just three of the most popular Java Pa
 providers, since Spring Boot is so amenable to cloud-based deployment you free to
 consider other providers as well.
 
-The next section goes on to cover the <<spring-boot-cli.adoc#cli, ``Spring Boot CLI''>>;
+The next section goes on to cover the '<<spring-boot-cli.adoc#cli, Spring Boot CLI>>';
 or you can jump ahead to read about
-<<build-tool-plugins.adoc#build-tool-plugins, ``build tool plugins''>>.
+'<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>'.
 
 
 
