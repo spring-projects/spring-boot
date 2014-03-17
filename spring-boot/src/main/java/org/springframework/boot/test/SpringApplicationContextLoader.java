@@ -44,11 +44,17 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 
 /**
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
- * normally startup using {@link SpringApplication}). Never starts an embedded web server,
- * but detects the {@link WebAppConfiguration @WebAppConfiguration} annotation on the test
- * class and only creates a web application context if it is present. Non-web features,
- * like a repository layer, can be tested cleanly by simply <em>not</em> marking the test
- * class <code>@WebAppConfiguration</code>.
+ * normally startup using {@link SpringApplication}). Normally never starts an embedded
+ * web server, but detects the {@link WebAppConfiguration @WebAppConfiguration} annotation
+ * on the test class and only creates a web application context if it is present. Non-web
+ * features, like a repository layer, can be tested cleanly by simply <em>not</em> marking
+ * the test class <code>@WebAppConfiguration</code>.
+ * <p>
+ * If you <em>want</em> to start a web server, mark the test class as
+ * <code>@WebAppConfiguration @IntegrationTest</code>. This is useful for testing HTTP
+ * endpoints using {@link RestTemplates} (for instance), especially since you can
+ * <code>@Autowired</code> application context components into your test case to see the
+ * internal effects of HTTP requests directly.
  * <p>
  * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
  * create the application context.

@@ -30,7 +30,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 
 /**
  * Test class annotation signifying that the tests are integration tests (and therefore
- * require an application to startup "fully leaded" and listening on their normal ports).
+ * require an application to startup "fully leaded" and listening on its normal ports).
  * 
  * @author Dave Syer
  */
