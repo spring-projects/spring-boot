@@ -296,9 +296,22 @@ public class SpringApplicationTests {
 		application.setAdditionalProfiles("foo");
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
-		application.run("--spring.profiles.active=bar");
+		application.run("--spring.profiles.active=bar,spam");
 		// Command line should always come last
-		assertArrayEquals(new String[] { "foo", "bar" }, environment.getActiveProfiles());
+		assertArrayEquals(new String[] { "foo", "bar", "spam" },
+				environment.getActiveProfiles());
+	}
+
+	@Test
+	public void addProfilesOrderWithProperties() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
+		application.setAdditionalProfiles("other");
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		application.setEnvironment(environment);
+		application.run();
+		// Active profile should win over default
+		assertEquals("fromotherpropertiesfile", environment.getProperty("my.property"));
 	}
 
 	@Test

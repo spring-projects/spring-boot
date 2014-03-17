@@ -285,6 +285,9 @@ public class ConfigFileApplicationListener implements
 				this.profiles.addAll(Arrays.asList(this.environment.getActiveProfiles()));
 			}
 
+			// The default profile for these purposes is represented as null. We add it
+			// last so that it is first out (active profiles will then override any
+			// settings in the defaults when the list is reversed later).
 			this.profiles.add(null);
 
 			while (!this.profiles.isEmpty()) {
