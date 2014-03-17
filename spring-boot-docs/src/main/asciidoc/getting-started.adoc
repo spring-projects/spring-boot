@@ -470,7 +470,7 @@ so that you can omit `version` tags for ``blessed'' dependencies.
 
 Other ``Starter POMs'' simply provide dependencies that you are likely to need when
 developing a specific type of application. Since we are developing a web application, we
-will add a `spring-boot-starter-web` dependency -- but before that, lets look at what we
+will add a `spring-boot-starter-web` dependency -- but before that, let's look at what we
 currently have.
 
 [indent=0]
@@ -487,7 +487,7 @@ currently have.
 
 The `mvn dependency:tree` command prints tree representation of your project dependencies.
 You can see that `spring-boot-starter-parent` has already provided some useful test
-dependencies. Lets edit our `pom.xml` and add the `spring-boot-starter-web` dependency
+dependencies. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
 just below the `parent` section:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -535,7 +535,7 @@ file named `src/main/java/Example.java`:
 	}
 ----
 
-Although there isn't much code here, quite a lot is going on. Lets step though the
+Although there isn't much code here, quite a lot is going on. Let's step though the
 important parts.
 
 
@@ -625,7 +625,7 @@ To gracefully exit the application hit `ctrl-c`.
 
 [[getting-started-first-application-executable-jar]]
 === Creating an executable jar
-Lets finish our example by creating a completely self-contained executable jar file that
+Let's finish our example by creating a completely self-contained executable jar file that
 we could run in production. Executable jars (sometimes called ``fat jars'') are archives
 containing your compiled classes along with all of the jar dependencies that your code
 needs to run.
