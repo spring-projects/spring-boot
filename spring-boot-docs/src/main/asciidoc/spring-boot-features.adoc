@@ -1376,7 +1376,7 @@ the following provided libraries:
 * Mockito -- A Java mocking framework.
 
 These are common libraries that we generally find useful when writing Tests. You are free
-to replace them if they don't suit your needs.
+to add additional test dependencies of your own if these don't suit your needs.
 
 
 
