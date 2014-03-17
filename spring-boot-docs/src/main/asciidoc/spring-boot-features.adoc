@@ -25,7 +25,7 @@ the static `SpringApplication.run` method:
 	}
 ----
 
-When you application starts you should see something similar to the following:
+When your application starts you should see something similar to the following:
 
 [indent=0,subs="attributes"]
 ----
@@ -43,7 +43,7 @@ When you application starts you should see something similar to the following:
 2014-03-04 13:09:56.501  INFO 41370 --- [           main] o.s.b.s.app.SampleApplication            : Started SampleApplication in 2.992 seconds (JVM running for 3.658)
 ----
 
-By default `INFO` logging messages will shown, including some relevant startup details
+By default `INFO` logging messages will be shown, including some relevant startup details
 such as the user that launched the application.
 
 
@@ -103,8 +103,9 @@ context, otherwise there is no way for Spring Boot to create the `ServletContext
 
 [[boot-features-application-events-and-listeners]]
 === Application events and listeners
-In addition to the usual Spring Framework events, such as `ContextRefreshedEvent`, a
-`SpringApplication` sends some additional application events. Some events are actually
+In addition to the usual Spring Framework events, such as
+{spring-javadoc}/context/event/ContextRefreshedEvent.{dc-ext}[`ContextRefreshedEvent`],
+a `SpringApplication` sends some additional application events. Some events are actually
 triggered before the `ApplicationContext` is created.
 
 You can register event listeners in a number of ways, the most common being
@@ -139,7 +140,7 @@ you need to override the default.
 It is also possible to take complete control of the `ApplicationContext` type that will
 be used by calling `setApplicationContextClass(...)`.
 
-TIP: It is often desirable call `setWebEnvironment(false)` when using `SpringApplication`
+TIP: It is often desirable to call `setWebEnvironment(false)` when using `SpringApplication`
 within a JUnit test.
 
 
@@ -255,7 +256,8 @@ following locations and add them to the Spring `Environment`:
 
 The list is ordered by precedence (locations higher in the list override lower items).
 
-NOTE: You can also use YAML ('.yml') files as an alternative to '.properties' (see below)
+NOTE: You can also <<boot-features-external-config-yaml, use YAML ('.yml') files>> as
+an alternative to '.properties'.
 
 If you don't like `application.properties` as the configuration file name you can switch
 to another by specifying a `spring.config.name` environment property. You can also refer
@@ -596,7 +598,7 @@ Logback routing is also included to ensure that dependent libraries that use
 Java Util Logging, Commons Logging, Log4J or SLF4J will all work correctly.
 
 TIP: There are a lot of logging frameworks available for Java. Don't worry if the above
-list seems confusing, generally you won't need to change your logging dependencues and
+list seems confusing, generally you won't need to change your logging dependencies and
 the Spring Boot defaults will work just fine.
 
 
@@ -966,9 +968,9 @@ you can see how to set things up.
 [[boot-features-sql]]
 == Working with SQL databases
 The Spring Framework provides extensive support for working with SQL databases. From
-direct JDBC access using `JdbcTemplate` though to complete ``object relational mapping''
+direct JDBC access using `JdbcTemplate` to complete ``object relational mapping''
 technologies such as Hibernate. Spring Data provides an additional level of functionality,
-creating `Repoistory` implementations directly from interfaces and using conventions to
+creating `Repository` implementations directly from interfaces and using conventions to
 generate queries from your method names.
 
 
@@ -983,7 +985,7 @@ credentials to establish a database connection.
 
 [[boot-features-embedded-database-support]]
 ==== Embedded Database Support
-It's often convenient develop applications using an in-memory embedded database.
+It's often convenient to develop applications using an in-memory embedded database.
 Obviously, in-memory databases do not provide persistent storage; you will need to
 populate your database when your application starts and be prepared to throw away
 data when your application ends.
@@ -1161,7 +1163,7 @@ how-to.
 [[boot-features-spring-data-jpa-repositories]]
 ==== Spring Data JPA Repositories
 Spring Data JPA repositories are interfaces that you can define to access data. JPA
-queries are created automatically from your method names. For example, a `CityRepoistory`
+queries are created automatically from your method names. For example, a `CityRepository`
 interface might declare a `findAllByState(String state)` method to find all cities
 in a given state.
 
@@ -1222,7 +1224,7 @@ http://projects.spring.io/spring-data-gemfire/[Gemfire],
 http://projects.spring.io/spring-data-couchbase/[Couchbase] and
 http://projects.spring.io/spring-data-cassandra/[Cassandra].
 Spring Boot provides auto-configuration for MongoDB; you can make use of the other
-project, but you will need to configure them yourself. Refer to the appropriate
+projects, but you will need to configure them yourself. Refer to the appropriate
 reference documentation at http://projects.spring.io/spring-data.
 
 
@@ -1316,7 +1318,7 @@ See the `MongoOperations` Javadoc for complete details.
 [[boot-features-spring-data-mongo-repositories]]
 ==== Spring Data MongoDB repositories
 Spring Data includes repository support for MongoDB. As with the JPA repositories
-discussed earlier, the basic principal is that queries are constructed for you
+discussed earlier, the basic principle is that queries are constructed for you
 automatically based on method names.
 
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common
@@ -1439,7 +1441,7 @@ useful when testing your application.
 ==== ConfigFileApplicationContextInitializer
 `ConfigFileApplicationContextInitializer` is an `ApplicationContextInitializer` that
 can apply to your tests to load Spring Boot `application.properties` files. You can use
-when you don't need the full features provided by `@SpringApplicationConfiguration`.
+this when you don't need the full features provided by `@SpringApplicationConfiguration`.
 
 [source,java,indent=0]
 ----
@@ -1572,15 +1574,15 @@ when searching for beans.
 NOTE: `@Conditional` annotations are processed when `@Configuration` classes are
 parsed. Auto-configure `@Configuration` is always parsed last (after any user defined
 beans), however, if you are using these annotations on regular `@Configuration` classes,
-care must be take not to refer to bean definitions that have not yet been created.
+care must be taken not to refer to bean definitions that have not yet been created.
 
 
 
 [[boot-features-resource-conditions]]
 ==== Resource conditions
-The `@ConditionalOnResource` annotation allows configuration to be skipped when a specific
-resource is not present. Resources can be specified using the usual Spring conventions,
-for example, `file:/home/user/test.dat`.
+The `@ConditionalOnResource` annotation allows configuration to be included only when a
+specific resource is present. Resources can be specified using the usual Spring
+conventions, for example, `file:/home/user/test.dat`.
 
 
 

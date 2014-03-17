@@ -23,6 +23,7 @@ Phillip Webb; Dave Syer; Josh Long;
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
 :spring-reference: http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle
+:spring-javadoc: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
