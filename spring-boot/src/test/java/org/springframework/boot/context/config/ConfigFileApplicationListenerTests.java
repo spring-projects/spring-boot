@@ -189,7 +189,20 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	public void loadPropertiesThenProfileProperties() throws Exception {
+	public void loadPropertiesThenProfilePropertiesActivatedInSpringApplication()
+			throws Exception {
+		// This should be the effect of calling
+		// SpringApplication.setAdditionalProfiles("other")
+		this.environment.setActiveProfiles("other");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		// The "other" profile is activated in SpringApplication so it should take
+		// precedence over the default profile
+		assertThat(property, equalTo("fromotherpropertiesfile"));
+	}
+
+	@Test
+	public void loadPropertiesThenProfilePropertiesActivatedInFirst() throws Exception {
 		this.initializer.setSearchNames("enableprofile");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
