@@ -1,0 +1,4 @@
+= NOTE
+
+Documentation can now be found in the `spring-boot-docs` project. This folder will be
+removed at a future date.
