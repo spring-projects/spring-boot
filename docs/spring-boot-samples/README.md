@@ -1,7 +1,6 @@
 ---
 layout: documentation_page
 ---
-# Spring Boot - Samples
+# Documentation has been moved
 
-> We are currently still working on documentation for Spring Boot. Please check back
-> in the future.
+Please see http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/
