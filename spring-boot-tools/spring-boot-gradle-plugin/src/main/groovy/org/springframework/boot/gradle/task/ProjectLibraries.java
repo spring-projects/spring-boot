@@ -17,9 +17,7 @@
 package org.springframework.boot.gradle.task;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.gradle.api.Project;
@@ -36,10 +34,6 @@ import org.springframework.boot.loader.tools.LibraryScope;
  * @author Andy Wilkinson
  */
 class ProjectLibraries implements Libraries {
-
-	private static final Set<String> SUPPORTED_TYPES = Collections
-			.unmodifiableSet(new HashSet<String>(Arrays.asList("jar", "ejb",
-					"ejb-client", "test-jar", "bundle")));
 
 	private final Project project;
 
@@ -109,9 +103,7 @@ class ProjectLibraries implements Libraries {
 	private void libraries(LibraryScope scope, Set<ResolvedArtifact> artifacts,
 			LibraryCallback callback) throws IOException {
 		for (ResolvedArtifact artifact : artifacts) {
-			if (SUPPORTED_TYPES.contains(artifact.getType())) {
-				callback.library(artifact.getFile(), scope);
-			}
+			callback.library(artifact.getFile(), scope);
 		}
 	}
 }

@@ -17,8 +17,10 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -32,6 +34,8 @@ import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
  * @author Phillip Webb
  */
 public class Repackager {
+
+	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
@@ -142,10 +146,37 @@ public class Repackager {
 
 				@Override
 				public void library(File file, LibraryScope scope) throws IOException {
-					String destination = Repackager.this.layout.getLibraryDestination(
-							file.getName(), scope);
-					if (destination != null) {
-						writer.writeNestedLibrary(destination, file);
+
+					if (isZipFile(file)) {
+						String destination = Repackager.this.layout
+								.getLibraryDestination(file.getName(), scope);
+						if (destination != null) {
+							writer.writeNestedLibrary(destination, file);
+						}
+					}
+				}
+
+				private boolean isZipFile(File file) {
+					byte[] buffer = new byte[4];
+					FileInputStream fis = null;
+					try {
+						fis = new FileInputStream(file);
+						int read = fis.read(buffer);
+
+						return (read == 4 && Arrays.equals(buffer, ZIP_FILE_HEADER));
+					}
+					catch (IOException ioe) {
+						return false;
+					}
+					finally {
+						if (fis != null) {
+							try {
+								fis.close();
+							}
+							catch (IOException ioe) {
+								// Close quietly
+							}
+						}
 					}
 				}
 			});
