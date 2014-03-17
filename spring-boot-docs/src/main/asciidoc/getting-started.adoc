@@ -469,8 +469,8 @@ that provides useful Maven defaults. It also provides a `dependency-management` 
 so that you can omit `version` tags for ``blessed'' dependencies.
 
 Other ``Starter POMs'' simply provide dependencies that you are likely to need when
-developing a specific type of application. Since we are developing web application we will
-add a `spring-boot-starter-web` dependency -- but before that, lets look at what we
+developing a specific type of application. Since we are developing a web application, we
+will add a `spring-boot-starter-web` dependency -- but before that, lets look at what we
 currently have.
 
 [indent=0]
@@ -486,7 +486,7 @@ currently have.
 ----
 
 The `mvn dependency:tree` command prints tree representation of your project dependencies.
-You can see that `spring-boot-starter-parent` has already provides some useful test
+You can see that `spring-boot-starter-parent` has already provided some useful test
 dependencies. Lets edit our `pom.xml` and add the `spring-boot-starter-web` dependency
 just below the `parent` section:
 
@@ -508,8 +508,8 @@ additional dependencies, including the Tomcat web server and Spring Boot itself.
 [[getting-started-first-application-code]]
 === Writing the code
 To finish our application we need to create a single Java file. Maven will compile sources
-from `src/main/java` so you need to create that folder structure, then add a file named
-`src/main/java/Example.java`:
+from `src/main/java` by default so you need to create that folder structure, then add a
+file named `src/main/java/Example.java`:
 
 [source,java,indent=0]
 ----

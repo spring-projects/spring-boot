@@ -13,8 +13,8 @@ Auditing, health and metrics gathering can be automatically applied to your appl
 
 [[production-ready-enabling]]
 == Enabling production-ready features.
-The `spring-boot-actuator` project provides all of Spring Boot's production-ready
-features. The simplist way to enable the features is to add a dependency to the
+The `spring-boot-actuator` module provides all of Spring Boot's production-ready
+features. The simplest way to enable the features is to add a dependency to the
 `spring-boot-starter-actuator` ``Starter POM''.
 
 .Definition of Actuator
@@ -170,7 +170,7 @@ implementation that attempts a simple database test.
 
 [[production-ready-application-info]]
 === Custom application info information
-You can customize the data exposed by the `info` endpoint by settings `info.*` Spring
+You can customize the data exposed by the `info` endpoint by setting `info.*` Spring
 properties. All `Environment` properties under the info key will be automatically
 exposed. For example, you could add the following to your `application.properties`:
 
@@ -244,7 +244,7 @@ for Gradle users, although a little more work is required to generate the proper
 [[production-ready-monitoring]]
 == Monitoring and management over HTTP
 If you are developing a Spring MVC application, Spring Boot Actuator will auto-configure
-all non-sensitive endpoints to be exposed over HTTP. The default convention it to use the
+all non-sensitive endpoints to be exposed over HTTP. The default convention is to use the
 `id` of the endpoint as the URL path. For example, `health` is exposed as `/health`.
 
 
@@ -381,7 +381,7 @@ property to `false`:
 === Using Jolokia for JMX over HTTP
 Jolokia is a JMX-HTTP bridge giving an alternative method of accessing JMX beans. To
 use Jolokia, simply include a dependency to `org.jolokia:jolokia-core`. For example,
-using Maven you you add the following:
+using Maven you would add the following:
 
 [source,xml,indent=0]
 ----
@@ -415,7 +415,7 @@ If you are using Jolokia but you don't want Spring Boot to configure it, simply 
 
 [source,properties,indent=0]
 ----
-	jolokia.config.enabled=false
+	endpoints.jolokia.enabled=false
 ----
 
 
@@ -511,7 +511,8 @@ Here is a simple ``hello world'' command that could be loaded from
 ----
 	package commands
 
-	import org.springframework.boot.actuate.endpoint.BeansEndpoint
+	import org.crsh.cli.Usage
+	import org.crsh.cli.Command
 
 	class hello {
 
@@ -621,7 +622,7 @@ Here is a simple example that counts the number of times that a method is invoke
 	}
 ----
 
-TIP: You can use any string as a metric name but you following guidelines of your chosen
+TIP: You can use any string as a metric name but you should follow guidelines of your chosen
 store/graphing technology. Some good guidelines for Graphite are available on
 http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/[Matt Aimonetti's Blog].
 
@@ -678,7 +679,7 @@ use that directly, or you can simply publish `AuditApplicationEvent` via the Spr
 
 [[production-ready-tracing]]
 == Tracing
-Tracing is automatically enable for all HTTP requests. You can view the `trace` endpoint
+Tracing is automatically enabled for all HTTP requests. You can view the `trace` endpoint
 and obtain basic information about the last few requests:
 
 [source,json,indent=0]
