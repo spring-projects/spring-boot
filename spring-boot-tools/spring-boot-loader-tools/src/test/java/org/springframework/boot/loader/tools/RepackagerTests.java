@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
+import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -256,6 +257,8 @@ public class RepackagerTests {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File libJarFile = libJar.getFile();
+		final File libNonJarFile = this.temporaryFolder.newFile();
+		FileCopyUtils.copy(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, libNonJarFile);
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		Repackager repackager = new Repackager(file);
@@ -263,9 +266,11 @@ public class RepackagerTests {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
 				callback.library(libJarFile, LibraryScope.COMPILE);
+				callback.library(libNonJarFile, LibraryScope.COMPILE);
 			}
 		});
 		assertThat(hasEntry(file, "lib/" + libJarFile.getName()), equalTo(true));
+		assertThat(hasEntry(file, "lib/" + libNonJarFile.getName()), equalTo(false));
 	}
 
 	@Test
