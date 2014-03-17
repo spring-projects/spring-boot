@@ -94,10 +94,10 @@ For example:
 ----
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy, e.g.
-the parent application context is *not* a `WebApplicationContext`.  Both parent and child
-are executed with the same `Environment` constructed in the usual way to include command
-line arguments.  Any `ServletContextAware` components all have to go in the child
-context, otherwise there is no way for Spring Boot to create the `ServletContext` in time.
+Web components *must* be contained within the child context, and the same `Environment`
+will be used for both parent and child contexts. See the
+{dc-spring-boot}/builder/SpringApplication.{dc-edit}[`SpringApplicationBuilder` javadoc]
+for full details.
 
 
 
