@@ -50,6 +50,7 @@
 		<spring-data-mongodb.version>1.4.1.RELEASE</spring-data-mongodb.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-rest.version>2.0.1.RELEASE</spring-data-rest.version>
+		<spring-data-commons.version>1.7.1.RELEASE</spring-data-commons.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
 		<spring-rabbit.version>1.2.1.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
@@ -499,6 +500,12 @@
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-redis</artifactId>
 				<version>${spring-data-redis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-commons</artifactId>
+				<version>${spring-data-commons.version}</version>
+				<optional>true</optional>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.hateoas</groupId>
