@@ -697,7 +697,8 @@ To help with the customization some other properties are transferred from the Sp
 
 |`PID`
 |`PID`
-|The current process ID is discovered if possible and not already provided.
+|The current process ID (discovered if possible and when not already defined as an OS
+ environment variable).
 |===
 
 All the logging systems supported can consult System properties when parsing their
