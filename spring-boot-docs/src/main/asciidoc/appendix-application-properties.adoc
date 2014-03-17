@@ -56,9 +56,9 @@ server.context-path= # the context path, defaults to '/'
 server.servlet-path= # the servlet path, defaults to '/'
 server.tomcat.access-log-pattern= # log pattern of the access log
 server.tomcat.access-log-enabled=false # is access logging enabled
-server.tomcat.protocol-header="x-forwarded-proto" # ssl forward headers
-server.tomcat.remote-ip-header="x-forwarded-for"
-server.tomcat.basedir="/tmp" # base dir (usually not needed, defaults to tmp)
+server.tomcat.protocol-header=x-forwarded-proto # ssl forward headers
+server.tomcat.remote-ip-header=x-forwarded-for
+server.tomcat.basedir=/tmp # base dir (usually not needed, defaults to tmp)
 server.tomcat.background-processor-delay=30; # in seconds
 server.tomcat.max-threads = 0 # number of threads in protocol handler
 
@@ -69,25 +69,25 @@ spring.view.suffix= # ... and suffix
 spring.resources.cache-period= # cache timeouts in headers sent to browser
 
 # THYMELEAF (ThymeleafAutoConfiguration)
-spring.thymeleaf.prefix="classpath:/templates/"
-spring.thymeleaf.suffix=".html"
-spring.thymeleaf.mode="HTML5"
-spring.thymeleaf.encoding="UTF-8"
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.mode=HTML5
+spring.thymeleaf.encoding=UTF-8
 spring.thymeleaf.cache=true # set to false for hot refresh
 
 # INTERNATIONALIZATION (MessageSourceAutoConfiguration)
-spring.messages.basename="messages"
-spring.messages.encoding="UTF-8"
+spring.messages.basename=messages
+spring.messages.encoding=UTF-8
 
 # SECURITY (SecurityProperties)
-security.user.name="user" # login username
+security.user.name=user # login username
 security.user.password= # login password
-security.user.role="USER" # role assigned to the user
+security.user.role=USER # role assigned to the user
 security.require-ssl=false # advanced settings ...
 security.enable-csrf=false
 security.basic.enabled=true
-security.basic.realm="Spring"
-security.basic.path="/**"
+security.basic.realm=Spring
+security.basic.path=/**
 security.headers.xss=false
 security.headers.cache=false
 security.headers.frame=false
@@ -140,7 +140,7 @@ spring.rabbitmq.virtualhost=
 spring.rabbitmq.dynamic=
 
 # REDIS (RedisProperties)
-spring.redis.host="localhost" # server host
+spring.redis.host=localhost # server host
 spring.redis.password= # server password
 spring.redis.port=6379 # connection port
 spring.redis.pool.max-idle=8 # pool settings ...
@@ -149,7 +149,7 @@ spring.redis.pool.max-active=8
 spring.redis.pool.max-wait=-1
 
 # ACTIVEMQ (ActiveMQProperties)
-spring.activemq.broker-url="tcp://localhost:61616" # connection URL
+spring.activemq.broker-url=tcp://localhost:61616 # connection URL
 spring.activemq.in-memory=true
 spring.activemq.pooled=false
 
@@ -157,7 +157,7 @@ spring.activemq.pooled=false
 spring.jms.pub-sub-domain=
 
 # SPRING BATCH (BatchDatabaseInitializer)
-spring.batch.job.names="job1,job2"
+spring.batch.job.names=job1,job2
 spring.batch.job.enabled=true
 spring.batch.initializer.enabled=true
 spring.batch.schema= # batch schema to load
@@ -179,43 +179,43 @@ management.address= # bind to a specific NIC
 management.contextPath= # default to '/'
 
 # ENDPOINTS (AbstractEndpoint subclasses)
-endpoints.autoconfig.id="autoconfig"
+endpoints.autoconfig.id=autoconfig
 endpoints.autoconfig.sensitive=true
 endpoints.autoconfig.enabled=true
-endpoints.beans.id="beans"
+endpoints.beans.id=beans
 endpoints.beans.sensitive=true
 endpoints.beans.enabled=true
-endpoints.configprops.id="configprops"
+endpoints.configprops.id=configprops
 endpoints.configprops.sensitive=true
 endpoints.configprops.enabled=true
-endpoints.configprops.keys-to-sanitize="password,secret"
-endpoints.dump.id="dump"
+endpoints.configprops.keys-to-sanitize=password,secret
+endpoints.dump.id=dump
 endpoints.dump.sensitive=true
 endpoints.dump.enabled=true
-endpoints.env.id="env"
+endpoints.env.id=env
 endpoints.env.sensitive=true
 endpoints.env.enabled=true
-endpoints.health.id="health"
+endpoints.health.id=health
 endpoints.health.sensitive=false
 endpoints.health.enabled=true
-endpoints.info.id="info"
+endpoints.info.id=info
 endpoints.info.sensitive=false
 endpoints.info.enabled=true
-endpoints.metrics.id="metrics"
+endpoints.metrics.id=metrics
 endpoints.metrics.sensitive=true
 endpoints.metrics.enabled=true
-endpoints.shutdown.id="shutdown"
+endpoints.shutdown.id=shutdown
 endpoints.shutdown.sensitive=true
 endpoints.shutdown.enabled=false
-endpoints.trace.id="trace"
+endpoints.trace.id=trace
 endpoints.trace.sensitive=true
 endpoints.trace.enabled=true
 
 # MVC ONLY ENDPOINTS
-endpoints.jolokia.path="jolokia"
+endpoints.jolokia.path=jolokia
 endpoints.jolokia.sensitive=true
 endpoints.jolokia.enabled=true # when using Jolokia
-endpoints.error.path="/error"
+endpoints.error.path=/error
 
 # JMX ENDPOINT (EndpointMBeanExportProperties)
 endpoints.jmx.enabled=true
@@ -230,8 +230,8 @@ jolokia.config.*= # See Jolokia manual
 # REMOTE SHELL
 shell.auth=simple # jaas, key, simple, spring
 shell.command-refresh-interval=-1
-shell.command-path-pattern="classpath*:/commands/**, classpath*:/crash/commands/**"
-shell.config-path-patterns="classpath*:/crash/*"
+shell.command-path-pattern=classpath*:/commands/**, classpath*:/crash/commands/**
+shell.config-path-patterns=classpath*:/crash/*
 shell.disabled-plugins=false # don't expose plugins
 shell.ssh.enabled= # ssh settings ...
 shell.ssh.keyPath=
