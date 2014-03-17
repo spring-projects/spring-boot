@@ -102,7 +102,7 @@ information is exposed to the application as environment variables (for example:
 environment variables are language agnostic.
 
 Environment variables don't always make for the easiest API so Spring Boot automatically
-extracts then and flattens the data into properties that can be accessed through
+extracts them and flattens the data into properties that can be accessed through
 Spring's `Environment` abstraction:
 
 [source,java,indent=0]
@@ -232,7 +232,7 @@ that covers the steps that you need to follow when deploying to CloudBees.
 == What to read next
 Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]
 and http://www.cloudbees.com[CloudBees] web sites for more information about the kinds of
-features that a PaaS can offer. These are just three of the more popular Java PaaS
+features that a PaaS can offer. These are just three of the most popular Java PaaS
 providers, since Spring Boot is so amenable to cloud-based deployment you free to
 consider other providers as well.
 

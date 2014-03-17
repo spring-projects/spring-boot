@@ -4,7 +4,7 @@
 [partintro]
 --
 Spring Boot provides build tool plugins for Maven and Gradle. The plugins offer a
-variety of features, including the packaging of executable jars. The section provides
+variety of features, including the packaging of executable jars. This section provides
 more details on both plugins, as well as some help should you need to extend an
 unsupported build system. If you are just getting started, you might want to read
 ``<<using-spring-boot.adoc#using-boot-build-systems>>'' from the
@@ -155,9 +155,11 @@ The following configuration options are available for the `spring-boot:repackage
 |Name |Description
 
 |`classifier`
-|Classifier to add to the artifact generated. If given, the artifact will be attached. If
+|Classifier to add to the generated artifact. If given, the artifact will be attached. If
  this is not given, it will merely be written to the output directory according to the
- `finalName`.
+ `finalName`. Attaching the artifact allows to deploy it alongside to the original one,
+ see http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html[
+ the maven documentation for more details]
 
 |`mainClass`
 |The name of the main class. If not specified will search for a single compiled class
@@ -362,7 +364,7 @@ default) reloadable in the live application, which can be helpful at development
 [[build-tool-plugins-gradle-repackage-configuration]]
 === Repackage configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
-for configuration. Simply set the appropriate properties as you would any other Gradle
+for configuration. Simply set the appropriate properties as you would with any other Gradle
 extension (see below for a list of configuration options):
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
@@ -379,7 +381,7 @@ extension (see below for a list of configuration options):
 Sometimes it may be more appropriate to not package default dependencies resolved from
 `compile`, `runtime` and `provided` scopes. If the created executable jar file
 is intended to be run as it is, you need to have all dependencies nested inside it;
-however, if the plan is to explode a jar file and run main class manually, you may already
+however, if the plan is to explode a jar file and run the main class manually, you may already
 have some of the libraries available via `CLASSPATH`. This is a situation where
 you can repackage your jar with a different set of dependencies.
 
