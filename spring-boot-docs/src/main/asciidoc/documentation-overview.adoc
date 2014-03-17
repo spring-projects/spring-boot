@@ -15,13 +15,13 @@ fashion, or you can skip sections if something doesn't interest you.
 Having trouble with Spring Boot, We'd like to help!
 
 * Try the <<howto.adoc#howto, How-to's>> -- they provide solutions to the most common
-  questions
+  questions.
 * Learn the Spring basics -- Spring Boot is builds on many other Spring projects, check
   the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
-  you are just starting out with Spring, try one of the http://spring.io/guides[guides]
+  you are just starting out with Spring, try one of the http://spring.io/guides[guides].
 * Ask a questions - we monitor http://stackoverflow.com[stackoverflow.com] for questions
-  tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`]
-* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues
+  tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`].
+* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
 
 NOTE: All of Spring Boot is open source, including the documentation! If you find problems
 with the docs; or if you just want to improve them, please <<github-code, get involved>>.
