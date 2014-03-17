@@ -124,7 +124,7 @@ Endpoints can be customized using Spring properties. You can change if an endpoi
 For example, here is an `application.properties` that changes the sensitivity and id
 of the `beans` endpoint and also enables `shutdown`.
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	endpoints.beans.id=springbeans
 	endpoints.beans.sensitive=false
@@ -174,11 +174,11 @@ You can customize the data exposed by the `info` endpoint by settings `info.*` S
 properties. All `Environment` properties under the info key will be automatically
 exposed. For example, you could add the following to your `application.properties`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
-	info.app.name: MyService
-	info.app.description: My awesome service
-	info.app.version: 1.0.0
+	info.app.name=MyService
+	info.app.description=My awesome service
+	info.app.version=1.0.0
 ----
 
 If you are using Maven, you can automatically expand info properties from the Maven
@@ -197,16 +197,16 @@ element):
 
 You can then refer to your Maven ``project properties'' via placeholders, e.g.
 
-[indent=0]
+[source,properties,indent=0]
 ----
-	project.artifactId: myproject
-	project.name: Demo
-	project.version: X.X.X.X
-	project.description: Demo project for info endpoint
-	info.build.artifact: ${project.artifactId}
-	info.build.name: ${project.name}
-	info.build.description: ${project.description}
-	info.build.version: ${project.version}
+	project.artifactId=myproject
+	project.name=Demo
+	project.version=X.X.X.X
+	project.description=Demo project for info endpoint
+	info.build.artifact=${project.artifactId}
+	info.build.name=${project.name}
+	info.build.description=${project.description}
+	info.build.version=${project.version}
 ----
 
 NOTE: In the above example we used `project.*` to set some values to be used as
@@ -262,7 +262,7 @@ You can use Spring properties to change the username and passsword and to change
 security role required to access the endpoints. For example, you might set the following
 in your `application.properties`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	security.user.name=admin
 	security.user.password=secret
@@ -277,7 +277,7 @@ Sometimes it is useful to group all management endpoints under a single path. Fo
 your application might already use `/info` for another purpose. You can use the
 `management.contextPath` property to set a prefix for your manangement endpoint:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	management.contextpath=/manage
 ----
@@ -297,7 +297,7 @@ The `management.port` property can be used to change the HTTP port. Since your m
 port is often protected by a firewall, and not exposed to the public, you might also
 want to disable management security:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	management.port=8081
 	management.security.enabled=false
@@ -318,7 +318,7 @@ main server port.
 Here is an example `application.properties` that will not allow remote management
 connections:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	management.port=8081
 	management.address=127.0.0.1
@@ -330,7 +330,7 @@ connections:
 === Disabling HTTP endpoints
 If you don't want to expose endpoints over HTTP you can set the management port to `-1`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	management.port=-1
 ----
@@ -357,7 +357,7 @@ to `true` so that MBean names are always unique.
 You can also customize the JMX domain under which endpoints are exposed. Here is an
 example `application.properties`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	endpoints.jmx.domain=myapp
 	endpoints.jmx.uniqueNames=true
@@ -370,7 +370,7 @@ example `application.properties`:
 If you don't want to expose endpoints over JMX you can set the `spring.jmx.enabled`
 property to `false`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	spring.jmx.enabled=false
 ----
@@ -401,7 +401,7 @@ Jolokia has a number of settings that you would traditionally configure using se
 parameters. With Spring Boot you can use your `application.properties`, simply prefix the
 parameter with `jolokia.config.`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	jolokia.config.debug=true
 ----
@@ -413,7 +413,7 @@ parameter with `jolokia.config.`:
 If you are using Jolokia but you don't want Spring Boot to configure it, simply set the
 `endpoints.jolokia.enabled` property to `false`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	jolokia.config.enabled=false
 ----

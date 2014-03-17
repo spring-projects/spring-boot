@@ -120,10 +120,10 @@ you create the application to modify its behavior. Or you can externalize the
 configuration using properties in `spring.main.*`. E.g. in `application.properties` you
 might have.
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.main.web_environment: false
-	spring.main.show_banner: false
+	spring.main.web_environment=false
+	spring.main.show_banner=false
 ----
 
 and then the Spring Boot banner will not be printed on startup, and the application will
@@ -167,9 +167,9 @@ Some people like to use (for example) `--port=9000` instead of `--server.port=90
 set configuration properties on the command line. You can easily enable this by using
 placeholders in `application.properties`, e.g.
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	server.port: ${port:8080}
+	server.port=${port:8080}
 ----
 
 NOTE: In this specific case the port binding will work in a PaaS environment like Heroku
@@ -204,12 +204,12 @@ is 1-level deep and has period-separated keys, a lot like people are used to wit
 
 The example YAML above corresponds to an `application.properties` file
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.application.name: cruncher
-	spring.datasource.driverClassName: com.mysql.jdbc.Driver
-	spring.datasource.url: jdbc:mysql://localhost/test
-	server.port: 9000
+	spring.application.name=cruncher
+	spring.datasource.driverClassName=com.mysql.jdbc.Driver
+	spring.datasource.url=jdbc:mysql://localhost/test
+	server.port=9000
 ----
 
 See ``<<spring-boot-features.adoc#boot-features-external-config-yaml>>'' in
@@ -230,7 +230,7 @@ or jar archive):
 
 In Spring Boot you can also set the active profile in `application.properties`, e.g.
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring.profiles.active=production
 ----
@@ -1085,10 +1085,10 @@ standard behavior is determined by the presence or absence of certain request he
 work with most front end proxies.  You switch on the valve by adding some entries to
 `application.properties`, e.g.
 
-[indent=0]
+[source,properties,indent=0]
 ----
-	server.tomcat.remote_ip_header: x-forwarded-for
-	server.tomcat.protocol_header: x-forwarded-proto
+	server.tomcat.remote_ip_header=x-forwarded-for
+	server.tomcat.protocol_header=x-forwarded-proto
 ----
 
 (The presence of either of those properties will switch on the valve. Or you can add the

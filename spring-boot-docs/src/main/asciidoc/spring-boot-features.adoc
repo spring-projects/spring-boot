@@ -284,10 +284,10 @@ The values in `application.properties` are filtered through the existing `Enviro
 when they are used so you can refer back to previously defined values (e.g. from System
 properties).
 
-[indent=0]
+[source,properties,indent=0]
 ----
-	app.name: MyApp
-	app.description: ${app.name} is a Spring Boot application
+	app.name=MyApp
+	app.description=${app.name} is a Spring Boot application
 ----
 
 TIP: You can also use this technique to create ``short'' variants of existing Spring Boot
@@ -328,7 +328,7 @@ For example, the following YAML document:
 
 Would be transformed into these properties:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	environments.dev.url=http://dev.bar.com
 	environments.dev.name=Developer Setup
@@ -348,7 +348,7 @@ and also as property keys with `[index]` dereferencers, for example this YAML:
 
 Would be transformed into these properties:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	servers=dev.bar.com,foo.bar.com
 	servers[0]=dev.bar.com
@@ -532,7 +532,7 @@ Spring Boot takes this a stage further, in that you can use a `spring.profiles.a
 in any of the usual ways, for example you could include it in your
 `application.properties`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
 	spring.profiles.active=dev,hsqldb
 ----
@@ -1036,12 +1036,12 @@ DataSource configuration is controlled by external configuration properties in
 `spring.datasource.*`. For example, you might declare the following section
 in `application.properties`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
-	spring.datasource.url: jdbc:mysql://localhost/test
-	spring.datasource.username: dbuser
-	spring.datasource.password: dbpass
-	spring.datasource.driverClassName: com.mysql.jdbc.Driver
+	spring.datasource.url=jdbc:mysql://localhost/test
+	spring.datasource.username=dbuser
+	spring.datasource.password=dbpass
+	spring.datasource.driverClassName=com.mysql.jdbc.Driver
 ----
 
 See {sc-spring-boot-autoconfigure}/jdbc/AbstractDataSourceConfiguration.{sc-ext}[`AbstractDataSourceConfiguration`]
@@ -1268,10 +1268,10 @@ You can set `spring.data.mongodb.url` property to change the `url`, or alternati
 specify a `host`/`port`. For example, you might declare the following in your
 `application.properties`:
 
-[indent=0]
+[source,properties,indent=0]
 ----
-	spring.data.mongodb.host = mongoserver
-	spring.data.mongodb.port = 27017
+	spring.data.mongodb.host=mongoserver
+	spring.data.mongodb.port=27017
 ----
 
 TIP: If `spring.data.mongodb.port` is not specified the default of `27017` is used. You

@@ -146,7 +146,7 @@ The following configuration options are available for the `spring-boot:repackage
 |Name of the generated archive (defaults to `${project.build.finalName}`).
 |===
 
-|==
+
 
 [[build-tool-plugins-maven-packaging-optional-params]]
 ==== Optional parameters

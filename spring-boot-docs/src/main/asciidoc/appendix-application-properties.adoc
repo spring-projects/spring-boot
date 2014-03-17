@@ -37,7 +37,7 @@ spring.profiles= # comma list of active profiles
 spring.main.sources=
 spring.main.web-environment= # detect by default
 spring.main.show-bannder=true
-spring.main.... # see class for all properties
+spring.main....= # see class for all properties
 
 # LOGGING
 logging.path=/var/logs
@@ -66,7 +66,7 @@ server.tomcat.max-threads = 0 # number of threads in protocol handler
 http.mappers.json-pretty-print=false # pretty print JSON
 spring.view.prefix= # MVC view prefix
 spring.view.suffix= # ... and suffix
-spring.resources.cache-period # cache timeouts in headers sent to browser
+spring.resources.cache-period= # cache timeouts in headers sent to browser
 
 # THYMELEAF (ThymeleafAutoConfiguration)
 spring.thymeleaf.prefix="classpath:/templates/"
@@ -109,7 +109,7 @@ spring.datasource.max-active=100 # Advanced configuration...
 spring.datasource.max-idle=8
 spring.datasource.min-idle=8
 spring.datasource.initial-size=10
-spring.datasource.validation-query
+spring.datasource.validation-query=
 spring.datasource.test-on-borrow=false
 spring.datasource.test-on-return=false
 
