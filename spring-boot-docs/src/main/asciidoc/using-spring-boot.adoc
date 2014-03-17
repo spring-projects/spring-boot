@@ -131,7 +131,7 @@ want to change the settings defined in the parent.
 [[using-boot-gradle]]
 === Gradle
 Gradle users can directly import ``starter POMs'' in their `dependencies` section. Unlike
-Maven, there is no ``super parent'' to import.
+Maven, there is no ``super parent'' to import to share some configuration.
 
 [source,groovy,indent=0,subs="attributes"]
 ----
@@ -284,7 +284,7 @@ swap specific technical facets.
 |Imports the Jetty HTTP engine (to be used as an alternative to Tomcat)
 
 |`spring-boot-starter-log4j`
-|Support the Log4J looggin framework
+|Support the Log4J logging framework
 
 |`spring-boot-starter-logging`
 |Import Spring Boot's default logging framework (Logback).
@@ -310,7 +310,7 @@ should be avoided. It can cause particular problems for Spring Boot applications
 use `@ComponentScan` or `@EntityScan` annotations, since every class from every jar,
 will be read.
 
-TIP: We recommend that you use the follow Java's recommended package naming conventions
+TIP: We recommend that you follow Java's recommended package naming conventions
 and use a reversed domain name (for example, `com.example.project`).
 
 
@@ -450,13 +450,13 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 
 [[using-boot-spring-beans-and-dependency-injection]]
 == Spring Beans and dependency injection
-You are free to use any the standard Spring Framework techniques to defines your beans
+You are free to use any of the standard Spring Framework techniques to define your beans
 and their injected dependencies. For simplicity, we often find that using `@ComponentScan`
 to find your beans, in combination with `@Autowired` constructor injection works well.
 
 If you structure your code as suggested above (locating your application class in a root
 package), you can add `@ComponentScan` without any arguments. All of your application
-components (`@Component`, `@Service`, `@Repoistory`, `@Controller` etc.) will be
+components (`@Component`, `@Service`, `@Repository`, `@Controller` etc.) will be
 automatically registered as Spring Beans.
 
 Here is an example `@Service` Bean that uses constructor injection to obtain a
