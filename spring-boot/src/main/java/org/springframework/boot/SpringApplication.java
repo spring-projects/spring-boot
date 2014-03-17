@@ -388,8 +388,8 @@ public class SpringApplication {
 	 * the above for fine-grained control over property sources or profiles, respectively.
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
-	 * @see #configurePropertySources(ConfigurableEnvironment, String[])
 	 * @see #configureProfiles(ConfigurableEnvironment, String[])
+	 * @see #configurePropertySources(ConfigurableEnvironment, String[])
 	 */
 	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
 		configurePropertySources(environment, args);
