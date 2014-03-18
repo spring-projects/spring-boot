@@ -175,6 +175,12 @@ placeholders in `application.properties`, e.g.
 	server.port=${port:8080}
 ----
 
+TIP: If you have enabled maven filtering for the `application.properties` you may want
+to avoid using `${*}` for the tokens to filter as it conflicts with those placeholders.
+You can either use `@*@` (i.e. `@maven.token@` instead of `${maven.token}`) or you can
+configure the `maven-resources-plugin` to use
+http://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
+
 NOTE: In this specific case the port binding will work in a PaaS environment like Heroku
 and Cloud Foundry, since in those two platforms the `PORT` environment variable is set
 automatically and Spring can bind to capitalized synonyms for `Environment` properties.
