@@ -1434,6 +1434,32 @@ TIP: The context loader guesses whether you want to test a web application or no
 `MockMVC`) by looking for the `@WebAppConfiguration` annotation.  (`MockMVC` and
 `@WebAppConfiguration` are part of `spring-test`).
 
+If you want a web application to start up and listen on its normal
+port, so you can test it with HTTP (e.g. using `RestTemplate`)
+annotate your test class (or one of its superclasses)
+`@IntegrationTest`. This can be very useful because it means you can
+test the full stack of your application, but also inject its
+components into the test class and use them to assert the internal
+state of the application after an HTTP interaction. Example:
+
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RunWith(SpringJUnit4ClassRunner.class)
+	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
+    @WebApplication
+    @IntegrationTest
+	public class CityRepositoryIntegrationTests {
+
+		@Autowired
+		CityRepository repository;
+
+        RestTemplate restTemplate = RestTemplates.get();
+
+		// ... interact with the running server
+
+	}
+----
 
 
 [[boot-features-test-utilities]]
