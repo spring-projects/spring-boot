@@ -129,6 +129,9 @@ might have.
 and then the Spring Boot banner will not be printed on startup, and the application will
 not be a web application.
 
+NOTE: The example above also demonstrates how flexible binding allows the use of
+underscores (`_`) as well as dashes (`-`) in property names.
+
 [[howto-change-the-location-of-external-properties]]
 === Change the location of external properties of an application
 By default properties from different sources are added to the Spring `Environment` in a
@@ -738,11 +741,11 @@ For example, using Maven:
 	</dependency>
 ----
 
-Spring Boot has a `LoggingSystem` abstraction that attempts to select a system depending
-on the content of the classpath. If Logback is available it is the first choice. So if
-you put a `logback.xml` in the root of your classpath it will be picked up from there.
-Spring Boot provides a default base configuration that you can include if you just want
-to set levels, e.g.
+Spring Boot has a `LoggingSystem` abstraction that attempts to configure logging based on
+the content of the classpath. If Logback is available it is the first choice. So if you
+put a `logback.xml` in the root of your classpath it will be picked up from there. Spring
+Boot provides a default base configuration that you can include if you just want to set
+levels, e.g.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
