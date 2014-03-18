@@ -34,7 +34,7 @@ the `spring-boot-actuator` there is also an `autoconfig` endpoint that renders t
 in JSON. Use that to debug the application and see what features have been added (and
 which not) by Spring Boot at runtime.
 
-Many more questions can be answered by looking at the source code and Javadocs. Some
+Many more questions can be answered by looking at the source code and the javadoc. Some
 rules of thumb:
 
 * Look for classes called `*AutoConfiguration` and read their sources, in particular the
@@ -73,7 +73,7 @@ than one way to register additional ones:
   methods on `SpringApplication` before you run it.
 * Declaratively per application by setting `context.initializer.classes` or
   `context.listener.classes`.
-* Declarative for all applications by adding a `META-INF/spring.factories` and packaging
+* Declaratively for all applications by adding a `META-INF/spring.factories` and packaging
   a jar file that the applications all use as a library.
 
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (even
@@ -147,7 +147,7 @@ You can also provide System properties (or environment variables) to change the 
 
 * `spring.config.name` (`SPRING_CONFIG_NAME`), defaults to `application` as the root of
   the file name.
-* `spring.config.location` (`SPRING_CONFIG_LOCATION`) is file to load (e.g. a classpath
+* `spring.config.location` (`SPRING_CONFIG_LOCATION`) is the file to load (e.g. a classpath
   resource or a URL). A separate `Environment` property source is set up for this document
   and it can be overridden by system properties, environment variables or the
   command line.
@@ -196,9 +196,9 @@ properties in a hierarchical format. E.g.
 ----
 
 Create a file called `application.yml` and stick it in the root of your classpath, and
-also add `snakeyaml` to your classpath (Maven co-ordinates `org.yaml:snakeyaml`, already
+also add `snakeyaml` to your dependencies (Maven coordinates `org.yaml:snakeyaml`, already
 included if you use the `spring-boot-starter`). A YAML file is parsed to a Java
-`Map<String,Object>` (like a JSON object), and Spring Boot flattens the maps so that it
+`Map<String,Object>` (like a JSON object), and Spring Boot flattens the map so that it
 is 1-level deep and has period-separated keys, a lot like people are used to with
 `Properties` files in Java.
 
@@ -220,7 +220,7 @@ about YAML.
 === Set the active Spring profiles
 The Spring `Environment` has an API for this, but normally you would set a System profile
 (`spring.profiles.active`) or an OS environment variable (`SPRING_PROFILES_ACTIVE`). E.g.
-launch your application with a `-D...` argument (remember to put it before the main class
+launch your application with a `-D` argument (remember to put it before the main class
 or jar archive):
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -353,7 +353,7 @@ You can access the port the server is running on from log output or from the
 `EmbeddedWebApplicationContext` via its `EmbeddedServletContainer`. The best way to get
 that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
-out of the event wehen it is published.
+out of the event when it is published.
 
 A really useful thing to do in is to autowire the
 `EmbeddedWebApplicationContext` into a test case and use it to
@@ -451,8 +451,8 @@ that sets up the connector to be secure:
 === Use Jetty instead of Tomcat
 The Spring Boot starters (`spring-boot-starter-web` in particular) use Tomcat as an
 embedded container by default. You need to exclude those dependencies and include the
-Jetty ones instead. Spring Boot provides Tomcat and Jetty dependencies bundled together
-as separate startes to help make this process as easy as possible.
+Jetty one instead. Spring Boot provides Tomcat and Jetty dependencies bundled together
+as separate starters to help make this process as easy as possible.
 
 Example in Maven:
 
@@ -627,7 +627,7 @@ source code for more details.
 [[howto-customize-the-responsebody-rendering]]
 === Customize the @ResponseBody rendering
 Spring uses `HttpMessageConverters` to render `@ResponseBody` (or responses from
-`@RestControllers`). You can contribute additional converters by simply adding beans of
+`@RestController`). You can contribute additional converters by simply adding beans of
 that type in a Spring Boot context. If a bean you add is of a type that would have been
 included by default anyway (like `MappingJackson2HttpMessageConverter` for JSON
 conversions) then it will replace the default value. A convenience bean is provided of
@@ -669,8 +669,8 @@ configuration in your hands.
 
 [[howto-customize-view-resolvers]]
 === Customize ViewResolvers
-A `ViewResolver` is a core components of Spring MVC, translating view names in
-`@Controllers` to actual `View` implementations.  Note that `ViewResolvers` are mainly
+A `ViewResolver` is a core component of Spring MVC, translating view names in
+`@Controller` to actual `View` implementations.  Note that `ViewResolvers` are mainly
 used in UI applications, rather than REST-style services (a `View` is not used to render
 a `@ResponseBody`). There are many implementations of `ViewResolver` to choose from, and
 Spring on its own is not opinionated about which ones you should use. Spring Boot, on the
@@ -727,7 +727,7 @@ Spring Boot has no mandatory logging dependence, except for the `commons-logging
 which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
 you need to include it, and some bindings for `commons-logging` on the classpath. The
 simplest way to do that is through the starter poms which all depend on
-`spring-boot-start-logging`.  For a web application you only need
+`spring-boot-starter-logging`.  For a web application you only need
 `spring-boot-starter-web` since it depends transitively on the logging starter.
 For example, using Maven:
 
@@ -740,7 +740,7 @@ For example, using Maven:
 ----
 
 Spring Boot has a `LoggingSystem` abstraction that attempts to select a system depending
-on the contents of the classpath. If Logback is available it is the first choice. So if
+on the content of the classpath. If Logback is available it is the first choice. So if
 you put a `logback.xml` in the root of your classpath it will be picked up from there.
 Spring Boot provides a default base configuration that you can include if you just want
 to set levels, e.g.
@@ -760,7 +760,7 @@ These are:
 
 * `${PID}` the current process ID.
 * `${LOG_FILE}` if `logging.file` was set in Boot's external configuration.
-* `${LOG_PATH` if `logging.path` was set (representing a directory for
+* `${LOG_PATH}` if `logging.path` was set (representing a directory for
 	log files to live in).
 
 Spring Boot also provides some nice ANSI colour terminal output on a console (but not in
@@ -777,7 +777,7 @@ If Groovy is on the classpath you should be able to configure Logback with
 Spring Boot supports http://logging.apache.org/log4j[Log4j] for logging
 configuration, but it has to be on the classpath. If you are using the starter poms for
 assembling dependencies that means you have to exclude logback and then include log4j
-back. If you aren't using the starter poms then you need to provide `commons-logging`
+instead. If you aren't using the starter poms then you need to provide `commons-logging`
 (at least) in addition to Log4j.
 
 The simplest path to using Log4j is probably through the starter poms, even though it
@@ -788,6 +788,10 @@ requires some jiggling with excludes, e.g. in Maven:
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter</artifactId>
 		<exclusions>
 				<exclusion>
 						<groupId>${project.groupId}</groupId>
@@ -801,7 +805,7 @@ requires some jiggling with excludes, e.g. in Maven:
 	</dependency>
 ----
 
-NOTE: The use of the log4j starter to gather together the dependencies for common logging
+NOTE: The use of the log4j starter gathers together the dependencies for common logging
 requirements (e.g. including having Tomcat use `java.util.logging` but configure the
 output using Log4j). See the Actuator Log4j Sample for more detail and to see it in
 action.
@@ -831,8 +835,8 @@ are included in the same package (or a sub-package) of your `@EnableAutoConfigur
 class.
 
 For many applications all you will need is to put the right Spring Data dependencies on
-your classpath (there is a `spring-boot-starter-data-jpa` for JPA and for Mongodb you
-only need to add `spring-datamongodb`), create some repository interfaces to handle your
+your classpath (there is a `spring-boot-starter-data-jpa` for JPA and a
+`spring-boot-starter-data-mongodb` for Mongodb), create some repository interfaces to handle your
 `@Entity` objects. Examples are in the {github-code}/spring-boot-samples/spring-boot-sample-data-jpa[JPA sample]
 or the {github-code}/spring-boot-samples/spring-boot-sample-data-mongodb[Mongodb sample].
 
@@ -864,8 +868,8 @@ annotation, e.g.
 
 [[howto-configure-jpa-properties]]
 === Configure JPA properties
-Spring JPA already provides some vendor-independent configuration options (e.g. for SQL
-logging) and Spring Boot exposes those, and a few more for hibernate as external
+Spring Data JPA already provides some vendor-independent configuration options (e.g.
+for SQL logging) and Spring Boot exposes those, and a few more for hibernate as external
 configuration properties. The most common options to set are:
 
 [indent=0,subs="verbatim,quotes,attributes"]
@@ -905,7 +909,7 @@ for the default settings.
 [[howto-database-initialization]]
 == Database initialization
 An SQL database can be initialized in different ways depending on what your stack is. Or
-of course you can do it manually as long as the database is in a server.
+of course you can do it manually as long as the database is a separate process.
 
 
 
@@ -929,11 +933,11 @@ value for you based on whether it thinks your database is embedded (default `cre
 or not (default `none`). An embedded database is detected by looking at the `Connection`
 type: `hsqldb`, `h2` and `derby` are embedded, the rest are not. Be careful when switching
 from in-memory to a ``real'' database that you don't make assumptions about the existence of
-the tables and data in the new platform. You either have to set `ddl-auto` expicitly, or
+the tables and data in the new platform. You either have to set `ddl-auto` explicitly, or
 use one of the other mechanisms to initialize the database.
 
 In addition, a file named `import.sql` in the root of the classpath will be executed on
-startup. This can be useful for demos and for testing if you are carefuil, but probably
+startup. This can be useful for demos and for testing if you are careful, but probably
 not something you want to be on the classpath in production. It is a Hibernate feature
 (nothing to do with Spring).
 
@@ -946,7 +950,8 @@ loads SQL from the standard locations `schema.sql` and `data.sql` (in the root o
 classpath). In addition Spring Boot will load a file `schema-${platform}.sql` where
 `platform` is the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
 `postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
-initializer by default, so if the scripts cause exceptions the application will fail.
+initializer by default, so if the scripts cause exceptions the application will fail
+to start.
 
 To disable the failfast you can set `spring.datasource.continueOnError=true`. This can be
 useful once an application has matured and been deployed a few times, since the scripts
@@ -968,7 +973,7 @@ initialization explicitly using `spring.batch.initializer.enabled=false`.
 
 
 [[howto-use-a-higher-level-database-migration-tool]]
-=== Use a higher level datababse migration tool
+=== Use a higher level database migration tool
 Spring Boot works fine with higher level migration tools http://flywaydb.org/[Flyway]
 (SQL-based) and http://www.liquibase.org/[Liquibase] (XML). In general we prefer
 Flyway because it is easier on the eyes, and it isn't very common to need platform
@@ -983,7 +988,7 @@ independence: usually only one or at most couple of platforms is needed.
 
 [[howto-execute-spring-batch-jobs-on-startup]]
 === Execute Spring Batch jobs on startup
-Spring Batch autoconfiguration is enabled by adding `@EnableBatchProcessing`
+Spring Batch auto configuration is enabled by adding `@EnableBatchProcessing`
 (from Spring Batch) somewhere in your context.
 
 By default it executes *all* `Jobs` in the application context on startup (see
@@ -1053,10 +1058,9 @@ If Spring Security is on the classpath then web applications will be secure by d
 application you can simply `@EnableGlobalMethodSecurity` with your desired settings.
 
 The default `AuthenticationManager` has a single user (username ``user'' and password
-random, printed at INFO when the application starts up). You can change the password by
-providing a `security.user.password`. This and other useful properties are externalized
-via `SecurityProperties`.
-
+random, printed at INFO level when the application starts up). You can change the
+password by providing a `security.user.password`. This and other useful properties
+are externalized via {sc-spring-boot-autoconfigure}/security/SecurityProperties{sc-ext}[`SecurityProperties`.
 
 
 [[howto-switch-off-spring-boot-security-configuration]]
@@ -1104,13 +1108,13 @@ before the default one in Spring Boot (which has very low precedence).
 [[howto-enable-https]]
 === Enable HTTPS
 Ensuring that all your main endpoints are only available over HTTPS is an important
-chore for any application.  If you are using Tomcat as a servlet container, then the
+chore for any application.  If you are using Tomcat as a servlet container, then
 Spring Boot will add Tomcat's own `RemoteIpValve` automatically if it detects some
 environment settings, and you should be able to rely on the `HttpServletRequest` to
-report whether or not it is secure (even downstream of the real SSL termination). The
+report whether it is secure or not (even downstream of the real SSL termination). The
 standard behavior is determined by the presence or absence of certain request headers
 (`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should
-work with most front end proxies.  You switch on the valve by adding some entries to
+work with most front end proxies. You can switch on the valve by adding some entries to
 `application.properties`, e.g.
 
 [source,properties,indent=0]
@@ -1155,7 +1159,7 @@ for other template customization options.
 
 [[howto-reload-java-classes-without-restarting]]
 === Reload Java classes without restarting the container
-Modern IDEs (Eclipse, IDEA etc.) all support hot swapping of bytecode, so if you make a
+Modern IDEs (Eclipse, IDEA, etc.) all support hot swapping of bytecode, so if you make a
 change that doesn't affect class or method signatures it should reload cleanly with no
 side effects.
 
@@ -1174,8 +1178,8 @@ would only ever be a development time trick probably).
 
 [[howto-build-an-executable-archive-with-ant]]
 === Build an executable archive with Ant
-To build with Ant you need to grab dependencies and compile and then create a jar or war
-archive as normal.  To make it executable:
+To build with Ant you need to grab dependencies, compile and then create a jar or war
+archive as normal. To make it executable:
 
 . Use the appropriate launcher as a `Main-Class`, e.g. `JarLauncher` for a jar file, and
   specify the other properties it needs as manifest entries, principally a `Start-Class`.
@@ -1234,7 +1238,7 @@ Use the `SpringBootServletInitializer` base class, which is picked up by Spring'
 Servlet 3.0 support on deployment. Add an extension of that to your project and build a
 war file as normal. For more detail, see the
 http://spring.io/guides/gs/convert-jar-to-war[``Converting a jar Project to a war''] guide
-on the spring.io website.
+on the spring.io website and the sample below.
 
 The war file can also be executable if you use the Spring Boot build tools. In that case
 the embedded container classes (to launch Tomcat for instance) have to be added to the
@@ -1291,8 +1295,8 @@ Static resources can be moved to `/public` (or `/static` or `/resources` or
 detects this automatically in the root of the classpath).
 
 Vanilla usage of Spring `DispatcherServlet` and Spring Security should require no further
-changes. If you have other features in your application, using other servlets or filters,
-for instance then you may need to add some configuration to your `Application` context,
+changes. If you have other features in your application, using other servlets or filters
+for instance, then you may need to add some configuration to your `Application` context,
 replacing those elements from the `web.xml` as follows:
 
 * A `@Bean` of type `Servlet` or `ServletRegistrationBean` installs that bean in the
