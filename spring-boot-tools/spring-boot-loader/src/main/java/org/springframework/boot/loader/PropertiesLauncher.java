@@ -410,7 +410,7 @@ public class PropertiesLauncher extends Launcher {
 
 		try {
 			// Prefer home dir for MANIFEST if there is one
-			Manifest manifest = new ExplodedArchive(this.home).getManifest();
+			Manifest manifest = new ExplodedArchive(this.home, false).getManifest();
 			if (manifest != null) {
 				String value = manifest.getMainAttributes().getValue(manifestKey);
 				this.logger.fine("Property '" + manifestKey
