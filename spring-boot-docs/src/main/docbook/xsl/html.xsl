@@ -114,4 +114,27 @@ under the License.
 			<xsl:apply-templates mode="titlepage.mode"/>
 		</div>
 	</xsl:template>
+
+	<!-- Title Links -->
+	<xsl:template name="anchor">
+		<xsl:param name="node" select="."/>
+		<xsl:param name="conditional" select="1"/>
+		<xsl:variable name="id">
+			<xsl:call-template name="object.id">
+				<xsl:with-param name="object" select="$node"/>
+			</xsl:call-template>
+		</xsl:variable>
+		<xsl:if test="$conditional = 0 or $node/@id or $node/@xml:id">
+			<xsl:element name="a">
+				<xsl:attribute name="name">
+					<xsl:value-of select="$id"/>
+				</xsl:attribute>
+				<xsl:attribute name="href">
+					<xsl:text>#</xsl:text>
+					<xsl:value-of select="$id"/>
+				</xsl:attribute>
+			</xsl:element>
+		</xsl:if>
+	</xsl:template>
+
 </xsl:stylesheet>
