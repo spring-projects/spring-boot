@@ -31,12 +31,12 @@ repositories {
 }
 
 configurations {
-    providedRuntime
+	providedRuntime
 }
 
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web")
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
