@@ -197,7 +197,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				return name.split("@")[0];
 			}
 		}
-		catch (Throwable e) {
+		catch (Throwable ex) {
+			// Ignore
 		}
 		return "????";
 	}

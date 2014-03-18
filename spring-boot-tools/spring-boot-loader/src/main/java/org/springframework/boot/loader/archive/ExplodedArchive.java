@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,21 @@ public class ExplodedArchive extends Archive {
 
 	private boolean recursive = true;
 
+	/**
+	 * Create a new {@link ExplodedArchive} instance.
+	 * @param root the root folder
+	 */
 	public ExplodedArchive(File root) {
 		this(root, true);
 	}
 
+	/**
+	 * Create a new {@link ExplodedArchive} instance.
+	 * @param root the root folder
+	 * @param recursive if recursive searching should be used to locate the manifest.
+	 * Defaults to {@code true}, folders with a large tree might want to set this to {code
+	 * false}.
+	 */
 	public ExplodedArchive(File root, boolean recursive) {
 		if (!root.exists() || !root.isDirectory()) {
 			throw new IllegalArgumentException("Invalid source folder " + root);
