@@ -43,6 +43,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link Repackager}.
  * 
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class RepackagerTests {
 
