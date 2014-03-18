@@ -91,7 +91,8 @@ public class ExplodedArchive extends Archive {
 			}
 			for (File child : files) {
 				if (!SKIPPED_NAMES.contains(child.getName())) {
-					if (file.equals(this.root) || this.recursive) {
+					if (file.equals(this.root) || this.recursive
+							|| file.getName().equals("META-INF")) {
 						buildEntries(child);
 					}
 				}
