@@ -44,6 +44,7 @@ public class SpringCli {
 		runner.addCommand(new ShellCommand());
 		runner.addCommand(new HintCommand(runner));
 		runner.setOptionCommands(HelpCommand.class, VersionCommand.class);
+		runner.setHiddenCommands(HintCommand.class);
 
 		int exitCode = runner.runAndHandleErrors(args);
 		if (exitCode != 0) {

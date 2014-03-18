@@ -46,6 +46,8 @@ public class CommandRunner implements Iterable<Command> {
 
 	private Class<?>[] optionCommandClasses = {};
 
+	private Class<?>[] hiddenCommandClasses = {};
+
 	/**
 	 * Create a new {@link CommandRunner} instance.
 	 * @param name the name of the runner or {@code null}
@@ -95,14 +97,32 @@ public class CommandRunner implements Iterable<Command> {
 	}
 
 	/**
+	 * Set the command classes which should be hidden (i.e. executed but not displayed in
+	 * the available commands list).
+	 * @param commandClasses the classes of hidden commands
+	 */
+	public void setHiddenCommands(Class<?>... commandClasses) {
+		Assert.notNull(commandClasses, "CommandClasses must not be null");
+		this.hiddenCommandClasses = commandClasses;
+	}
+
+	/**
 	 * Returns if the specified command is an option command.
 	 * @param command the command to test
 	 * @return {@code true} if the command is an option command
 	 * @see #setOptionCommands(Class...)
 	 */
 	public boolean isOptionCommand(Command command) {
-		for (Class<?> optionCommandClass : this.optionCommandClasses) {
-			if (optionCommandClass.isInstance(command)) {
+		return isCommandInstanceOf(command, this.optionCommandClasses);
+	}
+
+	private boolean isHiddenCommand(Command command) {
+		return isCommandInstanceOf(command, this.hiddenCommandClasses);
+	}
+
+	private boolean isCommandInstanceOf(Command command, Class<?>[] commandClasses) {
+		for (Class<?> commandClass : commandClasses) {
+			if (commandClass.isInstance(command)) {
 				return true;
 			}
 		}
@@ -249,7 +269,7 @@ public class CommandRunner implements Iterable<Command> {
 		Log.info("");
 		Log.info("Available commands are:");
 		for (Command command : this.commands) {
-			if (!isOptionCommand(command)) {
+			if (!isOptionCommand(command) && !isHiddenCommand(command)) {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("\n  %1$s %2$-15s\n    %3$s", command.getName(),
