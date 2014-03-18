@@ -1,7 +1,6 @@
 buildscript {
 	ext {
 		springBootVersion = '1.0.0.BUILD-SNAPSHOT'
-		springLoadedVersion = '1.1.5.RELEASE'
 	}
 	repositories {
 		mavenLocal()
@@ -9,20 +8,20 @@ buildscript {
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath("org.springsource.loaded:springloaded:${springLoadedVersion}")
 	}
 }
 
 
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
+apply plugin: 'war'
 
-mainClassName = "sample.ui.SampleWebUiApplication"
+mainClassName = "sample.ui.SampleWebStaticApplication"
 
-jar {
-	baseName = 'spring-boot-sample-web-ui'
+war {
+	baseName = 'spring-boot-sample-web-static'
 	version =  '0.5.0'
 }
 
@@ -31,9 +30,13 @@ repositories {
 	maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
+configurations {
+    providedRuntime
+}
+
 dependencies {
-	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-	compile("org.hibernate:hibernate-validator")
+	compile("org.springframework.boot:spring-boot-starter-web")
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 

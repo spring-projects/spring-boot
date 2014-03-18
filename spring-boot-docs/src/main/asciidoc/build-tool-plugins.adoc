@@ -125,6 +125,31 @@ To build and run a project artifact, you can type the following:
 	$ java -jar target/mymodule-0.0.1-SNAPSHOT.jar
 ----
 
+To build a war file that is both executable and deployable into an external container
+you need to mark the embedded container dependencies as "provided", e.g.
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<!-- ... -->
+		<packaging>war</packaging>
+		<!-- ... -->
+        <dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+				<scope>provided</scope>
+			</dependency>
+			<!-- ... -->
+	    </dependencies>
+	</project>
+----
 
 
 [[build-tool-plugins-maven-packaging-configuration]]
@@ -347,6 +372,35 @@ To build and run a project artifact, you can type the following:
 	$ java -jar build/libs/mymodule-0.0.1-SNAPSHOT.jar
 ----
 
+To build a war file that is both executable and deployable into an external container,
+you need to mark the embedded container dependencies as belonging to a configuration 
+named "providedRuntime", e.g.
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+...
+apply plugin: 'war'
+
+war {
+	baseName = 'myapp'
+	version =  '0.5.0'
+}
+
+repositories {
+	mavenCentral()
+	maven { url "http://repo.spring.io/libs-snapshot" }
+}
+
+configurations {
+    providedRuntime
+}
+
+dependencies {
+	compile("org.springframework.boot:spring-boot-starter-web")
+    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+    ...
+}
+----
 
 
 [[build-tool-plugins-gradle-running-applications]]
