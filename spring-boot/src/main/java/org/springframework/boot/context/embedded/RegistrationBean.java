@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.servlet.Registration;
 
 import org.springframework.core.Conventions;
+import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
 /**
@@ -32,9 +33,11 @@ import org.springframework.util.Assert;
  * @see FilterRegistrationBean
  * @see ServletListenerRegistrationBean
  */
-public abstract class RegistrationBean implements ServletContextInitializer {
+public abstract class RegistrationBean implements ServletContextInitializer, Ordered {
 
 	private String name;
+
+	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	private boolean asyncSupported = true;
 
@@ -111,6 +114,21 @@ public abstract class RegistrationBean implements ServletContextInitializer {
 		if (this.initParameters.size() > 0) {
 			registration.setInitParameters(this.initParameters);
 		}
+	}
+
+	/**
+	 * @param order the order to set
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	/**
+	 * @return the order
+	 */
+	@Override
+	public int getOrder() {
+		return this.order;
 	}
 
 }
