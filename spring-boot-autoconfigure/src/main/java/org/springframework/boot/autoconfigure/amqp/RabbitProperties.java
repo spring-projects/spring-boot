@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
  * Configuration properties for Rabbit.
  * 
  * @author Greg Turnquist
+ * @author Dave Syer
  */
 @ConfigurationProperties(name = "spring.rabbitmq")
 public class RabbitProperties {
@@ -68,12 +69,12 @@ public class RabbitProperties {
 		return this.port;
 	}
 
-	public String getAddresses() {
-		return this.addresses == null ? this.host + ":" + this.port : this.addresses;
-	}
-
 	public void setAddresses(String addresses) {
 		this.addresses = addresses;
+	}
+
+	public String getAddresses() {
+		return (this.addresses == null ? this.host + ":" + this.port : this.addresses);
 	}
 
 	public void setPort(int port) {
