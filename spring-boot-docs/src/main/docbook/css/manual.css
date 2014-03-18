@@ -311,3 +311,31 @@ div.navheader {
 div.navfooter {
 	border-top: 1px solid #CCCCCC;
 }
+
+.title {
+	margin-left: -1em;
+	padding-left: 1em;
+}
+
+.title>a {
+	position: absolute;
+	visibility: hidden;
+	display: block;
+	font-size: 0.85em;
+	margin-top: 0.05em;
+	margin-left: -1em;
+	vertical-align: text-top;
+	color: black;
+}
+
+.title>a:before {
+	content: "\00A7";
+}
+
+.title:hover>a,.title>a:hover,.title:hover>a:hover {
+	visibility: visible;
+}
+
+.title:focus>a,.title>a:focus,.title:focus>a:focus {
+	outline: 0;
+}
