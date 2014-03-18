@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,16 @@ import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.util.AsciiBytes;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ExplodedArchive}.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class ExplodedArchiveTests {
 
@@ -143,6 +146,30 @@ public class ExplodedArchiveTests {
 				new URL[] { filteredArchive.getUrl() });
 		assertThat(classLoader.getResourceAsStream("1.dat").read(), equalTo(1));
 		assertThat(classLoader.getResourceAsStream("2.dat"), nullValue());
+	}
+
+	@Test
+	public void getNonRecursiveEntriesForRoot() throws Exception {
+		ExplodedArchive archive = new ExplodedArchive(new File("/"), false);
+		Map<String, Archive.Entry> entries = getEntriesMap(archive);
+		assertThat(entries.size(), greaterThan(1));
+	}
+
+	@Test
+	public void getNonRecursiveManifest() throws Exception {
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
+		assertNotNull(archive.getManifest());
+		Map<String, Archive.Entry> entries = getEntriesMap(archive);
+		assertThat(entries.size(), equalTo(4));
+	}
+
+	@Test
+	public void getNonRecursiveManifestEvenIfNonRecursive() throws Exception {
+		ExplodedArchive archive = new ExplodedArchive(
+				new File("src/test/resources/root"), false);
+		assertNotNull(archive.getManifest());
+		Map<String, Archive.Entry> entries = getEntriesMap(archive);
+		assertThat(entries.size(), equalTo(3));
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {

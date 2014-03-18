@@ -285,7 +285,7 @@ public class SpringApplication {
 				try {
 					context.registerShutdownHook();
 				}
-				catch (AccessControlException e) {
+				catch (AccessControlException ex) {
 					// Not allowed in some environments.
 				}
 			}
