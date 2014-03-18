@@ -22,7 +22,9 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -35,6 +37,23 @@ public class SpecialArchiveTests {
 		ExplodedArchive archive = new ExplodedArchive(new File("/"), false);
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size(), greaterThan(1));
+	}
+
+	@Test
+	public void getManifest() throws Exception {
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
+		assertNotNull(archive.getManifest());
+		Map<String, Archive.Entry> entries = getEntriesMap(archive);
+		assertThat(entries.size(), equalTo(4));
+	}
+
+	@Test
+	public void getManifestEvenIfNonRecursive() throws Exception {
+		ExplodedArchive archive = new ExplodedArchive(
+				new File("src/test/resources/root"), false);
+		assertNotNull(archive.getManifest());
+		Map<String, Archive.Entry> entries = getEntriesMap(archive);
+		assertThat(entries.size(), equalTo(3));
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
