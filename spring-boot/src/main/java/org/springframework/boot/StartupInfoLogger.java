@@ -89,7 +89,12 @@ class StartupInfoLogger {
 		message.append(" in ");
 		message.append(stopWatch.getTotalTimeSeconds());
 		message.append(" seconds (JVM running for ");
-		message.append(ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0);
+		try {
+			message.append(ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0);
+		}
+		catch (Throwable e) {
+			message.append("?");
+		}
 		message.append(")");
 		return message;
 	}

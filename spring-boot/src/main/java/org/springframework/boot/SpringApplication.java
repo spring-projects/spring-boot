@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -281,7 +282,12 @@ public class SpringApplication {
 			// Create, load, refresh and run the ApplicationContext
 			context = createApplicationContext();
 			if (this.registerShutdownHook) {
-				context.registerShutdownHook();
+				try {
+					context.registerShutdownHook();
+				}
+				catch (AccessControlException e) {
+					// Not allowed in some environments.
+				}
 			}
 			context.setEnvironment(environment);
 			postProcessApplicationContext(context);
