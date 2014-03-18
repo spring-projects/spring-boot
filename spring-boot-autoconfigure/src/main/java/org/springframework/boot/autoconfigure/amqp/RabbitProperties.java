@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Rabbit.
@@ -36,10 +37,19 @@ public class RabbitProperties {
 
 	private String virtualHost;
 
+	private String addresses;
+
 	private boolean dynamic = true;
 
 	public String getHost() {
-		return this.host;
+		if (this.addresses == null) {
+			return this.host;
+		}
+		String[] hosts = StringUtils.delimitedListToStringArray(this.addresses, ":");
+		if (hosts.length == 2) {
+			return hosts[0];
+		}
+		return null;
 	}
 
 	public void setHost(String host) {
@@ -47,7 +57,23 @@ public class RabbitProperties {
 	}
 
 	public int getPort() {
+		if (this.addresses == null) {
+			return this.port;
+		}
+		String[] hosts = StringUtils.delimitedListToStringArray(this.addresses, ":");
+		if (hosts.length >= 2) {
+			return Integer
+					.valueOf(StringUtils.commaDelimitedListToStringArray(hosts[1])[0]);
+		}
 		return this.port;
+	}
+
+	public String getAddresses() {
+		return this.addresses == null ? this.host + ":" + this.port : this.addresses;
+	}
+
+	public void setAddresses(String addresses) {
+		this.addresses = addresses;
 	}
 
 	public void setPort(int port) {

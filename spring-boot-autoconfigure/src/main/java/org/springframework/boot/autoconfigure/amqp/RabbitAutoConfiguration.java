@@ -98,9 +98,13 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		public ConnectionFactory rabbitConnectionFactory(RabbitProperties config) {
-			CachingConnectionFactory factory = new CachingConnectionFactory(
-					config.getHost());
-			factory.setPort(config.getPort());
+			CachingConnectionFactory factory = new CachingConnectionFactory();
+			String addresses = config.getAddresses();
+			factory.setAddresses(addresses);
+			if (config.getHost() != null) {
+				factory.setHost(config.getHost());
+				factory.setPort(config.getPort());
+			}
 			if (config.getUsername() != null) {
 				factory.setUsername(config.getUsername());
 			}
