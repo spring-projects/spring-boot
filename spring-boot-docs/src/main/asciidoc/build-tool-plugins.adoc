@@ -125,8 +125,8 @@ To build and run a project artifact, you can type the following:
 	$ java -jar target/mymodule-0.0.1-SNAPSHOT.jar
 ----
 
-To build a war file that is both executable and deployable into an external container
-you need to mark the embedded container dependencies as "provided", e.g.
+To build a war file that is both executable and deployable into an external container you
+need to mark the embedded container dependencies as ``provided'', e.g:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -136,7 +136,7 @@ you need to mark the embedded container dependencies as "provided", e.g.
 		<!-- ... -->
 		<packaging>war</packaging>
 		<!-- ... -->
-        <dependencies>
+		<dependencies>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
@@ -147,9 +147,10 @@ you need to mark the embedded container dependencies as "provided", e.g.
 				<scope>provided</scope>
 			</dependency>
 			<!-- ... -->
-	    </dependencies>
+		</dependencies>
 	</project>
 ----
+
 
 
 [[build-tool-plugins-maven-packaging-configuration]]
@@ -373,33 +374,33 @@ To build and run a project artifact, you can type the following:
 ----
 
 To build a war file that is both executable and deployable into an external container,
-you need to mark the embedded container dependencies as belonging to a configuration 
-named "providedRuntime", e.g.
+you need to mark the embedded container dependencies as belonging to a configuration
+named "providedRuntime", e.g:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
-...
-apply plugin: 'war'
+	...
+	apply plugin: 'war'
 
-war {
-	baseName = 'myapp'
-	version =  '0.5.0'
-}
+	war {
+		baseName = 'myapp'
+		version =  '0.5.0'
+	}
 
-repositories {
-	mavenCentral()
-	maven { url "http://repo.spring.io/libs-snapshot" }
-}
+	repositories {
+		mavenCentral()
+		maven { url "http://repo.spring.io/libs-snapshot" }
+	}
 
-configurations {
-    providedRuntime
-}
+	configurations {
+		providedRuntime
+	}
 
-dependencies {
-	compile("org.springframework.boot:spring-boot-starter-web")
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
-    ...
-}
+	dependencies {
+		compile("org.springframework.boot:spring-boot-starter-web")
+		providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+		...
+	}
 ----
 
 

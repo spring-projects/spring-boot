@@ -355,30 +355,29 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A really useful thing to do in is to autowire the
-`EmbeddedWebApplicationContext` into a test case and use it to
-discover the port that the app is running on. In that way you can use
-a test profile that chooses a random port (`server.port=0`) and make
-your test suite independent of its environment. Example:
+A really useful thing to do in is to autowire the `EmbeddedWebApplicationContext` into a
+test case and use it to discover the port that the app is running on. In that way you can
+use a test profile that chooses a random port (`server.port=0`) and make your test suite
+independent of its environment. Example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
-    @WebApplication
-    @IntegrationTest
-    @ActiveProfiles("test")
+	@WebApplication
+	@IntegrationTest
+	@ActiveProfiles("test")
 	public class CityRepositoryIntegrationTests {
 
 		@Autowired
 		EmbeddedWebApplicationContext server;
 
-        int port;
+		int port;
 
-        @Before
-        public void init() {
-            port = server.getEmbeddedServletContainer().getPort();
-        }
+		@Before
+		public void init() {
+			port = server.getEmbeddedServletContainer().getPort();
+		}
 
 		// ...
 
