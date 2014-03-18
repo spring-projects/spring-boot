@@ -17,29 +17,11 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |===
 |Configuration Class | Links
 
-|{sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/PropertyPlaceholderAutoConfiguration.{sc-ext}[PropertyPlaceholderAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/PropertyPlaceholderAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/amqp/RabbitAutoConfiguration.{sc-ext}[RabbitAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/amqp/RabbitAutoConfiguration.{dc-ext}[javadoc]
-
 |{sc-spring-boot-autoconfigure}/aop/AopAutoConfiguration.{sc-ext}[AopAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/aop/AopAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/batch/BatchAutoConfiguration.{sc-ext}[BatchAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/batch/BatchAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{sc-ext}[JpaRepositoriesAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{sc-ext}[MongoRepositoriesAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{sc-ext}[MongoTemplateAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{dc-ext}[javadoc]
@@ -47,20 +29,50 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/jdbc/DataSourceTransactionManagerAutoConfiguration.{sc-ext}[DataSourceTransactionManagerAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/jdbc/DataSourceTransactionManagerAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/mobile/DeviceResolverAutoConfiguration.{sc-ext}[DeviceResolverAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/mobile/DeviceResolverAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{sc-ext}[DispatcherServletAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{sc-ext}[EmbeddedServletContainerAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{sc-ext}[HttpMessageConvertersAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/jms/JmsTemplateAutoConfiguration.{sc-ext}[JmsTemplateAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/jms/JmsTemplateAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{sc-ext}[JmxAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/mobile/DeviceResolverAutoConfiguration.{sc-ext}[DeviceResolverAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/mobile/DeviceResolverAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{sc-ext}[JpaRepositoriesAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/mongo/MongoAutoConfiguration.{sc-ext}[MongoAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/mongo/MongoAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{sc-ext}[MongoRepositoriesAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{sc-ext}[MongoTemplateAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[MultipartAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/PropertyPlaceholderAutoConfiguration.{sc-ext}[PropertyPlaceholderAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/PropertyPlaceholderAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/amqp/RabbitAutoConfiguration.{sc-ext}[RabbitAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/amqp/RabbitAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/reactor/ReactorAutoConfiguration.{sc-ext}[ReactorAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/reactor/ReactorAutoConfiguration.{dc-ext}[javadoc]
@@ -71,23 +83,11 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/security/SecurityAutoConfiguration.{sc-ext}[SecurityAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/security/SecurityAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{sc-ext}[DispatcherServletAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{sc-ext}[EmbeddedServletContainerAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{sc-ext}[HttpMessageConvertersAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[MultipartAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{dc-ext}[javadoc]
-
 |{sc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{sc-ext}[ServerPropertiesAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[WebMvcAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{dc-ext}[javadoc]
