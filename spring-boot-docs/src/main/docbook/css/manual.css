@@ -19,13 +19,13 @@ code {
 	color: #6D180B;
 }
 
-:not(pre) > code {
-    background-color: #F2F2F2;
-    border: 1px solid #CCCCCC;
-    border-radius: 4px;
-    padding: 1px 3px 0;
-    text-shadow: none;
-    white-space: nowrap;
+:not(pre)>code {
+	background-color: #F2F2F2;
+	border: 1px solid #CCCCCC;
+	border-radius: 4px;
+	padding: 1px 3px 0;
+	text-shadow: none;
+	white-space: nowrap;
 }
 
 body>*:first-child {
@@ -54,12 +54,12 @@ h1,h2,h3 {
 }
 
 h1 {
-    margin: 70px 0 30px;
-    padding-top: 20px;
+	margin: 70px 0 30px;
+	padding-top: 20px;
 }
 
 div.part h1 {
-    border-top: 1px dotted #CCCCCC;
+	border-top: 1px dotted #CCCCCC;
 }
 
 h1,h1 code {
@@ -138,7 +138,7 @@ div.table {
 	text-align: center;
 }
 
-div.table table, div.informaltable table {
+div.table table,div.informaltable table {
 	display: table;
 	width: 100%;
 }
@@ -160,7 +160,7 @@ div.table td {
 	color: #6D180B;
 }
 
-pre.programlisting, pre.screen {
+pre.programlisting,pre.screen {
 	font-size: 15px;
 	padding: 6px 10px;
 	background-color: #F8F8F8;
@@ -169,7 +169,7 @@ pre.programlisting, pre.screen {
 	clear: both;
 	overflow: auto;
 	line-height: 1.4;
-	font-family: Consolas,"Liberation Mono",Courier,monospace;
+	font-family: Consolas, "Liberation Mono", Courier, monospace;
 }
 
 table {
@@ -211,7 +211,8 @@ div.table-contents td p {
 	margin: 0;
 }
 
-div.important *,div.note *,div.tip *,div.warning *,div.navheader *,div.navfooter *,div.calloutlist * {
+div.important *,div.note *,div.tip *,div.warning *,div.navheader *,div.navfooter *,div.calloutlist *
+	{
 	border: none !important;
 	background: none !important;
 	margin: 0;
@@ -224,30 +225,29 @@ div.important p,div.note p,div.tip p,div.warning p {
 
 div.important code,div.note code,div.tip code,div.warning code {
 	background-color: #F2F2F2 !important;
-    border: 1px solid #CCCCCC !important;
-    border-radius: 4px !important;
-    padding: 1px 3px 0 !important;
-    text-shadow: none !important;
-    white-space: nowrap !important;
+	border: 1px solid #CCCCCC !important;
+	border-radius: 4px !important;
+	padding: 1px 3px 0 !important;
+	text-shadow: none !important;
+	white-space: nowrap !important;
 }
-
 
 .note th,.tip th,.warning th {
 	display: none;
 }
 
-.note tr:first-child td,.tip tr:first-child td,.warning tr:first-child td {
+.note tr:first-child td,.tip tr:first-child td,.warning tr:first-child td
+	{
 	border-right: 1px solid #CCCCCC !important;
 	padding-top: 10px;
 }
 
-
-div.calloutlist p, div.calloutlist td {
+div.calloutlist p,div.calloutlist td {
 	padding: 0;
 	margin: 0;
 }
 
-div.calloutlist > table > tbody > tr > td:first-child {
+div.calloutlist>table>tbody>tr>td:first-child {
 	padding-left: 10px;
 	width: 30px !important;
 }
@@ -270,21 +270,21 @@ dl,dt {
 	margin-bottom: 0;
 }
 
-div.toc > dl > dt {
+div.toc>dl>dt {
 	font-size: 32px;
 	font-weight: bold;
 	margin: 30px 0 10px 0;
 	display: block;
 }
 
-div.toc > dl > dd > dl > dt {
+div.toc>dl>dd>dl>dt {
 	font-size: 24px;
 	font-weight: bold;
 	margin: 20px 0 10px 0;
 	display: block;
 }
 
-div.toc > dl > dd > dl > dd > dl > dt {
+div.toc>dl>dd>dl>dd>dl>dt {
 	font-weight: bold;
 	font-size: 20px;
 	margin: 10px 0 0 0;
