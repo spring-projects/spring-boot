@@ -88,14 +88,13 @@ class StartupInfoLogger {
 		message.append(getApplicationName());
 		message.append(" in ");
 		message.append(stopWatch.getTotalTimeSeconds());
-		message.append(" seconds (JVM running for ");
 		try {
-			message.append(ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0);
+			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;
+			message.append(" seconds (JVM running for " + uptime + ")");
 		}
-		catch (Throwable e) {
-			message.append("?");
+		catch (Throwable ex) {
+			// No JVM time available
 		}
-		message.append(")");
 		return message;
 	}
 
