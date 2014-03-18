@@ -144,7 +144,7 @@ files in directories (as opposed to explicitly on the classpath). In the case of
 the war case) so you just add extra jars in those locations if you want more. The
 `PropertiesLauncher` looks in `lib/` by default, but you can add additional locations by
 setting an environment variable `LOADER_PATH` or `loader.path` in `application.properties`
-(colon-separated list of directories or archives).
+(comma-separated list of directories or archives).
 
 
 
@@ -202,7 +202,7 @@ properties (System properties, environment variables, manifest entries or
 |Key |Purpose
 
 |`loader.path`
-|Colon-separated Classpath, e.g. `lib:${HOME}/app/lib`.
+|Comma-separated Classpath, e.g. `lib:${HOME}/app/lib`.
 
 |`loader.home`
 |Location of additional properties file, e.g. `file:///opt/app`
@@ -219,7 +219,7 @@ properties (System properties, environment variables, manifest entries or
 
 |`loader.config.location`
 |Path to properties file, e.g. `classpath:loader.properties` (defaults to
- `application/.properties`).
+ `application.properties`).
 
 |`loader.system`
 |Boolean flag to indicate that all properties should be added to System properties
