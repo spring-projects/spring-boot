@@ -1525,6 +1525,34 @@ public class MyTest {
 }
 ----
 
+[[boot-features-rest-templates-test-utility]]
+==== RestTemplates
+
+`RestTemplates` is a static convenience factory for instances of
+`RestTemplate` that are useful in integration tests.  You can get a
+vanilla template or one that sends Basic HTTP authentication (with a
+username and password). And in either case the template will behave in
+a friendly way for testing, not following redirects (so you can assert
+the response location), ignoring cookies (so the template is
+stateless), and not throwing exceptions on server-side errors. It is
+recommended, but not mandatory, to use Apache HTTP Client (version
+4.3.2 or better), and if you have that on your classpath the
+`RestTemplates` will respond by configuring the client appropriately.
+
+[source,java,indent=0] 
+----
+public class MyTest {
+
+    RestTemplate template = RestTemplates.get();
+
+	@Test
+	public void testRequest() throws Exception {
+        HttpHeaders headers = template.getForEntity("http://myhost.com", String.class).getHeaders();
+		assertThat(headers.getLocation().toString(), containsString("myotherhost"));
+	}
+
+}
+----
 
 
 [[boot-features-developing-auto-configuration]]
