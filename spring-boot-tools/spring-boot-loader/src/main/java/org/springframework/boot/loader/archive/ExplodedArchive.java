@@ -85,7 +85,11 @@ public class ExplodedArchive extends Archive {
 			this.entries.put(entry.getName(), entry);
 		}
 		if (file.isDirectory()) {
-			for (File child : file.listFiles()) {
+			File[] files = file.listFiles();
+			if (files == null) {
+				return;
+			}
+			for (File child : files) {
 				if (!SKIPPED_NAMES.contains(child.getName())) {
 					if (file.equals(this.root) || this.recursive) {
 						buildEntries(child);
