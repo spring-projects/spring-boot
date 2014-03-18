@@ -150,12 +150,12 @@ setting an environment variable `LOADER_PATH` or `loader.path` in `application.p
 
 [[executable-jar-launcher-manifest]]
 ==== Launcher manifest
-You need specify an appropriate `Launcher` as the `Main-Class` attribute of
+You need to specify an appropriate `Launcher` as the `Main-Class` attribute of
 `META-INF/MANIFEST.MF`. The actual class that you want to launch (i.e. the class that
 you wrote that contains a `main` method) should be specified  in the `Start-Class`
 attribute.
 
-For example, here is a typical `MANIFEST.MF` for a executable jar file:
+For example, here is a typical `MANIFEST.MF` for an executable jar file:
 
 [indent=0]
 ----
