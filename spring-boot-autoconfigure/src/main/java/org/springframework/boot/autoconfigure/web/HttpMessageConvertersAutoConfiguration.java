@@ -38,12 +38,14 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
  * 
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Piotr Maj
  */
 @Configuration
 @ConditionalOnClass(HttpMessageConverter.class)
@@ -87,7 +89,12 @@ public class HttpMessageConvertersAutoConfiguration {
 		@ConditionalOnMissingBean
 		@Primary
 		public ObjectMapper jacksonObjectMapper() {
-			return new ObjectMapper();
+			ObjectMapper objectMapper = new ObjectMapper();
+			if (this.properties.isJsonSortKeys()) {
+				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
+						true);
+			}
+			return objectMapper;
 		}
 
 		@Bean
