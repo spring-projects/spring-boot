@@ -18,9 +18,8 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Method;
 import java.util.List;
-
-import com.sun.tools.attach.VirtualMachine;
 
 /**
  * Utility class to attach an instrumentation agent to the running JVM.
@@ -29,16 +28,22 @@ import com.sun.tools.attach.VirtualMachine;
  */
 public abstract class AgentAttacher {
 
+	private static final String VIRTUAL_MACHINE_CLASSNAME = "com.sun.tools.attach.VirtualMachine";
+
 	public static void attach(File agent) {
-		String name = ManagementFactory.getRuntimeMXBean().getName();
-		String pid = name.substring(0, name.indexOf('@'));
 		try {
-			VirtualMachine vm = VirtualMachine.attach(pid);
-			vm.loadAgent(agent.getAbsolutePath());
-			vm.detach();
+			String name = ManagementFactory.getRuntimeMXBean().getName();
+			String pid = name.substring(0, name.indexOf('@'));
+			ClassLoader classLoader = JvmUtils.getToolsClassLoader();
+			Class<?> vmClass = classLoader.loadClass(VIRTUAL_MACHINE_CLASSNAME);
+			Method attachMethod = vmClass.getDeclaredMethod("attach", String.class);
+			Object vm = attachMethod.invoke(null, pid);
+			Method loadAgentMethod = vmClass.getDeclaredMethod("loadAgent", String.class);
+			loadAgentMethod.invoke(vm, agent.getAbsolutePath());
+			vmClass.getDeclaredMethod("detach").invoke(vm);
 		}
 		catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new RuntimeException("Unable to attach Spring Loaded to the JVM", ex);
 		}
 	}
 
