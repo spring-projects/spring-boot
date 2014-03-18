@@ -135,10 +135,12 @@ spring.jmx.enabled=true # Expose MBeans from Spring
 # RABBIT (RabbitProperties)
 spring.rabbitmq.host= # connection host
 spring.rabbitmq.port= # connection port
+spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
 spring.rabbitmq.username= # login user
 spring.rabbitmq.password= # login password
 spring.rabbitmq.virtualhost=
 spring.rabbitmq.dynamic=
+
 
 # REDIS (RedisProperties)
 spring.redis.host=localhost # server host
