@@ -66,15 +66,21 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem {
 	@Override
 	public void beforeInitialize() {
 		super.beforeInitialize();
-		if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler", getClassLoader())) {
-			try {
-				SLF4JBridgeHandler.removeHandlersForRootLogger();
+		try {
+			if (ClassUtils.isPresent("org.slf4j.bridge.SLF4JBridgeHandler",
+					getClassLoader())) {
+				try {
+					SLF4JBridgeHandler.removeHandlersForRootLogger();
+				}
+				catch (NoSuchMethodError ex) {
+					// Method missing in older versions of SLF4J like in JBoss AS 7.1
+					SLF4JBridgeHandler.uninstall();
+				}
+				SLF4JBridgeHandler.install();
 			}
-			catch (NoSuchMethodError ex) {
-				// Method missing in older versions of SLF4J like in JBoss AS 7.1
-				SLF4JBridgeHandler.uninstall();
-			}
-			SLF4JBridgeHandler.install();
+		}
+		catch (Throwable e) {
+			// Ignore. No java.util.logging bridge is installed.
 		}
 	}
 

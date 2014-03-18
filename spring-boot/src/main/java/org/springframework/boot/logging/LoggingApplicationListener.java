@@ -191,9 +191,13 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 	}
 
 	private String getPid() {
-		String name = ManagementFactory.getRuntimeMXBean().getName();
-		if (name != null) {
-			return name.split("@")[0];
+		try {
+			String name = ManagementFactory.getRuntimeMXBean().getName();
+			if (name != null) {
+				return name.split("@")[0];
+			}
+		}
+		catch (Throwable e) {
 		}
 		return "????";
 	}
