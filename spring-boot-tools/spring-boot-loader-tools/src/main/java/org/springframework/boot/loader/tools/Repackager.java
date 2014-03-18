@@ -19,8 +19,8 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -35,13 +35,13 @@ import org.springframework.boot.loader.tools.MainClassFinder.ClassNameCallback;
  */
 public class Repackager {
 
-	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
-
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
 	private static final String START_CLASS_ATTRIBUTE = "Start-Class";
 
 	private static final String BOOT_VERSION_ATTRIBUTE = "Spring-Boot-Version";
+
+	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
 	private String mainClass;
 
@@ -142,12 +142,11 @@ public class Repackager {
 		try {
 			writer.writeManifest(buildManifest(sourceJar));
 			writer.writeEntries(sourceJar);
-			libraries.doWithLibraries(new LibraryCallback() {
 
+			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
 				public void library(File file, LibraryScope scope) throws IOException {
-
-					if (isZipFile(file)) {
+					if (isZip(file)) {
 						String destination = Repackager.this.layout
 								.getLibraryDestination(file.getName(), scope);
 						if (destination != null) {
@@ -155,31 +154,8 @@ public class Repackager {
 						}
 					}
 				}
-
-				private boolean isZipFile(File file) {
-					byte[] buffer = new byte[4];
-					FileInputStream fis = null;
-					try {
-						fis = new FileInputStream(file);
-						int read = fis.read(buffer);
-
-						return (read == 4 && Arrays.equals(buffer, ZIP_FILE_HEADER));
-					}
-					catch (IOException ioe) {
-						return false;
-					}
-					finally {
-						if (fis != null) {
-							try {
-								fis.close();
-							}
-							catch (IOException ioe) {
-								// Close quietly
-							}
-						}
-					}
-				}
 			});
+
 			if (!(this.layout instanceof Layouts.None)) {
 				writer.writeLoaderClasses();
 			}
@@ -192,6 +168,30 @@ public class Repackager {
 				// Ignore
 			}
 		}
+	}
+
+	private boolean isZip(File file) {
+		try {
+			FileInputStream fileInputStream = new FileInputStream(file);
+			try {
+				return isZip(fileInputStream);
+			}
+			finally {
+				fileInputStream.close();
+			}
+		}
+		catch (IOException ex) {
+			return false;
+		}
+	}
+
+	private boolean isZip(InputStream inputStream) throws IOException {
+		for (int i = 0; i < ZIP_FILE_HEADER.length; i++) {
+			if (inputStream.read() != ZIP_FILE_HEADER[i]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private Manifest buildManifest(JarFile source) throws IOException {
