@@ -16,17 +16,17 @@
 
 package org.springframework.boot.autoconfigure;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Locale;
 
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class MessageSourceAutoConfigurationTests {
@@ -53,6 +53,20 @@ public class MessageSourceAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals("bar",
 				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+	}
+
+	@Test
+	public void testMultipleMessageSourceCreated() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MessageSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.messages.basename:test/messages,test/messages2");
+		this.context.refresh();
+		assertEquals("bar",
+				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+		assertEquals("bar-bar",
+				this.context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK));
 	}
 
 	@Test
