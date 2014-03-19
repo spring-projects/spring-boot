@@ -2,13 +2,13 @@ buildscript {
 	ext {
 		springBootVersion = '1.0.0.BUILD-SNAPSHOT'
 	}
-    repositories {
-    	mavenLocal()
-        maven { url "http://repo.spring.io/libs-snapshot" }
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+	repositories {
+		mavenLocal()
+		maven { url "http://repo.spring.io/libs-snapshot" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
 }
 
 apply plugin: 'java'
@@ -17,14 +17,14 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 jar {
-    baseName = 'spring-boot-sample-actuator'
-    version =  '1.0.0'
+	baseName = 'spring-boot-sample-actuator'
+	version =  '0.0.0'
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "http://repo.spring.io/libs-snapshot" }
+	mavenLocal()
+	mavenCentral()
+	maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
 dependencies {
@@ -32,13 +32,13 @@ dependencies {
 		insecure.exclude module: 'spring-boot-starter-security'
 	}
 
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    compile("org.springframework.boot:spring-boot-starter-security")
-    compile("org.springframework.boot:spring-boot-starter-web")
+	compile("org.springframework.boot:spring-boot-starter-actuator")
+	compile("org.springframework.boot:spring-boot-starter-security")
+	compile("org.springframework.boot:spring-boot-starter-web")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+	testCompile("org.springframework.boot:spring-boot-starter-test")
 
-    insecure configurations.runtime
+	insecure configurations.runtime
 }
 
 // Slightly odd requirement (package a jar file as an insecure app, exlcuding Spring Security)
@@ -48,5 +48,5 @@ springBoot {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+	gradleVersion = '1.6'
 }

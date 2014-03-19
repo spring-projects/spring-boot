@@ -22,7 +22,7 @@ mainClassName = "sample.ui.SampleWebStaticApplication"
 
 war {
 	baseName = 'spring-boot-sample-web-static'
-	version =  '0.5.0'
+	version =  '0.0.0'
 }
 
 repositories {

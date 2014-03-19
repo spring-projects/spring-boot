@@ -2,15 +2,14 @@ buildscript {
 	ext {
 		springBootVersion = '1.0.0.BUILD-SNAPSHOT'
 	}
-    repositories {
-    	mavenLocal()
-        maven { url "http://repo.spring.io/libs-snapshot" }
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+	repositories {
+		mavenLocal()
+		maven { url "http://repo.spring.io/libs-snapshot" }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
 }
-
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -18,21 +17,21 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 jar {
-    baseName = 'spring-boot-sample-simple'
-    version =  '1.0.0'
+	baseName = 'spring-boot-sample-simple'
+	version =  '0.0.0'
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "http://repo.spring.io/libs-snapshot" }
+	mavenLocal()
+	mavenCentral()
+	maven { url "http://repo.spring.io/libs-snapshot" }
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+	compile("org.springframework.boot:spring-boot-starter")
+	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.6'
+	gradleVersion = '1.6'
 }
