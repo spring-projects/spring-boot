@@ -36,6 +36,8 @@ configurations {
 
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web")
+	compile("org.webjars:bootstrap:3.0.3")
+	compile("org.webjars:jquery:2.0.3-1")
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
