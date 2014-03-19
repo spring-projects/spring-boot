@@ -64,7 +64,7 @@ server.tomcat.max-threads = 0 # number of threads in protocol handler
 
 # SPRING MVC ({sc-spring-boot-autoconfigure}/web/HttpMapperProperties.{sc-ext}[HttpMapperProperties])
 http.mappers.json-pretty-print=false # pretty print JSON
-http.mappers.json-sort-keys=falose # sort keys
+http.mappers.json-sort-keys=false # sort keys
 spring.view.prefix= # MVC view prefix
 spring.view.suffix= # ... and suffix
 spring.resources.cache-period= # cache timeouts in headers sent to browser
