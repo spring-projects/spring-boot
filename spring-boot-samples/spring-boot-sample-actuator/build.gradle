@@ -31,10 +31,13 @@ dependencies {
 	configurations {
 		insecure.exclude module: 'spring-boot-starter-security'
 	}
-    compile("org.springframework.boot:spring-boot-starter-web")
+
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-security")
-    testCompile("junit:junit")
+    compile("org.springframework.boot:spring-boot-starter-web")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+
     insecure configurations.runtime
 }
 
