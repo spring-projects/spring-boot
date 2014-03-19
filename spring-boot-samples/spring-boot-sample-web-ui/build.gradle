@@ -23,7 +23,7 @@ mainClassName = "sample.ui.SampleWebUiApplication"
 
 jar {
 	baseName = 'spring-boot-sample-web-ui'
-	version =  '0.5.0'
+	version =  '0.0.0'
 }
 
 repositories {
