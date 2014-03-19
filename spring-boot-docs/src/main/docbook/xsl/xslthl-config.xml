@@ -17,5 +17,7 @@
 	<highlighter id="sql" file="./xslthl/sql2003-hl.xml" />
 	<highlighter id="asciidoc" file="./xslthl/asciidoc-hl.xml" />
 	<highlighter id="properties" file="./xslthl/properties-hl.xml" />
+	<highlighter id="json" file="./xslthl/json-hl.xml" />
+	<highlighter id="yaml" file="./xslthl/yaml-hl.xml" />
 	<namespace prefix="xslthl" uri="http://xslthl.sf.net" />
 </xslthl-config>
