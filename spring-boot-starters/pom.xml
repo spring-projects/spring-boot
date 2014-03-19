@@ -29,7 +29,7 @@
 		<module>spring-boot-starter-parent</module>
 		<module>spring-boot-starter-redis</module>
 		<module>spring-boot-starter-security</module>
-		<module>spring-boot-starter-shell-remote</module>
+		<module>spring-boot-starter-shell</module>
 		<module>spring-boot-starter-test</module>
 		<module>spring-boot-starter-thymeleaf</module>
 		<module>spring-boot-starter-tomcat</module>

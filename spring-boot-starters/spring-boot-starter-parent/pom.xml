@@ -122,7 +122,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-shell-remote</artifactId>
+				<artifactId>spring-boot-starter-shell</artifactId>
 				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
