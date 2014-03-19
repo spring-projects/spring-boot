@@ -134,6 +134,15 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void moreSpecificLocationTakesPrecedenceOverRoot() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment,
+				"spring.config.name:specific");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("specific"));
+	}
+
+	@Test
 	public void loadTwoOfThreePropertiesFile() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ "classpath:testproperties.properties,"
