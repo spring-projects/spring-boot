@@ -269,7 +269,7 @@ add '<<production-ready-features.adoc#production-ready, production ready>>' feat
 |`spring-boot-starter-actuator`
 |Adds production ready features such as metrics and monitoring.
 
-|`spring-boot-starter-shell-remote`
+|`spring-boot-starter-shell`
 |Adds remote `ssh` shell support.
 |===
 

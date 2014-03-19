@@ -1,6 +1,6 @@
 package org.test
 
-@Grab("spring-boot-starter-shell-remote")
+@Grab("spring-boot-starter-shell")
 
 @RestController
 class SampleController {
