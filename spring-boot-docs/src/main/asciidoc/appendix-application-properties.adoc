@@ -113,6 +113,10 @@ spring.datasource.initial-size=10
 spring.datasource.validation-query=
 spring.datasource.test-on-borrow=false
 spring.datasource.test-on-return=false
+spring.datasource.test-while-idle=
+spring.datasource.time-between-eviction-runs-millis=
+spring.datasource.min-evictable-idle-time-millis=
+spring.datasource.max-wait-millis=
 
 # MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 spring.data.mongodb.host= # the db host
