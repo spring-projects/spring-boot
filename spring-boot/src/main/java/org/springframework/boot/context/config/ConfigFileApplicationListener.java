@@ -96,8 +96,8 @@ public class ConfigFileApplicationListener implements
 
 	private static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
-	private static final String DEFAULT_SEARCH_LOCATIONS = "file:./,file:./config/,"
-			+ "classpath:/,classpath:/config/";
+	private static final String DEFAULT_SEARCH_LOCATIONS = "file:./config/,file:./,"
+			+ "classpath:/config/,classpath:/";
 
 	private static final String DEFAULT_NAMES = "application";
 
