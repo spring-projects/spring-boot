@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure;
 
-import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
-import static org.springframework.util.StringUtils.trimAllWhitespace;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
@@ -31,9 +28,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
+import static org.springframework.util.StringUtils.commaDelimitedListToStringArray;
+import static org.springframework.util.StringUtils.trimAllWhitespace;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
- *
+ * 
  * @author Dave Syer
  */
 @Configuration
@@ -53,7 +53,8 @@ public class MessageSourceAutoConfiguration implements EnvironmentAware {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		String basename = this.environment.getProperty("basename", "messages");
 		if (StringUtils.hasText(basename)) {
-			messageSource.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(basename)));
+			messageSource
+					.setBasenames(commaDelimitedListToStringArray(trimAllWhitespace(basename)));
 		}
 		String encoding = this.environment.getProperty("encoding", "utf-8");
 		messageSource.setDefaultEncoding(encoding);
