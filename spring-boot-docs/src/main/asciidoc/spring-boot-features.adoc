@@ -534,10 +534,10 @@ be marked with `@Profile` to limit when it is loaded:
 	}
 ----
 
-Spring Boot takes this a stage further, in that you can use a `spring.profiles.active`
-`Environment` property to specify which profiles are active. You can specify the property
-in any of the usual ways, for example you could include it in your
-`application.properties`:
+In the normal Spring way, you can use a `spring.profiles.active`
+`Environment` property to specify which profiles are active. You can
+specify the property in any of the usual ways, for example you could
+include it in your `application.properties`:
 
 [source,properties,indent=0]
 ----
@@ -556,7 +556,10 @@ active profiles in `application.properties` then *replace* them using the comman
 switch.
 
 Sometimes it is useful to have profile specific properties that *add* to the active
-profiles rather than replace them. The `+` prefix can be used to add active profiles.
+profiles rather than replace them. The `spring.profiles.include` property can be used
+to unconditionally add active profiles. The `SpringApplication` entry point also has
+a Java API for setting additional profiles (i.e. on top of those activated by the
+`spring.profiles.active` property): see the `setAdditionalProfiles()` method.
 
 For example, when an application with following properties is run using the switch
 `--spring.profiles.active=prod` the `proddb` and `prodmq` profiles will also be activated:
@@ -567,7 +570,7 @@ For example, when an application with following properties is run using the swit
 	my.property: fromyamlfile
 	---
 	spring.profiles: prod
-	spring.profiles.active: +proddb,+prodmq
+	spring.profiles.include: proddb,prodmq
 ----
 
 
