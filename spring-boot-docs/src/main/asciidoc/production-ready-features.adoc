@@ -467,13 +467,8 @@ download and install http://www.putty.org/[PuTTY].
 	 :: Spring Boot ::  (v{spring-boot-version}) on myhost
 ----
 
-Type `help` for a list of commands. Spring boot provides `metrics`, `beans` and
-`autoconfig` commands. You can also use the `jmx` command to query endpoint data:
-
-[indent=0]
-----
-	jmx find -p org.springframework.boot:type=Endpoint,name=healthEndpoint | jmx get Data
-----
+Type `help` for a list of commands. Spring boot provides `metrics`, `beans`, `autoconfig`
+and `endpoint` commands. 
 
 
 
@@ -502,10 +497,10 @@ for details). By default Spring Boot will search for commands in the following l
 * `classpath*:/commands/**`
 * `classpath*:/crash/commands/**`
 
-TIP: You can change the search path by settings a `shell.commandpathpatterns` property.
+TIP: You can change the search path by settings a `shell.commandPathPatterns` property.
 
 Here is a simple ``hello world'' command that could be loaded from
-`src/main/resources/commands/Hello.groovy`
+`src/main/resources/commands/hello.groovy`
 
 [source,groovy,indent=0]
 ----

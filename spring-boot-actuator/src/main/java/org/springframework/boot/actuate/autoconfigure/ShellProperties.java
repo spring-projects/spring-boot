@@ -167,6 +167,8 @@ public class ShellProperties {
 							+ "configured method '%s'. Please check your classpath.",
 					finalAuth, this.auth));
 		}
+		// Make sure we keep track of final authentication method
+		this.auth = finalAuth;
 	}
 
 	/**
