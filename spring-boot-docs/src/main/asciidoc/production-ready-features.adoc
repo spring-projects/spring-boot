@@ -468,7 +468,7 @@ download and install http://www.putty.org/[PuTTY].
 ----
 
 Type `help` for a list of commands. Spring boot provides `metrics`, `beans`, `autoconfig`
-and `endpoint` commands. 
+and `endpoint` commands.
 
 
 
