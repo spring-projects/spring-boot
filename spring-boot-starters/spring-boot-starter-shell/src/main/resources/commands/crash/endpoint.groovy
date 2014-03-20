@@ -20,7 +20,12 @@ class endpoint {
 
 	@Usage("Invoke provided actuator endpoint")
 	@Command
-	def invoke(InvocationContext context, @Usage("The object name pattern") @Required @Argument String name) {
+	def invoke(InvocationContext context, @Usage("The name of the Endpoint to invoke") @Required @Argument String name) {
+
+		// Don't require passed argument to end with 'Endpoint'
+		if (!name.endsWith("Endpoint")) {
+    	name = name + "Endpoint"
+    }
 
 		context.attributes['spring.beanfactory'].getBeansOfType(Endpoint.class).each { n, endpoint ->
 			if (n.equals(name) && endpoint.isEnabled()) {
@@ -30,7 +35,7 @@ class endpoint {
 					out.println mbean.getData()
 				}
 				else {
-					out.println mbean.invoke()
+					out.println mbean.endpoint.invoke()
 				}
 
 			}
