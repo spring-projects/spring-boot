@@ -24,8 +24,8 @@ class endpoint {
 
 		// Don't require passed argument to end with 'Endpoint'
 		if (!name.endsWith("Endpoint")) {
-    	name = name + "Endpoint"
-    }
+			name = name + "Endpoint"
+		}
 
 		context.attributes['spring.beanfactory'].getBeansOfType(Endpoint.class).each { n, endpoint ->
 			if (n.equals(name) && endpoint.isEnabled()) {
