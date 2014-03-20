@@ -92,6 +92,8 @@ public class ConfigFileApplicationListener implements
 
 	private static final String ACTIVE_PROFILES_PROPERTY = "spring.profiles.active";
 
+	private static final String INCLUDE_PROFILES_PROPERTY = "spring.profiles.include";
+
 	private static final String CONFIG_NAME_PROPERTY = "spring.config.name";
 
 	private static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
@@ -274,9 +276,9 @@ public class ConfigFileApplicationListener implements
 
 			if (this.environment.containsProperty(ACTIVE_PROFILES_PROPERTY)) {
 				// Any pre-existing active profiles set via property sources (e.g. System
-				// properties) take precedence over those added in config files (unless
-				// latter are prefixed with "+").
-				addActiveProfiles(this.environment.getProperty(ACTIVE_PROFILES_PROPERTY));
+				// properties) take precedence over those added in config files.
+				tryToSetActiveProfiles(this.environment
+						.getProperty(ACTIVE_PROFILES_PROPERTY));
 			}
 			else {
 				// Pre-existing active profiles set via Environment.setActiveProfiles()
@@ -330,32 +332,42 @@ public class ConfigFileApplicationListener implements
 				PropertySource<?> propertySource = this.propertiesLoader.load(resource,
 						name, profile);
 				if (propertySource != null) {
-					addActiveProfiles(propertySource
+					tryToSetActiveProfiles(propertySource
 							.getProperty(ACTIVE_PROFILES_PROPERTY));
+					addIncludeProfiles(propertySource
+							.getProperty(INCLUDE_PROFILES_PROPERTY));
 				}
 				return propertySource;
 			}
 			return null;
 		}
 
-		private void addActiveProfiles(Object property) {
-			String profiles = (property == null ? null : property.toString());
-			boolean profilesNotActivatedWhenCalled = !this.activatedProfiles;
-			for (String profile : asResolvedSet(profiles, null)) {
-				// A profile name prefixed with "+" is always added even if it is
-				// activated in a config file (without the "+" it can be disabled
-				// by an explicit Environment property set before the file was
-				// processed).
-				boolean addition = profile.startsWith("+");
-				profile = (addition ? profile.substring(1) : profile);
-				if (profilesNotActivatedWhenCalled || addition) {
-					this.profiles.add(profile);
-					if (!this.environment.acceptsProfiles(profile)) {
-						// If it's already accepted we assume the order was set
-						// intentionally
-						prependProfile(this.environment, profile);
-					}
+		private void tryToSetActiveProfiles(Object property) {
+			if (!this.activatedProfiles == true) {
+				Set<String> profiles = getProfilesForProperty(property);
+				activeProfiles(profiles);
+				if (profiles.size() > 0) {
 					this.activatedProfiles = true;
+				}
+			}
+		}
+
+		private void addIncludeProfiles(Object property) {
+			Set<String> profiles = getProfilesForProperty(property);
+			activeProfiles(profiles);
+		}
+
+		private Set<String> getProfilesForProperty(Object property) {
+			return asResolvedSet((property == null ? null : property.toString()), null);
+		}
+
+		private void activeProfiles(Set<String> profiles) {
+			for (String profile : profiles) {
+				this.profiles.add(profile);
+				if (!this.environment.acceptsProfiles(profile)) {
+					// If it's already accepted we assume the order was set
+					// intentionally
+					prependProfile(this.environment, profile);
 				}
 			}
 		}

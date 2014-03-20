@@ -556,7 +556,8 @@ active profiles in `application.properties` then *replace* them using the comman
 switch.
 
 Sometimes it is useful to have profile specific properties that *add* to the active
-profiles rather than replace them. The `+` prefix can be used to add active profiles.
+profiles rather than replace them. The `spring.profiles.include` property can be used
+to add active profiles.
 
 For example, when an application with following properties is run using the switch
 `--spring.profiles.active=prod` the `proddb` and `prodmq` profiles will also be activated:
@@ -567,7 +568,7 @@ For example, when an application with following properties is run using the swit
 	my.property: fromyamlfile
 	---
 	spring.profiles: prod
-	spring.profiles.active: +proddb,+prodmq
+	spring.profiles.include: proddb,prodmq
 ----
 
 
