@@ -61,6 +61,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.SpringVersion;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.security.access.AccessDecisionManager;
@@ -199,6 +200,9 @@ public class CrshAutoConfiguration {
 		private ListableBeanFactory beanFactory;
 
 		@Autowired
+		private Environment environment;
+
+		@Autowired
 		private ShellProperties properties;
 
 		@Autowired
@@ -249,6 +253,9 @@ public class CrshAutoConfiguration {
 			attributes.put("spring.version", SpringVersion.getVersion());
 			if (this.beanFactory != null) {
 				attributes.put("spring.beanfactory", this.beanFactory);
+			}
+			if (this.environment != null) {
+				attributes.put("spring.environment", this.environment);
 			}
 			return attributes;
 		}

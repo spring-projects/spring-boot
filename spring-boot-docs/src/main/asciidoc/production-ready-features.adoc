@@ -533,8 +533,11 @@ from your command:
 |`spring.version`
 |The version of the core Spring Framework
 
-|`spring.beanFactory`
+|`spring.beanfactory`
 |Access to the Spring `BeanFactory`
+
+|`spring.environment`
+|Access to the Spring `Environment`
 |===
 
 
