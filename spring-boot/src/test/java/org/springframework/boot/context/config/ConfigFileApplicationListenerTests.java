@@ -111,6 +111,19 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void loadTwoPropertiesFilesWithProfilesAndSwitchOneOff() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
+				+ "classpath:enabletwoprofiles.properties,"
+				+ "classpath:enableprofile.properties");
+		this.initializer.onApplicationEvent(this.event);
+		assertEquals("myprofile",
+				StringUtils.arrayToCommaDelimitedString(this.environment
+						.getActiveProfiles()));
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("fromtwopropertiesfile"));
+	}
+
+	@Test
 	public void localFileTakesPrecedenceOverClasspath() throws Exception {
 		File localFile = new File(new File("."), "application.properties");
 		assertThat(localFile.exists(), equalTo(false));
