@@ -84,6 +84,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	private List<TomcatConnectorCustomizer> tomcatConnectorCustomizers = new ArrayList<TomcatConnectorCustomizer>();
 
+	private List<Connector> additionalTomcatConnectors = new ArrayList<Connector>();
+
 	private ResourceLoader resourceLoader;
 
 	private String protocol = DEFAULT_PROTOCOL;
@@ -129,6 +131,10 @@ public class TomcatEmbeddedServletContainerFactory extends
 		tomcat.setConnector(connector);
 		tomcat.getHost().setAutoDeploy(false);
 		tomcat.getEngine().setBackgroundProcessorDelay(-1);
+
+		for (Connector additionalConnector : this.additionalTomcatConnectors) {
+			tomcat.getService().addConnector(additionalConnector);
+		}
 
 		prepareContext(tomcat.getHost(), initializers);
 		this.logger.info("Server initialized with port: " + getPort());
@@ -428,6 +434,24 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	public Collection<TomcatConnectorCustomizer> getTomcatConnectorCustomizers() {
 		return this.tomcatConnectorCustomizers;
+	}
+
+	/**
+	 * Add {@link Connector}s in addition to the default connector, eg for SSL or AJP
+	 * @param connectors the connectors to add
+	 */
+	public void addAdditionalTomcatConnectors(Connector... connectors) {
+		Assert.notNull(connectors, "Connectors must not be null");
+		this.additionalTomcatConnectors.addAll(Arrays.asList(connectors));
+	}
+
+	/**
+	 * Returns a mutable collection of the {@link Connector}s that will be added to the
+	 * Tomcat
+	 * @return the additionalTomcatConnectors
+	 */
+	public List<Connector> getAdditionalTomcatConnectors() {
+		return this.additionalTomcatConnectors;
 	}
 
 	private static class TomcatErrorPage {

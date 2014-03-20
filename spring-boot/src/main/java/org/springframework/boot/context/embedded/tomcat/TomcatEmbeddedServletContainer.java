@@ -119,7 +119,13 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					}
 				}
 				connector.getProtocolHandler().start();
-				this.logger.info("Tomcat started on port: " + connector.getLocalPort());
+				StringBuilder ports = new StringBuilder();
+				for (Connector additionalConnector : this.tomcat.getService()
+						.findConnectors()) {
+					ports.append(additionalConnector.getLocalPort() + "/"
+							+ additionalConnector.getScheme() + " ");
+				}
+				this.logger.info("Tomcat started on port(s): " + ports.toString());
 			}
 			catch (Exception ex) {
 				this.logger.error("Cannot start connector: ", ex);
