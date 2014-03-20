@@ -31,6 +31,7 @@
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-simple</module>
 		<module>spring-boot-sample-tomcat</module>
+		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-traditional</module>
 		<module>spring-boot-sample-web-method-security</module>
 		<module>spring-boot-sample-web-secure</module>
