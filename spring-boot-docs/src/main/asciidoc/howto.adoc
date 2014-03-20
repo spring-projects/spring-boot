@@ -453,6 +453,50 @@ that sets up the connector to be secure:
 	}
 ----
 
+[[howto-enable-multiple-connectors-in-tomcat]]
+=== Enable Multiple Connectors Tomcat
+Add a `org.apache.catalina.connector.Connector` to the `TomcatEmbeddedServletContainerFactory`
+which can allow multiple connectors eg a HTTP and HTTPS connector:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+    @Bean
+    public EmbeddedServletContainerFactory servletContainer() {
+
+        final int sslPort = 8443;
+        final String keystoreFile = "src/ssl/keystore";
+        final String keystorePass = "changeit";
+        final String truststoreFile = "src/ssl/truststore";
+        final String truststorePass = "changeit";
+        final String privateKeyAlias = "tomcat";
+
+        TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory();
+
+        Connector sslConnector = new Connector(
+                "org.apache.coyote.http11.Http11NioProtocol");
+        try {
+            File keystore = new ClassPathResource(keystoreFile).getFile();
+            File truststore = new ClassPathResource(truststoreFile).getFile();
+            sslConnector.setScheme("https");
+            sslConnector.setSecure(true);
+            sslConnector.setPort(sslPort);
+            Http11NioProtocol protocol = (Http11NioProtocol) sslConnector.getProtocolHandler();
+            protocol.setSSLEnabled(true);
+            protocol.setKeystoreFile(keystore.getAbsolutePath());
+            protocol.setKeystorePass(keystorePass);
+            protocol.setTruststoreFile(truststore.getAbsolutePath());
+            protocol.setTruststorePass(truststorePass);
+            protocol.setKeyAlias(privateKeyAlias);
+
+        } catch (IOException e) {
+            throw new RuntimeException("cant access keystore: [" + keystoreFile + "] or truststore: [" + truststoreFile + "]", e);
+        }
+
+        tomcat.addAdditionalTomcatConnectors(sslConnector);
+
+        return tomcat;
+    }
+----
 
 
 [[howto-use-jetty-instead-of-tomcat]]

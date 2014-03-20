@@ -82,7 +82,7 @@ public class SampleTomcatTwoConnectorsApplication {
 			protocol.setKeyAlias(privateKeyAlias);
 
 		} catch (IOException e) {
-			throw new RuntimeException("cant access keystore: " + keystoreFile, e);
+			throw new RuntimeException("cant access keystore: [" + keystoreFile + "] or truststore: [" + truststoreFile + "]", e);
 		}
 
 		tomcat.addAdditionalTomcatConnectors(sslConnector);
