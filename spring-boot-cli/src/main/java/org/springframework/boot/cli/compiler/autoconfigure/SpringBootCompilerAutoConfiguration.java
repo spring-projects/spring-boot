@@ -64,7 +64,8 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 				"org.springframework.core.io.ResourceLoader",
 				"org.springframework.boot.CommandLineRunner",
 				"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
-		imports.addStarImports("org.springframework.stereotype");
+		imports.addStarImports("org.springframework.stereotype",
+				"org.springframework.scheduling.annotation");
 	}
 
 	@Override
