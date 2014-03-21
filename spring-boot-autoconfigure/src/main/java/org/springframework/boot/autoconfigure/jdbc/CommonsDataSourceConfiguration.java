@@ -51,11 +51,11 @@ public class CommonsDataSourceConfiguration extends AbstractDataSourceConfigurat
 	public DataSource dataSource() {
 		logger.info("Hint: using Commons DBCP BasicDataSource. It's going to work, "
 				+ "but the Tomcat DataSource is more reliable.");
-		this.pool = createAndSetupPool();
+		this.pool = createAndConfigurePool();
 		return this.pool;
 	}
 
-	private BasicDataSource createAndSetupPool() {
+	private BasicDataSource createAndConfigurePool() {
 		BasicDataSource pool = new BasicDataSource();
 		pool.setDriverClassName(getDriverClassName());
 		pool.setUrl(getUrl());
