@@ -35,6 +35,7 @@ import org.springframework.boot.bind.PropertySourcesPropertyValues;
 import org.springframework.boot.bind.RelaxedDataBinder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.env.EnumerableCompositePropertySource;
 import org.springframework.boot.env.PropertySourcesLoader;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -98,8 +99,8 @@ public class ConfigFileApplicationListener implements
 
 	private static final String CONFIG_LOCATION_PROPERTY = "spring.config.location";
 
-	private static final String DEFAULT_SEARCH_LOCATIONS = "file:./config/,file:./,"
-			+ "classpath:/config/,classpath:/";
+	// Note the order is from least to most specific (last one wins)
+	private static final String DEFAULT_SEARCH_LOCATIONS = "classpath:/,classpath:/config/,file:./,file:./config/";
 
 	private static final String DEFAULT_NAMES = "application";
 
@@ -197,8 +198,8 @@ public class ConfigFileApplicationListener implements
 	 * search location should be a directory path (ending in "/") and it will be prefixed
 	 * by the file names constructed from {@link #setSearchNames(String) search names} and
 	 * profiles (if any) plus file extensions supported by the properties loaders.
-	 * Locations are considered in the order specified, with earlier items taking
-	 * precedence.
+	 * Locations are considered in the order specified, with later items taking precedence
+	 * (like a map merge).
 	 */
 	public void setSearchLocations(String locations) {
 		Assert.hasLength(locations, "Locations must not be empty");
@@ -288,15 +289,22 @@ public class ConfigFileApplicationListener implements
 			}
 
 			// The default profile for these purposes is represented as null. We add it
-			// last so that it is first out (active profiles will then override any
-			// settings in the defaults when the list is reversed later).
+			// last so that it is first out of the queue (active profiles will then
+			// override any settings in the defaults when the list is reversed later).
 			this.profiles.add(null);
 
 			while (!this.profiles.isEmpty()) {
 				String profile = this.profiles.poll();
 				for (String location : getSearchLocations()) {
-					for (String name : getSearchNames()) {
-						load(location, name, profile);
+					if (!location.endsWith("/")) {
+						// location is a filename already, so don't search for more
+						// filenames
+						load(location, null, profile);
+					}
+					else {
+						for (String name : getSearchNames()) {
+							load(location, name, profile);
+						}
 					}
 				}
 			}
@@ -307,30 +315,39 @@ public class ConfigFileApplicationListener implements
 		private void load(String location, String name, String profile)
 				throws IOException {
 
-			// Try to load directly from the location
-			PropertySource<?> locationPropertySource = load(location, profile);
+			String group = "profile=" + (profile == null ? "" : profile);
 
-			// If that fails, try a search
-			if (locationPropertySource == null) {
+			if (!StringUtils.hasText(name)) {
+				// Try to load directly from the location
+				loadIntoGroup(group, location, profile);
+			}
+			else {
+				// Search for a file with the given name
 				for (String ext : this.propertiesLoader.getAllFileExtensions()) {
 					if (profile != null) {
 						// Try the profile specific file
-						load(location + name + "-" + profile + "." + ext, null);
-						load(location + name + "-" + profile + "." + ext, profile);
+						loadIntoGroup(group, location + name + "-" + profile + "." + ext,
+								null);
+						// Sometimes people put "spring.profiles: dev" in
+						// application-dev.yml (gh-340). Arguably we should try and error
+						// out on that, but we can be kind and load it anyway.
+						loadIntoGroup(group, location + name + "-" + profile + "." + ext,
+								profile);
 					}
-					// Try the profile (if any) specific section of the normal file
-					load(location + name + "." + ext, profile);
+					// Also try the profile specific section (if any) of the normal file
+					loadIntoGroup(group, location + name + "." + ext, profile);
 				}
 			}
 		}
 
-		private PropertySource<?> load(String resourceLocation, String profile)
-				throws IOException {
-			Resource resource = this.resourceLoader.getResource(resourceLocation);
+		private PropertySource<?> loadIntoGroup(String identifier, String location,
+				String profile) throws IOException {
+			Resource resource = this.resourceLoader.getResource(location);
 			if (resource != null) {
-				String name = "applicationConfig: " + resource.getDescription();
+				String name = "applicationConfig: [" + location + "]";
+				String group = "applicationConfig: [" + identifier + "]";
 				PropertySource<?> propertySource = this.propertiesLoader.load(resource,
-						name, profile);
+						group, name, profile);
 				if (propertySource != null) {
 					maybeActivateProfiles(propertySource
 							.getProperty(ACTIVE_PROFILES_PROPERTY));
@@ -381,11 +398,9 @@ public class ConfigFileApplicationListener implements
 			environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
 		}
 
-		public Set<String> getSearchLocations() {
+		private Set<String> getSearchLocations() {
 			Set<String> locations = new LinkedHashSet<String>();
-			locations.addAll(asResolvedSet(
-					ConfigFileApplicationListener.this.searchLocations,
-					DEFAULT_SEARCH_LOCATIONS));
+			// User-configured settings take precedence, so we do them first
 			if (this.environment.containsProperty(CONFIG_LOCATION_PROPERTY)) {
 				for (String path : asResolvedSet(
 						this.environment.getProperty(CONFIG_LOCATION_PROPERTY), null)) {
@@ -398,10 +413,13 @@ public class ConfigFileApplicationListener implements
 					locations.add(path);
 				}
 			}
+			locations.addAll(asResolvedSet(
+					ConfigFileApplicationListener.this.searchLocations,
+					DEFAULT_SEARCH_LOCATIONS));
 			return locations;
 		}
 
-		public Set<String> getSearchNames() {
+		private Set<String> getSearchNames() {
 			if (this.environment.containsProperty(CONFIG_NAME_PROPERTY)) {
 				return asResolvedSet(this.environment.getProperty(CONFIG_NAME_PROPERTY),
 						null);
@@ -410,16 +428,10 @@ public class ConfigFileApplicationListener implements
 		}
 
 		private Set<String> asResolvedSet(String value, String fallback) {
-			return asResolvedSet(value, fallback, true);
-		}
-
-		private Set<String> asResolvedSet(String value, String fallback, boolean reverse) {
 			List<String> list = Arrays.asList(StringUtils
 					.commaDelimitedListToStringArray(value != null ? this.environment
 							.resolvePlaceholders(value) : fallback));
-			if (reverse) {
-				Collections.reverse(list);
-			}
+			Collections.reverse(list);
 			return new LinkedHashSet<String>(list);
 		}
 
@@ -428,7 +440,6 @@ public class ConfigFileApplicationListener implements
 			for (PropertySource<?> item : sources) {
 				reorderedSources.add(item);
 			}
-			Collections.reverse(reorderedSources);
 			this.environment.getPropertySources().addLast(
 					new ConfigurationPropertySources(reorderedSources));
 		}
@@ -477,7 +488,15 @@ public class ConfigFileApplicationListener implements
 					.remove(ConfigurationPropertySources.NAME);
 			if (removed != null) {
 				for (PropertySource<?> propertySource : removed.sources) {
-					propertySources.addLast(propertySource);
+					if (propertySource instanceof EnumerableCompositePropertySource) {
+						EnumerableCompositePropertySource composite = (EnumerableCompositePropertySource) propertySource;
+						for (PropertySource<?> nested : composite.getSource()) {
+							propertySources.addLast(nested);
+						}
+					}
+					else {
+						propertySources.addLast(propertySource);
+					}
 				}
 			}
 		}
