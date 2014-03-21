@@ -119,7 +119,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 					}
 				}
 				connector.getProtocolHandler().start();
-				this.logger.info("Tomcat started on port: " + connector.getLocalPort());
+				logPorts();
 			}
 			catch (Exception ex) {
 				this.logger.error("Cannot start connector: ", ex);
@@ -127,6 +127,16 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 						"Unable to start embedded Tomcat connectors", ex);
 			}
 		}
+	}
+
+	private void logPorts() {
+		StringBuilder ports = new StringBuilder();
+		for (Connector additionalConnector : this.tomcat.getService().findConnectors()) {
+			ports.append(ports.length() == 0 ? "" : " ");
+			ports.append(additionalConnector.getLocalPort() + "/"
+					+ additionalConnector.getScheme());
+		}
+		this.logger.info("Tomcat started on port(s): " + ports.toString());
 	}
 
 	@Override

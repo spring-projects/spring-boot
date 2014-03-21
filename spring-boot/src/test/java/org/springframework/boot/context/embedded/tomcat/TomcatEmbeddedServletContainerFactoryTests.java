@@ -116,6 +116,26 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	}
 
 	@Test
+	public void tomcatAdditionalConnectors() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		Connector[] listeners = new Connector[4];
+		for (int i = 0; i < listeners.length; i++) {
+			listeners[i] = mock(Connector.class);
+		}
+		factory.addAdditionalTomcatConnectors(listeners);
+		this.container = factory.getEmbeddedServletContainer();
+		assertEquals(listeners.length, factory.getAdditionalTomcatConnectors().size());
+	}
+
+	@Test
+	public void addNullAdditionalConnectorThrows() {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		this.thrown.expect(IllegalArgumentException.class);
+		this.thrown.expectMessage("Connectors must not be null");
+		factory.addAdditionalTomcatConnectors((Connector[]) null);
+	}
+
+	@Test
 	public void sessionTimeout() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(10);
