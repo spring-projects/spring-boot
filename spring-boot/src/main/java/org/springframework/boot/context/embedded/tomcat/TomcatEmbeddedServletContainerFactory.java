@@ -66,6 +66,7 @@ import org.springframework.util.StreamUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Brock Mills
+ * @author Stephane Nicoll
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
  * @see TomcatEmbeddedServletContainer
@@ -92,6 +93,8 @@ public class TomcatEmbeddedServletContainerFactory extends
 	private String protocol = DEFAULT_PROTOCOL;
 
 	private String tldSkip;
+
+	private String uriEncoding = "UTF-8";
 
 	/**
 	 * Create a new {@link TomcatEmbeddedServletContainerFactory} instance.
@@ -206,6 +209,10 @@ public class TomcatEmbeddedServletContainerFactory extends
 						.setAddress(getAddress());
 			}
 		}
+		if (getUriEncoding() != null) {
+			connector.setURIEncoding(getUriEncoding());
+		}
+
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
@@ -455,10 +462,28 @@ public class TomcatEmbeddedServletContainerFactory extends
 		return this.additionalTomcatConnectors;
 	}
 
+	/**
+	 * Set the character encoding to use for URL decoding. If not specified 'UTF-8' will
+	 * be used.
+	 * @param uriEncoding the uri encoding to set
+	 */
+	public void setUriEncoding(String uriEncoding) {
+		this.uriEncoding = uriEncoding;
+	}
+
+	/**
+	 * Returns the character encoding to use for URL decoding.
+	 */
+	public String getUriEncoding() {
+		return this.uriEncoding;
+	}
+
 	private static class TomcatErrorPage {
 
 		private final String location;
+
 		private final String exceptionType;
+
 		private final int errorCode;
 
 		private final Object nativePage;

@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
  * 
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
@@ -144,6 +145,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private int maxThreads = 0; // Number of threads in protocol handler
 
+		private String uriEncoding;
+
 		public int getMaxThreads() {
 			return this.maxThreads;
 		}
@@ -200,6 +203,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			this.remoteIpHeader = remoteIpHeader;
 		}
 
+		public String getUriEncoding() {
+			return this.uriEncoding;
+		}
+
+		public void setUriEncoding(String uriEncoding) {
+			this.uriEncoding = uriEncoding;
+		}
+
 		void customizeTomcat(TomcatEmbeddedServletContainerFactory factory) {
 			if (getBasedir() != null) {
 				factory.setBaseDirectory(getBasedir());
@@ -246,6 +257,9 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 				}
 				valve.setSuffix(".log");
 				factory.addContextValves(valve);
+			}
+			if (getUriEncoding() != null) {
+				factory.setUriEncoding(getUriEncoding());
 			}
 		}
 
