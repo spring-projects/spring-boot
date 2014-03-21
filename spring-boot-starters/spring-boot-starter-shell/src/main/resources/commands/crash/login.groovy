@@ -11,7 +11,7 @@ welcome = { ->
 		hostName = "localhost";
 	}
 
-  	Get Spring Boot version from context
+  	// Get Spring Boot version from context
 	def version = crash.context.attributes.get("spring.boot.version")
 
 	return """\
