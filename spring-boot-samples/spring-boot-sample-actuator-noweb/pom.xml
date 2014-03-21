@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-shell</artifactId>
+			<artifactId>spring-boot-starter-remote-shell</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
