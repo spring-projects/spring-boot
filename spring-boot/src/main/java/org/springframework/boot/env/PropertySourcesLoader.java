@@ -68,26 +68,24 @@ public class PropertySourcesLoader {
 	 * @throws IOException
 	 */
 	public PropertySource<?> load(Resource resource) throws IOException {
-		return this.load(resource, null);
+		return load(resource, null);
 	}
 
 	/**
 	 * Load the profile-specific properties from the specified resource (if any) and add
 	 * it as the first source.
-	 * 
 	 * @param resource the source resource (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
 	 * @throws IOException
 	 */
 	public PropertySource<?> load(Resource resource, String profile) throws IOException {
-		return this.load(resource, resource.getDescription(), profile);
+		return load(resource, resource.getDescription(), profile);
 	}
 
 	/**
 	 * Load the profile-specific properties from the specified resource (if any), give the
 	 * name provided and add it as the first source.
-	 * 
 	 * @param resource the source resource (may be {@code null}).
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
@@ -96,7 +94,7 @@ public class PropertySourcesLoader {
 	 */
 	public PropertySource<?> load(Resource resource, String name, String profile)
 			throws IOException {
-		return this.load(resource, null, name, profile);
+		return load(resource, null, name, profile);
 	}
 
 	/**
@@ -108,7 +106,6 @@ public class PropertySourcesLoader {
 	 * groups afterwards (with the highest priority last). Property resolution from the
 	 * resulting sources will consider all keys for a given group first and then move to
 	 * the next group.
-	 * 
 	 * @param resource the source resource (may be {@code null}).
 	 * @param group an identifier for the group that this source belongs to
 	 * @param name the root property name (may be {@code null}).
