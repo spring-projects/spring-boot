@@ -338,10 +338,12 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			for (String location : locations) {
 				Resource resource = this.resourceLoader.getResource(this.environment
 						.resolvePlaceholders(location));
-				for (String profile : this.environment.getActiveProfiles()) {
-					loader.load(resource, null, profile);
+				String[] profiles = this.environment.getActiveProfiles();
+				for (int i = profiles.length; i-- > 0;) {
+					String profile = profiles[i];
+					loader.load(resource, profile);
 				}
-				loader.load(resource, null, null);
+				loader.load(resource);
 			}
 			return loader.getPropertySources();
 		}
