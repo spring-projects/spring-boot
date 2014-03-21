@@ -6,7 +6,7 @@
 		<artifactId>spring-boot-starters</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-starter-shell</artifactId>
+	<artifactId>spring-boot-starter-remote-shell</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
