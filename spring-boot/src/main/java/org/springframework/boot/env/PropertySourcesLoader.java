@@ -64,6 +64,31 @@ public class PropertySourcesLoader {
 	/**
 	 * Load the specified resource (if possible) and add it as the first source.
 	 * @param resource the source resource (may be {@code null}).
+	 * @return the loaded property source or {@code null}
+	 * @throws IOException
+	 */
+	public PropertySource<?> load(Resource resource) throws IOException {
+		return this.load(resource, null);
+	}
+
+	/**
+	 * Load the profile-specific properties from the specified resource (if any) and add
+	 * it as the first source.
+	 * 
+	 * @param resource the source resource (may be {@code null}).
+	 * @param profile a specific profile to load or {@code null} to load the default.
+	 * @return the loaded property source or {@code null}
+	 * @throws IOException
+	 */
+	public PropertySource<?> load(Resource resource, String profile) throws IOException {
+		return this.load(resource, resource.getDescription(), profile);
+	}
+
+	/**
+	 * Load the profile-specific properties from the specified resource (if any), give the
+	 * name provided and add it as the first source.
+	 * 
+	 * @param resource the source resource (may be {@code null}).
 	 * @param name the root property name (may be {@code null}).
 	 * @param profile a specific profile to load or {@code null} to load the default.
 	 * @return the loaded property source or {@code null}
@@ -71,13 +96,36 @@ public class PropertySourcesLoader {
 	 */
 	public PropertySource<?> load(Resource resource, String name, String profile)
 			throws IOException {
+		return this.load(resource, null, name, profile);
+	}
+
+	/**
+	 * Load the profile-specific properties from the specified resource (if any), give the
+	 * name provided and add it to a group of property sources identified by the group
+	 * name. Property sources are added to the end of a group, but new groups are added as
+	 * the first in the chain being assembled. This means the normal sequence of calls is
+	 * to first create the group for the default (null) profile, and then add specific
+	 * groups afterwards (with the highest priority last). Property resolution from the
+	 * resulting sources will consider all keys for a given group first and then move to
+	 * the next group.
+	 * 
+	 * @param resource the source resource (may be {@code null}).
+	 * @param group an identifier for the group that this source belongs to
+	 * @param name the root property name (may be {@code null}).
+	 * @param profile a specific profile to load or {@code null} to load the default.
+	 * @return the loaded property source or {@code null}
+	 * @throws IOException
+	 */
+	public PropertySource<?> load(Resource resource, String group, String name,
+			String profile) throws IOException {
 		if (isFile(resource)) {
-			name = generatePropertySourceName(resource, name, profile);
+			String sourceName = generatePropertySourceName(name, profile);
 			for (PropertySourceLoader loader : this.loaders) {
 				if (canLoadFileExtension(loader, resource)) {
-					PropertySource<?> source = loader.load(name, resource, profile);
-					addPropertySource(source);
-					return source;
+					PropertySource<?> specific = loader.load(sourceName, resource,
+							profile);
+					addPropertySource(group, specific, profile);
+					return specific;
 				}
 			}
 		}
@@ -91,11 +139,7 @@ public class PropertySourcesLoader {
 						.getFilename()));
 	}
 
-	private String generatePropertySourceName(Resource resource, String name,
-			String profile) {
-		if (name == null) {
-			name = resource.getDescription();
-		}
+	private String generatePropertySourceName(String name, String profile) {
 		return (profile == null ? name : name + "#" + profile);
 	}
 
@@ -109,10 +153,37 @@ public class PropertySourcesLoader {
 		return false;
 	}
 
-	private void addPropertySource(PropertySource<?> propertySource) {
-		if (propertySource != null) {
-			this.propertySources.addLast(propertySource);
+	private void addPropertySource(String basename, PropertySource<?> source,
+			String profile) {
+
+		if (source == null) {
+			return;
 		}
+
+		if (basename == null) {
+			this.propertySources.addLast(source);
+			return;
+		}
+
+		EnumerableCompositePropertySource group = getGeneric(basename);
+		group.add(source);
+		if (this.propertySources.contains(group.getName())) {
+			this.propertySources.replace(group.getName(), group);
+		}
+		else {
+			this.propertySources.addFirst(group);
+		}
+
+	}
+
+	private EnumerableCompositePropertySource getGeneric(String name) {
+		PropertySource<?> source = this.propertySources.get(name);
+		if (source instanceof EnumerableCompositePropertySource) {
+			return (EnumerableCompositePropertySource) source;
+		}
+		EnumerableCompositePropertySource composite = new EnumerableCompositePropertySource(
+				name);
+		return composite;
 	}
 
 	/**

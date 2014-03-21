@@ -249,10 +249,10 @@ them using `SpringApplication.setAddCommandLineProperties(false)`.
 `SpringApplication` will load properties from `application.properties` files in the
 following locations and add them to the Spring `Environment`:
 
-. The current directory
 . A `/config` subdir of the current directory.
-. The classpath root
+. The current directory
 . A classpath `/config` package
+. The classpath root
 
 The list is ordered by precedence (locations higher in the list override lower items).
 
@@ -261,13 +261,29 @@ an alternative to '.properties'.
 
 If you don't like `application.properties` as the configuration file name you can switch
 to another by specifying a `spring.config.name` environment property. You can also refer
-to an explicit location using the `spring.config.location` environment property.
+to an explicit location using the `spring.config.location` environment property (comma-
+separated list of directory locations, or file paths).
 
 [indent=0]
 ----
 	$ java -jar myproject.jar --spring.config.name=myproject
 ----
 
+or
+
+[indent=0]
+----
+	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
+----
+
+If `spring.config.location` contains directories (as opposed to files)
+they should end in "/" (and will be appended with the names generated
+from `spring.config.name` before being loaded). The default search
+path `classpath:,classpath:/config,file:,file:config/` is always used,
+irrespective of the value of `spring.config.location`. In that way you
+can set up default values for your app in `application.properties` (or
+whatever other basename you choose with `spring.config.name`) and
+override it at runtime with a different file, keeping the defaults.
 
 
 [[boot-features-external-config-profile-specific-properties]]

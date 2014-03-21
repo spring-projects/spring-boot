@@ -278,6 +278,16 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@Test
+	public void testBindingDirectlyToFileWithTwoExplicitSpringProfiles() {
+		this.context.register(ResourceBindingProperties.class, TestConfiguration.class);
+		this.context.getEnvironment().setActiveProfiles("super", "other");
+		this.context.refresh();
+		assertEquals(1,
+				this.context.getBeanNamesForType(ResourceBindingProperties.class).length);
+		assertEquals("spam", this.context.getBean(ResourceBindingProperties.class).name);
+	}
+
+	@Test
 	public void testBindingWithTwoBeans() {
 		this.context.register(MoreConfiguration.class, TestConfiguration.class);
 		this.context.refresh();
@@ -357,7 +367,6 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("value3", bean.mymap.get("key3"));
 		// this should not fail!!!
 		// mymap looks to contain - {key1=, key3=value3}
-		System.err.println(bean.mymap);
 		assertEquals("value12", bean.mymap.get("key1.key2"));
 	}
 
