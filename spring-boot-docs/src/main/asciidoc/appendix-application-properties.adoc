@@ -61,6 +61,7 @@ server.tomcat.remote-ip-header=x-forwarded-for
 server.tomcat.basedir=/tmp # base dir (usually not needed, defaults to tmp)
 server.tomcat.background-processor-delay=30; # in seconds
 server.tomcat.max-threads = 0 # number of threads in protocol handler
+server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
 
 # SPRING MVC ({sc-spring-boot-autoconfigure}/web/HttpMapperProperties.{sc-ext}[HttpMapperProperties])
 http.mappers.json-pretty-print=false # pretty print JSON
