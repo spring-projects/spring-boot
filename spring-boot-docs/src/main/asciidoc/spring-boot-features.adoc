@@ -276,14 +276,14 @@ or
 	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
 ----
 
-If `spring.config.location` contains directories (as opposed to files)
-they should end in "/" (and will be appended with the names generated
-from `spring.config.name` before being loaded). The default search
-path `classpath:,classpath:/config,file:,file:config/` is always used,
-irrespective of the value of `spring.config.location`. In that way you
-can set up default values for your app in `application.properties` (or
-whatever other basename you choose with `spring.config.name`) and
-override it at runtime with a different file, keeping the defaults.
+If `spring.config.location` contains directories (as opposed to files) they should end
+in `/` (and will be appended with the names generated from `spring.config.name` before
+being loaded). The default search path `classpath:,classpath:/config,file:,file:config/`
+is always used, irrespective of the value of `spring.config.location`. In that way you
+can set up default values for your application in `application.properties` (or whatever
+other basename you choose with `spring.config.name`) and override it at runtime with a
+different file, keeping the defaults.
+
 
 
 [[boot-features-external-config-profile-specific-properties]]
