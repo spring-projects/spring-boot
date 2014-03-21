@@ -80,15 +80,20 @@ public class CodahaleMetricWriterTests {
 		assertEquals(2, this.registry.histogram("histogram.foo").getCount());
 	}
 
+	/**
+	 * Test the case where a given writer is used amongst several threads where each
+	 * thread is updating the same set of metrics. This would be an example case of the
+	 * writer being used with the MetricsFilter handling several requests/sec to the same
+	 * URL.
+	 * 
+	 * @throws Exception if an error occurs
+	 */
 	@Test
 	public void testParallism() throws Exception {
-		MetricRegistry registry = new MetricRegistry();
-		CodahaleMetricWriter writer = new CodahaleMetricWriter(registry);
-
 		List<WriterThread> threads = new ArrayList<WriterThread>();
 		ThreadGroup group = new ThreadGroup("threads");
 		for (int i = 0; i < 10; i++) {
-			WriterThread thread = new WriterThread(group, i, writer);
+			WriterThread thread = new WriterThread(group, i, this.writer);
 			threads.add(thread);
 			thread.start();
 		}
@@ -122,7 +127,17 @@ public class CodahaleMetricWriterTests {
 		public void run() {
 			for (int i = 0; i < 10000; i++) {
 				try {
-					this.writer.set(new Metric<Integer>("test", this.index));
+					Metric<Integer> metric1 = new Metric<Integer>(
+							"timer.test.service", this.index);
+					this.writer.set(metric1);
+
+					Metric<Integer> metric2 = new Metric<Integer>(
+							"histogram.test.service", this.index);
+					this.writer.set(metric2);
+
+					Metric<Integer> metric3 = new Metric<Integer>(
+							"gauge.test.service", this.index);
+					this.writer.set(metric3);
 				}
 				catch (IllegalArgumentException iae) {
 					this.failed = true;
