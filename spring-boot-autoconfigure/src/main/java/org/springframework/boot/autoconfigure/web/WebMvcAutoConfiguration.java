@@ -179,8 +179,8 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(ViewResolver.class)
-		public ContentNegotiatingViewResolver contentNegotiatingViewResolver(
-				BeanFactory beanFactory) {
+		@ConditionalOnMissingBean(name = "viewResolver")
+		public ContentNegotiatingViewResolver viewResolver(BeanFactory beanFactory) {
 			ContentNegotiatingViewResolver resolver = new ContentNegotiatingViewResolver();
 			resolver.setContentNegotiationManager(beanFactory
 					.getBean(ContentNegotiationManager.class));

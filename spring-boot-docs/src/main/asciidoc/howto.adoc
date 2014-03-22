@@ -747,9 +747,8 @@ added.
   client. There is a useful
   https://spring.io/blog/2013/06/03/content-negotiation-using-views[blog about `ContentNegotiatingViewResolver`]
   that you might like to study to learn more, and also look at the source code for detail.
-  Be careful not to define your own `ViewResolver` with id ``viewResolver'' (like the
-  `ContentNegotiatingViewResolver`) otherwise, in that case, your bean will be
-  overwritten, not the other way round.
+  You can switch off the auto-configured
+  `ContentNegotiatingViewResolver` by defining a bean named ``viewResolver''.
 
 * If you use Thymeleaf you will also have a `ThymeleafViewResolver` with id
   ``thymeleafViewResolver''. It looks for resources by surrounding the view name with a
