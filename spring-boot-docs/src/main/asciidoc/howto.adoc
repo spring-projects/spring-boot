@@ -422,7 +422,7 @@ that sets up the connector to be secure:
 	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
 
 		@Override
-		public void customize(ConfigurableEmbeddedServletContainerFactory factory) {
+		public void customize(ConfigurableEmbeddedServletContainer factory) {
 			if(factory instanceof TomcatEmbeddedServletContainerFactory) {
 				customizeTomcat((TomcatEmbeddedServletContainerFactory) factory));
 			}
