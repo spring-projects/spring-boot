@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.actuate.metrics.Metric;
@@ -48,6 +50,8 @@ import com.codahale.metrics.Timer;
 public class CodahaleMetricWriter implements MetricWriter {
 
 	private final MetricRegistry registry;
+
+	private final ConcurrentMap<String, Object> gaugeLocks = new ConcurrentHashMap<String, Object>();
 
 	/**
 	 * Create a new {@link CodahaleMetricWriter} instance.
@@ -86,13 +90,19 @@ public class CodahaleMetricWriter implements MetricWriter {
 		}
 		else {
 			final double gauge = value.getValue().doubleValue();
+			Object lock = null;
+			if (this.gaugeLocks.containsKey(name)) {
+				lock = this.gaugeLocks.get(name);
+			}
+			else {
+				this.gaugeLocks.putIfAbsent(name, new Object());
+				lock = this.gaugeLocks.get(name);
+			}
 
-			// ensure we synchronize on the registry to avoid another thread
-			// pre-empting this thread after remove causing register to be
-			// called twice causing an error in CodaHale metrics
-			// NOTE: this probably should not be synchronized, but CodaHale
-			// provides no other methods to get or add a particular gauge
-			synchronized (this.registry) {
+			// Ensure we synchronize to avoid another thread pre-empting this thread after
+			// remove causing an error in CodaHale metrics
+			// NOTE: CodaHale provides no way to do this atomically
+			synchronized (lock) {
 				this.registry.remove(name);
 				this.registry.register(name, new SimpleGauge(gauge));
 			}
