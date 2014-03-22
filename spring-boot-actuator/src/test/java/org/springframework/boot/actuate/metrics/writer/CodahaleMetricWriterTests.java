@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.metrics.writer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 
@@ -23,6 +26,7 @@ import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Dave Syer
@@ -76,4 +80,70 @@ public class CodahaleMetricWriterTests {
 		assertEquals(2, this.registry.histogram("histogram.foo").getCount());
 	}
 
+	/**
+	 * Test the case where a given writer is used amongst several threads where each
+	 * thread is updating the same set of metrics. This would be an example case of the
+	 * writer being used with the MetricsFilter handling several requests/sec to the same
+	 * URL.
+	 * 
+	 * @throws Exception if an error occurs
+	 */
+	@Test
+	public void testParallism() throws Exception {
+		List<WriterThread> threads = new ArrayList<WriterThread>();
+		ThreadGroup group = new ThreadGroup("threads");
+		for (int i = 0; i < 10; i++) {
+			WriterThread thread = new WriterThread(group, i, this.writer);
+			threads.add(thread);
+			thread.start();
+		}
+
+		while (group.activeCount() > 0) {
+			Thread.sleep(1000);
+		}
+
+		for (WriterThread thread : threads) {
+			assertFalse("expected thread caused unexpected exception", thread.isFailed());
+		}
+	}
+
+	public static class WriterThread extends Thread {
+		private int index;
+		private boolean failed;
+		private CodahaleMetricWriter writer;
+
+		public WriterThread(ThreadGroup group, int index, CodahaleMetricWriter writer) {
+			super(group, "Writer-" + index);
+
+			this.index = index;
+			this.writer = writer;
+		}
+
+		public boolean isFailed() {
+			return this.failed;
+		}
+
+		@Override
+		public void run() {
+			for (int i = 0; i < 10000; i++) {
+				try {
+					Metric<Integer> metric1 = new Metric<Integer>(
+							"timer.test.service", this.index);
+					this.writer.set(metric1);
+
+					Metric<Integer> metric2 = new Metric<Integer>(
+							"histogram.test.service", this.index);
+					this.writer.set(metric2);
+
+					Metric<Integer> metric3 = new Metric<Integer>(
+							"gauge.test.service", this.index);
+					this.writer.set(metric3);
+				}
+				catch (IllegalArgumentException iae) {
+					this.failed = true;
+					throw iae;
+				}
+			}
+		}
+	}
 }

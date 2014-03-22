@@ -86,8 +86,16 @@ public class CodahaleMetricWriter implements MetricWriter {
 		}
 		else {
 			final double gauge = value.getValue().doubleValue();
-			this.registry.remove(name);
-			this.registry.register(name, new SimpleGauge(gauge));
+
+			// ensure we synchronize on the registry to avoid another thread
+			// pre-empting this thread after remove causing register to be
+			// called twice causing an error in CodaHale metrics
+			// NOTE: this probably should not be synchronized, but CodaHale
+			// provides no other methods to get or add a particular gauge
+			synchronized (this.registry) {
+				this.registry.remove(name);
+				this.registry.register(name, new SimpleGauge(gauge));
+			}
 		}
 	}
 
