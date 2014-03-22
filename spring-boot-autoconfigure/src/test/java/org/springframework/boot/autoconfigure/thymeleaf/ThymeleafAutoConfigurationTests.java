@@ -38,6 +38,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -83,6 +84,17 @@ public class ThymeleafAutoConfigurationTests {
 		assertEquals("UTF-16", ((TemplateResolver) resolver).getCharacterEncoding());
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertEquals("UTF-16", views.getCharacterEncoding());
+	}
+
+	@Test
+	public void overrideViewNames() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.thymeleaf.viewNames:foo,bar");
+		this.context.register(ThymeleafAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
+		assertArrayEquals(new String[] { "foo", "bar" }, views.getViewNames());
 	}
 
 	@Test(expected = BeanCreationException.class)
