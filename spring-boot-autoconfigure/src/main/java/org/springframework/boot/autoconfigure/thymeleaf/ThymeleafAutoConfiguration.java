@@ -182,9 +182,9 @@ public class ThymeleafAutoConfiguration {
 					"excludedViewNames", String[].class));
 			resolver.setViewNames(this.environment.getProperty("viewNames",
 					String[].class));
-			// Needs to come before any fallback resolver (e.g. a
-			// InternalResourceViewResolver)
-			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 20);
+			// This resolver acts as a fallback resolver (e.g. like a
+			// InternalResourceViewResolver) so it needs to have low precedence
+			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
 			return resolver;
 		}
 
