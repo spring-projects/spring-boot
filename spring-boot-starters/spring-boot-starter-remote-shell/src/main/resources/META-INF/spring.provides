@@ -1,1 +1,1 @@
-provides: crash.cli,crash.shell,crash.plugins.cron,crash.embed.spring,crash.connectors.telnet,crash.connectors.ssh
+provides: crash.cli,crash.shell,crash.plugins.cron,crash.embed.spring,crash.connectors.ssh

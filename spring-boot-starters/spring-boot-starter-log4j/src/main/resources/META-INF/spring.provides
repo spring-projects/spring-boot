@@ -1,1 +1,1 @@
-provides: logback-classic,jcl-over-slf4j,jul-to-slf4j
+provides: log4j,slf4j-log4j12
