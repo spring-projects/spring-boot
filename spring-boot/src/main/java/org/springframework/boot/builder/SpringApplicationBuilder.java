@@ -293,6 +293,27 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
+	 * Flag to indicate if pid file should be created
+	 * @param createPidFile the flag to set. Default {@code false}.
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder createPidFile(boolean createPidFile) {
+		this.application.setCreatePidFile(createPidFile);
+		return this;
+	}
+
+	/**
+	 * Filename of the pid file
+	 * @param pidFileName the filename to use. Defaults to
+	 * {@link org.springframework.boot.SpringApplication#DEFAULT_PID_FILE_NAME}
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder pidFileName(String pidFileName) {
+		this.application.setPidFileName(pidFileName);
+		return this;
+	}
+
+	/**
 	 * Sets if the application is headless and should not instantiate AWT. Defaults to
 	 * {@code true} to prevent java icons appearing.
 	 * @param headless if the application is headless

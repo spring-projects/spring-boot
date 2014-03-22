@@ -16,6 +16,12 @@
 
 package org.springframework.boot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.lang.reflect.Constructor;
 import java.security.AccessControlException;
 import java.util.ArrayList;
@@ -151,6 +157,8 @@ public class SpringApplication {
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
 			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
+	private static final String DEFAULT_PID_FILE_NAME = "application.pid";
+
 	private final Log log = LogFactory.getLog(getClass());
 
 	private final Set<Object> sources = new LinkedHashSet<Object>();
@@ -184,6 +192,10 @@ public class SpringApplication {
 	private Map<String, Object> defaultProperties;
 
 	private Set<String> profiles = new HashSet<String>();
+
+	private boolean createPidFile;
+
+	private String pidFileName = DEFAULT_PID_FILE_NAME;
 
 	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
@@ -277,6 +289,10 @@ public class SpringApplication {
 
 			if (this.showBanner) {
 				printBanner();
+			}
+
+			if (this.createPidFile) {
+				savePidFile();
 			}
 
 			// Create, load, refresh and run the ApplicationContext
@@ -717,6 +733,24 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Sets if the pid file should be created. Defaults
+	 * to {@code false}.
+	 * @param createPidFile if the pid file should be created
+	 */
+	public void setCreatePidFile(boolean createPidFile) {
+		this.createPidFile = createPidFile;
+	}
+
+	/**
+	 * Sets the pid file name. If {@link #createPidFile} is true then
+	 * this file will contains current process id.
+	 * @param pidFileName the name of file containing pid
+	 */
+	public void setPidFileName(String pidFileName) {
+		this.pidFileName = pidFileName;
+	}
+
+	/**
 	 * Sets if the application information should be logged when the application starts.
 	 * Defaults to {@code true}
 	 * @param logStartupInfo if startup info should be logged.
@@ -987,6 +1021,36 @@ public class SpringApplication {
 		list.addAll(elemements);
 		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<E>(list);
+	}
+
+	private void savePidFile() {
+		RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+		String jvmName = runtimeBean.getName();
+		if (StringUtils.isEmpty(jvmName)) {
+			log.warn("Cannot get JVM name - pid file won't be created!");
+		}
+		if (!jvmName.contains("@")) {
+			log.warn("JVM name doesn't contain process id - pid file won't be created!");
+		}
+		String pid = jvmName.split("@")[0];
+		File file = new File(pidFileName);
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = new FileOutputStream(file);
+			fileOutputStream.write(pid.getBytes());
+		} catch (FileNotFoundException e) {
+			log.warn(String.format("Cannot create pid file %s !", pidFileName));
+		} catch (IOException e) {
+			log.warn(String.format("Cannot write to pid file %s!", pidFileName));
+		} finally {
+			if (fileOutputStream != null) {
+				try {
+					fileOutputStream.close();
+				} catch (IOException e) {
+					log.warn(String.format("Cannot close pid file %s!", pidFileName));
+				}
+			}
+		}
 	}
 
 }
