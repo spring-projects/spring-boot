@@ -21,6 +21,8 @@ import javax.servlet.Servlet;
 import org.apache.catalina.Context;
 import org.apache.catalina.deploy.ApplicationListener;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,6 +31,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.context.web.NonEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
@@ -47,6 +50,8 @@ import org.springframework.web.socket.WebSocketHandler;
 @AutoConfigureBefore(EmbeddedServletContainerAutoConfiguration.class)
 public class WebSocketAutoConfiguration {
 
+	private static Log logger = LogFactory.getLog(WebSocketAutoConfiguration.class);
+
 	private static final ApplicationListener WS_APPLICATION_LISTENER = new ApplicationListener(
 			"org.apache.tomcat.websocket.server.WsContextListener", false);
 
@@ -58,10 +63,14 @@ public class WebSocketAutoConfiguration {
 
 			@Override
 			public void customize(ConfigurableEmbeddedServletContainer container) {
+				if (container instanceof NonEmbeddedServletContainerFactory) {
+					logger.info("NonEmbeddedServletContainerFactory detected. Websockets support should be native so this normally is not a problem.");
+					return;
+				}
 				if (!(container instanceof TomcatEmbeddedServletContainerFactory)) {
 					throw new IllegalStateException(
 							"Websockets are currently only supported in Tomcat (found "
-									+ container.getClass() + ")");
+									+ container.getClass() + "). ");
 				}
 				((TomcatEmbeddedServletContainerFactory) container)
 						.addContextCustomizers(new TomcatContextCustomizer() {
@@ -77,5 +86,4 @@ public class WebSocketAutoConfiguration {
 		return customizer;
 
 	}
-
 }

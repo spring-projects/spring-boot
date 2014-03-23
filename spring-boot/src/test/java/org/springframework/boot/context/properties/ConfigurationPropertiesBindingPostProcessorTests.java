@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ import org.springframework.validation.Validator;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * 
@@ -52,11 +54,27 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
+	public void testValidationWithSetter() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "test.foo:spam");
+		this.context.register(TestConfigurationWithValidatingSetter.class);
+		try {
+			this.context.refresh();
+			fail("Expected exception");
+		}
+		catch (BeanCreationException ex) {
+			BindException bex = (BindException) ex.getRootCause();
+			assertTrue(1 == bex.getErrorCount());
+		}
+	}
+
+	@Test
 	public void testValidationWithoutJSR303() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfigurationWithoutJSR303.class);
 		try {
 			this.context.refresh();
+			fail("Expected exception");
 		}
 		catch (BeanCreationException ex) {
 			BindException bex = (BindException) ex.getRootCause();
@@ -70,6 +88,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.register(TestConfigurationWithJSR303.class);
 		try {
 			this.context.refresh();
+			fail("Expected exception");
 		}
 		catch (BeanCreationException ex) {
 			BindException bex = (BindException) ex.getRootCause();
@@ -96,6 +115,35 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.setEnvironment(env);
 		this.context.register(TestConfigurationWithInitializer.class);
 		this.context.refresh();
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class TestConfigurationWithValidatingSetter {
+
+		@Bean
+		public PropertyWithValidatingSetter testProperties() {
+			return new PropertyWithValidatingSetter();
+		}
+
+	}
+
+	@ConfigurationProperties(name = "test")
+	public static class PropertyWithValidatingSetter {
+
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+			if (!foo.equals("bar")) {
+				throw new IllegalArgumentException("Wrong value for foo");
+			}
+		}
+
 	}
 
 	@Configuration
