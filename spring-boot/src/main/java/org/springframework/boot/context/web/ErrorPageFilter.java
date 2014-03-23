@@ -53,7 +53,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
-		Filter {
+		Filter, NonEmbeddedServletContainerFactory {
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 
