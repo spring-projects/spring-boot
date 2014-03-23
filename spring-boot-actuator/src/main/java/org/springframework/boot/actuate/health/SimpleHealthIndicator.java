@@ -48,6 +48,7 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS");
 		queries.put("Oracle", "SELECT 'Hello' from DUAL");
 		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
+		queries.put("MySQL", "SELECT 1");
 	}
 
 	private static String DEFAULT_QUERY = "SELECT 'Hello'";
