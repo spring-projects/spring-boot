@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author Christian Dupuis
  */
-@ConfigurationProperties(name = "endpoints.jmx")
+@ConfigurationProperties(prefix = "endpoints.jmx")
 public class EndpointMBeanExportProperties {
 
 	private String domain;
