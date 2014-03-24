@@ -135,7 +135,7 @@ public class ConfigFileApplicationListener implements
 
 	private void onApplicationEnvironmentPreparedEvent(
 			ConfigurableEnvironment environment, SpringApplication application) {
-		addPropertySources(environment);
+		addPropertySources(environment, application.getResourceLoader());
 		bindToSpringApplication(environment, application);
 	}
 
@@ -148,12 +148,13 @@ public class ConfigFileApplicationListener implements
 	 * @param environment the environment to add source to
 	 * @see #addPostProcessors(ConfigurableApplicationContext)
 	 */
-	protected void addPropertySources(ConfigurableEnvironment environment) {
+	protected void addPropertySources(ConfigurableEnvironment environment,
+			ResourceLoader resourceLoader) {
 		RandomValuePropertySource.addToEnvironment(environment);
 		try {
 			PropertySource<?> defaultProperties = environment.getPropertySources()
 					.remove(DEFAULT_PROPERTIES);
-			new Loader(environment).load();
+			new Loader(environment, resourceLoader).load();
 			if (defaultProperties != null) {
 				environment.getPropertySources().addLast(defaultProperties);
 			}
@@ -258,7 +259,7 @@ public class ConfigFileApplicationListener implements
 
 		private final ConfigurableEnvironment environment;
 
-		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+		private final ResourceLoader resourceLoader;
 
 		private PropertySourcesLoader propertiesLoader;
 
@@ -266,8 +267,10 @@ public class ConfigFileApplicationListener implements
 
 		private boolean activatedProfiles;
 
-		public Loader(ConfigurableEnvironment environment) {
+		public Loader(ConfigurableEnvironment environment, ResourceLoader resourceLoader) {
 			this.environment = environment;
+			this.resourceLoader = resourceLoader == null ? new DefaultResourceLoader()
+					: resourceLoader;
 		}
 
 		public void load() throws IOException {
