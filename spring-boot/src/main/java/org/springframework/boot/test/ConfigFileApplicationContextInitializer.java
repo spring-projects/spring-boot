@@ -36,7 +36,8 @@ public class ConfigFileApplicationContextInitializer implements
 	public void initialize(final ConfigurableApplicationContext applicationContext) {
 		new ConfigFileApplicationListener() {
 			public void apply() {
-				addPropertySources(applicationContext.getEnvironment());
+				addPropertySources(applicationContext.getEnvironment(),
+						applicationContext);
 				addPostProcessors(applicationContext);
 			}
 		}.apply();

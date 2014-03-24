@@ -46,6 +46,9 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -79,6 +82,34 @@ public class ConfigFileApplicationListenerTests {
 	public void cleanup() {
 		System.clearProperty("my.property");
 		System.clearProperty("spring.config.location");
+	}
+
+	@Test
+	public void loadCustomResource() throws Exception {
+		this.event.getSpringApplication().setResourceLoader(new ResourceLoader() {
+			@Override
+			public Resource getResource(final String location) {
+				if (location.equals("classpath:/custom.properties")) {
+					return new ByteArrayResource("my.property: fromcustom".getBytes(),
+							location) {
+						@Override
+						public String getFilename() {
+							return location;
+						}
+					};
+				}
+				return null;
+			}
+
+			@Override
+			public ClassLoader getClassLoader() {
+				return getClass().getClassLoader();
+			}
+		});
+		this.initializer.setSearchNames("custom");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("fromcustom"));
 	}
 
 	@Test
