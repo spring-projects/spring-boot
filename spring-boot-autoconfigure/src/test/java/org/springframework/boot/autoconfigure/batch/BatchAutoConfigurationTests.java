@@ -33,12 +33,17 @@ import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.batch.core.explore.support.MapJobExplorerFactoryBean;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
+import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -81,14 +86,26 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDefaultContext() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, BatchAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		assertNotNull(this.context.getBean(JobExplorer.class));
 		assertEquals(0, new JdbcTemplate(this.context.getBean(DataSource.class))
 				.queryForList("select * from BATCH_JOB_EXECUTION").size());
+	}
+
+	@Test
+	public void testNoDatabase() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestCustomConfiguration.class,
+				BatchAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(JobLauncher.class));
+		JobExplorer explorer = this.context.getBean(JobExplorer.class);
+		assertNotNull(explorer);
+		assertEquals(0, explorer.getJobInstances("job", 0, 100).size());
 	}
 
 	@Test
@@ -105,8 +122,8 @@ public class BatchAutoConfigurationTests {
 	@Test
 	public void testDefinesAndLaunchesJob() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(JobConfiguration.class, BatchAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(JobConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
@@ -121,7 +138,7 @@ public class BatchAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.batch.job.names:discreteRegisteredJob");
 		this.context.register(NamedJobConfigurationWithRegisteredJob.class,
-				BatchAutoConfiguration.class, EmbeddedDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		JobRepository repository = this.context.getBean(JobRepository.class);
@@ -137,7 +154,7 @@ public class BatchAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.batch.job.names:discreteLocalJob");
 		this.context.register(NamedJobConfigurationWithLocalJob.class,
-				BatchAutoConfiguration.class, EmbeddedDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
@@ -151,8 +168,8 @@ public class BatchAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.batch.job.enabled:false");
-		this.context.register(JobConfiguration.class, BatchAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(JobConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
@@ -165,8 +182,8 @@ public class BatchAutoConfigurationTests {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.name:batchtest",
 				"spring.batch.initializer.enabled:false");
-		this.context.register(TestConfiguration.class, BatchAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
+		this.context.register(TestConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, BatchAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(JobLauncher.class));
@@ -201,6 +218,43 @@ public class BatchAutoConfigurationTests {
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
 	protected static class TestConfiguration {
+	}
+
+	@EnableBatchProcessing
+	@TestAutoConfigurationPackage(City.class)
+	protected static class TestCustomConfiguration implements BatchConfigurer {
+
+		private JobRepository jobRepository;
+		private MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean();
+
+		@Override
+		public JobRepository getJobRepository() throws Exception {
+			if (this.jobRepository == null) {
+				this.factory.afterPropertiesSet();
+				this.jobRepository = (JobRepository) this.factory.getObject();
+			}
+			return this.jobRepository;
+		}
+
+		@Override
+		public PlatformTransactionManager getTransactionManager() throws Exception {
+			return new ResourcelessTransactionManager();
+		}
+
+		@Override
+		public JobLauncher getJobLauncher() throws Exception {
+			SimpleJobLauncher launcher = new SimpleJobLauncher();
+			launcher.setJobRepository(this.jobRepository);
+			return launcher;
+		}
+
+		@Bean
+		public JobExplorer jobExplorer() throws Exception {
+			MapJobExplorerFactoryBean explorer = new MapJobExplorerFactoryBean(
+					this.factory);
+			explorer.afterPropertiesSet();
+			return (JobExplorer) explorer.getObject();
+		}
 	}
 
 	@EnableBatchProcessing
