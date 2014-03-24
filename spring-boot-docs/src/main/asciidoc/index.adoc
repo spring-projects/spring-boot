@@ -1,5 +1,5 @@
 = Spring Boot Reference Guide
-Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll;
+Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch;
 :doctype: book
 :toc:
 :toclevels: 4
@@ -24,6 +24,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll;
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
 :spring-reference: http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle
+:spring-security-reference: http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle
 :spring-javadoc: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
