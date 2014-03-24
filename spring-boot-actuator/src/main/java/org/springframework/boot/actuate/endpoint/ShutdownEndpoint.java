@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Dave Syer
  * @author Christian Dupuis
  */
-@ConfigurationProperties(name = "endpoints.shutdown", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.shutdown", ignoreUnknownFields = false)
 public class ShutdownEndpoint extends AbstractEndpoint<Map<String, Object>> implements
 		ApplicationContextAware {
 

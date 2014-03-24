@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "spring.redis")
+@ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
 
 	private String host = "localhost";

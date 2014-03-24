@@ -44,7 +44,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "server", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 	private Integer port;

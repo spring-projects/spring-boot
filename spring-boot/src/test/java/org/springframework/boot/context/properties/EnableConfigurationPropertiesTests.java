@@ -464,7 +464,7 @@ public class EnableConfigurationPropertiesTests {
 	public static class SystemExampleConfig {
 	}
 
-	@ConfigurationProperties(name = "external")
+	@ConfigurationProperties(prefix = "external")
 	public static class External {
 
 		private String name;
@@ -478,7 +478,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 	}
 
-	@ConfigurationProperties(name = "another")
+	@ConfigurationProperties(prefix = "another")
 	public static class Another {
 
 		private String name;
@@ -492,7 +492,7 @@ public class EnableConfigurationPropertiesTests {
 		}
 	}
 
-	@ConfigurationProperties(name = "spring_test_external")
+	@ConfigurationProperties(prefix = "spring_test_external")
 	public static class SystemEnvVar {
 
 		public String getVal() {
@@ -602,7 +602,7 @@ public class EnableConfigurationPropertiesTests {
 	protected static class StrictTestProperties extends TestProperties {
 	}
 
-	@ConfigurationProperties(name = "spring.foo")
+	@ConfigurationProperties(prefix = "spring.foo")
 	protected static class EmbeddedTestProperties extends TestProperties {
 	}
 
@@ -653,7 +653,7 @@ public class EnableConfigurationPropertiesTests {
 		// No getter - you should be able to bind to a write-only bean
 	}
 
-	@ConfigurationProperties(path = "${binding.location:classpath:name.yml}")
+	@ConfigurationProperties(locations = "${binding.location:classpath:name.yml}")
 	protected static class ResourceBindingProperties {
 
 		private String name;
@@ -666,7 +666,7 @@ public class EnableConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
-	@ConfigurationProperties(path = "${binding.location:classpath:map.yml}")
+	@ConfigurationProperties(locations = "${binding.location:classpath:map.yml}")
 	protected static class ResourceBindingPropertiesWithMap {
 
 		private Map<String, String> mymap;

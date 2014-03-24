@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.jms;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(name = "spring.jms")
+@ConfigurationProperties(prefix = "spring.jms")
 public class JmsTemplateProperties {
 
 	private boolean pubSubDomain = true;

@@ -292,8 +292,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				.getTarget() : bean);
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
-		if (annotation != null && annotation.path().length != 0) {
-			factory.setPropertySources(loadPropertySources(annotation.path()));
+		if (annotation != null && annotation.locations().length != 0) {
+			factory.setPropertySources(loadPropertySources(annotation.locations()));
 		}
 		else {
 			factory.setPropertySources(this.propertySources);
@@ -309,7 +309,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 			factory.setExceptionIfInvalid(annotation.exceptionIfInvalid());
 			factory.setIgnoreNestedProperties(annotation.ignoreNestedProperties());
 			String targetName = (StringUtils.hasLength(annotation.value()) ? annotation
-					.value() : annotation.name());
+					.value() : annotation.prefix());
 			if (StringUtils.hasLength(targetName)) {
 				factory.setTargetName(targetName);
 			}

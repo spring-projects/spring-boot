@@ -48,7 +48,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
  * 
  * @author Christian Dupuis
  */
-@ConfigurationProperties(name = "endpoints.configprops", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.configprops", ignoreUnknownFields = false)
 public class ConfigurationPropertiesReportEndpoint extends
 		AbstractEndpoint<Map<String, Object>> implements ApplicationContextAware {
 
@@ -138,7 +138,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
 				bean.getClass(), ConfigurationProperties.class);
 		return (StringUtils.hasLength(annotation.value()) ? annotation.value()
-				: annotation.name());
+				: annotation.prefix());
 	}
 
 	/**

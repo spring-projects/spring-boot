@@ -30,7 +30,7 @@ import com.mongodb.MongoClientURI;
  * @author Dave Syer
  * @author Phillip Webb
  */
-@ConfigurationProperties(name = "spring.data.mongodb")
+@ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
 
 	private String host;

@@ -42,7 +42,7 @@ import org.springframework.web.servlet.mvc.ServletWrappingController;
  * 
  * @author Christian Dupuis
  */
-@ConfigurationProperties(name = "endpoints.jolokia", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)
 public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		ApplicationContextAware, ServletContextAware {
 

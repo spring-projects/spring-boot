@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * 
  * @author Greg Turnquist
  */
-@ConfigurationProperties(name = "spring.activemq")
+@ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {
 
 	private String brokerUrl = "tcp://localhost:61616";

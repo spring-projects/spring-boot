@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
  * @author Greg Turnquist
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "spring.rabbitmq")
+@ConfigurationProperties(prefix = "spring.rabbitmq")
 public class RabbitProperties {
 
 	private String host = "localhost";

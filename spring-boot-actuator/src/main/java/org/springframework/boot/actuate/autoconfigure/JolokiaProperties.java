@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Christian Dupuis
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "jolokia")
+@ConfigurationProperties(prefix = "jolokia")
 public class JolokiaProperties {
 
 	private Map<String, String> config = new HashMap<String, String>();

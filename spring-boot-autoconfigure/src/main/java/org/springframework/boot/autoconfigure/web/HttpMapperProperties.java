@@ -25,7 +25,7 @@ import org.springframework.http.converter.HttpMessageConverter;
  * @author Dave Syer
  * @author Piotr Maj
  */
-@ConfigurationProperties(name = "http.mappers", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "http.mappers", ignoreUnknownFields = false)
 public class HttpMapperProperties {
 
 	private boolean jsonPrettyPrint;

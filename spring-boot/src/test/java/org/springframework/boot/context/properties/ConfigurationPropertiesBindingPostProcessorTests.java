@@ -128,7 +128,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
-	@ConfigurationProperties(name = "test")
+	@ConfigurationProperties(prefix = "test")
 	public static class PropertyWithValidatingSetter {
 
 		private String foo;
@@ -157,7 +157,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
-	@ConfigurationProperties(name = "test")
+	@ConfigurationProperties(prefix = "test")
 	public static class PropertyWithoutJSR303 implements Validator {
 
 		private String foo;
@@ -215,7 +215,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 	}
 
-	@ConfigurationProperties(name = "test")
+	@ConfigurationProperties(prefix = "test")
 	public static class PropertyWithJSR303 extends PropertyWithoutJSR303 {
 
 		@NotNull
