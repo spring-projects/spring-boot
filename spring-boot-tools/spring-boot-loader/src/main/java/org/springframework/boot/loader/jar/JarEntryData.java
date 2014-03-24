@@ -16,14 +16,15 @@
 
 package org.springframework.boot.loader.jar;
 
+import org.springframework.boot.loader.data.RandomAccessData;
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+import org.springframework.boot.loader.util.AsciiBytes;
+import sun.net.www.ParseUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.util.zip.ZipEntry;
-
-import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * Holds the underlying data of a {@link JarEntry}, allowing creation to be deferred until
@@ -62,7 +63,9 @@ public final class JarEntryData {
 		long extraLength = Bytes.littleEndianValue(header, 30, 2);
 		long commentLength = Bytes.littleEndianValue(header, 32, 2);
 
-		this.name = new AsciiBytes(Bytes.get(inputStream, nameLength));
+		String rawName = new String(Bytes.get(inputStream, nameLength));
+		this.name = new AsciiBytes(ParseUtil.encodePath(rawName));
+
 		this.extra = Bytes.get(inputStream, extraLength);
 		this.comment = new AsciiBytes(Bytes.get(inputStream, commentLength));
 

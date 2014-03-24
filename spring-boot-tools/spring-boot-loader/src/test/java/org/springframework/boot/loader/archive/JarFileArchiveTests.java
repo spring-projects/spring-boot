@@ -62,7 +62,7 @@ public class JarFileArchiveTests {
 	@Test
 	public void getEntries() throws Exception {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size(), equalTo(7));
+		assertThat(entries.size(), equalTo(9));
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class JarFileArchiveTests {
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
-		Map<String, Archive.Entry> entries = new HashMap<String, Archive.Entry>();
+		Map<String, Archive.Entry> entries = new HashMap<String, Entry>();
 		for (Archive.Entry entry : archive.getEntries()) {
 			entries.put(entry.getName().toString(), entry);
 		}

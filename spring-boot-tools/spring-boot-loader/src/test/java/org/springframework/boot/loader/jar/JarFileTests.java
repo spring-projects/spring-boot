@@ -99,6 +99,8 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("2.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("d/"));
 		assertThat(entries.nextElement().getName(), equalTo("d/9.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("special/"));
+		assertThat(entries.nextElement().getName(), equalTo("special/%c3%8b.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 	}
@@ -204,6 +206,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("META-INF/MANIFEST.MF"));
 		assertThat(entries.nextElement().getName(), equalTo("3.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("4.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("%c3%84.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 
 		InputStream inputStream = nestedJarFile.getInputStream(nestedJarFile
