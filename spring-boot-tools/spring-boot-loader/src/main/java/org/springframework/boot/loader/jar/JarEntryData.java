@@ -16,15 +16,16 @@
 
 package org.springframework.boot.loader.jar;
 
-import org.springframework.boot.loader.data.RandomAccessData;
-import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
-import org.springframework.boot.loader.util.AsciiBytes;
-import sun.net.www.ParseUtil;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.util.zip.ZipEntry;
+
+import org.springframework.boot.loader.data.RandomAccessData;
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
+import org.springframework.boot.loader.util.AsciiBytes;
+
+import sun.net.www.ParseUtil;
 
 /**
  * Holds the underlying data of a {@link JarEntry}, allowing creation to be deferred until
