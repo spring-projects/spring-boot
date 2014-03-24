@@ -80,6 +80,7 @@ spring.thymeleaf.cache=true # set to false for hot refresh
 spring.messages.basename=messages
 spring.messages.encoding=UTF-8
 
+[[common-application-properties-security]]
 # SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
 security.user.name=user # login username
 security.user.password= # login password

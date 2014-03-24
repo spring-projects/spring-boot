@@ -1101,11 +1101,15 @@ Look at {sc-spring-boot-actuator}/autoconfigure/ErrorMvcAutoConfiguration.{sc-ex
 If Spring Security is on the classpath then web applications will be secure by default
 (``basic'' authentication on all endpoints) . To add method-level security to a web
 application you can simply `@EnableGlobalMethodSecurity` with your desired settings.
+Additional information can be found in the {spring-security-reference}#jc-method[Spring
+Security Reference].
 
 The default `AuthenticationManager` has a single user (username ``user'' and password
 random, printed at INFO level when the application starts up). You can change the
 password by providing a `security.user.password`. This and other useful properties
-are externalized via {sc-spring-boot-autoconfigure}/security/SecurityProperties{sc-ext}[`SecurityProperties`.
+are externalized via
+{sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`].
+
 
 
 [[howto-switch-off-spring-boot-security-configuration]]
@@ -1114,7 +1118,8 @@ If you define a `@Configuration` with `@EnableWebSecurity` anywhere in your appl
 it will switch off the default webapp security settings in Spring Boot. To tweak the
 defaults try setting properties in `security.*` (see
 {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
-for details of available settings).
+for details of available settings) and `SECURITY` section of
+<<common-application-properties-security,Common application properties>>.
 
 
 
@@ -1132,21 +1137,18 @@ use this in a webapp is to inject it into a void method in a
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration
-	@Order(0)
 	public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 		@Autowired
-		protected void init(AuthenticationManagerBuilder builder) {
-				builder.inMemoryAuthentication().withUser("barry"); // ...  etc.
+		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+				auth.inMemoryAuthentication()
+					.withUser("barry").password("password").roles("USER"); // ...  etc.
 		}
 
 		// ... other stuff for application security
 
 	}
 ----
-
-The configuration class that does this should declare an `@Order` so that it is used
-before the default one in Spring Boot (which has very low precedence).
 
 
 
