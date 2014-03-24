@@ -100,7 +100,7 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getEntries() throws Exception {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size(), equalTo(7));
+		assertThat(entries.size(), equalTo(9));
 	}
 
 	@Test

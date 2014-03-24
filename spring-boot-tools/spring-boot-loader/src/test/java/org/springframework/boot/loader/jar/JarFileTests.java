@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link JarFile}.
  * 
  * @author Phillip Webb
+ * @author Martin Lau
  */
 public class JarFileTests {
 
@@ -68,6 +70,26 @@ public class JarFileTests {
 		this.rootJarFile = this.temporaryFolder.newFile();
 		TestJarCreator.createTestJar(this.rootJarFile);
 		this.jarFile = new JarFile(this.rootJarFile);
+	}
+
+	@Test
+	public void jdkJarFile() throws Exception {
+		// Sanity checks to see how the default jar file operates
+		java.util.jar.JarFile jarFile = new java.util.jar.JarFile(this.rootJarFile);
+		Enumeration<java.util.jar.JarEntry> entries = jarFile.entries();
+		assertThat(entries.nextElement().getName(), equalTo("META-INF/"));
+		assertThat(entries.nextElement().getName(), equalTo("META-INF/MANIFEST.MF"));
+		assertThat(entries.nextElement().getName(), equalTo("1.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("2.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("d/"));
+		assertThat(entries.nextElement().getName(), equalTo("d/9.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("special/"));
+		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
+		assertThat(entries.hasMoreElements(), equalTo(false));
+		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
+		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
+		assertThat(urlClassLoader.getResource("special/\u00EB.dat"), notNullValue());
 	}
 
 	@Test
@@ -99,8 +121,17 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("2.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("d/"));
 		assertThat(entries.nextElement().getName(), equalTo("d/9.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("special/"));
+		assertThat(entries.nextElement().getName(), equalTo("special/\u00EB.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("nested.jar"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
+	}
+
+	@Test
+	public void getSpecialResourceViaClassLoader() throws Exception {
+		URLClassLoader urlClassLoader = new URLClassLoader(
+				new URL[] { this.jarFile.getUrl() });
+		assertThat(urlClassLoader.getResource("special/\u00EB.dat"), notNullValue());
 	}
 
 	@Test
@@ -204,6 +235,7 @@ public class JarFileTests {
 		assertThat(entries.nextElement().getName(), equalTo("META-INF/MANIFEST.MF"));
 		assertThat(entries.nextElement().getName(), equalTo("3.dat"));
 		assertThat(entries.nextElement().getName(), equalTo("4.dat"));
+		assertThat(entries.nextElement().getName(), equalTo("\u00E4.dat"));
 		assertThat(entries.hasMoreElements(), equalTo(false));
 
 		InputStream inputStream = nestedJarFile.getInputStream(nestedJarFile
