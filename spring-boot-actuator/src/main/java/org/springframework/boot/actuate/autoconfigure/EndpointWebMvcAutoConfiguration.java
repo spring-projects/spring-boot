@@ -25,6 +25,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -50,6 +52,7 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -80,6 +83,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 		ManagementServerPropertiesAutoConfiguration.class })
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
+
+	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
 
 	private ApplicationContext applicationContext;
 
@@ -184,7 +189,20 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 						}
 					});
 		}
-		childContext.refresh();
+		try {
+			childContext.refresh();
+		}
+		catch (RuntimeException e) {
+			// No support currently for deploying a war with management.port=<different>,
+			// and this is the signature of that happening
+			if (e instanceof EmbeddedServletContainerException
+					|| e.getCause() instanceof EmbeddedServletContainerException) {
+				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
+			}
+			else {
+				throw e;
+			}
+		}
 	}
 
 	protected static enum ManagementServerPort {
