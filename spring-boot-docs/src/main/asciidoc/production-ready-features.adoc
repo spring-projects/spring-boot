@@ -308,7 +308,7 @@ want to disable management security:
 [[production-ready-customizing-management-server-address]]
 === Customizing the management server address
 You can customize the address that the management endpoints are available on by
-setting the `management.security.address` property. This can be useful if you want to
+setting the `management.address` property. This can be useful if you want to
 listen only on an internal or ops-facing network, or to only listen for connections from
 `localhost`.
 
