@@ -70,6 +70,7 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnBean(DataSource.class)
 	public BatchDatabaseInitializer batchDatabaseInitializer() {
 		return new BatchDatabaseInitializer();
 	}
@@ -95,6 +96,7 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnBean(DataSource.class)
 	public JobExplorer jobExplorer(DataSource dataSource) throws Exception {
 		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
 		factory.setDataSource(dataSource);
