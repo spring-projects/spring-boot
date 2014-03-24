@@ -1,17 +1,22 @@
-Spring Boot Starters are a set of convenient dependency descriptors
-that you can include in your application. You get a one-stop-shop for
-all the Spring and related technology that you need without having to
-hunt through sample code and copy paste loads of dependency
-descriptors. For example, if you want to get started using Spring and
-JPA for database access just include the
-`spring-boot-starter-data-jpa` dependency in your project, and you are
-good to go.
+= Starter POMs
 
-=== Community Contributions
+Spring Boot Starters are a set of convenient dependency descriptors that you can include
+in your application. You get a one-stop-shop for all the Spring and related technology
+that you need without having to hunt through sample code and copy paste loads of
+dependency descriptors. For example, if you want to get started using Spring and
+JPA for database access just include the `spring-boot-starter-data-jpa` dependency in
+your project, and you are good to go.
 
-If you create a starter for a technology that is not already in the standard list we can list it here. Just send a pull request for this page.
+For complete details see the
+http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#using-boot-starter-poms[reference documentation]
+
+== Community Contributions
+If you create a starter for a technology that is not already in the standard list we can
+list it here. Just send a pull request for this page.
 
 |===
 | Name | Location
 
-| WRO4J | https://github.com/sbuettner/spring-boot-autoconfigure-wro4j[https://github.com/sbuettner/spring-boot-autoconfigure-wro4j]
+| https://code.google.com/p/wro4j/[WRO4J]
+| https://github.com/sbuettner/spring-boot-autoconfigure-wro4j
+|===

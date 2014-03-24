@@ -294,6 +294,10 @@ swap specific technical facets.
 |Import Spring Boot's default HTTP engine (Tomcat).
 |===
 
+TIP: For a list of additional community contributed starter POMs, see the
+{github-master-code}/spring-boot-starters/README.adoc[README file] in the
+`spring-boot-starters` module on GitHub.
+
 
 
 [[using-boot-structuring-your-code]]
