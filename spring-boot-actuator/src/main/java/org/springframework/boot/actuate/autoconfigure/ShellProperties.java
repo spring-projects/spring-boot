@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Christian Dupuis
  * @author Phillip Webb
  */
-@ConfigurationProperties(name = "shell", ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "shell", ignoreUnknownFields = true)
 public class ShellProperties {
 
 	private static Log logger = LogFactory.getLog(ShellProperties.class);
@@ -279,7 +279,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for JAAS authentication
 	 */
-	@ConfigurationProperties(name = "shell.auth.jaas", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = "shell.auth.jaas", ignoreUnknownFields = false)
 	public static class JaasAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 
@@ -305,7 +305,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for key authentication
 	 */
-	@ConfigurationProperties(name = "shell.auth.key", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = "shell.auth.key", ignoreUnknownFields = false)
 	public static class KeyAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 
@@ -333,7 +333,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for simple authentication
 	 */
-	@ConfigurationProperties(name = "shell.auth.simple", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = "shell.auth.simple", ignoreUnknownFields = false)
 	public static class SimpleAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 
@@ -402,7 +402,7 @@ public class ShellProperties {
 	/**
 	 * Auth specific properties for Spring authentication
 	 */
-	@ConfigurationProperties(name = "shell.auth.spring", ignoreUnknownFields = false)
+	@ConfigurationProperties(prefix = "shell.auth.spring", ignoreUnknownFields = false)
 	public static class SpringAuthenticationProperties extends
 			CrshShellAuthenticationProperties {
 

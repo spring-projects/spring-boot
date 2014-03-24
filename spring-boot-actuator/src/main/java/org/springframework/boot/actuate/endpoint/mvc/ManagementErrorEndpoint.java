@@ -34,7 +34,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(name = "error")
+@ConfigurationProperties(prefix = "error")
 public class ManagementErrorEndpoint implements MvcEndpoint {
 
 	private final ErrorController controller;
