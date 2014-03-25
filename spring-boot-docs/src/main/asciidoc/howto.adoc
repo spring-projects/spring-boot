@@ -525,7 +525,7 @@ Example in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	configurations {
-		compile.exclude module: 'spring-boot-starter-tomcat'
+		compile.exclude module: "spring-boot-starter-tomcat"
 	}
 
 	dependencies {
