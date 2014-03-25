@@ -17,6 +17,8 @@
 package org.springframework.boot.cli.compiler.grape;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.List;
 
 import org.apache.maven.settings.Mirror;
 import org.apache.maven.settings.Proxy;
@@ -26,6 +28,10 @@ import org.apache.maven.settings.building.DefaultSettingsBuilderFactory;
 import org.apache.maven.settings.building.DefaultSettingsBuildingRequest;
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.apache.maven.settings.building.SettingsBuildingRequest;
+import org.apache.maven.settings.crypto.DefaultSettingsDecrypter;
+import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.apache.maven.settings.crypto.SettingsDecryptionResult;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.Authentication;
@@ -38,6 +44,9 @@ import org.eclipse.aether.util.repository.ConservativeAuthenticationSelector;
 import org.eclipse.aether.util.repository.DefaultAuthenticationSelector;
 import org.eclipse.aether.util.repository.DefaultMirrorSelector;
 import org.eclipse.aether.util.repository.DefaultProxySelector;
+import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
+import org.sonatype.plexus.components.cipher.PlexusCipherException;
+import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
@@ -48,18 +57,34 @@ import org.eclipse.aether.util.repository.DefaultProxySelector;
 public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		RepositorySystemSessionAutoConfiguration {
 
-	private static final String HOME_DIR = System.getProperty("user.home");
+	private static final String DEFAULT_HOME_DIR = System.getProperty("user.home");
+
+	private final String homeDir;
+
+	public SettingsXmlRepositorySystemSessionAutoConfiguration() {
+		this(DEFAULT_HOME_DIR);
+	}
+
+	SettingsXmlRepositorySystemSessionAutoConfiguration(String homeDir) {
+		this.homeDir = homeDir;
+	}
 
 	@Override
 	public void apply(DefaultRepositorySystemSession session,
 			RepositorySystem repositorySystem) {
 
 		Settings settings = loadSettings();
+		SettingsDecryptionResult decryptionResult = decryptSettings(settings);
+		if (!decryptionResult.getProblems().isEmpty()) {
+			throw new IllegalStateException("Settings decryption failed: "
+					+ decryptionResult.getProblems());
+		}
 
 		session.setOffline(settings.isOffline());
 		session.setMirrorSelector(createMirrorSelector(settings));
-		session.setAuthenticationSelector(createAuthenticationSelector(settings));
-		session.setProxySelector(createProxySelector(settings));
+		session.setAuthenticationSelector(createAuthenticationSelector(decryptionResult
+				.getServers()));
+		session.setProxySelector(createProxySelector(decryptionResult.getProxies()));
 
 		String localRepository = settings.getLocalRepository();
 		if (localRepository != null) {
@@ -69,7 +94,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 	}
 
 	private Settings loadSettings() {
-		File settingsFile = new File(HOME_DIR, ".m2/settings.xml");
+		File settingsFile = new File(this.homeDir, ".m2/settings.xml");
 		SettingsBuildingRequest request = new DefaultSettingsBuildingRequest();
 		request.setUserSettingsFile(settingsFile);
 		try {
@@ -82,6 +107,32 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		}
 	}
 
+	private SettingsDecryptionResult decryptSettings(Settings settings) {
+		DefaultSettingsDecryptionRequest request = new DefaultSettingsDecryptionRequest(
+				settings);
+
+		return createSettingsDecrypter().decrypt(request);
+	}
+
+	private SettingsDecrypter createSettingsDecrypter() {
+		SettingsDecrypter settingsDecrypter = new DefaultSettingsDecrypter();
+		setField(DefaultSettingsDecrypter.class, "securityDispatcher", settingsDecrypter,
+				new SpringBootSecDispatcher());
+		return settingsDecrypter;
+	}
+
+	private void setField(Class<?> clazz, String fieldName, Object target, Object value) {
+		try {
+			Field field = clazz.getDeclaredField(fieldName);
+			field.setAccessible(true);
+			field.set(target, value);
+		}
+		catch (Exception e) {
+			throw new IllegalStateException("Failed to set field '" + fieldName
+					+ "' on '" + target + "'", e);
+		}
+	}
+
 	private MirrorSelector createMirrorSelector(Settings settings) {
 		DefaultMirrorSelector selector = new DefaultMirrorSelector();
 		for (Mirror mirror : settings.getMirrors()) {
@@ -91,9 +142,9 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		return selector;
 	}
 
-	private AuthenticationSelector createAuthenticationSelector(Settings settings) {
+	private AuthenticationSelector createAuthenticationSelector(List<Server> servers) {
 		DefaultAuthenticationSelector selector = new DefaultAuthenticationSelector();
-		for (Server server : settings.getServers()) {
+		for (Server server : servers) {
 			AuthenticationBuilder auth = new AuthenticationBuilder();
 			auth.addUsername(server.getUsername()).addPassword(server.getPassword());
 			auth.addPrivateKey(server.getPrivateKey(), server.getPassphrase());
@@ -102,9 +153,9 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		return new ConservativeAuthenticationSelector(selector);
 	}
 
-	private ProxySelector createProxySelector(Settings settings) {
+	private ProxySelector createProxySelector(List<Proxy> proxies) {
 		DefaultProxySelector selector = new DefaultProxySelector();
-		for (Proxy proxy : settings.getProxies()) {
+		for (Proxy proxy : proxies) {
 			Authentication authentication = new AuthenticationBuilder()
 					.addUsername(proxy.getUsername()).addPassword(proxy.getPassword())
 					.build();
@@ -113,5 +164,20 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 					.getNonProxyHosts());
 		}
 		return selector;
+	}
+
+	private class SpringBootSecDispatcher extends DefaultSecDispatcher {
+
+		public SpringBootSecDispatcher() {
+			this._configurationFile = new File(
+					SettingsXmlRepositorySystemSessionAutoConfiguration.this.homeDir,
+					".m2/settings-security.xml").getAbsolutePath();
+			try {
+				this._cipher = new DefaultPlexusCipher();
+			}
+			catch (PlexusCipherException e) {
+				throw new IllegalStateException(e);
+			}
+		}
 	}
 }
