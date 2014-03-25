@@ -9,6 +9,8 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch;
 :spring-boot-repo: snapshot
 :github-tag: master
 :spring-boot-docs-version: current
+:spring-boot-docs: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/reference
+:spring-boot-docs-current: http://docs.spring.io/spring-boot/docs/current/reference
 :github-repo: spring-projects/spring-boot
 :github-raw: http://raw.github.com/{github-repo}/{github-tag}
 :github-code: http://github.com/{github-repo}/tree/{github-tag}

@@ -6,8 +6,22 @@
 This section provides a brief overview of Spring Boot reference documentation. Think of
 it as map for the rest of the document. You can read this reference guide in a linear
 fashion, or you can skip sections if something doesn't interest you.
-
 --
+
+
+
+[[boot-documentation-about]]
+== About the documentation
+The Spring Boot reference guide is available as {spring-boot-docs}/html[html],
+{spring-boot-docs}/pdf/spring-boot-reference.pdf[pdf]
+and {spring-boot-docs}/epub/spring-boot-reference.epub[epub] documents. The latest copy
+is available at {spring-boot-docs-current}.
+
+Copies of this document may be made for your own use and for
+distribution to others, provided that you do not charge any fee for such copies and
+further provided that each copy contains this Copyright Notice, whether distributed in
+print or electronically.
+
 
 
 [[boot-documentation-getting-help]]
