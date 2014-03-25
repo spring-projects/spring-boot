@@ -35,6 +35,7 @@ import org.junit.runners.model.Statement;
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.grab.GrabCommand;
+import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
 import org.springframework.boot.cli.util.OutputCapture;
@@ -78,6 +79,12 @@ public class CliTester implements TestRule {
 
 	public String grab(String... args) throws Exception {
 		Future<GrabCommand> future = submitCommand(new GrabCommand(), args);
+		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
+		return getOutput();
+	}
+
+	public String jar(String... args) throws Exception {
+		Future<JarCommand> future = submitCommand(new JarCommand(), args);
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}
