@@ -510,8 +510,10 @@ public class TomcatEmbeddedServletContainerFactory extends
 				}
 			}
 			catch (ClassNotFoundException ex) {
+				// Swallow and continue
 			}
 			catch (LinkageError ex) {
+				// Swallow and continue
 			}
 			return nativePage;
 		}

@@ -40,7 +40,7 @@ public class SampleSecureApplication implements CommandLineRunner {
 				new UsernamePasswordAuthenticationToken("user", "N/A", AuthorityUtils
 						.commaSeparatedStringToAuthorityList("ROLE_USER")));
 		try {
-			System.out.println(service.secure());
+			System.out.println(this.service.secure());
 		}
 		finally {
 			SecurityContextHolder.clearContext();
