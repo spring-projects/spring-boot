@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -29,6 +31,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Class for storing auto-configuration packages for reference later (e.g. by JPA entity
@@ -38,6 +41,8 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  */
 public abstract class AutoConfigurationPackages {
+
+	private static Log logger = LogFactory.getLog(AutoConfigurationPackages.class);
 
 	private static final String BEAN = AutoConfigurationPackages.class.getName();
 
@@ -76,13 +81,24 @@ public abstract class AutoConfigurationPackages {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
+		private static final String NO_SUCH_PACKAGE = "not.scanning.root";
+
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 				BeanDefinitionRegistry registry) {
-			set(registry,
-					ClassUtils.getPackageName(importingClassMetadata.getClassName()));
+			String packageName = ClassUtils.getPackageName(importingClassMetadata
+					.getClassName());
+			if (StringUtils.hasText(packageName)) {
+				set(registry, packageName);
+				logger.info("@EnableAutoConfiguration was declared on a class in the package '"
+						+ packageName + "'. Automatic @Repository scanning is enabled.");
+			}
+			else {
+				set(registry, NO_SUCH_PACKAGE);
+				logger.warn("@EnableAutoConfiguration was declared on a class in the default package. "
+						+ "Automatic @Repository scanning is not enabled.");
+			}
 		}
-
 	}
 
 	/**
