@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = SampleSecureApplication.class)
+@SpringApplicationConfiguration(classes = SampleWebSecureApplication.class)
 @WebAppConfiguration
 @IntegrationTest
 @DirtiesContext
