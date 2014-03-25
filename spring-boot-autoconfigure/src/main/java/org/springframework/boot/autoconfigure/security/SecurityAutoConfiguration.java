@@ -17,13 +17,18 @@
 package org.springframework.boot.autoconfigure.security;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
@@ -50,6 +55,25 @@ public class SecurityAutoConfiguration {
 	@ConditionalOnMissingBean
 	public SecurityProperties securityProperties() {
 		return new SecurityProperties();
+	}
+
+	/**
+	 * If the user explicitly disables the basic security features and forgets to
+	 * <code>@EnableWebSecurity</code>, and yet still wants a bean of type
+	 * WebSecurityConfigurerAdapter, he is trying to use a custom security setup. The app
+	 * would fail in a confusing way without this shim configuration, which just helpfully
+	 * defines an empty <code>@EnableWebSecurity</code>.
+	 * 
+	 * @author Dave Syer
+	 */
+	@ConditionalOnExpression("!${security.basic.enabled:true}")
+	@ConditionalOnBean(WebSecurityConfigurerAdapter.class)
+	@ConditionalOnClass(EnableWebSecurity.class)
+	@ConditionalOnMissingBean(WebSecurityConfiguration.class)
+	@ConditionalOnWebApplication
+	@EnableWebSecurity
+	protected static class EmptyWebSecurityConfiguration {
+
 	}
 
 }

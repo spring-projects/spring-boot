@@ -35,7 +35,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableAutoConfiguration
 @ComponentScan
 @Controller
-public class SampleSecureApplication extends WebMvcConfigurerAdapter {
+public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 
 	@RequestMapping("/")
 	public String home(Map<String, Object> model) {
@@ -52,7 +52,7 @@ public class SampleSecureApplication extends WebMvcConfigurerAdapter {
 
 	public static void main(String[] args) throws Exception {
 		// Set user password to "password" for demo purposes only
-		new SpringApplicationBuilder(SampleSecureApplication.class).properties("security.user.password=password").run(
+		new SpringApplicationBuilder(SampleWebSecureApplication.class).properties("security.user.password=password").run(
 				args);
 	}
 
