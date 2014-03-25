@@ -43,7 +43,7 @@
 		<slf4j.version>1.7.6</slf4j.version>
 		<snakeyaml.version>1.13</snakeyaml.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
-		<spring.version>4.0.3.BUILD-SNAPSHOT</spring.version>
+		<spring.version>4.0.2.RELEASE</spring.version>
 		<spring-integration.version>3.0.1.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.5.RELEASE</spring-batch.version>
 		<spring-data-jpa.version>1.5.1.RELEASE</spring-data-jpa.version>
