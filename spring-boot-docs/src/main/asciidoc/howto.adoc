@@ -569,8 +569,7 @@ Tomcat 8 for it to work. For example, using the starter poms in Maven:
 	</dependencies>
 ----
 
-change the classpath to use Tomcat 8
-for it to work. 
+change the classpath to use Tomcat 8 for it to work.
 
 
 
