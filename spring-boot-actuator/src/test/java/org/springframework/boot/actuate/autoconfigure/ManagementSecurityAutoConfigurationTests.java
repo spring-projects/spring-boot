@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -133,6 +134,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
 				ManagementSecurityAutoConfiguration.class,
+				FallbackWebSecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
