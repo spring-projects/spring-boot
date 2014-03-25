@@ -16,9 +16,11 @@
 
 package org.springframework.boot.loader.jar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Manifest;
@@ -64,7 +66,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 		 */
 		if (separator + SEPARATOR.length() != spec.length()) {
 			this.jarFileUrl = new URL("jar:" + spec);
-			this.jarEntryName = spec.substring(separator + 2);
+			this.jarEntryName = decode(spec.substring(separator + 2));
 		}
 		else {
 			// The root of the archive (!/)
@@ -162,4 +164,39 @@ class JarURLConnection extends java.net.JarURLConnection {
 		return builder.toString();
 	}
 
+	private static String decode(String source) {
+		int length = source.length();
+		if ((length == 0) || (source.indexOf('%') < 0)) {
+			return source;
+		}
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(length);
+			for (int i = 0; i < length; i++) {
+				int ch = source.charAt(i);
+				if (ch == '%') {
+					if ((i + 2) >= length) {
+						throw new IllegalArgumentException("Invalid encoded sequence \""
+								+ source.substring(i) + "\"");
+					}
+					ch = decodeEscapeSequence(source, i);
+					i += 2;
+				}
+				bos.write(ch);
+			}
+			return new String(bos.toByteArray(), "UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private static char decodeEscapeSequence(String source, int i) {
+		int hi = Character.digit(source.charAt(i + 1), 16);
+		int lo = Character.digit(source.charAt(i + 2), 16);
+		if (hi == -1 || lo == -1) {
+			throw new IllegalArgumentException("Invalid encoded sequence \""
+					+ source.substring(i) + "\"");
+		}
+		return ((char) ((hi << 4) + lo));
+	}
 }
