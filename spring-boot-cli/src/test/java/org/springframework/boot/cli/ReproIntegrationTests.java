@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.cli;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
@@ -31,6 +32,9 @@ public class ReproIntegrationTests {
 
 	@Rule
 	public CliTester cli = new CliTester("src/test/resources/repro-samples/");
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
 	public void grabAntBuilder() throws Exception {
@@ -54,4 +58,10 @@ public class ReproIntegrationTests {
 				containsString("{\"message\":\"Hello World\"}"));
 	}
 
+	@Test
+	public void jarFileExtensionNeeded() throws Exception {
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectMessage("is not a JAR file");
+		this.cli.jar("secure.groovy", "crsh.groovy");
+	}
 }
