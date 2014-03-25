@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link ServerProperties}.
  * 
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class ServerPropertiesTests {
 
@@ -85,6 +86,15 @@ public class ServerPropertiesTests {
 		this.properties.setPort(8080);
 		this.properties.customize(factory);
 		verify(factory).setPort(8080);
+	}
+
+	@Test
+	public void testCustomizeUriEncoding() throws Exception {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("server.tomcat.uriEncoding", "US-ASCII");
+		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(
+				map));
+		assertEquals("US-ASCII", this.properties.getTomcat().getUriEncoding());
 	}
 
 }

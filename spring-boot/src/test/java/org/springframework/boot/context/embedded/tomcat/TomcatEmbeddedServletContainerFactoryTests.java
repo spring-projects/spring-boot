@@ -44,6 +44,7 @@ import static org.mockito.Mockito.verify;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
 public class TomcatEmbeddedServletContainerFactoryTests extends
 		AbstractEmbeddedServletContainerFactoryTests {
@@ -190,11 +191,30 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null);
 	}
 
+	@Test
+	public void uriEncoding() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		factory.setUriEncoding("US-ASCII");
+		Tomcat tomcat = getTomcat(factory);
+		assertEquals("US-ASCII", tomcat.getConnector().getURIEncoding());
+	}
+
+	@Test
+	public void defaultUriEncoding() throws Exception {
+		TomcatEmbeddedServletContainerFactory factory = getFactory();
+		Tomcat tomcat = getTomcat(factory);
+		assertEquals("UTF-8", tomcat.getConnector().getURIEncoding());
+	}
+
 	private void assertTimeout(TomcatEmbeddedServletContainerFactory factory, int expected) {
-		this.container = factory.getEmbeddedServletContainer();
-		Tomcat tomcat = ((TomcatEmbeddedServletContainer) this.container).getTomcat();
+		Tomcat tomcat = getTomcat(factory);
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		assertThat(context.getSessionTimeout(), equalTo(expected));
+	}
+
+	private Tomcat getTomcat(TomcatEmbeddedServletContainerFactory factory) {
+		this.container = factory.getEmbeddedServletContainer();
+		return ((TomcatEmbeddedServletContainer) this.container).getTomcat();
 	}
 
 }
