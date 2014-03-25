@@ -155,9 +155,11 @@ public class JarCommand extends OptionParsingCommand {
 					options.valuesOf(this.excludeOption));
 			List<File> roots = new ArrayList<File>();
 			for (URL classpathEntry : classpath) {
-				roots.add(new File(URI.create(classpathEntry.toString())));
+				File file = new File(URI.create(classpathEntry.toString()));
+				roots.add(file);
 			}
-			return matcher.find(roots);
+			List<MatchedResource> found = matcher.find(roots);
+			return found;
 		}
 
 		private void writeJar(File file, Class<?>[] compiledClasses,

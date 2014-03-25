@@ -147,7 +147,7 @@ class ResourceMatcher {
 		private MatchedResource(File file) {
 			this.name = file.getName();
 			this.file = file;
-			this.root = false;
+			this.root = this.name.endsWith(".jar");
 		}
 
 		private MatchedResource(File rootFolder, File file) {
