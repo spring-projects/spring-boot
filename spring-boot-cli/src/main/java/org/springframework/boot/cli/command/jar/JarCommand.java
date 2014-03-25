@@ -110,6 +110,8 @@ public class JarCommand extends OptionParsingCommand {
 					"The name of the resulting jar and at least one source file must be specified");
 
 			File output = new File((String) nonOptionArguments.remove(0));
+			Assert.isTrue(output.getName().toLowerCase().endsWith(".jar"), "The output '"
+					+ output + "' is not a JAR file.");
 			deleteIfExists(output);
 
 			GroovyCompiler compiler = createCompiler(options);
