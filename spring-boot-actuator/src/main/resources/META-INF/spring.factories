@@ -12,3 +12,6 @@ org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceRepositoryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration
+
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.actuate.system.ApplicationPidListener
