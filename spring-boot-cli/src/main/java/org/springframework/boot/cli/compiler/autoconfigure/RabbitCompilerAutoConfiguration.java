@@ -16,18 +16,13 @@
 
 package org.springframework.boot.cli.compiler.autoconfigure;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
+import org.springframework.boot.groovy.EnableRabbitMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Rabbit.
@@ -58,13 +53,6 @@ public class RabbitCompilerAutoConfiguration extends CompilerAutoConfiguration {
 				"org.springframework.amqp.rabbit.listener.adapter",
 				"org.springframework.amqp.core").addImports(
 				EnableRabbitMessaging.class.getCanonicalName());
-	}
-
-	@Target(ElementType.TYPE)
-	@Documented
-	@Retention(RetentionPolicy.RUNTIME)
-	public static @interface EnableRabbitMessaging {
-
 	}
 
 }
