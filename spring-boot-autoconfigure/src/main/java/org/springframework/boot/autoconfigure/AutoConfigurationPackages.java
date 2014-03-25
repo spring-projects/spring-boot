@@ -56,8 +56,7 @@ public abstract class AutoConfigurationPackages {
 		// Currently we only store a single base package, but we return a list to
 		// allow this to change in the future if needed
 		try {
-			return Collections.singletonList(beanFactory.getBean(BEAN, BasePackage.class)
-					.toString());
+			return beanFactory.getBean(BEAN, BasePackages.class).get();
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			throw new IllegalStateException(
@@ -67,7 +66,7 @@ public abstract class AutoConfigurationPackages {
 
 	static void set(BeanDefinitionRegistry registry, String packageName) {
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(BasePackage.class);
+		beanDefinition.setBeanClass(BasePackages.class);
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
 				packageName);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -81,40 +80,50 @@ public abstract class AutoConfigurationPackages {
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
-		private static final String NO_SUCH_PACKAGE = "not.scanning.root";
-
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+		public void registerBeanDefinitions(AnnotationMetadata metadata,
 				BeanDefinitionRegistry registry) {
-			String packageName = ClassUtils.getPackageName(importingClassMetadata
-					.getClassName());
-			if (StringUtils.hasText(packageName)) {
-				set(registry, packageName);
-				logger.info("@EnableAutoConfiguration was declared on a class in the package '"
-						+ packageName + "'. Automatic @Repository scanning is enabled.");
-			}
-			else {
-				set(registry, NO_SUCH_PACKAGE);
-				logger.warn("@EnableAutoConfiguration was declared on a class in the default package. "
-						+ "Automatic @Repository scanning is not enabled.");
-			}
+			set(registry, ClassUtils.getPackageName(metadata.getClassName()));
 		}
+
 	}
 
 	/**
-	 * Holder for the base package.
+	 * Holder for the base package (name may be null to indicate no scanning).
 	 */
-	final static class BasePackage {
+	final static class BasePackages {
 
-		private final String name;
+		private final List<String> packages;
 
-		public BasePackage(String name) {
-			this.name = name;
+		private boolean loggedBasePackageInfo;
+
+		public BasePackages(String name) {
+			this.packages = (StringUtils.hasText(name) ? Collections.singletonList(name)
+					: Collections.<String> emptyList());
 		}
 
-		@Override
-		public String toString() {
-			return this.name;
+		public List<String> get() {
+			if (!this.loggedBasePackageInfo) {
+				if (this.packages.isEmpty()) {
+					if (logger.isWarnEnabled()) {
+						logger.warn("@EnableAutoConfiguration was declared on a class "
+								+ "in the default package. Automatic @Repository and "
+								+ "@Entity scanning is not enabled.");
+					}
+				}
+				else {
+					if (logger.isDebugEnabled()) {
+						String packageNames = StringUtils
+								.collectionToCommaDelimitedString(this.packages);
+						logger.debug("@EnableAutoConfiguration was declared on a class "
+								+ "in the package '" + packageNames
+								+ "'. Automatic @Repository and @Entity scanning is "
+								+ "enabled.");
+					}
+				}
+				this.loggedBasePackageInfo = true;
+			}
+			return this.packages;
 		}
 
 	}
