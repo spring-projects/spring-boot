@@ -4,8 +4,12 @@ buildscript {
 		springLoadedVersion = '1.1.5.RELEASE'
 	}
 	repositories {
+		// NOTE: You should declare only repositories that you need here
 		mavenLocal()
-		maven { url "http://repo.spring.io/libs-snapshot" }
+		mavenCentral()
+		maven { url "http://repo.spring.io/release" }
+		maven { url "http://repo.spring.io/milestone" }
+		maven { url "http://repo.spring.io/snapshot" }
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -27,8 +31,12 @@ jar {
 }
 
 repositories {
+	// NOTE: You should declare only repositories that you need here
+	mavenLocal()
 	mavenCentral()
-	maven { url "http://repo.spring.io/libs-snapshot" }
+	maven { url "http://repo.spring.io/release" }
+	maven { url "http://repo.spring.io/milestone" }
+	maven { url "http://repo.spring.io/snapshot" }
 }
 
 dependencies {
