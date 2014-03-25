@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import static org.junit.Assert.assertEquals;
@@ -42,6 +43,8 @@ public class DataSourceTransactionManagerAutoConfigurationTests {
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
 		assertNotNull(this.context.getBean(DataSourceTransactionManager.class));
+		assertNotNull(this.context
+				.getBean(AbstractTransactionManagementConfiguration.class));
 	}
 
 	@Test
