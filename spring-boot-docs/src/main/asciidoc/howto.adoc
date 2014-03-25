@@ -570,8 +570,7 @@ Tomcat 8 for it to work. For example, using the starter poms in Maven:
 ----
 
 change the classpath to use Tomcat 8
-for it to work. The {github-code}/spring-boot-samples/spring-boot-sample-websocket/pom.xml[websocket sample]
-shows you how to do that in Maven.
+for it to work. 
 
 
 
