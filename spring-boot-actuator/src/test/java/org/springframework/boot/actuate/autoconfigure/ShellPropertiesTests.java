@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import org.crsh.plugin.PluginLifeCycle;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.boot.actuate.autoconfigure.CrshAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.KeyAuthenticationProperties;

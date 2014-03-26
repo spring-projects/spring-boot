@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,16 +127,16 @@ public class CodahaleMetricWriterTests {
 		public void run() {
 			for (int i = 0; i < 10000; i++) {
 				try {
-					Metric<Integer> metric1 = new Metric<Integer>(
-							"timer.test.service", this.index);
+					Metric<Integer> metric1 = new Metric<Integer>("timer.test.service",
+							this.index);
 					this.writer.set(metric1);
 
 					Metric<Integer> metric2 = new Metric<Integer>(
 							"histogram.test.service", this.index);
 					this.writer.set(metric2);
 
-					Metric<Integer> metric3 = new Metric<Integer>(
-							"gauge.test.service", this.index);
+					Metric<Integer> metric3 = new Metric<Integer>("gauge.test.service",
+							this.index);
 					this.writer.set(metric3);
 				}
 				catch (IllegalArgumentException iae) {

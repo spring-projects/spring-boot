@@ -76,7 +76,7 @@ public class LogbackLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		LoggerContext context = (LoggerContext) factory;
-		Logger root = context.getLogger(Logger.ROOT_LOGGER_NAME);
+		Logger root = context.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 		assertNotNull(root.getAppender("CONSOLE"));
 	}
 

@@ -68,7 +68,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 		enhanceRunTask(project);
 		addRunAppTask(project);
 		if (project.getTasks().withType(JavaExec.class).isEmpty()) {
-			// Add the ApplicationPlugin so that a JavaExec task is available (run) to enhance
+			// Add the ApplicationPlugin so that a JavaExec task is available (run) to
+			// enhance
 			project.getPlugins().apply(ApplicationPlugin.class);
 		}
 	}
@@ -111,7 +112,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 		if (!project.getTasksByName("compileJava", false).isEmpty()) {
 			if (!project.getTasksByName("compileGroovy", false).isEmpty()) {
 				runJarTask.dependsOn("compileJava", "compileGroovy");
-			} else {
+			}
+			else {
 				runJarTask.dependsOn("compileJava");
 			}
 		}
