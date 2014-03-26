@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.data.alt.CityMongoDbRepository;
 import org.springframework.boot.autoconfigure.data.mongo.City;
 import org.springframework.boot.autoconfigure.data.mongo.CityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoTemplateAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
