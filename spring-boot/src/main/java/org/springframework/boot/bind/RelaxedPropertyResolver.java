@@ -16,14 +16,10 @@
 
 package org.springframework.boot.bind;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.util.Assert;
 
@@ -141,68 +137,14 @@ public class RelaxedPropertyResolver implements PropertyResolver {
 	 * {@link ConfigurableEnvironment}.
 	 * @param keyPrefix the key prefix used to filter results
 	 * @return a map of all sub properties starting with the specified key prefix.
-	 * @see #getSubProperties(PropertySources, String)
-	 * @see #getSubProperties(PropertySources, String, String)
+	 * @see PropertySourceUtils#getSubProperties(PropertySources, String)
+	 * @see PropertySourceUtils#getSubProperties(PropertySources, String, String)
 	 */
 	public Map<String, Object> getSubProperties(String keyPrefix) {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, this.resolver,
 				"SubProperties not available.");
 		ConfigurableEnvironment env = (ConfigurableEnvironment) this.resolver;
-		return getSubProperties(env.getPropertySources(), this.prefix, keyPrefix);
-	}
-
-	/**
-	 * Return a Map of all values from the specified {@link PropertySources} that start
-	 * with a particular key.
-	 * @param propertySources the property sources to scan
-	 * @param keyPrefix the key prefixes to test
-	 * @return a map of all sub properties starting with the specified key prefixes.
-	 * @see #getSubProperties(PropertySources, String, String)
-	 */
-	public static Map<String, Object> getSubProperties(PropertySources propertySources,
-			String keyPrefix) {
-		return getSubProperties(propertySources, null, keyPrefix);
-	}
-
-	/**
-	 * Return a Map of all values from the specified {@link PropertySources} that start
-	 * with a particular key.
-	 * @param propertySources the property sources to scan
-	 * @param rootPrefix a root prefix to be prepended to the keyPrefex (can be
-	 * {@code null})
-	 * @param keyPrefix the key prefixes to test
-	 * @return a map of all sub properties starting with the specified key prefixes.
-	 * @see #getSubProperties(PropertySources, String, String)
-	 */
-	public static Map<String, Object> getSubProperties(PropertySources propertySources,
-			String rootPrefix, String keyPrefix) {
-		RelaxedNames keyPrefixes = new RelaxedNames(keyPrefix);
-		Map<String, Object> subProperties = new LinkedHashMap<String, Object>();
-		for (PropertySource<?> source : propertySources) {
-			if (source instanceof EnumerablePropertySource) {
-				for (String name : ((EnumerablePropertySource<?>) source)
-						.getPropertyNames()) {
-					String key = getSubKey(name, rootPrefix, keyPrefixes);
-					if (key != null) {
-						subProperties.put(key, source.getProperty(name));
-					}
-				}
-			}
-		}
-		return Collections.unmodifiableMap(subProperties);
-	}
-
-	private static String getSubKey(String name, String rootPrefixes,
-			RelaxedNames keyPrefix) {
-		rootPrefixes = (rootPrefixes == null ? "" : rootPrefixes);
-		for (String rootPrefix : new RelaxedNames(rootPrefixes)) {
-			for (String candidateKeyPrefix : keyPrefix) {
-				if (name.startsWith(rootPrefix + candidateKeyPrefix)) {
-					return name.substring((rootPrefix + candidateKeyPrefix).length());
-				}
-			}
-		}
-		return null;
+		return PropertySourceUtils.getSubProperties(env.getPropertySources(), this.prefix, keyPrefix);
 	}
 
 }
