@@ -1,8 +1,5 @@
-= Spring Boot
+= Spring Boot image:https://build.spring.io/plugins/servlet/buildStatusImage/BOOT-PUB["Build Status", link="https://build.spring.io/browse/BOOT-PUB"]
 :docs: http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
-
-^#**Build Status:{nbsp}**#^
-image:https://build.spring.io/plugins/servlet/buildStatusImage/BOOT-PUB["Build Status", link="https://build.spring.io/browse/BOOT-PUB"]
 
 Spring Boot makes it easy to create Spring-powered, production-grade applications and
 services with absolute minimum fuss. It takes an opinionated view of the Spring platform
