@@ -24,12 +24,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.impl.StaticLoggerBinder;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.util.StringUtils;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -63,6 +69,15 @@ public class LogbackLoggingSystemTests {
 		System.clearProperty("LOG_FILE");
 		System.clearProperty("LOG_PATH");
 		System.clearProperty("PID");
+	}
+
+	@Test
+	public void testBasicConfigLocation() throws Exception {
+		this.loggingSystem.beforeInitialize();
+		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
+		LoggerContext context = (LoggerContext) factory;
+		Logger root = context.getLogger(Logger.ROOT_LOGGER_NAME);
+		assertNotNull(root.getAppender("CONSOLE"));
 	}
 
 	@Test
