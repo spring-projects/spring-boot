@@ -75,8 +75,10 @@ public class JarCommandIT {
 		assertThat(invocation.getErrorOutput(), equalTo(""));
 		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
 		assertThat(invocation.getStandardOutput(), containsString("/public/public.txt"));
-		assertThat(invocation.getStandardOutput(), containsString("/resources/resource.txt"));
+		assertThat(invocation.getStandardOutput(),
+				containsString("/resources/resource.txt"));
 		assertThat(invocation.getStandardOutput(), containsString("/static/static.txt"));
-		assertThat(invocation.getStandardOutput(), containsString("/templates/template.txt"));
+		assertThat(invocation.getStandardOutput(),
+				containsString("/templates/template.txt"));
 	}
 }
