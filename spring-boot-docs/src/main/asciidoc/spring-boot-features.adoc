@@ -783,8 +783,7 @@ available at http://spring.io/guides that cover Spring MVC.
 [[boot-features-spring-mvc-auto-configuration]]
 ==== Spring MVC auto-configuration
 Spring Boot provides auto-configuration for Spring MVC that works well with most
-applications. If you want to take complete control of Spring MVC you can add your
-own `@Configuration` annotated with `@EnableWebMvc`.
+applications.
 
 The auto-configuration adds the following features on top of Spring's defaults:
 
@@ -795,7 +794,13 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Static `index.html` support.
 * Custom `Favicon` support.
 
-
+If you want to take complete control of Spring MVC you can add your
+own `@Configuration` annotated with `@EnableWebMvc`. If you want the
+Boot features, and just want to add additional [normal MVC
+configuration](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html),
+like interceptors, formatters, view controllers etc, you can simply
+add your own `@Bean` of type `WebMvcConfigurerAdapter` (like normal
+MVC), but don't forget *not* to add `@EnableWebMvc`.
 
 [[boot-features-spring-mvc-message-converters]]
 ==== HttpMessageConverters
