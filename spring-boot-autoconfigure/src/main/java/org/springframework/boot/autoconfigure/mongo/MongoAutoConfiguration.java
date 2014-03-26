@@ -60,4 +60,5 @@ public class MongoAutoConfiguration {
 		this.mongo = this.properties.createMongoClient();
 		return this.mongo;
 	}
+
 }
