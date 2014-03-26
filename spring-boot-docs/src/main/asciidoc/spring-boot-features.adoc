@@ -794,13 +794,13 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Static `index.html` support.
 * Custom `Favicon` support.
 
-If you want to take complete control of Spring MVC you can add your
-own `@Configuration` annotated with `@EnableWebMvc`. If you want the
-Boot features, and just want to add additional [normal MVC
-configuration](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html),
-like interceptors, formatters, view controllers etc, you can simply
-add your own `@Bean` of type `WebMvcConfigurerAdapter` (like normal
-MVC), but don't forget *not* to add `@EnableWebMvc`.
+If you want to take complete control of Spring MVC, you can add your own `@Configuration`
+annotated with `@EnableWebMvc`. If you want to keep Spring Boot MVC features, and
+you just want to add additional {spring-reference}#mvc[MVC configuration] (interceptors,
+formatters, view controllers etc.) you can add your own `@Bean` of type
+`WebMvcConfigurerAdapter`, but *without* `@EnableWebMvc`.
+
+
 
 [[boot-features-spring-mvc-message-converters]]
 ==== HttpMessageConverters
