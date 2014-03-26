@@ -73,7 +73,7 @@ public class Repackage extends DefaultTask {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
 		JavaExec runner = (JavaExec) project.getTasks().findByName("run");
-		if (runner!=null && mainClass==null) {
+		if (runner != null && this.mainClass == null) {
 			getLogger().info("Found main in run task: " + runner.getMain());
 			setMainClass(runner.getMain());
 		}
