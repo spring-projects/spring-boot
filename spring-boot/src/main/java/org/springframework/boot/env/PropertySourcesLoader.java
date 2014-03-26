@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
@@ -36,6 +38,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 public class PropertySourcesLoader {
+
+	private static Log logger = LogFactory.getLog(PropertySourcesLoader.class);
 
 	private final MutablePropertySources propertySources;
 
@@ -164,6 +168,7 @@ public class PropertySourcesLoader {
 
 		EnumerableCompositePropertySource group = getGeneric(basename);
 		group.add(source);
+		logger.info("Adding PropertySource: " + source + " in group: " + basename);
 		if (this.propertySources.contains(group.getName())) {
 			this.propertySources.replace(group.getName(), group);
 		}
