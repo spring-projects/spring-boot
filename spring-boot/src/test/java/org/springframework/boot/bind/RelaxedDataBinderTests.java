@@ -487,9 +487,11 @@ public class RelaxedDataBinderTests {
 		public void setInfo(Map<String, Object> nested) {
 			this.info = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMap {
+
 		private Map<String, Object> nested;
 
 		public Map<String, Object> getNested() {
@@ -499,9 +501,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, Object> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfString {
+
 		private Map<String, String> nested;
 
 		public Map<String, String> getNested() {
@@ -511,9 +515,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, String> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfListOfString {
+
 		private Map<String, List<String>> nested;
 
 		public Map<String, List<String>> getNested() {
@@ -523,9 +529,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, List<String>> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfListOfBean {
+
 		private Map<String, List<VanillaTarget>> nested;
 
 		public Map<String, List<VanillaTarget>> getNested() {
@@ -535,9 +543,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, List<VanillaTarget>> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedMapOfBean {
+
 		private Map<String, VanillaTarget> nested;
 
 		public Map<String, VanillaTarget> getNested() {
@@ -547,9 +557,11 @@ public class RelaxedDataBinderTests {
 		public void setNested(Map<String, VanillaTarget> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedList {
+
 		private List<String> nested;
 
 		public List<String> getNested() {
@@ -559,33 +571,41 @@ public class RelaxedDataBinderTests {
 		public void setNested(List<String> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithReadOnlyNestedList {
+
 		private final List<String> nested = new ArrayList<String>();
 
 		public List<String> getNested() {
 			return this.nested;
 		}
+
 	}
 
 	public static class TargetWithReadOnlyDoubleNestedList {
+
 		TargetWithReadOnlyNestedList bean = new TargetWithReadOnlyNestedList();
 
 		public TargetWithReadOnlyNestedList getBean() {
 			return this.bean;
 		}
+
 	}
 
 	public static class TargetWithReadOnlyNestedCollection {
+
 		private final Collection<String> nested = new ArrayList<String>();
 
 		public Collection<String> getNested() {
 			return this.nested;
 		}
+
 	}
 
 	public static class TargetWithNestedSet {
+
 		private Set<String> nested = new LinkedHashSet<String>();
 
 		public Set<String> getNested() {
@@ -595,6 +615,7 @@ public class RelaxedDataBinderTests {
 		public void setNested(Set<String> nested) {
 			this.nested = nested;
 		}
+
 	}
 
 	public static class TargetWithNestedObject {
@@ -650,6 +671,7 @@ public class RelaxedDataBinderTests {
 		public void setFooBaz(String fooBaz) {
 			this.fooBaz = fooBaz;
 		}
+
 	}
 
 	public static class ValidatedTarget {
