@@ -19,7 +19,7 @@ package sample.traditional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +44,7 @@ public class SampleTraditionalApplicationTests {
 
 	@Test
 	public void testHomeJsp() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
@@ -54,7 +54,7 @@ public class SampleTraditionalApplicationTests {
 
 	@Test
 	public void testStaticPage() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080/index.html", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();

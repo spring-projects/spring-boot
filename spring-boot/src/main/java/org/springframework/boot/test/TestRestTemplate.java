@@ -18,7 +18,7 @@ package org.springframework.boot.test;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.client.config.CookieSpecs;
@@ -29,6 +29,7 @@ import org.apache.http.protocol.HttpContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -39,62 +40,73 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Convenient static factory for {@link RestTemplate} instances that are suitable for
- * integration tests. They are fault tolerant, and optionally can carry Basic
- * authentication headers. If Apache Http Client 4.3.2 or better is available
- * (recommended) it will be used as the client, and configured to ignore cookies and
- * redirects.
+ * Convenient subclass of {@link RestTemplate} that is suitable for integration tests.
+ * They are fault tolerant, and optionally can carry Basic authentication headers. If
+ * Apache Http Client 4.3.2 or better is available (recommended) it will be used as the
+ * client, and configured to ignore cookies and redirects.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
-public class RestTemplates {
+public class TestRestTemplate extends RestTemplate {
 
 	/**
-	 * Basic factory method for a RestTemplate that does not follow redirects, ignores
-	 * cookies and does not throw exceptions on server side errors.
-	 * @return a basic RestTemplate with no authentication
+	 * Create a new {@link TestRestTemplate} instance.
 	 */
-	public static RestTemplate get() {
-		return get(null, null);
+	public TestRestTemplate() {
+		this(null, null);
 	}
 
 	/**
-	 * Factory method for a secure RestTemplate with Basic authentication that does not
-	 * follow redirects, ignores cookies and does not throw exceptions on server side
-	 * errors.
-	 * @return a basic RestTemplate with Basic authentication
+	 * Create a new {@link TestRestTemplate} instance with the specified credentials.
+	 * @param username the username to use (or {@code null})
+	 * @param password the password (or {@code null})
 	 */
-	public static RestTemplate get(final String username, final String password) {
-
-		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<ClientHttpRequestInterceptor>();
-
-		if (username != null) {
-			interceptors.add(new ClientHttpRequestInterceptor() {
-
-				@Override
-				public ClientHttpResponse intercept(HttpRequest request, byte[] body,
-						ClientHttpRequestExecution execution) throws IOException {
-					byte[] token = Base64.encode((username + ":" + password).getBytes());
-					request.getHeaders().add("Authorization",
-							"Basic " + new String(token));
-					return execution.execute(request, body);
-				}
-
-			});
-		}
-
-		RestTemplate restTemplate = new RestTemplate(
-				new InterceptingClientHttpRequestFactory(
-						new SimpleClientHttpRequestFactory(), interceptors));
+	public TestRestTemplate(String username, String password) {
+		super(getRequestFactory(username, password));
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
-			new HttpComponentsCustomizer().customize(restTemplate);
+			new HttpComponentsCustomizer().customize(this);
 		}
-		restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+		setErrorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			public void handleError(ClientHttpResponse response) throws IOException {
 			}
 		});
-		return restTemplate;
+
+	}
+
+	private static ClientHttpRequestFactory getRequestFactory(String username,
+			String password) {
+		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+		if (username == null) {
+			return factory;
+		}
+		List<ClientHttpRequestInterceptor> interceptors = Collections
+				.<ClientHttpRequestInterceptor> singletonList(new BasicAuthorizationInterceptor(
+						username, password));
+		return new InterceptingClientHttpRequestFactory(factory, interceptors);
+	}
+
+	private static class BasicAuthorizationInterceptor implements
+			ClientHttpRequestInterceptor {
+
+		private final String username;
+
+		private final String password;
+
+		public BasicAuthorizationInterceptor(String username, String password) {
+			this.username = username;
+			this.password = (password == null ? "" : password);
+		}
+
+		@Override
+		public ClientHttpResponse intercept(HttpRequest request, byte[] body,
+				ClientHttpRequestExecution execution) throws IOException {
+			byte[] token = Base64
+					.encode((this.username + ":" + this.password).getBytes());
+			request.getHeaders().add("Authorization", "Basic " + new String(token));
+			return execution.execute(request, body);
+		}
 
 	}
 

@@ -19,7 +19,7 @@ package sample.ui;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,7 +45,7 @@ public class SampleWebStaticApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
@@ -54,7 +54,7 @@ public class SampleWebStaticApplicationTests {
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
 				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
