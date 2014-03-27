@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -56,7 +56,7 @@ public class SampleMethodSecurityApplicationTests {
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = RestTemplates.get().exchange(
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
 				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
@@ -72,7 +72,7 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("username", "admin");
 		form.set("password", "admin");
 		getCsrf(form, headers);
-		ResponseEntity<String> entity = RestTemplates.get().exchange(
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:8080/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
@@ -89,23 +89,23 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("username", "user");
 		form.set("password", "user");
 		getCsrf(form, headers);
-		ResponseEntity<String> entity = RestTemplates.get().exchange(
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:8080/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
 		String cookie = entity.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
-		ResponseEntity<String> page = RestTemplates.get().exchange(
-				entity.getHeaders().getLocation(), HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+		ResponseEntity<String> page = new TestRestTemplate().exchange(entity.getHeaders()
+				.getLocation(), HttpMethod.GET, new HttpEntity<Void>(headers),
+				String.class);
 		assertEquals(HttpStatus.FORBIDDEN, page.getStatusCode());
 		assertTrue("Wrong body (message doesn't match):\n" + entity.getBody(), page
 				.getBody().contains("Access denied"));
 	}
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
-		ResponseEntity<String> page = RestTemplates.get().getForEntity(
+		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
 				"http://localhost:8080/login", String.class);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
