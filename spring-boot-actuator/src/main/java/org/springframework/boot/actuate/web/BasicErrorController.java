@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -63,17 +64,26 @@ public class BasicErrorController implements ErrorController {
 
 	@RequestMapping(value = "${error.path:/error}", produces = "text/html")
 	public ModelAndView errorHtml(HttpServletRequest request) {
-		Map<String, Object> map = error(request);
+		Map<String, Object> map = extract(new ServletRequestAttributes(request), false,
+				false);
 		return new ModelAndView(ERROR_KEY, map);
 	}
 
 	@RequestMapping(value = "${error.path:/error}")
 	@ResponseBody
-	public Map<String, Object> error(HttpServletRequest request) {
+	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
 		ServletRequestAttributes attributes = new ServletRequestAttributes(request);
 		String trace = request.getParameter("trace");
-		return extract(attributes, trace != null && !"false".equals(trace.toLowerCase()),
-				true);
+		Map<String, Object> extracted = extract(attributes,
+				trace != null && !"false".equals(trace.toLowerCase()), true);
+		HttpStatus statusCode;
+		try {
+			statusCode = HttpStatus.valueOf((Integer) extracted.get("status"));
+		}
+		catch (Exception e) {
+			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		return new ResponseEntity<Map<String, Object>>(extracted, statusCode);
 	}
 
 	@Override

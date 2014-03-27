@@ -69,7 +69,7 @@ public class BasicErrorControllerIntegrationTests {
 	@Test
 	public void testErrorForMachineClient() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/error"))
-				.andExpect(status().isOk()).andReturn();
+				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("999"));
 	}
