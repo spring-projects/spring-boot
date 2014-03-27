@@ -168,7 +168,7 @@ public class PropertySourcesLoader {
 
 		EnumerableCompositePropertySource group = getGeneric(basename);
 		group.add(source);
-		logger.info("Adding PropertySource: " + source + " in group: " + basename);
+		logger.trace("Adding PropertySource: " + source + " in group: " + basename);
 		if (this.propertySources.contains(group.getName())) {
 			this.propertySources.replace(group.getName(), group);
 		}
