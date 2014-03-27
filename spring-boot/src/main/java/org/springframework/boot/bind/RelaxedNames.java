@@ -90,6 +90,7 @@ public final class RelaxedNames implements Iterable<String> {
 		};
 
 		public abstract String apply(String value);
+
 	}
 
 	static enum Manipulation {
@@ -157,5 +158,7 @@ public final class RelaxedNames implements Iterable<String> {
 		};
 
 		public abstract String apply(String value);
+
 	}
+
 }

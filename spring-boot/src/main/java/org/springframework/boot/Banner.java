@@ -63,4 +63,5 @@ abstract class Banner {
 				FAINT, version));
 		printStream.println();
 	}
+
 }

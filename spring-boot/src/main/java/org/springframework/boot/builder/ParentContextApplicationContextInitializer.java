@@ -75,6 +75,7 @@ public class ParentContextApplicationContextInitializer implements
 						(ConfigurableApplicationContext) context));
 			}
 		}
+
 	}
 
 	public static class ParentContextAvailableEvent extends ApplicationEvent {

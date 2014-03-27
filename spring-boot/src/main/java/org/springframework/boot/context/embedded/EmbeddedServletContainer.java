@@ -48,6 +48,7 @@ public interface EmbeddedServletContainer {
 		public int getPort() {
 			return 0;
 		}
+
 	};
 
 	/**

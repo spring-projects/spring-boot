@@ -301,10 +301,13 @@ class BeanDefinitionLoader {
 		protected boolean matchClassName(String className) {
 			return this.classNames.contains(className);
 		}
+
 	}
 
 	protected interface GroovyBeanDefinitionSource {
+
 		Closure<?> getBeans();
+
 	}
 
 }
