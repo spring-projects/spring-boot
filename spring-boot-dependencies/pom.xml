@@ -24,7 +24,7 @@
 		<httpclient.version>4.3.2</httpclient.version>
 		<httpasyncclient.version>4.0.1</httpasyncclient.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
-		<jackson.version>2.3.1</jackson.version>
+		<jackson.version>2.3.2</jackson.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<jetty.version>8.1.14.v20131031</jetty.version>
 		<joda-time.version>2.3</joda-time.version>
@@ -38,7 +38,7 @@
 		<mockito.version>1.9.5</mockito.version>
 		<mongodb.version>2.11.4</mongodb.version>
 		<mysql.version>5.1.29</mysql.version>
-		<reactor.version>1.0.0.RELEASE</reactor.version>
+		<reactor.version>1.0.1.RELEASE</reactor.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<slf4j.version>1.7.6</slf4j.version>
 		<snakeyaml.version>1.13</snakeyaml.version>
