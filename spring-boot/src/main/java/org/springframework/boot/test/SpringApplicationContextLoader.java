@@ -52,7 +52,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * <p>
  * If you <em>want</em> to start a web server, mark the test class as
  * <code>@WebAppConfiguration @IntegrationTest</code>. This is useful for testing HTTP
- * endpoints using {@link RestTemplates} (for instance), especially since you can
+ * endpoints using {@link TestRestTemplate} (for instance), especially since you can
  * <code>@Autowired</code> application context components into your test case to see the
  * internal effects of HTTP requests directly.
  * <p>

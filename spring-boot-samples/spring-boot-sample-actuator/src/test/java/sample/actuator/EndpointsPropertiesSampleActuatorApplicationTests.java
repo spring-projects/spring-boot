@@ -21,8 +21,8 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.RestTemplates;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -48,8 +48,8 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 	@Test
 	public void testCustomErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", "password").getForEntity(
-				"http://localhost:8080/oops", Map.class);
+		ResponseEntity<Map> entity = new TestRestTemplate("user", "password")
+				.getForEntity("http://localhost:8080/oops", Map.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -59,7 +59,7 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 
 	@Test
 	public void testCustomContextPath() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080/admin/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();

@@ -21,7 +21,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +46,7 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")

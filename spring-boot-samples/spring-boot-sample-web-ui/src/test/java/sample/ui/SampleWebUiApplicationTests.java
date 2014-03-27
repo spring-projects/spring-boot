@@ -21,7 +21,7 @@ import java.net.URI;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.RestTemplates;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +49,7 @@ public class SampleWebUiApplicationTests {
 
 	@Test
 	public void testHome() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
@@ -63,14 +63,15 @@ public class SampleWebUiApplicationTests {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
-		URI location = RestTemplates.get().postForLocation("http://localhost:8080", map);
+		URI location = new TestRestTemplate().postForLocation("http://localhost:8080",
+				map);
 		assertTrue("Wrong location:\n" + location,
 				location.toString().contains("localhost:8080"));
 	}
 
 	@Test
 	public void testCss() throws Exception {
-		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
 				"http://localhost:8080/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));

@@ -23,8 +23,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.RestTemplates;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -53,7 +53,7 @@ public class NoManagementSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword())
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:8080", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -65,7 +65,7 @@ public class NoManagementSampleActuatorApplicationTests {
 	public void testMetricsNotAvailable() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword())
+		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
 				.getForEntity("http://localhost:8080/metrics", Map.class);
 		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
 	}
