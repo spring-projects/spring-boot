@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +25,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests for
- * {@link SpringApplicationContextLoader#detectDefaultConfigurationClasses(Class)}
+ * Tests for {@link SpringApplicationContextLoader} (detectDefaultConfigurationClasses).
  * 
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration
-@Ignore("Ignore until SPR-11455 is resolved (Spring 4.0.3)")
 public class SpringApplicationConfigurationDefaultConfigurationTests {
 
 	@Autowired
