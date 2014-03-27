@@ -20,6 +20,7 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyClassLoader.ClassCollector;
 import groovy.lang.GroovyCodeSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -184,7 +185,13 @@ public class GroovyCompiler {
 		for (String source : sources) {
 			List<String> paths = ResourceUtils.getUrls(source, this.loader);
 			for (String path : paths) {
-				compilationUnit.addSource(new URL(path));
+				URL url = new URL(path);
+				if ("file".equals(url.getProtocol())) {
+					compilationUnit.addSource(new File(url.getFile()));
+				}
+				else {
+					compilationUnit.addSource(url);
+				}
 			}
 		}
 
