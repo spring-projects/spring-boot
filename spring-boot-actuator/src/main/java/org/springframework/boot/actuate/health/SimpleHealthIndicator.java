@@ -50,7 +50,7 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
 	}
 
-	private static String DEFAULT_QUERY = "SELECT 'Hello'";
+	private static String DEFAULT_QUERY = "SELECT 1";
 
 	private String query = null;
 
