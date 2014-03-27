@@ -158,7 +158,7 @@ public class SampleActuatorApplicationTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
 				"http://localhost:8080/error", Map.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
 		assertEquals("None", body.get("error"));
