@@ -24,3 +24,4 @@ activemq-data
 overridedb.*
 *.iml
 .idea
+.java-version

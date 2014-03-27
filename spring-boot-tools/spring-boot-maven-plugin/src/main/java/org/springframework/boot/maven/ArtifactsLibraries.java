@@ -17,8 +17,10 @@
 package org.springframework.boot.maven;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,26 +37,34 @@ import org.springframework.boot.loader.tools.LibraryScope;
  */
 public class ArtifactsLibraries implements Libraries {
 
-	private static final Map<String, LibraryScope> SCOPES;
+	private static final Map<String, LibraryScope> DEFAULT_SCOPES;
 	static {
 		Map<String, LibraryScope> scopes = new HashMap<String, LibraryScope>();
 		scopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
 		scopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
 		scopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
-		SCOPES = Collections.unmodifiableMap(scopes);
+		DEFAULT_SCOPES = Collections.unmodifiableMap(scopes);
 	}
 
 	private final Set<Artifact> artifacts;
 
+    private final List<String> userScopes;
+
 	public ArtifactsLibraries(Set<Artifact> artifacts) {
 		this.artifacts = artifacts;
+        this.userScopes = new ArrayList<String>( DEFAULT_SCOPES.keySet() );
 	}
+
+    public ArtifactsLibraries(Set<Artifact> artifacts, List<String> userScopes) {
+        this.artifacts = artifacts;
+        this.userScopes = ( userScopes == null || userScopes.isEmpty() ) ? new ArrayList<String>( DEFAULT_SCOPES.keySet() ) : userScopes;
+    }
 
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
 		for (Artifact artifact : this.artifacts) {
-			LibraryScope scope = SCOPES.get(artifact.getScope());
-			if (scope != null && artifact.getFile() != null) {
+			LibraryScope scope = DEFAULT_SCOPES.get(artifact.getScope());
+			if (scope != null && artifact.getFile() != null && userScopes.contains( artifact.getScope() )) {
 				callback.library(artifact.getFile(), scope);
 			}
 		}
