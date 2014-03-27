@@ -32,7 +32,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,8 +60,8 @@ public class ManagementPortSampleActuatorApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate("user", getPassword()).getForEntity(
-				"http://localhost:" + this.port, Map.class);
+		ResponseEntity<Map> entity = RestTemplates.get("user", getPassword())
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -73,14 +72,14 @@ public class ManagementPortSampleActuatorApplicationTests {
 	public void testMetrics() throws Exception {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
 				"http://localhost:" + this.managementPort + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testHealth() throws Exception {
-		ResponseEntity<String> entity = getRestTemplate().getForEntity(
+		ResponseEntity<String> entity = RestTemplates.get().getForEntity(
 				"http://localhost:" + this.managementPort + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
@@ -89,7 +88,7 @@ public class ManagementPortSampleActuatorApplicationTests {
 	@Test
 	public void testErrorPage() throws Exception {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = getRestTemplate().getForEntity(
+		ResponseEntity<Map> entity = RestTemplates.get().getForEntity(
 				"http://localhost:" + this.managementPort + "/error", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
@@ -99,14 +98,6 @@ public class ManagementPortSampleActuatorApplicationTests {
 
 	private String getPassword() {
 		return this.security.getUser().getPassword();
-	}
-
-	private RestTemplate getRestTemplate() {
-		return RestTemplates.get();
-	}
-
-	private RestTemplate getRestTemplate(final String username, final String password) {
-		return RestTemplates.get(username, password);
 	}
 
 }

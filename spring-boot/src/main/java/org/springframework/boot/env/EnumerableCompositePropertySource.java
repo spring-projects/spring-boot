@@ -75,4 +75,5 @@ public class EnumerableCompositePropertySource extends
 		getSource().add(source);
 		this.names = null;
 	}
+
 }

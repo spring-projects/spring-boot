@@ -76,14 +76,17 @@ public class BasicErrorController implements ErrorController {
 		String trace = request.getParameter("trace");
 		Map<String, Object> extracted = extract(attributes,
 				trace != null && !"false".equals(trace.toLowerCase()), true);
-		HttpStatus statusCode;
-		try {
-			statusCode = HttpStatus.valueOf((Integer) extracted.get("status"));
-		}
-		catch (Exception e) {
-			statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
+		HttpStatus statusCode = getStatus((Integer) extracted.get("status"));
 		return new ResponseEntity<Map<String, Object>>(extracted, statusCode);
+	}
+
+	private HttpStatus getStatus(Integer value) {
+		try {
+			return HttpStatus.valueOf(value);
+		}
+		catch (Exception ex) {
+			return HttpStatus.INTERNAL_SERVER_ERROR;
+		}
 	}
 
 	@Override
