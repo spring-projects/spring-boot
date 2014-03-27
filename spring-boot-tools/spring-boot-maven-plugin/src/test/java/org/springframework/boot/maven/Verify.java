@@ -26,6 +26,7 @@ import java.util.zip.ZipFile;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Verification utility for use with maven-invoker-plugin verification scripts.
@@ -37,6 +38,14 @@ public class Verify {
 	public static void verifyJar(File file) throws Exception {
 		new JarArchiveVerification(file, "org.test.SampleApplication").verify();
 	}
+
+    public static void verifyJarContain(File file, String main, String path) throws Exception {
+        new JarArchiveVerification(file, main).verify(path);
+    }
+
+    public static void verifyJarNotContain(File file, String main, String path) throws Exception {
+        new JarArchiveVerification(file, main).verifyNot(path);
+    }
 
 	public static void verifyJar(File file, String main) throws Exception {
 		new JarArchiveVerification(file, main).verify();
@@ -73,6 +82,39 @@ public class Verify {
 			zipFile.close();
 		}
 
+        public void verify(String path) throws Exception {
+            assertTrue("Archive missing", this.file.exists());
+            assertTrue("Archive not a file", this.file.isFile());
+
+            ZipFile zipFile = new ZipFile(this.file);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            Map<String, ZipEntry> zipMap = new HashMap<String, ZipEntry>();
+            while (entries.hasMoreElements()) {
+                ZipEntry zipEntry = entries.nextElement();
+                zipMap.put(zipEntry.getName(), zipEntry);
+            }
+            verifyZipEntries(zipFile, zipMap);
+            assertTrue("archive not containing file with path:" + path, zipMap.containsKey( path ) );
+            zipFile.close();
+        }
+
+        public void verifyNot(String path) throws Exception {
+            assertTrue("Archive missing", this.file.exists());
+            assertTrue("Archive not a file", this.file.isFile());
+
+            ZipFile zipFile = new ZipFile(this.file);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            Map<String, ZipEntry> zipMap = new HashMap<String, ZipEntry>();
+            while (entries.hasMoreElements()) {
+                ZipEntry zipEntry = entries.nextElement();
+                zipMap.put(zipEntry.getName(), zipEntry);
+            }
+            verifyZipEntries(zipFile, zipMap);
+            assertFalse("archive containing file with path:" + path, zipMap.containsKey( path ) );
+            zipFile.close();
+        }
+
+
 		protected void verifyZipEntries(ZipFile zipFile, Map<String, ZipEntry> entries)
 				throws Exception {
 			verifyManifest(zipFile, entries.get("META-INF/MANIFEST.MF"));
@@ -98,7 +140,7 @@ public class Verify {
 
 	private static class JarArchiveVerification extends AbstractArchiveVerification {
 
-		private final String main;
+		private String main;
 
 		public JarArchiveVerification(File file, String main) {
 			super(file);

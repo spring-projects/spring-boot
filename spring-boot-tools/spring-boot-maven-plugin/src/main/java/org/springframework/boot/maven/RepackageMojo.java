@@ -18,6 +18,7 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 
@@ -95,6 +96,12 @@ public class RepackageMojo extends AbstractMojo {
 	@Parameter
 	private LayoutType layout;
 
+    /**
+     * list of artifact scopes you want to have repackaged in the jar
+     */
+    @Parameter
+    private List<String> scopes;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		File source = this.project.getArtifact().getFile();
@@ -122,7 +129,7 @@ public class RepackageMojo extends AbstractMojo {
 			getLog().info("Layout: " + this.layout);
 			repackager.setLayout(this.layout.layout());
 		}
-		Libraries libraries = new ArtifactsLibraries(this.project.getArtifacts());
+		Libraries libraries = new ArtifactsLibraries(this.project.getArtifacts(), this.scopes);
 		try {
 			repackager.repackage(target, libraries);
 		}
