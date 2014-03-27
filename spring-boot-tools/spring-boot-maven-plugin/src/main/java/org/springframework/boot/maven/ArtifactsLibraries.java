@@ -58,7 +58,6 @@ public class ArtifactsLibraries implements Libraries {
     public ArtifactsLibraries(Set<Artifact> artifacts, List<String> userScopes) {
         this.artifacts = artifacts;
         this.userScopes = ( userScopes == null || userScopes.isEmpty() ) ? new ArrayList<String>( DEFAULT_SCOPES.keySet() ) : userScopes;
-        System.out.println( "this.userScopes: " + this.userScopes );
     }
 
 	@Override
