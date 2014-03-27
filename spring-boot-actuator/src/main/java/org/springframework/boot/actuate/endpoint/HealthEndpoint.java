@@ -46,4 +46,8 @@ public class HealthEndpoint<T> extends AbstractEndpoint<T> {
 		return this.indicator.health();
 	}
 
+	public HealthIndicator<? extends T> getIndicator() {
+		return indicator;
+	}
+
 }
