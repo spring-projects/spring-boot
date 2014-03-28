@@ -25,6 +25,10 @@ jar {
 	version =  '0.0.0'
 }
 
+run {
+  systemProperties = System.properties
+}
+
 repositories {
 	// NOTE: You should declare only repositories that you need here
 	mavenLocal()
