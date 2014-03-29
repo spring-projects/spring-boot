@@ -205,7 +205,8 @@ public class DependencyCustomizer {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
 					.getArtifactCoordinatesResolver();
 			this.classNode.addAnnotation(createGrabAnnotation(
-					artifactCoordinatesResolver.getGroupId(module), module,
+					artifactCoordinatesResolver.getGroupId(module),
+					artifactCoordinatesResolver.getArtifactId(module),
 					artifactCoordinatesResolver.getVersion(module), transitive));
 		}
 		return this;
