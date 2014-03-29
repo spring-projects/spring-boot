@@ -27,6 +27,7 @@
 		<module>spring-boot-sample-amqp</module>
 		<module>spring-boot-sample-aop</module>
 		<module>spring-boot-sample-batch</module>
+		<module>spring-boot-sample-data-gemfire</module>
 		<module>spring-boot-sample-data-jpa</module>
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-redis</module>

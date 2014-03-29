@@ -52,6 +52,7 @@
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-pool.version>1.6</commons-pool.version>
 		<crashub.version>1.3.0-beta14</crashub.version>
+		<gemfire.version>7.0.1</gemfire.version>
 		<gradle.version>1.6</gradle.version>
 		<groovy.version>2.3.0-rc-1</groovy.version>
 		<h2.version>1.3.175</h2.version>
@@ -87,6 +88,7 @@
 		<spring-integration.version>3.0.2.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.6.RELEASE</spring-batch.version>
         <spring-data-couchbase.version>1.0.0.RELEASE</spring-data-couchbase.version>
+		<spring-data-gemfire.version>1.3.3.RELEASE</spring-data-gemfire.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-releasetrain.version>Codd-SR2</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
@@ -312,6 +314,11 @@
 				<version>${jetty.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.gemstone.gemfire</groupId>
+				<artifactId>gemfire</artifactId>
+				<version>${gemfire.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-library</artifactId>
 				<version>${hamcrest.version}</version>
@@ -525,7 +532,12 @@
 				<artifactId>spring-batch-core</artifactId>
 				<version>${spring-batch.version}</version>
 			</dependency>
-			<dependency>
+      <dependency>
+        <groupId>org.springframework.data</groupId>
+        <artifactId>spring-data-gemfire</artifactId>
+        <version>${spring-data-gemfire.version}</version>
+      </dependency>
+      <dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-releasetrain</artifactId>
 				<version>${spring-data-releasetrain.version}</version>
