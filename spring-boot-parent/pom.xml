@@ -210,7 +210,7 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-	</repositories>
+  </repositories>
 	<build>
 		<pluginManagement>
 			<plugins>
