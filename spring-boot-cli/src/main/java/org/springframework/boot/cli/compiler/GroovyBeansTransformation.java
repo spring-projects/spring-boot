@@ -25,14 +25,8 @@ import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.PropertyNode;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.ClosureExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
 
@@ -105,29 +99,7 @@ public class GroovyBeansTransformation implements ASTTransformation {
 		 * @return a beans Closure if one can be found, null otherwise
 		 */
 		private ClosureExpression beans(BlockStatement block) {
-
-			for (Statement statement : new ArrayList<Statement>(block.getStatements())) {
-				if (statement instanceof ExpressionStatement) {
-					Expression expression = ((ExpressionStatement) statement)
-							.getExpression();
-					if (expression instanceof MethodCallExpression) {
-						MethodCallExpression call = (MethodCallExpression) expression;
-						Expression methodCall = call.getMethod();
-						if (methodCall instanceof ConstantExpression) {
-							ConstantExpression method = (ConstantExpression) methodCall;
-							if (BEANS.equals(method.getValue())) {
-								ArgumentListExpression arguments = (ArgumentListExpression) call
-										.getArguments();
-								block.getStatements().remove(statement);
-								ClosureExpression closure = (ClosureExpression) arguments
-										.getExpression(0);
-								return closure;
-							}
-						}
-					}
-				}
-			}
-			return null;
+			return AstUtils.getClosure(block, BEANS, true);
 		}
 	}
 }
