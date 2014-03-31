@@ -1296,7 +1296,7 @@ the URL `mongodb://localhost/test`:
 	}
 ----
 
-You can set `spring.data.mongodb.url` property to change the `url`, or alternatively
+You can set `spring.data.mongodb.uri` property to change the `url`, or alternatively
 specify a `host`/`port`. For example, you might declare the following in your
 `application.properties`:
 
