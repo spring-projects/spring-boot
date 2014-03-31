@@ -41,7 +41,7 @@ should also work without issue.
 
 === Building from source
 To build the source you will need to install
-http://maven.apache.org/run-maven/index.html[Apache Maven] v3.0 or above.
+http://maven.apache.org/run-maven/index.html[Apache Maven] v3.0.6 or above and JDK 1.7.
 
 ==== Default build
 The project can be built from the root directory using the standard maven command:
