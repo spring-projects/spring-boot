@@ -19,33 +19,25 @@ package org.springframework.boot.test;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests for {@link ConfigFileApplicationContextInitializer}.
+ * Tests for {@link SpringApplicationContextLoader} (detectDefaultConfigurationClasses).
  * 
- * @author Phillip Webb
+ * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class, initializers = ConfigFileApplicationContextInitializer.class)
-public class ConfigFileApplicationContextInitializerTests {
+@SpringApplicationConfiguration(locations = "classpath:test.groovy")
+public class SpringApplicationConfigurationGroovyConfigurationTests {
 
 	@Autowired
-	private Environment environment;
+	private String foo;
 
 	@Test
-	public void initializerPopulatesEnvironment() {
-		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
+	public void groovyConfigLoaded() {
+		assertNotNull(this.foo);
 	}
 
-	@Configuration
-	public static class Config {
-
-	}
 }
