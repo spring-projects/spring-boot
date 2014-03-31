@@ -18,7 +18,10 @@ package org.springframework.boot.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.test.SpringApplicationIntegrationTestTests.Config;
 import org.springframework.context.annotation.Bean;
@@ -44,10 +47,13 @@ import static org.junit.Assert.assertEquals;
 @IntegrationTest
 public class SpringApplicationIntegrationTestTests {
 
+	@Autowired
+	private EmbeddedWebApplicationContext applicationContext;
+
 	@Test
 	public void runAndTestHttpEndpoint() {
-		String body = new RestTemplate().getForObject("http://localhost:8080/",
-				String.class);
+		String home = WebTestUtils.getLocalUrl(applicationContext.getEmbeddedServletContainer(), "/");
+		String body = new RestTemplate().getForObject(home, String.class);
 		assertEquals("Hello World", body);
 	}
 
@@ -63,7 +69,7 @@ public class SpringApplicationIntegrationTestTests {
 
 		@Bean
 		public EmbeddedServletContainerFactory embeddedServletContainer() {
-			return new TomcatEmbeddedServletContainerFactory();
+			return new TomcatEmbeddedServletContainerFactory(0);
 		}
 
 		@RequestMapping("/")

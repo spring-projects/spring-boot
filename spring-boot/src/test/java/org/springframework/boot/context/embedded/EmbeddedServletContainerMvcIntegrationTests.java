@@ -16,16 +16,22 @@
 
 package org.springframework.boot.context.embedded;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
 import java.net.URI;
 import java.nio.charset.Charset;
 
 import org.junit.After;
 import org.junit.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.test.WebTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -39,13 +45,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
 /**
  * Integration tests for {@link EmbeddedWebApplicationContext} and
  * {@link EmbeddedServletContainer}s running Spring MVC.
- * 
+ *
  * @author Phillip Webb
  */
 public class EmbeddedServletContainerMvcIntegrationTests {
@@ -62,27 +65,26 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 
 	@Test
 	public void tomcat() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				TomcatEmbeddedServletContainerFactory.class, Config.class);
-		doTest(this.context, "http://localhost:8080/hello");
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(TomcatConfig.class);
+		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void jetty() throws Exception {
-		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
-				JettyEmbeddedServletContainerFactory.class, Config.class);
-		doTest(this.context, "http://localhost:8080/hello");
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext(JettyConfig.class);
+		doTest(this.context, "/hello");
 	}
 
 	@Test
 	public void advancedConfig() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext(
 				AdvancedConfig.class);
-		doTest(this.context, "http://localhost:8081/example/spring/hello");
+		doTest(this.context, "/example/spring/hello");
 	}
 
-	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context, String url)
+	private void doTest(AnnotationConfigEmbeddedWebApplicationContext context, String resourcePath)
 			throws Exception {
+		String url = WebTestUtils.getLocalUrl(context.getEmbeddedServletContainer(), resourcePath);
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(url),
 				HttpMethod.GET);
@@ -94,6 +96,24 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 		}
 		finally {
 			response.close();
+		}
+	}
+
+	@Configuration
+	@Import(Config.class)
+	public static class TomcatConfig {
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			return new TomcatEmbeddedServletContainerFactory(0);
+		}
+	}
+
+	@Configuration
+	@Import(Config.class)
+	public static class JettyConfig {
+		@Bean
+		public EmbeddedServletContainerFactory containerFactory() {
+			return new JettyEmbeddedServletContainerFactory(0);
 		}
 	}
 
@@ -125,9 +145,8 @@ public class EmbeddedServletContainerMvcIntegrationTests {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {
-			JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
-			factory.setPort(this.env.getProperty("port", Integer.class));
-			factory.setContextPath("/example");
+			JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory(0);
+			factory.setContextPath(this.env.getProperty("context"));
 			return factory;
 		}
 
