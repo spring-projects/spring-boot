@@ -45,7 +45,7 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {
-		return new JettyEmbeddedServletContainerFactory();
+		return new JettyEmbeddedServletContainerFactory(0);
 	}
 
 	@Test
