@@ -45,7 +45,7 @@ import static org.junit.Assert.assertEquals;
 public class SpringApplicationIntegrationTestTests {
 
 	@Test
-	public void nestedConfigClasses() {
+	public void runAndTestHttpEndpoint() {
 		String body = new RestTemplate().getForObject("http://localhost:8080/",
 				String.class);
 		assertEquals("Hello World", body);

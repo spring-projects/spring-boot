@@ -16,36 +16,41 @@
 
 package org.springframework.boot.test;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfigurationMixedConfigurationTests.Config;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests for {@link ConfigFileApplicationContextInitializer}.
+ * Tests for {@link SpringApplicationContextLoader}.
  * 
- * @author Phillip Webb
+ * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class, initializers = ConfigFileApplicationContextInitializer.class)
-public class ConfigFileApplicationContextInitializerTests {
+@SpringApplicationConfiguration(classes = Config.class, locations = "classpath:test.groovy")
+@Ignore("classes and locations together are not supported in Spring Test (for legacy reasons)")
+public class SpringApplicationConfigurationMixedConfigurationTests {
 
 	@Autowired
-	private Environment environment;
+	private String foo;
+
+	@Autowired
+	private Config config;
 
 	@Test
-	public void initializerPopulatesEnvironment() {
-		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
+	public void mixedConfigClasses() {
+		assertNotNull(this.foo);
+		assertNotNull(this.config);
 	}
 
 	@Configuration
-	public static class Config {
+	protected static class Config {
 
 	}
+
 }
