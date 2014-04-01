@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.0.1.BUILD-SNAPSHOT</version>
+		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-docs</artifactId>
@@ -191,7 +192,8 @@
 												<include name="**/*.pdf" />
 											</fileset>
 										</copy>
-										<move file="${basedir}/target/contents/reference/pdf/index.pdf" tofile="${basedir}/target/contents/reference/pdf/spring-boot-reference.pdf" />
+										<move file="${basedir}/target/contents/reference/pdf/index.pdf"
+											tofile="${basedir}/target/contents/reference/pdf/spring-boot-reference.pdf" />
 									</postProcess>
 								</configuration>
 							</execution>
@@ -210,7 +212,8 @@
 												<include name="**/*.epub" />
 											</fileset>
 										</copy>
-										<move file="${basedir}/target/contents/reference/epub/index.epub" tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
+										<move file="${basedir}/target/contents/reference/epub/index.epub"
+											tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
 									</postProcess>
 								</configuration>
 							</execution>
@@ -251,8 +254,11 @@
 								</goals>
 								<configuration>
 									<target>
-										<zip destfile="${project.build.directory}/${project.name}-${project.version}.zip">
-											<zipfileset src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar" prefix="api" />
+										<zip
+											destfile="${project.build.directory}/${project.name}-${project.version}.zip">
+											<zipfileset
+												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
+												prefix="api" />
 											<fileset dir="${project.build.directory}/contents" />
 										</zip>
 									</target>
@@ -270,15 +276,20 @@
 										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
 										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
 										<var name="version-type" value="${project.version}" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp=".*\.(.*)" replace="\1" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true"
+											input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
 										<stringutil string="${version-type}" property="spring-boot-repo">
 											<lowercase />
 										</stringutil>
 										<var name="github-tag" value="v${project.version}" />
-										<propertyregex property="github-tag" override="true" input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
+										<propertyregex property="github-tag" override="true"
+											input="${github-tag}" regexp=".*SNAPSHOT" replace="master" />
 									</target>
 								</configuration>
 							</execution>
