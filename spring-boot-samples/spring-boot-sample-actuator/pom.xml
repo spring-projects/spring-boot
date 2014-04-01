@@ -9,7 +9,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-actuator</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Actuator Sample</name>
 	<description>Spring Boot Actuator Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>

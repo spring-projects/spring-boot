@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-thymeleaf</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Thymeleaf Starter</name>
 	<description>Spring Boot Thymeleaf Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

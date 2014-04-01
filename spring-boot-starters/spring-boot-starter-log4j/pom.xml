@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-log4j</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Log4J Starter</name>
 	<description>Spring Boot Log4J Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

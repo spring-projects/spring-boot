@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-web</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Web Starter</name>
 	<description>Spring Boot Web Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

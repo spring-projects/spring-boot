@@ -9,7 +9,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-tomcat-multi-connectors</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Multi-Connector Tomcat Sample</name>
 	<description>Spring Boot Multi-Connector Tomcat Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
