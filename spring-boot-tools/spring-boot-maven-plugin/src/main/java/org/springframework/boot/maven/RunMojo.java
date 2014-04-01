@@ -37,7 +37,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.FileUtils;
 import org.springframework.boot.loader.tools.AgentAttacher;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
@@ -208,11 +207,11 @@ public class RunMojo extends AbstractMojo {
 			for (String name : directory.list()) {
 				File targetFile = new File(this.classesDirectory, name);
 				if (targetFile.exists() && targetFile.canWrite()) {
-					if (targetFile.isDirectory()) {
-						FileUtils.deleteDirectory(targetFile);
+					if (!targetFile.isDirectory()) {
+						targetFile.delete();
 					}
 					else {
-						targetFile.delete();
+						removeDuplicatesFromTarget(targetFile);
 					}
 				}
 			}
