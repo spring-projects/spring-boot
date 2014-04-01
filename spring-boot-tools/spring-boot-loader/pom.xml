@@ -9,6 +9,14 @@
 	</parent>
 	<artifactId>spring-boot-loader</artifactId>
 	<packaging>jar</packaging>
+	<name>Spring Boot Loader</name>
+	<description>Spring Boot Loader</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
+
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>

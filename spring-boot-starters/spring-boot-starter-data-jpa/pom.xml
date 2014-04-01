@@ -9,6 +9,13 @@
 	</parent>
 	<artifactId>spring-boot-starter-data-jpa</artifactId>
 	<packaging>jar</packaging>
+	<name>Spring Boot Data JPA Starter</name>
+	<description>Spring Boot Data JPA Starter</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
