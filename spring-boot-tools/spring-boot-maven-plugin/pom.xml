@@ -9,6 +9,13 @@
 	</parent>
 	<artifactId>spring-boot-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
+	<name>Spring Boot Maven Plugin</name>
+	<description>Spring Boot Maven Plugin</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>

@@ -10,6 +10,13 @@
 		<artifactId>spring-boot-samples</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
+	<name>Spring Boot WebSocket Sample</name>
+	<description>Spring Boot WebSocket Sample</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<java.version>1.7</java.version>

@@ -9,6 +9,13 @@
 	</parent>
 	<artifactId>spring-boot-dependency-tools</artifactId>
 	<packaging>jar</packaging>
+	<name>Spring Boot Dependency Tools</name>
+	<description>Spring Boot Dependency Tools</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<generated.pom.dir>${project.build.directory}/generated-resources/org/springframework/boot/dependency/tools</generated.pom.dir>
