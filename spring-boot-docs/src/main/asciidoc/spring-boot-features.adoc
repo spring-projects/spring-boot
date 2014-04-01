@@ -1470,20 +1470,20 @@ documentation].
 [[boot-features-testing]]
 == Testing
 Spring Boot provides a number of useful tools for testing your application. The
-`spring-boot-starter-parent` POM provides JUnit, Hamcrest and Mockito ``test'' `scope`
+`spring-boot-starter-test` POM provides Spring Test, JUnit, Hamcrest and Mockito
 dependencies. There are also useful test utilities in the core `spring-boot` module
-under the `org.springframework.boot.test` package. There is also a
-`spring-boot-starter-test` ``Starter POM''.
+under the `org.springframework.boot.test` package.
 
 
 
 [[boot-features-test-scope-dependencies]]
 === Test scope dependencies
-If you extend your Maven project from the `spring-boot-starter-parent` POM, or use the
+If you use the
 `spring-boot-starter-test` ``Starter POM'' (in the `test` `scope`), you will find
 the following provided libraries:
 
-* JUnit -- The de-facto standard for unit testing Java applications.
+* Spring Test -- integration test support for Spring applications.
+* Junit -- The de-facto standard for unit testing Java applications.
 * Hamcrest -- A library of matcher objects (also known as constraints or predicates)
   allowing `assertThat` style JUnit assertions.
 * Mockito -- A Java mocking framework.

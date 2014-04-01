@@ -203,7 +203,7 @@ endif::release[]
 
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("junit:junit")
+		testCompile("org.springframework.boot:spring-boot-starter-test")
 	}
 ----
 
@@ -477,16 +477,11 @@ currently have.
 	$ mvn dependency:tree
 
 	[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
-	[INFO] +- junit:junit:jar:4.11:test
-	[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
-	[INFO] +- org.mockito:mockito-core:jar:1.9.5:test
-	[INFO] |  \- org.objenesis:objenesis:jar:1.0:test
-	[INFO] \- org.hamcrest:hamcrest-library:jar:1.3:test
 ----
 
 The `mvn dependency:tree` command prints tree representation of your project dependencies.
-You can see that `spring-boot-starter-parent` has already provided some useful test
-dependencies. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
+You can see that `spring-boot-starter-parent` provides no
+dependenciesby itself. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
 just below the `parent` section:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
