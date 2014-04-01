@@ -64,22 +64,23 @@ public class JmsTemplateAutoConfiguration {
 
 		@Bean
 		public ConnectionFactory jmsConnectionFactory() {
+			ConnectionFactory connectionFactory;
+			if (this.config.getUser() != null && this.config.getPassword() != null) {
+				connectionFactory = new ActiveMQConnectionFactory(this.config.getUser(),
+						this.config.getPassword(), this.config.getBrokerUrl());
+			}
+			else {
+				connectionFactory = new ActiveMQConnectionFactory(
+						this.config.getBrokerUrl());
+			}
 			if (this.config.isPooled()) {
 				PooledConnectionFactory pool = new PooledConnectionFactory();
-				ConnectionFactory connectionFactory;
-				if (this.config.getUser() != null && this.config.getPassword() != null) {
-					connectionFactory = new ActiveMQConnectionFactory(
-							this.config.getUser(), this.config.getPassword(),
-							this.config.getBrokerUrl());
-				}
-				else {
-					connectionFactory = new ActiveMQConnectionFactory(
-							this.config.getBrokerUrl());
-				}
 				pool.setConnectionFactory(connectionFactory);
 				return pool;
 			}
-			return new ActiveMQConnectionFactory(this.config.getBrokerUrl());
+			else {
+				return connectionFactory;
+			}
 		}
 	}
 
