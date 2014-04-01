@@ -9,7 +9,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-web-secure</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Web Secure Sample</name>
 	<description>Spring Boot Web Secure Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>

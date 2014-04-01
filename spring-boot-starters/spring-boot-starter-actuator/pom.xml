@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-actuator</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Actuator Starter</name>
 	<description>Spring Boot Actuator Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

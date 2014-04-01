@@ -9,7 +9,6 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-cli</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot CLI</name>
 	<description>Spring Boot CLI</description>
 	<url>http://projects.spring.io/spring-boot/</url>

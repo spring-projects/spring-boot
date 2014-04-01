@@ -9,7 +9,6 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-autoconfigure</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot AutoConfigure</name>
 	<description>Spring Boot AutoConfigure</description>
 	<url>http://projects.spring.io/spring-boot/</url>

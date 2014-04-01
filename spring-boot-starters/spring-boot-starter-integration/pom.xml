@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-integration</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Integration Starter</name>
 	<description>Spring Boot Integration Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

@@ -9,7 +9,6 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-actuator</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Actuator</name>
 	<description>Spring Boot Actuator</description>
 	<url>http://projects.spring.io/spring-boot/</url>

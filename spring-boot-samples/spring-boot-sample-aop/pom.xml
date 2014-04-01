@@ -9,7 +9,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-aop</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot AOP Sample</name>
 	<description>Spring Boot AOP Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
