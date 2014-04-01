@@ -279,7 +279,7 @@ your application might already use `/info` for another purpose. You can use the
 
 [source,properties,indent=0]
 ----
-	management.contextpath=/manage
+	management.context-path=/manage
 ----
 
 The `application.properties` example above will change the endpoint from `/{id}` to
