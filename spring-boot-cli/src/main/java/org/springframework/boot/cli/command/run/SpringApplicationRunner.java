@@ -18,10 +18,15 @@ package org.springframework.boot.cli.command.run;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.springframework.boot.cli.compiler.GroovyCompiler;
+import org.springframework.boot.cli.util.ResourceUtils;
 
 /**
  * Compiles Groovy code running the resulting classes using a {@code SpringApplication}.
@@ -83,11 +88,6 @@ public class SpringApplicationRunner {
 				throw new RuntimeException("No classes found in '" + this.sources + "'");
 			}
 
-			// Run in new thread to ensure that the context classloader is setup
-			this.runThread = new RunThread(compiledSources);
-			this.runThread.start();
-			this.runThread.join();
-
 			// Start monitoring for changes
 			if (this.fileWatchThread == null
 					&& this.configuration.isWatchForFileChanges()) {
@@ -95,6 +95,10 @@ public class SpringApplicationRunner {
 				this.fileWatchThread.start();
 			}
 
+			// Run in new thread to ensure that the context classloader is setup
+			this.runThread = new RunThread(compiledSources);
+			this.runThread.start();
+			this.runThread.join();
 		}
 		catch (Exception ex) {
 			if (this.fileWatchThread == null) {
@@ -173,11 +177,13 @@ public class SpringApplicationRunner {
 
 		private long previous;
 
+		private List<File> sources;
+
 		public FileWatchThread() {
 			super("filewatcher-" + (watcherCounter++));
 			this.previous = 0;
-			for (String path : SpringApplicationRunner.this.sources) {
-				File file = new File(path);
+			this.sources = getSourceFiles();
+			for (File file : this.sources) {
 				if (file.exists()) {
 					long current = file.lastModified();
 					if (current > this.previous) {
@@ -188,13 +194,32 @@ public class SpringApplicationRunner {
 			setDaemon(false);
 		}
 
+		private List<File> getSourceFiles() {
+			List<File> sources = new ArrayList<File>();
+			for (String source : SpringApplicationRunner.this.sources) {
+				List<String> paths = ResourceUtils.getUrls(source,
+						SpringApplicationRunner.this.compiler.getLoader());
+				for (String path : paths) {
+					try {
+						URL url = new URL(path);
+						if ("file".equals(url.getProtocol())) {
+							sources.add(new File(url.getFile()));
+						}
+					}
+					catch (MalformedURLException ex) {
+						// Ignore
+					}
+				}
+			}
+			return sources;
+		}
+
 		@Override
 		public void run() {
 			while (true) {
 				try {
 					Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-					for (String path : SpringApplicationRunner.this.sources) {
-						File file = new File(path);
+					for (File file : this.sources) {
 						if (file.exists()) {
 							long current = file.lastModified();
 							if (this.previous < current) {
