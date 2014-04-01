@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-tools</artifactId>
-		<version>1.0.0.BUILD-SNAPSHOT</version>
+		<version>1.0.1.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-dependency-tools</artifactId>
 	<name>Spring Boot Dependency Tools</name>
@@ -38,8 +37,7 @@
 						</goals>
 						<configuration>
 							<target>
-								<copy file="${main.basedir}/spring-boot-dependencies/pom.xml"
-									tofile="${generated.pom.dir}/dependencies-pom.xml" />
+								<copy file="${main.basedir}/spring-boot-dependencies/pom.xml" tofile="${generated.pom.dir}/dependencies-pom.xml" />
 							</target>
 						</configuration>
 					</execution>
