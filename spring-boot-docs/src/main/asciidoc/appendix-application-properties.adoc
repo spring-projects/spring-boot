@@ -13,246 +13,247 @@ your own properties.
 WARNING: This sample file is meant as a guide only. Do **not** copy/paste the entire
 content into your application; rather pick only the properties that you need.
 
+
 [source,properties,indent=0,subs="verbatim,attributes,macros"]
 ----
-# ===================================================================
-# COMMON SPRING BOOT PROPERTIES
-#
-# This sample file is provided as a guideline. Do NOT copy it in its
-# entirety to your own application.               ^^^
-# ===================================================================
+	# ===================================================================
+	# COMMON SPRING BOOT PROPERTIES
+	#
+	# This sample file is provided as a guideline. Do NOT copy it in its
+	# entirety to your own application.               ^^^
+	# ===================================================================
 
-# ----------------------------------------
-# CORE PROPERTIES
-# ----------------------------------------
+	# ----------------------------------------
+	# CORE PROPERTIES
+	# ----------------------------------------
 
-# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
-spring.config.name= # config file name (default to 'application')
-spring.config.location= # location of config file
+	# SPRING CONFIG ({sc-spring-boot}/context/config/ConfigFileApplicationListener.{sc-ext}[ConfigFileApplicationListener])
+	spring.config.name= # config file name (default to 'application')
+	spring.config.location= # location of config file
 
-# PROFILES
-spring.profiles= # comma list of active profiles
+	# PROFILES
+	spring.profiles= # comma list of active profiles
 
-# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
-spring.main.sources=
-spring.main.web-environment= # detect by default
-spring.main.show-banner=true
-spring.main....= # see class for all properties
+	# APPLICATION SETTINGS ({sc-spring-boot}/SpringApplication.{sc-ext}[SpringApplication])
+	spring.main.sources=
+	spring.main.web-environment= # detect by default
+	spring.main.show-banner=true
+	spring.main....= # see class for all properties
 
-# LOGGING
-logging.path=/var/logs
-logging.file=myapp.log
-logging.config=
+	# LOGGING
+	logging.path=/var/logs
+	logging.file=myapp.log
+	logging.config=
 
-# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
-spring.application.name=
-spring.application.index=
+	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
+	spring.application.name=
+	spring.application.index=
 
-# EMBEDDED SERVER CONFIGURATION ({sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[ServerProperties])
-server.port=8080
-server.address= # bind to a specific NIC
-server.session-timeout= # session timeout in sections
-server.context-path= # the context path, defaults to '/'
-server.servlet-path= # the servlet path, defaults to '/'
-server.tomcat.access-log-pattern= # log pattern of the access log
-server.tomcat.access-log-enabled=false # is access logging enabled
-server.tomcat.protocol-header=x-forwarded-proto # ssl forward headers
-server.tomcat.remote-ip-header=x-forwarded-for
-server.tomcat.basedir=/tmp # base dir (usually not needed, defaults to tmp)
-server.tomcat.background-processor-delay=30; # in seconds
-server.tomcat.max-threads = 0 # number of threads in protocol handler
-server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
+	# EMBEDDED SERVER CONFIGURATION ({sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[ServerProperties])
+	server.port=8080
+	server.address= # bind to a specific NIC
+	server.session-timeout= # session timeout in sections
+	server.context-path= # the context path, defaults to '/'
+	server.servlet-path= # the servlet path, defaults to '/'
+	server.tomcat.access-log-pattern= # log pattern of the access log
+	server.tomcat.access-log-enabled=false # is access logging enabled
+	server.tomcat.protocol-header=x-forwarded-proto # ssl forward headers
+	server.tomcat.remote-ip-header=x-forwarded-for
+	server.tomcat.basedir=/tmp # base dir (usually not needed, defaults to tmp)
+	server.tomcat.background-processor-delay=30; # in seconds
+	server.tomcat.max-threads = 0 # number of threads in protocol handler
+	server.tomcat.uri-encoding = UTF-8 # character encoding to use for URL decoding
 
-# SPRING MVC ({sc-spring-boot-autoconfigure}/web/HttpMapperProperties.{sc-ext}[HttpMapperProperties])
-http.mappers.json-pretty-print=false # pretty print JSON
-http.mappers.json-sort-keys=false # sort keys
-spring.view.prefix= # MVC view prefix
-spring.view.suffix= # ... and suffix
-spring.resources.cache-period= # cache timeouts in headers sent to browser
+	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/HttpMapperProperties.{sc-ext}[HttpMapperProperties])
+	http.mappers.json-pretty-print=false # pretty print JSON
+	http.mappers.json-sort-keys=false # sort keys
+	spring.view.prefix= # MVC view prefix
+	spring.view.suffix= # ... and suffix
+	spring.resources.cache-period= # cache timeouts in headers sent to browser
 
-# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
-spring.thymeleaf.prefix=classpath:/templates/
-spring.thymeleaf.suffix=.html
-spring.thymeleaf.mode=HTML5
-spring.thymeleaf.encoding=UTF-8
-spring.thymeleaf.cache=true # set to false for hot refresh
+	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
+	spring.thymeleaf.prefix=classpath:/templates/
+	spring.thymeleaf.suffix=.html
+	spring.thymeleaf.mode=HTML5
+	spring.thymeleaf.encoding=UTF-8
+	spring.thymeleaf.cache=true # set to false for hot refresh
 
-# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
-spring.messages.basename=messages
-spring.messages.encoding=UTF-8
+	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
+	spring.messages.basename=messages
+	spring.messages.encoding=UTF-8
 
-[[common-application-properties-security]]
-# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
-security.user.name=user # login username
-security.user.password= # login password
-security.user.role=USER # role assigned to the user
-security.require-ssl=false # advanced settings ...
-security.enable-csrf=false
-security.basic.enabled=true
-security.basic.realm=Spring
-security.basic.path= # /**
-security.headers.xss=false
-security.headers.cache=false
-security.headers.frame=false
-security.headers.contentType=false
-security.headers.hsts=all # none / domain / all
-security.sessions=stateless # always / never / if_required / stateless
-security.ignored=false
+	[[common-application-properties-security]]
+	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])
+	security.user.name=user # login username
+	security.user.password= # login password
+	security.user.role=USER # role assigned to the user
+	security.require-ssl=false # advanced settings ...
+	security.enable-csrf=false
+	security.basic.enabled=true
+	security.basic.realm=Spring
+	security.basic.path= # /**
+	security.headers.xss=false
+	security.headers.cache=false
+	security.headers.frame=false
+	security.headers.contentType=false
+	security.headers.hsts=all # none / domain / all
+	security.sessions=stateless # always / never / if_required / stateless
+	security.ignored=false
 
-# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}//jdbc/AbstractDataSourceConfiguration.{sc-ext}[AbstractDataSourceConfiguration])
-spring.datasource.name= # name of the data source
-spring.datasource.intialize=true # populate using data.sql
-spring.datasource.schema= # a schema resource reference
-spring.datasource.continueOnError=false # continue even if can't be initialized
-spring.datasource.driverClassName= # JDBC Settings...
-spring.datasource.url=
-spring.datasource.username=
-spring.datasource.password=
-spring.datasource.max-active=100 # Advanced configuration...
-spring.datasource.max-idle=8
-spring.datasource.min-idle=8
-spring.datasource.initial-size=10
-spring.datasource.validation-query=
-spring.datasource.test-on-borrow=false
-spring.datasource.test-on-return=false
-spring.datasource.test-while-idle=
-spring.datasource.time-between-eviction-runs-millis=
-spring.datasource.min-evictable-idle-time-millis=
-spring.datasource.max-wait-millis=
+	# DATASOURCE ({sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[DataSourceAutoConfiguration] & {sc-spring-boot-autoconfigure}//jdbc/AbstractDataSourceConfiguration.{sc-ext}[AbstractDataSourceConfiguration])
+	spring.datasource.name= # name of the data source
+	spring.datasource.intialize=true # populate using data.sql
+	spring.datasource.schema= # a schema resource reference
+	spring.datasource.continueOnError=false # continue even if can't be initialized
+	spring.datasource.driverClassName= # JDBC Settings...
+	spring.datasource.url=
+	spring.datasource.username=
+	spring.datasource.password=
+	spring.datasource.max-active=100 # Advanced configuration...
+	spring.datasource.max-idle=8
+	spring.datasource.min-idle=8
+	spring.datasource.initial-size=10
+	spring.datasource.validation-query=
+	spring.datasource.test-on-borrow=false
+	spring.datasource.test-on-return=false
+	spring.datasource.test-while-idle=
+	spring.datasource.time-between-eviction-runs-millis=
+	spring.datasource.min-evictable-idle-time-millis=
+	spring.datasource.max-wait-millis=
 
-# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
-spring.data.mongodb.host= # the db host
-spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
-spring.data.mongodb.uri=mongodb://localhost/test # connection URL
+	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
+	spring.data.mongodb.host= # the db host
+	spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
+	spring.data.mongodb.uri=mongodb://localhost/test # connection URL
 
-# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
-spring.jpa.properties.*= # properties to set on the JPA connection
-spring.jpa.openInView=true
-spring.jpa.show-sql=true
-spring.jpa.database-platform=
-spring.jpa.database=
-spring.jpa.generate-ddl=
-spring.jpa.hibernate.naming-strategy= # naming classname
-spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
+	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
+	spring.jpa.properties.*= # properties to set on the JPA connection
+	spring.jpa.openInView=true
+	spring.jpa.show-sql=true
+	spring.jpa.database-platform=
+	spring.jpa.database=
+	spring.jpa.generate-ddl=
+	spring.jpa.hibernate.naming-strategy= # naming classname
+	spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
 
-# JMX
-spring.jmx.enabled=true # Expose MBeans from Spring
+	# JMX
+	spring.jmx.enabled=true # Expose MBeans from Spring
 
-# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
-spring.rabbitmq.host= # connection host
-spring.rabbitmq.port= # connection port
-spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
-spring.rabbitmq.username= # login user
-spring.rabbitmq.password= # login password
-spring.rabbitmq.virtualhost=
-spring.rabbitmq.dynamic=
+	# RABBIT ({sc-spring-boot-autoconfigure}/amqp/RabbitProperties.{sc-ext}[RabbitProperties])
+	spring.rabbitmq.host= # connection host
+	spring.rabbitmq.port= # connection port
+	spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
+	spring.rabbitmq.username= # login user
+	spring.rabbitmq.password= # login password
+	spring.rabbitmq.virtualhost=
+	spring.rabbitmq.dynamic=
 
 
-# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
-spring.redis.host=localhost # server host
-spring.redis.password= # server password
-spring.redis.port=6379 # connection port
-spring.redis.pool.max-idle=8 # pool settings ...
-spring.redis.pool.min-idle=0
-spring.redis.pool.max-active=8
-spring.redis.pool.max-wait=-1
+	# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
+	spring.redis.host=localhost # server host
+	spring.redis.password= # server password
+	spring.redis.port=6379 # connection port
+	spring.redis.pool.max-idle=8 # pool settings ...
+	spring.redis.pool.min-idle=0
+	spring.redis.pool.max-active=8
+	spring.redis.pool.max-wait=-1
 
-# ACTIVEMQ ({sc-spring-boot-autoconfigure}/jms/ActiveMQProperties.{sc-ext}[ActiveMQProperties])
-spring.activemq.broker-url=tcp://localhost:61616 # connection URL
-spring.activemq.in-memory=true
-spring.activemq.pooled=false
+	# ACTIVEMQ ({sc-spring-boot-autoconfigure}/jms/ActiveMQProperties.{sc-ext}[ActiveMQProperties])
+	spring.activemq.broker-url=tcp://localhost:61616 # connection URL
+	spring.activemq.in-memory=true
+	spring.activemq.pooled=false
 
-# JMS ({sc-spring-boot-autoconfigure}/jms/JmsTemplateProperties.{sc-ext}[JmsTemplateProperties])
-spring.jms.pub-sub-domain=
+	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsTemplateProperties.{sc-ext}[JmsTemplateProperties])
+	spring.jms.pub-sub-domain=
 
-# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchDatabaseInitializer.{sc-ext}[BatchDatabaseInitializer])
-spring.batch.job.names=job1,job2
-spring.batch.job.enabled=true
-spring.batch.initializer.enabled=true
-spring.batch.schema= # batch schema to load
+	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchDatabaseInitializer.{sc-ext}[BatchDatabaseInitializer])
+	spring.batch.job.names=job1,job2
+	spring.batch.job.enabled=true
+	spring.batch.initializer.enabled=true
+	spring.batch.schema= # batch schema to load
 
-# AOP
-spring.aop.auto=
-spring.aop.proxyTargetClass=
+	# AOP
+	spring.aop.auto=
+	spring.aop.proxyTargetClass=
 
-# FILE ENCODING ({sc-spring-boot}/context/FileEncodingApplicationListener.{sc-ext}[FileEncodingApplicationListener])
-spring.mandatory-file-encoding=false
+	# FILE ENCODING ({sc-spring-boot}/context/FileEncodingApplicationListener.{sc-ext}[FileEncodingApplicationListener])
+	spring.mandatory-file-encoding=false
 
-# ----------------------------------------
-# ACTUATOR PROPERTIES
-# ----------------------------------------
+	# ----------------------------------------
+	# ACTUATOR PROPERTIES
+	# ----------------------------------------
 
-# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
-management.port= # defaults to 'server.port'
-management.address= # bind to a specific NIC
-management.contextPath= # default to '/'
+	# MANAGEMENT HTTP SERVER ({sc-spring-boot-actuator}/autoconfigure/ManagementServerProperties.{sc-ext}[ManagementServerProperties])
+	management.port= # defaults to 'server.port'
+	management.address= # bind to a specific NIC
+	management.contextPath= # default to '/'
 
-# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
-endpoints.autoconfig.id=autoconfig
-endpoints.autoconfig.sensitive=true
-endpoints.autoconfig.enabled=true
-endpoints.beans.id=beans
-endpoints.beans.sensitive=true
-endpoints.beans.enabled=true
-endpoints.configprops.id=configprops
-endpoints.configprops.sensitive=true
-endpoints.configprops.enabled=true
-endpoints.configprops.keys-to-sanitize=password,secret
-endpoints.dump.id=dump
-endpoints.dump.sensitive=true
-endpoints.dump.enabled=true
-endpoints.env.id=env
-endpoints.env.sensitive=true
-endpoints.env.enabled=true
-endpoints.health.id=health
-endpoints.health.sensitive=false
-endpoints.health.enabled=true
-endpoints.info.id=info
-endpoints.info.sensitive=false
-endpoints.info.enabled=true
-endpoints.metrics.id=metrics
-endpoints.metrics.sensitive=true
-endpoints.metrics.enabled=true
-endpoints.shutdown.id=shutdown
-endpoints.shutdown.sensitive=true
-endpoints.shutdown.enabled=false
-endpoints.trace.id=trace
-endpoints.trace.sensitive=true
-endpoints.trace.enabled=true
+	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
+	endpoints.autoconfig.id=autoconfig
+	endpoints.autoconfig.sensitive=true
+	endpoints.autoconfig.enabled=true
+	endpoints.beans.id=beans
+	endpoints.beans.sensitive=true
+	endpoints.beans.enabled=true
+	endpoints.configprops.id=configprops
+	endpoints.configprops.sensitive=true
+	endpoints.configprops.enabled=true
+	endpoints.configprops.keys-to-sanitize=password,secret
+	endpoints.dump.id=dump
+	endpoints.dump.sensitive=true
+	endpoints.dump.enabled=true
+	endpoints.env.id=env
+	endpoints.env.sensitive=true
+	endpoints.env.enabled=true
+	endpoints.health.id=health
+	endpoints.health.sensitive=false
+	endpoints.health.enabled=true
+	endpoints.info.id=info
+	endpoints.info.sensitive=false
+	endpoints.info.enabled=true
+	endpoints.metrics.id=metrics
+	endpoints.metrics.sensitive=true
+	endpoints.metrics.enabled=true
+	endpoints.shutdown.id=shutdown
+	endpoints.shutdown.sensitive=true
+	endpoints.shutdown.enabled=false
+	endpoints.trace.id=trace
+	endpoints.trace.sensitive=true
+	endpoints.trace.enabled=true
 
-# MVC ONLY ENDPOINTS
-endpoints.jolokia.path=jolokia
-endpoints.jolokia.sensitive=true
-endpoints.jolokia.enabled=true # when using Jolokia
-endpoints.error.path=/error
+	# MVC ONLY ENDPOINTS
+	endpoints.jolokia.path=jolokia
+	endpoints.jolokia.sensitive=true
+	endpoints.jolokia.enabled=true # when using Jolokia
+	endpoints.error.path=/error
 
-# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportProperties.{sc-ext}[EndpointMBeanExportProperties])
-endpoints.jmx.enabled=true
-endpoints.jmx.domain= # the JMX domain, defaults to 'org.springboot'
-endpoints.jmx.unique-names=false
-endpoints.jmx.enabled=true
-endpoints.jmx.staticNames=
+	# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportProperties.{sc-ext}[EndpointMBeanExportProperties])
+	endpoints.jmx.enabled=true
+	endpoints.jmx.domain= # the JMX domain, defaults to 'org.springboot'
+	endpoints.jmx.unique-names=false
+	endpoints.jmx.enabled=true
+	endpoints.jmx.staticNames=
 
-# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/JolokiaProperties.{sc-ext}[JolokiaProperties])
-jolokia.config.*= # See Jolokia manual
+	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/JolokiaProperties.{sc-ext}[JolokiaProperties])
+	jolokia.config.*= # See Jolokia manual
 
-# REMOTE SHELL
-shell.auth=simple # jaas, key, simple, spring
-shell.command-refresh-interval=-1
-shell.command-path-pattern= # classpath*:/commands/**, classpath*:/crash/commands/**
-shell.config-path-patterns= # classpath*:/crash/*
-shell.disabled-plugins=false # don't expose plugins
-shell.ssh.enabled= # ssh settings ...
-shell.ssh.keyPath=
-shell.ssh.port=
-shell.telnet.enabled= # telnet settings ...
-shell.telnet.port=
-shell.auth.jaas.domain= # authentication settings ...
-shell.auth.key.path=
-shell.auth.simple.user.name=
-shell.auth.simple.user.password=
-shell.auth.spring.roles=
+	# REMOTE SHELL
+	shell.auth=simple # jaas, key, simple, spring
+	shell.command-refresh-interval=-1
+	shell.command-path-pattern= # classpath*:/commands/**, classpath*:/crash/commands/**
+	shell.config-path-patterns= # classpath*:/crash/*
+	shell.disabled-plugins=false # don't expose plugins
+	shell.ssh.enabled= # ssh settings ...
+	shell.ssh.keyPath=
+	shell.ssh.port=
+	shell.telnet.enabled= # telnet settings ...
+	shell.telnet.port=
+	shell.auth.jaas.domain= # authentication settings ...
+	shell.auth.key.path=
+	shell.auth.simple.user.name=
+	shell.auth.simple.user.password=
+	shell.auth.spring.roles=
 
-# GIT INFO
-spring.git.properties= # resource ref to generated git info properties file
+	# GIT INFO
+	spring.git.properties= # resource ref to generated git info properties file
 ----
