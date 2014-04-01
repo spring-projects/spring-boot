@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-jdbc</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot JDBC Starter</name>
 	<description>Spring Boot JDBC Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

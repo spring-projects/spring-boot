@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-test</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Test Starter</name>
 	<description>Spring Boot Test Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

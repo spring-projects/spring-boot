@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-remote-shell</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Remote Shell Starter</name>
 	<description>Spring Boot Remote Shell Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

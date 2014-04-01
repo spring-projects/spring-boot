@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-amqp</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot AMPQ Starter</name>
 	<description>Spring Boot AMQP Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

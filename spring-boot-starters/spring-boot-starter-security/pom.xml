@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-security</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Security Starter</name>
 	<description>Spring Boot Security Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

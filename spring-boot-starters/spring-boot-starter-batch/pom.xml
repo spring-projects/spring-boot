@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-batch</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Batch Starter</name>
 	<description>Spring Boot Batch Starter</description>
 	<url>http://projects.spring.io/spring-boot/</url>

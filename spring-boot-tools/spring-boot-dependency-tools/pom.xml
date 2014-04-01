@@ -8,7 +8,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-dependency-tools</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot Dependency Tools</name>
 	<description>Spring Boot Dependency Tools</description>
 	<url>http://projects.spring.io/spring-boot/</url>

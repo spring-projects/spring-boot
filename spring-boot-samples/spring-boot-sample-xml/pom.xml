@@ -9,7 +9,6 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-sample-xml</artifactId>
-	<packaging>jar</packaging>
 	<name>Spring Boot XML Sample</name>
 	<description>Spring Boot XML Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
