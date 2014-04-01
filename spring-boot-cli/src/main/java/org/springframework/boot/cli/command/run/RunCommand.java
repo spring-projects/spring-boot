@@ -16,7 +16,6 @@
 
 package org.springframework.boot.cli.command.run;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,8 +63,6 @@ public class RunCommand extends OptionParsingCommand {
 
 		private OptionSpec<Void> watchOption;
 
-		private OptionSpec<Void> editOption;
-
 		private OptionSpec<Void> verboseOption;
 
 		private OptionSpec<Void> quietOption;
@@ -75,8 +72,6 @@ public class RunCommand extends OptionParsingCommand {
 		@Override
 		protected void doOptions() {
 			this.watchOption = option("watch", "Watch the specified file for changes");
-			this.editOption = option(asList("edit", "e"),
-					"Open the file with the default system editor");
 			this.verboseOption = option(asList("verbose", "v"),
 					"Verbose logging of dependency resolution");
 			this.quietOption = option(asList("quiet", "q"), "Quiet logging");
@@ -98,10 +93,6 @@ public class RunCommand extends OptionParsingCommand {
 			}
 
 			SourceOptions sourceOptions = new SourceOptions(options);
-
-			if (options.has(this.editOption)) {
-				Desktop.getDesktop().edit(new File(sourceOptions.getSources().get(0)));
-			}
 
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
 					.createDefaultRepositoryConfiguration();
