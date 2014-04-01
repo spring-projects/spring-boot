@@ -10,6 +10,13 @@
 	</parent>
 	<artifactId>spring-boot-sample-web-secure</artifactId>
 	<packaging>jar</packaging>
+	<name>Spring Boot Web Secure Sample</name>
+	<description>Spring Boot Web Secure Sample</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>

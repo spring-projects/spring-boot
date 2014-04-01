@@ -6,6 +6,44 @@
 	<artifactId>spring-boot-full-build</artifactId>
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	<name>Spring Boot Full Build</name>
+	<description>Spring Boot Full Build</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/spring-projects/spring-boot</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>pwebb</id>
+			<name>Phillip Webb</name>
+			<email>pwebb at gopivotal.com</email>
+			<organization>Pivotal Software, Inc.</organization>
+			<organizationUrl>http://www.spring.io</organizationUrl>
+			<roles>
+				<role>Project lead</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>dsyer</id>
+			<name>Dave Syer</name>
+			<email>dsyer at gopivotal.com</email>
+			<organization>Pivotal Software, Inc.</organization>
+			<organizationUrl>http://www.spring.io</organizationUrl>
+			<roles>
+				<role>Project lead</role>
+			</roles>
+		</developer>
+	</developers>
 	<modules>
 		<module>../</module>
 		<module>../spring-boot-dependencies</module>

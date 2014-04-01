@@ -10,6 +10,13 @@
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>
 	<packaging>pom</packaging>
+	<name>Spring Boot Parent</name>
+	<description>Spring Boot Parent</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<aether.version>0.9.0.M4</aether.version>
 		<java.version>1.6</java.version>

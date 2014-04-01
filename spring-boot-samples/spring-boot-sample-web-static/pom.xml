@@ -10,6 +10,13 @@
 	</parent>
 	<artifactId>spring-boot-sample-web-static</artifactId>
 	<packaging>war</packaging>
+	<name>Spring Boot Web Static Sample</name>
+	<description>Spring Boot Web Static Sample</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>

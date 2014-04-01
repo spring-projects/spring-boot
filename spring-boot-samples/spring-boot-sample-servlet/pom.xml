@@ -10,6 +10,13 @@
 	</parent>
 	<artifactId>spring-boot-sample-servlet</artifactId>
 	<packaging>war</packaging>
+	<name>Spring Boot Servlet Sample</name>
+	<description>Spring Boot Servlet Sample</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>

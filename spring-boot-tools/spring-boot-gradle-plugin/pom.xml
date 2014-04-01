@@ -8,6 +8,13 @@
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-gradle-plugin</artifactId>
+	<name>Spring Boot Gradle Plugin</name>
+	<description>Spring Boot Gradle Plugin</description>
+	<url>http://projects.spring.io/spring-boot/</url>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>http://www.spring.io</url>
+	</organization>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
