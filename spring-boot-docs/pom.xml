@@ -262,9 +262,9 @@
 								<configuration>
 									<target>
 										<zip
-											destfile="${project.build.directory}/${project.name}-${project.version}.zip">
+											destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
 											<zipfileset
-												src="${project.build.directory}/${project.name}-${project.version}-javadoc.jar"
+												src="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"
 												prefix="api" />
 											<fileset dir="${project.build.directory}/contents" />
 										</zip>
@@ -314,7 +314,7 @@
 								<configuration>
 									<artifacts>
 										<artifact>
-											<file>${project.build.directory}/${project.name}-${project.version}.zip</file>
+											<file>${project.build.directory}/${project.artifactId}-${project.version}.zip</file>
 											<type>zip;zip.type=docs;zip.deployed=false</type>
 										</artifact>
 									</artifacts>
