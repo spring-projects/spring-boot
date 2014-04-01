@@ -30,66 +30,104 @@ developed>> in the ``Getting Started'' section up and running in the Cloud.
 [[cloud-deployment-cloud-foundry]]
 == Cloud Foundry
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is
-specified. The Cloud Foundry buildpack has excellent support for Spring applications,
+specified. The Cloud Foundry Java buildpack has excellent support for Spring applications,
 including Spring Boot.  You can deploy stand-alone executable jar applications, as well as
-traditional `war` packaged applications.
+traditional `.war` packaged applications.
 
 Once you've built your application (using, for example, `mvn clean install`) and
-http://docs.cloudfoundry.org/devguide/installcf/[installed the `cf` command line tool],
-simply answer the `cf push` command's prompts as follows:
+http://docs.run.pivotal.io/devguide/installcf/install-go-cli.html/[installed the `cf`
+command line tool], simply answer the `cf push` command  prompts as follows, substituting
+the path to  your compiled `.jar` for mine. Be sure to have
+http://docs.run.pivotal.io/devguide/installcf/whats-new-v6.html#login[logged in with your
+`cf` command line client] before attempting to use it.
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
 	$ cf push --path target/demo-0.0.1-SNAPSHOT.jar
+----
 
-	Name> *_$YOURAPP_*
+If there is a Cloud Foundry `manifest.yml` file present in the same directory, it will be
+consulted. If not, the client will prompt you with questions it has about how it should
+deploy and manage your application, starting with its name:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	Name> *acloudyspringtime*
+
 	Instances> *1*
+
+	1: 128M
+	2: 256M
+	3: 512M
+	4: 1G
 	Memory Limit> *256M*
 
-	Creating _$YOURAPP_... *OK*
+	Creating acloudyspringtime... *OK*
 
-	1: _$YOURAPP_
+	1: acloudyspringtime
 	2: none
-	Subdomain> *_$YOURAPP_*
+	Subdomain> *acloudyspringtime*
 
 	1: cfapps.io
 	2: none
 	Domain> *cfapps.io*
 
-	Creating route _$YOURAPP_.cfapps.io... OK
-	Binding _$YOURAPP_.cfapps.io to _$YOURAPP_... OK
+	Creating route acloudyspringtime.cfapps.io... *OK*
+	Binding acloudyspringtime.cfapps.io to acloudyspringtime... *OK*
 
 	Create services for application?> *n*
+
 	Bind other services to application?> *n*
+
 	Save configuration?> *y*
+
+	Saving to manifest.yml... *OK*
 ----
+
+NOTE: Here we are substituting `acloudyspringtime` for whatever value you give `cf` when
+it asks for the `name` of your application.
 
 At this point `cf` will start uploading your application:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	Saving to manifest.yml... *OK*
-	Uploading $YOURAPP... *OK*
-	Preparing to start _$YOURAPP_... *OK*
-	-----> Downloaded app package (8.7M)
+	Uploading acloudyspringtime... *OK*
+	Preparing to start acloudyspringtime... *OK*
+	-----> Downloaded app package (*8.9M*)
 	-----> Java Buildpack source: system
-	-----> Downloading Open JDK 1.7.0_51 from .../openjdk-1.7.0_51.tar.gz (*1.4s*)
-	       Expanding Open JDK to .java-buildpack/open_jdk (*1.3s*)
-	-----> Downloading Spring Auto Reconfiguration 0.8.7 from .../auto-reconfiguration-0.8.7.jar (*0.0s*)
-	-----> Uploading droplet (*43M*)
-	Checking status of app '_$YOURAPP_'...
-	 0 of 1 instances running (1 starting)
-	 0 of 1 instances running (1 starting)
-	 1 of 1 instances running (1 running)
-	Push successful! App '_$YOURAPP_' available at http://_$YOURAPP_.cfapps.io
+	-----> Downloading Open JDK 1.7.0_51 from .../x86_64/openjdk-1.7.0_51.tar.gz (*1.8s*)
+	       Expanding Open JDK to .java-buildpack/open_jdk (*1.2s*)
+	-----> Downloading Spring Auto Reconfiguration from  0.8.7 .../auto-reconfiguration-0.8.7.jar (*0.1s*)
+	-----> Uploading droplet (*44M*)
+	Checking status of app 'acloudyspringtime'...
+	  0 of 1 instances running (1 starting)
+	  ...
+	  0 of 1 instances running (1 down)
+	  ...
+	  0 of 1 instances running (1 starting)
+	  ...
+	  1 of 1 instances running (1 running)
+	Push successful! App \'acloudyspringtime' available at acloudyspringtime.cfapps.io
 ----
 
-NOTE: Here we are substituting `$YOURAPP` for whatever value you give `cf` when it asks
-for the `name` of your application.
+Congratulations! The application is now live!
+
+It's easy to then verify the status of the deployed application:
+
+[indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ cf apps
+	Getting applications in ... OK
+
+	name                             status    usage      url
+	...
+	acloudyspringtime                running   1 x 256M   acloudyspringtime.cfapps.io
+	...
+----
 
 Once Cloud Foundry acknowledges that your application has been deployed, you should be
-able to hit the application at the URI provided:
-`http://$YOURAPP.cfapps.io/`.
+able to hit the application at the URI given, in this case
+`http://acloudyspringtime.cfapps.io/`.
 
 
 
