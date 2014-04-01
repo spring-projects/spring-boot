@@ -65,7 +65,9 @@ public class JmsTemplateAutoConfiguration {
 		@Bean
 		public ConnectionFactory jmsConnectionFactory() {
 			ConnectionFactory connectionFactory;
-			if (this.config.getUser() != null && this.config.getPassword() != null) {
+			if (this.config.getUser() != null && !"".equals(this.config.getUser())
+					&& this.config.getPassword() != null
+					&& !"".equals(this.config.getPassword())) {
 				connectionFactory = new ActiveMQConnectionFactory(this.config.getUser(),
 						this.config.getPassword(), this.config.getBrokerUrl());
 			}
