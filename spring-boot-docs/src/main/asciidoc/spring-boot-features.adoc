@@ -1189,7 +1189,6 @@ See the '<<howto.adoc#howto-separate-entity-definitions-from-spring-configuratio
 how-to.
 
 
-
 [[boot-features-spring-data-jpa-repositories]]
 ==== Spring Data JPA Repositories
 Spring Data JPA repositories are interfaces that you can define to access data. JPA
@@ -1238,9 +1237,15 @@ following to your `application.properties`.
 
 [indent=0]
 ----
-	spring.jpa.hibernate.ddl-auto="create-drop"
+	spring.jpa.hibernate.ddl-auto=create-drop
 ----
 
+Note that Hibernate's own internal property name for this (if you
+happen to remember it better) is `hibernate.hbm2ddl.auto`. You can set
+it, along with other Hibernate native properties, using
+`spring.jpa.properties.*` (the prefix is stripped before adding them
+to the entity manager).  Also relevant:
+`spring.jpa.generate-ddl=false` switches off all DDL generation.
 
 
 [[boot-features-nosql]]

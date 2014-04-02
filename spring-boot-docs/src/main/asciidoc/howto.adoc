@@ -935,13 +935,22 @@ and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBas
 for more details.
 
 
+[[howto-use-custom-entity-manager]]
+=== Use a custom EntityManagerFactory
+To take full control of the configuration of the
+`EntityManagerFactory`, you need to add a `@Bean` named
+"entityManagerFactory".  To avoid eager initialization of JPA
+infrastructure Spring Boot autoconfiguration does not switch on its
+entity manager based on the presence of a bean of that type. Instead
+it has to do it by name.
+
 
 [[howto-use-traditional-persistence-xml]]
 === Use a traditional persistence.xml
 Spring doesn't require the use of XML to configure the JPA provider, and Spring Boot
 assumes you want to take advantage of that feature. If you prefer to use `persistence.xml`
-then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean`, and set
-the persistence unit name there.
+then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with
+id "entityManagerFactory", and set the persistence unit name there.
 
 See
 https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
