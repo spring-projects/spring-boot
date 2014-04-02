@@ -16,6 +16,14 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ConnectionCallback;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.ClassUtils;
 
@@ -101,6 +109,46 @@ public enum EmbeddedDatabaseConnection {
 				&& (driverClass.equals(HSQL.driverClass)
 						|| driverClass.equals(H2.driverClass) || driverClass
 							.equals(DERBY.driverClass));
+	}
+
+	/**
+	 * Convenience method to determine if a given data source represents an embedded
+	 * database type.
+	 * 
+	 * @param dataSource the data source to interrogate
+	 * @return true if the data sourceis one of the embedded types
+	 */
+	public static boolean isEmbedded(DataSource dataSource) {
+		boolean embedded = false;
+		try {
+			embedded = new JdbcTemplate(dataSource)
+					.execute(new ConnectionCallback<Boolean>() {
+						@Override
+						public Boolean doInConnection(Connection con)
+								throws SQLException, DataAccessException {
+							String productName = con.getMetaData()
+									.getDatabaseProductName();
+							if (productName == null) {
+								return false;
+							}
+							productName = productName.toUpperCase();
+							if (productName.contains(H2.name())) {
+								return true;
+							}
+							if (productName.contains(HSQL.name())) {
+								return true;
+							}
+							if (productName.contains(DERBY.name())) {
+								return true;
+							}
+							return false;
+						}
+					});
+		}
+		catch (DataAccessException e) {
+			// Could not connect, which means it's not embedded
+		}
+		return embedded;
 	}
 
 	/**
