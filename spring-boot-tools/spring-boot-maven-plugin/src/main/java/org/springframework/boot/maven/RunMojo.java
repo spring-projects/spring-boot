@@ -38,6 +38,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.springframework.boot.loader.tools.AgentAttacher;
+import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
@@ -197,23 +198,7 @@ public class RunMojo extends AbstractMojo {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
 				urls.add(directory.toURI().toURL());
-				removeDuplicatesFromTarget(directory);
-			}
-		}
-	}
-
-	private void removeDuplicatesFromTarget(File directory) throws IOException {
-		if (directory.isDirectory()) {
-			for (String name : directory.list()) {
-				File targetFile = new File(this.classesDirectory, name);
-				if (targetFile.exists() && targetFile.canWrite()) {
-					if (!targetFile.isDirectory()) {
-						targetFile.delete();
-					}
-					else {
-						removeDuplicatesFromTarget(targetFile);
-					}
-				}
+				FileUtils.removeDuplicatesFromCopy(this.classesDirectory, directory);
 			}
 		}
 	}
