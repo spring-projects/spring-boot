@@ -30,6 +30,7 @@ import org.gradle.api.internal.file.collections.SimpleFileCollection;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
+import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
@@ -74,21 +75,10 @@ public class RunApp extends DefaultTask {
 				}
 				if (outputDir != null) {
 					for (File directory : allResources) {
-						removeDuplicatesFromOutputDir(directory, outputDir);
+						FileUtils.removeDuplicatesFromCopy(outputDir, directory);
 					}
 				}
 				exec.exec();
-			}
-
-			private void removeDuplicatesFromOutputDir(File directory, File outputDir) {
-				if (directory.isDirectory()) {
-					for (String name : directory.list()) {
-						File outputFile = new File(outputDir, name);
-						if (outputFile.exists() && outputFile.canWrite()) {
-							getProject().delete(outputFile);
-						}
-					}
-				}
 			}
 
 		});
