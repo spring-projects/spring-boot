@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -52,20 +52,12 @@ import org.springframework.util.ClassUtils;
 		EnableTransactionManagement.class, EntityManager.class })
 @Conditional(HibernateEntityManagerCondition.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implements
-		BeanClassLoaderAware {
+public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 
 	private RelaxedPropertyResolver environment;
 
-	private ClassLoader classLoader;
-
 	public HibernateJpaAutoConfiguration() {
 		this.environment = null;
-	}
-
-	@Override
-	public void setBeanClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
 	}
 
 	@Override
@@ -86,19 +78,18 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration implemen
 		Map<String, Object> properties = entityManagerFactoryBean.getJpaPropertyMap();
 		properties.put("hibernate.ejb.naming_strategy", this.environment.getProperty(
 				"naming-strategy", SpringNamingStrategy.class.getName()));
-		String ddlAuto = this.environment.getProperty("ddl-auto", getDefaultDdlAuto());
+		String ddlAuto = this.environment.getProperty("ddl-auto",
+				getDefaultDdlAuto(entityManagerFactoryBean.getDataSource()));
 		if (!"none".equals(ddlAuto)) {
 			properties.put("hibernate.hbm2ddl.auto", ddlAuto);
 		}
 	}
 
-	private String getDefaultDdlAuto() {
-		EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection
-				.get(this.classLoader);
-		if (embeddedDatabaseConnection == EmbeddedDatabaseConnection.NONE) {
-			return "none";
+	private String getDefaultDdlAuto(DataSource dataSource) {
+		if (EmbeddedDatabaseConnection.isEmbedded(dataSource)) {
+			return "create-drop";
 		}
-		return "create-drop";
+		return "none";
 	}
 
 	static class HibernateEntityManagerCondition extends SpringBootCondition {
