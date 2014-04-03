@@ -293,13 +293,21 @@ Exposing management endpoints using the default HTTP port is a sensible choice f
 based deployments. If, however, your application runs inside your own data center you
 may prefer to expose endpoints using a different HTTP port.
 
-The `management.port` property can be used to change the HTTP port. Since your management
-port is often protected by a firewall, and not exposed to the public. If you have Spring
-Security on the classpath, you might also want to disable management security:
+The `management.port` property can be used to change the HTTP port.
 
 [source,properties,indent=0]
 ----
 	management.port=8081
+----
+
+Since your management
+port is often protected by a firewall, and not exposed to the public you might not need
+security on the management endpoints, even if your main application is secure. In that
+case you will have Spring
+Security on the classpath, and you can disable management security like this:
+
+[source,properties,indent=0]
+----
 	management.security.enabled=false
 ----
 
