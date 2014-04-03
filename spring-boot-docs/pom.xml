@@ -71,6 +71,79 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-maven-plugin</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-maven-plugin</artifactId>
+											<version>${project.version}</version>
+											<classifier>site</classifier>
+											<type>jar</type>
+											<outputDirectory>
+												${project.build.directory}/contents/maven-plugin
+											</outputDirectory>
+											<excludes>META-INF/**</excludes>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
+							<execution>
+								<id>unpack-dependency-tools-effective-pom</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-dependency-tools</artifactId>
+											<version>${project.version}</version>
+											<type>jar</type>
+										</artifactItem>
+									</artifactItems>
+									<includes>**/effective-pom.xml</includes>
+									<outputDirectory>${project.build.directory}/external-resources</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>xml-maven-plugin</artifactId>
+						<version>1.0</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>transform</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<transformationSets>
+								<transformationSet>
+									<dir>${project.build.directory}/external-resources</dir>
+									<stylesheet>src/main/xslt/dependencyVersions.xsl</stylesheet>
+									<fileMappers>
+										<fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+											<targetExtension>.adoc</targetExtension>
+										</fileMapper>
+									</fileMappers>
+									<outputDir>${project.build.directory}/generated-resources</outputDir>
+								</transformationSet>
+							</transformationSets>
+						</configuration>
+					</plugin>
+					<plugin>
 						<groupId>org.asciidoctor</groupId>
 						<artifactId>asciidoctor-maven-plugin</artifactId>
 						<version>0.1.4</version>
@@ -215,34 +288,6 @@
 										</copy>
 										<move file="${basedir}/target/contents/reference/epub/index.epub" tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
 									</postProcess>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>unpack-maven-plugin</id>
-								<phase>generate-resources</phase>
-								<goals>
-									<goal>unpack</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>org.springframework.boot</groupId>
-											<artifactId>spring-boot-maven-plugin</artifactId>
-											<version>${project.version}</version>
-											<classifier>site</classifier>
-											<type>jar</type>
-											<outputDirectory>
-												${project.build.directory}/contents/maven-plugin
-											</outputDirectory>
-											<excludes>META-INF/**</excludes>
-										</artifactItem>
-									</artifactItems>
 								</configuration>
 							</execution>
 						</executions>

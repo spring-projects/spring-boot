@@ -160,7 +160,8 @@ without a group or version, for example `@Grab('freemarker')`. This will consult
 default dependency metadata to deduce the artifact's group and version. Note that the default
 metadata is tied to the version of the CLI that you're using – it will only change when you move
 to a new version of the CLI, putting you in control of when the versions of your dependencies
-may change.
+may change. A table showing the dependencies and their versions that are included in the default
+metadata can be found in the <<appendix-dependency-versions, appendix>>.
 
 
 
