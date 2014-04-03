@@ -221,7 +221,13 @@ public class ManagementSecurityAutoConfiguration {
 		List<String> paths = new ArrayList<String>(endpoints.size());
 		for (MvcEndpoint endpoint : endpoints) {
 			if (endpoint.isSensitive() == secure) {
-				paths.add(endpointHandlerMapping.getPrefix() + endpoint.getPath());
+				String path = endpointHandlerMapping.getPrefix() + endpoint.getPath();
+				paths.add(path);
+				if (secure) {
+					// Add Spring MVC-generated additional paths
+					paths.add(path + "/");
+					paths.add(path + ".*");
+				}
 			}
 		}
 		return paths.toArray(new String[paths.size()]);
