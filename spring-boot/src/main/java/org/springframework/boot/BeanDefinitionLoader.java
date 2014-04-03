@@ -80,6 +80,7 @@ class BeanDefinitionLoader {
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
+		this.xmlReader.setValidating(false);
 		if (isGroovyPresent()) {
 			this.groovyReader = new GroovyBeanDefinitionReader(this.xmlReader);
 		}
