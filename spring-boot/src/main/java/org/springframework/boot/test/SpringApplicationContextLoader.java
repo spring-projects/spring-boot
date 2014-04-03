@@ -60,6 +60,7 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  * create the application context.
  * 
  * @author Dave Syer
+ * @author Abhijit Sarkar
  * @see IntegrationTest
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
@@ -106,10 +107,20 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		return new SpringApplication();
 	}
 
-	private Set<Object> getSources(MergedContextConfiguration mergedConfig) {
+	protected Set<Object> getSources(MergedContextConfiguration mergedConfig) {
 		Set<Object> sources = new LinkedHashSet<Object>();
 		sources.addAll(Arrays.asList(mergedConfig.getClasses()));
 		sources.addAll(Arrays.asList(mergedConfig.getLocations()));
+		
+		/* The Spring application class may have annotations on it too. If such a class is declared on the test class,
+        * add it as a source too. */
+        SpringApplicationConfiguration springAppConfig = AnnotationUtils.findAnnotation(mergedConfig.getTestClass(),
+                SpringApplicationConfiguration.class);
+
+        if (springAppConfig != null) {
+            sources.addAll(Arrays.asList(springAppConfig.classes()));
+        }
+	        
 		if (sources.isEmpty()) {
 			throw new IllegalStateException(
 					"No configuration classes or locations found in @SpringApplicationConfiguration. "
