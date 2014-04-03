@@ -81,7 +81,7 @@ class BeanDefinitionLoader {
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
 		if (isGroovyPresent()) {
-			this.groovyReader = new GroovyBeanDefinitionReader(this.xmlReader);
+			this.groovyReader = new GroovyBeanDefinitionReader(registry);
 		}
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
