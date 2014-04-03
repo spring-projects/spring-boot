@@ -993,7 +993,66 @@ packaged as an executable archive), there are some limitations in the JSP suppor
 There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so
 you can see how to set things up.
 
+[[boot-features-security]]
+== Security
+If Spring Security is on the classpath then web applications will be secure by default
+with ``basic'' authentication on all HTTP endpoints. To add method-level security to a web
+application you can also add `@EnableGlobalMethodSecurity` with your desired settings.
+Additional information can be found in the {spring-security-reference}#jc-method[Spring
+Security Reference].
 
+The default `AuthenticationManager` has a single user (username
+``user'' and password random, printed at INFO level when the
+application starts up). You can change the password by providing a
+`security.user.password`. This and other useful properties are
+externalized via
+{sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
+(properties prefix "security").
+
+The default security configuration is implemented in
+`SecurityAutoConfiguration` and in the classes imported from there
+(`SpringBootWebSecurityConfiguration` for web security and
+`AuthenticationManagerConfiguration` for authentication configuration
+which is also relevant in non-web applications). To switch off the
+Boot default configuration completely in a web application you can add
+a bean with `@EnableWebSecurity`. To customize it you normally use
+external properties and beans of type `WebConfigurerAdapter` (e.g. to
+add form-based login). There are several secure applications in the
+{github-code}/spring-boot-samples/[Spring Boot samples] to get you
+started with common use cases.
+
+The basic features you get out of the box in a web application are
+
+* An `AuthenticationManager` bean with in-memory store and a single
+  user (see `SecurityProperties.User` for the properties of the user).
+
+* Ignored (unsecure) paths for common static resource locations
+  (`/css/**`, `/js/**`, `/images/**` and `**/favicon.ico`).
+
+* HTTP Basic security for all other endpoints.
+
+* Security events published to Spring's `ApplicationEventPublisher`
+  (successful and unsuccessful authentication and access denied).
+
+* Common low-level features (HSTS, XSS, CSRF, caching) provided by Spring
+Security are on by default.
+
+All of the above can be switched on and off or modified using external
+properties (`security.*`).
+
+If the Actuator is also in use, you will find:
+
+* The management endpoints are secure even if the application
+  endpoints are unsecure.
+
+* Security events are transformed into `AuditEvents` and published to
+  the `AuditService`.
+
+* The default user will have the "ADMIN" role as well as the "USER"
+  role.
+
+The Actuator security features can be modified using external
+properties (`management.security.*`).
 
 [[boot-features-sql]]
 == Working with SQL databases

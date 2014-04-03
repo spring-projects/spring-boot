@@ -251,9 +251,9 @@ all non-sensitive endpoints to be exposed over HTTP. The default convention is t
 
 [[production-ready-sensitive-endpoints]]
 === Exposing sensitive endpoints
-If you use ``Spring Security'' sensitive endpoints will also be exposed over HTTP. By
-default ``basic'' authentication will be used with the username `user` and a generated
-password.
+If you use ``Spring Security'' sensitive endpoints will be exposed over HTTP, but also 
+protected. By default ``basic'' authentication will be used with the username `user` 
+and a generated password (which is printed on the console when the application starts).
 
 TIP: Generated passwords are logged as the application starts. Search for ``Using default
 password for application endpoints''.

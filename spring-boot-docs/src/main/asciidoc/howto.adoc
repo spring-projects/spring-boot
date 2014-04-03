@@ -1102,23 +1102,6 @@ Look at {sc-spring-boot-actuator}/autoconfigure/ErrorMvcAutoConfiguration.{sc-ex
 == Security
 
 
-
-[[howto-secure-an-application]]
-=== Secure an application
-If Spring Security is on the classpath then web applications will be secure by default
-(``basic'' authentication on all endpoints) . To add method-level security to a web
-application you can simply `@EnableGlobalMethodSecurity` with your desired settings.
-Additional information can be found in the {spring-security-reference}#jc-method[Spring
-Security Reference].
-
-The default `AuthenticationManager` has a single user (username ``user'' and password
-random, printed at INFO level when the application starts up). You can change the
-password by providing a `security.user.password`. This and other useful properties
-are externalized via
-{sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`].
-
-
-
 [[howto-switch-off-spring-boot-security-configuration]]
 === Switch off the Spring Boot security configuration
 If you define a `@Configuration` with `@EnableWebSecurity` anywhere in your application
@@ -1157,7 +1140,9 @@ use this in a webapp is to inject it into a void method in a
 	}
 ----
 
-
+You will get the best results if you put this in a nested class, or a standalone class (i.e.
+not mixed in with a lot of other `@Beans` that might be allowed to influence the order of
+instantiation). The https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-web-secure[secure web sample] is a useful template to follow.
 
 [[howto-enable-https]]
 === Enable HTTPS
