@@ -294,8 +294,8 @@ based deployments. If, however, your application runs inside your own data cente
 may prefer to expose endpoints using a different HTTP port.
 
 The `management.port` property can be used to change the HTTP port. Since your management
-port is often protected by a firewall, and not exposed to the public, you might also
-want to disable management security:
+port is often protected by a firewall, and not exposed to the public. If you have Spring
+Security on the classpath, you might also want to disable management security:
 
 [source,properties,indent=0]
 ----
@@ -303,7 +303,8 @@ want to disable management security:
 	management.security.enabled=false
 ----
 
-
+(If you don't have Spring Security on the classpath then there is no need to explicitly
+disable the management security in this way, and it might even break the application.)
 
 [[production-ready-customizing-management-server-address]]
 === Customizing the management server address
