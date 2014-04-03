@@ -202,12 +202,8 @@ If you are using a milestone or snapshot release you will also need to add appro
 === Declaring dependencies without versions
 The `spring-boot` plugin will register a custom Gradle `ResolutionStrategy` with your
 build that allows you to omit version numbers when declaring dependencies to ``blessed''
-artifacts. All artifacts with a `org.springframework.boot` group ID, and any of the
-artifacts declared in the `managementDependencies` section of the
-{github-code}/spring-boot-dependencies/pom.xml[`spring-dependencies`]
-POM can have their version number resolved automatically.
-
-Simply declare dependencies in the usual way, but leave the version number empty:
+artifacts. To make use of this functionality, simply declare dependencies in the usual way,
+but leave the version number empty:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -221,9 +217,20 @@ Simply declare dependencies in the usual way, but leave the version number empty
 NOTE: The version of the `spring-boot` gradle plugin that you declare determines the
 actual versions of the ``blessed'' dependencies (this ensures that builds are always
 repeatable). You should always set the version of the `spring-boot` gradle plugin to the
-actual Spring Boot version that you wish to use.
+actual Spring Boot version that you wish to use. Details of the versions that are
+provided can be found in the <<appendix-dependency-versions, appendix>>.
 
+The `spring-boot` plugin will only supply a version where one is not specified. To
+use a version of an artifact that differs from the one that the plugin would provide,
+simply specify the version when you declare the dependency as you usually would. For
+example:
 
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	dependencies {
+		compile("org.thymeleaf:thymeleaf-spring4:2.1.1.RELEASE")
+	}
+----
 
 [[build-tool-plugins-gradle-custom-version-management]]
 ==== Custom version management
@@ -249,8 +256,6 @@ the above example `mycorp-versions.properties` file might contain the following:
 
 The properties file takes precedence over Spring Boot's defaults, and can be used
 to override version numbers if necessary.
-
-
 
 [[build-tool-plugins-gradle-packaging]]
 === Packaging executable jar and war files
@@ -519,8 +524,6 @@ Here is a typical example repackage:
 				}
 			});
 ----
-
-
 
 [[build-tool-plugins-whats-next]]
 == What to read next

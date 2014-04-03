@@ -275,3 +275,5 @@ alternatives could be considered:
 * http://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
 * http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
 * http://one-jar.sourceforge.net[OneJar]
+
+
