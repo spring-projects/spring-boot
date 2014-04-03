@@ -81,6 +81,7 @@ content into your application; rather pick only the properties that you need.
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
 	spring.messages.basename=messages
 	spring.messages.encoding=UTF-8
+    spring.messages.cacheSeconds=-1
 
 	[[common-application-properties-security]]
 	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])

@@ -58,6 +58,8 @@ public class MessageSourceAutoConfiguration implements EnvironmentAware {
 		}
 		String encoding = this.environment.getProperty("encoding", "utf-8");
 		messageSource.setDefaultEncoding(encoding);
+		messageSource.setCacheSeconds(this.environment.getProperty("cacheSeconds",
+				Integer.class, -1));
 		return messageSource;
 	}
 
