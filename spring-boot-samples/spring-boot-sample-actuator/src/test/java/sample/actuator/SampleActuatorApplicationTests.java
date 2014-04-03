@@ -71,6 +71,23 @@ public class SampleActuatorApplicationTests {
 	}
 
 	@Test
+	public void testMetricsIsSecure() throws Exception {
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:8080/metrics", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		entity = new TestRestTemplate().getForEntity(
+				"http://localhost:8080/metrics/", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		entity = new TestRestTemplate().getForEntity(
+				"http://localhost:8080/metrics/foo", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+		entity = new TestRestTemplate().getForEntity(
+				"http://localhost:8080/metrics.json", Map.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+	}
+
+	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
