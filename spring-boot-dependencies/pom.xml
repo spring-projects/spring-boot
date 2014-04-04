@@ -77,6 +77,7 @@
 		<mockito.version>1.9.5</mockito.version>
 		<mongodb.version>2.11.4</mongodb.version>
 		<mysql.version>5.1.30</mysql.version>
+        <neo4j.version>2.0.2</neo4j.version>
 		<reactor.version>1.0.1.RELEASE</reactor.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<slf4j.version>1.7.7</slf4j.version>
@@ -85,7 +86,7 @@
 		<spring.version>4.0.3.RELEASE</spring.version>
 		<spring-integration.version>3.0.2.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.6.RELEASE</spring-batch.version>
-		<spring-data-couchbase.version>1.0.0.RELEASE</spring-data-couchbase.version>
+        <spring-data-couchbase.version>1.0.0.RELEASE</spring-data-couchbase.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-releasetrain.version>Codd-SR2</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
@@ -354,6 +355,11 @@
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongo-java-driver</artifactId>
 				<version>${mongodb.version}</version>
+			</dependency>
+            <dependency>
+				<groupId>org.neo4j</groupId>
+				<artifactId>neo4j</artifactId>
+				<version>${neo4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectreactor</groupId>
