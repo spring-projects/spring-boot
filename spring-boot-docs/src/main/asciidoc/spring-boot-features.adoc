@@ -424,7 +424,7 @@ the configuration of your application. For example:
 [source,java,indent=0]
 ----
 	@Component
-	@ConfigurationProperties(name="connection")
+	@ConfigurationProperties(prefix="connection")
 	public class ConnectionSettings {
 
 		private String username;
@@ -512,7 +512,7 @@ annotations to your `@ConfigurationProperties` class:
 [source,java,indent=0]
 ----
 	@Component
-	@ConfigurationProperties(name="connection")
+	@ConfigurationProperties(prefix="connection")
 	public class ConnectionSettings {
 
 		@NotNull
