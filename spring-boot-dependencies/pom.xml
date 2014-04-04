@@ -85,6 +85,7 @@
 		<spring-batch.version>2.2.5.RELEASE</spring-batch.version>
 		<spring-data-jpa.version>1.5.1.RELEASE</spring-data-jpa.version>
 		<spring-data-mongodb.version>1.4.1.RELEASE</spring-data-mongodb.version>
+		<spring-data-neo4j.version>3.0.1.RELEASE</spring-data-neo4j.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-rest.version>2.0.1.RELEASE</spring-data-rest.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
@@ -531,6 +532,11 @@
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-mongodb</artifactId>
 				<version>${spring-data-mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-neo4j</artifactId>
+				<version>${spring-data-neo4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
