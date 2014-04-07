@@ -935,14 +935,14 @@ and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBas
 for more details.
 
 
+
 [[howto-use-custom-entity-manager]]
 === Use a custom EntityManagerFactory
-To take full control of the configuration of the
-`EntityManagerFactory`, you need to add a `@Bean` named
-"entityManagerFactory".  To avoid eager initialization of JPA
-infrastructure Spring Boot autoconfiguration does not switch on its
-entity manager based on the presence of a bean of that type. Instead
-it has to do it by name.
+To take full control of the configuration of the `EntityManagerFactory`, you need to add
+a `@Bean` named "entityManagerFactory". To avoid eager initialization of JPA
+infrastructure, Spring Boot auto-configuration does not switch on its entity manager
+based on the presence of a bean of that type. Instead it has to do it by name.
+
 
 
 [[howto-use-traditional-persistence-xml]]
@@ -1140,9 +1140,12 @@ use this in a webapp is to inject it into a void method in a
 	}
 ----
 
-You will get the best results if you put this in a nested class, or a standalone class (i.e.
-not mixed in with a lot of other `@Beans` that might be allowed to influence the order of
-instantiation). The https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-web-secure[secure web sample] is a useful template to follow.
+You will get the best results if you put this in a nested class, or a standalone class
+(i.e. not mixed in with a lot of other `@Beans` that might be allowed to influence the
+order of instantiation). The {github-code}/spring-boot-samples/spring-boot-sample-web-secure[secure web sample]
+is a useful template to follow.
+
+
 
 [[howto-enable-https]]
 === Enable HTTPS
