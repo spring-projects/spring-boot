@@ -251,8 +251,8 @@ all non-sensitive endpoints to be exposed over HTTP. The default convention is t
 
 [[production-ready-sensitive-endpoints]]
 === Exposing sensitive endpoints
-If you use ``Spring Security'' sensitive endpoints will be exposed over HTTP, but also 
-protected. By default ``basic'' authentication will be used with the username `user` 
+If you use ``Spring Security'' sensitive endpoints will be exposed over HTTP, but also
+protected. By default ``basic'' authentication will be used with the username `user`
 and a generated password (which is printed on the console when the application starts).
 
 TIP: Generated passwords are logged as the application starts. Search for ``Using default
@@ -300,11 +300,10 @@ The `management.port` property can be used to change the HTTP port.
 	management.port=8081
 ----
 
-Since your management
-port is often protected by a firewall, and not exposed to the public you might not need
-security on the management endpoints, even if your main application is secure. In that
-case you will have Spring
-Security on the classpath, and you can disable management security like this:
+Since your management port is often protected by a firewall, and not exposed to the public
+you might not need security on the management endpoints, even if your main application is
+secure. In that case you will have Spring Security on the classpath, and you can disable
+management security like this:
 
 [source,properties,indent=0]
 ----
@@ -313,6 +312,8 @@ Security on the classpath, and you can disable management security like this:
 
 (If you don't have Spring Security on the classpath then there is no need to explicitly
 disable the management security in this way, and it might even break the application.)
+
+
 
 [[production-ready-customizing-management-server-address]]
 === Customizing the management server address

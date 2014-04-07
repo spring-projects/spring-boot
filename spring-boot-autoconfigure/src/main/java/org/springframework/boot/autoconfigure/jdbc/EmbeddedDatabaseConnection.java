@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,36 +119,13 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the data sourceis one of the embedded types
 	 */
 	public static boolean isEmbedded(DataSource dataSource) {
-		boolean embedded = false;
 		try {
-			embedded = new JdbcTemplate(dataSource)
-					.execute(new ConnectionCallback<Boolean>() {
-						@Override
-						public Boolean doInConnection(Connection con)
-								throws SQLException, DataAccessException {
-							String productName = con.getMetaData()
-									.getDatabaseProductName();
-							if (productName == null) {
-								return false;
-							}
-							productName = productName.toUpperCase();
-							if (productName.contains(H2.name())) {
-								return true;
-							}
-							if (productName.contains(HSQL.name())) {
-								return true;
-							}
-							if (productName.contains(DERBY.name())) {
-								return true;
-							}
-							return false;
-						}
-					});
+			return new JdbcTemplate(dataSource).execute(new IsEmbedded());
 		}
-		catch (DataAccessException e) {
+		catch (DataAccessException ex) {
 			// Could not connect, which means it's not embedded
+			return false;
 		}
-		return embedded;
 	}
 
 	/**
@@ -170,4 +147,27 @@ public enum EmbeddedDatabaseConnection {
 		return NONE;
 	}
 
+	/**
+	 * {@link ConnectionCallback} to determine if a connection is embedded.
+	 */
+	private static class IsEmbedded implements ConnectionCallback<Boolean> {
+
+		@Override
+		public Boolean doInConnection(Connection connection) throws SQLException,
+				DataAccessException {
+			String productName = connection.getMetaData().getDatabaseProductName();
+			if (productName == null) {
+				return false;
+			}
+			productName = productName.toUpperCase();
+			EmbeddedDatabaseConnection[] candidates = EmbeddedDatabaseConnection.values();
+			for (EmbeddedDatabaseConnection candidate : candidates) {
+				if (candidate != NONE && productName.contains(candidate.name())) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+	}
 }
