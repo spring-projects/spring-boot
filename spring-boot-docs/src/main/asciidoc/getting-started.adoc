@@ -3,7 +3,7 @@
 
 [partintro]
 --
-If your just getting started with Spring Boot, or 'Spring' in general, this is the section
+If you're just getting started with Spring Boot, or 'Spring' in general, this is the section
 for you! Here we answer the basic '``what?''', '``how?''' and '``why?''' questions. You'll
 find a gentle introduction to Spring Boot along with installation instructions.
 We'll then build our first Spring Boot application, discussing some core principles as
@@ -54,7 +54,7 @@ using the latest version of Java.
 
 [[getting-started-installation-instructions-for-java]]
 === Installation instructions for the Java developer
-You can use Spring Boot in the same way as any standard java library. Simply include the
+You can use Spring Boot in the same way as any standard Java library. Simply include the
 appropriate `spring-boot-*.jar` files on your classpath. Spring Boot does not require
 any special tools integration, so you can use any IDE or text editor; and there is
 nothing special about a Spring Boot application, so you can run and debug as you would
@@ -300,7 +300,7 @@ the Spring Boot CLI is:
 
 Homebrew will install `spring` to `/usr/local/bin`.
 
-NOTE: If you don't see the formula, you're installation of brew might be out-of-date.
+NOTE: If you don't see the formula, your installation of brew might be out-of-date.
 Just execute `brew update` and try again.
 
 
@@ -582,13 +582,13 @@ to Spring Boot's `SpringApplication` class by calling `run`. `SpringApplication`
 bootstrap our application, starting Spring which will in turn start the auto-configured
 Tomcat web server. We need to pass `Example.class` as an argument to the `run` method to
 tell `SpringApplication` which is the primary Spring component. The `args` array is also
-passed though to expose any command-line arguments.
+passed through to expose any command-line arguments.
 
 
 
 [[getting-started-first-application-run]]
 === Running the example
-At this point out application should work. Since we have used the
+At this point our application should work. Since we have used the
 `spring-boot-starter-parent` POM we have a useful `run` goal that we can use to start
 the application. Type `mvn spring-boot:run` from the root project directory to start the
 application:
@@ -632,7 +632,7 @@ needs to run.
 ****
 Java does not provide any standard way to load nested jar files (i.e. jar files that are
 themselves contained within a jar). This can be problematic if you are looking to
-distribute a self contained application.
+distribute a self-contained application.
 
 To solve this problem, many developers use ``shaded'' jars. A shaded jar simply packages
 all classes, from all jars, into a single ``uber jar''. The problem with shaded jars is that
@@ -718,7 +718,7 @@ As before, to gracefully exit the application hit `ctrl-c`.
 [[getting-started-whats-next]]
 == What to read next
 Hopefully this section has provided you with some of the Spring Boot basics, and got you
-on your way to writing your own applications. If your a task oriented type of
+on your way to writing your own applications. If you're a task-oriented type of
 developer you might want to jump over to http://spring.io and check out some of the
 http://spring.io/guides/[getting started] guides that solve specific
 '``How do I do that with Spring''' problems; we also have a Spring Boot specific
@@ -726,4 +726,4 @@ http://spring.io/guides/[getting started] guides that solve specific
 
 Otherwise, the next logical step is to read '<<using-spring-boot.adoc#using-boot>>'. If
 you're really impatient, you could also jump ahead and read about
-'<<spring-boot-features.adoc#boot-features, spring boot features>>'.
+'<<spring-boot-features.adoc#boot-features, Spring Boot features>>'.
