@@ -82,11 +82,10 @@ Here is an example ``hello world'' web application written in Groovy:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Controller
+	@RestController
 	class WebApplication {
 
 		@RequestMapping("/")
-		@ResponseBody
 		String home() {
 			return "Hello World!"
 		}
@@ -104,7 +103,7 @@ same way as Maven or Gradle would; but without requiring you to use a build tool
 
 Spring Boot extends this technique further, and will attempt to deduce which libraries
 to ``grab'' based on your code. For example, since the `WebApplication` code above uses
-`@Controller` annotations, ``Tomcat'' and ``Spring MVC'' will be grabbed.
+`@RestController` annotations, ``Tomcat'' and ``Spring MVC'' will be grabbed.
 
 The following items are used as ``grab hints'':
 
@@ -158,7 +157,7 @@ in the Spring Boot CLI source code to understand exactly how customizations are 
 ==== Default import statements
 To help reduce the size of your Groovy code, several `import` statements are
 automatically included. Notice how the example above refers to `@Component`,
-`@Controller`, `@RequestMapping` and `@ResponseBody` without needing to use
+`@RestController` and `@RequestMapping` without needing to use
 fully-qualified names or `import` statements.
 
 TIP: Many Spring annotations will work without using `import` statements. Try running
