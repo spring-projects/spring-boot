@@ -40,7 +40,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<dependencies>
 					<dependency>
-						<groupId>org.springsource.loaded</groupId>
+						<groupId>org.springframework</groupId>
 						<artifactId>springloaded</artifactId>
 						<version>1.1.5.RELEASE</version>
 					</dependency>
