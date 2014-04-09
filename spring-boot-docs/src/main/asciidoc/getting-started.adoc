@@ -334,11 +334,10 @@ a file called `app.groovy`:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Controller
+	@RestController
 	class ThisWillActuallyRun {
 
 		@RequestMapping("/")
-		@ResponseBody
 		String home() {
 			return "Hello World!"
 		}
@@ -518,12 +517,11 @@ file named `src/main/java/Example.java`:
 	import org.springframework.stereotype.*;
 	import org.springframework.web.bind.annotation.*;
 
-	@Controller
+	@RestController
 	@EnableAutoConfiguration
 	public class Example {
 
 		@RequestMapping("/")
-		@ResponseBody
 		String home() {
 			return "Hello World!";
 		}
@@ -541,18 +539,18 @@ important parts.
 
 
 [[getting-started-first-application-annotations]]
-==== The @Controller, @RequestMapping and @ResponseBody annotations
-The first annotation on our `Example` class is `@Controller`. This is known as a
+==== The @RestController and @RequestMapping annotations
+The first annotation on our `Example` class is `@RestController`. This is known as a
 _stereotype_ annotation. It provides hints for people reading the code, and for Spring,
 that the class plays a specific role. In this case, our class is a web `@Controller` so
 Spring will consider it when handling incoming web requests.
 
 The `@RequestMapping` annotation provides ``routing'' information. It is telling Spring
 that any HTTP request with the path "`/`" should be mapped to the `home` method. The
-additional `@ResponseBody` annotation tells Spring to render the resulting string directly
+`@RestController` annotation tells Spring to render the resulting string directly
 back to the caller.
 
-TIP: The `@Controller`, `@RequestMapping` and `@ResponseBody` annotations are Spring MVC
+TIP: The `@RestController` and`@RequestMapping` annotations are Spring MVC
 annotations (they are not specific to Spring Boot). See the
 <{spring-reference}/#mvc>[MVC section] in the Spring
 Reference Documentation for more details.
