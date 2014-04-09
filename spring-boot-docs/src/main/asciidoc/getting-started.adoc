@@ -311,13 +311,13 @@ Spring Boot CLI ships with scripts that provide command completion for
 http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
 http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
 `spring`) in any shell, or put it in your personal or system-wide bash completion
-initialization. On a Debian system the system-wide scripts are in `/etc/bash_completion.d`
+initialization. On a Debian system the system-wide scripts are in `/shell-completion/bash`
 and all scripts in that directory are executed when a new shell starts. To run the script
 manually, e.g. if you have installed using `GVM`
 
 [indent=0]
 ----
-	$ . ~/.gvm/springboot/current/bash_completion.d/spring
+	$ . ~/.gvm/springboot/current/shell-completion/bash/spring
 	$ spring <HIT TAB HERE>
 	  grab  help  jar  run  test  version
 ----
