@@ -33,7 +33,7 @@ Having trouble with Spring Boot, We'd like to help!
 * Learn the Spring basics -- Spring Boot is builds on many other Spring projects, check
   the http://spring.io[spring.io] web-site for a wealth of reference documentation. If
   you are just starting out with Spring, try one of the http://spring.io/guides[guides].
-* Ask a questions - we monitor http://stackoverflow.com[stackoverflow.com] for questions
+* Ask a question - we monitor http://stackoverflow.com[stackoverflow.com] for questions
   tagged with http://stackoverflow.com/tags/spring-boot[`spring-boot`].
 * Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
 
@@ -42,7 +42,7 @@ with the docs; or if you just want to improve them, please <<github-code, get in
 
 [[boot-documentation-first-steps]]
 == First steps
-If your just getting started with Spring Boot, or 'Spring' in general,
+If you're just getting started with Spring Boot, or 'Spring' in general,
 <<getting-started.adoc#getting-started, this is the place to start!>>
 
 * *From scratch:*
@@ -106,7 +106,7 @@ Need more details about Spring Boot's core features?
 
 
 == Moving to production
-When your ready to push your Spring Boot application to production, we've got
+When you're ready to push your Spring Boot application to production, we've got
 <<production-ready-features.adoc#production-ready, some tricks that you might like>>!
 
 * *Management endpoints:*
