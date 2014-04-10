@@ -6,7 +6,7 @@
 This section goes into more detail about how you should use Spring Boot. It covers topics
 such as build systems, auto-configuration and run/deployment options. We also cover some
 Spring Boot best practices. Although there is nothing particularly special about
-Spring Boot (it is just another library that you can consume). There are a few
+Spring Boot (it is just another library that you can consume), there are a few
 recommendations that, when followed, will make your development process just a
 little easier.
 
@@ -63,7 +63,7 @@ the `parent`:
 ----
 
 NOTE: You should only need to specify the Spring Boot version number on this dependency.
-if you import additional starters, you can safely omit the version number.
+If you import additional starters, you can safely omit the version number.
 
 
 
@@ -571,7 +571,7 @@ the `spring-boot-plugin`
 
 [[using-boot-hot-swapping]]
 === Hot swapping
-Since Spring Boot applications are just plain Java application, JVM hot-swapping should
+Since Spring Boot applications are just plain Java applications, JVM hot-swapping should
 work out of the box. JVM hot swapping is somewhat limited with the bytecode that it can
 replace, for a more complete solution the
 https://github.com/spring-projects/spring-loaded[Spring Loaded] project, or

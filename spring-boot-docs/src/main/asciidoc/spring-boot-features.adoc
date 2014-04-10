@@ -149,7 +149,7 @@ within a JUnit test.
 === Using the CommandLineRunner
 If you want access to the raw command line arguments, or you need to run some specific code
 once the `SpringApplication` has started you can implement the `CommandLineRunner`
-interface. The `run(String... args)` method will be called on all spring beans
+interface. The `run(String... args)` method will be called on all Spring beans
 implementing this interface.
 
 [source,java,indent=0]
@@ -187,7 +187,7 @@ interface if they wish to return a specific exit code when the application ends.
 
 [[boot-features-external-config]]
 == Externalized Configuration
-Spring Boot likes you to externalize your configuration so you can work with the same
+Spring Boot allows you to externalize your configuration so you can work with the same
 application code in different environments. You can use properties files, YAML files,
 environment variables and command-line arguments to externalize configuration. Property
 values can be injected directly into your beans using the `@Value` annotation, accessed
@@ -227,14 +227,14 @@ To provide a concrete example, suppose you develop a `@Component` that uses a
 
 You can bundle an `application.properties` inside your jar that provides a sensible
 default `name`. When running in production, an `application.properties` can be provided
-outside of your jar that overrides `name`; and for one off testing, you can launch with
+outside of your jar that overrides `name`; and for one-off testing, you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
 
 
 [[boot-features-external-config-command-line-args]]
 === Accessing command line properties
-By default SpringApplication will convert any command line option arguments (starting
+By default `SpringApplication` will convert any command line option arguments (starting
 with ``--'', e.g. `--server.port=9000`) to a `property` and add it to the Spring
 `Environment`. As mentioned above, command line properties always take precedence over
 other property sources.
@@ -261,8 +261,8 @@ an alternative to '.properties'.
 
 If you don't like `application.properties` as the configuration file name you can switch
 to another by specifying a `spring.config.name` environment property. You can also refer
-to an explicit location using the `spring.config.location` environment property (comma-
-separated list of directory locations, or file paths).
+to an explicit location using the `spring.config.location` environment property
+(comma-separated list of directory locations, or file paths).
 
 [indent=0]
 ----
@@ -506,7 +506,7 @@ property editors (via a `CustomEditorConfigurer` bean).
 [[boot-features-external-config-validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot will attempt to validate external configuration, by default using JSR-303
-(if it is on the classpath). You can simply add JSR-303 `javax.valididation` constraint
+(if it is on the classpath). You can simply add JSR-303 `javax.validation` constraint
 annotations to your `@ConfigurationProperties` class:
 
 [source,java,indent=0]
