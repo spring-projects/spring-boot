@@ -30,6 +30,8 @@ import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -54,6 +56,8 @@ import org.springframework.util.ClassUtils;
  */
 public class ServletListenerRegistrationBean<T extends EventListener> extends
 		RegistrationBean {
+
+	private static Log logger = LogFactory.getLog(ServletListenerRegistrationBean.class);
 
 	private static final Set<Class<?>> SUPPORTED_TYPES;
 	static {
@@ -97,6 +101,10 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		if (!isEnabled()) {
+			logger.info("Listener " + this.listener + " was not registered (disabled)");
+			return;
+		}
 		servletContext.addListener(this.listener);
 	}
 
