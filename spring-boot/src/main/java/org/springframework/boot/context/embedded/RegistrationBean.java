@@ -41,6 +41,8 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 
 	private boolean asyncSupported = true;
 
+	private boolean enabled = true;
+
 	private Map<String, String> initParameters = new LinkedHashMap<String, String>();
 
 	/**
@@ -64,6 +66,22 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 	 */
 	public boolean isAsyncSupported() {
 		return this.asyncSupported;
+	}
+
+	/**
+	 * Flag to indicate that the registration is enabled.
+	 * 
+	 * @param enabled the enabled to set
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	/**
+	 * @return the enabled flag (default true)
+	 */
+	public boolean isEnabled() {
+		return this.enabled;
 	}
 
 	/**
