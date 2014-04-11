@@ -637,7 +637,7 @@ then `http://localhost:8080/thing` will serve a JSON representation of it by def
 Sometimes in a browser you might see XML responses (but by default only if `MyThing` was
 a JAXB object) because browsers tend to send accept headers that prefer XML.
 
-[[howto-write-a-json-rest-service]]
+[[howto-write-an-xml-rest-service]]
 === Write an XML REST service
 Since JAXB is in the JDK the same example as we used for JSON would work, as long as the
 `MyThing` was annotated as `@XmlRootElement`:
