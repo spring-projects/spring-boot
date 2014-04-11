@@ -110,7 +110,7 @@ public class RunMojo extends AbstractMojo {
 			getLog().info("Attaching agent: " + this.agent);
 			if (this.noverify != null && this.noverify && !AgentAttacher.hasNoVerify()) {
 				throw new MojoExecutionException(
-						"The JVM must be started with -noverify for this agent to work. You can use MAVEN_OPTS to add that flag.");
+						"The JVM must be started with -noverify for this agent to work. You can use MAVEN_OPTS=-noverify to add that flag.");
 			}
 			AgentAttacher.attach(this.agent);
 		}
