@@ -339,7 +339,7 @@ a file called `app.groovy`:
 
 		@RequestMapping("/")
 		String home() {
-			return "Hello World!"
+			"Hello World!"
 		}
 
 	}
