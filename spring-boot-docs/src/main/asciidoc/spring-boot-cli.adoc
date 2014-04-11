@@ -87,7 +87,7 @@ Here is an example ``hello world'' web application written in Groovy:
 
 		@RequestMapping("/")
 		String home() {
-			return "Hello World!"
+			"Hello World!"
 		}
 
 	}
@@ -190,7 +190,7 @@ In this example, `tests.groovy` contains JUnit `@Test` methods or Spock `Specifi
 classes. All the common framework annotations and static methods should be available to
 you without having to `import` them.
 
-Here is the `test.groovy` file that we used above:
+Here is the `test.groovy` file that we used above (with a JUnit test):
 
 [source,groovy,indent=0]
 ----
