@@ -120,14 +120,16 @@ public class RunMojo extends AbstractMojo {
 
 	private void findAgent() {
 		try {
-			Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
-			if (this.agent == null && loaded != null) {
-				if (this.noverify == null) {
-					this.noverify = true;
-				}
-				CodeSource source = loaded.getProtectionDomain().getCodeSource();
-				if (source != null) {
-					this.agent = new File(source.getLocation().getFile());
+			if (this.agent == null) {
+				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
+				if (loaded != null) {
+					if (this.noverify == null) {
+						this.noverify = true;
+					}
+					CodeSource source = loaded.getProtectionDomain().getCodeSource();
+					if (source != null) {
+						this.agent = new File(source.getLocation().getFile());
+					}
 				}
 			}
 		}
@@ -198,7 +200,8 @@ public class RunMojo extends AbstractMojo {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
 				urls.add(directory.toURI().toURL());
-				FileUtils.removeDuplicatesFromOutputDirectory(this.classesDirectory, directory);
+				FileUtils.removeDuplicatesFromOutputDirectory(this.classesDirectory,
+						directory);
 			}
 		}
 	}
