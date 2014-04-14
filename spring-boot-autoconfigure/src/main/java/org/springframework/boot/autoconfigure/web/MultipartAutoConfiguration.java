@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.MultiPartConfigFactory;
@@ -51,6 +52,7 @@ public class MultipartAutoConfiguration {
     private MultipartProperties multipartProperties = new MultipartProperties();
 
     @Bean
+    @ConditionalOnExpression("${multipart.enabled:true}")
     @ConditionalOnMissingBean
     public MultipartConfigElement multipartConfigElement() {
         MultiPartConfigFactory factory = new MultiPartConfigFactory();
