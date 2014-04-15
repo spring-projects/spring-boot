@@ -27,7 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.ClassUtils;
 
 /**
- * Strategy to load '.yml' files into a {@link PropertySource}.
+ * Strategy to load '.yml' (or '.yaml') files into a {@link PropertySource}.
  * 
  * @author Dave Syer
  * @author Phillip Webb
@@ -36,7 +36,7 @@ public class YamlPropertySourceLoader implements PropertySourceLoader {
 
 	@Override
 	public String[] getFileExtensions() {
-		return new String[] { "yml" };
+		return new String[] { "yml", "yaml" };
 	}
 
 	@Override
