@@ -84,6 +84,7 @@ public class ThymeleafAutoConfigurationTests {
 		assertEquals("UTF-16", ((TemplateResolver) resolver).getCharacterEncoding());
 		ThymeleafViewResolver views = this.context.getBean(ThymeleafViewResolver.class);
 		assertEquals("UTF-16", views.getCharacterEncoding());
+		assertEquals("text/html;charset=UTF-16", views.getContentType());
 	}
 
 	@Test
