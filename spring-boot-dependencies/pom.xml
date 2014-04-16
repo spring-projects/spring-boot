@@ -88,6 +88,7 @@
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-rest.version>2.0.2.RELEASE</spring-data-rest.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
+		<spring-plugin.version>1.0.0.RELEASE</spring-plugin.version>
 		<spring-rabbit.version>1.2.2.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
@@ -541,6 +542,11 @@
 				<groupId>org.springframework.hateoas</groupId>
 				<artifactId>spring-hateoas</artifactId>
 				<version>${spring-hateoas.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.plugin</groupId>
+				<artifactId>spring-plugin-core</artifactId>
+				<version>${spring-plugin.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
