@@ -863,7 +863,7 @@ and JSPs. Many other templating engines also ship their own Spring MVC integrati
 
 Spring Boot includes auto-configuration support for the Thymeleaf templating engine.
 Thymeleaf is an XML/XHTML/HTML5 template engine that can work both in web and non-web
-environments. If allows you to create natural templates, that can be correctly displayed
+environments. It allows you to create natural templates that can be correctly displayed
 by browsers and therefore work also as static prototypes. Thymeleaf templates will be
 picked up automatically from `src/main/resources/templates`.
 
@@ -891,7 +891,7 @@ By default, if the context contains only a single Servlet it will be mapped to `
 the case of multiple Servlets beans the bean name will be used as a path prefix. Filters
 will map to `/*`.
 
-If convention based mapping is not flexible enough you can use the
+If convention-based mapping is not flexible enough you can use the
 `ServletRegistrationBean` and `FilterRegistrationBean` classes for complete control. You
 can also register items directly if your bean implements the `ServletContextInitializer`
 interface.
@@ -1003,8 +1003,8 @@ application you can also add `@EnableGlobalMethodSecurity` with your desired set
 Additional information can be found in the {spring-security-reference}#jc-method[Spring
 Security Reference].
 
-The default `AuthenticationManager` has a single user (username ``user'' and password
-random, printed at INFO level when the application starts up). You can change the
+The default `AuthenticationManager` has a single user (``user'' username and random
+password, printed at INFO level when the application starts up). You can change the
 password by providing a `security.user.password`. This and other useful properties are
 externalized via {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
 (properties prefix "security").
@@ -1169,7 +1169,7 @@ relational databases. The `spring-boot-starter-data-jpa` POM provides a quick wa
 started. It provides the following key dependencies:
 
 * Hibernate -- One of the most popular JPA implementations.
-* Spring Data JPA -- Makes it easy to easily implement JPA based repositories.
+* Spring Data JPA -- Makes it easy to easily implement JPA-based repositories.
 * Spring ORMs -- Core ORM support from the Spring Framework.
 
 TIP: We won't go into too many details of JPA or Spring Data here. You can follow the
@@ -1449,12 +1449,12 @@ If you extend your Maven project from the `spring-boot-starter-parent` POM, or u
 `spring-boot-starter-test` ``Starter POM'' (in the `test` `scope`), you will find
 the following provided libraries:
 
-* Junit -- The de-facto standard for unit testing Java applications.
+* JUnit -- The de-facto standard for unit testing Java applications.
 * Hamcrest -- A library of matcher objects (also known as constraints or predicates)
   allowing `assertThat` style JUnit assertions.
 * Mockito -- A Java mocking framework.
 
-These are common libraries that we generally find useful when writing Tests. You are free
+These are common libraries that we generally find useful when writing tests. You are free
 to add additional test dependencies of your own if these don't suit your needs.
 
 
@@ -1474,7 +1474,7 @@ The Spring Framework includes a dedicated test module for just such integration 
 You can declare a dependency directly to `org.springframework:spring-test` or use the
 `spring-boot-starter-test` ``Starter POM'' to pull it in transitively.
 
-If you have not use the `spring-test` module before you should start by reading the
+If you have not used the `spring-test` module before you should start by reading the
 {spring-reference}/#testing[relevant section] of the Spring Framework reference
 documentation.
 
@@ -1606,8 +1606,8 @@ public class MyTest {
 
 `TestRestTemplate` is a convenience subclass of Spring's `RestTemplate` that is
 useful in integration tests.  You can get a vanilla template or one that sends Basic HTTP
-authentication (with a username and password). And in either case the template will behave
-in a friendly way for testing, not following redirects (so you can assert the response
+authentication (with a username and password). In either case the template will behave
+in a test-friendly way: not following redirects (so you can assert the response
 location), ignoring cookies (so the template is stateless), and not throwing exceptions
 on server-side errors. It is recommended, but not mandatory, to use Apache HTTP Client
 (version 4.3.2 or better), and if you have that on your classpath the `TestRestTemplate`

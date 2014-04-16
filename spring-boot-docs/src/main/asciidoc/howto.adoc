@@ -25,7 +25,7 @@ can send us a {github-code}[pull request].
 
 [[howto-troubleshoot-auto-configuration]]
 === Troubleshoot auto-configuration
-The Spring Boot auto-configuration tries it's best to ``do the right thing'', but
+The Spring Boot auto-configuration tries its best to ``do the right thing'', but
 sometimes things fail and it can be hard to tell why.
 
 There is a really useful `AutoConfigurationReport` available in any Spring Boot
@@ -44,7 +44,7 @@ rules of thumb:
   Actuator app look at the `autoconfig` endpoint (`/autoconfig' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
-  {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`]
+  {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`])
   and read from there the available external configuration options. The
   `@ConfigurationProperties` has a `name` attribute which acts as a prefix to external
   properties, thus `ServerProperties` has `prefix="server"` and its configuration properties

@@ -54,7 +54,7 @@ Actuator endpoints allow you to monitor and interact with your application. Spri
 includes a number of built-in endpoints and you can also add your own. For example the
 `health` endpoint provides basic application health information.
 
-The way that enpoints are exposed will depend on the type of technology that you choose.
+The way that endpoints are exposed will depend on the type of technology that you choose.
 Most applications choose HTTP monitoring, where the ID of the endpoint is mapped
 to a URL. For example, by default, the `health` endpoint will be mapped to `/health`.
 
