@@ -34,7 +34,7 @@ specified. The Cloud Foundry Java buildpack has excellent support for Spring app
 including Spring Boot.  You can deploy stand-alone executable jar applications, as well as
 traditional `.war` packaged applications.
 
-Once you've built your application (using, for example, `mvn clean install`) and
+Once you've built your application (using, for example, `mvn clean package`) and
 http://docs.run.pivotal.io/devguide/installcf/install-go-cli.html/[installed the `cf`
 command line tool], simply answer the `cf push` command  prompts as follows, substituting
 the path to  your compiled `.jar` for mine. Be sure to have
@@ -166,8 +166,8 @@ information (such as database credentials). See `VcapApplicationListener` Javdoc
 complete details.
 
 TIP: The https://github.com/spring-projects/spring-cloud[Spring Cloud] project is a better
-fit for tasks such as configuring a DataSource; and you can also use Spring Cloud with
-Heroku too!
+fit for tasks such as configuring a DataSource; it also lets you use Spring Cloud with
+Heroku.
 
 
 
@@ -178,8 +178,8 @@ Heroku is another popular PaaS platform. To customize Heroku builds, you provide
 assigns a `port` for the Java application to use and then ensures that routing to the
 external URI works.
 
-You must configure your application to listen on the correct port. This is a breeze with
-Spring Boot. Here's the `Procfile` for our starter REST application:
+You must configure your application to listen on the correct port. Here's the `Procfile`
+for our starter REST application:
 
 [indent=0]
 ----
@@ -250,7 +250,7 @@ This should be everything you need. The most common workflow for Heroku deployme
 	 * [new branch]      master -> master
 ----
 
-That should be it! Your application should be up and running on Heroku.
+Your application should now be up and running on Heroku.
 
 
 
@@ -271,7 +271,7 @@ that covers the steps that you need to follow when deploying to CloudBees.
 Check out the http://www.cloudfoundry.com/[Cloud Foundry], https://www.heroku.com/[Heroku]
 and http://www.cloudbees.com[CloudBees] web sites for more information about the kinds of
 features that a PaaS can offer. These are just three of the most popular Java PaaS
-providers, since Spring Boot is so amenable to cloud-based deployment you free to
+providers, since Spring Boot is so amenable to cloud-based deployment you're free to
 consider other providers as well.
 
 The next section goes on to cover the '<<spring-boot-cli.adoc#cli, Spring Boot CLI>>';
