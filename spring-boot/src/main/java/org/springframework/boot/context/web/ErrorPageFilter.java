@@ -91,6 +91,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
+
 		ErrorWrapperResponse wrapped = new ErrorWrapperResponse(response);
 		try {
 			chain.doFilter(request, wrapped);
@@ -102,6 +103,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		catch (Throwable ex) {
 			handleException(request, response, wrapped, ex);
 		}
+		response.flushBuffer();
 
 	}
 
