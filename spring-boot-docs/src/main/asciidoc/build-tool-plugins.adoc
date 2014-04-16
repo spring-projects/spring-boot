@@ -626,10 +626,10 @@ Here is a typical example repackage:
 
 [[build-tool-plugins-whats-next]]
 == What to read next
-If your interested to looking at how the build tool plugins were developed you can
+If you're interested in how the build tool plugins work you can
 look at the {github-code}/spring-boot-tools[`spring-boot-tools`] module on GitHub. More
 technical details of the <<appendix-executable-jar-format.adoc#executable-jar, executable
 jar format>> are covered in the appendix.
 
-If you have specific build related questions, you can check out the
+If you have specific build-related questions you can check out the
 `<<howto.adoc#howto, how-to>>' guides.
