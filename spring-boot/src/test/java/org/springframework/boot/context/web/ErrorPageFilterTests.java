@@ -34,6 +34,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ErrorPageFilter}.
@@ -76,6 +77,7 @@ public class ErrorPageFilterTests {
 				equalTo((Object) 400));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
+		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
@@ -96,6 +98,7 @@ public class ErrorPageFilterTests {
 				equalTo((Object) 400));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE),
 				equalTo((Object) "BAD"));
+		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
@@ -118,6 +121,7 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "BAD"));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) RuntimeException.class.getName()));
+		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
