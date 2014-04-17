@@ -78,7 +78,8 @@ public class RunMojo extends AbstractMojo {
 	private Boolean noverify;
 
 	/**
-	 * Arguments that should be passed to the application.
+	 * Arguments that should be passed to the application. On command line use commas to
+	 * separate multiple arguments.
 	 */
 	@Parameter(property = "run.arguments")
 	private String[] arguments;
