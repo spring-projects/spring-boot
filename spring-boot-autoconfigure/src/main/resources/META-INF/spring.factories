@@ -19,6 +19,7 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JmsTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
+org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration,\

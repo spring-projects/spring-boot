@@ -56,6 +56,9 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{sc-ext}[JpaRepositoriesAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/data/JpaRepositoriesAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/liquibase/LiquibaseAutoConfiguration.{sc-ext}[LiquibaseAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/liquibase/LiquibaseAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{dc-ext}[javadoc]
 

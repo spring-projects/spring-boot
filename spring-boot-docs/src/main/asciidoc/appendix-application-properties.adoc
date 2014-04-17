@@ -158,6 +158,13 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.hibernate.naming-strategy= # naming classname
 	spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
 
+	# LIQUIBASE ({sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[LiquibaseProperties])
+	spring.liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml
+	spring.liquibase.contexts= # runtime contexts to use
+	spring.liquibase.default-schema= # default database schema to use
+	spring.liquibase.drop-first=false
+	spring.liquibase.should-run=true
+
 	# JMX
 	spring.jmx.enabled=true # Expose MBeans from Spring
 
@@ -169,7 +176,6 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.password= # login password
 	spring.rabbitmq.virtualhost=
 	spring.rabbitmq.dynamic=
-
 
 	# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
 	spring.redis.host=localhost # server host
