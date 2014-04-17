@@ -273,7 +273,7 @@ The following configuration options are available for the `spring-boot:run` goal
 |Name |Description
 
 |`arguments` or `-Drun.arguments`
-|Arguments that should be passed to the application.
+|Arguments that should be passed to the application (comma-separated).
 
 |`addResources` or `-Drun.addResources`
 |Add Maven resources to the classpath directly, this allows live in-place editing or
