@@ -55,16 +55,29 @@ public abstract class EnvironmentTestUtils {
 	 */
 	public static void addEnvironment(ConfigurableEnvironment environment,
 			String... pairs) {
+		addEnvironment("test", environment, pairs);
+	}
+
+	/**
+	 * Add additional (high priority) values to an {@link Environment}. Name-value pairs
+	 * can be specified with colon (":") or equals ("=") separators.
+	 * 
+	 * @param environment the environment to modify
+	 * @param name the property source name
+	 * @param pairs the name:value pairs
+	 */
+	public static void addEnvironment(String name, ConfigurableEnvironment environment,
+			String... pairs) {
 		MutablePropertySources sources = environment.getPropertySources();
 		Map<String, Object> map;
-		if (!sources.contains("test")) {
+		if (!sources.contains(name)) {
 			map = new HashMap<String, Object>();
-			MapPropertySource source = new MapPropertySource("test", map);
+			MapPropertySource source = new MapPropertySource(name, map);
 			sources.addFirst(source);
 		}
 		else {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> value = (Map<String, Object>) sources.get("test")
+			Map<String, Object> value = (Map<String, Object>) sources.get(name)
 					.getSource();
 			map = value;
 		}
