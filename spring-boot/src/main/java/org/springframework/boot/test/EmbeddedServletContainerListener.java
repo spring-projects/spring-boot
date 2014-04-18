@@ -16,7 +16,10 @@
 
 package org.springframework.boot.test;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContext;
@@ -37,7 +40,12 @@ public class EmbeddedServletContainerListener extends AbstractTestExecutionListe
 			return;
 		}
 		EmbeddedWebApplicationContext embedded = (EmbeddedWebApplicationContext) context;
-		final int port = embedded.getEmbeddedServletContainer().getPort();
-		EnvironmentTestUtils.addEnvironment(embedded, "local.server.port:" + port);
+		Map<String, EmbeddedServletContainer> containers = embedded
+				.getEmbeddedServletContainers();
+		for (String name : containers.keySet()) {
+			int port = containers.get(name).getPort();
+			EnvironmentTestUtils.addEnvironment(embedded, "local." + name + ".port:"
+					+ port);
+		}
 	}
 }

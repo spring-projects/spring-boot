@@ -143,6 +143,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		if (annotation == null) {
 			// Not running an embedded server, just setting up web context
 			args.put("server.port", "-1");
+			args.put("management.port", "-1");
 		}
 		else {
 			args.putAll(extractProperties(annotation.value()));
