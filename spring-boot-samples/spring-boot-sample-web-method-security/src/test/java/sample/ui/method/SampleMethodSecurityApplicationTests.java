@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -48,16 +49,19 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleMethodSecurityApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port:0")
 @DirtiesContext
 public class SampleMethodSecurityApplicationTests {
+
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
+				"http://localhost:" + port, HttpMethod.GET, new HttpEntity<Void>(headers),
 				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
@@ -73,11 +77,11 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("password", "admin");
 		getCsrf(form, headers);
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080/login", HttpMethod.POST,
+				"http://localhost:" + port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertEquals("http://localhost:8080/", entity.getHeaders().getLocation()
+		assertEquals("http://localhost:" + port + "/", entity.getHeaders().getLocation()
 				.toString());
 	}
 
@@ -90,7 +94,7 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("password", "user");
 		getCsrf(form, headers);
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080/login", HttpMethod.POST,
+				"http://localhost:" + port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
@@ -106,7 +110,7 @@ public class SampleMethodSecurityApplicationTests {
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
 		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/login", String.class);
+				"http://localhost:" + port + "/login", String.class);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
 		String body = page.getBody();

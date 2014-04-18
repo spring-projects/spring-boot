@@ -16,6 +16,8 @@
 
 package samples.websocket.echo;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.util.SocketUtils;
 import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
@@ -43,8 +46,6 @@ import samples.websocket.client.SimpleClientWebSocketHandler;
 import samples.websocket.client.SimpleGreetingService;
 import samples.websocket.config.SampleWebSocketsApplication;
 import samples.websocket.echo.CustomContainerWebSocketsApplicationTests.CustomContainerConfiguration;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = { SampleWebSocketsApplication.class,
@@ -56,14 +57,16 @@ public class CustomContainerWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory
 			.getLog(CustomContainerWebSocketsApplicationTests.class);
+	
+	private static int PORT = SocketUtils.findAvailableTcpPort();
 
-	private static final String WS_URI = "ws://localhost:9010/ws/echo/websocket";
+	private static final String WS_URI = "ws://localhost:" + PORT + "/ws/echo/websocket";
 
 	@Configuration
 	protected static class CustomContainerConfiguration {
 		@Bean
 		public EmbeddedServletContainerFactory embeddedServletContainerFactory() {
-			return new TomcatEmbeddedServletContainerFactory("/ws", 9010);
+			return new TomcatEmbeddedServletContainerFactory("/ws", PORT);
 		}
 	}
 
