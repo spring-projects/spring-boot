@@ -37,6 +37,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.InOrder;
+
+import org.springframework.boot.test.WebTestUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -44,11 +46,11 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.SocketUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
@@ -88,18 +90,17 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse("http://localhost:8080/hello"), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
 	}
 
 	@Test
-	public void emptyServerWhenPortIsZero() throws Exception {
+	public void emptyServerWhenPortIsMinusOne() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.setPort(0);
+		factory.setPort(-1);
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		this.thrown.expect(IOException.class);
-		getResponse("http://localhost:8080/hello");
+		assertThat(container.getPort(), lessThan(0)); // Jetty is -2
 	}
 
 	@Test
@@ -110,7 +111,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 		this.container.stop();
 		this.thrown.expect(IOException.class);
-		getResponse("http://localhost:8080/hello");
+		getResponse(getLocalUrl("/hello"));
 	}
 
 	@Test
@@ -121,7 +122,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 		HttpComponentsAsyncClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsAsyncClientHttpRequestFactory();
 		ListenableFuture<ClientHttpResponse> response1 = clientHttpRequestFactory
-				.createAsyncRequest(new URI("http://localhost:8080/hello"),
+				.createAsyncRequest(new URI(getLocalUrl("/hello")),
 						HttpMethod.GET).executeAsync();
 		assertThat(response1.get(10, TimeUnit.SECONDS).getRawStatusCode(), equalTo(200));
 
@@ -131,7 +132,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.start();
 
 		ListenableFuture<ClientHttpResponse> response2 = clientHttpRequestFactory
-				.createAsyncRequest(new URI("http://localhost:8080/hello"),
+				.createAsyncRequest(new URI(getLocalUrl("/hello")),
 						HttpMethod.GET).executeAsync();
 		assertThat(response2.get(10, TimeUnit.SECONDS).getRawStatusCode(), equalTo(200));
 	}
@@ -143,7 +144,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				exampleServletRegistration(), new FilterRegistrationBean(
 						new ExampleFilter()));
 		this.container.start();
-		assertThat(getResponse("http://localhost:8080/hello"), equalTo("[Hello World]"));
+		assertThat(getResponse(getLocalUrl("/hello")), equalTo("[Hello World]"));
 	}
 
 	@Test
@@ -188,12 +189,13 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 	@Test
 	public void specificPort() throws Exception {
 		AbstractEmbeddedServletContainerFactory factory = getFactory();
-		factory.setPort(8081);
+		int specificPort = SocketUtils.findAvailableTcpPort(40000);
+		factory.setPort(specificPort);
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse("http://localhost:8081/hello"), equalTo("Hello World"));
-		assertEquals(8081, this.container.getPort());
+		assertThat(getResponse("http://localhost:" + specificPort + "/hello"), equalTo("Hello World"));
+		assertEquals(specificPort, this.container.getPort());
 	}
 
 	@Test
@@ -203,7 +205,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
-		assertThat(getResponse("http://localhost:8080/say/hello"), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/say/hello")), equalTo("Hello World"));
 	}
 
 	@Test
@@ -264,7 +266,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.setDocumentRoot(this.temporaryFolder.getRoot());
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
-		assertThat(getResponse("http://localhost:8080/test.txt"), equalTo("test"));
+		assertThat(getResponse(getLocalUrl("/test.txt")), equalTo("test"));
 	}
 
 	@Test
@@ -278,7 +280,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		factory.setMimeMappings(mimeMappings);
 		this.container = factory.getEmbeddedServletContainer();
 		this.container.start();
-		ClientHttpResponse response = getClientResponse("http://localhost:8080/test.xxcss");
+		ClientHttpResponse response = getClientResponse(getLocalUrl("/test.xxcss"));
 		assertThat(response.getHeaders().getContentType().toString(), equalTo("text/css"));
 		response.close();
 	}
@@ -290,8 +292,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory.getEmbeddedServletContainer(
 				exampleServletRegistration(), errorServletRegistration());
 		this.container.start();
-		assertThat(getResponse("http://localhost:8080/hello"), equalTo("Hello World"));
-		assertThat(getResponse("http://localhost:8080/bang"), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/hello")), equalTo("Hello World"));
+		assertThat(getResponse(getLocalUrl("/bang")), equalTo("Hello World"));
+	}
+
+	protected String getLocalUrl(String resourcePath) {
+		return WebTestUtils.getLocalUrl(container, resourcePath);
 	}
 
 	protected String getResponse(String url) throws IOException, URISyntaxException {

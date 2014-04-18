@@ -541,7 +541,7 @@ public class SpringApplicationTests {
 
 		@Bean
 		public JettyEmbeddedServletContainerFactory container() {
-			return new JettyEmbeddedServletContainerFactory();
+			return new JettyEmbeddedServletContainerFactory(0);
 		}
 
 	}
