@@ -16,6 +16,8 @@
 
 package sample.actuator.ui;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Map;
 
 import org.junit.Test;
@@ -24,16 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -43,18 +42,17 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorUiApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest({"server.port=0", "management.port:0"})
 @DirtiesContext
-@ActiveProfiles("management-port")
 public class SampleActuatorUiApplicationPortTests {
 
 	@Autowired
 	private SecurityProperties security;
 
-	@Value("${server.port}")
+	@Value("${local.server.port}")
 	private int port = 9010;
 
-	@Value("${management.port}")
+	@Value("${local.management.port}")
 	private int managementPort = 9011;
 
 	@Test

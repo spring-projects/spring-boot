@@ -48,6 +48,7 @@ public class UnsecureSampleActuatorApplicationTests {
 
 	@Value("${local.server.port}")
 	private int port;
+
 	@Test
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")

@@ -199,6 +199,7 @@ sensible overriding of values, properties are considered in the the following or
 . Command line arguments.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
+. A `RandomValueProperySource` that only has properties in `random.*`.
 . `@PropertySource` annotations on your `@Configuration` classes.
 . Application properties outside of your packaged jar (`application.properties`
   including YAML and profile variants).
@@ -230,7 +231,24 @@ default `name`. When running in production, an `application.properties` can be p
 outside of your jar that overrides `name`; and for one-off testing, you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
+The `RandomValueProperySource` is useful for injecting random values
+(e.g. into secrets or test cases). It can produce integers, longs or
+strings, e.g.
 
+
+[source,properties,indent=0]
+----
+my.secret=${random.value}
+my.number=${random.int}
+my.bignumber=${random.long}
+my.number.less.than.ten=${random.int(10)}
+my.number.in.range=${random.int[1024,65536]}
+----
+
+The `random.int*` syntax is `OPEN value (,max) CLOSE` where the
+`OPEN,CLOSE` are any character and `value,max` are integers. If
+`max` is provided then `value` is the minimum value and `max` is the
+maximum (exclusive).
 
 [[boot-features-external-config-command-line-args]]
 === Accessing command line properties
@@ -1537,6 +1555,10 @@ interaction. For Example:
 
 	}
 ----
+
+To change the port you can add environment properties to
+`@IntegrationTest` as colon- or equals-separated name-value pairs,
+e.g. `@IntegrationTest("server.port:9000")`.
 
 [[boot-features-test-utilities]]
 === Test utilities
