@@ -126,4 +126,5 @@ public class ManagementServerProperties implements SecurityPrequisite {
 		}
 		return null;
 	}
+
 }

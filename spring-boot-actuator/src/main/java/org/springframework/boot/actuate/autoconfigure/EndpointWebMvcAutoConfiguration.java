@@ -53,7 +53,9 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
+import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -195,6 +197,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		}
 		try {
 			childContext.refresh();
+			registerContainer(this.applicationContext,
+					childContext.getEmbeddedServletContainer());
 		}
 		catch (RuntimeException e) {
 			// No support currently for deploying a war with management.port=<different>,
@@ -206,6 +210,16 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			else {
 				throw e;
 			}
+		}
+	};
+
+	private void registerContainer(ApplicationContext applicationContext,
+			EmbeddedServletContainer embeddedServletContainer) {
+		if (applicationContext instanceof EmbeddedWebApplicationContext) {
+			((EmbeddedWebApplicationContext) applicationContext)
+					.getEmbeddedServletContainers().put("management",
+							embeddedServletContainer);
+			// Maybe unregister it when it shuts down?
 		}
 	}
 
