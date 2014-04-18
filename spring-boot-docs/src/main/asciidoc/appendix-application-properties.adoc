@@ -106,6 +106,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.name= # name of the data source
 	spring.datasource.intialize=true # populate using data.sql
 	spring.datasource.schema= # a schema resource reference
+	spring.datasource.platform= # the platform to use in the schema resource (schema-${platform}.sql)
 	spring.datasource.continueOnError=false # continue even if can't be initialized
 	spring.datasource.driverClassName= # JDBC Settings...
 	spring.datasource.url=
