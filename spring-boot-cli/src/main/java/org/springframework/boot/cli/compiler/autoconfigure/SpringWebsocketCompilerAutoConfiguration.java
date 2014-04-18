@@ -47,9 +47,10 @@ public class SpringWebsocketCompilerAutoConfiguration extends CompilerAutoConfig
 	public void applyImports(ImportCustomizer imports) {
 		imports.addStarImports("org.springframework.messaging.handler.annotation",
 				"org.springframework.messaging.simp.config",
-				"org.springframework.web.socket",
 				"org.springframework.web.socket.handler",
-				"org.springframework.web.socket.config.annotation");
+				"org.springframework.web.socket.sockjs.transport.handler",
+				"org.springframework.web.socket.config.annotation").addImports(
+				"org.springframework.web.socket.WebSocketHandler");
 	}
 
 }
