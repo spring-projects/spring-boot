@@ -18,6 +18,7 @@ package sample.tomcat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration;
@@ -40,7 +41,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import sample.tomcat.NonAutoConfigurationSampleTomcatApplicationTests.NonAutoConfigurationSampleTomcatApplication;
 import sample.tomcat.service.HelloWorldService;
 import sample.tomcat.web.SampleController;
-
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -51,9 +51,12 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = NonAutoConfigurationSampleTomcatApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port=0")
 @DirtiesContext
 public class NonAutoConfigurationSampleTomcatApplicationTests {
+
+	@Value("${local.server.port}")
+	private int port;
 
 	@Configuration
 	@Import({ EmbeddedServletContainerAutoConfiguration.class,
@@ -73,7 +76,7 @@ public class NonAutoConfigurationSampleTomcatApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
+				"http://localhost:" + port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}

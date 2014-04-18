@@ -16,13 +16,17 @@
 
 package samples.websocket.echo;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.IntegrationTest;
@@ -41,18 +45,24 @@ import samples.websocket.client.SimpleClientWebSocketHandler;
 import samples.websocket.client.SimpleGreetingService;
 import samples.websocket.config.SampleWebSocketsApplication;
 
-import static org.junit.Assert.assertEquals;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWebSocketsApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port:0")
 @DirtiesContext
 public class SampleWebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
-	private static final String WS_URI = "ws://localhost:8080/echo/websocket";
+	private static String WS_URI;
+
+	@Value("${local.server.port}")
+	private int port;
+	
+	@Before
+	public void init() {
+		WS_URI = "ws://localhost:" + port + "/echo/websocket";
+	}
 
 	@Test
 	public void runAndWait() throws Exception {

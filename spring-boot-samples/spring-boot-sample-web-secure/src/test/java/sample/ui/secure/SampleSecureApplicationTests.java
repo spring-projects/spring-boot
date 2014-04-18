@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -44,16 +45,19 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWebSecureApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port:0")
 @DirtiesContext
 public class SampleSecureApplicationTests {
+
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testHome() throws Exception {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:8080", HttpMethod.GET, new HttpEntity<Void>(headers),
+				"http://localhost:" + port, HttpMethod.GET, new HttpEntity<Void>(headers),
 				String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
@@ -63,7 +67,7 @@ public class SampleSecureApplicationTests {
 	@Test
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/css/bootstrap.min.css", String.class);
+				"http://localhost:" + port + "/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
 	}
