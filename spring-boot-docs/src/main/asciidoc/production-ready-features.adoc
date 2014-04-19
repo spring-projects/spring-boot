@@ -54,7 +54,7 @@ Actuator endpoints allow you to monitor and interact with your application. Spri
 includes a number of built-in endpoints and you can also add your own. For example the
 `health` endpoint provides basic application health information.
 
-The way that enpoints are exposed will depend on the type of technology that you choose.
+The way that endpoints are exposed will depend on the type of technology that you choose.
 Most applications choose HTTP monitoring, where the ID of the endpoint is mapped
 to a URL. For example, by default, the `health` endpoint will be mapped to `/health`.
 
@@ -740,9 +740,68 @@ if needed.
 
 [[production-ready-error-handling]]
 == Error Handling
-Spring Boot Actuator provides an `/error` mapping by default that handles all errors in a
-sensible way.  If you want more specific error pages for some conditions, the embedded
-servlet containers support a uniform Java DSL for customizing the error handling.
+
+Spring Boot Actuator provides an `/error` mapping by default that
+handles all errors in a sensible way, and it is registered as a
+"global" error page in the servlet container. For machine clients it
+will produce a JSON response with details of the error, the HTTP
+status and the exception message. For browser clients there is a
+"whitelabel" error view that renders the same data in HTML format (to
+customize it just add a `View` that resolves to ``error'').
+
+If you want more specific error
+pages for some conditions, the embedded servlet containers support a
+uniform Java DSL for customizing the error handling. For example:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public EmbeddedServletContainerCustomizer containerCustomizer(){
+		return new MyCustomizer();
+	}
+
+	// ...
+
+	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
+
+		@Override
+		public void customize(ConfigurableEmbeddedServletContainer factory) {
+            factory.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
+		}
+
+	}
+----
+
+
+You can also use regular Spring MVC features like http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-exception-handlers[`@ExceptionHandler`
+methods] and http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice[`@ControllerAdvice`].
+
+
+[[production-ready-process-monitoring]]
+== Process monitoring
+In Spring Boot Actuator you can find `ApplicationPidListener` which creates file
+containing application PID (by default in application directory and file name is
+`application.pid`). It's not activated by default, but you can do it in two simple
+ways described below.
+
+
+
+[[production-ready-process-monitoring-configuration]]
+=== Extend configuration
+In `META-INF/spring.factories` file you have to activate the listener:
+[indent=0]
+----
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.actuate.system.ApplicationPidListener
+----
+
+
+
+[[production-ready-process-monitoring-programmatically]]
+=== Programmatically
+You can also activate this listener by invoking `SpringApplication.addListeners(...)`
+method and passing `ApplicationPidListener` object. You can also customize file name
+and path through constructor.
 
 
 

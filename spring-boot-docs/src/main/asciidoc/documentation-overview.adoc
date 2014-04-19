@@ -119,7 +119,8 @@ When you're ready to push your Spring Boot application to production, we've got
 * *Monitoring:*
 <<production-ready-features.adoc#production-ready-metrics, Metrics>> |
 <<production-ready-features.adoc#production-ready-auditing, Auditing>> |
-<<production-ready-features.adoc#production-ready-tracing, Tracing>>
+<<production-ready-features.adoc#production-ready-tracing, Tracing>> |
+<<production-ready-features.adoc#production-ready-process-monitoring, Process>>
 
 == Advanced topics
 Lastly, we have a few topics for the more advanced user.

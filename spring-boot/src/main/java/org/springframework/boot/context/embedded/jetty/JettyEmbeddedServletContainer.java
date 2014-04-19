@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
 import org.springframework.util.Assert;
@@ -87,9 +88,7 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		try {
 			this.server.start();
 			for (Handler handler : this.server.getHandlers()) {
-				if (handler instanceof JettyEmbeddedWebAppContext) {
-					((JettyEmbeddedWebAppContext) handler).deferredInitialize();
-				}
+				handleDeferredInitialize(handler);
 			}
 			Connector[] connectors = this.server.getConnectors();
 			for (Connector connector : connectors) {
@@ -100,6 +99,15 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Jetty servlet container", ex);
+		}
+	}
+
+	private void handleDeferredInitialize(Handler handler) throws Exception {
+		if (handler instanceof JettyEmbeddedWebAppContext) {
+			((JettyEmbeddedWebAppContext) handler).deferredInitialize();
+		}
+		else if (handler instanceof HandlerWrapper) {
+			handleDeferredInitialize(((HandlerWrapper) handler).getHandler());
 		}
 	}
 

@@ -29,12 +29,10 @@ import org.apache.http.protocol.HttpContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.InterceptingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
@@ -63,10 +61,10 @@ public class TestRestTemplate extends RestTemplate {
 	 * @param password the password (or {@code null})
 	 */
 	public TestRestTemplate(String username, String password) {
-		super(getRequestFactory(username, password));
 		if (ClassUtils.isPresent("org.apache.http.client.config.RequestConfig", null)) {
 			new HttpComponentsCustomizer().customize(this);
 		}
+		addAuthentication(username, password);
 		setErrorHandler(new DefaultResponseErrorHandler() {
 			@Override
 			public void handleError(ClientHttpResponse response) throws IOException {
@@ -75,16 +73,15 @@ public class TestRestTemplate extends RestTemplate {
 
 	}
 
-	private static ClientHttpRequestFactory getRequestFactory(String username,
-			String password) {
-		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+	private void addAuthentication(String username, String password) {
 		if (username == null) {
-			return factory;
+			return;
 		}
 		List<ClientHttpRequestInterceptor> interceptors = Collections
 				.<ClientHttpRequestInterceptor> singletonList(new BasicAuthorizationInterceptor(
 						username, password));
-		return new InterceptingClientHttpRequestFactory(factory, interceptors);
+		setRequestFactory(new InterceptingClientHttpRequestFactory(getRequestFactory(),
+				interceptors));
 	}
 
 	private static class BasicAuthorizationInterceptor implements

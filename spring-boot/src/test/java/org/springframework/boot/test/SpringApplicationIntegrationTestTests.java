@@ -18,11 +18,13 @@ package org.springframework.boot.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
 import org.springframework.boot.test.SpringApplicationIntegrationTestTests.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Tests for {@link IntegrationTest}
@@ -41,13 +44,18 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Config.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port=0")
 public class SpringApplicationIntegrationTestTests {
+
+	@Value("${local.server.port}")
+	private int port = 0;
 
 	@Test
 	public void runAndTestHttpEndpoint() {
-		String body = new RestTemplate().getForObject("http://localhost:8080/",
-				String.class);
+		assertNotEquals(8080, this.port);
+		assertNotEquals(0, this.port);
+		String body = new RestTemplate().getForObject("http://localhost:" + this.port
+				+ "/", String.class);
 		assertEquals("Hello World", body);
 	}
 
@@ -56,6 +64,9 @@ public class SpringApplicationIntegrationTestTests {
 	@RestController
 	protected static class Config {
 
+		@Value("${server.port:8080}")
+		private int port = 8080;
+
 		@Bean
 		public DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
@@ -63,7 +74,14 @@ public class SpringApplicationIntegrationTestTests {
 
 		@Bean
 		public EmbeddedServletContainerFactory embeddedServletContainer() {
-			return new TomcatEmbeddedServletContainerFactory();
+			TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+			factory.setPort(this.port);
+			return factory;
+		}
+
+		@Bean
+		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 		@RequestMapping("/")

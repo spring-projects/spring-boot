@@ -25,7 +25,7 @@ can send us a {github-code}[pull request].
 
 [[howto-troubleshoot-auto-configuration]]
 === Troubleshoot auto-configuration
-The Spring Boot auto-configuration tries it's best to ``do the right thing'', but
+The Spring Boot auto-configuration tries its best to ``do the right thing'', but
 sometimes things fail and it can be hard to tell why.
 
 There is a really useful `AutoConfigurationReport` available in any Spring Boot
@@ -44,7 +44,7 @@ rules of thumb:
   Actuator app look at the `autoconfig` endpoint (`/autoconfig' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
-  {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`]
+  {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`])
   and read from there the available external configuration options. The
   `@ConfigurationProperties` has a `name` attribute which acts as a prefix to external
   properties, thus `ServerProperties` has `prefix="server"` and its configuration properties
@@ -364,29 +364,22 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A really useful thing to do in is to autowire the `EmbeddedWebApplicationContext` into a
-test case and use it to discover the port that the app is running on. In that way you can
-use a test profile that chooses a random port (`server.port=0`) and make your test suite
-independent of its environment. Example:
+A really useful thing to do in is to use `@IntegrationTest` to set `server.port=0`
+and then inject the actual ("local") port as a `@Value`. Example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
 	@WebApplication
-	@IntegrationTest
-	@ActiveProfiles("test")
+	@IntegrationTest("server.port:0")
 	public class CityRepositoryIntegrationTests {
 
 		@Autowired
 		EmbeddedWebApplicationContext server;
-
+        
+        @Value("${local.server.port}")
 		int port;
-
-		@Before
-		public void init() {
-			port = server.getEmbeddedServletContainer().getPort();
-		}
 
 		// ...
 
@@ -1016,7 +1009,8 @@ not something you want to be on the classpath in production. It is a Hibernate f
 Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
 classpath). In addition Spring Boot will load a file `schema-${platform}.sql` where
-`platform` is the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
+`platform` is the value of `spring.datasource.platform`, e.g. you might choose to set 
+it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
 `postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
 initializer by default, so if the scripts cause exceptions the application will fail
 to start.

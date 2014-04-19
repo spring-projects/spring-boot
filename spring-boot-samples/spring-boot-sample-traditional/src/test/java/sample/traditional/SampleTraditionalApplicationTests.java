@@ -18,6 +18,7 @@ package sample.traditional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -38,14 +39,17 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleTraditionalApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port:0")
 @DirtiesContext
 public class SampleTraditionalApplicationTests {
+
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testHomeJsp() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
+				"http://localhost:" + port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
 		assertTrue("Wrong body:\n" + body, body.contains("<html>"));
@@ -55,7 +59,7 @@ public class SampleTraditionalApplicationTests {
 	@Test
 	public void testStaticPage() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/index.html", String.class);
+				"http://localhost:" + port + "/index.html", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
 		assertTrue("Wrong body:\n" + body, body.contains("<html>"));

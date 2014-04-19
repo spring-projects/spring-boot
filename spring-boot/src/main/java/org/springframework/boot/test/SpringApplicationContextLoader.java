@@ -18,6 +18,7 @@ package org.springframework.boot.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -135,14 +136,30 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
 		Map<String, Object> args = new LinkedHashMap<String, Object>();
-		if (AnnotationUtils.findAnnotation(mergedConfig.getTestClass(),
-				IntegrationTest.class) == null) {
+		// JMX bean names will clash if the same bean is used in multiple contexts
+		args.put("spring.jmx.enabled", "false");
+		IntegrationTest annotation = AnnotationUtils.findAnnotation(
+				mergedConfig.getTestClass(), IntegrationTest.class);
+		if (annotation == null) {
 			// Not running an embedded server, just setting up web context
 			args.put("server.port", "-1");
 		}
-		// JMX bean names will clash if the same bean is used in multiple contexts
-		args.put("spring.jmx.enabled", "false");
+		else {
+			args.putAll(extractProperties(annotation.value()));
+		}
 		return args;
+	}
+
+	private Map<String, String> extractProperties(String[] values) {
+		Map<String, String> map = new HashMap<String, String>();
+		for (String pair : values) {
+			int index = pair.indexOf(":");
+			index = index < 0 ? index = pair.indexOf("=") : index;
+			String key = pair.substring(0, index > 0 ? index : pair.length());
+			String value = index > 0 ? pair.substring(index + 1) : "";
+			map.put(key.trim(), value.trim());
+		}
+		return map;
 	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(
