@@ -67,6 +67,7 @@ content into your application; rather pick only the properties that you need.
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/HttpMapperProperties.{sc-ext}[HttpMapperProperties])
 	http.mappers.json-pretty-print=false # pretty print JSON
 	http.mappers.json-sort-keys=false # sort keys
+	spring.mvc.locale= # set fixed locale, e.g. en_UK
 	spring.view.prefix= # MVC view prefix
 	spring.view.suffix= # ... and suffix
 	spring.resources.cache-period= # cache timeouts in headers sent to browser

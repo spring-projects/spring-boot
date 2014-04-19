@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web;
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,27 +29,34 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.AbstractView;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -139,6 +147,40 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(mappingLocations.get("/**").size(), equalTo(1));
 		assertThat(mappingLocations.get("/**").get(0),
 				equalTo((Resource) new ClassPathResource("/foo/")));
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void noLocaleResolver() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(AllResources.class, Config.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(LocaleResolver.class);
+	}
+
+	@Test
+	public void overrideLocale() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		// set fixed locale
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.locale:en_UK");
+		this.context.register(AllResources.class, Config.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		// mock request and set user preferred locale
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
+		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
+		Locale locale = localeResolver.resolveLocale(request);
+		assertThat(localeResolver,
+				instanceOf(FixedLocaleResolver.class));
+		// test locale resolver uses fixed locale and not user preferred locale
+		assertThat(locale.toString(),
+				equalTo("en_UK"));
 	}
 
 	@SuppressWarnings("unchecked")
