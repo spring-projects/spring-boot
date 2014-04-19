@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +50,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.validation.DefaultMessageCodesResolver;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -140,6 +143,9 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.resources.cachePeriod:}")
 		private Integer cachePeriod;
 
+		@Value("${spring.mvc.message-codes-resolver.format:}")
+		private String messageCodesResolverFormat = "";
+
 		@Autowired
 		private ListableBeanFactory beanFactory;
 
@@ -188,6 +194,15 @@ public class WebMvcAutoConfiguration {
 			// a view so it should have a high precedence
 			resolver.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return resolver;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(MessageCodesResolver.class)
+		@ConditionalOnExpression("'${spring.mvc.message-codes-resolver.format:}' != ''")
+		public MessageCodesResolver messageCodesResolver() {
+			DefaultMessageCodesResolver messageCodesResolver = new DefaultMessageCodesResolver();
+	        messageCodesResolver.setMessageCodeFormatter(DefaultMessageCodesResolver.Format.valueOf(messageCodesResolverFormat));
+	        return messageCodesResolver;
 		}
 
 		@Override
