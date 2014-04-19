@@ -28,16 +28,19 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.View;
@@ -141,6 +144,30 @@ public class WebMvcAutoConfigurationTests {
 				equalTo((Resource) new ClassPathResource("/foo/")));
 	}
 
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void noMessageCodeResolver() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(AllResources.class, Config.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(MessageCodesResolver.class);
+	}
+
+	@Test
+	public void overrideMessageCodesFormat() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.message-codes-resolver.format:POSTFIX_ERROR_CODE");
+		this.context.register(AllResources.class, Config.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(MessageCodesResolver.class);
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected Map<String, List<Resource>> getMappingLocations()
 			throws IllegalAccessException {
