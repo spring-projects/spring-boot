@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -106,6 +107,21 @@ public class SampleMethodSecurityApplicationTests {
 		assertEquals(HttpStatus.FORBIDDEN, page.getStatusCode());
 		assertTrue("Wrong body (message doesn't match):\n" + entity.getBody(), page
 				.getBody().contains("Access denied"));
+	}
+
+	@Test
+	public void testManagementProtected() throws Exception {
+		ResponseEntity<String> entity = new TestRestTemplate()
+				.getForEntity("http://localhost:" + port + "/beans", String.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
+	}
+
+	@Test
+	@Ignore("https://github.com/spring-projects/spring-boot/issues/699")
+	public void testManagementAuthorizedAccess() throws Exception {
+		ResponseEntity<String> entity = new TestRestTemplate("user", "user")
+				.getForEntity("http://localhost:" + port + "/beans", String.class);
+		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
