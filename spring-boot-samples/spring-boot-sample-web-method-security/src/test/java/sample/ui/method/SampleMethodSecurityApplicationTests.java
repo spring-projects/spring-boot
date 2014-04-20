@@ -16,17 +16,19 @@
 
 package sample.ui.method;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,9 +40,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for demo application.
@@ -117,11 +116,17 @@ public class SampleMethodSecurityApplicationTests {
 	}
 
 	@Test
-	@Ignore("https://github.com/spring-projects/spring-boot/issues/699")
 	public void testManagementAuthorizedAccess() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate("user", "user")
+		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
 				.getForEntity("http://localhost:" + port + "/beans", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
+	}
+
+	@Test
+	public void testManagementUnauthorizedAccess() throws Exception {
+		ResponseEntity<String> entity = new TestRestTemplate("user", "user")
+				.getForEntity("http://localhost:" + port + "/beans", String.class);
+		assertEquals(HttpStatus.FORBIDDEN, entity.getStatusCode());
 	}
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
