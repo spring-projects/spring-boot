@@ -372,25 +372,39 @@ Would be transformed into these properties:
 	environments.prod.name=My Cool App
 ----
 
-YAML lists are represented as comma-separated values (useful for simple String values)
-and also as property keys with `[index]` dereferencers, for example this YAML:
+YAML lists are represented as property keys with `[index]` dereferencers, 
+for example this YAML:
 
 [source,yaml,indent=0]
 ----
-	 servers:
- 		- dev.bar.com
- 		- foo.bar.com
+	 my:
+        servers:
+ 		    - dev.bar.com
+ 		    - foo.bar.com
 ----
 
 Would be transformed into these properties:
 
 [source,properties,indent=0]
 ----
-	servers=dev.bar.com,foo.bar.com
-	servers[0]=dev.bar.com
-	servers[1]=foo.bar.com
+	my.servers[0]=dev.bar.com
+	my.servers[1]=foo.bar.com
 ----
 
+To bind to properties like that using the Spring `DataBinder`
+utilities (which is what `@ConfigurationProperties` does) you need to
+have a property in the target bean of type `java.util.List` (or `Set`)
+and you either need to provide a setter, or initialize it with a
+mutable value, e.g. this will bind to the properties above
+
+[source,java,indent=0]
+----
+@ConfigurationProperties(prefix="my")
+public class Config {
+    private List<String> servers = new ArrayList<String>();
+    public List<String> getServers() { return this.servers; }
+}
+----
 
 
 [[boot-features-external-config-exposing-yaml-to-spring]]
