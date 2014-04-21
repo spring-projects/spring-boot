@@ -726,6 +726,23 @@ then you can take control completely and do everything manually using
 See the {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
 
+[[howto-multipart-file-upload-configuration]]
+=== Handling Multipart File Uploads
+Spring Boot embraces the Servlet 3 `javax.servlet.http.Part` API to support uploading files. By default
+Spring Boot configures Spring MVC with a maximum file of 1Mb per
+file and a maximum of 10Mb of file data in a single request. You may override these values, as well as the location
+to which intermediate data is stored (e.g., to the `/tmp` directory) and the threshold past which data is flushed to
+disk by using the properties exposed in the `MultipartAutoConfiguration` class. If you want to specify that files be unlimited,
+for example, set the `multipart.maxFileSize` property to `-1`.
+
+The multipart support is helpful when you want to receive multipart encoded file data as a `@RequestParam`-annotated
+ parameter of  type `MultipartFile` in a Spring MVC controller handler method.
+
+See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`] source for more details.
+
+
+
+
 
 
 [[howto-switch-off-the-spring-mvc-dispatcherservlet]]

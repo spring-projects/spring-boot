@@ -20,7 +20,7 @@ import javax.servlet.MultipartConfigElement;
 
 import org.junit.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
-import org.springframework.boot.context.embedded.MultiPartConfigFactory;
+import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
@@ -120,7 +120,7 @@ public class DispatcherServletAutoConfigurationTests {
 
 		@Bean
 		public MultipartConfigElement multipartConfig() {
-			MultiPartConfigFactory factory = new MultiPartConfigFactory();
+			MultipartConfigFactory factory = new MultipartConfigFactory();
 			factory.setMaxFileSize("128KB");
 			factory.setMaxRequestSize("128KB");
 			return factory.createMultipartConfig();
