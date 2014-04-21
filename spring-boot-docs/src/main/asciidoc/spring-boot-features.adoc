@@ -199,7 +199,7 @@ sensible overriding of values, properties are considered in the the following or
 . Command line arguments.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
-. A `RandomValueProperySource` that only has properties in `random.*`.
+. A `RandomValuePropertySource` that only has properties in `random.*`.
 . `@PropertySource` annotations on your `@Configuration` classes.
 . Application properties outside of your packaged jar (`application.properties`
   including YAML and profile variants).
@@ -231,7 +231,7 @@ default `name`. When running in production, an `application.properties` can be p
 outside of your jar that overrides `name`; and for one-off testing, you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
-The `RandomValueProperySource` is useful for injecting random values
+The `RandomValuePropertySource` is useful for injecting random values
 (e.g. into secrets or test cases). It can produce integers, longs or
 strings, e.g.
 
