@@ -388,10 +388,10 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(this.environment, containsProperySource("applicationConfig: "
+		assertThat(this.environment, containsPropertySource("applicationConfig: "
 				+ "[classpath:specificlocation.properties]"));
 		// The default property source is still there
-		assertThat(this.environment, containsProperySource("applicationConfig: "
+		assertThat(this.environment, containsPropertySource("applicationConfig: "
 				+ "[classpath:/application.properties]"));
 		assertThat(this.environment.getProperty("foo"), equalTo("bucket"));
 	}
@@ -402,7 +402,7 @@ public class ConfigFileApplicationListenerTests {
 		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment, containsProperySource("applicationConfig: ["
+		assertThat(this.environment, containsPropertySource("applicationConfig: ["
 				+ location + "]"));
 	}
 
@@ -412,7 +412,7 @@ public class ConfigFileApplicationListenerTests {
 		EnvironmentTestUtils.addEnvironment(this.environment, "spring.config.location:"
 				+ location);
 		this.initializer.onApplicationEvent(this.event);
-		assertThat(this.environment, containsProperySource("applicationConfig: [file:"
+		assertThat(this.environment, containsPropertySource("applicationConfig: [file:"
 				+ location + "]"));
 	}
 
@@ -423,7 +423,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
 				+ "[specificlocation.properties]"));
 		context.close();
 	}
@@ -439,7 +439,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
 				+ "[specificlocation.properties]"));
 		context.close();
 	}
@@ -452,7 +452,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(context.getEnvironment(), containsProperySource("foo"));
+		assertThat(context.getEnvironment(), containsPropertySource("foo"));
 		context.close();
 	}
 
@@ -465,9 +465,9 @@ public class ConfigFileApplicationListenerTests {
 				.run("--spring.profiles.active=myprofile");
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
-		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
 				+ "[enableprofile.properties]"));
-		assertThat(context.getEnvironment(), not(containsProperySource("classpath:/"
+		assertThat(context.getEnvironment(), not(containsPropertySource("classpath:/"
 				+ "enableprofile-myprofile.properties")));
 		context.close();
 	}
@@ -480,7 +480,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromapplicationproperties"));
-		assertThat(context.getEnvironment(), not(containsProperySource("classpath:"
+		assertThat(context.getEnvironment(), not(containsPropertySource("classpath:"
 				+ "/enableprofile-myprofile.properties")));
 		context.close();
 	}
@@ -493,7 +493,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));
-		assertThat(context.getEnvironment(), containsProperySource("class path resource "
+		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
 				+ "[specificlocation.properties]"));
 		context.close();
 	}
@@ -506,7 +506,7 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));
-		assertThat(context.getEnvironment(), containsProperySource("foo"));
+		assertThat(context.getEnvironment(), containsPropertySource("foo"));
 		context.close();
 	}
 
@@ -545,7 +545,7 @@ public class ConfigFileApplicationListenerTests {
 		assertThat((Boolean) field.get(application), equalTo(false));
 	}
 
-	private static Matcher<? super ConfigurableEnvironment> containsProperySource(
+	private static Matcher<? super ConfigurableEnvironment> containsPropertySource(
 			final String sourceName) {
 		return new TypeSafeDiagnosingMatcher<ConfigurableEnvironment>() {
 			@Override
