@@ -229,6 +229,9 @@ public class RelaxedDataBinder extends DataBinder {
 			return;
 		}
 		TypeDescriptor descriptor = parent.getMapValueTypeDescriptor();
+		if (descriptor == null) {
+			descriptor = TypeDescriptor.valueOf(Object.class);
+		}
 		if (!descriptor.isMap() && !descriptor.isCollection()
 				&& !descriptor.getType().equals(Object.class)) {
 			return;
