@@ -90,6 +90,7 @@ public class JarFileTests {
 		URL jarUrl = new URL("jar:" + this.rootJarFile.toURI() + "!/");
 		URLClassLoader urlClassLoader = new URLClassLoader(new URL[] { jarUrl });
 		assertThat(urlClassLoader.getResource("special/\u00EB.dat"), notNullValue());
+		assertThat(urlClassLoader.getResource("d/9.dat"), notNullValue());
 	}
 
 	@Test
