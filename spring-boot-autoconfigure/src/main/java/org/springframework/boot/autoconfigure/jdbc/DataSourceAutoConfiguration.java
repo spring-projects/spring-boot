@@ -118,6 +118,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 				populator.setContinueOnError(continueOnError);
 			}
 		}
+		populator.setSeparator(this.datasourceProperties.getProperty("separator", ";"));
 
 		if (exists) {
 			DatabasePopulatorUtils.execute(populator, this.dataSource);
