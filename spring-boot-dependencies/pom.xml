@@ -68,6 +68,7 @@
 		<jolokia.version>1.2.0</jolokia.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.11</junit.version>
+		<awaitility.version>1.5.0</awaitility.version>
 		<lettuce.version>2.3.3</lettuce.version>
 		<liquibase.version>3.1.1</liquibase.version>
 		<log4j.version>1.2.17</log4j.version>
@@ -175,6 +176,11 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jayway.awaitility</groupId>
+				<artifactId>awaitility</artifactId>
+				<version>${awaitility.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>

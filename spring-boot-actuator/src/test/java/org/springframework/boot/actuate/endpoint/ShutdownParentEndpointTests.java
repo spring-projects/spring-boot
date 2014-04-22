@@ -24,6 +24,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.awaitility.Awaitility.reset;
+import static com.jayway.awaitility.Awaitility.to;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -33,6 +41,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link ShutdownEndpoint}.
  * 
  * @author Dave Syer
+ * @author Jakub Kubrynski
  */
 public class ShutdownParentEndpointTests {
 
@@ -52,8 +61,8 @@ public class ShutdownParentEndpointTests {
 		assertThat((String) getEndpointBean().invoke().get("message"),
 				startsWith("Shutting down"));
 		assertTrue(this.context.isActive());
-		Thread.sleep(600);
-		assertFalse(this.context.isActive());
+		await().atMost(2, TimeUnit.SECONDS)
+				.untilCall(to(this.context).isActive(), equalTo(false));
 	}
 
 	@Test
@@ -63,8 +72,8 @@ public class ShutdownParentEndpointTests {
 		assertThat((String) getEndpointBean().invoke().get("message"),
 				startsWith("Shutting down"));
 		assertTrue(this.context.isActive());
-		Thread.sleep(600);
-		assertFalse(this.context.isActive());
+		await().atMost(2, TimeUnit.SECONDS)
+				.untilCall(to(this.context).isActive(), equalTo(false));
 	}
 
 	private ShutdownEndpoint getEndpointBean() {
