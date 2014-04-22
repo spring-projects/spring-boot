@@ -109,6 +109,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.schema= # a schema resource reference
 	spring.datasource.platform= # the platform to use in the schema resource (schema-${platform}.sql)
 	spring.datasource.continueOnError=false # continue even if can't be initialized
+	spring.datasource.separator=; # statement separator in SQL initialization scripts
 	spring.datasource.driverClassName= # JDBC Settings...
 	spring.datasource.url=
 	spring.datasource.username=
