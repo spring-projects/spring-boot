@@ -16,16 +16,20 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextClosedEvent;
 
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -49,22 +53,22 @@ public class ShutdownParentEndpointTests {
 	public void shutdownChild() throws Exception {
 		this.context = new SpringApplicationBuilder(Config.class).child(Empty.class)
 				.web(false).run();
+		CountDownLatch latch = this.context.getBean(Config.class).latch;
 		assertThat((String) getEndpointBean().invoke().get("message"),
 				startsWith("Shutting down"));
 		assertTrue(this.context.isActive());
-		Thread.sleep(600);
-		assertFalse(this.context.isActive());
+		assertTrue(latch.await(10, TimeUnit.SECONDS));
 	}
 
 	@Test
 	public void shutdownParent() throws Exception {
 		this.context = new SpringApplicationBuilder(Empty.class).child(Config.class)
 				.web(false).run();
+		CountDownLatch latch = this.context.getBean(Config.class).latch;
 		assertThat((String) getEndpointBean().invoke().get("message"),
 				startsWith("Shutting down"));
 		assertTrue(this.context.isActive());
-		Thread.sleep(600);
-		assertFalse(this.context.isActive());
+		assertTrue(latch.await(10, TimeUnit.SECONDS));
 	}
 
 	private ShutdownEndpoint getEndpointBean() {
@@ -75,6 +79,8 @@ public class ShutdownParentEndpointTests {
 	@EnableConfigurationProperties
 	public static class Config {
 
+		private CountDownLatch latch = new CountDownLatch(1);
+
 		@Bean
 		public ShutdownEndpoint endpoint() {
 			ShutdownEndpoint endpoint = new ShutdownEndpoint();
@@ -82,6 +88,16 @@ public class ShutdownParentEndpointTests {
 			return endpoint;
 		}
 
+		@Bean
+		public ApplicationListener<ContextClosedEvent> listener() {
+			return new ApplicationListener<ContextClosedEvent>() {
+				@Override
+				public void onApplicationEvent(ContextClosedEvent event) {
+					Config.this.latch.countDown();
+				}
+			};
+
+		}
 	}
 
 	@Configuration
