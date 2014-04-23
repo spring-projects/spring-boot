@@ -17,104 +17,74 @@
 package org.springframework.boot.actuate.system;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.boot.util.SystemUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
- * into file
+ * into file. This application listener will be triggered exactly once per JVM.
  * 
- * @since 1.0.2
- *
  * @author Jakub Kubrynski
  * @author Dave Syer
+ * @author Phillip Webb
+ * @since 1.0.2
  */
 public class ApplicationPidListener implements
 		ApplicationListener<ApplicationStartedEvent>, Ordered {
 
-	private static final String DEFAULT_PID_FILE_NAME = "application.pid";
+	private static final Log logger = LogFactory.getLog(ApplicationPidListener.class);
 
-	private static final AtomicBoolean pidFileCreated = new AtomicBoolean(false);
+	private static final String DEFAULT_FILE_NAME = "application.pid";
+
+	private static final AtomicBoolean created = new AtomicBoolean(false);
 
 	private int order = Ordered.HIGHEST_PRECEDENCE + 13;
 
-	private static final Log logger = LogFactory.getLog(ApplicationPidListener.class);
-
-	private String pidFileName = DEFAULT_PID_FILE_NAME;
+	private final File file;
 
 	/**
-	 * Sets the pid file name. This file will contain current process id.
-	 *
-	 * @param pidFileName the name of file containing pid
+	 * Create a new {@link ApplicationPidListener} instance using the filename
+	 * 'application.pid'.
 	 */
-	public ApplicationPidListener(String pidFileName) {
-		this.pidFileName = pidFileName;
+	public ApplicationPidListener() {
+		this.file = new File(DEFAULT_FILE_NAME);
 	}
 
-	public ApplicationPidListener() {
+	/**
+	 * Create a new {@link ApplicationPidListener} instance with a specified filename.
+	 * @param filename the name of file containing pid
+	 */
+	public ApplicationPidListener(String filename) {
+		Assert.notNull(filename, "Filename must not be null");
+		this.file = new File(filename);
+	}
+
+	/**
+	 * Create a new {@link ApplicationPidListener} instance with a specified file.
+	 * @param file the file containing pid
+	 */
+	public ApplicationPidListener(File file) {
+		Assert.notNull(file, "File must not be null");
+		this.file = file;
 	}
 
 	@Override
 	public void onApplicationEvent(ApplicationStartedEvent event) {
-		if (pidFileCreated.get()) {
-			return;
-		}
-
-		String applicationPid;
-		try {
-			applicationPid = SystemUtils.getApplicationPid();
-		}
-		catch (IllegalStateException ignore) {
-			return;
-		}
-
-		if (pidFileCreated.compareAndSet(false, true)) {
-			File file = new File(this.pidFileName);
-			FileOutputStream fileOutputStream = null;
+		if (created.compareAndSet(false, true)) {
 			try {
-				File parent = file.getParentFile();
-				if (parent != null) {
-					parent.mkdirs();
-				}
-				fileOutputStream = new FileOutputStream(file);
-				fileOutputStream.write(applicationPid.getBytes());
+				new ApplicationPid().write(this.file);
 			}
-			catch (FileNotFoundException e) {
-				logger.warn(String
-						.format("Cannot create pid file %s !", this.pidFileName));
-			}
-			catch (Exception e) {
-				logger.warn(String.format("Cannot write to pid file %s!",
-						this.pidFileName));
-			}
-			finally {
-				if (fileOutputStream != null) {
-					try {
-						fileOutputStream.close();
-					}
-					catch (IOException e) {
-						logger.warn(String.format("Cannot close pid file %s!",
-								this.pidFileName));
-					}
-				}
+			catch (Exception ex) {
+				logger.warn(String.format("Cannot create pid file %s", this.file));
 			}
 		}
-	}
-
-	/**
-	 * Allow pid file to be re-written
-	 */
-	public static void reset() {
-		pidFileCreated.set(false);
 	}
 
 	public void setOrder(int order) {
@@ -126,4 +96,10 @@ public class ApplicationPidListener implements
 		return this.order;
 	}
 
+	/**
+	 * Reset the created flag for testing purposes.
+	 */
+	static void reset() {
+		created.set(false);
+	}
 }

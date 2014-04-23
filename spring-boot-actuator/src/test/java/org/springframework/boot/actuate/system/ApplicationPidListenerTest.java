@@ -17,57 +17,47 @@
 package org.springframework.boot.actuate.system;
 
 import java.io.File;
+import java.io.FileReader;
 
 import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.util.FileCopyUtils;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 /**
+ * Tests fpr {@link ApplicationPidListener}.
+ * 
  * @author Jakub Kubrynski
  * @author Dave Syer
  */
 public class ApplicationPidListenerTest {
 
-	private static final String[] NO_ARGS = {};
+	private static final ApplicationStartedEvent EVENT = new ApplicationStartedEvent(
+			new SpringApplication(), new String[] {});
 
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+	@Before
 	@After
-	public void init() {
+	public void resetListener() {
 		ApplicationPidListener.reset();
 	}
 
 	@Test
-	public void shouldCreatePidFile() {
-		// given
-		String pidFileName = "test.pid";
-		ApplicationPidListener sut = new ApplicationPidListener(pidFileName);
-
-		// when
-		sut.onApplicationEvent(new ApplicationStartedEvent(new SpringApplication(),
-				NO_ARGS));
-
-		// then
-		File pidFile = new File(pidFileName);
-		assertTrue(pidFile.exists());
-		pidFile.delete();
-	}
-
-	@Test
-	public void shouldCreatePidFileParentDirectory() {
-		// given
-		String pidFileName = "target/pid/test.pid";
-		ApplicationPidListener sut = new ApplicationPidListener(pidFileName);
-
-		// when
-		sut.onApplicationEvent(new ApplicationStartedEvent(new SpringApplication(),
-				NO_ARGS));
-
-		// then
-		File pidFile = new File(pidFileName);
-		assertTrue(pidFile.exists());
-		pidFile.delete();
+	public void createPidFile() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		ApplicationPidListener listener = new ApplicationPidListener(file);
+		listener.onApplicationEvent(EVENT);
+		assertThat(FileCopyUtils.copyToString(new FileReader(file)), not(isEmptyString()));
 	}
 
 }

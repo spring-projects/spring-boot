@@ -16,12 +16,16 @@
 
 package org.springframework.boot.logging;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.boot.util.SystemUtils;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.SmartApplicationListener;
@@ -32,10 +36,6 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * An {@link ApplicationListener} that configures a logging framework depending on what it
@@ -124,13 +124,7 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		}
 		else {
 			if (System.getProperty(PID_KEY) == null) {
-				String applicationPid;
-				try {
-					applicationPid = SystemUtils.getApplicationPid();
-				} catch (IllegalStateException e) {
-					applicationPid = "????";
-				}
-				System.setProperty(PID_KEY, applicationPid);
+				System.setProperty(PID_KEY, new ApplicationPid().toString());
 			}
 			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
 					.getDefaultClassLoader());
