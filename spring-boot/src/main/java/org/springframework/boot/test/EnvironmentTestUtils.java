@@ -37,7 +37,6 @@ public abstract class EnvironmentTestUtils {
 	 * Add additional (high priority) values to an {@link Environment} owned by an
 	 * {@link ApplicationContext}. Name-value pairs can be specified with colon (":") or
 	 * equals ("=") separators.
-	 * 
 	 * @param context the context with an environment to modify
 	 * @param pairs the name:value pairs
 	 */
@@ -49,7 +48,6 @@ public abstract class EnvironmentTestUtils {
 	/**
 	 * Add additional (high priority) values to an {@link Environment}. Name-value pairs
 	 * can be specified with colon (":") or equals ("=") separators.
-	 * 
 	 * @param environment the environment to modify
 	 * @param pairs the name:value pairs
 	 */
@@ -61,7 +59,6 @@ public abstract class EnvironmentTestUtils {
 	/**
 	 * Add additional (high priority) values to an {@link Environment}. Name-value pairs
 	 * can be specified with colon (":") or equals ("=") separators.
-	 * 
 	 * @param environment the environment to modify
 	 * @param name the property source name
 	 * @param pairs the name:value pairs

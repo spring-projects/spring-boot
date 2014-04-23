@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -58,8 +58,8 @@ public class SampleActuatorUiApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + port, HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
+				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
+						headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
 				.getBody().contains("<title>Hello"));
@@ -68,7 +68,7 @@ public class SampleActuatorUiApplicationTests {
 	@Test
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/css/bootstrap.min.css", String.class);
+				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
 	}
@@ -77,7 +77,7 @@ public class SampleActuatorUiApplicationTests {
 	public void testMetrics() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/metrics", Map.class);
+				"http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
@@ -86,8 +86,8 @@ public class SampleActuatorUiApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + port + "/error", HttpMethod.GET, new HttpEntity<Void>(
-						headers), String.class);
+				"http://localhost:" + this.port + "/error", HttpMethod.GET,
+				new HttpEntity<Void>(headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody()
 				.contains("<html>"));

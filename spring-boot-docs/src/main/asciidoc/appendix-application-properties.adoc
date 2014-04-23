@@ -77,7 +77,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.suffix=.html
 	spring.thymeleaf.mode=HTML5
 	spring.thymeleaf.encoding=UTF-8
-	spring.thymeleaf.contentType=text/html # ;charset=<encoding> is added
+	spring.thymeleaf.content-type=text/html # ;charset=<encoding> is added
 	spring.thymeleaf.cache=true # set to false for hot refresh
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])

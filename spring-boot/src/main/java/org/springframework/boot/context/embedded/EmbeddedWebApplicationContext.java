@@ -89,10 +89,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class EmbeddedWebApplicationContext extends GenericWebApplicationContext {
 
-	/**
-	 * 
-	 */
-	private static final String SERVER = "server";
+	private static final String DEFAULT_SERVER_NAME = "server";
 
 	/**
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
@@ -166,7 +163,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
 					.getEmbeddedServletContainer(getSelfInitializer());
-			this.containers.put(SERVER, this.embeddedServletContainer);
+			this.containers.put(DEFAULT_SERVER_NAME, this.embeddedServletContainer);
 		}
 		else if (getServletContext() != null) {
 			try {
@@ -391,7 +388,7 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			try {
 				this.embeddedServletContainer.stop();
 				this.embeddedServletContainer = null;
-				this.containers.remove(SERVER);
+				this.containers.remove(DEFAULT_SERVER_NAME);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
@@ -439,7 +436,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 * A registry of embedded containers by name. The
 	 * {@link #getEmbeddedServletContainer() canonical container} is called "server".
 	 * Anyone else who creates one can register it with whatever name they please.
-	 * 
 	 * @return the containers
 	 */
 	public Map<String, EmbeddedServletContainer> getEmbeddedServletContainers() {

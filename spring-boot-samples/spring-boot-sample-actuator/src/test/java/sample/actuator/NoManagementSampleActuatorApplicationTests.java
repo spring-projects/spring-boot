@@ -16,8 +16,6 @@
 
 package sample.actuator;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -34,6 +32,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Integration tests for switching off management endpoints.
  * 
@@ -42,13 +42,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest({"server.port=0", "management.port=-1"})
+@IntegrationTest({ "server.port=0", "management.port=-1" })
 @DirtiesContext
 public class NoManagementSampleActuatorApplicationTests {
 
 	@Autowired
 	private SecurityProperties security;
-	
+
 	@Value("${local.server.port}")
 	private int port = 0;
 
@@ -56,7 +56,7 @@ public class NoManagementSampleActuatorApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port, Map.class);
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -68,7 +68,7 @@ public class NoManagementSampleActuatorApplicationTests {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port + "/metrics", Map.class);
+				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.NOT_FOUND, entity.getStatusCode());
 	}
 

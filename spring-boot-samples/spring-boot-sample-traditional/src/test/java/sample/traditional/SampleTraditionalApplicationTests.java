@@ -20,8 +20,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -49,7 +49,7 @@ public class SampleTraditionalApplicationTests {
 	@Test
 	public void testHomeJsp() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port, String.class);
+				"http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
 		assertTrue("Wrong body:\n" + body, body.contains("<html>"));
@@ -59,7 +59,7 @@ public class SampleTraditionalApplicationTests {
 	@Test
 	public void testStaticPage() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/index.html", String.class);
+				"http://localhost:" + this.port + "/index.html", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
 		assertTrue("Wrong body:\n" + body, body.contains("<html>"));

@@ -16,8 +16,6 @@
 
 package samples.websocket.echo;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +43,8 @@ import samples.websocket.client.SimpleClientWebSocketHandler;
 import samples.websocket.client.SimpleGreetingService;
 import samples.websocket.config.SampleWebSocketsApplication;
 
+import static org.junit.Assert.assertEquals;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWebSocketsApplication.class)
 @WebAppConfiguration
@@ -58,10 +58,10 @@ public class SampleWebSocketsApplicationTests {
 
 	@Value("${local.server.port}")
 	private int port;
-	
+
 	@Before
 	public void init() {
-		WS_URI = "ws://localhost:" + port + "/echo/websocket";
+		WS_URI = "ws://localhost:" + this.port + "/echo/websocket";
 	}
 
 	@Test

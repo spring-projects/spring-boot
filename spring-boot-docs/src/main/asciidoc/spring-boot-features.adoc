@@ -231,24 +231,23 @@ default `name`. When running in production, an `application.properties` can be p
 outside of your jar that overrides `name`; and for one-off testing, you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
 
-The `RandomValuePropertySource` is useful for injecting random values
-(e.g. into secrets or test cases). It can produce integers, longs or
-strings, e.g.
-
+The `RandomValuePropertySource` is useful for injecting random values (e.g. into secrets
+or test cases). It can produce integers, longs or strings, e.g.
 
 [source,properties,indent=0]
 ----
-my.secret=${random.value}
-my.number=${random.int}
-my.bignumber=${random.long}
-my.number.less.than.ten=${random.int(10)}
-my.number.in.range=${random.int[1024,65536]}
+	my.secret=${random.value}
+	my.number=${random.int}
+	my.bignumber=${random.long}
+	my.number.less.than.ten=${random.int(10)}
+	my.number.in.range=${random.int[1024,65536]}
 ----
 
-The `random.int*` syntax is `OPEN value (,max) CLOSE` where the
-`OPEN,CLOSE` are any character and `value,max` are integers. If
-`max` is provided then `value` is the minimum value and `max` is the
-maximum (exclusive).
+The `random.int*` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any
+character and `value,max` are integers. If `max` is provided then `value` is the minimum
+value and `max` is the maximum (exclusive).
+
+
 
 [[boot-features-external-config-command-line-args]]
 === Accessing command line properties
@@ -372,15 +371,15 @@ Would be transformed into these properties:
 	environments.prod.name=My Cool App
 ----
 
-YAML lists are represented as property keys with `[index]` dereferencers, 
+YAML lists are represented as property keys with `[index]` dereferencers,
 for example this YAML:
 
 [source,yaml,indent=0]
 ----
 	 my:
-        servers:
- 		    - dev.bar.com
- 		    - foo.bar.com
+		servers:
+			- dev.bar.com
+			- foo.bar.com
 ----
 
 Would be transformed into these properties:
@@ -391,20 +390,23 @@ Would be transformed into these properties:
 	my.servers[1]=foo.bar.com
 ----
 
-To bind to properties like that using the Spring `DataBinder`
-utilities (which is what `@ConfigurationProperties` does) you need to
-have a property in the target bean of type `java.util.List` (or `Set`)
-and you either need to provide a setter, or initialize it with a
-mutable value, e.g. this will bind to the properties above
+To bind to properties like that using the Spring `DataBinder` utilities (which is what
+`@ConfigurationProperties` does) you need to have a property in the target bean of type
+`java.util.List` (or `Set`) and you either need to provide a setter, or initialize it
+with a mutable value, e.g. this will bind to the properties above
 
 [source,java,indent=0]
 ----
-@ConfigurationProperties(prefix="my")
-public class Config {
-    private List<String> servers = new ArrayList<String>();
-    public List<String> getServers() { return this.servers; }
-}
+	@ConfigurationProperties(prefix="my")
+	public class Config {
+		private List<String> servers = new ArrayList<String>();
+
+		public List<String> getServers() {
+			return this.servers;
+		}
+	}
 ----
+
 
 
 [[boot-features-external-config-exposing-yaml-to-spring]]
@@ -1570,9 +1572,10 @@ interaction. For Example:
 	}
 ----
 
-To change the port you can add environment properties to
-`@IntegrationTest` as colon- or equals-separated name-value pairs,
-e.g. `@IntegrationTest("server.port:9000")`.
+To change the port you can add environment properties to `@IntegrationTest` as colon- or
+equals-separated name-value pairs, e.g. `@IntegrationTest("server.port:9000")`.
+
+
 
 [[boot-features-test-utilities]]
 === Test utilities

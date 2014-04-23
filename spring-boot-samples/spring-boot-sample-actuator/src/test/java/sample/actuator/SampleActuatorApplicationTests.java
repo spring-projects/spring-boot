@@ -65,7 +65,7 @@ public class SampleActuatorApplicationTests {
 	public void testHomeIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port, Map.class);
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -78,16 +78,16 @@ public class SampleActuatorApplicationTests {
 	public void testMetricsIsSecure() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/metrics", Map.class);
+				"http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		entity = new TestRestTemplate().getForEntity("http://localhost:" + port + "/metrics/",
-				Map.class);
+		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
+				+ "/metrics/", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		entity = new TestRestTemplate().getForEntity("http://localhost:" + port + "/metrics/foo",
-				Map.class);
+		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
+				+ "/metrics/foo", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
-		entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/metrics.json", Map.class);
+		entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port
+				+ "/metrics.json", Map.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
@@ -95,7 +95,7 @@ public class SampleActuatorApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port, Map.class);
+				.getForEntity("http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -107,7 +107,7 @@ public class SampleActuatorApplicationTests {
 		testHome(); // makes sure some requests have been made
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port + "/metrics", Map.class);
+				.getForEntity("http://localhost:" + this.port + "/metrics", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -118,7 +118,7 @@ public class SampleActuatorApplicationTests {
 	public void testEnv() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port + "/env", Map.class);
+				.getForEntity("http://localhost:" + this.port + "/env", Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -128,7 +128,7 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testHealth() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/health", String.class);
+				"http://localhost:" + this.port + "/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("ok", entity.getBody());
 	}
@@ -136,7 +136,7 @@ public class SampleActuatorApplicationTests {
 	@Test
 	public void testErrorPage() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port + "/foo", String.class);
+				.getForEntity("http://localhost:" + this.port + "/foo", String.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		String body = entity.getBody();
 		assertNotNull(body);
@@ -149,8 +149,8 @@ public class SampleActuatorApplicationTests {
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.exchange("http://localhost:" + port + "/foo", HttpMethod.GET, request,
-						String.class);
+				.exchange("http://localhost:" + this.port + "/foo", HttpMethod.GET,
+						request, String.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		String body = entity.getBody();
 		assertNotNull("Body was null", body);
@@ -160,10 +160,11 @@ public class SampleActuatorApplicationTests {
 
 	@Test
 	public void testTrace() throws Exception {
-		new TestRestTemplate().getForEntity("http://localhost:" + port + "/health", String.class);
+		new TestRestTemplate().getForEntity("http://localhost:" + this.port + "/health",
+				String.class);
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port + "/trace", List.class);
+				.getForEntity("http://localhost:" + this.port + "/trace", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> list = entity.getBody();
@@ -178,7 +179,7 @@ public class SampleActuatorApplicationTests {
 	public void testErrorPageDirectAccess() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/error", Map.class);
+				"http://localhost:" + this.port + "/error", Map.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -190,7 +191,7 @@ public class SampleActuatorApplicationTests {
 	public void testBeans() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<List> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port + "/beans", List.class);
+				.getForEntity("http://localhost:" + this.port + "/beans", List.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals(1, entity.getBody().size());
 		@SuppressWarnings("unchecked")

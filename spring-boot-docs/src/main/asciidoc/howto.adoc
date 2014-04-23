@@ -365,7 +365,7 @@ that and be sure that it has initialized is to add a `@Bean` of type
 out of the event when it is published.
 
 A really useful thing to do in is to use `@IntegrationTest` to set `server.port=0`
-and then inject the actual ("local") port as a `@Value`. Example:
+and then inject the actual (``local'') port as a `@Value`. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -377,14 +377,16 @@ and then inject the actual ("local") port as a `@Value`. Example:
 
 		@Autowired
 		EmbeddedWebApplicationContext server;
-        
-        @Value("${local.server.port}")
+
+		@Value("${local.server.port}")
 		int port;
 
 		// ...
 
 	}
 ----
+
+
 
 [[howto-configure-tomcat]]
 === Configure Tomcat
@@ -630,6 +632,8 @@ then `http://localhost:8080/thing` will serve a JSON representation of it by def
 Sometimes in a browser you might see XML responses (but by default only if `MyThing` was
 a JAXB object) because browsers tend to send accept headers that prefer XML.
 
+
+
 [[howto-write-an-xml-rest-service]]
 === Write an XML REST service
 Since JAXB is in the JDK the same example as we used for JSON would work, as long as the
@@ -637,15 +641,16 @@ Since JAXB is in the JDK the same example as we used for JSON would work, as lon
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-    @XmlRootElement
+	@XmlRootElement
 	public class MyThing {
-        private String name;
-        // .. getters and setters
+		private String name;
+		// .. getters and setters
 	}
 ----
 
-To get the server to render XML instead of JSON you might have to send
-an `Accept: text/xml` header (or use a browser).
+To get the server to render XML instead of JSON you might have to send an
+`Accept: text/xml` header (or use a browser).
+
 
 
 [[howto-customize-the-jackson-objectmapper]]
@@ -1009,7 +1014,7 @@ not something you want to be on the classpath in production. It is a Hibernate f
 Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
 classpath). In addition Spring Boot will load a file `schema-${platform}.sql` where
-`platform` is the value of `spring.datasource.platform`, e.g. you might choose to set 
+`platform` is the value of `spring.datasource.platform`, e.g. you might choose to set
 it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
 `postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
 initializer by default, so if the scripts cause exceptions the application will fail

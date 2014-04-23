@@ -16,8 +16,6 @@
 
 package sample.actuator;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -34,6 +32,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Integration tests for separate management and main service ports.
  * 
@@ -42,7 +42,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest({"server.port=0", "management.port=0", "management.address=127.0.0.1", "management.contextPath:/admin"})
+@IntegrationTest({ "server.port=0", "management.port=0", "management.address=127.0.0.1",
+		"management.contextPath:/admin" })
 @DirtiesContext
 public class ManagementAddressActuatorApplicationTests {
 

@@ -22,8 +22,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -54,7 +54,7 @@ public class SampleWebUiApplicationTests {
 	@Test
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port, String.class);
+				"http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
 				.getBody().contains("<title>Messages"));
@@ -67,16 +67,16 @@ public class SampleWebUiApplicationTests {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("text", "FOO text");
 		map.set("summary", "FOO");
-		URI location = new TestRestTemplate().postForLocation("http://localhost:" + port,
-				map);
+		URI location = new TestRestTemplate().postForLocation("http://localhost:"
+				+ this.port, map);
 		assertTrue("Wrong location:\n" + location,
-				location.toString().contains("localhost:" + port));
+				location.toString().contains("localhost:" + this.port));
 	}
 
 	@Test
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/css/bootstrap.min.css", String.class);
+				"http://localhost:" + this.port + "/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
 	}

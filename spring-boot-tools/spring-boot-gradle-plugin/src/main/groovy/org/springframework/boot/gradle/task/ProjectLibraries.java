@@ -18,8 +18,6 @@ package org.springframework.boot.gradle.task;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -30,7 +28,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
  * Expose Gradle {@link Configuration}s as {@link Libraries}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -44,7 +42,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
-	 * 
+	 *
 	 * @param project the gradle project
 	 */
 	public ProjectLibraries(Project project) {
@@ -53,7 +51,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Set the name of the provided configuration. Defaults to 'providedRuntime'.
-	 * 
+	 *
 	 * @param providedConfigurationName the providedConfigurationName to set
 	 */
 	public void setProvidedConfigurationName(String providedConfigurationName) {

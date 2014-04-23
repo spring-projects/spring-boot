@@ -143,7 +143,7 @@ public class WebMvcAutoConfiguration {
 
 		@Value("${spring.resources.cachePeriod:}")
 		private Integer cachePeriod;
-		
+
 		@Value("${spring.mvc.locale:}")
 		private String locale = "";
 
