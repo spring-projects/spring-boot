@@ -352,6 +352,11 @@ Simply declare dependencies in the usual way, but leave the version number empty
 	}
 ----
 
+NOTE: The version of the `spring-boot` gradle plugin that you declare determines the
+actual versions of the ``blessed'' dependencies (this ensures that builds are always
+repeatable). You should always set the version of the `spring-boot` gradle plugin to the
+actual Spring Boot version that you wish to use.
+
 
 
 [[build-tool-plugins-gradle-packaging]]
