@@ -542,6 +542,9 @@
 								</goals>
 								<configuration>
 									<rules>
+										<requireJavaVersion>
+											<version>(1.7,1.8)</version>
+										</requireJavaVersion>
 										<requireReleaseDeps />
 										<requireReleaseVersion />
 									</rules>
@@ -561,12 +564,15 @@
 						<artifactId>maven-enforcer-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>enforce-milestone-rules</id>
+								<id>enforce-release-rules</id>
 								<goals>
 									<goal>enforce</goal>
 								</goals>
 								<configuration>
 									<rules>
+										<requireJavaVersion>
+											<version>(1.7,1.8)</version>
+										</requireJavaVersion>
 										<requireReleaseDeps />
 										<requireReleaseVersion />
 									</rules>
