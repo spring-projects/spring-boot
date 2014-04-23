@@ -41,9 +41,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @Target(ElementType.TYPE)
 // Leave out the ServletTestExecutionListener because it only deals with Mock* servlet
 // stuff. A real embedded application will not need the mocks.
-@TestExecutionListeners(listeners = {
-		EmbeddedServletContainerTestExecutionListener.class,
-		DependencyInjectionTestExecutionListener.class,
+@TestExecutionListeners(listeners = { DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
 		TransactionalTestExecutionListener.class })
 public @interface IntegrationTest {

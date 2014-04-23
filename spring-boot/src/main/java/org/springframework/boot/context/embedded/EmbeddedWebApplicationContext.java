@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventListener;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -89,8 +88,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public class EmbeddedWebApplicationContext extends GenericWebApplicationContext {
 
-	private static final String DEFAULT_SERVER_NAME = "server";
-
 	/**
 	 * Constant value for the DispatcherServlet bean name. A Servlet bean with this name
 	 * is deemed to be the "main" servlet and is automatically given a mapping of "/" by
@@ -104,8 +101,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	private ServletConfig servletConfig;
 
 	private String namespace;
-
-	private Map<String, EmbeddedServletContainer> containers = new HashMap<String, EmbeddedServletContainer>();
 
 	/**
 	 * Register ServletContextAwareProcessor.
@@ -163,7 +158,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			EmbeddedServletContainerFactory containerFactory = getEmbeddedServletContainerFactory();
 			this.embeddedServletContainer = containerFactory
 					.getEmbeddedServletContainer(getSelfInitializer());
-			this.containers.put(DEFAULT_SERVER_NAME, this.embeddedServletContainer);
 		}
 		else if (getServletContext() != null) {
 			try {
@@ -388,7 +382,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 			try {
 				this.embeddedServletContainer.stop();
 				this.embeddedServletContainer = null;
-				this.containers.remove(DEFAULT_SERVER_NAME);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException(ex);
@@ -430,16 +423,6 @@ public class EmbeddedWebApplicationContext extends GenericWebApplicationContext 
 	 */
 	public EmbeddedServletContainer getEmbeddedServletContainer() {
 		return this.embeddedServletContainer;
-	}
-
-	/**
-	 * A registry of embedded containers by name. The
-	 * {@link #getEmbeddedServletContainer() canonical container} is called "server".
-	 * Anyone else who creates one can register it with whatever name they please.
-	 * @return the containers
-	 */
-	public Map<String, EmbeddedServletContainer> getEmbeddedServletContainers() {
-		return this.containers;
 	}
 
 }

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.embedded;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -29,10 +28,11 @@ import org.springframework.context.ApplicationEvent;
  */
 public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 
-	private final ApplicationContext applicationContext;
+	private final EmbeddedWebApplicationContext applicationContext;
 
 	public EmbeddedServletContainerInitializedEvent(
-			ApplicationContext applicationContext, EmbeddedServletContainer source) {
+			EmbeddedWebApplicationContext applicationContext,
+			EmbeddedServletContainer source) {
 		super(source);
 		this.applicationContext = applicationContext;
 	}
@@ -60,7 +60,7 @@ public class EmbeddedServletContainerInitializedEvent extends ApplicationEvent {
 	 * context) before acting on the server container itself.
 	 * @return the applicationContext that the container was created from
 	 */
-	public ApplicationContext getApplicationContext() {
+	public EmbeddedWebApplicationContext getApplicationContext() {
 		return this.applicationContext;
 	}
 
