@@ -83,10 +83,8 @@
 		<spring.version>4.0.3.RELEASE</spring.version>
 		<spring-integration.version>3.0.1.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.5.RELEASE</spring-batch.version>
-		<spring-data-jpa.version>1.5.1.RELEASE</spring-data-jpa.version>
-		<spring-data-mongodb.version>1.4.1.RELEASE</spring-data-mongodb.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
-		<spring-data-rest.version>2.0.1.RELEASE</spring-data-rest.version>
+		<spring-data-releasetrain.version>Codd-SR2</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
 		<spring-rabbit.version>1.2.1.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
@@ -514,38 +512,15 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-jpa</artifactId>
-				<version>${spring-data-jpa.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-jdbc</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-orm</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-mongodb</artifactId>
-				<version>${spring-data-mongodb.version}</version>
+				<artifactId>spring-data-releasetrain</artifactId>
+				<version>${spring-data-releasetrain.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-redis</artifactId>
 				<version>${spring-data-redis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.hateoas</groupId>
-				<artifactId>spring-hateoas</artifactId>
-				<version>${spring-hateoas.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-rest-webmvc</artifactId>
-				<version>${spring-data-rest.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
