@@ -1233,6 +1233,26 @@ would only ever be a development time trick probably).
 
 
 
+[[howto-customize-dependency-versions-with-maven]]
+=== Customize dependency versions with Maven
+If you use a Maven build that inherits from `spring-boot-starter-parent` but you want
+to override a specific third-party dependency you can add appropriate `<properties>`
+elements. Browse the {github-code}/spring-boot-dependencies/pom.xml[`spring-dependencies`]
+POM for a complete list of properties. For example, to pick a different `slf4j` version
+you would add the following:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<slf4j.version>1.7.5<slf4j.version>
+	</properties>
+----
+
+WARNING: Each Spring Boot release is designed and tested against a specific set of
+third-party dependencies. Overriding versions may cause compatibilty issues.
+
+
+
 [[howto-build-an-executable-archive-with-ant]]
 === Build an executable archive with Ant
 To build with Ant you need to grab dependencies, compile and then create a jar or war
