@@ -1253,6 +1253,20 @@ third-party dependencies. Overriding versions may cause compatibilty issues.
 
 
 
+[[howto-remote-debug-maven-run]]
+=== Remote debug a Spring Boot application started with Maven
+To attach a remote debugger to a Spring Boot application started with Maven you can use
+the `mvnDebug` command rather than `mvn`. For example:
+
+[indent=0]
+----
+	$ mvnDebug spring-boot:run
+----
+
+You can now attach a remote debugger to your running application on port `8000`.
+
+
+
 [[howto-build-an-executable-archive-with-ant]]
 === Build an executable archive with Ant
 To build with Ant you need to grab dependencies, compile and then create a jar or war
