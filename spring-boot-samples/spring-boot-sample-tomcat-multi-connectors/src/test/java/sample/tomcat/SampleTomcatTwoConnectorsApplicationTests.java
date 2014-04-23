@@ -29,8 +29,11 @@ import javax.net.ssl.X509TrustManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -49,9 +52,15 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleTomcatTwoConnectorsApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port=0")
 @DirtiesContext
 public class SampleTomcatTwoConnectorsApplicationTests {
+
+	@Value("${local.server.port}")
+	private String port;
+
+	@Autowired
+	private ApplicationContext context;
 
 	@BeforeClass
 	public static void setUp() {
@@ -100,13 +109,13 @@ public class SampleTomcatTwoConnectorsApplicationTests {
 				});
 		template.setRequestFactory(factory);
 
-		ResponseEntity<String> entity = template.getForEntity(
-				"http://localhost:8080/hello", String.class);
+		ResponseEntity<String> entity = template.getForEntity("http://localhost:"
+				+ this.port + "/hello", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("hello", entity.getBody());
 
-		ResponseEntity<String> httpsEntity = template.getForEntity(
-				"https://localhost:8443/hello", String.class);
+		ResponseEntity<String> httpsEntity = template.getForEntity("https://localhost:"
+				+ this.context.getBean("port") + "/hello", String.class);
 		assertEquals(HttpStatus.OK, httpsEntity.getStatusCode());
 		assertEquals("hello", httpsEntity.getBody());
 
