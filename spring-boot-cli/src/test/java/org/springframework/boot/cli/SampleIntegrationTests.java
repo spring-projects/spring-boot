@@ -99,7 +99,7 @@ public class SampleIntegrationTests {
 		this.cli.run("ui.groovy", "--classpath=.:src/test/resources");
 		String result = this.cli.getHttpOutput();
 		assertTrue("Wrong output: " + result, result.contains("Hello World"));
-		result = this.cli.getHttpOutput("http://localhost:8080/css/bootstrap.min.css");
+		result = this.cli.getHttpOutput("/css/bootstrap.min.css");
 		assertTrue("Wrong output: " + result, result.contains("container"));
 	}
 
