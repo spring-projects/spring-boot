@@ -48,7 +48,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
-			<artifactId>activemq-core</artifactId>
+			<artifactId>activemq-client</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

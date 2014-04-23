@@ -46,7 +46,7 @@
 		<!-- Spring Boot (replaced during a full build to a real value) -->
 		<spring-boot.version>${project.version}</spring-boot.version>
 		<!-- Third Party -->
-		<activemq.version>5.7.0</activemq.version>
+		<activemq.version>5.9.1</activemq.version>
 		<aspectj.version>1.7.4</aspectj.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
@@ -376,7 +376,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-core</artifactId>
+				<artifactId>activemq-client</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
