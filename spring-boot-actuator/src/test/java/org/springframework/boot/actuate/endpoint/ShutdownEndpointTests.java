@@ -16,13 +16,17 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextClosedEvent;
 
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -41,22 +45,35 @@ public class ShutdownEndpointTests extends AbstractEndpointTests<ShutdownEndpoin
 
 	@Test
 	public void invoke() throws Exception {
+		CountDownLatch latch = this.context.getBean(Config.class).latch;
 		assertThat((String) getEndpointBean().invoke().get("message"),
 				startsWith("Shutting down"));
 		assertTrue(this.context.isActive());
-		Thread.sleep(600);
-		assertFalse(this.context.isActive());
+		assertTrue(latch.await(10, TimeUnit.SECONDS));
 	}
 
 	@Configuration
 	@EnableConfigurationProperties
 	public static class Config {
 
+		private CountDownLatch latch = new CountDownLatch(1);
+
 		@Bean
 		public ShutdownEndpoint endpoint() {
 			ShutdownEndpoint endpoint = new ShutdownEndpoint();
 			endpoint.setEnabled(true);
 			return endpoint;
+		}
+
+		@Bean
+		public ApplicationListener<ContextClosedEvent> listener() {
+			return new ApplicationListener<ContextClosedEvent>() {
+				@Override
+				public void onApplicationEvent(ContextClosedEvent event) {
+					Config.this.latch.countDown();
+				}
+			};
+
 		}
 
 	}
