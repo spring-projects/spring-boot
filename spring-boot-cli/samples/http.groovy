@@ -6,6 +6,9 @@ import groovyx.net.http.*
 @Controller
 class Example implements CommandLineRunner {
 
+	@Autowired
+	ApplicationContext context;
+
 	@RequestMapping("/")
 	@ResponseBody
 	public String helloWorld() {
@@ -13,7 +16,8 @@ class Example implements CommandLineRunner {
 	}
 
 	void run(String... args) {
-		def world = new RESTClient("http://localhost:8080").get(path:"/").data.text
+		def port = context.embeddedServletContainer.port;
+		def world = new RESTClient("http://localhost:" + port).get(path:"/").data.text
 		print "Hello " + world
 	}
 }
