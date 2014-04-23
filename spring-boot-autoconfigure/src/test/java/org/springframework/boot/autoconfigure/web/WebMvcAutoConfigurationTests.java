@@ -149,7 +149,6 @@ public class WebMvcAutoConfigurationTests {
 				equalTo((Resource) new ClassPathResource("/foo/")));
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void noLocaleResolver() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(AllResources.class, Config.class,
@@ -157,6 +156,7 @@ public class WebMvcAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+		this.thrown.expect(NoSuchBeanDefinitionException.class);
 		this.context.getBean(LocaleResolver.class);
 	}
 
@@ -164,8 +164,7 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideLocale() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		// set fixed locale
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.locale:en_UK");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.locale:en_UK");
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -176,11 +175,9 @@ public class WebMvcAutoConfigurationTests {
 		request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
 		LocaleResolver localeResolver = this.context.getBean(LocaleResolver.class);
 		Locale locale = localeResolver.resolveLocale(request);
-		assertThat(localeResolver,
-				instanceOf(FixedLocaleResolver.class));
+		assertThat(localeResolver, instanceOf(FixedLocaleResolver.class));
 		// test locale resolver uses fixed locale and not user preferred locale
-		assertThat(locale.toString(),
-				equalTo("en_UK"));
+		assertThat(locale.toString(), equalTo("en_UK"));
 	}
 
 	@SuppressWarnings("unchecked")

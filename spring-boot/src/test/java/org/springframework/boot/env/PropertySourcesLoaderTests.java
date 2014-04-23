@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link PropertySourcesLoader}.
+ * 
  * @author Dave Syer
  */
 public class PropertySourcesLoaderTests {
@@ -28,7 +30,7 @@ public class PropertySourcesLoaderTests {
 	private PropertySourcesLoader loader = new PropertySourcesLoader();
 
 	@Test
-	public void test() {
+	public void fileExtensions() {
 		assertTrue(this.loader.getAllFileExtensions().contains("yml"));
 		assertTrue(this.loader.getAllFileExtensions().contains("yaml"));
 		assertTrue(this.loader.getAllFileExtensions().contains("properties"));

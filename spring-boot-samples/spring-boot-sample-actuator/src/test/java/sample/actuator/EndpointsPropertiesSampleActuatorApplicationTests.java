@@ -53,7 +53,7 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 	public void testCustomErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + port + "/oops", Map.class);
+				.getForEntity("http://localhost:" + this.port + "/oops", Map.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();
@@ -64,7 +64,7 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 	@Test
 	public void testCustomContextPath() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/admin/health", String.class);
+				"http://localhost:" + this.port + "/admin/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
 		assertEquals("ok", body);

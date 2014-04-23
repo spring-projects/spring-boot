@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
+ * Tests for {@link YamlPropertySourceLoader}.
+ * 
  * @author Dave Syer
  */
 public class YamlPropertySourceLoaderTests {
@@ -31,9 +33,9 @@ public class YamlPropertySourceLoaderTests {
 	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Test
-	public void test() throws Exception {
-		PropertySource<?> source = this.loader.load("resource", new ByteArrayResource(
-				"foo:\n  bar: spam".getBytes()), null);
+	public void load() throws Exception {
+		ByteArrayResource resource = new ByteArrayResource("foo:\n  bar: spam".getBytes());
+		PropertySource<?> source = this.loader.load("resource", resource, null);
 		assertNotNull(source);
 		assertEquals("spam", source.getProperty("foo.bar"));
 	}

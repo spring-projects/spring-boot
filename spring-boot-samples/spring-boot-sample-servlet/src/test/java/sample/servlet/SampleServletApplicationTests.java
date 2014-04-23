@@ -16,8 +16,6 @@
 
 package sample.servlet;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for demo application.
@@ -53,14 +53,14 @@ public class SampleServletApplicationTests {
 	@Test
 	public void testHomeIsSecure() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port, String.class);
+				"http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + port, String.class);
+				.getForEntity("http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals("Hello World", entity.getBody());
 	}

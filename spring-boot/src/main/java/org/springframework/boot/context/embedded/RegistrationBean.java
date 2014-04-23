@@ -70,7 +70,6 @@ public abstract class RegistrationBean implements ServletContextInitializer, Ord
 
 	/**
 	 * Flag to indicate that the registration is enabled.
-	 * 
 	 * @param enabled the enabled to set
 	 */
 	public void setEnabled(boolean enabled) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,34 +18,36 @@ package org.springframework.boot.test;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
- * Listener that injects the server port (if one is discoverable from the application
- * context)into a field annotated with {@link Value @Value("dynamic.port")}.
+ * Listener that injects the server port into an {@link Environment} property named
+ * {@literal local.&lt;server&gt;.port}. Useful when the server is running on a dynamic
+ * port.
  * 
  * @author Dave Syer
  */
-public class EmbeddedServletContainerListener extends AbstractTestExecutionListener {
+public class EmbeddedServletContainerTestExecutionListener extends
+		AbstractTestExecutionListener {
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
 		ApplicationContext context = testContext.getApplicationContext();
-		if (!(context instanceof EmbeddedWebApplicationContext)) {
-			return;
+		if (context instanceof EmbeddedWebApplicationContext) {
+			prepareTestInstance((EmbeddedWebApplicationContext) context);
 		}
-		EmbeddedWebApplicationContext embedded = (EmbeddedWebApplicationContext) context;
-		Map<String, EmbeddedServletContainer> containers = embedded
-				.getEmbeddedServletContainers();
-		for (String name : containers.keySet()) {
-			int port = containers.get(name).getPort();
-			EnvironmentTestUtils.addEnvironment(embedded, "local." + name + ".port:"
-					+ port);
+	}
+
+	private void prepareTestInstance(EmbeddedWebApplicationContext context) {
+		for (Map.Entry<String, EmbeddedServletContainer> entry : context
+				.getEmbeddedServletContainers().entrySet()) {
+			EnvironmentTestUtils.addEnvironment(context, "local." + entry.getKey()
+					+ ".port:" + entry.getValue().getPort());
 		}
 	}
 }

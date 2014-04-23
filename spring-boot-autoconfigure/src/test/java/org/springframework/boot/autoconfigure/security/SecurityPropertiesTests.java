@@ -38,6 +38,7 @@ import static org.junit.Assert.assertTrue;
 public class SecurityPropertiesTests {
 
 	private SecurityProperties security = new SecurityProperties();
+
 	private RelaxedDataBinder binder = new RelaxedDataBinder(this.security, "security");
 
 	@Before

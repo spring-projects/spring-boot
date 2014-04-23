@@ -200,15 +200,15 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			registerContainer(this.applicationContext,
 					childContext.getEmbeddedServletContainer());
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException ex) {
 			// No support currently for deploying a war with management.port=<different>,
 			// and this is the signature of that happening
-			if (e instanceof EmbeddedServletContainerException
-					|| e.getCause() instanceof EmbeddedServletContainerException) {
+			if (ex instanceof EmbeddedServletContainerException
+					|| ex.getCause() instanceof EmbeddedServletContainerException) {
 				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
 			}
 			else {
-				throw e;
+				throw ex;
 			}
 		}
 	};

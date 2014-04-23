@@ -16,9 +16,6 @@
 
 package sample.actuator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -33,6 +30,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
@@ -42,7 +42,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest({"server.port:0", "security.basic.enabled:false"})
+@IntegrationTest({ "server.port:0", "security.basic.enabled:false" })
 @DirtiesContext
 public class UnsecureSampleActuatorApplicationTests {
 
@@ -53,7 +53,7 @@ public class UnsecureSampleActuatorApplicationTests {
 	public void testHome() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port, Map.class);
+				"http://localhost:" + this.port, Map.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

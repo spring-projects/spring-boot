@@ -18,6 +18,7 @@ package org.springframework.boot.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -66,19 +67,18 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
 public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	@Override
-	public ApplicationContext loadContext(MergedContextConfiguration mergedConfig)
+	public ApplicationContext loadContext(MergedContextConfiguration config)
 			throws Exception {
-
 		SpringApplication application = getSpringApplication();
-		application.setSources(getSources(mergedConfig));
-		if (!ObjectUtils.isEmpty(mergedConfig.getActiveProfiles())) {
-			application.setAdditionalProfiles(mergedConfig.getActiveProfiles());
+		application.setSources(getSources(config));
+		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
+			application.setAdditionalProfiles(config.getActiveProfiles());
 		}
-		application.setDefaultProperties(getArgs(mergedConfig));
-		List<ApplicationContextInitializer<?>> initializers = getInitializers(
-				mergedConfig, application);
-		if (mergedConfig instanceof WebMergedContextConfiguration) {
-			new WebConfigurer().configure(mergedConfig, application, initializers);
+		application.setDefaultProperties(getEnvironmentProperties(config));
+		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
+				application);
+		if (config instanceof WebMergedContextConfiguration) {
+			new WebConfigurer().configure(config, application, initializers);
 		}
 		else {
 			application.setWebEnvironment(false);
@@ -134,32 +134,41 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				.detectDefaultConfigurationClasses(declaringClass);
 	}
 
-	private Map<String, Object> getArgs(MergedContextConfiguration mergedConfig) {
-		Map<String, Object> args = new LinkedHashMap<String, Object>();
+	private Map<String, Object> getEnvironmentProperties(MergedContextConfiguration config) {
+		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
-		args.put("spring.jmx.enabled", "false");
+		disableJmx(properties);
 		IntegrationTest annotation = AnnotationUtils.findAnnotation(
-				mergedConfig.getTestClass(), IntegrationTest.class);
-		if (annotation == null) {
-			// Not running an embedded server, just setting up web context
-			args.put("server.port", "-1");
-		}
-		else {
-			args.putAll(extractProperties(annotation.value()));
-		}
-		return args;
+				config.getTestClass(), IntegrationTest.class);
+		properties.putAll(getEnvironmentProperties(annotation));
+		return properties;
 	}
 
-	private Map<String, String> extractProperties(String[] values) {
-		Map<String, String> map = new HashMap<String, String>();
+	private void disableJmx(Map<String, Object> properties) {
+		properties.put("spring.jmx.enabled", "false");
+	}
+
+	private Map<String, String> getEnvironmentProperties(IntegrationTest annotation) {
+		if (annotation == null) {
+			return getDefaultEnvironmentProperties();
+		}
+		return extractEnvironmentProperties(annotation.value());
+	}
+
+	private Map<String, String> getDefaultEnvironmentProperties() {
+		return Collections.singletonMap("server.port", "-1");
+	}
+
+	private Map<String, String> extractEnvironmentProperties(String[] values) {
+		Map<String, String> properties = new HashMap<String, String>();
 		for (String pair : values) {
 			int index = pair.indexOf(":");
-			index = index < 0 ? index = pair.indexOf("=") : index;
+			index = (index < 0 ? index = pair.indexOf("=") : index);
 			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = index > 0 ? pair.substring(index + 1) : "";
-			map.put(key.trim(), value.trim());
+			String value = (index > 0 ? pair.substring(index + 1) : "");
+			properties.put(key.trim(), value.trim());
 		}
-		return map;
+		return properties;
 	}
 
 	private List<ApplicationContextInitializer<?>> getInitializers(

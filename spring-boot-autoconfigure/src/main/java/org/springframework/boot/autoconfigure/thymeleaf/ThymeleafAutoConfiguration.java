@@ -178,7 +178,7 @@ public class ThymeleafAutoConfiguration {
 			resolver.setTemplateEngine(this.templateEngine);
 			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
 					"UTF-8"));
-			resolver.setContentType(addEncoding(
+			resolver.setContentType(appendCharset(
 					this.environment.getProperty("contentType", "text/html"),
 					resolver.getCharacterEncoding()));
 			resolver.setExcludedViewNames(this.environment.getProperty(
@@ -191,13 +191,11 @@ public class ThymeleafAutoConfiguration {
 			return resolver;
 		}
 
-		private String addEncoding(String type, String charset) {
+		private String appendCharset(String type, String charset) {
 			if (type.contains("charset=")) {
 				return type;
 			}
-			else {
-				return type + ";charset=" + charset;
-			}
+			return type + ";charset=" + charset;
 		}
 
 	}

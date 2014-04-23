@@ -16,9 +16,6 @@
 
 package sample.ui.method;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +38,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Basic integration tests for demo application.
  * 
@@ -61,8 +61,8 @@ public class SampleMethodSecurityApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + port, HttpMethod.GET, new HttpEntity<Void>(headers),
-				String.class);
+				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
+						headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
 				.getBody().contains("<title>Login"));
@@ -77,12 +77,12 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("password", "admin");
 		getCsrf(form, headers);
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + port + "/login", HttpMethod.POST,
+				"http://localhost:" + this.port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
-		assertEquals("http://localhost:" + port + "/", entity.getHeaders().getLocation()
-				.toString());
+		assertEquals("http://localhost:" + this.port + "/", entity.getHeaders()
+				.getLocation().toString());
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class SampleMethodSecurityApplicationTests {
 		form.set("password", "user");
 		getCsrf(form, headers);
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
-				"http://localhost:" + port + "/login", HttpMethod.POST,
+				"http://localhost:" + this.port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
 				String.class);
 		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
@@ -110,28 +110,28 @@ public class SampleMethodSecurityApplicationTests {
 
 	@Test
 	public void testManagementProtected() throws Exception {
-		ResponseEntity<String> entity = new TestRestTemplate()
-				.getForEntity("http://localhost:" + port + "/beans", String.class);
+		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/beans", String.class);
 		assertEquals(HttpStatus.UNAUTHORIZED, entity.getStatusCode());
 	}
 
 	@Test
 	public void testManagementAuthorizedAccess() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity("http://localhost:" + port + "/beans", String.class);
+				.getForEntity("http://localhost:" + this.port + "/beans", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 	}
 
 	@Test
 	public void testManagementUnauthorizedAccess() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "user")
-				.getForEntity("http://localhost:" + port + "/beans", String.class);
+				.getForEntity("http://localhost:" + this.port + "/beans", String.class);
 		assertEquals(HttpStatus.FORBIDDEN, entity.getStatusCode());
 	}
 
 	private void getCsrf(MultiValueMap<String, String> form, HttpHeaders headers) {
 		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
-				"http://localhost:" + port + "/login", String.class);
+				"http://localhost:" + this.port + "/login", String.class);
 		String cookie = page.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
 		String body = page.getBody();
