@@ -448,6 +448,8 @@ that sets up the connector to be secure:
 	}
 ----
 
+
+
 [[howto-enable-multiple-connectors-in-tomcat]]
 === Enable Multiple Connectors Tomcat
 Add a `org.apache.catalina.connector.Connector` to the
@@ -486,6 +488,26 @@ HTTPS connector:
 		}
 	}
 ----
+
+
+
+[[howto-use-tomcat-behind-a-proxy-server]]
+=== Use Tomcat behind a front-end proxy server
+Spring Boot will automatically configure Tomcat's `RemoteIpValve` if it detects some
+environment settings. This allows you to transparently use the standard `x-forwarded-for`
+and `x-forwarded-proto` headers that most front-end proxy servers add.
+
+You can switch on the valve by adding some entries to application.properties, e.g.
+
+[indent=0]
+----
+	server.tomcat.remote_ip_header=x-forwarded-for
+	server.tomcat.protocol_header=x-forwarded-proto
+----
+
+Alternatively, you can add the `RemoteIpValve` yourself by adding a
+`TomcatEmbeddedServletContainerFactory` bean.
+
 
 
 [[howto-use-jetty-instead-of-tomcat]]
@@ -1163,16 +1185,16 @@ is a useful template to follow.
 
 
 [[howto-enable-https]]
-=== Enable HTTPS
+=== Enable HTTPS when running behind a proxy server
 Ensuring that all your main endpoints are only available over HTTPS is an important
 chore for any application.  If you are using Tomcat as a servlet container, then
 Spring Boot will add Tomcat's own `RemoteIpValve` automatically if it detects some
 environment settings, and you should be able to rely on the `HttpServletRequest` to
-report whether it is secure or not (even downstream of the real SSL termination). The
-standard behavior is determined by the presence or absence of certain request headers
-(`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should
-work with most front end proxies. You can switch on the valve by adding some entries to
-`application.properties`, e.g.
+report whether it is secure or not (even downstream of a proxy server that handles the
+real SSL termination). The standard behavior is determined by the presence or absence of
+certain request headers (`x-forwarded-for` and `x-forwarded-proto`), whose names are
+conventional, so it should work with most front end proxies. You can switch on the valve
+by adding some entries to `application.properties`, e.g.
 
 [source,properties,indent=0]
 ----
