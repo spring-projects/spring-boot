@@ -146,8 +146,9 @@ Maven, there is no ``super parent'' to import to share some configuration.
 
 The <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, `spring-boot-gradle-plugin`>>
 is also available and provides tasks to create executable jars and run projects from
-source. It also adds a `ResolutionStrategy` that enables you to omit the version number
-for ``blessed'' dependencies:
+source. It also adds a `ResolutionStrategy` that enables you to
+<<build-tool-plugins-gradle-dependencies-without-versions, omit the version number
+for ``blessed'' dependencies>>:
 
 [source,groovy,indent=0,subs="attributes"]
 ----
