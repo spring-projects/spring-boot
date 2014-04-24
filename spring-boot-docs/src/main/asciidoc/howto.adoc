@@ -873,7 +873,7 @@ requires some jiggling with excludes, e.g. in Maven:
 		<artifactId>spring-boot-starter</artifactId>
 		<exclusions>
 				<exclusion>
-						<groupId>${project.groupId}</groupId>
+						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
 		</exclusions>
