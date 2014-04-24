@@ -58,10 +58,10 @@
 		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
 		<hibernate-validator.version>5.0.3.Final</hibernate-validator.version>
-		<httpclient.version>4.3.2</httpclient.version>
+		<httpclient.version>4.3.3</httpclient.version>
 		<httpasyncclient.version>4.0.1</httpasyncclient.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
-		<jackson.version>2.3.2</jackson.version>
+		<jackson.version>2.3.3</jackson.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
 		<jetty.version>8.1.14.v20131031</jetty.version>
 		<joda-time.version>2.3</joda-time.version>
@@ -74,26 +74,26 @@
 		<logback.version>1.1.2</logback.version>
 		<mockito.version>1.9.5</mockito.version>
 		<mongodb.version>2.11.4</mongodb.version>
-		<mysql.version>5.1.29</mysql.version>
+		<mysql.version>5.1.30</mysql.version>
 		<reactor.version>1.0.1.RELEASE</reactor.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
-		<slf4j.version>1.7.6</slf4j.version>
+		<slf4j.version>1.7.7</slf4j.version>
 		<snakeyaml.version>1.13</snakeyaml.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
 		<spring.version>4.0.3.RELEASE</spring.version>
-		<spring-integration.version>3.0.1.RELEASE</spring-integration.version>
+		<spring-integration.version>3.0.2.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.6.RELEASE</spring-batch.version>
-		<spring-data-jpa.version>1.5.1.RELEASE</spring-data-jpa.version>
-		<spring-data-mongodb.version>1.4.1.RELEASE</spring-data-mongodb.version>
+		<spring-data-jpa.version>1.5.2.RELEASE</spring-data-jpa.version>
+		<spring-data-mongodb.version>1.4.2.RELEASE</spring-data-mongodb.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
-		<spring-data-rest.version>2.0.1.RELEASE</spring-data-rest.version>
+		<spring-data-rest.version>2.0.2.RELEASE</spring-data-rest.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
-		<spring-rabbit.version>1.2.1.RELEASE</spring-rabbit.version>
+		<spring-rabbit.version>1.2.2.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
 		<thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
-		<thymeleaf-layout-dialect.version>1.2.2</thymeleaf-layout-dialect.version>
+		<thymeleaf-layout-dialect.version>1.2.3</thymeleaf-layout-dialect.version>
 		<tomcat.version>7.0.52</tomcat.version>
 	</properties>
 	<prerequisites>
