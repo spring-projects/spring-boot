@@ -94,23 +94,23 @@ public class JmsTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	public void testPubSubEnabledByDefault() {
+	public void testPubSubDisabledByDefault() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context
 				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
-		assertTrue(jmsTemplate.isPubSubDomain());
+		assertFalse(jmsTemplate.isPubSubDomain());
 	}
 
 	@Test
-	public void testJmsTemplatePostProcessedSoThatPubSubIsFalse() {
+	public void testJmsTemplatePostProcessedSoThatPubSubIsTrue() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration4.class,
 				JmsTemplateAutoConfiguration.class);
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
-		assertFalse(jmsTemplate.isPubSubDomain());
+		assertTrue(jmsTemplate.isPubSubDomain());
 	}
 
 	@Test
@@ -262,7 +262,7 @@ public class JmsTemplateAutoConfigurationTests {
 				throws BeansException {
 			if (bean.getClass().isAssignableFrom(JmsTemplate.class)) {
 				JmsTemplate jmsTemplate = (JmsTemplate) bean;
-				jmsTemplate.setPubSubDomain(false);
+				jmsTemplate.setPubSubDomain(true);
 			}
 			return bean;
 		}
