@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.hateoas.LinkDiscoverer;
@@ -27,9 +24,12 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.hal.HalLinkDiscoverer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for {@link HypermediaAutoConfiguration}.
- *
+ * 
  * @author Roy Clarkson
  */
 public class HypermediaAutoConfigurationTests {

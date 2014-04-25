@@ -29,4 +29,5 @@ public class SampleDataRestApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleDataRestApplication.class, args);
 	}
+
 }
