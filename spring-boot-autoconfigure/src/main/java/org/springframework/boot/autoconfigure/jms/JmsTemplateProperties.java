@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "spring.jms")
 public class JmsTemplateProperties {
 
-	private boolean pubSubDomain = true;
+	private boolean pubSubDomain = false;
 
 	public boolean isPubSubDomain() {
 		return this.pubSubDomain;
