@@ -162,14 +162,14 @@ public class MultipartAutoConfigurationTests {
 		this.context.register(ContainerWithNoMultipartTomcat.class,
 				BaseConfiguration.class);
 		this.context.refresh();
-		assertEquals(this.context.getBeansOfType(MultipartConfigElement.class).size(), 0);
+		assertEquals(0, this.context.getBeansOfType(MultipartConfigElement.class).size());
 	}
 
 	private void verifyServletWorks() {
 		RestTemplate restTemplate = new RestTemplate();
-		assertEquals(restTemplate.getForObject("http://localhost:"
+		assertEquals("Hello", restTemplate.getForObject("http://localhost:"
 				+ this.context.getEmbeddedServletContainer().getPort() + "/",
-				String.class), "Hello");
+				String.class));
 	}
 
 	@Configuration

@@ -54,6 +54,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 /**
  * Tests for {@link RelaxedDataBinder}.
@@ -185,7 +186,7 @@ public class RelaxedDataBinderTests {
 		BindingResult result = bind(binder, target, "foo: bar\n" + "value: 123\n"
 				+ "bar: spam");
 		assertEquals(123, target.getValue());
-		assertEquals(null, target.getFoo());
+		assertNull(target.getFoo());
 		assertEquals(0, result.getErrorCount());
 	}
 

@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CrshAutoConfiguration}.
- * 
+ *
  * @author Christian Dupuis
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -117,7 +117,7 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
-		assertEquals(lifeCycle.getConfig().getProperty("crash.ssh.port"), "3333");
+		assertEquals("3333", lifeCycle.getConfig().getProperty("crash.ssh.port"));
 	}
 
 	@Test
@@ -132,8 +132,7 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
-		assertEquals(lifeCycle.getConfig().getProperty("crash.ssh.keypath"),
-				"~/.ssh/id.pem");
+		assertEquals("~/.ssh/id.pem", lifeCycle.getConfig().getProperty("crash.ssh.keypath"));
 	}
 
 	@Test
@@ -194,7 +193,7 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "simple");
+		assertEquals("simple", lifeCycle.getConfig().get("crash.auth"));
 	}
 
 	@Test
@@ -210,9 +209,8 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "jaas");
-		assertEquals(lifeCycle.getConfig().get("crash.auth.jaas.domain"),
-				"my-test-domain");
+		assertEquals("jaas", lifeCycle.getConfig().get("crash.auth"));
+		assertEquals("my-test-domain", lifeCycle.getConfig().get("crash.auth.jaas.domain"));
 	}
 
 	@Test
@@ -228,8 +226,8 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "key");
-		assertEquals(lifeCycle.getConfig().get("crash.auth.key.path"), "~/test.pem");
+		assertEquals("key", lifeCycle.getConfig().get("crash.auth"));
+		assertEquals("~/test.pem", lifeCycle.getConfig().get("crash.auth.key.path"));
 	}
 
 	@Test
@@ -246,7 +244,7 @@ public class CrshAutoConfigurationTests {
 		this.context.refresh();
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
-		assertEquals(lifeCycle.getConfig().get("crash.auth"), "simple");
+		assertEquals("simple", lifeCycle.getConfig().get("crash.auth"));
 
 		AuthenticationPlugin<String> authenticationPlugin = null;
 		String authentication = lifeCycle.getConfig().getProperty("crash.auth");
@@ -260,8 +258,7 @@ public class CrshAutoConfigurationTests {
 		}
 		assertNotNull(authenticationPlugin);
 		assertTrue(authenticationPlugin.authenticate("user", "password"));
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
-				"password"));
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(), "password"));
 	}
 
 	@Test
@@ -287,11 +284,9 @@ public class CrshAutoConfigurationTests {
 				break;
 			}
 		}
-		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
-				SecurityConfiguration.PASSWORD));
+		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME, SecurityConfiguration.PASSWORD));
 
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
-				SecurityConfiguration.PASSWORD));
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(), SecurityConfiguration.PASSWORD));
 	}
 
 	@Test
@@ -316,11 +311,9 @@ public class CrshAutoConfigurationTests {
 				break;
 			}
 		}
-		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
-				SecurityConfiguration.PASSWORD));
+		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME, SecurityConfiguration.PASSWORD));
 
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
-				SecurityConfiguration.PASSWORD));
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(), SecurityConfiguration.PASSWORD));
 	}
 
 	@Configuration

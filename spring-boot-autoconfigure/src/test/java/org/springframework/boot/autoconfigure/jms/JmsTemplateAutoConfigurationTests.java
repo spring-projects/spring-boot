@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JmsTemplateAutoConfiguration}.
- * 
+ *
  * @author Greg Turnquist
  */
 public class JmsTemplateAutoConfigurationTests {
@@ -55,10 +55,7 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(
-				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
-						.getBrokerURL(),
-				"vm://localhost");
+		assertEquals("vm://localhost", ((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
 	}
 
 	@Test
@@ -144,10 +141,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(
-				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
-						.getBrokerURL(),
-				"tcp://localhost:61616");
+		assertEquals("tcp://localhost:61616",
+					 ((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
 	}
 
 	@Test
@@ -165,10 +160,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals(
-				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
-						.getBrokerURL(),
-				"tcp://remote-host:10000");
+		assertEquals("tcp://remote-host:10000",
+					 ((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
 	}
 
 	@Test

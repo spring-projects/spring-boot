@@ -26,6 +26,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CommonsDataSourceConfiguration}.
@@ -62,9 +63,9 @@ public class CommonsDataSourceConfigurationTests {
 		this.context.refresh();
 		BasicDataSource ds = this.context.getBean(BasicDataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getUrl());
-		assertEquals(true, ds.getTestWhileIdle());
-		assertEquals(true, ds.getTestOnBorrow());
-		assertEquals(true, ds.getTestOnReturn());
+		assertTrue(ds.getTestWhileIdle());
+		assertTrue(ds.getTestOnBorrow());
+		assertTrue(ds.getTestOnReturn());
 		assertEquals(10000, ds.getTimeBetweenEvictionRunsMillis());
 		assertEquals(12345, ds.getMinEvictableIdleTimeMillis());
 		assertEquals(1234, ds.getMaxWait());
