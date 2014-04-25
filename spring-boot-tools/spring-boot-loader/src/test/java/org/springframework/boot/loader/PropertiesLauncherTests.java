@@ -32,6 +32,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -71,7 +72,7 @@ public class PropertiesLauncherTests {
 	public void testUserSpecifiedMain() throws Exception {
 		PropertiesLauncher launcher = new PropertiesLauncher();
 		assertEquals("demo.Application", launcher.getMainClass());
-		assertEquals(null, System.getProperty("loader.main"));
+		assertNull(System.getProperty("loader.main"));
 	}
 
 	@Test

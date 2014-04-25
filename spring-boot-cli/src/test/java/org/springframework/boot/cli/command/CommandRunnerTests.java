@@ -31,6 +31,7 @@ import org.springframework.boot.cli.command.core.HintCommand;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -124,7 +125,7 @@ public class CommandRunnerTests {
 		verify(this.regularCommand).run("--", "--debug", "bar");
 		// When handled by the command itself it shouldn't cause the system property to be
 		// set
-		assertEquals(null, System.getProperty("debug"));
+		assertNull(System.getProperty("debug"));
 	}
 
 	@Test

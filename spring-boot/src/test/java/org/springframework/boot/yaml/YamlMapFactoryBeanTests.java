@@ -103,7 +103,7 @@ public class YamlMapFactoryBeanTests {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> sub = (Map<String, Object>) object;
 		assertTrue(sub.containsKey("key1.key2"));
-		assertTrue(sub.get("key1.key2").equals("value"));
+		assertEquals("value", sub.get("key1.key2"));
 	}
 
 }
