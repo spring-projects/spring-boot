@@ -37,9 +37,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Import;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
@@ -211,7 +211,7 @@ public class AutoConfigurationReportTests {
 		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource().get(
 				autoconfigKey);
 		assertThat(outcomes, not(nullValue()));
-		assertThat(getNumberOfOutcomes(outcomes), equalTo(1));
+		assertThat(getNumberOfOutcomes(outcomes), equalTo(2));
 
 		List<String> messages = new ArrayList<String>();
 		for (ConditionAndOutcome outcome : outcomes) {
@@ -221,7 +221,7 @@ public class AutoConfigurationReportTests {
 
 		Matcher<String> onClassMessage = containsString("@ConditionalOnClass "
 				+ "classes found: javax.servlet.Servlet,org.springframework.web.multipart.support.StandardServletMultipartResolver");
-		assertThat(messages, contains(onClassMessage));
+		assertThat(messages, hasItem(onClassMessage));
 		context.close();
 	}
 
