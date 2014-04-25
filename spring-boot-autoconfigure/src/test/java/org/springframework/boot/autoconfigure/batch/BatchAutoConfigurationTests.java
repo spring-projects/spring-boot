@@ -253,7 +253,7 @@ public class BatchAutoConfigurationTests {
 			MapJobExplorerFactoryBean explorer = new MapJobExplorerFactoryBean(
 					this.factory);
 			explorer.afterPropertiesSet();
-			return (JobExplorer) explorer.getObject();
+			return explorer.getObject();
 		}
 	}
 
