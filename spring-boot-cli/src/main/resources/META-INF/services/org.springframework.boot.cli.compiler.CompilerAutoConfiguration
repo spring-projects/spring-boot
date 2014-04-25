@@ -11,3 +11,4 @@ org.springframework.boot.cli.compiler.autoconfigure.TransactionManagementCompile
 org.springframework.boot.cli.compiler.autoconfigure.SpringIntegrationCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.SpringSecurityCompilerAutoConfiguration
 org.springframework.boot.cli.compiler.autoconfigure.SpringMobileCompilerAutoConfiguration
+org.springframework.boot.cli.compiler.autoconfigure.SpringWebsocketCompilerAutoConfiguration

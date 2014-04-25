@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.0.1.BUILD-SNAPSHOT</version>
+		<version>1.1.0.BUILD-SNAPSHOT</version>
 		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-starter-parent</artifactId>
@@ -20,7 +20,7 @@
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring-boot.version>1.0.1.BUILD-SNAPSHOT</spring-boot.version>
+		<spring-boot.version>1.1.0.BUILD-SNAPSHOT</spring-boot.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -49,6 +49,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-actuator</artifactId>
+				<version>${spring-boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-autoconfigure</artifactId>
 				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
@@ -90,6 +95,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-rest</artifactId>
 				<version>${spring-boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-data-couchbase</artifactId>
+				<version>0.5.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -163,6 +173,24 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<!-- Generally Useful Test Dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<!-- Turn on filtering by default for application properties -->
 		<resources>

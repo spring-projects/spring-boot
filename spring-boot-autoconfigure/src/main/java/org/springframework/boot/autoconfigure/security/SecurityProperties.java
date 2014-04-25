@@ -223,6 +223,10 @@ public class SecurityProperties implements SecurityPrequisite {
 			return this.role;
 		}
 
+		public void setRole(List<String> role) {
+			this.role = new ArrayList<String>(role);
+		}
+
 		public boolean isDefaultPassword() {
 			return this.defaultPassword;
 		}

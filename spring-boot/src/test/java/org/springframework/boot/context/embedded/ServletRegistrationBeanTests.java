@@ -39,6 +39,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -127,6 +128,15 @@ public class ServletRegistrationBeanTests {
 		bean.setServlet(this.servlet);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addServlet("mockServlet", this.servlet);
+	}
+
+	@Test
+	public void disable() throws Exception {
+		ServletRegistrationBean bean = new ServletRegistrationBean();
+		bean.setServlet(this.servlet);
+		bean.setEnabled(false);
+		bean.onStartup(this.servletContext);
+		verify(this.servletContext, times(0)).addServlet("mockServlet", this.servlet);
 	}
 
 	@Test

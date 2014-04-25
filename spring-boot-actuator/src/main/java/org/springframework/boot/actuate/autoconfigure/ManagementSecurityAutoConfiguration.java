@@ -55,6 +55,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for security of framework endpoints.
@@ -142,9 +143,17 @@ public class ManagementSecurityAutoConfiguration {
 				ignored.remove("none");
 			}
 			if (this.errorController != null) {
-				ignored.add(this.errorController.getErrorPath());
+				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
 			ignoring.antMatchers(ignored.toArray(new String[0]));
+		}
+
+		private String normalizePath(String errorPath) {
+			String result = StringUtils.cleanPath(errorPath);
+			if (!result.startsWith("/")) {
+				result = "/" + result;
+			}
+			return result;
 		}
 
 	}

@@ -16,13 +16,13 @@
 
 package org.springframework.boot.logging;
 
-import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
@@ -69,11 +69,14 @@ import org.springframework.util.ResourceUtils;
 public class LoggingApplicationListener implements SmartApplicationListener {
 
 	private static final Map<String, String> ENVIRONMENT_SYSTEM_PROPERTY_MAPPING;
+
+	public static final String PID_KEY = "PID";
+
 	static {
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING = new HashMap<String, String>();
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.file", "LOG_FILE");
 		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("logging.path", "LOG_PATH");
-		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put("PID", "PID");
+		ENVIRONMENT_SYSTEM_PROPERTY_MAPPING.put(PID_KEY, PID_KEY);
 	}
 
 	private static MultiValueMap<LogLevel, String> LOG_LEVEL_LOGGERS;
@@ -120,8 +123,8 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 					.getClassLoader());
 		}
 		else {
-			if (System.getProperty("PID") == null) {
-				System.setProperty("PID", getPid());
+			if (System.getProperty(PID_KEY) == null) {
+				System.setProperty(PID_KEY, new ApplicationPid().toString());
 			}
 			LoggingSystem loggingSystem = LoggingSystem.get(ClassUtils
 					.getDefaultClassLoader());
@@ -188,19 +191,6 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 				system.setLogLevel(logger, level);
 			}
 		}
-	}
-
-	private String getPid() {
-		try {
-			String name = ManagementFactory.getRuntimeMXBean().getName();
-			if (name != null) {
-				return name.split("@")[0];
-			}
-		}
-		catch (Throwable ex) {
-			// Ignore
-		}
-		return "????";
 	}
 
 	public void setOrder(int order) {

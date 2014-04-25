@@ -3,7 +3,7 @@
 
 [partintro]
 --
-If your just getting started with Spring Boot, or 'Spring' in general, this is the section
+If you're just getting started with Spring Boot, or 'Spring' in general, this is the section
 for you! Here we answer the basic '``what?''', '``how?''' and '``why?''' questions. You'll
 find a gentle introduction to Spring Boot along with installation instructions.
 We'll then build our first Spring Boot application, discussing some core principles as
@@ -14,7 +14,7 @@ we go.
 [[getting-started-introducing-spring-boot]]
 == Introducing Spring Boot
 Spring Boot makes it easy to create stand-alone, production-grade Spring based
-Applications that can you can ``just run''. We take an opinionated view of the Spring
+Applications that you can ``just run''. We take an opinionated view of the Spring
 platform and third-party libraries so you can get started with minimum fuss. Most Spring
 Boot applications need very little Spring configuration.
 
@@ -54,7 +54,7 @@ using the latest version of Java.
 
 [[getting-started-installation-instructions-for-java]]
 === Installation instructions for the Java developer
-You can use Spring Boot in the same way as any standard java library. Simply include the
+You can use Spring Boot in the same way as any standard Java library. Simply include the
 appropriate `spring-boot-*.jar` files on your classpath. Spring Boot does not require
 any special tools integration, so you can use any IDE or text editor; and there is
 nothing special about a Spring Boot application, so you can run and debug as you would
@@ -203,7 +203,7 @@ endif::release[]
 
 	dependencies {
 		compile("org.springframework.boot:spring-boot-starter-web")
-		testCompile("org.springframework.boot:spring-boot-starter-test")
+		testCompile("junit:junit")
 	}
 ----
 
@@ -300,7 +300,7 @@ the Spring Boot CLI is:
 
 Homebrew will install `spring` to `/usr/local/bin`.
 
-NOTE: If you don't see the formula, you're installation of brew might be out-of-date.
+NOTE: If you don't see the formula, your installation of brew might be out-of-date.
 Just execute `brew update` and try again.
 
 
@@ -311,13 +311,13 @@ Spring Boot CLI ships with scripts that provide command completion for
 http://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and
 http://en.wikipedia.org/wiki/Zsh[zsh] shells. You can `source` the script (also named
 `spring`) in any shell, or put it in your personal or system-wide bash completion
-initialization. On a Debian system the system-wide scripts are in `/etc/bash_completion.d`
+initialization. On a Debian system the system-wide scripts are in `/shell-completion/bash`
 and all scripts in that directory are executed when a new shell starts. To run the script
 manually, e.g. if you have installed using `GVM`
 
 [indent=0]
 ----
-	$ . ~/.gvm/springboot/current/bash_completion.d/spring
+	$ . ~/.gvm/springboot/current/shell-completion/bash/spring
 	$ spring <HIT TAB HERE>
 	  grab  help  jar  run  test  version
 ----
@@ -334,13 +334,12 @@ a file called `app.groovy`:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Controller
+	@RestController
 	class ThisWillActuallyRun {
 
 		@RequestMapping("/")
-		@ResponseBody
 		String home() {
-			return "Hello World!"
+			"Hello World!"
 		}
 
 	}
@@ -478,11 +477,16 @@ currently have.
 	$ mvn dependency:tree
 
 	[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
+	[INFO] +- junit:junit:jar:4.11:test
+	[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+	[INFO] +- org.mockito:mockito-core:jar:1.9.5:test
+	[INFO] |  \- org.objenesis:objenesis:jar:1.0:test
+	[INFO] \- org.hamcrest:hamcrest-library:jar:1.3:test
 ----
 
 The `mvn dependency:tree` command prints tree representation of your project dependencies.
-You can see that `spring-boot-starter-parent` provides no
-dependenciesby itself. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
+You can see that `spring-boot-starter-parent` has already provided some useful test
+dependencies. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
 just below the `parent` section:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -513,12 +517,11 @@ file named `src/main/java/Example.java`:
 	import org.springframework.stereotype.*;
 	import org.springframework.web.bind.annotation.*;
 
-	@Controller
+	@RestController
 	@EnableAutoConfiguration
 	public class Example {
 
 		@RequestMapping("/")
-		@ResponseBody
 		String home() {
 			return "Hello World!";
 		}
@@ -536,18 +539,18 @@ important parts.
 
 
 [[getting-started-first-application-annotations]]
-==== The @Controller, @RequestMapping and @ResponseBody annotations
-The first annotation on our `Example` class is `@Controller`. This is known as a
+==== The @RestController and @RequestMapping annotations
+The first annotation on our `Example` class is `@RestController`. This is known as a
 _stereotype_ annotation. It provides hints for people reading the code, and for Spring,
 that the class plays a specific role. In this case, our class is a web `@Controller` so
 Spring will consider it when handling incoming web requests.
 
 The `@RequestMapping` annotation provides ``routing'' information. It is telling Spring
 that any HTTP request with the path "`/`" should be mapped to the `home` method. The
-additional `@ResponseBody` annotation tells Spring to render the resulting string directly
+`@RestController` annotation tells Spring to render the resulting string directly
 back to the caller.
 
-TIP: The `@Controller`, `@RequestMapping` and `@ResponseBody` annotations are Spring MVC
+TIP: The `@RestController` and`@RequestMapping` annotations are Spring MVC
 annotations (they are not specific to Spring Boot). See the
 <{spring-reference}/#mvc>[MVC section] in the Spring
 Reference Documentation for more details.
@@ -579,13 +582,13 @@ to Spring Boot's `SpringApplication` class by calling `run`. `SpringApplication`
 bootstrap our application, starting Spring which will in turn start the auto-configured
 Tomcat web server. We need to pass `Example.class` as an argument to the `run` method to
 tell `SpringApplication` which is the primary Spring component. The `args` array is also
-passed though to expose any command-line arguments.
+passed through to expose any command-line arguments.
 
 
 
 [[getting-started-first-application-run]]
 === Running the example
-At this point out application should work. Since we have used the
+At this point our application should work. Since we have used the
 `spring-boot-starter-parent` POM we have a useful `run` goal that we can use to start
 the application. Type `mvn spring-boot:run` from the root project directory to start the
 application:
@@ -629,7 +632,7 @@ needs to run.
 ****
 Java does not provide any standard way to load nested jar files (i.e. jar files that are
 themselves contained within a jar). This can be problematic if you are looking to
-distribute a self contained application.
+distribute a self-contained application.
 
 To solve this problem, many developers use ``shaded'' jars. A shaded jar simply packages
 all classes, from all jars, into a single ``uber jar''. The problem with shaded jars is that
@@ -715,7 +718,7 @@ As before, to gracefully exit the application hit `ctrl-c`.
 [[getting-started-whats-next]]
 == What to read next
 Hopefully this section has provided you with some of the Spring Boot basics, and got you
-on your way to writing your own applications. If your a task oriented type of
+on your way to writing your own applications. If you're a task-oriented type of
 developer you might want to jump over to http://spring.io and check out some of the
 http://spring.io/guides/[getting started] guides that solve specific
 '``How do I do that with Spring''' problems; we also have a Spring Boot specific
@@ -723,4 +726,4 @@ http://spring.io/guides/[getting started] guides that solve specific
 
 Otherwise, the next logical step is to read '<<using-spring-boot.adoc#using-boot>>'. If
 you're really impatient, you could also jump ahead and read about
-'<<spring-boot-features.adoc#boot-features, spring boot features>>'.
+'<<spring-boot-features.adoc#boot-features, Spring Boot features>>'.

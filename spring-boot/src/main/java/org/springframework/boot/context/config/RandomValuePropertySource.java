@@ -22,6 +22,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link PropertySource} that returns a random value for any property that starts with
@@ -44,12 +45,26 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (name.endsWith("int")) {
 			return getSource().nextInt();
 		}
-		if (name.endsWith("long")) {
+		if (name.startsWith("random.long")) {
 			return getSource().nextLong();
+		}
+		if (name.startsWith("random.int") && name.length() > "random.int".length() + 1) {
+			String range = name.substring("random.int".length() + 1);
+			range = range.substring(0, range.length() - 1);
+			return getNextInRange(range);
 		}
 		byte[] bytes = new byte[32];
 		getSource().nextBytes(bytes);
 		return DigestUtils.md5DigestAsHex(bytes);
+	}
+
+	private int getNextInRange(String range) {
+		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
+		Integer start = Integer.valueOf(tokens[0]);
+		if (tokens.length == 1) {
+			return getSource().nextInt(start);
+		}
+		return start + getSource().nextInt(Integer.valueOf(tokens[1]) - start);
 	}
 
 	public static void addToEnvironment(ConfigurableEnvironment environment) {

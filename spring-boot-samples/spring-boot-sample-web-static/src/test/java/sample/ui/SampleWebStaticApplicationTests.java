@@ -18,9 +18,10 @@ package sample.ui;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,14 +40,17 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWebStaticApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port=0")
 @DirtiesContext
 public class SampleWebStaticApplicationTests {
+
+	@Value("${local.server.port}")
+	private int port = 0;
 
 	@Test
 	public void testHome() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
+				"http://localhost:" + this.port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
 				.getBody().contains("<title>Static"));
@@ -55,8 +59,8 @@ public class SampleWebStaticApplicationTests {
 	@Test
 	public void testCss() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/webjars/bootstrap/3.0.3/css/bootstrap.min.css",
-				String.class);
+				"http://localhost:" + this.port
+						+ "/webjars/bootstrap/3.0.3/css/bootstrap.min.css", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(), entity.getBody().contains("body"));
 		assertEquals("Wrong content type:\n" + entity.getHeaders().getContentType(),

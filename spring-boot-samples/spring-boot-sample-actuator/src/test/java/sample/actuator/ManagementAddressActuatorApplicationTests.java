@@ -29,7 +29,6 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -43,18 +42,18 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest({ "server.port=0", "management.port=0", "management.address=127.0.0.1",
+		"management.contextPath:/admin" })
 @DirtiesContext
-@ActiveProfiles("management-address")
 public class ManagementAddressActuatorApplicationTests {
 
 	@Autowired
 	private SecurityProperties security;
 
-	@Value("${server.port}")
+	@Value("${local.server.port}")
 	private int port = 9010;
 
-	@Value("${management.port}")
+	@Value("${local.management.port}")
 	private int managementPort = 9011;
 
 	@Test

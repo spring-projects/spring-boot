@@ -149,7 +149,7 @@ within a JUnit test.
 === Using the CommandLineRunner
 If you want access to the raw command line arguments, or you need to run some specific code
 once the `SpringApplication` has started you can implement the `CommandLineRunner`
-interface. The `run(String... args)` method will be called on all spring beans
+interface. The `run(String... args)` method will be called on all Spring beans
 implementing this interface.
 
 [source,java,indent=0]
@@ -187,7 +187,7 @@ interface if they wish to return a specific exit code when the application ends.
 
 [[boot-features-external-config]]
 == Externalized Configuration
-Spring Boot likes you to externalize your configuration so you can work with the same
+Spring Boot allows you to externalize your configuration so you can work with the same
 application code in different environments. You can use properties files, YAML files,
 environment variables and command-line arguments to externalize configuration. Property
 values can be injected directly into your beans using the `@Value` annotation, accessed
@@ -199,6 +199,7 @@ sensible overriding of values, properties are considered in the the following or
 . Command line arguments.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
+. A `RandomValuePropertySource` that only has properties in `random.*`.
 . `@PropertySource` annotations on your `@Configuration` classes.
 . Application properties outside of your packaged jar (`application.properties`
   including YAML and profile variants).
@@ -227,14 +228,30 @@ To provide a concrete example, suppose you develop a `@Component` that uses a
 
 You can bundle an `application.properties` inside your jar that provides a sensible
 default `name`. When running in production, an `application.properties` can be provided
-outside of your jar that overrides `name`; and for one off testing, you can launch with
+outside of your jar that overrides `name`; and for one-off testing, you can launch with
 a specific command line switch (e.g. `java -jar app.jar --name="Spring"`).
+
+The `RandomValuePropertySource` is useful for injecting random values (e.g. into secrets
+or test cases). It can produce integers, longs or strings, e.g.
+
+[source,properties,indent=0]
+----
+	my.secret=${random.value}
+	my.number=${random.int}
+	my.bignumber=${random.long}
+	my.number.less.than.ten=${random.int(10)}
+	my.number.in.range=${random.int[1024,65536]}
+----
+
+The `random.int*` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any
+character and `value,max` are integers. If `max` is provided then `value` is the minimum
+value and `max` is the maximum (exclusive).
 
 
 
 [[boot-features-external-config-command-line-args]]
 === Accessing command line properties
-By default SpringApplication will convert any command line option arguments (starting
+By default `SpringApplication` will convert any command line option arguments (starting
 with ``--'', e.g. `--server.port=9000`) to a `property` and add it to the Spring
 `Environment`. As mentioned above, command line properties always take precedence over
 other property sources.
@@ -261,8 +278,8 @@ an alternative to '.properties'.
 
 If you don't like `application.properties` as the configuration file name you can switch
 to another by specifying a `spring.config.name` environment property. You can also refer
-to an explicit location using the `spring.config.location` environment property (comma-
-separated list of directory locations, or file paths).
+to an explicit location using the `spring.config.location` environment property
+(comma-separated list of directory locations, or file paths).
 
 [indent=0]
 ----
@@ -354,23 +371,40 @@ Would be transformed into these properties:
 	environments.prod.name=My Cool App
 ----
 
-YAML lists are represented as comma-separated values (useful for simple String values)
-and also as property keys with `[index]` dereferencers, for example this YAML:
+YAML lists are represented as property keys with `[index]` dereferencers,
+for example this YAML:
 
 [source,yaml,indent=0]
 ----
-	 servers:
- 		- dev.bar.com
- 		- foo.bar.com
+	 my:
+		servers:
+			- dev.bar.com
+			- foo.bar.com
 ----
 
 Would be transformed into these properties:
 
 [source,properties,indent=0]
 ----
-	servers=dev.bar.com,foo.bar.com
-	servers[0]=dev.bar.com
-	servers[1]=foo.bar.com
+	my.servers[0]=dev.bar.com
+	my.servers[1]=foo.bar.com
+----
+
+To bind to properties like that using the Spring `DataBinder` utilities (which is what
+`@ConfigurationProperties` does) you need to have a property in the target bean of type
+`java.util.List` (or `Set`) and you either need to provide a setter, or initialize it
+with a mutable value, e.g. this will bind to the properties above
+
+[source,java,indent=0]
+----
+	@ConfigurationProperties(prefix="my")
+	public class Config {
+		private List<String> servers = new ArrayList<String>();
+
+		public List<String> getServers() {
+			return this.servers;
+		}
+	}
 ----
 
 
@@ -506,7 +540,7 @@ property editors (via a `CustomEditorConfigurer` bean).
 [[boot-features-external-config-validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot will attempt to validate external configuration, by default using JSR-303
-(if it is on the classpath). You can simply add JSR-303 `javax.valididation` constraint
+(if it is on the classpath). You can simply add JSR-303 `javax.validation` constraint
 annotations to your `@ConfigurationProperties` class:
 
 [source,java,indent=0]
@@ -863,7 +897,7 @@ and JSPs. Many other templating engines also ship their own Spring MVC integrati
 
 Spring Boot includes auto-configuration support for the Thymeleaf templating engine.
 Thymeleaf is an XML/XHTML/HTML5 template engine that can work both in web and non-web
-environments. If allows you to create natural templates, that can be correctly displayed
+environments. It allows you to create natural templates that can be correctly displayed
 by browsers and therefore work also as static prototypes. Thymeleaf templates will be
 picked up automatically from `src/main/resources/templates`.
 
@@ -891,7 +925,7 @@ By default, if the context contains only a single Servlet it will be mapped to `
 the case of multiple Servlets beans the bean name will be used as a path prefix. Filters
 will map to `/*`.
 
-If convention based mapping is not flexible enough you can use the
+If convention-based mapping is not flexible enough you can use the
 `ServletRegistrationBean` and `FilterRegistrationBean` classes for complete control. You
 can also register items directly if your bean implements the `ServletContextInitializer`
 interface.
@@ -993,6 +1027,8 @@ packaged as an executable archive), there are some limitations in the JSP suppor
 There is a {github-code}/spring-boot-samples/spring-boot-sample-web-jsp[JSP sample] so
 you can see how to set things up.
 
+
+
 [[boot-features-security]]
 == Security
 If Spring Security is on the classpath then web applications will be secure by default
@@ -1001,58 +1037,47 @@ application you can also add `@EnableGlobalMethodSecurity` with your desired set
 Additional information can be found in the {spring-security-reference}#jc-method[Spring
 Security Reference].
 
-The default `AuthenticationManager` has a single user (username
-``user'' and password random, printed at INFO level when the
-application starts up). You can change the password by providing a
-`security.user.password`. This and other useful properties are
-externalized via
-{sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
+The default `AuthenticationManager` has a single user (``user'' username and random
+password, printed at INFO level when the application starts up). You can change the
+password by providing a `security.user.password`. This and other useful properties are
+externalized via {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
 (properties prefix "security").
 
-The default security configuration is implemented in
-`SecurityAutoConfiguration` and in the classes imported from there
-(`SpringBootWebSecurityConfiguration` for web security and
-`AuthenticationManagerConfiguration` for authentication configuration
-which is also relevant in non-web applications). To switch off the
-Boot default configuration completely in a web application you can add
-a bean with `@EnableWebSecurity`. To customize it you normally use
-external properties and beans of type `WebConfigurerAdapter` (e.g. to
+The default security configuration is implemented in `SecurityAutoConfiguration` and in
+the classes imported from there (`SpringBootWebSecurityConfiguration` for web security
+and `AuthenticationManagerConfiguration` for authentication configuration which is also
+relevant in non-web applications). To switch off the Boot default configuration
+completely in a web application you can add a bean with `@EnableWebSecurity`. To customize
+it you normally use external properties and beans of type `WebConfigurerAdapter` (e.g. to
 add form-based login). There are several secure applications in the
-{github-code}/spring-boot-samples/[Spring Boot samples] to get you
-started with common use cases.
+{github-code}/spring-boot-samples/[Spring Boot samples] to get you started with common
+use cases.
 
-The basic features you get out of the box in a web application are
+The basic features you get out of the box in a web application are:
 
-* An `AuthenticationManager` bean with in-memory store and a single
-  user (see `SecurityProperties.User` for the properties of the user).
-
-* Ignored (unsecure) paths for common static resource locations
-  (`/css/**`, `/js/**`, `/images/**` and `**/favicon.ico`).
-
+* An `AuthenticationManager` bean with in-memory store and a single user (see
+  `SecurityProperties.User` for the properties of the user).
+* Ignored (unsecure) paths for common static resource locations (`/css/**`, `/js/**`,
+  `/images/**` and `**/favicon.ico`).
 * HTTP Basic security for all other endpoints.
+* Security events published to Spring's `ApplicationEventPublisher` (successful and
+  unsuccessful authentication and access denied).
+* Common low-level features (HSTS, XSS, CSRF, caching) provided by Spring Security are
+  on by default.
 
-* Security events published to Spring's `ApplicationEventPublisher`
-  (successful and unsuccessful authentication and access denied).
-
-* Common low-level features (HSTS, XSS, CSRF, caching) provided by Spring
-Security are on by default.
-
-All of the above can be switched on and off or modified using external
-properties (`security.*`).
+All of the above can be switched on and off or modified using external properties
+(`security.*`).
 
 If the Actuator is also in use, you will find:
 
-* The management endpoints are secure even if the application
-  endpoints are unsecure.
+* The management endpoints are secure even if the application endpoints are unsecure.
+* Security events are transformed into `AuditEvents` and published to the `AuditService`.
+* The default user will have the "ADMIN" role as well as the "USER" role.
 
-* Security events are transformed into `AuditEvents` and published to
-  the `AuditService`.
+The Actuator security features can be modified using external properties
+(`management.security.*`).
 
-* The default user will have the "ADMIN" role as well as the "USER"
-  role.
 
-The Actuator security features can be modified using external
-properties (`management.security.*`).
 
 [[boot-features-sql]]
 == Working with SQL databases
@@ -1178,7 +1203,7 @@ relational databases. The `spring-boot-starter-data-jpa` POM provides a quick wa
 started. It provides the following key dependencies:
 
 * Hibernate -- One of the most popular JPA implementations.
-* Spring Data JPA -- Makes it easy to easily implement JPA based repositories.
+* Spring Data JPA -- Makes it easy to easily implement JPA-based repositories.
 * Spring ORMs -- Core ORM support from the Spring Framework.
 
 TIP: We won't go into too many details of JPA or Spring Data here. You can follow the
@@ -1299,12 +1324,12 @@ following to your `application.properties`.
 	spring.jpa.hibernate.ddl-auto=create-drop
 ----
 
-Note that Hibernate's own internal property name for this (if you
-happen to remember it better) is `hibernate.hbm2ddl.auto`. You can set
-it, along with other Hibernate native properties, using
-`spring.jpa.properties.*` (the prefix is stripped before adding them
-to the entity manager).  Also relevant:
-`spring.jpa.generate-ddl=false` switches off all DDL generation.
+NOTE: Hibernate's own internal property name for this (if you happen to remember it
+better) is `hibernate.hbm2ddl.auto`. You can set it, along with other Hibernate native
+properties, using `spring.jpa.properties.*` (the prefix is stripped before adding them
+to the entity manager). Alternatively, `spring.jpa.generate-ddl=false` switches off all
+DDL generation.
+
 
 
 [[boot-features-nosql]]
@@ -1445,25 +1470,25 @@ documentation].
 [[boot-features-testing]]
 == Testing
 Spring Boot provides a number of useful tools for testing your application. The
-`spring-boot-starter-test` POM provides Spring Test, JUnit, Hamcrest and Mockito
+`spring-boot-starter-parent` POM provides JUnit, Hamcrest and Mockito ``test'' `scope`
 dependencies. There are also useful test utilities in the core `spring-boot` module
-under the `org.springframework.boot.test` package.
+under the `org.springframework.boot.test` package. There is also a
+`spring-boot-starter-test` ``Starter POM''.
 
 
 
 [[boot-features-test-scope-dependencies]]
 === Test scope dependencies
-If you use the
+If you extend your Maven project from the `spring-boot-starter-parent` POM, or use the
 `spring-boot-starter-test` ``Starter POM'' (in the `test` `scope`), you will find
 the following provided libraries:
 
-* Spring Test -- integration test support for Spring applications.
-* Junit -- The de-facto standard for unit testing Java applications.
+* JUnit -- The de-facto standard for unit testing Java applications.
 * Hamcrest -- A library of matcher objects (also known as constraints or predicates)
   allowing `assertThat` style JUnit assertions.
 * Mockito -- A Java mocking framework.
 
-These are common libraries that we generally find useful when writing Tests. You are free
+These are common libraries that we generally find useful when writing tests. You are free
 to add additional test dependencies of your own if these don't suit your needs.
 
 
@@ -1483,7 +1508,7 @@ The Spring Framework includes a dedicated test module for just such integration 
 You can declare a dependency directly to `org.springframework:spring-test` or use the
 `spring-boot-starter-test` ``Starter POM'' to pull it in transitively.
 
-If you have not use the `spring-test` module before you should start by reading the
+If you have not used the `spring-test` module before you should start by reading the
 {spring-reference}/#testing[relevant section] of the Spring Framework reference
 documentation.
 
@@ -1546,6 +1571,11 @@ interaction. For Example:
 
 	}
 ----
+
+To change the port you can add environment properties to `@IntegrationTest` as colon- or
+equals-separated name-value pairs, e.g. `@IntegrationTest("server.port:9000")`.
+
+
 
 [[boot-features-test-utilities]]
 === Test utilities
@@ -1615,8 +1645,8 @@ public class MyTest {
 
 `TestRestTemplate` is a convenience subclass of Spring's `RestTemplate` that is
 useful in integration tests.  You can get a vanilla template or one that sends Basic HTTP
-authentication (with a username and password). And in either case the template will behave
-in a friendly way for testing, not following redirects (so you can assert the response
+authentication (with a username and password). In either case the template will behave
+in a test-friendly way: not following redirects (so you can assert the response
 location), ignoring cookies (so the template is stateless), and not throwing exceptions
 on server-side errors. It is recommended, but not mandatory, to use Apache HTTP Client
 (version 4.3.2 or better), and if you have that on your classpath the `TestRestTemplate`

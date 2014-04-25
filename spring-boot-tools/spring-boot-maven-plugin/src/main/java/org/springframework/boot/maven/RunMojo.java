@@ -78,7 +78,8 @@ public class RunMojo extends AbstractMojo {
 	private Boolean noverify;
 
 	/**
-	 * Arguments that should be passed to the application.
+	 * Arguments that should be passed to the application. On command line use commas to
+	 * separate multiple arguments.
 	 */
 	@Parameter(property = "run.arguments")
 	private String[] arguments;
@@ -110,7 +111,9 @@ public class RunMojo extends AbstractMojo {
 			getLog().info("Attaching agent: " + this.agent);
 			if (this.noverify != null && this.noverify && !AgentAttacher.hasNoVerify()) {
 				throw new MojoExecutionException(
-						"The JVM must be started with -noverify for this agent to work. You can use MAVEN_OPTS to add that flag.");
+						"The JVM must be started with -noverify for "
+								+ "this agent to work. You can use MAVEN_OPTS=-noverify "
+								+ "to add that flag.");
 			}
 			AgentAttacher.attach(this.agent);
 		}
@@ -120,14 +123,16 @@ public class RunMojo extends AbstractMojo {
 
 	private void findAgent() {
 		try {
-			Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
-			if (this.agent == null && loaded != null) {
-				if (this.noverify == null) {
-					this.noverify = true;
-				}
-				CodeSource source = loaded.getProtectionDomain().getCodeSource();
-				if (source != null) {
-					this.agent = new File(source.getLocation().getFile());
+			if (this.agent == null) {
+				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
+				if (loaded != null) {
+					if (this.noverify == null) {
+						this.noverify = true;
+					}
+					CodeSource source = loaded.getProtectionDomain().getCodeSource();
+					if (source != null) {
+						this.agent = new File(source.getLocation().getFile());
+					}
 				}
 			}
 		}
@@ -198,7 +203,8 @@ public class RunMojo extends AbstractMojo {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
 				urls.add(directory.toURI().toURL());
-				FileUtils.removeDuplicatesFromCopy(this.classesDirectory, directory);
+				FileUtils.removeDuplicatesFromOutputDirectory(this.classesDirectory,
+						directory);
 			}
 		}
 	}

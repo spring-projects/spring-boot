@@ -35,7 +35,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
  * Run the project from Gradle.
- * 
+ *
  * @author Dave Syer
  */
 public class RunApp extends DefaultTask {
@@ -75,7 +75,7 @@ public class RunApp extends DefaultTask {
 				}
 				if (outputDir != null) {
 					for (File directory : allResources) {
-						FileUtils.removeDuplicatesFromCopy(outputDir, directory);
+						FileUtils.removeDuplicatesFromOutputDirectory(outputDir, directory);
 					}
 				}
 				exec.exec();

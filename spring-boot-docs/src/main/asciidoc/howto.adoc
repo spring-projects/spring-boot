@@ -25,7 +25,7 @@ can send us a {github-code}[pull request].
 
 [[howto-troubleshoot-auto-configuration]]
 === Troubleshoot auto-configuration
-The Spring Boot auto-configuration tries it's best to ``do the right thing'', but
+The Spring Boot auto-configuration tries its best to ``do the right thing'', but
 sometimes things fail and it can be hard to tell why.
 
 There is a really useful `AutoConfigurationReport` available in any Spring Boot
@@ -44,7 +44,7 @@ rules of thumb:
   Actuator app look at the `autoconfig` endpoint (`/autoconfig' or the JMX equivalent) for
   the same information.
 * Look for classes that are `@ConfigurationProperties` (e.g.
-  {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`]
+  {sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[`ServerProperties`])
   and read from there the available external configuration options. The
   `@ConfigurationProperties` has a `name` attribute which acts as a prefix to external
   properties, thus `ServerProperties` has `prefix="server"` and its configuration properties
@@ -364,34 +364,29 @@ that and be sure that it has initialized is to add a `@Bean` of type
 `ApplicationListener<EmbeddedServletContainerInitializedEvent>` and pull the container
 out of the event when it is published.
 
-A really useful thing to do in is to autowire the `EmbeddedWebApplicationContext` into a
-test case and use it to discover the port that the app is running on. In that way you can
-use a test profile that chooses a random port (`server.port=0`) and make your test suite
-independent of its environment. Example:
+A really useful thing to do in is to use `@IntegrationTest` to set `server.port=0`
+and then inject the actual (``local'') port as a `@Value`. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
 	@WebApplication
-	@IntegrationTest
-	@ActiveProfiles("test")
+	@IntegrationTest("server.port:0")
 	public class CityRepositoryIntegrationTests {
 
 		@Autowired
 		EmbeddedWebApplicationContext server;
 
+		@Value("${local.server.port}")
 		int port;
-
-		@Before
-		public void init() {
-			port = server.getEmbeddedServletContainer().getPort();
-		}
 
 		// ...
 
 	}
 ----
+
+
 
 [[howto-configure-tomcat]]
 === Configure Tomcat
@@ -453,6 +448,8 @@ that sets up the connector to be secure:
 	}
 ----
 
+
+
 [[howto-enable-multiple-connectors-in-tomcat]]
 === Enable Multiple Connectors Tomcat
 Add a `org.apache.catalina.connector.Connector` to the
@@ -491,6 +488,26 @@ HTTPS connector:
 		}
 	}
 ----
+
+
+
+[[howto-use-tomcat-behind-a-proxy-server]]
+=== Use Tomcat behind a front-end proxy server
+Spring Boot will automatically configure Tomcat's `RemoteIpValve` if it detects some
+environment settings. This allows you to transparently use the standard `x-forwarded-for`
+and `x-forwarded-proto` headers that most front-end proxy servers add.
+
+You can switch on the valve by adding some entries to application.properties, e.g.
+
+[indent=0]
+----
+	server.tomcat.remote_ip_header=x-forwarded-for
+	server.tomcat.protocol_header=x-forwarded-proto
+----
+
+Alternatively, you can add the `RemoteIpValve` yourself by adding a
+`TomcatEmbeddedServletContainerFactory` bean.
+
 
 
 [[howto-use-jetty-instead-of-tomcat]]
@@ -639,6 +656,25 @@ a JAXB object) because browsers tend to send accept headers that prefer XML.
 
 
 
+[[howto-write-an-xml-rest-service]]
+=== Write an XML REST service
+Since JAXB is in the JDK the same example as we used for JSON would work, as long as the
+`MyThing` was annotated as `@XmlRootElement`:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@XmlRootElement
+	public class MyThing {
+		private String name;
+		// .. getters and setters
+	}
+----
+
+To get the server to render XML instead of JSON you might have to send an
+`Accept: text/xml` header (or use a browser).
+
+
+
 [[howto-customize-the-jackson-objectmapper]]
 === Customize the Jackson ObjectMapper
 Spring MVC (client and server side) uses `HttpMessageConverters` to negotiate content
@@ -689,6 +725,23 @@ then you can take control completely and do everything manually using
 
 See the {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`]
 source code for more details.
+
+[[howto-multipart-file-upload-configuration]]
+=== Handling Multipart File Uploads
+Spring Boot embraces the Servlet 3 `javax.servlet.http.Part` API to support uploading files. By default
+Spring Boot configures Spring MVC with a maximum file of 1Mb per
+file and a maximum of 10Mb of file data in a single request. You may override these values, as well as the location
+to which intermediate data is stored (e.g., to the `/tmp` directory) and the threshold past which data is flushed to
+disk by using the properties exposed in the `MultipartAutoConfiguration` class. If you want to specify that files be unlimited,
+for example, set the `multipart.maxFileSize` property to `-1`.
+
+The multipart support is helpful when you want to receive multipart encoded file data as a `@RequestParam`-annotated
+ parameter of  type `MultipartFile` in a Spring MVC controller handler method.
+
+See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`] source for more details.
+
+
+
 
 
 
@@ -837,7 +890,7 @@ requires some jiggling with excludes, e.g. in Maven:
 		<artifactId>spring-boot-starter</artifactId>
 		<exclusions>
 				<exclusion>
-						<groupId>${project.groupId}</groupId>
+						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
 		</exclusions>
@@ -935,14 +988,14 @@ and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBas
 for more details.
 
 
+
 [[howto-use-custom-entity-manager]]
 === Use a custom EntityManagerFactory
-To take full control of the configuration of the
-`EntityManagerFactory`, you need to add a `@Bean` named
-"entityManagerFactory".  To avoid eager initialization of JPA
-infrastructure Spring Boot autoconfiguration does not switch on its
-entity manager based on the presence of a bean of that type. Instead
-it has to do it by name.
+To take full control of the configuration of the `EntityManagerFactory`, you need to add
+a `@Bean` named "entityManagerFactory". To avoid eager initialization of JPA
+infrastructure, Spring Boot auto-configuration does not switch on its entity manager
+based on the presence of a bean of that type. Instead it has to do it by name.
+
 
 
 [[howto-use-traditional-persistence-xml]]
@@ -1000,7 +1053,8 @@ not something you want to be on the classpath in production. It is a Hibernate f
 Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
 classpath). In addition Spring Boot will load a file `schema-${platform}.sql` where
-`platform` is the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
+`platform` is the value of `spring.datasource.platform`, e.g. you might choose to set
+it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
 `postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
 initializer by default, so if the scripts cause exceptions the application will fail
 to start.
@@ -1140,21 +1194,24 @@ use this in a webapp is to inject it into a void method in a
 	}
 ----
 
-You will get the best results if you put this in a nested class, or a standalone class (i.e.
-not mixed in with a lot of other `@Beans` that might be allowed to influence the order of
-instantiation). The https://github.com/spring-projects/spring-boot/tree/master/spring-boot-samples/spring-boot-sample-web-secure[secure web sample] is a useful template to follow.
+You will get the best results if you put this in a nested class, or a standalone class
+(i.e. not mixed in with a lot of other `@Beans` that might be allowed to influence the
+order of instantiation). The {github-code}/spring-boot-samples/spring-boot-sample-web-secure[secure web sample]
+is a useful template to follow.
+
+
 
 [[howto-enable-https]]
-=== Enable HTTPS
+=== Enable HTTPS when running behind a proxy server
 Ensuring that all your main endpoints are only available over HTTPS is an important
 chore for any application.  If you are using Tomcat as a servlet container, then
 Spring Boot will add Tomcat's own `RemoteIpValve` automatically if it detects some
 environment settings, and you should be able to rely on the `HttpServletRequest` to
-report whether it is secure or not (even downstream of the real SSL termination). The
-standard behavior is determined by the presence or absence of certain request headers
-(`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should
-work with most front end proxies. You can switch on the valve by adding some entries to
-`application.properties`, e.g.
+report whether it is secure or not (even downstream of a proxy server that handles the
+real SSL termination). The standard behavior is determined by the presence or absence of
+certain request headers (`x-forwarded-for` and `x-forwarded-proto`), whose names are
+conventional, so it should work with most front end proxies. You can switch on the valve
+by adding some entries to `application.properties`, e.g.
 
 [source,properties,indent=0]
 ----
@@ -1212,6 +1269,40 @@ would only ever be a development time trick probably).
 
 [[howto-build]]
 == Build
+
+
+
+[[howto-customize-dependency-versions-with-maven]]
+=== Customize dependency versions with Maven
+If you use a Maven build that inherits from `spring-boot-starter-parent` but you want
+to override a specific third-party dependency you can add appropriate `<properties>`
+elements. Browse the {github-code}/spring-boot-dependencies/pom.xml[`spring-dependencies`]
+POM for a complete list of properties. For example, to pick a different `slf4j` version
+you would add the following:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<properties>
+		<slf4j.version>1.7.5<slf4j.version>
+	</properties>
+----
+
+WARNING: Each Spring Boot release is designed and tested against a specific set of
+third-party dependencies. Overriding versions may cause compatibilty issues.
+
+
+
+[[howto-remote-debug-maven-run]]
+=== Remote debug a Spring Boot application started with Maven
+To attach a remote debugger to a Spring Boot application started with Maven you can use
+the `mvnDebug` command rather than `mvn`. For example:
+
+[indent=0]
+----
+	$ mvnDebug spring-boot:run
+----
+
+You can now attach a remote debugger to your running application on port `8000`.
 
 
 

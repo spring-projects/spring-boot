@@ -67,6 +67,7 @@ content into your application; rather pick only the properties that you need.
 	# SPRING MVC ({sc-spring-boot-autoconfigure}/web/HttpMapperProperties.{sc-ext}[HttpMapperProperties])
 	http.mappers.json-pretty-print=false # pretty print JSON
 	http.mappers.json-sort-keys=false # sort keys
+	spring.mvc.locale= # set fixed locale, e.g. en_UK
 	spring.view.prefix= # MVC view prefix
 	spring.view.suffix= # ... and suffix
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
@@ -76,6 +77,7 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.suffix=.html
 	spring.thymeleaf.mode=HTML5
 	spring.thymeleaf.encoding=UTF-8
+	spring.thymeleaf.content-type=text/html # ;charset=<encoding> is added
 	spring.thymeleaf.cache=true # set to false for hot refresh
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
@@ -105,7 +107,9 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.name= # name of the data source
 	spring.datasource.intialize=true # populate using data.sql
 	spring.datasource.schema= # a schema resource reference
+	spring.datasource.platform= # the platform to use in the schema resource (schema-${platform}.sql)
 	spring.datasource.continueOnError=false # continue even if can't be initialized
+	spring.datasource.separator=; # statement separator in SQL initialization scripts
 	spring.datasource.driverClassName= # JDBC Settings...
 	spring.datasource.url=
 	spring.datasource.username=
@@ -167,7 +171,7 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.pooled=false
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsTemplateProperties.{sc-ext}[JmsTemplateProperties])
-	spring.jms.pub-sub-domain=
+	spring.jms.pub-sub-domain= # false for queue (default), true for topic
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchDatabaseInitializer.{sc-ext}[BatchDatabaseInitializer])
 	spring.batch.job.names=job1,job2

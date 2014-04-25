@@ -179,8 +179,7 @@ public class JobLauncherCommandLineRunnerTests {
 
 		@Bean
 		public JobExplorer jobExplorer() throws Exception {
-			return (JobExplorer) new MapJobExplorerFactoryBean(this.jobRepositoryFactory)
-					.getObject();
+			return new MapJobExplorerFactoryBean(this.jobRepositoryFactory).getObject();
 		}
 	}
 

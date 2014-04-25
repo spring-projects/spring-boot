@@ -47,13 +47,13 @@ public class SpringApplicationHierarchyTests {
 	public void testParent() {
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Child.class);
 		builder.parent(Parent.class);
-		this.context = builder.run();
+		this.context = builder.run("--server.port=0");
 	}
 
 	@Test
 	public void testChild() {
-		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class)
-				.run();
+		this.context = new SpringApplicationBuilder(Parent.class).child(Child.class).run(
+				"--server.port=0");
 	}
 
 	@EnableAutoConfiguration

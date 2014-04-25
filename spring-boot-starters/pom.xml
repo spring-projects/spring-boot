@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.0.1.BUILD-SNAPSHOT</version>
+		<version>1.1.0.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-starters</artifactId>
@@ -24,6 +24,7 @@
 		<module>spring-boot-starter-amqp</module>
 		<module>spring-boot-starter-aop</module>
 		<module>spring-boot-starter-batch</module>
+		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
 		<module>spring-boot-starter-integration</module>

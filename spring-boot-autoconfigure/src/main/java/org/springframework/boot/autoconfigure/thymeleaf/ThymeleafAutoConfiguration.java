@@ -178,6 +178,9 @@ public class ThymeleafAutoConfiguration {
 			resolver.setTemplateEngine(this.templateEngine);
 			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
 					"UTF-8"));
+			resolver.setContentType(appendCharset(
+					this.environment.getProperty("contentType", "text/html"),
+					resolver.getCharacterEncoding()));
 			resolver.setExcludedViewNames(this.environment.getProperty(
 					"excludedViewNames", String[].class));
 			resolver.setViewNames(this.environment.getProperty("viewNames",
@@ -186,6 +189,13 @@ public class ThymeleafAutoConfiguration {
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
 			return resolver;
+		}
+
+		private String appendCharset(String type, String charset) {
+			if (type.contains("charset=")) {
+				return type;
+			}
+			return type + ";charset=" + charset;
 		}
 
 	}

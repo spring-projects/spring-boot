@@ -29,21 +29,19 @@ started''] guide. Documentation is published in {docs}/htmlsingle/[HTML],
 {docs}/pdf/spring-boot-reference.pdf[PDF] and {docs}/epub/spring-boot-reference.epub[EPUB]
 formats.
 
-Here is a quick teaser of a Spring Boot application:
+Here is a quick teaser of a complete Spring Boot application in Java:
 
 [source,java,indent=0]
 ----
 	import org.springframework.boot.*;
 	import org.springframework.boot.autoconfigure.*;
-	import org.springframework.stereotype.*;
 	import org.springframework.web.bind.annotation.*;
 
-	@Controller
+	@RestController
 	@EnableAutoConfiguration
 	public class Example {
 
 		@RequestMapping("/")
-		@ResponseBody
 		String home() {
 			return "Hello World!";
 		}

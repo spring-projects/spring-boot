@@ -37,9 +37,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.Import;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
@@ -201,7 +201,6 @@ public class AutoConfigurationReportTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void duplicateOutcomes() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				DuplicateConfig.class);
@@ -222,9 +221,7 @@ public class AutoConfigurationReportTests {
 
 		Matcher<String> onClassMessage = containsString("@ConditionalOnClass "
 				+ "classes found: javax.servlet.Servlet,org.springframework.web.multipart.support.StandardServletMultipartResolver");
-		Matcher<String> onBeanMessage = containsString("@ConditionalOnBean "
-				+ "(types: javax.servlet.MultipartConfigElement; SearchStrategy: all) found no beans");
-		assertThat(messages, containsInAnyOrder(onClassMessage, onBeanMessage));
+		assertThat(messages, hasItem(onClassMessage));
 		context.close();
 	}
 

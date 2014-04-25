@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,60 +27,67 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests fir {@link FileUtils}.
+ * 
  * @author Dave Syer
  */
 public class FileUtilsTests {
 
-	private File origin;
-	private File target;
+	private File outputDirectory;
+
+	private File originDirectory;
 
 	@Before
 	public void init() {
-		this.origin = new File("target/test/remove");
-		this.target = new File("target/test/keep");
-		FileSystemUtils.deleteRecursively(this.origin);
-		FileSystemUtils.deleteRecursively(this.target);
-		this.origin.mkdirs();
-		this.target.mkdirs();
+		this.outputDirectory = new File("target/test/remove");
+		this.originDirectory = new File("target/test/keep");
+		FileSystemUtils.deleteRecursively(this.outputDirectory);
+		FileSystemUtils.deleteRecursively(this.originDirectory);
+		this.outputDirectory.mkdirs();
+		this.originDirectory.mkdirs();
 	}
 
 	@Test
 	public void simpleDuplicateFile() throws IOException {
-		File file = new File(this.origin, "logback.xml");
+		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
-		new File(this.target, "logback.xml").createNewFile();
-		FileUtils.removeDuplicatesFromCopy(this.origin, this.target);
+		new File(this.originDirectory, "logback.xml").createNewFile();
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
+				this.originDirectory);
 		assertFalse(file.exists());
 	}
 
 	@Test
 	public void nestedDuplicateFile() throws IOException {
-		assertTrue(new File(this.origin, "sub").mkdirs());
-		assertTrue(new File(this.target, "sub").mkdirs());
-		File file = new File(this.origin, "sub/logback.xml");
+		assertTrue(new File(this.outputDirectory, "sub").mkdirs());
+		assertTrue(new File(this.originDirectory, "sub").mkdirs());
+		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
-		new File(this.target, "sub/logback.xml").createNewFile();
-		FileUtils.removeDuplicatesFromCopy(this.origin, this.target);
+		new File(this.originDirectory, "sub/logback.xml").createNewFile();
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
+				this.originDirectory);
 		assertFalse(file.exists());
 	}
 
 	@Test
 	public void nestedNonDuplicateFile() throws IOException {
-		assertTrue(new File(this.origin, "sub").mkdirs());
-		assertTrue(new File(this.target, "sub").mkdirs());
-		File file = new File(this.origin, "sub/logback.xml");
+		assertTrue(new File(this.outputDirectory, "sub").mkdirs());
+		assertTrue(new File(this.originDirectory, "sub").mkdirs());
+		File file = new File(this.outputDirectory, "sub/logback.xml");
 		file.createNewFile();
-		new File(this.target, "sub/different.xml").createNewFile();
-		FileUtils.removeDuplicatesFromCopy(this.origin, this.target);
+		new File(this.originDirectory, "sub/different.xml").createNewFile();
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
+				this.originDirectory);
 		assertTrue(file.exists());
 	}
 
 	@Test
 	public void nonDuplicateFile() throws IOException {
-		File file = new File(this.origin, "logback.xml");
+		File file = new File(this.outputDirectory, "logback.xml");
 		file.createNewFile();
-		new File(this.target, "different.xml").createNewFile();
-		FileUtils.removeDuplicatesFromCopy(this.origin, this.target);
+		new File(this.originDirectory, "different.xml").createNewFile();
+		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
+				this.originDirectory);
 		assertTrue(file.exists());
 	}
 

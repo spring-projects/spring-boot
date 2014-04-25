@@ -23,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
@@ -44,5 +45,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 		DirtiesContextTestExecutionListener.class,
 		TransactionalTestExecutionListener.class })
 public @interface IntegrationTest {
+
+	/**
+	 * Properties in form {@literal key=value} that should be added to the Spring
+	 * {@link Environment} before the test runs.
+	 */
+	String[] value() default {};
 
 }

@@ -137,6 +137,12 @@ class StartupInfoLogger {
 				return System.getProperty("user.name");
 			}
 		});
+		String in = getValue("in ", new Callable<Object>() {
+			@Override
+			public Object call() throws Exception {
+				return System.getProperty("user.dir");
+			}
+		});
 		File codeSourceLocation = getCodeSourceLocation();
 		String path = (codeSourceLocation == null ? "" : codeSourceLocation
 				.getAbsolutePath());
@@ -146,7 +152,10 @@ class StartupInfoLogger {
 		if (StringUtils.hasLength(startedBy) && StringUtils.hasLength(path)) {
 			startedBy = " " + startedBy;
 		}
-		return " (" + path + startedBy + ")";
+		if (StringUtils.hasLength(in) && StringUtils.hasLength(startedBy)) {
+			in = " " + in;
+		}
+		return " (" + path + startedBy + in + ")";
 	}
 
 	private File getCodeSourceLocation() {

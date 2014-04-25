@@ -171,6 +171,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		final AnnotationConfigEmbeddedWebApplicationContext childContext = new AnnotationConfigEmbeddedWebApplicationContext();
 		childContext.setParent(this.applicationContext);
+		childContext.setNamespace("management");
 		childContext.setId(this.applicationContext.getId() + ":management");
 
 		// Register the ManagementServerChildContextConfiguration first followed
@@ -196,18 +197,18 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		try {
 			childContext.refresh();
 		}
-		catch (RuntimeException e) {
+		catch (RuntimeException ex) {
 			// No support currently for deploying a war with management.port=<different>,
 			// and this is the signature of that happening
-			if (e instanceof EmbeddedServletContainerException
-					|| e.getCause() instanceof EmbeddedServletContainerException) {
+			if (ex instanceof EmbeddedServletContainerException
+					|| ex.getCause() instanceof EmbeddedServletContainerException) {
 				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
 			}
 			else {
-				throw e;
+				throw ex;
 			}
 		}
-	}
+	};
 
 	protected static enum ManagementServerPort {
 

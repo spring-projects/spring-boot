@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -120,6 +121,15 @@ public class FilterRegistrationBeanTests {
 		bean.setFilter(this.filter);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter("mockFilter", this.filter);
+	}
+
+	@Test
+	public void disable() throws Exception {
+		FilterRegistrationBean bean = new FilterRegistrationBean();
+		bean.setFilter(this.filter);
+		bean.setEnabled(false);
+		bean.onStartup(this.servletContext);
+		verify(this.servletContext, times(0)).addFilter("mockFilter", this.filter);
 	}
 
 	@Test

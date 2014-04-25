@@ -39,6 +39,7 @@ import org.springframework.boot.cli.command.jar.JarCommand;
 import org.springframework.boot.cli.command.run.RunCommand;
 import org.springframework.boot.cli.command.test.TestCommand;
 import org.springframework.boot.cli.util.OutputCapture;
+import org.springframework.util.SocketUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
@@ -56,6 +57,8 @@ public class CliTester implements TestRule {
 	private final List<AbstractCommand> commands = new ArrayList<AbstractCommand>();
 
 	private final String prefix;
+
+	private final int port = SocketUtils.findAvailableTcpPort();
 
 	public CliTester(String prefix) {
 		this.prefix = prefix;
@@ -96,11 +99,13 @@ public class CliTester implements TestRule {
 			@Override
 			public T call() throws Exception {
 				ClassLoader loader = Thread.currentThread().getContextClassLoader();
+				System.setProperty("server.port", String.valueOf(CliTester.this.port));
 				try {
 					command.run(sources);
 					return command;
 				}
 				finally {
+					System.clearProperty("server.port");
 					Thread.currentThread().setContextClassLoader(loader);
 				}
 			}
@@ -148,12 +153,13 @@ public class CliTester implements TestRule {
 	}
 
 	public String getHttpOutput() {
-		return getHttpOutput("http://localhost:8080");
+		return getHttpOutput("/");
 	}
 
 	public String getHttpOutput(String uri) {
 		try {
-			InputStream stream = URI.create(uri).toURL().openStream();
+			InputStream stream = URI.create("http://localhost:" + this.port + uri)
+					.toURL().openStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 			String line;
 			StringBuilder result = new StringBuilder();

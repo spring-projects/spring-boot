@@ -60,7 +60,8 @@ public class BasicErrorControllerSpecialIntegrationTests {
 	@Test
 	public void errorPageAvailableWithParentContext() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(
-				ParentConfiguration.class).child(ChildConfiguration.class).run());
+				ParentConfiguration.class).child(ChildConfiguration.class).run(
+				"--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();
@@ -70,8 +71,8 @@ public class BasicErrorControllerSpecialIntegrationTests {
 
 	@Test
 	public void errorPageAvailableWithMvcIncluded() throws Exception {
-		setup((ConfigurableWebApplicationContext) SpringApplication
-				.run(WebMvcIncludedConfiguration.class));
+		setup((ConfigurableWebApplicationContext) new SpringApplication(
+				WebMvcIncludedConfiguration.class).run("--server.port=0"));
 		MvcResult response = this.mockMvc
 				.perform(get("/error").accept(MediaType.TEXT_HTML))
 				.andExpect(status().isOk()).andReturn();

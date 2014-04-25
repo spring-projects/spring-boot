@@ -16,20 +16,19 @@
 
 package org.springframework.boot.gradle.task;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ResolvedArtifact;
+import org.gradle.api.file.FileCollection;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
  * Expose Gradle {@link Configuration}s as {@link Libraries}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -43,7 +42,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
-	 * 
+	 *
 	 * @param project the gradle project
 	 */
 	public ProjectLibraries(Project project) {
@@ -52,7 +51,7 @@ class ProjectLibraries implements Libraries {
 
 	/**
 	 * Set the name of the provided configuration. Defaults to 'providedRuntime'.
-	 * 
+	 *
 	 * @param providedConfigurationName the providedConfigurationName to set
 	 */
 	public void setProvidedConfigurationName(String providedConfigurationName) {
@@ -66,44 +65,40 @@ class ProjectLibraries implements Libraries {
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
 
-		Configuration custom = this.customConfigurationName != null ? this.project
+		FileCollection custom = this.customConfigurationName != null ? this.project
 				.getConfigurations().findByName(this.customConfigurationName) : null;
 
 		if (custom != null) {
-			libraries(LibraryScope.CUSTOM, getResolvedArtifacts(custom), callback);
+			libraries(LibraryScope.CUSTOM, custom, callback);
 		}
 		else {
-			Set<ResolvedArtifact> compileArtifacts = getResolvedArtifacts("compile");
-			Set<ResolvedArtifact> runtimeArtifacts = getResolvedArtifacts("runtime");
-			runtimeArtifacts.removeAll(compileArtifacts);
+			FileCollection compile = this.project.getConfigurations()
+					.getByName("compile");
 
-			Set<ResolvedArtifact> providedArtifacts = getResolvedArtifacts(this.providedConfigurationName);
-			compileArtifacts.removeAll(providedArtifacts);
-			runtimeArtifacts.removeAll(providedArtifacts);
+			FileCollection runtime = this.project.getConfigurations()
+					.getByName("runtime");
+			runtime = runtime.minus(compile);
 
-			libraries(LibraryScope.COMPILE, compileArtifacts, callback);
-			libraries(LibraryScope.RUNTIME, runtimeArtifacts, callback);
-			libraries(LibraryScope.PROVIDED, providedArtifacts, callback);
+			FileCollection provided = this.project.getConfigurations()
+					.findByName(this.providedConfigurationName);
+
+			if (provided != null) {
+				compile = compile.minus(provided);
+				runtime = runtime.minus(provided);
+			}
+
+			libraries(LibraryScope.COMPILE, compile, callback);
+			libraries(LibraryScope.RUNTIME, runtime, callback);
+			libraries(LibraryScope.PROVIDED, provided, callback);
 		}
 	}
 
-	private Set<ResolvedArtifact> getResolvedArtifacts(Configuration configuration) {
-		if (configuration == null) {
-			return Collections.emptySet();
-		}
-		return configuration.getResolvedConfiguration().getResolvedArtifacts();
-	}
-
-	private Set<ResolvedArtifact> getResolvedArtifacts(String configurationName) {
-		Configuration configuration = this.project.getConfigurations().findByName(
-				configurationName);
-		return getResolvedArtifacts(configuration);
-	}
-
-	private void libraries(LibraryScope scope, Set<ResolvedArtifact> artifacts,
+	private void libraries(LibraryScope scope, FileCollection files,
 			LibraryCallback callback) throws IOException {
-		for (ResolvedArtifact artifact : artifacts) {
-			callback.library(artifact.getFile(), scope);
+		if (files != null) {
+			for (File file: files) {
+				callback.library(file, scope);
+			}
 		}
 	}
 }

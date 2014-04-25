@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link JmsTemplate}.
@@ -64,25 +65,22 @@ public class JmsTemplateAutoConfiguration {
 
 		@Bean
 		public ConnectionFactory jmsConnectionFactory() {
-			ConnectionFactory connectionFactory;
-			if (this.config.getUser() != null && !"".equals(this.config.getUser())
-					&& this.config.getPassword() != null
-					&& !"".equals(this.config.getPassword())) {
-				connectionFactory = new ActiveMQConnectionFactory(this.config.getUser(),
-						this.config.getPassword(), this.config.getBrokerUrl());
-			}
-			else {
-				connectionFactory = new ActiveMQConnectionFactory(
-						this.config.getBrokerUrl());
-			}
+			ConnectionFactory connectionFactory = getActiveMQConnectionFactory();
 			if (this.config.isPooled()) {
 				PooledConnectionFactory pool = new PooledConnectionFactory();
 				pool.setConnectionFactory(connectionFactory);
 				return pool;
 			}
-			else {
-				return connectionFactory;
+			return connectionFactory;
+		}
+
+		private ConnectionFactory getActiveMQConnectionFactory() {
+			if (StringUtils.hasLength(this.config.getUser())
+					&& StringUtils.hasLength(this.config.getPassword())) {
+				return new ActiveMQConnectionFactory(this.config.getUser(),
+						this.config.getPassword(), this.config.getBrokerUrl());
 			}
+			return new ActiveMQConnectionFactory(this.config.getBrokerUrl());
 		}
 	}
 

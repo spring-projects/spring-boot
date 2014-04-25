@@ -133,8 +133,8 @@ public class JolokiaMvcEndpoint implements MvcEndpoint, InitializingBean,
 		@Override
 		public String getPathInfo() {
 			String value = super.getRequestURI();
-			if (value.startsWith(this.path)) {
-				value = value.substring(this.path.length());
+			if (value.contains(this.path)) {
+				value = value.substring(value.indexOf(this.path) + this.path.length());
 			}
 			int index = value.indexOf("?");
 			if (index > 0) {
