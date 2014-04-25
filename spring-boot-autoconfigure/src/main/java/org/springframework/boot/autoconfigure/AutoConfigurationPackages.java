@@ -91,7 +91,7 @@ public abstract class AutoConfigurationPackages {
 	/**
 	 * Holder for the base package (name may be null to indicate no scanning).
 	 */
-	final static class BasePackages {
+	static final class BasePackages {
 
 		private final List<String> packages;
 
