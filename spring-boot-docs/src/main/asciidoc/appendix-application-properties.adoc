@@ -171,7 +171,7 @@ content into your application; rather pick only the properties that you need.
 	spring.activemq.pooled=false
 
 	# JMS ({sc-spring-boot-autoconfigure}/jms/JmsTemplateProperties.{sc-ext}[JmsTemplateProperties])
-	spring.jms.pub-sub-domain=
+	spring.jms.pub-sub-domain= # false for queue (default), true for topic
 
 	# SPRING BATCH ({sc-spring-boot-autoconfigure}/batch/BatchDatabaseInitializer.{sc-ext}[BatchDatabaseInitializer])
 	spring.batch.job.names=job1,job2
