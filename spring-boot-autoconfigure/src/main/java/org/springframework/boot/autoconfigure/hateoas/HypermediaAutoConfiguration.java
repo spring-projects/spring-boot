@@ -29,8 +29,9 @@ import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring HATEOAS's
  * {@link EnableHypermediaSupport}.
- *
+ * 
  * @author Roy Clarkson
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(Resource.class)

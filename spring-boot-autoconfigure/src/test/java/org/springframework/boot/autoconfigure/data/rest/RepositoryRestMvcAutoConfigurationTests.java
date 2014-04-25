@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2013 the original author or authors.
+ * Copyright 2002-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.data.rest;
 
-import static org.junit.Assert.assertNotNull;
+package org.springframework.boot.autoconfigure.data.rest;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -30,13 +29,15 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
+ * Tests for {@link RepositoryRestMvcAutoConfiguration}.
  * 
  * @author Rob Winch
- *
  */
 public class RepositoryRestMvcAutoConfigurationTests {
-	
+
 	private AnnotationConfigWebApplicationContext context;
 
 	@Test
