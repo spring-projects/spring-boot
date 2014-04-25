@@ -24,7 +24,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.util.StringUtils;
 
 import com.mongodb.Mongo;
 
@@ -51,8 +55,25 @@ public class MongoTemplateAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoTemplate mongoTemplate(Mongo mongo) throws UnknownHostException {
-		return new MongoTemplate(mongo, this.properties.getMongoClientDatabase());
+	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory)
+			throws UnknownHostException {
+		return new MongoTemplate(mongoDbFactory);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
+		String db = StringUtils.hasText(this.properties.getGridFsDatabase()) ? this.properties
+				.getGridFsDatabase() : this.properties.getMongoClientDatabase();
+
+		return new SimpleMongoDbFactory(mongo, db);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
+			MongoTemplate mongoTemplate) {
+		return new GridFsTemplate(mongoDbFactory, mongoTemplate.getConverter());
 	}
 
 }
