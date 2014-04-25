@@ -47,7 +47,7 @@ import com.mongodb.Mongo;
  */
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoTemplate.class })
-public class MongoTemplateAutoConfiguration {
+public class MongoDataAutoConfiguration {
 
 	@Autowired
 	private MongoProperties properties;
