@@ -16,16 +16,17 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.net.UnknownHostException;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import com.mongodb.DBPort;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.net.UnknownHostException;
 
 /**
  * Configuration properties for Mongo.
- *
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  * @author Josh Long
@@ -33,69 +34,68 @@ import java.net.UnknownHostException;
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
 
-    private String host;
+	private String host;
 
-    private int port = DBPort.PORT;
+	private int port = DBPort.PORT;
 
-    private String uri = "mongodb://localhost/test";
+	private String uri = "mongodb://localhost/test";
 
-    private String database;
+	private String database;
 
-    private String gridFsDatabase;
+	private String gridFsDatabase;
 
+	public String getHost() {
+		return this.host;
+	}
 
-    public String getHost() {
-        return this.host;
-    }
+	public void setHost(String host) {
+		this.host = host;
+	}
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+	public String getDatabase() {
+		return this.database;
+	}
 
-    public String getDatabase() {
-        return this.database;
-    }
+	public void setDatabase(String database) {
+		this.database = database;
+	}
 
-    public void setDatabase(String database) {
-        this.database = database;
-    }
+	public String getUri() {
+		return this.uri;
+	}
 
-    public String getUri() {
-        return this.uri;
-    }
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
+	public int getPort() {
+		return this.port;
+	}
 
-    public int getPort() {
-        return this.port;
-    }
+	public void setPort(int port) {
+		this.port = port;
+	}
 
-    public void setPort(int port) {
-        this.port = port;
-    }
+	public String getGridFsDatabase() {
+		return this.gridFsDatabase;
+	}
 
-    public String getGridFsDatabase() {
-        return gridFsDatabase;
-    }
+	public void setGridFsDatabase(String gridFsDatabase) {
+		this.gridFsDatabase = gridFsDatabase;
+	}
 
-    public void setGridFsDatabase(String gridFsDatabase) {
-        this.gridFsDatabase = gridFsDatabase;
-    }
+	public String getMongoClientDatabase() {
+		if (this.database != null) {
+			return this.database;
+		}
+		return new MongoClientURI(this.uri).getDatabase();
+	}
 
-    public String getMongoClientDatabase() {
-        if (this.database != null) {
-            return this.database;
-        }
-        return new MongoClientURI(this.uri).getDatabase();
-    }
-
-    public MongoClient createMongoClient() throws UnknownHostException {
-        if (this.host != null) {
-            return new MongoClient(this.host, this.port);
-        }
-        return new MongoClient(new MongoClientURI(this.uri));
-    }
+	public MongoClient createMongoClient() throws UnknownHostException {
+		if (this.host != null) {
+			return new MongoClient(this.host, this.port);
+		}
+		return new MongoClient(new MongoClientURI(this.uri));
+	}
 
 }
