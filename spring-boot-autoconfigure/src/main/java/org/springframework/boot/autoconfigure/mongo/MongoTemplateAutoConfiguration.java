@@ -33,11 +33,10 @@ import org.springframework.util.StringUtils;
 import com.mongodb.Mongo;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's
- * {@link MongoTemplate}.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's mongo support.
  * <p>
- * Registers a {@link org.springframework.data.mongodb.core.MongoTemplate} bean if no
- * other bean of the same type is configured.
+ * Registers a {@link MongoTemplate} and {@link GridFsTemplate} beans if no other beans of
+ * the same type are configured.
  * <P>
  * Honors the {@literal spring.data.mongodb.database} property if set, otherwise connects
  * to the {@literal test} database.
