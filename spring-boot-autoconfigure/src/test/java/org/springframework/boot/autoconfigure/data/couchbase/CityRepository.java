@@ -18,8 +18,5 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
 
-/**
- * @author Michael Nitschinger
- */
 public interface CityRepository extends CouchbaseRepository<City, String> {
 }
