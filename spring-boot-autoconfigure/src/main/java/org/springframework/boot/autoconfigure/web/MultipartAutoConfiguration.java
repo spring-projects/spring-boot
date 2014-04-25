@@ -25,11 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
-import org.springframework.boot.context.embedded.MultipartConfigFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
 /**
@@ -41,7 +39,7 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
  * <p/>
  * The {@link javax.servlet.MultipartConfigElement} is a Servlet API that's used to
  * configure how the container handles file uploads. By default
- *
+ * 
  * @author Greg Turnquist
  * @author Josh Long
  */
@@ -57,25 +55,7 @@ public class MultipartAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MultipartConfigElement multipartConfigElement() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-
-		if (StringUtils.hasText(this.multipartProperties.getFileSizeThreshold())) {
-			factory.setFileSizeThreshold(this.multipartProperties.getFileSizeThreshold());
-		}
-
-		if (StringUtils.hasText(this.multipartProperties.getLocation())) {
-			factory.setLocation(this.multipartProperties.getLocation());
-		}
-
-		if (StringUtils.hasText(this.multipartProperties.getMaxRequestSize())) {
-			factory.setMaxRequestSize(this.multipartProperties.getMaxRequestSize());
-		}
-
-		if (StringUtils.hasText(this.multipartProperties.getMaxFileSize())) {
-			factory.setMaxFileSize(this.multipartProperties.getMaxFileSize());
-		}
-
-		return factory.createMultipartConfig();
+		return this.multipartProperties.createMultipartConfig();
 	}
 
 	@Bean
@@ -83,4 +63,5 @@ public class MultipartAutoConfiguration {
 	public StandardServletMultipartResolver multipartResolver() {
 		return new StandardServletMultipartResolver();
 	}
+
 }
