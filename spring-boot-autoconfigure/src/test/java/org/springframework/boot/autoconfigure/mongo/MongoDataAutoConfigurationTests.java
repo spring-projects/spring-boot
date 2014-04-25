@@ -25,11 +25,11 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link MongoTemplateAutoConfiguration}.
+ * Tests for {@link MongoDataAutoConfiguration}.
  * 
  * @author Josh Long
  */
-public class MongoTemplateAutoConfigurationTests {
+public class MongoDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -44,7 +44,7 @@ public class MongoTemplateAutoConfigurationTests {
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoTemplateAutoConfiguration.class);
+				MongoDataAutoConfiguration.class);
 		assertEquals(1, this.context.getBeanNamesForType(GridFsTemplate.class).length);
 	}
 }

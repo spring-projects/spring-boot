@@ -44,7 +44,7 @@ public class MongoAutoConfigurationTests {
 	public void templateExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoTemplateAutoConfiguration.class);
+				MongoDataAutoConfiguration.class);
 		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
 	}
 
