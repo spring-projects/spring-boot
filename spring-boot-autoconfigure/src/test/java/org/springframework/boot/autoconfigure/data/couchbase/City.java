@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 
-import java.io.Serializable;
-
-/**
- * @author Michael Nitschinger
- */
 @Document
 public class City implements Serializable {
 
@@ -31,8 +28,11 @@ public class City implements Serializable {
 	private String id;
 
 	private String name;
+
 	private String state;
+
 	private String country;
+
 	private String map;
 
 	public City(String id, String name, String country) {
@@ -42,7 +42,7 @@ public class City implements Serializable {
 	}
 
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(String id) {
@@ -50,7 +50,7 @@ public class City implements Serializable {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -58,7 +58,7 @@ public class City implements Serializable {
 	}
 
 	public String getState() {
-		return state;
+		return this.state;
 	}
 
 	public void setState(String state) {
@@ -66,7 +66,7 @@ public class City implements Serializable {
 	}
 
 	public String getCountry() {
-		return country;
+		return this.country;
 	}
 
 	public void setCountry(String country) {
@@ -74,10 +74,11 @@ public class City implements Serializable {
 	}
 
 	public String getMap() {
-		return map;
+		return this.map;
 	}
 
 	public void setMap(String map) {
 		this.map = map;
 	}
+
 }

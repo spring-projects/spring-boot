@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,22 @@
 
 package org.springframework.boot.autoconfigure.data;
 
+import java.lang.annotation.Annotation;
+
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.data.couchbase.repository.config.CouchbaseRepositoryConfigurationExtension;
 import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
-import java.lang.annotation.Annotation;
-
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Couchbase
  * Repositories.
- *
+ * 
  * @author Michael Nitschinger
+ * @since 1.1.0
  */
 class CouchbaseRepositoriesAutoConfigureRegistrar extends
-	AbstractRepositoryConfigurationSourceSupport {
+		AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
