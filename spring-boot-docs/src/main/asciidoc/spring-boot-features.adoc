@@ -869,7 +869,7 @@ If you need to add or customize converters you can use Spring Boot's
 ==== Static Content
 By default Spring Boot will serve static content from a folder called `/static` (or
 `/public` or `/resources` or `/META-INF/resources`) in the classpath or from the root
-of the `ServeltContext`.  It uses the `ResourceHttpRequestHandler` from Spring MVC so you
+of the `ServletContext`.  It uses the `ResourceHttpRequestHandler` from Spring MVC so you
 can modify that behavior by adding your own `WebMvcConfigurerAdapter` and overriding the
 `addResourceHandlers` method.
 
