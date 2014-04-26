@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClas
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -90,8 +91,9 @@ public class SpringBootWebSecurityConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AuthenticationEventPublisher authenticationEventPublisher() {
-		return new DefaultAuthenticationEventPublisher();
+	public AuthenticationEventPublisher authenticationEventPublisher(
+			ApplicationEventPublisher publisher) {
+		return new DefaultAuthenticationEventPublisher(publisher);
 	}
 
 	@Bean
