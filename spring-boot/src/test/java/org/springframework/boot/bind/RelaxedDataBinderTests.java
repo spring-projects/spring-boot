@@ -75,6 +75,13 @@ public class RelaxedDataBinderTests {
 	}
 
 	@Test
+	public void testBindChars() throws Exception {
+		VanillaTarget target = new VanillaTarget();
+		bind(target, "bar: foo");
+		assertEquals("foo", new String(target.getBar()));
+	}
+
+	@Test
 	public void testBindStringWithPrefix() throws Exception {
 		VanillaTarget target = new VanillaTarget();
 		bind(target, "test.foo: bar", "test");
@@ -656,11 +663,21 @@ public class RelaxedDataBinderTests {
 
 		private String foo;
 
+		private char[] bar;
+
 		private int value;
 
 		private String foo_bar;
 
 		private String fooBaz;
+
+		public char[] getBar() {
+			return this.bar;
+		}
+
+		public void setBar(char[] bar) {
+			this.bar = bar;
+		}
 
 		public int getValue() {
 			return this.value;

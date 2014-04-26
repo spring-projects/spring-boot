@@ -54,6 +54,13 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
+		String db = this.properties.getMongoClientDatabase();
+		return new SimpleMongoDbFactory(mongo, db);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public MongoTemplate mongoTemplate(MongoDbFactory mongoDbFactory)
 			throws UnknownHostException {
 		return new MongoTemplate(mongoDbFactory);
@@ -61,18 +68,11 @@ public class MongoDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public MongoDbFactory mongoDbFactory(Mongo mongo) throws Exception {
+	public GridFsTemplate gridFsTemplate(Mongo mongo, MongoTemplate mongoTemplate) {
 		String db = StringUtils.hasText(this.properties.getGridFsDatabase()) ? this.properties
 				.getGridFsDatabase() : this.properties.getMongoClientDatabase();
-
-		return new SimpleMongoDbFactory(mongo, db);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public GridFsTemplate gridFsTemplate(MongoDbFactory mongoDbFactory,
-			MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(mongoDbFactory, mongoTemplate.getConverter());
+		return new GridFsTemplate(new SimpleMongoDbFactory(mongo, db),
+				mongoTemplate.getConverter());
 	}
 
 }

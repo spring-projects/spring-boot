@@ -17,12 +17,18 @@
 package org.springframework.boot.autoconfigure.mongo;
 
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.mongodb.DBPort;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientOptions.Builder;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 /**
  * Configuration properties for Mongo.
@@ -44,6 +50,10 @@ public class MongoProperties {
 
 	private String gridFsDatabase;
 
+	private String username;
+
+	private char[] password;
+
 	public String getHost() {
 		return this.host;
 	}
@@ -58,6 +68,31 @@ public class MongoProperties {
 
 	public void setDatabase(String database) {
 		this.database = database;
+	}
+
+	public String getUsername() {
+		return this.username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public char[] getPassword() {
+		return this.password;
+	}
+
+	public void setPassword(char[] password) {
+		this.password = password;
+	}
+
+	public void clearPassword() {
+		if (this.password == null) {
+			return;
+		}
+		for (int i = 0; i < this.password.length; i++) {
+			this.password[i] = 0;
+		}
 	}
 
 	public String getUri() {
@@ -91,11 +126,51 @@ public class MongoProperties {
 		return new MongoClientURI(this.uri).getDatabase();
 	}
 
-	public MongoClient createMongoClient() throws UnknownHostException {
-		if (this.host != null) {
-			return new MongoClient(this.host, this.port);
+	public MongoClient createMongoClient(MongoClientOptions options)
+			throws UnknownHostException {
+		try {
+			if (this.host != null) {
+				if (options == null) {
+					options = MongoClientOptions.builder().build();
+				}
+				List<MongoCredential> credentials = null;
+				if (this.password != null && this.username != null) {
+					credentials = Arrays.asList(MongoCredential.createMongoCRCredential(
+							this.username, getMongoClientDatabase(), this.password));
+				}
+				return new MongoClient(Arrays.asList(new ServerAddress(this.host,
+						this.port)), credentials, options);
+			}
+			// The options and credentials are in the URI
+			return new MongoClient(new MongoClientURI(this.uri, builder(options)));
 		}
-		return new MongoClient(new MongoClientURI(this.uri));
+		finally {
+			clearPassword();
+		}
+	}
+
+	private Builder builder(MongoClientOptions options) {
+		Builder builder = MongoClientOptions.builder();
+		if (options != null) {
+			builder.alwaysUseMBeans(options.isAlwaysUseMBeans());
+			builder.autoConnectRetry(options.isAutoConnectRetry());
+			builder.connectionsPerHost(options.getConnectionsPerHost());
+			builder.connectTimeout(options.getConnectTimeout());
+			builder.cursorFinalizerEnabled(options.isCursorFinalizerEnabled());
+			builder.dbDecoderFactory(options.getDbDecoderFactory());
+			builder.dbEncoderFactory(options.getDbEncoderFactory());
+			builder.description(options.getDescription());
+			builder.maxAutoConnectRetryTime(options.getMaxAutoConnectRetryTime());
+			builder.maxWaitTime(options.getMaxWaitTime());
+			builder.readPreference(options.getReadPreference());
+			builder.socketFactory(options.getSocketFactory());
+			builder.socketKeepAlive(options.isSocketKeepAlive());
+			builder.socketTimeout(options.getSocketTimeout());
+			builder.threadsAllowedToBlockForConnectionMultiplier(options
+					.getThreadsAllowedToBlockForConnectionMultiplier());
+			builder.writeConcern(options.getWriteConcern());
+		}
+		return builder;
 	}
 
 }
