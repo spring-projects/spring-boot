@@ -19,8 +19,13 @@ package org.springframework.boot.autoconfigure.mongo;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.mongodb.Mongo;
+import com.mongodb.MongoClientOptions;
 
 import static org.junit.Assert.assertEquals;
 
@@ -41,11 +46,44 @@ public class MongoAutoConfigurationTests {
 	}
 
 	@Test
-	public void templateExists() {
+	public void clientExists() {
 		this.context = new AnnotationConfigApplicationContext(
-				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
-				MongoDataAutoConfiguration.class);
-		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
+		assertEquals(1, this.context.getBeanNamesForType(Mongo.class).length);
+	}
+
+	@Test
+	public void optionsAdded() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.host:localhost");
+		this.context.register(OptionsConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(300, this.context.getBean(Mongo.class).getMongoOptions()
+				.getSocketTimeout());
+	}
+
+	@Test
+	public void optionsAddedButNoHost() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.uri:mongodb://localhost/test");
+		this.context.register(OptionsConfig.class,
+				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals(300, this.context.getBean(Mongo.class).getMongoOptions()
+				.getSocketTimeout());
+	}
+
+	@Configuration
+	protected static class OptionsConfig {
+
+		@Bean
+		public MongoClientOptions mongoOptions() {
+			return MongoClientOptions.builder().socketTimeout(300).build();
+		}
+
 	}
 
 }

@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.mongo;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 import static org.junit.Assert.assertEquals;
@@ -45,6 +47,18 @@ public class MongoDataAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class);
+		assertEquals(1, this.context.getBeanNamesForType(MongoTemplate.class).length);
+	}
+
+	@Test
+	public void gridFsTemplateExists() {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.data.mongodb.gridFsDatabase:grid");
+		this.context.register(PropertyPlaceholderAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class);
+		this.context.refresh();
 		assertEquals(1, this.context.getBeanNamesForType(GridFsTemplate.class).length);
 	}
+
 }
