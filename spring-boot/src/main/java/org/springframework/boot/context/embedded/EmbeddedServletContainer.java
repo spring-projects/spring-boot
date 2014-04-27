@@ -30,28 +30,6 @@ package org.springframework.boot.context.embedded;
 public interface EmbeddedServletContainer {
 
 	/**
-	 * An empty {@link EmbeddedServletContainer} that does nothing.
-	 */
-	public static final EmbeddedServletContainer NONE = new EmbeddedServletContainer() {
-
-		@Override
-		public void start() throws EmbeddedServletContainerException {
-			// Do nothing
-		};
-
-		@Override
-		public void stop() throws EmbeddedServletContainerException {
-			// Do nothing
-		}
-
-		@Override
-		public int getPort() {
-			return 0;
-		}
-
-	};
-
-	/**
 	 * Starts the embedded servlet container. Calling this method on an already started
 	 * container has no effect.
 	 * @throws EmbeddedServletContainerException of the container cannot be stopped
