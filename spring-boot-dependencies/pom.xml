@@ -81,12 +81,14 @@
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<snakeyaml.version>1.13</snakeyaml.version>
+		<solr.version>4.7.2</solr.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
 		<spring.version>4.0.3.RELEASE</spring.version>
 		<spring-integration.version>3.0.2.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.6.RELEASE</spring-batch.version>
 		<spring-data-couchbase.version>1.0.0.RELEASE</spring-data-couchbase.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
+		<spring-data-solr.version>1.1.1.RELEASE</spring-data-solr.version>
 		<spring-data-releasetrain.version>Codd-SR2</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
 		<spring-plugin.version>1.0.0.RELEASE</spring-plugin.version>
@@ -401,6 +403,11 @@
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.solr</groupId>
+				<artifactId>solr-solrj</artifactId>
+				<version>${solr.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.spockframework</groupId>
 				<artifactId>spock-core</artifactId>
 				<version>${spock.version}</version>
@@ -535,6 +542,11 @@
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-redis</artifactId>
 				<version>${spring-data-redis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-solr</artifactId>
+				<version>${spring-data-solr.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.hateoas</groupId>
