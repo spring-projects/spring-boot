@@ -28,8 +28,8 @@
 			<artifactId>spring-data-redis</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.lambdaworks</groupId>
-			<artifactId>lettuce</artifactId>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
 		</dependency>
 	</dependencies>
 </project>

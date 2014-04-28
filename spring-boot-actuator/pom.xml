@@ -49,11 +49,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.lambdaworks</groupId>
-			<artifactId>lettuce</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<optional>true</optional>
@@ -106,6 +101,11 @@
 		<dependency>
 			<groupId>org.jolokia</groupId>
 			<artifactId>jolokia-core</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<!-- Test -->
