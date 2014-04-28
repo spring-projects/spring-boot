@@ -24,7 +24,6 @@
 		<module>spring-boot-starter-amqp</module>
 		<module>spring-boot-starter-aop</module>
 		<module>spring-boot-starter-batch</module>
-		<module>spring-boot-starter-data-couchbase</module>
 		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
