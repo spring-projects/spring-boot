@@ -20,8 +20,8 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.springframework.boot.SimpleMainTests;
-import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.autoconfigure.security.SecurityAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.web.DefaultErrorViewIntegrationTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
@@ -29,7 +29,8 @@ import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletConta
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ SimpleMainTests.class, JettyEmbeddedServletContainerFactoryTests.class })
+@SuiteClasses({ DefaultErrorViewIntegrationTests.class,
+		SecurityAutoConfigurationTests.class })
 @Ignore
 public class AdhocTestSuite {
 

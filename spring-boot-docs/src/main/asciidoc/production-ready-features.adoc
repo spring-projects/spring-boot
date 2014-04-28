@@ -737,43 +737,6 @@ the capacity. You can also create your own alternative `TraceRepository` impleme
 if needed.
 
 
-
-[[production-ready-error-handling]]
-== Error Handling
-Spring Boot Actuator provides an `/error` mapping by default that handles all errors in a
-sensible way, and it is registered as a ``global'' error page in the servlet container.
-For machine clients it will produce a JSON response with details of the error, the HTTP
-status and the exception message. For browser clients there is a ``whitelabel'' error
-view that renders the same data in HTML format (to customize it just add a `View` that
-resolves to ``error'').
-
-If you want more specific error pages for some conditions, the embedded servlet containers
-support a uniform Java DSL for customizing the error handling. For example:
-
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
-----
-	@Bean
-	public EmbeddedServletContainerCustomizer containerCustomizer(){
-		return new MyCustomizer();
-	}
-
-	// ...
-
-	private static class MyCustomizer implements EmbeddedServletContainerCustomizer {
-
-		@Override
-		public void customize(ConfigurableEmbeddedServletContainer factory) {
-            factory.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
-		}
-
-	}
-----
-
-You can also use regular Spring MVC features like http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-exception-handlers[`@ExceptionHandler`
-methods] and http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice[`@ControllerAdvice`].
-
-
-
 [[production-ready-process-monitoring]]
 == Process monitoring
 In Spring Boot Actuator you can find `ApplicationPidListener` which creates file

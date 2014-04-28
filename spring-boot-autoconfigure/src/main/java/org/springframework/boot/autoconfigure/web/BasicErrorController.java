@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web;
+package org.springframework.boot.autoconfigure.web;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

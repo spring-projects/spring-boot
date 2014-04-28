@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.actuate.web.BasicErrorController;
+import org.springframework.boot.autoconfigure.web.BasicErrorController;
 import org.springframework.core.Ordered;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

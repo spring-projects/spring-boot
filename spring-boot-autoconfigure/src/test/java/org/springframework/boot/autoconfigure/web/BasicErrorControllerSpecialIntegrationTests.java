@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web;
+package org.springframework.boot.autoconfigure.web;
 
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
@@ -82,16 +82,14 @@ public class BasicErrorControllerSpecialIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class })
 	protected static class ParentConfiguration {
 
 	}
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class })
 	@EnableWebMvc
 	protected static class WebMvcIncludedConfiguration {
 		// For manual testing
@@ -103,10 +101,9 @@ public class BasicErrorControllerSpecialIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class })
 	protected static class VanillaConfiguration {
-		// For manual testing
+		// For manual testingm
 		public static void main(String[] args) {
 			SpringApplication.run(VanillaConfiguration.class, args);
 		}
@@ -115,8 +112,7 @@ public class BasicErrorControllerSpecialIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class })
 	protected static class ChildConfiguration {
 		// For manual testing
 		public static void main(String[] args) {

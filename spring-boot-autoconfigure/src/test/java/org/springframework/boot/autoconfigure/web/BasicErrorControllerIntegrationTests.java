@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web;
+package org.springframework.boot.autoconfigure.web;
 
 import java.util.Map;
 
@@ -28,16 +28,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.EndpointMBeanExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.ManagementSecurityAutoConfiguration;
-import org.springframework.boot.actuate.web.BasicErrorControllerIntegrationTests.TestConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests.TestConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -61,6 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
+@DirtiesContext
 public class BasicErrorControllerIntegrationTests {
 
 	@Autowired
@@ -117,8 +119,7 @@ public class BasicErrorControllerIntegrationTests {
 
 	@Configuration
 	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			ManagementSecurityAutoConfiguration.class,
-			EndpointMBeanExportAutoConfiguration.class })
+			DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 	public static class TestConfiguration {
 
 		// For manual testing
