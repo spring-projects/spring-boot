@@ -147,8 +147,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.lambdaworks</groupId>
-			<artifactId>lettuce</artifactId>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
