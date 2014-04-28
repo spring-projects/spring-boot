@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.couchbase;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,6 +39,8 @@ public class CouchbaseProperties {
 	private String bucket = "default";
 
 	private String password = "";
+
+	private CouchbaseClient client;
 
 	public String getHost() {
 		return this.host;
@@ -65,8 +67,17 @@ public class CouchbaseProperties {
 	}
 
 	public CouchbaseClient createClient() throws URISyntaxException, IOException {
-		return new CouchbaseClient(Arrays.asList(new URI("http://" + getHost()
-				+ ":8091/pools")), getBucket(), getPassword());
+		if (this.client == null) {
+			this.client = new CouchbaseClient(Arrays.asList(new URI("http://" + getHost()
+					+ ":8091/pools")), getBucket(), getPassword());
+		}
+		return this.client;
+	}
+
+	public void closeClient() {
+		if (this.client != null) {
+			this.client.shutdown();
+		}
 	}
 
 }

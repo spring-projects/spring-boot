@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.couchbase.City;
 import org.springframework.boot.autoconfigure.data.couchbase.CityRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -42,7 +43,7 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
+		this.context.register(TestConfiguration.class, CouchbaseAutoConfiguration.class,
 				CouchbaseRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -53,7 +54,7 @@ public class CouchbaseRepositoriesAutoConfigurationTests {
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmptyConfiguration.class,
+		this.context.register(EmptyConfiguration.class, CouchbaseAutoConfiguration.class,
 				CouchbaseRepositoriesAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();

@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.couchbase;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.couchbase.repository.CouchbaseRepository;
+import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
-import org.springframework.data.couchbase.repository.support.CouchbaseRepositoryFactoryBean;
+
+import com.couchbase.client.CouchbaseClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Couchbase
@@ -36,9 +43,28 @@ import org.springframework.data.couchbase.repository.support.CouchbaseRepository
  * @see EnableCouchbaseRepositories
  */
 @Configuration
-@ConditionalOnClass({ CouchbaseRepository.class })
-@ConditionalOnMissingBean(CouchbaseRepositoryFactoryBean.class)
-@Import(CouchbaseRepositoriesAutoConfigureRegistrar.class)
-public class CouchbaseRepositoriesAutoConfiguration {
+@ConditionalOnClass({ CouchbaseClient.class, CouchbaseTemplate.class })
+@EnableConfigurationProperties(CouchbaseProperties.class)
+public class CouchbaseAutoConfiguration {
+
+	@Autowired
+	private CouchbaseProperties properties;
+
+	@PreDestroy
+	public void close() throws URISyntaxException, IOException {
+		this.properties.closeClient();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(CouchbaseClient.class)
+	public CouchbaseClient couchbaseClient() throws URISyntaxException, IOException {
+		return this.properties.createClient();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(CouchbaseTemplate.class)
+	public CouchbaseTemplate couchbaseTemplate(CouchbaseClient couchbaseClient) {
+		return new CouchbaseTemplate(couchbaseClient);
+	}
 
 }
