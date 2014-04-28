@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starters</artifactId>
-		<version>1.0.1.BUILD-SNAPSHOT</version>
+		<version>1.1.0.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-starter-data-gemfire</artifactId>
 	<packaging>jar</packaging>
@@ -29,8 +29,8 @@
 	</dependencies>
 	<repositories>
 		<repository>
-			<id>spring-plugins</id>
-			<url>http://repo.spring.io/plugins-release</url>
+			<id>repo.spring.io</id>
+			<url>http://repo.spring.io/libs-release</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
