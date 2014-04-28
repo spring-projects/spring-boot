@@ -28,6 +28,7 @@
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
 		<module>spring-boot-starter-data-rest</module>
+		<module>spring-boot-starter-data-solr</module>
 		<module>spring-boot-starter-freemarker</module>
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
