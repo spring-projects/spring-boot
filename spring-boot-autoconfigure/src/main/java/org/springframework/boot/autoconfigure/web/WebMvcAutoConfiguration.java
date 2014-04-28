@@ -31,7 +31,6 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -50,6 +49,8 @@ import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.DefaultMessageCodesResolver;
+import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -135,6 +136,9 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.resources.cachePeriod:}")
 		private Integer cachePeriod;
 
+		@Value("${spring.mvc.message-codes-resolver.format:}")
+		private String messageCodesResolverFormat = "";
+
 		@Value("${spring.mvc.locale:}")
 		private String locale = "";
 
@@ -195,6 +199,15 @@ public class WebMvcAutoConfiguration {
 			return new FixedLocaleResolver(StringUtils.parseLocaleString(this.locale));
 		}
 
+		@Bean
+		@ConditionalOnMissingBean(MessageCodesResolver.class)
+		@ConditionalOnExpression("'${spring.mvc.message-codes-resolver.format:}' != ''")
+		public MessageCodesResolver messageCodesResolver() {
+			DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
+			resolver.setMessageCodeFormatter(DefaultMessageCodesResolver.Format.valueOf(messageCodesResolverFormat));
+			return resolver;
+		}
+		
 		@Override
 		public void addFormatters(FormatterRegistry registry) {
 			for (Converter<?, ?> converter : getBeansOfType(Converter.class)) {
