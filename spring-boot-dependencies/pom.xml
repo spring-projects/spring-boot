@@ -78,7 +78,7 @@
 		<mockito.version>1.9.5</mockito.version>
 		<mongodb.version>2.11.4</mongodb.version>
 		<mysql.version>5.1.30</mysql.version>
-        <neo4j.version>2.0.2</neo4j.version>
+		<neo4j.version>2.0.2</neo4j.version>
 		<reactor.version>1.0.1.RELEASE</reactor.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<slf4j.version>1.7.7</slf4j.version>
@@ -87,7 +87,7 @@
 		<spring.version>4.0.3.RELEASE</spring.version>
 		<spring-integration.version>3.0.2.RELEASE</spring-integration.version>
 		<spring-batch.version>2.2.6.RELEASE</spring-batch.version>
-        <spring-data-couchbase.version>1.0.0.RELEASE</spring-data-couchbase.version>
+		<spring-data-couchbase.version>1.0.0.RELEASE</spring-data-couchbase.version>
 		<spring-data-gemfire.version>1.3.3.RELEASE</spring-data-gemfire.version>
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-releasetrain.version>Codd-SR2</spring-data-releasetrain.version>
@@ -212,6 +212,11 @@
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.geronimo.specs</groupId>
+				<artifactId>geronimo-jms_1.1_spec</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>${httpclient.version}</version>
@@ -288,6 +293,41 @@
 				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.cli</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.connectors.ssh</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.connectors.telnet</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.embed.spring</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.plugins.cron</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.plugins.mail</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.crashub</groupId>
+				<artifactId>crash.shell</artifactId>
+				<version>${crashub.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-webapp</artifactId>
 				<version>${jetty.version}</version>
@@ -354,6 +394,11 @@
 				<version>${javassist.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.jolokia</groupId>
+				<artifactId>jolokia-core</artifactId>
+				<version>${jolokia.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
 				<version>${liquibase.version}</version>
@@ -363,7 +408,7 @@
 				<artifactId>mongo-java-driver</artifactId>
 				<version>${mongodb.version}</version>
 			</dependency>
-            <dependency>
+			<dependency>
 				<groupId>org.neo4j</groupId>
 				<artifactId>neo4j</artifactId>
 				<version>${neo4j.version}</version>
@@ -528,21 +573,14 @@
 				</exclusions>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.amqp</groupId>
+				<artifactId>spring-rabbit</artifactId>
+				<version>${spring-rabbit.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.batch</groupId>
 				<artifactId>spring-batch-core</artifactId>
 				<version>${spring-batch.version}</version>
-			</dependency>
-      <dependency>
-        <groupId>org.springframework.data</groupId>
-        <artifactId>spring-data-gemfire</artifactId>
-        <version>${spring-data-gemfire.version}</version>
-      </dependency>
-      <dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-releasetrain</artifactId>
-				<version>${spring-data-releasetrain.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
@@ -551,8 +589,20 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-gemfire</artifactId>
+				<version>${spring-data-gemfire.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-redis</artifactId>
 				<version>${spring-data-redis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-releasetrain</artifactId>
+				<version>${spring-data-releasetrain.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.hateoas</groupId>
@@ -590,6 +640,16 @@
 				<version>${spring-integration.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.mobile</groupId>
+				<artifactId>spring-mobile-device</artifactId>
+				<version>${spring-mobile.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-acl</artifactId>
+				<version>${spring-security.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-core</artifactId>
 				<version>${spring-security.version}</version>
@@ -605,28 +665,8 @@
 				<version>${spring-security.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-acl</artifactId>
-				<version>${spring-security.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.amqp</groupId>
-				<artifactId>spring-rabbit</artifactId>
-				<version>${spring-rabbit.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.mobile</groupId>
-				<artifactId>spring-mobile-device</artifactId>
-				<version>${spring-mobile.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf</artifactId>
-				<version>${thymeleaf.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.thymeleaf</groupId>
-				<artifactId>thymeleaf-spring4</artifactId>
 				<version>${thymeleaf.version}</version>
 			</dependency>
 			<dependency>
@@ -635,54 +675,14 @@
 				<version>${thymeleaf-extras-springsecurity3.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.thymeleaf</groupId>
+				<artifactId>thymeleaf-spring4</artifactId>
+				<version>${thymeleaf.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jms_1.1_spec</artifactId>
-				<version>1.1.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.crashub</groupId>
-				<artifactId>crash.cli</artifactId>
-				<version>${crashub.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.crashub</groupId>
-				<artifactId>crash.connectors.ssh</artifactId>
-				<version>${crashub.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.crashub</groupId>
-				<artifactId>crash.connectors.telnet</artifactId>
-				<version>${crashub.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.crashub</groupId>
-				<artifactId>crash.embed.spring</artifactId>
-				<version>${crashub.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.crashub</groupId>
-				<artifactId>crash.plugins.cron</artifactId>
-				<version>${crashub.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.crashub</groupId>
-				<artifactId>crash.plugins.mail</artifactId>
-				<version>${crashub.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.crashub</groupId>
-				<artifactId>crash.shell</artifactId>
-				<version>${crashub.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jolokia</groupId>
-				<artifactId>jolokia-core</artifactId>
-				<version>${jolokia.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
