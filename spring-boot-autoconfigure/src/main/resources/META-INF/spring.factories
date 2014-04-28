@@ -11,6 +11,7 @@ org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration,\
 org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.JpaRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.MongoRepositoriesAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.SolrRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
@@ -31,6 +32,7 @@ org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
 org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
