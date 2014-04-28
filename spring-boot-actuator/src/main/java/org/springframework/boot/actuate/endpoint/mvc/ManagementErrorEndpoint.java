@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
-import org.springframework.boot.actuate.web.ErrorController;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;

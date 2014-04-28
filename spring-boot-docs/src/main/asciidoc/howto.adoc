@@ -1150,7 +1150,7 @@ a `View` that resolves with a name of `error`, and/or a `@Controller` that handl
 `/error` path. Unless you replaced some of the default configuration you should find a
 `BeanNameViewResolver` in your `ApplicationContext` so a `@Bean` with id `error` would be
 a simple way of doing that.
-Look at {sc-spring-boot-actuator}/autoconfigure/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
+Look at {sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
 
 
