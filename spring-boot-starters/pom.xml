@@ -28,6 +28,8 @@
 		<module>spring-boot-starter-data-gemfire</module>
 		<module>spring-boot-starter-data-jpa</module>
 		<module>spring-boot-starter-data-mongodb</module>
+		<module>spring-boot-starter-data-neo4j</module>
+		<module>spring-boot-starter-data-rest</module>
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>
 		<module>spring-boot-starter-jetty</module>
@@ -44,7 +46,5 @@
 		<module>spring-boot-starter-tomcat</module>
 		<module>spring-boot-starter-web</module>
 		<module>spring-boot-starter-websocket</module>
-		<module>spring-boot-starter-data-rest</module>
-		<module>spring-boot-starter-data-neo4j</module>
 	</modules>
 </project>
