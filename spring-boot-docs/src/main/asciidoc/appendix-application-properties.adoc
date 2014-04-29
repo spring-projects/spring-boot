@@ -80,6 +80,22 @@ content into your application; rather pick only the properties that you need.
 	spring.thymeleaf.content-type=text/html # ;charset=<encoding> is added
 	spring.thymeleaf.cache=true # set to false for hot refresh
 
+	# FREEMARKER ({sc-spring-boot-autoconfigure}}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration])
+	spring.freemarker.allowRequestOverride=false
+	spring.freemarker.allowSessionOverride=false
+	spring.freemarker.cache=true
+	spring.freemarker.checkTemplateLocation=true
+	spring.freemarker.contentType=text/html
+	spring.freemarker.exposeRequestAttributes=false
+	spring.freemarker.exposeSessionAttributes=false
+	spring.freemarker.exposeSpringMacroHelpers=false
+	spring.freemarker.prefix=
+	spring.freemarker.requestContextAttribute=
+	spring.freemarker.suffix=
+	spring.freemarker.templateEncoding=UTF-8
+	spring.freemarker.templateLoaderPath=classpath:/templates/
+	spring.freemarker.viewNames=
+
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
 	spring.messages.basename=messages
 	spring.messages.encoding=UTF-8

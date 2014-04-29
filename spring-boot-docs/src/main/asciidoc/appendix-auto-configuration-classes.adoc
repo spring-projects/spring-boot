@@ -38,6 +38,9 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{sc-ext}[EmbeddedServletContainerAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{dc-ext}[javadoc]
 

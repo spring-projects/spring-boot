@@ -1,5 +1,5 @@
 = Spring Boot Reference Guide
-Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch;
+Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :doctype: book
 :toc:
 :toclevels: 4
