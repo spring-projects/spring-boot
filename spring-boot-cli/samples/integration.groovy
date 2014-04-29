@@ -1,7 +1,7 @@
 package org.test
 
 @Component
-@EnableIntegrationPatterns
+@EnableIntegration
 class SpringIntegrationExample implements CommandLineRunner {
 
 	@Bean
