@@ -43,7 +43,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -75,6 +74,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnWebApplication
@@ -116,15 +116,6 @@ public class WebMvcAutoConfiguration {
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
 	public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new HiddenHttpMethodFilter();
-	}
-
-	public static boolean templateExists(Environment environment,
-			ResourceLoader resourceLoader, String view) {
-		String prefix = environment.getProperty("spring.view.prefix",
-				WebMvcAutoConfiguration.DEFAULT_PREFIX);
-		String suffix = environment.getProperty("spring.view.suffix",
-				WebMvcAutoConfiguration.DEFAULT_SUFFIX);
-		return resourceLoader.getResource(prefix + view + suffix).exists();
 	}
 
 	// Defined as a nested config to ensure WebMvcConfigurerAdapter it not read when not

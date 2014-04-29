@@ -892,14 +892,16 @@ and it will be silently ignored by most build tools if you generate a jar.
 [[boot-features-spring-mvc-template-engines]]
 ==== Template engines
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
-Spring MVC supports a variety of templating technologies including: velocity, freemarker,
+Spring MVC supports a variety of templating technologies including: Velocity, FreeMarker,
 and JSPs. Many other templating engines also ship their own Spring MVC integrations.
 
-Spring Boot includes auto-configuration support for the Thymeleaf templating engine.
-Thymeleaf is an XML/XHTML/HTML5 template engine that can work both in web and non-web
-environments. It allows you to create natural templates that can be correctly displayed
-by browsers and therefore work also as static prototypes. Thymeleaf templates will be
-picked up automatically from `src/main/resources/templates`.
+Spring Boot includes auto-configuration support for the Thymeleaf and FreeMarker
+templating engines. Thymeleaf is an XML/XHTML/HTML5 template engine that can work both in
+web and non-web environments. If allows you to create natural templates that can be
+correctly displayed by browsers and therefore work also as static prototypes. Both
+FreeMarker and Thymeleaf templates will be picked up automatically from
+`src/main/resources/templates`.
+
 
 TIP: JSPs should be avoided if possible, there are several
 <<boot-features-jsp-limitations, known limitations>> when using them with embedded

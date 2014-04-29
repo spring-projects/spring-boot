@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Servlet;
@@ -33,21 +34,21 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.DefaultTemplateResolverConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
+import org.springframework.boot.web.TemplateAvailabilityProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -57,8 +58,9 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
  * controller.
- * 
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
@@ -116,22 +118,20 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context,
 				AnnotatedTypeMetadata metadata) {
-			if (ClassUtils.isPresent("org.thymeleaf.spring4.SpringTemplateEngine",
-					context.getClassLoader())) {
-				if (DefaultTemplateResolverConfiguration.templateExists(
-						context.getEnvironment(), context.getResourceLoader(), "error")) {
-					return ConditionOutcome
-							.noMatch("Thymeleaf template found for error view");
+			List<TemplateAvailabilityProvider> availabilityProviders = SpringFactoriesLoader
+					.loadFactories(TemplateAvailabilityProvider.class,
+							context.getClassLoader());
+
+			for (TemplateAvailabilityProvider availabilityProvider : availabilityProviders) {
+				if (availabilityProvider.isTemplateAvailable("error",
+						context.getEnvironment(), context.getClassLoader(),
+						context.getResourceLoader())) {
+					return ConditionOutcome.noMatch("Template from "
+							+ availabilityProvider + " found for error view");
 				}
 			}
-			if (ClassUtils.isPresent("org.apache.jasper.compiler.JspConfig",
-					context.getClassLoader())) {
-				if (WebMvcAutoConfiguration.templateExists(context.getEnvironment(),
-						context.getResourceLoader(), "error")) {
-					return ConditionOutcome.noMatch("JSP template found for error view");
-				}
-			}
-			return ConditionOutcome.match("no error template view detected");
+
+			return ConditionOutcome.match("No error template view detected");
 		};
 
 	}

@@ -50,8 +50,9 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
- * 
+ *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Configuration
 @ConditionalOnClass(SpringTemplateEngine.class)
@@ -108,16 +109,6 @@ public class ThymeleafAutoConfiguration {
 		protected SpringResourceResourceResolver thymeleafResourceResolver() {
 			return new SpringResourceResourceResolver();
 		}
-
-		public static boolean templateExists(Environment environment,
-				ResourceLoader resourceLoader, String view) {
-			String prefix = environment.getProperty("spring.thymeleaf.prefix",
-					ThymeleafAutoConfiguration.DEFAULT_PREFIX);
-			String suffix = environment.getProperty("spring.thymeleaf.suffix",
-					ThymeleafAutoConfiguration.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(prefix + view + suffix).exists();
-		}
-
 	}
 
 	@Configuration
