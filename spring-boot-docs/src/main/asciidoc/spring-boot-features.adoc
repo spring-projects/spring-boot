@@ -1593,7 +1593,7 @@ interaction. For Example:
 ----
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = SampleDataJpaApplication.class)
-	@WebApplication
+	@WebAppConfiguration
 	@IntegrationTest
 	public class CityRepositoryIntegrationTests {
 
