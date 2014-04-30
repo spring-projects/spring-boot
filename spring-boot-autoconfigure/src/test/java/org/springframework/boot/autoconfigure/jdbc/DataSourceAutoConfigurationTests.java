@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
@@ -44,6 +46,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.util.ClassUtils;
 
+import com.zaxxer.hikari.HikariDataSource;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -71,6 +75,30 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(DataSource.class));
+	}
+
+	@Test
+	public void testTomcatIsFallback() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.driverClassName:org.hsqldb.jdbcDriver",
+				"spring.datasource.url:jdbc:hsqldb:mem:testdb");
+		this.context.setClassLoader(new URLClassLoader(new URL[0], getClass()
+				.getClassLoader()) {
+			@Override
+			protected Class<?> loadClass(String name, boolean resolve)
+					throws ClassNotFoundException {
+				if (name.startsWith("org.apache.tomcat")) {
+					throw new ClassNotFoundException();
+				}
+				return super.loadClass(name, resolve);
+			}
+		});
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		DataSource bean = this.context.getBean(DataSource.class);
+		HikariDataSource pool = (HikariDataSource) bean;
+		assertEquals("jdbc:hsqldb:mem:testdb", pool.getJdbcUrl());
 	}
 
 	@Test
