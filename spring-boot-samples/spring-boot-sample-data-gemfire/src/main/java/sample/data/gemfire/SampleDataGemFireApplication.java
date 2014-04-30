@@ -28,9 +28,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * The GemstoneAppConfiguration class for allowing Spring Boot to pickup additional
  * application Spring configuration meta-data for GemFire, which must be specified in
  * Spring Data GemFire's XML namespace.
- * <p/>
+ * 
  * @author John Blum
- * @since 1.1.0
  */
 @Configuration
 @ImportResource("/spring-data-gemfire-cache.xml")

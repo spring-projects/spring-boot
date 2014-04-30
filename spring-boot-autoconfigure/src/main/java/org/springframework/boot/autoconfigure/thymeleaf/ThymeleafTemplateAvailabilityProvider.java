@@ -24,9 +24,9 @@ import org.springframework.util.ClassUtils;
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
  * Thymeleaf view templates
- *
+ * 
  * @author Andy Wilkinson
- *
+ * @since 1.1.0
  */
 public class ThymeleafTemplateAvailabilityProvider implements
 		TemplateAvailabilityProvider {
