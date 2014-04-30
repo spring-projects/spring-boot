@@ -17,6 +17,7 @@
 package org.springframework.boot;
 
 import java.lang.reflect.Constructor;
+import java.nio.charset.Charset;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +67,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StopWatch;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -276,7 +278,7 @@ public class SpringApplication {
 			}
 
 			if (this.showBanner) {
-				printBanner();
+				printBanner(environment);
 			}
 
 			// Create, load, refresh and run the ApplicationContext
@@ -450,6 +452,36 @@ public class SpringApplication {
 		}
 		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
 		environment.setActiveProfiles(profiles.toArray(new String[profiles.size()]));
+	}
+
+	/**
+	 * Print a custom banner message to the console, optionally extracting its location or
+	 * content from the Environment (banner.location and banner.charset). The defaults are
+	 * banner.location=classpath:banner.txt, banner.charest=UTF-8. If the banner file does
+	 * not exist or cannot be printed, a simple default is created.
+	 * 
+	 * @see #setShowBanner(boolean)
+	 * @see #printBanner()
+	 */
+	protected void printBanner(Environment environment) {
+		String location = environment.getProperty("banner.location", "banner.txt");
+		ResourceLoader resourceLoader = this.resourceLoader != null ? this.resourceLoader
+				: new DefaultResourceLoader(getClassLoader());
+		Resource resource = resourceLoader.getResource(location);
+		if (resource.exists()) {
+			try {
+				System.out.println(StreamUtils.copyToString(
+						resource.getInputStream(),
+						environment.getProperty("banner.charset", Charset.class,
+								Charset.forName("UTF-8"))));
+				return;
+			}
+			catch (Exception e) {
+				System.out.println("Banner not printable: " + resource + " ("
+						+ e.getClass() + ": '" + e.getMessage() + "')");
+			}
+		}
+		printBanner();
 	}
 
 	/**
