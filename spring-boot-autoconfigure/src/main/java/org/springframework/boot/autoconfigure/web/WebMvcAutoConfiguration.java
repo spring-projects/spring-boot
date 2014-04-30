@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.Servlet;
@@ -48,6 +49,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -140,8 +142,11 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.mvc.message-codes-resolver.format:}")
 		private DefaultMessageCodesResolver.Format messageCodesResolverFormat = null;
 
-		@Value("${spring.mvc.locale:}")
+		@Value("${spring.mvc.fixed.locale:}")
 		private String locale = "";
+
+		@Value("${spring.mvc.fixed.date-format:}")
+		private String dateFormat = "";
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -195,9 +200,15 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(LocaleResolver.class)
-		@ConditionalOnExpression("'${spring.mvc.locale:}' != ''")
+		@ConditionalOnExpression("'${spring.mvc.fixed.locale:}' != ''")
 		public LocaleResolver localeResolver() {
 			return new FixedLocaleResolver(StringUtils.parseLocaleString(this.locale));
+		}
+
+		@Bean
+		@ConditionalOnExpression("'${spring.mvc.fixed.date-format:}' != ''")
+		public Formatter<Date> dateFormatter() {
+			return new DateFormatter(this.dateFormat);
 		}
 
 		@Bean

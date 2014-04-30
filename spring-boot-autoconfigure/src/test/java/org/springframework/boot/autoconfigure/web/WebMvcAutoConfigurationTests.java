@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +32,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -150,7 +153,8 @@ public class WebMvcAutoConfigurationTests {
 				equalTo((Resource) new ClassPathResource("/foo/")));
 	}
 
-	public void noLocaleResolver() throws Exception {
+	@Test
+	public void noFixedLocale() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
@@ -162,10 +166,10 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void overrideLocale() throws Exception {
+	public void overrideFixedLocale() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		// set fixed locale
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.locale:en_UK");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.fixed.locale:en_UK");
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -179,6 +183,35 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(localeResolver, instanceOf(FixedLocaleResolver.class));
 		// test locale resolver uses fixed locale and not user preferred locale
 		assertThat(locale.toString(), equalTo("en_UK"));
+	}
+
+	@Test
+	public void noFixedDateFormat() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		this.context.register(AllResources.class, Config.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		FormattingConversionService cs = this.context.getBean(FormattingConversionService.class);
+		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+		// formatting cs should use simple toString()
+		assertThat(cs.convert(date, String.class), equalTo(date.toString()));
+	}
+
+	@Test
+	public void overrideFixedDateFormat() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		// set fixed date format
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.fixed.date-format:dd*MM*yyyy");
+		this.context.register(AllResources.class, Config.class,
+				WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		FormattingConversionService cs = this.context.getBean(FormattingConversionService.class);
+		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
+		assertThat(cs.convert(date, String.class), equalTo("25*06*1988"));
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
