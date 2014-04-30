@@ -101,19 +101,19 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	}
 
 	private static ClassLoader getDefaultClassLoader() {
-		ClassLoader cl = null;
+		ClassLoader classloader = null;
 		try {
-			cl = Thread.currentThread().getContextClassLoader();
+			classloader = Thread.currentThread().getContextClassLoader();
 		}
 		catch (Throwable ex) {
 			// Cannot access thread context ClassLoader - falling back to system class
 			// loader...
 		}
-		if (cl == null) {
+		if (classloader == null) {
 			// No thread context class loader -> use class loader of this class.
-			cl = ExecutableArchiveLauncher.class.getClassLoader();
+			classloader = ExecutableArchiveLauncher.class.getClassLoader();
 		}
-		return cl;
+		return classloader;
 	}
 
 }

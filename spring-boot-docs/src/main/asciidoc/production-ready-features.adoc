@@ -597,7 +597,7 @@ decrement). Metrics for all HTTP requests are automatically recorded, so if you 
 
 Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
 information along with some HTTP metrics. In this instance the `root` (``/'') and `/metrics`
-URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears 
+URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
 that the `root` URL returned `HTTP 401` (unauthorized) `4` times.
 
 The `gauge` shows the last response time for a request. So the last request to `root` took

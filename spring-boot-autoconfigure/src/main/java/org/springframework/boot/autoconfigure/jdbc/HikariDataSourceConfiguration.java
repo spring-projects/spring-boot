@@ -40,14 +40,17 @@ import com.zaxxer.hikari.HikariDataSource;
  * 
  * @author Dave Syer
  * @see DataSourceAutoConfiguration
+ * @since 1.1.0
  */
 @Configuration
 public class HikariDataSourceConfiguration extends AbstractDataSourceConfiguration {
 
 	private String dataSourceClassName;
+
 	private String username;
 
 	private HikariDataSource pool;
+
 	private Properties hikari = new Properties();
 
 	@Bean(destroyMethod = "shutdown")
