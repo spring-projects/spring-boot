@@ -35,7 +35,7 @@ defaults. The parent project provides the following features:
 * Java 1.6 as the default compiler level.
 * UTF-8 source encoding.
 * A Dependency Management section, allowing you to omit `<version>` tags for common
-  dependencies.
+  dependencies, inherited from the `spring-boot-dependencies` POM.
 * Sensible https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[resource filtering].
 * Sensible plugin configuration (http://mojo.codehaus.org/exec-maven-plugin/[exec plugin],
   http://maven.apache.org/surefire/maven-surefire-plugin/[surefire],
