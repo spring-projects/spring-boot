@@ -16,8 +16,12 @@
 
 package org.springframework.boot.loader;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 
 import org.springframework.boot.loader.archive.Archive;
@@ -64,6 +68,21 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return archives;
 	}
 
+	@Override
+	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
+		Set<URL> copy = new LinkedHashSet<URL>();
+		ClassLoader loader = getDefaultClassLoader();
+		if (loader instanceof URLClassLoader) {
+			for (URL url : ((URLClassLoader) loader).getURLs()) {
+				copy.add(url);
+			}
+		}
+		for (URL url : urls) {
+			copy.add(url);
+		}
+		return super.createClassLoader(copy.toArray(new URL[copy.size()]));
+	}
+
 	/**
 	 * Determine if the specified {@link JarEntry} is a nested item that should be added
 	 * to the classpath. The method is called once for each entry.
@@ -79,6 +98,22 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * @throws Exception
 	 */
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
+	}
+
+	private static ClassLoader getDefaultClassLoader() {
+		ClassLoader cl = null;
+		try {
+			cl = Thread.currentThread().getContextClassLoader();
+		}
+		catch (Throwable ex) {
+			// Cannot access thread context ClassLoader - falling back to system class
+			// loader...
+		}
+		if (cl == null) {
+			// No thread context class loader -> use class loader of this class.
+			cl = ExecutableArchiveLauncher.class.getClassLoader();
+		}
+		return cl;
 	}
 
 }

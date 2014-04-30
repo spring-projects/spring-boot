@@ -63,7 +63,7 @@
 					</descriptors>
 					<archive>
 						<manifest>
-							<mainClass>org.springframework.boot.load.JarLauncher</mainClass>
+							<mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Start-Class>org.springframework.boot.load.it.jar.EmbeddedJarStarter</Start-Class>
