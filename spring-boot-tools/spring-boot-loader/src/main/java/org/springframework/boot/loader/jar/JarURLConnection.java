@@ -27,7 +27,7 @@ import java.util.jar.Manifest;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
- * 
+ *
  * @author Phillip Webb
  */
 class JarURLConnection extends java.net.JarURLConnection {
