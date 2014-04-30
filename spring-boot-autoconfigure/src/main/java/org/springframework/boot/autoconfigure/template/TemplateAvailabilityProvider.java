@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web;
+package org.springframework.boot.autoconfigure.template;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
