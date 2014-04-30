@@ -3,6 +3,7 @@ package org.test
 import java.util.concurrent.CountDownLatch;
 
 @EnableReactor
+@Consumer
 @Log
 class Runner implements CommandLineRunner {
 
@@ -22,7 +23,7 @@ class Runner implements CommandLineRunner {
 		latch.await()
 	}
 
-	@Selector(reactor="reactor", value="hello")
+	@Selector(value="hello")
 	void receive(String data) {
 		log.info "Hello ${data}"
 		latch.countDown()

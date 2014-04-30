@@ -202,8 +202,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.projectreactor</groupId>
-			<artifactId>reactor-spring</artifactId>
+			<groupId>org.projectreactor.spring</groupId>
+			<artifactId>reactor-spring-context</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
