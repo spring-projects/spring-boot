@@ -34,14 +34,12 @@
 	<dependencies>
 		<!-- Compile -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-dependency-tools</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader-tools</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>jline</groupId>
@@ -162,7 +160,7 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>${project.groupId}</groupId>
+									<groupId>org.springframework.boot</groupId>
 									<artifactId>spring-boot-loader</artifactId>
 									<version>${project.version}</version>
 									<type>jar</type>
