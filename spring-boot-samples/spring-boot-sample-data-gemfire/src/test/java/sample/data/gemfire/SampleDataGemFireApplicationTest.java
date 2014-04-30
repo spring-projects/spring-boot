@@ -16,8 +16,6 @@
 
 package sample.data.gemfire;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -33,21 +31,18 @@ import sample.data.gemfire.domain.Gemstone;
 import sample.data.gemfire.service.GemstoneService;
 import sample.data.gemfire.service.GemstoneServiceImpl.IllegalGemstoneException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
- * The SampleDataGemFireApplicationTest class is a test suite with test cases testing the SampleDataGemFireApplication
- * in Spring Boot.
- * <p/>
+ * The SampleDataGemFireApplicationTest class is a test suite with test cases testing the
+ * SampleDataGemFireApplication in Spring Boot.
+ * 
  * @author John Blum
- * @see org.junit.Test
- * @see org.junit.runner.RunWith
- * @see org.springframework.boot.test.SpringApplicationConfiguration
- * @see org.springframework.test.context.junit4.SpringJUnit4ClassRunner
- * @see sample.data.gemfire.SampleDataGemFireApplication
- * @since 1.0.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleDataGemFireApplication.class)
-@SuppressWarnings("unused")
 public class SampleDataGemFireApplicationTest {
 
 	@Autowired
@@ -68,7 +63,7 @@ public class SampleDataGemFireApplicationTest {
 	}
 
 	protected Gemstone createGemstone(final String name) {
-		return createGemstone(ID_GENERATOR.incrementAndGet(), name);
+		return createGemstone(this.ID_GENERATOR.incrementAndGet(), name);
 	}
 
 	protected Gemstone createGemstone(final Long id, final String name) {
@@ -87,45 +82,50 @@ public class SampleDataGemFireApplicationTest {
 
 	@Before
 	public void setup() {
-		assertNotNull("A reference to the GemstoneService was not properly configured!", gemstoneService);
+		assertNotNull("A reference to the GemstoneService was not properly configured!",
+				this.gemstoneService);
 	}
 
 	@Test
 	public void testGemstonesApp() {
-		assertEquals(0, gemstoneService.count());
-		assertTrue(asList(gemstoneService.list()).isEmpty());
+		assertEquals(0, this.gemstoneService.count());
+		assertTrue(asList(this.gemstoneService.list()).isEmpty());
 
-		gemstoneService.save(createGemstone("Diamond"));
-		gemstoneService.save(createGemstone("Ruby"));
+		this.gemstoneService.save(createGemstone("Diamond"));
+		this.gemstoneService.save(createGemstone("Ruby"));
 
-		assertEquals(2, gemstoneService.count());
-		assertTrue(asList(gemstoneService.list()).containsAll(getGemstones("Diamond", "Ruby")));
+		assertEquals(2, this.gemstoneService.count());
+		assertTrue(asList(this.gemstoneService.list()).containsAll(
+				getGemstones("Diamond", "Ruby")));
 
 		try {
-			gemstoneService.save(createGemstone("Coal"));
+			this.gemstoneService.save(createGemstone("Coal"));
 		}
 		catch (IllegalGemstoneException expected) {
 		}
 
-		assertEquals(2, gemstoneService.count());
-		assertTrue(asList(gemstoneService.list()).containsAll(getGemstones("Diamond", "Ruby")));
+		assertEquals(2, this.gemstoneService.count());
+		assertTrue(asList(this.gemstoneService.list()).containsAll(
+				getGemstones("Diamond", "Ruby")));
 
-		gemstoneService.save(createGemstone("Pearl"));
-		gemstoneService.save(createGemstone("Sapphire"));
+		this.gemstoneService.save(createGemstone("Pearl"));
+		this.gemstoneService.save(createGemstone("Sapphire"));
 
-		assertEquals(4, gemstoneService.count());
-		assertTrue(asList(gemstoneService.list()).containsAll(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
+		assertEquals(4, this.gemstoneService.count());
+		assertTrue(asList(this.gemstoneService.list()).containsAll(
+				getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
 
 		try {
-			gemstoneService.save(createGemstone("Quartz"));
+			this.gemstoneService.save(createGemstone("Quartz"));
 		}
 		catch (IllegalGemstoneException expected) {
 		}
 
-		assertEquals(4, gemstoneService.count());
-		assertTrue(asList(gemstoneService.list()).containsAll(getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
-		assertEquals(createGemstone("Diamond"), gemstoneService.get("Diamond"));
-		assertEquals(createGemstone("Pearl"), gemstoneService.get("Pearl"));
+		assertEquals(4, this.gemstoneService.count());
+		assertTrue(asList(this.gemstoneService.list()).containsAll(
+				getGemstones("Diamond", "Ruby", "Pearl", "Sapphire")));
+		assertEquals(createGemstone("Diamond"), this.gemstoneService.get("Diamond"));
+		assertEquals(createGemstone("Pearl"), this.gemstoneService.get("Pearl"));
 	}
 
 }
