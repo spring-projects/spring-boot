@@ -16,6 +16,9 @@
 
 package org.springframework.boot.cli.util;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
 
 import org.junit.Test;
@@ -35,6 +38,16 @@ public class ResourceUtilsTests {
 	public void explicitClasspathResource() {
 		List<String> urls = ResourceUtils.getUrls("classpath:init.groovy",
 				ClassUtils.getDefaultClassLoader());
+		assertEquals(1, urls.size());
+		assertTrue(urls.get(0).startsWith("file:"));
+	}
+
+	@Test
+	public void duplicateResource() throws Exception {
+		URLClassLoader loader = new URLClassLoader(new URL[] {
+				new URL("file:./src/test/resources/"),
+				new File("src/test/resources/").getAbsoluteFile().toURI().toURL() });
+		List<String> urls = ResourceUtils.getUrls("classpath:init.groovy", loader);
 		assertEquals(1, urls.size());
 		assertTrue(urls.get(0).startsWith("file:"));
 	}
