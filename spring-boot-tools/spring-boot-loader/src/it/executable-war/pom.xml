@@ -27,7 +27,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.springframework.boot.load.WarLauncher</mainClass>
+							<mainClass>org.springframework.boot.loader.WarLauncher</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Start-Class>org.springframework.boot.load.it.war.embedded.EmbeddedWarStarter</Start-Class>
