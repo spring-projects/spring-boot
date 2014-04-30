@@ -38,7 +38,10 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 
 	@Override
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {
-		archives.add(0, getArchive());
+		Archive archive = getArchive();
+		if (!archives.contains(archive)) {
+			archives.add(0, archive);
+		}
 	}
 
 	public static void main(String[] args) {

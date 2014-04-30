@@ -22,8 +22,10 @@ import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 
 import org.springframework.boot.loader.jar.JarFile;
 
@@ -79,14 +81,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 	}
 
-	@Override
-	public Enumeration<URL> findResources(String name) throws IOException {
-		if (name.equals("") && hasURLs()) {
-			return Collections.enumeration(Arrays.asList(getURLs()));
-		}
-		return super.findResources(name);
-	}
-
 	private boolean hasURLs() {
 		return getURLs().length > 0;
 	}
@@ -98,25 +92,17 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			return findResources(name);
 		}
 
-		final Enumeration<URL> rootResources = this.rootClassLoader.getResources(name);
-		final Enumeration<URL> localResources = findResources(name);
+		Collection<URL> urls = new LinkedHashSet<URL>();
 
-		return new Enumeration<URL>() {
+		urls.addAll(Collections.list(this.rootClassLoader.getResources(name)));
 
-			@Override
-			public boolean hasMoreElements() {
-				return rootResources.hasMoreElements()
-						|| localResources.hasMoreElements();
-			}
+		if (name.equals("") && hasURLs()) {
+			urls.addAll(Arrays.asList(getURLs()));
+		}
 
-			@Override
-			public URL nextElement() {
-				if (rootResources.hasMoreElements()) {
-					return rootResources.nextElement();
-				}
-				return localResources.nextElement();
-			}
-		};
+		urls.addAll(Collections.list(super.getResources(name)));
+
+		return Collections.enumeration(urls);
 	}
 
 	/**

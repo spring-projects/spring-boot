@@ -17,9 +17,12 @@
 package org.springframework.boot.loader;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -74,6 +77,18 @@ public class LaunchedURLClassLoaderTests {
 				"jar:file:src/test/resources/jars/app.jar!/") }, getClass()
 				.getClassLoader());
 		assertTrue(loader.getResources("").hasMoreElements());
+	}
+
+	@Test
+	public void parentClassLoaderResolvesResources() throws Exception {
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { new URL(
+				"jar:file:src/test/resources/lib/plugin.jar!/") }, getClass()
+				.getClassLoader());
+		ArrayList<URL> list = Collections.list(loader
+				.getResources("META-INF/spring.factories"));
+		// One from src/test/resources and one from the lib/plugin.jar
+		assertEquals(2, list.size());
+
 	}
 
 }
