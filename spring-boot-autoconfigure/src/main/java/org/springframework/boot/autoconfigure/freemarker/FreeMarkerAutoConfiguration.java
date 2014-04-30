@@ -49,7 +49,6 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
  */
 @Configuration
 @ConditionalOnClass(freemarker.template.Configuration.class)
-@ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class FreeMarkerAutoConfiguration {
 
@@ -60,7 +59,7 @@ public class FreeMarkerAutoConfiguration {
 	public static final String DEFAULT_SUFFIX = ".ftl";
 
 	@Configuration
-	public static class FreemarkerConfigurerConfiguration implements EnvironmentAware {
+	public static class FreeMarkerConfigurerConfiguration implements EnvironmentAware {
 
 		@Autowired
 		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -105,14 +104,15 @@ public class FreeMarkerAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(Servlet.class)
-	public static class FreemarkerViewResolverConfiguration implements EnvironmentAware {
+	@ConditionalOnWebApplication
+	public static class FreeMarkerViewResolverConfiguration implements EnvironmentAware {
 
 		private RelaxedPropertyResolver environment;
 
 		@Override
 		public void setEnvironment(Environment environment) {
 			this.environment = new RelaxedPropertyResolver(environment,
-					"spring.freeMarker.");
+					"spring.freemarker.");
 		}
 
 		@Bean
@@ -135,7 +135,7 @@ public class FreeMarkerAutoConfiguration {
 			resolver.setAllowSessionOverride(this.environment.getProperty(
 					"allowSessionOverride", Boolean.class, false));
 			resolver.setExposeSpringMacroHelpers(this.environment.getProperty(
-					"exposeSpringMacroHelpers", Boolean.class, false));
+					"exposeSpringMacroHelpers", Boolean.class, true));
 			resolver.setRequestContextAttribute(this.environment
 					.getProperty("requestContextAttribute"));
 
