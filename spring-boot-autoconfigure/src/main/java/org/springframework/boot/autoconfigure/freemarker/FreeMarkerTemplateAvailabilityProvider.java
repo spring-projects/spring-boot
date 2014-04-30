@@ -22,11 +22,11 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
 /**
- * {@link TemplateAvailabilityProvider} that provides availability information
- * for FreeMarker view templates
- *
+ * {@link TemplateAvailabilityProvider} that provides availability information for
+ * FreeMarker view templates
+ * 
  * @author Andy Wilkinson
- *
+ * @since 1.1.0
  */
 public class FreeMarkerTemplateAvailabilityProvider implements
 		TemplateAvailabilityProvider {
@@ -34,15 +34,16 @@ public class FreeMarkerTemplateAvailabilityProvider implements
 	@Override
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
-		if (ClassUtils.isPresent("freemarker.template.Configuration",
-				classLoader)) {
-			String loaderPath = environment.getProperty("spring.freemarker.templateLoaderPath",
+		if (ClassUtils.isPresent("freemarker.template.Configuration", classLoader)) {
+			String loaderPath = environment.getProperty(
+					"spring.freemarker.templateLoaderPath",
 					FreeMarkerAutoConfiguration.DEFAULT_TEMPLATE_LOADER_PATH);
 			String prefix = environment.getProperty("spring.freemarker.prefix",
 					FreeMarkerAutoConfiguration.DEFAULT_PREFIX);
 			String suffix = environment.getProperty("spring.freemarker.suffix",
 					FreeMarkerAutoConfiguration.DEFAULT_SUFFIX);
-			return resourceLoader.getResource(loaderPath + prefix + view + suffix).exists();
+			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
+					.exists();
 		}
 		return false;
 	}

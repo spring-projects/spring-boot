@@ -21,6 +21,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
 
+/**
+ * {@link TemplateAvailabilityProvider} that provides availability information for JSP
+ * view templates
+ * 
+ * @author Andy Wilkinson
+ * @since 1.1.0
+ */
 public class JspTemplateAvailabilityProvider implements TemplateAvailabilityProvider {
 
 	@Override

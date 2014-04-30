@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
- *
+ * 
  * @author Andy Wilkinson
  */
 public class FreeMarkerAutoConfigurationTests {
@@ -85,8 +85,8 @@ public class FreeMarkerAutoConfigurationTests {
 		new File("target/test-classes/templates/empty-directory").mkdir();
 
 		EnvironmentTestUtils
-		.addEnvironment(this.context,
-				"spring.freemarker.templateLoaderPath:classpath:/templates/empty-directory/");
+				.addEnvironment(this.context,
+						"spring.freemarker.templateLoaderPath:classpath:/templates/empty-directory/");
 
 		this.context.register(FreeMarkerAutoConfiguration.class);
 		this.context.refresh();
