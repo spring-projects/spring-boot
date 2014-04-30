@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.thymeleaf;
 
 import org.junit.Test;
-import org.springframework.boot.web.TemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.mock.env.MockEnvironment;

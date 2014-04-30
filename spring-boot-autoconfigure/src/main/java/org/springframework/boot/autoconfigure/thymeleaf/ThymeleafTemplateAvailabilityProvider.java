@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.thymeleaf;
 
-import org.springframework.boot.web.TemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
