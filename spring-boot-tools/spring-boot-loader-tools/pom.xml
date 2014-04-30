@@ -25,9 +25,8 @@
 		</dependency>
 		<!-- Provided -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-loader</artifactId>
-			<version>${project.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- Test -->
@@ -75,7 +74,7 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>${project.groupId}</groupId>
+									<groupId>org.springframework.boot</groupId>
 									<artifactId>spring-boot-loader</artifactId>
 									<version>${project.version}</version>
 									<destFileName>spring-boot-loader.jar</destFileName>
