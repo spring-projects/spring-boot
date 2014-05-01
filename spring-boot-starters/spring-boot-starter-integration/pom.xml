@@ -24,8 +24,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

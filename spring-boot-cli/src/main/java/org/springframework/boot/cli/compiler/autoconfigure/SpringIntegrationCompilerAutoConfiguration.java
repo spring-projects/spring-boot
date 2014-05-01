@@ -32,7 +32,8 @@ public class SpringIntegrationCompilerAutoConfiguration extends CompilerAutoConf
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableIntegration");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableIntegration")
+				|| AstUtils.hasAtLeastOneAnnotation(classNode, "MessageEndpoint");
 	}
 
 	@Override

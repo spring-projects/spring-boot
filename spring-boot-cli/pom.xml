@@ -128,11 +128,6 @@
 			<artifactId>junit</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.integration</groupId>
-			<artifactId>spring-integration-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
