@@ -47,6 +47,12 @@ By default `INFO` logging messages will be shown, including some relevant startu
 such as the user that launched the application.
 
 
+[[boot-features-banner]]
+=== Customizing the Banner
+The banner that is printed on start up can be changed by adding a `banner.txt` file
+to your classpath, or by setting `banner.location` to the location of such a file.
+If the file has an unusual encoding you can set `banner.encoding` (default is UTF-8).
+
 
 [[boot-features-customizing-spring-application]]
 === Customizing SpringApplication
@@ -825,6 +831,7 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Support for serving static resources, including support for WebJars (see below).
 * Automatic registration of `Converter`, `GenericConverter`, `Formatter` beans.
 * Support for `HttpMessageConverters` (see below).
+* Automatic registration of `MessageCodeResolver` (see below)
 * Static `index.html` support.
 * Custom `Favicon` support.
 
@@ -862,6 +869,13 @@ If you need to add or customize converters you can use Spring Boot's
 
 	}
 ----
+
+[[boot-features-spring-message-codes]]
+==== MessageCodesResolver
+Spring MVC has a strategy for generating error codes for rendering error messages
+from binding errors: `MessageCodesResolver`. Spring Boot will create one for you if
+you set the `spring.mvc.message-codes-resolver.format` property `PREFIX_ERROR_CODE` or
+`POSTFIX_ERROR_CODE` (see the enumeration in `DefaultMessageCodesResolver.Format`).
 
 
 
