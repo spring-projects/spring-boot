@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.freemarker;
 
 import java.io.File;
+import java.io.StringWriter;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -184,6 +185,21 @@ public class FreeMarkerAutoConfigurationTests {
 
 		assertEquals("yup,nope", this.context.getBean(FreeMarkerConfigurer.class)
 				.getConfiguration().getSetting("boolean_format"));
+	}
+
+	@Test
+	public void renderTemplate() throws Exception {
+		this.context.register(FreeMarkerAutoConfiguration.class);
+		this.context.refresh();
+		freemarker.template.Configuration freemarker = this.context
+				.getBean(freemarker.template.Configuration.class);
+		StringWriter writer = new StringWriter();
+		freemarker.getTemplate("message.ftl").process(this, writer);
+		assertTrue("Wrong content: " + writer, writer.toString().contains("Hello World"));
+	}
+
+	public String getGreeting() {
+		return "Hello World";
 	}
 
 	private MockHttpServletResponse render(String viewName) throws Exception {
