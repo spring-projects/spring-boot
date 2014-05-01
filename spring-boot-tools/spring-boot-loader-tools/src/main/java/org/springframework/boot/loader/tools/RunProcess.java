@@ -48,7 +48,7 @@ public class RunProcess {
 		this.command = command;
 	}
 
-	public void run(String... args) throws Exception {
+	public void run(String... args) throws IOException {
 		run(Arrays.asList(args));
 	}
 

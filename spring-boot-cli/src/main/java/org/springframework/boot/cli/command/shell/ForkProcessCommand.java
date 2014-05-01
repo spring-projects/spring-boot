@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.options.OptionHelp;
-import org.springframework.boot.cli.util.JavaExecutable;
+import org.springframework.boot.loader.tools.JavaExecutable;
 
 /**
  * Decorate an existing command to run it by forking the current java process.
