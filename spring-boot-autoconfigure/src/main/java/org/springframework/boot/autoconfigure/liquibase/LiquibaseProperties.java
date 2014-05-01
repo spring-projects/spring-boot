@@ -41,7 +41,7 @@ public class LiquibaseProperties {
 
 	private boolean dropFirst = false;
 
-	private boolean shouldRun = true;
+	private boolean enabled = true;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -83,11 +83,11 @@ public class LiquibaseProperties {
 		this.dropFirst = dropFirst;
 	}
 
-	public boolean isShouldRun() {
-		return this.shouldRun;
+	public boolean isEnabled() {
+		return this.enabled;
 	}
 
-	public void setShouldRun(boolean shouldRun) {
-		this.shouldRun = shouldRun;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }
