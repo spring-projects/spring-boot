@@ -29,6 +29,7 @@
 		<module>spring-boot-starter-data-mongodb</module>
 		<module>spring-boot-starter-data-neo4j</module>
 		<module>spring-boot-starter-data-rest</module>
+		<module>spring-boot-starter-flyway</module>
 		<module>spring-boot-starter-freemarker</module>
 		<module>spring-boot-starter-integration</module>
 		<module>spring-boot-starter-jdbc</module>

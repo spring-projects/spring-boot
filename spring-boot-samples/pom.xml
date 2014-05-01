@@ -32,6 +32,7 @@
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-redis</module>
 		<module>spring-boot-sample-data-rest</module>
+		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-liquibase</module>
