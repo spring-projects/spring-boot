@@ -1117,7 +1117,7 @@ To automatically run Liquibase database migrations on startup, add the
 `spring-boot-starter-liquibase` to your classpath.
 
 The master change log is by default read from `db/changelog/db.changelog-master.yaml` but
-can be set using `spring.liquibase.change-log`. See
+can be set using `liquibase.change-log`. See
 {sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[`LiquibaseProperties`]
 for details of available settings like contexts, default schema etc.
 

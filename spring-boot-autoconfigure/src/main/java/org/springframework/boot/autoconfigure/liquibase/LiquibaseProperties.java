@@ -27,14 +27,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * 
  * @author Marcel Overdijk
  */
-@ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "liquibase", ignoreUnknownFields = false)
 public class LiquibaseProperties {
 
 	@NotNull
 	private String changeLog = "classpath:/db/changelog/db.changelog-master.yaml";
 
 	private boolean checkChangeLogLocation = true;
-	
+
 	private String contexts;
 
 	private String defaultSchema;
@@ -44,7 +44,7 @@ public class LiquibaseProperties {
 	private boolean shouldRun = true;
 
 	public String getChangeLog() {
-		return changeLog;
+		return this.changeLog;
 	}
 
 	public void setChangeLog(String changeLog) {
@@ -52,7 +52,7 @@ public class LiquibaseProperties {
 	}
 
 	public boolean isCheckChangeLogLocation() {
-		return checkChangeLogLocation;
+		return this.checkChangeLogLocation;
 	}
 
 	public void setCheckChangeLogLocation(boolean checkChangeLogLocation) {
@@ -60,7 +60,7 @@ public class LiquibaseProperties {
 	}
 
 	public String getContexts() {
-		return contexts;
+		return this.contexts;
 	}
 
 	public void setContexts(String contexts) {
@@ -68,7 +68,7 @@ public class LiquibaseProperties {
 	}
 
 	public String getDefaultSchema() {
-		return defaultSchema;
+		return this.defaultSchema;
 	}
 
 	public void setDefaultSchema(String defaultSchema) {
@@ -76,7 +76,7 @@ public class LiquibaseProperties {
 	}
 
 	public boolean isDropFirst() {
-		return dropFirst;
+		return this.dropFirst;
 	}
 
 	public void setDropFirst(boolean dropFirst) {
@@ -84,7 +84,7 @@ public class LiquibaseProperties {
 	}
 
 	public boolean isShouldRun() {
-		return shouldRun;
+		return this.shouldRun;
 	}
 
 	public void setShouldRun(boolean shouldRun) {
