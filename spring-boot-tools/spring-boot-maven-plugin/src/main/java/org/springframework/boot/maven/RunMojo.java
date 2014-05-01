@@ -40,6 +40,8 @@ import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.boot.loader.tools.RunProcess;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 /**
  * MOJO that can be used to run a executable archive application directly from Maven.
  * 
@@ -68,7 +70,7 @@ public class RunMojo extends AbstractMojo {
 	 * Path to agent jar.
 	 */
 	@Parameter(property = "run.agent")
-	private File agent;
+	private File[] agent;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
@@ -111,7 +113,7 @@ public class RunMojo extends AbstractMojo {
 
 	private void findAgent() {
 		try {
-			if (this.agent == null) {
+			if (this.agent == null || this.agent.length == 0) {
 				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
 				if (loaded != null) {
 					if (this.noverify == null) {
@@ -119,7 +121,7 @@ public class RunMojo extends AbstractMojo {
 					}
 					CodeSource source = loaded.getProtectionDomain().getCodeSource();
 					if (source != null) {
-						this.agent = new File(source.getLocation().getFile());
+						this.agent = new File[] { new File(source.getLocation().getFile()) };
 					}
 				}
 			}
@@ -133,36 +135,51 @@ public class RunMojo extends AbstractMojo {
 	}
 
 	private void run(String startClassName) throws MojoExecutionException {
-		findAgent();
-		int extras = 0;
-		if (this.agent != null) {
-			getLog().info("Attaching agent: " + this.agent);
-			extras = 1;
+		List<String> args = new ArrayList<String>();
+		addAgents(args);
+		addClasspath(args);
+		args.add(startClassName);
+		addArgs(args);
+		try {
+			new RunProcess(new JavaExecutable().toString()).run(args
+					.toArray(new String[args.size()]));
 		}
-		if (this.noverify) {
-			extras++;
+		catch (Exception e) {
+			throw new MojoExecutionException("Could not exec java", e);
 		}
-		String[] args = new String[this.arguments.length + extras + 3];
-		System.arraycopy(this.arguments, 0, args, extras + 3, this.arguments.length);
-		if (extras > 0) {
-			args[0] = "-javaagent:" + this.agent;
+	}
+
+	private void addArgs(List<String> args) {
+		for (String arg : this.arguments) {
+			args.add(arg);
 		}
-		if (this.noverify) {
-			args[1] = "-noverify";
-		}
-		args[extras + 2] = startClassName;
+	}
+
+	private void addClasspath(List<String> args) throws MojoExecutionException {
 		try {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
 				classpath = classpath.append((classpath.length() > 0 ? File.pathSeparator
 						: "") + ele);
 			}
-			args[extras] = "-cp";
-			args[extras + 1] = classpath.toString();
-			new RunProcess(new JavaExecutable().toString()).run(args);
+			args.add("-cp");
+			args.add(classpath.toString());
 		}
 		catch (Exception e) {
-			throw new MojoExecutionException("Could not exec java", e);
+			throw new MojoExecutionException("Could not build classpath", e);
+		}
+	}
+
+	private void addAgents(List<String> args) {
+		findAgent();
+		if (this.agent != null) {
+			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
+			for (File agent : this.agent) {
+				args.add("-javaagent:" + agent);
+			}
+		}
+		if (this.noverify) {
+			args.add("-noverify");
 		}
 	}
 
