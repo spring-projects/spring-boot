@@ -18,10 +18,8 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +35,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.springframework.boot.loader.tools.AgentAttacher;
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
+import org.springframework.boot.loader.tools.RunProcess;
 
 /**
  * MOJO that can be used to run a executable archive application directly from Maven.
@@ -106,17 +105,6 @@ public class RunMojo extends AbstractMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		findAgent();
-		if (this.agent != null) {
-			getLog().info("Attaching agent: " + this.agent);
-			if (this.noverify != null && this.noverify && !AgentAttacher.hasNoVerify()) {
-				throw new MojoExecutionException(
-						"The JVM must be started with -noverify for "
-								+ "this agent to work. You can use MAVEN_OPTS=-noverify "
-								+ "to add that flag.");
-			}
-			AgentAttacher.attach(this.agent);
-		}
 		final String startClassName = getStartClass();
 		run(startClassName);
 	}
@@ -139,16 +127,43 @@ public class RunMojo extends AbstractMojo {
 		catch (ClassNotFoundException ex) {
 			// ignore;
 		}
+		if (this.noverify == null) {
+			this.noverify = false;
+		}
 	}
 
 	private void run(String startClassName) throws MojoExecutionException {
-		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
-				this.arguments), startClassName + ".main()");
-		launchThread.setContextClassLoader(getClassLoader());
-		launchThread.start();
-		join(threadGroup);
-		threadGroup.rethrowUncaughtException();
+		findAgent();
+		int extras = 0;
+		if (this.agent != null) {
+			getLog().info("Attaching agent: " + this.agent);
+			extras = 1;
+		}
+		if (this.noverify) {
+			extras++;
+		}
+		String[] args = new String[this.arguments.length + extras + 3];
+		System.arraycopy(this.arguments, 0, args, extras + 3, this.arguments.length);
+		if (extras > 0) {
+			args[0] = "-javaagent:" + this.agent;
+		}
+		if (this.noverify) {
+			args[1] = "-noverify";
+		}
+		args[extras + 2] = startClassName;
+		try {
+			StringBuilder classpath = new StringBuilder();
+			for (URL ele : getClassPathUrls()) {
+				classpath = classpath.append((classpath.length() > 0 ? File.pathSeparator
+						: "") + ele);
+			}
+			args[extras] = "-cp";
+			args[extras + 1] = classpath.toString();
+			new RunProcess(new JavaExecutable().toString()).run(args);
+		}
+		catch (Exception e) {
+			throw new MojoExecutionException("Could not exec java", e);
+		}
 	}
 
 	private final String getStartClass() throws MojoExecutionException {
@@ -166,11 +181,6 @@ public class RunMojo extends AbstractMojo {
 					+ "please add a 'mainClass' property");
 		}
 		return mainClass;
-	}
-
-	private ClassLoader getClassLoader() throws MojoExecutionException {
-		URL[] urls = getClassPathUrls();
-		return new URLClassLoader(urls);
 	}
 
 	private URL[] getClassPathUrls() throws MojoExecutionException {
@@ -219,94 +229,6 @@ public class RunMojo extends AbstractMojo {
 				if (!Artifact.SCOPE_TEST.equals(artifact.getScope())) {
 					urls.add(artifact.getFile().toURI().toURL());
 				}
-			}
-		}
-	}
-
-	private void join(ThreadGroup threadGroup) {
-		boolean hasNonDaemonThreads;
-		do {
-			hasNonDaemonThreads = false;
-			Thread[] threads = new Thread[threadGroup.activeCount()];
-			threadGroup.enumerate(threads);
-			for (Thread thread : threads) {
-				if (thread != null && !thread.isDaemon()) {
-					try {
-						hasNonDaemonThreads = true;
-						thread.join();
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-			}
-		}
-		while (hasNonDaemonThreads);
-	}
-
-	/**
-	 * Isolated {@link ThreadGroup} to capture uncaught exceptions.
-	 */
-	class IsolatedThreadGroup extends ThreadGroup {
-
-		private Throwable exception;
-
-		public IsolatedThreadGroup(String name) {
-			super(name);
-		}
-
-		@Override
-		public void uncaughtException(Thread thread, Throwable ex) {
-			if (!(ex instanceof ThreadDeath)) {
-				synchronized (this) {
-					this.exception = (this.exception == null ? ex : this.exception);
-				}
-				getLog().warn(ex);
-			}
-		}
-
-		public synchronized void rethrowUncaughtException() throws MojoExecutionException {
-			if (this.exception != null) {
-				throw new MojoExecutionException("An exception occured while running. "
-						+ this.exception.getMessage(), this.exception);
-			}
-		}
-	}
-
-	/**
-	 * Runner used to launch the application.
-	 */
-	class LaunchRunner implements Runnable {
-
-		private final String startClassName;
-		private final String[] args;
-
-		public LaunchRunner(String startClassName, String... args) {
-			this.startClassName = startClassName;
-			this.args = (args != null ? args : new String[] {});
-		}
-
-		@Override
-		public void run() {
-			Thread thread = Thread.currentThread();
-			ClassLoader classLoader = thread.getContextClassLoader();
-			try {
-				Class<?> startClass = classLoader.loadClass(this.startClassName);
-				Method mainMethod = startClass.getMethod("main",
-						new Class[] { String[].class });
-				if (!mainMethod.isAccessible()) {
-					mainMethod.setAccessible(true);
-				}
-				mainMethod.invoke(null, new Object[] { this.args });
-			}
-			catch (NoSuchMethodException ex) {
-				Exception wrappedEx = new Exception(
-						"The specified mainClass doesn't contain a "
-								+ "main method with appropriate signature.", ex);
-				thread.getThreadGroup().uncaughtException(thread, wrappedEx);
-			}
-			catch (Exception ex) {
-				thread.getThreadGroup().uncaughtException(thread, ex);
 			}
 		}
 	}
