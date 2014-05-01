@@ -25,8 +25,10 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -38,7 +40,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
@@ -86,10 +90,25 @@ public class FreeMarkerAutoConfiguration {
 			}
 		}
 
+	}
+
+	@Configuration
+	@ConditionalOnClass(Servlet.class)
+	@ConditionalOnNotWebApplication
+	public static class FreeMarkerConfiguration implements EnvironmentAware {
+
+		private RelaxedPropertyResolver environment;
+
+		@Override
+		public void setEnvironment(Environment environment) {
+			this.environment = new RelaxedPropertyResolver(environment,
+					"spring.freemarker.");
+		}
+
 		@Bean
-		@ConditionalOnMissingBean(name = "freeMarkerConfigurer")
-		public FreeMarkerConfigurer freeMarkerConfigurer() {
-			FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
+		@ConditionalOnMissingBean
+		public FreeMarkerConfigurationFactoryBean freeMarkerConfigurer() {
+			FreeMarkerConfigurationFactoryBean freeMarkerConfigurer = new FreeMarkerConfigurationFactoryBean();
 			freeMarkerConfigurer.setTemplateLoaderPath(this.environment.getProperty(
 					"templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
 			freeMarkerConfigurer.setDefaultEncoding(this.environment.getProperty(
@@ -101,6 +120,7 @@ public class FreeMarkerAutoConfiguration {
 			freeMarkerConfigurer.setFreemarkerSettings(settings);
 			return freeMarkerConfigurer;
 		}
+
 	}
 
 	@Configuration
@@ -114,6 +134,30 @@ public class FreeMarkerAutoConfiguration {
 		public void setEnvironment(Environment environment) {
 			this.environment = new RelaxedPropertyResolver(environment,
 					"spring.freemarker.");
+		}
+
+		@Bean
+		@ConditionalOnBean(FreeMarkerConfig.class)
+		@ConditionalOnMissingBean
+		public freemarker.template.Configuration freemarkerConfiguration(
+				FreeMarkerConfig configurer) {
+			return configurer.getConfiguration();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		public FreeMarkerConfigurer freeMarkerConfigurer() {
+			FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
+			freeMarkerConfigurer.setTemplateLoaderPath(this.environment.getProperty(
+					"templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
+			freeMarkerConfigurer.setDefaultEncoding(this.environment.getProperty(
+					"templateEncoding", "UTF-8"));
+			Map<String, Object> settingsMap = this.environment
+					.getSubProperties("settings.");
+			Properties settings = new Properties();
+			settings.putAll(settingsMap);
+			freeMarkerConfigurer.setFreemarkerSettings(settings);
+			return freeMarkerConfigurer;
 		}
 
 		@Bean
