@@ -200,13 +200,14 @@ public class WebMvcAutoConfiguration {
 			return new FixedLocaleResolver(StringUtils.parseLocaleString(this.locale));
 		}
 
-		@Bean
-		@ConditionalOnMissingBean(MessageCodesResolver.class)
-		@ConditionalOnExpression("'${spring.mvc.message-codes-resolver.format:}' != ''")
-		public MessageCodesResolver messageCodesResolver() {
-			DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
-			resolver.setMessageCodeFormatter(this.messageCodesResolverFormat);
-			return resolver;
+		@Override
+		public MessageCodesResolver getMessageCodesResolver() {
+			if (this.messageCodesResolverFormat != null) {
+				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
+				resolver.setMessageCodeFormatter(this.messageCodesResolverFormat);
+				return resolver;
+			}
+			return null;
 		}
 
 		@Override
