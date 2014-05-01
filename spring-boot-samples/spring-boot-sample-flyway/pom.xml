@@ -7,9 +7,9 @@
 		<artifactId>spring-boot-samples</artifactId>
 		<version>1.1.0.BUILD-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring-boot-sample-liquibase</artifactId>
-	<name>Spring Boot Liquibase Sample</name>
-	<description>Spring Boot Liquibase Sample</description>
+	<artifactId>spring-boot-sample-flyway</artifactId>
+	<name>Spring Boot Flyway Sample</name>
+	<description>Spring Boot Flyway Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
@@ -25,7 +25,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-liquibase</artifactId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>

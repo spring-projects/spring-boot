@@ -238,6 +238,9 @@ and Hibernate.
 |`spring-boot-starter-jdbc`
 |JDBC Database support.
 
+|`spring-boot-starter-flyway`
+|Support for Flyway database migrations.
+
 |`spring-boot-starter-liquibase`
 |Support for Liquibase database migrations.
 
