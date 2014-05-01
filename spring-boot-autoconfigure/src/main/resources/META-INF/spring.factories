@@ -14,6 +14,7 @@ org.springframework.boot.autoconfigure.data.MongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration,\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration,\
 org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
+org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JmsTemplateAutoConfiguration,\
@@ -41,4 +42,3 @@ org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.JspTemplateAvailabilityProvider
-

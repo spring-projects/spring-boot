@@ -1,7 +1,7 @@
 package org.test
 
-@Component
-@EnableIntegrationPatterns
+@Configuration
+@EnableIntegration
 class SpringIntegrationExample implements CommandLineRunner {
 
 	@Bean
@@ -11,7 +11,7 @@ class SpringIntegrationExample implements CommandLineRunner {
 
 	@Override
 	void run(String... args) {
-		print new MessagingTemplate(input()).convertSendAndReceive("World")
+		println new MessagingTemplate(input()).convertSendAndReceive("World", String)
 	}
 }
 
