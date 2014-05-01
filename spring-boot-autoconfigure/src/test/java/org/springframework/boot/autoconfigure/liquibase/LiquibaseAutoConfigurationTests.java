@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.liquibase;
 import liquibase.integration.spring.SpringLiquibase;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -43,7 +44,13 @@ public class LiquibaseAutoConfigurationTests {
 	@Rule
 	public ExpectedException expected = ExpectedException.none();
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();;
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	@Before
+	public void init() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.name:liquibasetest");
+	}
 
 	@After
 	public void close() {
@@ -56,10 +63,8 @@ public class LiquibaseAutoConfigurationTests {
 	public void testNoDataSource() throws Exception {
 		this.context.register(LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		this.expected.expect(BeanCreationException.class);
-		this.expected.expectMessage("No qualifying bean");
-		this.expected.expectMessage("DataSource");
 		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(SpringLiquibase.class).length);
 	}
 
 	@Test

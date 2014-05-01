@@ -23,7 +23,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties to configure Flyway.
+ * Configuration properties for Flyway database migrations.
  * 
  * @author Dave Syer
  */
@@ -40,7 +40,9 @@ public class FlywayProperties {
 
 	private String initVersion = "1";
 
-	private boolean checkLocation;
+	private boolean checkLocation = false;
+
+	private boolean enabled = true;
 
 	public String getPrefix() {
 		return this.prefix;
@@ -88,5 +90,13 @@ public class FlywayProperties {
 
 	public boolean isCheckLocation() {
 		return this.checkLocation;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.flyway;
 import java.util.Arrays;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -45,6 +46,12 @@ public class FlywayAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();;
 
+	@Before
+	public void init() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.name:flywaytest");
+	}
+
 	@After
 	public void close() {
 		if (this.context != null) {
@@ -56,10 +63,8 @@ public class FlywayAutoConfigurationTests {
 	public void testNoDataSource() throws Exception {
 		this.context.register(FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		this.expected.expect(BeanCreationException.class);
-		this.expected.expectMessage("No qualifying bean");
-		this.expected.expectMessage("DataSource");
 		this.context.refresh();
+		assertEquals(0, this.context.getBeanNamesForType(Flyway.class).length);
 	}
 
 	@Test

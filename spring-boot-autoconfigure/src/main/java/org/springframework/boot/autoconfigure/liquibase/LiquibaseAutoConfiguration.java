@@ -24,7 +24,9 @@ import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,6 +44,8 @@ import org.springframework.util.Assert;
  */
 @Configuration
 @ConditionalOnClass(SpringLiquibase.class)
+@ConditionalOnBean(DataSource.class)
+@ConditionalOnExpression("${liquibase.enabled:true}")
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class LiquibaseAutoConfiguration {
 
@@ -62,9 +66,11 @@ public class LiquibaseAutoConfiguration {
 		@PostConstruct
 		public void checkChangelogExists() {
 			if (this.properties.isCheckChangeLogLocation()) {
-				Resource resource = this.resourceLoader.getResource(this.properties.getChangeLog());
+				Resource resource = this.resourceLoader.getResource(this.properties
+						.getChangeLog());
 				Assert.state(resource.exists(), "Cannot find changelog location: "
-						+ resource + " (please add changelog or check your Liquibase configuration)");
+						+ resource
+						+ " (please add changelog or check your Liquibase configuration)");
 			}
 		}
 
@@ -73,10 +79,10 @@ public class LiquibaseAutoConfiguration {
 			SpringLiquibase liquibase = new SpringLiquibase();
 			liquibase.setChangeLog(this.properties.getChangeLog());
 			liquibase.setContexts(this.properties.getContexts());
-	        liquibase.setDataSource(dataSource);
-	        liquibase.setDefaultSchema(this.properties.getDefaultSchema());
-	        liquibase.setDropFirst(this.properties.isDropFirst());
-	        liquibase.setShouldRun(this.properties.isShouldRun());
+			liquibase.setDataSource(this.dataSource);
+			liquibase.setDefaultSchema(this.properties.getDefaultSchema());
+			liquibase.setDropFirst(this.properties.isDropFirst());
+			liquibase.setShouldRun(this.properties.isEnabled());
 			return liquibase;
 		}
 	}

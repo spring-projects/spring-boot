@@ -22,7 +22,9 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,6 +44,8 @@ import com.googlecode.flyway.core.Flyway;
  */
 @Configuration
 @ConditionalOnClass(Flyway.class)
+@ConditionalOnBean(DataSource.class)
+@ConditionalOnExpression("${flyway.enabled:true}")
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 public class FlywayAutoConfiguration {
 
