@@ -25,7 +25,6 @@ import javax.servlet.Servlet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
@@ -42,7 +41,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.util.Assert;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
@@ -143,14 +141,6 @@ public class FreeMarkerAutoConfiguration implements EnvironmentAware {
 			settings.putAll(settingsMap);
 			freeMarkerConfigurer.setFreemarkerSettings(settings);
 			return freeMarkerConfigurer;
-		}
-
-		@Bean
-		@ConditionalOnBean(FreeMarkerConfigurer.class)
-		@ConditionalOnMissingBean
-		public freemarker.template.Configuration freemarkerConfiguration(
-				FreeMarkerConfig configurer) {
-			return configurer.getConfiguration();
 		}
 
 		@Bean

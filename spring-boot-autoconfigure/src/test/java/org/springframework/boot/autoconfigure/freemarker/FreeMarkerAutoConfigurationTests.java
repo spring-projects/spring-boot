@@ -191,10 +191,10 @@ public class FreeMarkerAutoConfigurationTests {
 	public void renderTemplate() throws Exception {
 		this.context.register(FreeMarkerAutoConfiguration.class);
 		this.context.refresh();
-		freemarker.template.Configuration freemarker = this.context
-				.getBean(freemarker.template.Configuration.class);
+		FreeMarkerConfigurer freemarker = this.context
+				.getBean(FreeMarkerConfigurer.class);
 		StringWriter writer = new StringWriter();
-		freemarker.getTemplate("message.ftl").process(this, writer);
+		freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
 		assertTrue("Wrong content: " + writer, writer.toString().contains("Hello World"));
 	}
 
