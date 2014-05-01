@@ -661,23 +661,10 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-acl</artifactId>
+				<artifactId>spring-security-bom</artifactId>
 				<version>${spring-security.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>${spring-security.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-config</artifactId>
-				<version>${spring-security.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-web</artifactId>
-				<version>${spring-security.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
