@@ -77,7 +77,7 @@ public class FlywayAutoConfigurationTests {
 	@Test
 	public void testOverrideLocations() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.flyway.locations:classpath:db/changelog");
+				"flyway.locations:classpath:db/changelog");
 		this.context
 				.register(EmbeddedDataSourceConfiguration.class,
 						FlywayAutoConfiguration.class,
@@ -90,7 +90,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test
 	public void testOverrideSchemas() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.flyway.schemas:public");
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.schemas:public");
 		this.context
 				.register(EmbeddedDataSourceConfiguration.class,
 						FlywayAutoConfiguration.class,
@@ -102,8 +102,7 @@ public class FlywayAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void testChangeLogDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.flyway.locations:no-such-dir");
+		EnvironmentTestUtils.addEnvironment(this.context, "flyway.locations:no-such-dir");
 		this.context
 				.register(EmbeddedDataSourceConfiguration.class,
 						FlywayAutoConfiguration.class,

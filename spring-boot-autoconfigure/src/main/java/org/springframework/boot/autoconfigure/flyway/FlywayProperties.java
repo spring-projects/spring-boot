@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * 
  * @author Dave Syer
  */
-@ConfigurationProperties(prefix = "spring.flyway", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = false)
 public class FlywayProperties {
 
 	private List<String> locations = Arrays.asList("db/migrations");

@@ -69,7 +69,8 @@ public class LiquibaseAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("classpath:/db/changelog/db.changelog-master.yaml", liquibase.getChangeLog());
+		assertEquals("classpath:/db/changelog/db.changelog-master.yaml",
+				liquibase.getChangeLog());
 		assertNull(liquibase.getContexts());
 		assertNull(liquibase.getDefaultSchema());
 		assertFalse(liquibase.isDropFirst());
@@ -78,19 +79,20 @@ public class LiquibaseAutoConfigurationTests {
 	@Test
 	public void testOverrideChangeLog() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml");
+				"liquibase.change-log:classpath:/db/changelog/db.changelog-override.xml");
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
-		assertEquals("classpath:/db/changelog/db.changelog-override.xml", liquibase.getChangeLog());
+		assertEquals("classpath:/db/changelog/db.changelog-override.xml",
+				liquibase.getChangeLog());
 	}
 
 	@Test
 	public void testOverrideContexts() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.liquibase.contexts:test, production");
+				"liquibase.contexts:test, production");
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -98,11 +100,11 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		assertEquals("test, production", liquibase.getContexts());
 	}
-	
+
 	@Test
 	public void testOverrideDefaultSchema() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.liquibase.default-schema:public");
+				"liquibase.default-schema:public");
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -110,11 +112,10 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		assertEquals("public", liquibase.getDefaultSchema());
 	}
-	
+
 	@Test
 	public void testOverrideDropFirst() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.liquibase.drop-first:true");
+		EnvironmentTestUtils.addEnvironment(this.context, "liquibase.drop-first:true");
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
@@ -122,11 +123,11 @@ public class LiquibaseAutoConfigurationTests {
 		SpringLiquibase liquibase = this.context.getBean(SpringLiquibase.class);
 		assertTrue(liquibase.isDropFirst());
 	}
-	
+
 	@Test(expected = BeanCreationException.class)
 	public void testChangeLogDoesNotExist() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.liquibase.change-log:classpath:/no-such-changelog.yaml");
+				"liquibase.change-log:classpath:/no-such-changelog.yaml");
 		this.context.register(EmbeddedDataSourceConfiguration.class,
 				LiquibaseAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
