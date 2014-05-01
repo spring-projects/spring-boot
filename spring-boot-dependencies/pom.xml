@@ -424,6 +424,26 @@
 				<version>${reactor.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.projectreactor</groupId>
+				<artifactId>reactor-groovy</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectreactor</groupId>
+				<artifactId>reactor-groovy-extensions</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectreactor</groupId>
+				<artifactId>reactor-logback</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectreactor</groupId>
+				<artifactId>reactor-net</artifactId>
+				<version>${reactor.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.projectreactor.spring</groupId>
 				<artifactId>reactor-spring-core</artifactId>
 				<version>${reactor.version}</version>
