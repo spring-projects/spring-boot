@@ -55,7 +55,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 @Configuration
 @ConditionalOnClass(freemarker.template.Configuration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class FreeMarkerAutoConfiguration {
+public class FreeMarkerAutoConfiguration implements EnvironmentAware {
 
 	public static final String DEFAULT_TEMPLATE_LOADER_PATH = "classpath:/templates/";
 
@@ -63,38 +63,32 @@ public class FreeMarkerAutoConfiguration {
 
 	public static final String DEFAULT_SUFFIX = ".ftl";
 
-	@Configuration
-	public static class FreeMarkerConfigurerConfiguration implements EnvironmentAware {
+	@Autowired
+	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-		@Autowired
-		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private RelaxedPropertyResolver environment;
 
-		private RelaxedPropertyResolver environment;
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = new RelaxedPropertyResolver(environment, "spring.freeMarker.");
+	}
 
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = new RelaxedPropertyResolver(environment,
-					"spring.freeMarker.");
+	@PostConstruct
+	public void checkTemplateLocationExists() {
+		Boolean checkTemplateLocation = this.environment.getProperty(
+				"checkTemplateLocation", Boolean.class, true);
+		if (checkTemplateLocation) {
+			Resource resource = this.resourceLoader.getResource(this.environment
+					.getProperty("templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
+			Assert.state(resource.exists(), "Cannot find template location: " + resource
+					+ " (please add some templates "
+					+ "or check your FreeMarker configuration)");
 		}
-
-		@PostConstruct
-		public void checkTemplateLocationExists() {
-			Boolean checkTemplateLocation = this.environment.getProperty(
-					"checkTemplateLocation", Boolean.class, true);
-			if (checkTemplateLocation) {
-				Resource resource = this.resourceLoader.getResource(this.environment
-						.getProperty("templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
-				Assert.state(resource.exists(), "Cannot find template location: "
-						+ resource + " (please add some templates "
-						+ "or check your FreeMarker configuration)");
-			}
-		}
-
 	}
 
 	@Configuration
 	@ConditionalOnNotWebApplication
-	public static class FreeMarkerConfiguration implements EnvironmentAware {
+	public static class FreeMarkerNonWebConfiguration implements EnvironmentAware {
 
 		private RelaxedPropertyResolver environment;
 
@@ -125,7 +119,7 @@ public class FreeMarkerAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnWebApplication
-	public static class FreeMarkerViewResolverConfiguration implements EnvironmentAware {
+	public static class FreeMarkerWebConfiguration implements EnvironmentAware {
 
 		private RelaxedPropertyResolver environment;
 
@@ -133,14 +127,6 @@ public class FreeMarkerAutoConfiguration {
 		public void setEnvironment(Environment environment) {
 			this.environment = new RelaxedPropertyResolver(environment,
 					"spring.freemarker.");
-		}
-
-		@Bean
-		@ConditionalOnBean(FreeMarkerConfigurer.class)
-		@ConditionalOnMissingBean
-		public freemarker.template.Configuration freemarkerConfiguration(
-				FreeMarkerConfig configurer) {
-			return configurer.getConfiguration();
 		}
 
 		@Bean
@@ -157,6 +143,14 @@ public class FreeMarkerAutoConfiguration {
 			settings.putAll(settingsMap);
 			freeMarkerConfigurer.setFreemarkerSettings(settings);
 			return freeMarkerConfigurer;
+		}
+
+		@Bean
+		@ConditionalOnBean(FreeMarkerConfigurer.class)
+		@ConditionalOnMissingBean
+		public freemarker.template.Configuration freemarkerConfiguration(
+				FreeMarkerConfig configurer) {
+			return configurer.getConfiguration();
 		}
 
 		@Bean
