@@ -169,7 +169,7 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideFixedLocale() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		// set fixed locale
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.fixed.locale:en_UK");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.locale:en_UK");
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -203,7 +203,7 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideFixedDateFormat() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		// set fixed date format
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.fixed.date-format:dd*MM*yyyy");
+		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.date-format:dd*MM*yyyy");
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,

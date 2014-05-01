@@ -142,10 +142,10 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.mvc.message-codes-resolver.format:}")
 		private DefaultMessageCodesResolver.Format messageCodesResolverFormat = null;
 
-		@Value("${spring.mvc.fixed.locale:}")
+		@Value("${spring.mvc.locale:}")
 		private String locale = "";
 
-		@Value("${spring.mvc.fixed.date-format:}")
+		@Value("${spring.mvc.date-format:}")
 		private String dateFormat = "";
 
 		@Autowired
@@ -200,13 +200,13 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(LocaleResolver.class)
-		@ConditionalOnExpression("'${spring.mvc.fixed.locale:}' != ''")
+		@ConditionalOnExpression("'${spring.mvc.locale:}' != ''")
 		public LocaleResolver localeResolver() {
 			return new FixedLocaleResolver(StringUtils.parseLocaleString(this.locale));
 		}
 
 		@Bean
-		@ConditionalOnExpression("'${spring.mvc.fixed.date-format:}' != ''")
+		@ConditionalOnExpression("'${spring.mvc.date-format:}' != ''")
 		public Formatter<Date> dateFormatter() {
 			return new DateFormatter(this.dateFormat);
 		}
