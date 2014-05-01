@@ -273,6 +273,18 @@ public class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	public void twoProfilesFromProperties() throws Exception {
+		// This should be the effect of calling
+		// SpringApplication.setAdditionalProfiles("other", "dev")
+		this.environment.setActiveProfiles("other", "dev");
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		// The "dev" profile is activated in SpringApplication so it should take
+		// precedence over the default profile
+		assertThat(property, equalTo("fromdevpropertiesfile"));
+	}
+
+	@Test
 	public void loadPropertiesThenProfilePropertiesActivatedInFirst() throws Exception {
 		this.initializer.setSearchNames("enableprofile");
 		this.initializer.onApplicationEvent(this.event);
@@ -324,7 +336,7 @@ public class ConfigFileApplicationListenerTests {
 		this.environment.setActiveProfiles("other", "dev");
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
-		assertThat(property, equalTo("fromotherprofile"));
+		assertThat(property, equalTo("fromdevprofile"));
 		property = this.environment.getProperty("my.other");
 		assertThat(property, equalTo("notempty"));
 	}
@@ -423,8 +435,9 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
-				+ "[specificlocation.properties]"));
+		assertThat(context.getEnvironment(),
+				containsPropertySource("class path resource "
+						+ "[specificlocation.properties]"));
 		context.close();
 	}
 
@@ -439,8 +452,9 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("fromspecificlocation"));
-		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
-				+ "[specificlocation.properties]"));
+		assertThat(context.getEnvironment(),
+				containsPropertySource("class path resource "
+						+ "[specificlocation.properties]"));
 		context.close();
 	}
 
@@ -465,8 +479,9 @@ public class ConfigFileApplicationListenerTests {
 				.run("--spring.profiles.active=myprofile");
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frompropertiesfile"));
-		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
-				+ "[enableprofile.properties]"));
+		assertThat(context.getEnvironment(),
+				containsPropertySource("class path resource "
+						+ "[enableprofile.properties]"));
 		assertThat(context.getEnvironment(), not(containsPropertySource("classpath:/"
 				+ "enableprofile-myprofile.properties")));
 		context.close();
@@ -493,8 +508,9 @@ public class ConfigFileApplicationListenerTests {
 		ConfigurableApplicationContext context = application.run();
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(property, equalTo("frommorepropertiesfile"));
-		assertThat(context.getEnvironment(), containsPropertySource("class path resource "
-				+ "[specificlocation.properties]"));
+		assertThat(context.getEnvironment(),
+				containsPropertySource("class path resource "
+						+ "[specificlocation.properties]"));
 		context.close();
 	}
 

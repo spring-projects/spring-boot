@@ -288,7 +288,12 @@ public class ConfigFileApplicationListener implements
 				// Pre-existing active profiles set via Environment.setActiveProfiles()
 				// are additional profiles and config files are allowed to add more if
 				// they want to, so don't call addActiveProfiles() here.
-				this.profiles.addAll(Arrays.asList(this.environment.getActiveProfiles()));
+				List<String> list = new ArrayList<String>(Arrays.asList(this.environment
+						.getActiveProfiles()));
+				// Reverse them so the order is the same as from getProfilesForValue()
+				// (last one wins when properties are eventually resolved)
+				Collections.reverse(list);
+				this.profiles.addAll(list);
 			}
 
 			// The default profile for these purposes is represented as null. We add it
