@@ -93,7 +93,6 @@ public class FreeMarkerAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnNotWebApplication
 	public static class FreeMarkerConfiguration implements EnvironmentAware {
 
@@ -137,7 +136,7 @@ public class FreeMarkerAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnBean(FreeMarkerConfig.class)
+		@ConditionalOnBean(FreeMarkerConfigurer.class)
 		@ConditionalOnMissingBean
 		public freemarker.template.Configuration freemarkerConfiguration(
 				FreeMarkerConfig configurer) {
