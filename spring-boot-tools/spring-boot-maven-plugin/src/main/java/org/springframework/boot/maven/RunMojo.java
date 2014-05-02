@@ -160,8 +160,9 @@ public class RunMojo extends AbstractMojo {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
 				classpath = classpath.append((classpath.length() > 0 ? File.pathSeparator
-						: "") + ele);
+						: "") + new File(ele.toURI()));
 			}
+			getLog().debug("Classpath for forked process: " + classpath);
 			args.add("-cp");
 			args.add(classpath.toString());
 		}

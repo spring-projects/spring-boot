@@ -76,6 +76,9 @@ public class RunProcess {
 	}
 
 	private boolean inheritIO(ProcessBuilder builder) {
+		if (isInheritIOBroken()) {
+			return false;
+		}
 		try {
 			INHERIT_IO_METHOD.invoke(builder);
 			return true;
@@ -83,6 +86,32 @@ public class RunProcess {
 		catch (Exception ex) {
 			return false;
 		}
+	}
+
+	// There's a bug in the Windows VM (https://bugs.openjdk.java.net/browse/JDK-8023130)
+	// that means we need to avoid inheritIO
+	private static boolean isInheritIOBroken() {
+		if (!System.getProperty("os.name", "none").toLowerCase().contains("windows")) {
+			return false;
+		}
+		String runtime = System.getProperty("java.runtime.version");
+		if (!runtime.startsWith("1.7")) {
+			return false;
+		}
+		String[] tokens = runtime.split("_");
+		if (tokens.length < 2) {
+			return true; // No idea actually, shouldn't happen
+		}
+		try {
+			Integer build = Integer.valueOf(tokens[1].split("[^0-9]")[0]);
+			if (build < 60) {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			return true;
+		}
+		return false;
 	}
 
 	private void redirectOutput(Process process) {
@@ -96,6 +125,7 @@ public class RunProcess {
 					while (line != null) {
 						System.out.println(line);
 						line = reader.readLine();
+						System.out.flush();
 					}
 					reader.close();
 				}
