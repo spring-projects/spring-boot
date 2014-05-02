@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.freemarker;
 
-import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -39,8 +38,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
@@ -84,32 +85,41 @@ public class FreeMarkerAutoConfiguration implements EnvironmentAware {
 		}
 	}
 
-	@Configuration
-	@ConditionalOnNotWebApplication
-	public static class FreeMarkerNonWebConfiguration implements EnvironmentAware {
+	protected static class FreeMarkerConfiguration implements EnvironmentAware {
 
-		private RelaxedPropertyResolver environment;
+		private RelaxedPropertyResolver properties;
 
 		@Override
 		public void setEnvironment(Environment environment) {
-			this.environment = new RelaxedPropertyResolver(environment,
+			this.properties = new RelaxedPropertyResolver(environment,
 					"spring.freemarker.");
 		}
 
+		protected void applyProperties(FreeMarkerConfigurationFactory factory) {
+			factory.setTemplateLoaderPath(this.properties.getProperty(
+					"templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
+			factory.setDefaultEncoding(this.properties.getProperty("templateEncoding",
+					"UTF-8"));
+			Properties settings = new Properties();
+			settings.putAll(this.properties.getSubProperties("settings."));
+			factory.setFreemarkerSettings(settings);
+		}
+
+		protected final RelaxedPropertyResolver getProperties() {
+			return this.properties;
+		}
+	}
+
+	@Configuration
+	@ConditionalOnNotWebApplication
+	public static class FreeMarkerNonWebConfiguration extends FreeMarkerConfiguration {
+
 		@Bean
 		@ConditionalOnMissingBean
-		public FreeMarkerConfigurationFactoryBean freeMarkerConfigurer() {
-			FreeMarkerConfigurationFactoryBean freeMarkerConfigurer = new FreeMarkerConfigurationFactoryBean();
-			freeMarkerConfigurer.setTemplateLoaderPath(this.environment.getProperty(
-					"templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
-			freeMarkerConfigurer.setDefaultEncoding(this.environment.getProperty(
-					"templateEncoding", "UTF-8"));
-			Map<String, Object> settingsMap = this.environment
-					.getSubProperties("settings.");
-			Properties settings = new Properties();
-			settings.putAll(settingsMap);
-			freeMarkerConfigurer.setFreemarkerSettings(settings);
-			return freeMarkerConfigurer;
+		public FreeMarkerConfigurationFactoryBean freeMarkerConfiguration() {
+			FreeMarkerConfigurationFactoryBean freeMarkerFactoryBean = new FreeMarkerConfigurationFactoryBean();
+			applyProperties(freeMarkerFactoryBean);
+			return freeMarkerFactoryBean;
 		}
 
 	}
@@ -117,54 +127,43 @@ public class FreeMarkerAutoConfiguration implements EnvironmentAware {
 	@Configuration
 	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnWebApplication
-	public static class FreeMarkerWebConfiguration implements EnvironmentAware {
+	public static class FreeMarkerWebConfiguration extends FreeMarkerConfiguration {
 
-		private RelaxedPropertyResolver environment;
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = new RelaxedPropertyResolver(environment,
-					"spring.freemarker.");
+		@Bean
+		@ConditionalOnMissingBean(FreeMarkerConfig.class)
+		public FreeMarkerConfigurer freeMarkerConfigurer() {
+			FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+			applyProperties(configurer);
+			return configurer;
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public FreeMarkerConfigurer freeMarkerConfigurer() {
-			FreeMarkerConfigurer freeMarkerConfigurer = new FreeMarkerConfigurer();
-			freeMarkerConfigurer.setTemplateLoaderPath(this.environment.getProperty(
-					"templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
-			freeMarkerConfigurer.setDefaultEncoding(this.environment.getProperty(
-					"templateEncoding", "UTF-8"));
-			Map<String, Object> settingsMap = this.environment
-					.getSubProperties("settings.");
-			Properties settings = new Properties();
-			settings.putAll(settingsMap);
-			freeMarkerConfigurer.setFreemarkerSettings(settings);
-			return freeMarkerConfigurer;
+		public freemarker.template.Configuration freeMarkerConfiguration(
+				FreeMarkerConfig configurer) {
+			return configurer.getConfiguration();
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
 		public FreeMarkerViewResolver freeMarkerViewResolver() {
 			FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
-			resolver.setPrefix(this.environment.getProperty("prefix", DEFAULT_PREFIX));
-			resolver.setSuffix(this.environment.getProperty("suffix", DEFAULT_SUFFIX));
-			resolver.setCache(this.environment.getProperty("cache", Boolean.class, true));
-			resolver.setContentType(this.environment.getProperty("contentType",
-					"text/html"));
-			resolver.setViewNames(this.environment.getProperty("viewNames",
-					String[].class));
-			resolver.setExposeRequestAttributes(this.environment.getProperty(
+			RelaxedPropertyResolver properties = getProperties();
+			resolver.setPrefix(properties.getProperty("prefix", DEFAULT_PREFIX));
+			resolver.setSuffix(properties.getProperty("suffix", DEFAULT_SUFFIX));
+			resolver.setCache(properties.getProperty("cache", Boolean.class, true));
+			resolver.setContentType(properties.getProperty("contentType", "text/html"));
+			resolver.setViewNames(properties.getProperty("viewNames", String[].class));
+			resolver.setExposeRequestAttributes(properties.getProperty(
 					"exposeRequestAttributes", Boolean.class, false));
-			resolver.setAllowRequestOverride(this.environment.getProperty(
+			resolver.setAllowRequestOverride(properties.getProperty(
 					"allowRequestOverride", Boolean.class, false));
-			resolver.setExposeSessionAttributes(this.environment.getProperty(
+			resolver.setExposeSessionAttributes(properties.getProperty(
 					"exposeSessionAttributes", Boolean.class, false));
-			resolver.setAllowSessionOverride(this.environment.getProperty(
+			resolver.setAllowSessionOverride(properties.getProperty(
 					"allowSessionOverride", Boolean.class, false));
-			resolver.setExposeSpringMacroHelpers(this.environment.getProperty(
+			resolver.setExposeSpringMacroHelpers(properties.getProperty(
 					"exposeSpringMacroHelpers", Boolean.class, true));
-			resolver.setRequestContextAttribute(this.environment
+			resolver.setRequestContextAttribute(properties
 					.getProperty("requestContextAttribute"));
 
 			// This resolver acts as a fallback resolver (e.g. like a
