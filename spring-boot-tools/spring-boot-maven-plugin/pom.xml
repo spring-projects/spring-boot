@@ -56,24 +56,43 @@
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration>
-							<descriptors>
-								<descriptor>src/assemble/site.xml</descriptor>
-							</descriptors>
-						</configuration>
+						<artifactId>maven-site-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>create-site-zip</id>
-								<phase>site</phase>
+								<id>generate-site</id>
 								<goals>
-									<goal>single</goal>
+									<goal>jar</goal>
 								</goals>
 							</execution>
 						</executions>
 					</plugin>
 				</plugins>
 			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-plugin-plugin</artifactId>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-project-info-reports-plugin</artifactId>
+						<version>2.7</version>
+						<reportSets>
+							<reportSet>
+								<reports>
+									<report>index</report>
+									<report>cim</report>
+									<report>issue-tracking</report>
+									<report>license</report>
+									<report>scm</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+				</plugins>
+
+			</reporting>
 		</profile>
 	</profiles>
 	<dependencies>
@@ -168,29 +187,4 @@
 			</plugin>
 		</plugins>
 	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-plugin-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.7</version>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<report>index</report>
-							<report>cim</report>
-							<report>issue-tracking</report>
-							<report>license</report>
-							<report>scm</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-
-	</reporting>
 </project>

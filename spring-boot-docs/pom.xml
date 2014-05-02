@@ -240,8 +240,11 @@
 											<artifactId>spring-boot-maven-plugin</artifactId>
 											<version>${project.version}</version>
 											<classifier>site</classifier>
-											<type>zip</type>
-											<outputDirectory>${project.build.directory}/contents</outputDirectory>
+											<type>jar</type>
+											<outputDirectory>
+												${project.build.directory}/contents/maven-plugin
+											</outputDirectory>
+											<excludes>META-INF/**</excludes>
 										</artifactItem>
 									</artifactItems>
 								</configuration>
