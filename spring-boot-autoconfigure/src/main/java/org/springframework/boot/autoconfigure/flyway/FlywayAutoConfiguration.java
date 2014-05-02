@@ -41,6 +41,8 @@ import com.googlecode.flyway.core.Flyway;
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
  * 
  * @author Dave Syer
+ * 
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(Flyway.class)

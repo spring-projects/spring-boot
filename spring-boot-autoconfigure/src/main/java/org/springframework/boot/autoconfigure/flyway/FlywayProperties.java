@@ -26,6 +26,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Flyway database migrations.
  * 
  * @author Dave Syer
+ * 
+ * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = false)
 public class FlywayProperties {
