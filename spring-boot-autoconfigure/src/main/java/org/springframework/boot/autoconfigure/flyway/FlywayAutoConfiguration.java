@@ -41,7 +41,6 @@ import com.googlecode.flyway.core.Flyway;
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
  * 
  * @author Dave Syer
- * 
  * @since 1.1.0
  */
 @Configuration
@@ -74,7 +73,7 @@ public class FlywayAutoConfiguration {
 				boolean exists = false;
 				for (String location : this.properties.getLocations()) {
 					Resource resource = this.resourceLoader.getResource(location);
-					exists = !exists && resource.exists();
+					exists = (!exists && resource.exists());
 				}
 				Assert.state(exists, "Cannot find migrations location in: "
 						+ this.properties.getLocations()
