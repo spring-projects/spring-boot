@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -36,9 +37,10 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
@@ -50,9 +52,8 @@ public class FreeMarkerAutoConfigurationTests {
 	private AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
 
 	@Before
-	public void registerServletContext() {
-		MockServletContext servletContext = new MockServletContext();
-		this.context.setServletContext(servletContext);
+	public void setupContext() {
+		this.context.setServletContext(new MockServletContext());
 	}
 
 	@After
@@ -64,138 +65,111 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void defaultConfiguration() {
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
-		assertNotNull(this.context.getBean(FreeMarkerViewResolver.class));
-
-		assertNotNull(this.context.getBean(FreeMarkerConfigurer.class));
+		registerAndRefreshContext();
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class), notNullValue());
+		assertThat(this.context.getBean(FreeMarkerConfigurer.class), notNullValue());
 	}
 
 	@Test(expected = BeanCreationException.class)
 	public void nonExistentTemplateLocation() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.freemarker.templateLoaderPath:classpath:/does-not-exist/");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
+				+ "classpath:/does-not-exist/");
 	}
 
 	@Test
 	public void emptyTemplateLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-
-		EnvironmentTestUtils
-				.addEnvironment(this.context,
-						"spring.freemarker.templateLoaderPath:classpath:/templates/empty-directory/");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
+				+ "classpath:/templates/empty-directory/");
 	}
 
 	@Test
 	public void defaultViewResolution() throws Exception {
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
+		registerAndRefreshContext();
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-
-		assertTrue("Wrong output: " + result, result.contains("home"));
-		assertEquals("text/html", response.getContentType());
+		assertThat(result, containsString("home"));
+		assertThat(response.getContentType(), equalTo("text/html"));
 	}
 
 	@Test
 	public void customContentType() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.freemarker.contentType:application/json");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
+		registerAndRefreshContext("spring.freemarker.contentType:application/json");
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
-
-		assertTrue("Wrong output: " + result, result.contains("home"));
-		assertEquals("application/json", response.getContentType());
+		assertThat(result, containsString("home"));
+		assertThat(response.getContentType(), equalTo("application/json"));
 	}
 
 	@Test
 	public void customPrefix() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.freemarker.prefix:prefix/");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
+		registerAndRefreshContext("spring.freemarker.prefix:prefix/");
 		MockHttpServletResponse response = render("prefixed");
 		String result = response.getContentAsString();
-
-		assertTrue("Wrong output: " + result, result.contains("prefixed"));
+		assertThat(result, containsString("prefixed"));
 	}
 
 	@Test
 	public void customSuffix() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.freemarker.suffix:.freemarker");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
+		registerAndRefreshContext("spring.freemarker.suffix:.freemarker");
 		MockHttpServletResponse response = render("suffixed");
 		String result = response.getContentAsString();
-
-		assertTrue("Wrong output: " + result, result.contains("suffixed"));
+		assertThat(result, containsString("suffixed"));
 	}
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
+		registerAndRefreshContext("spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
-
-		assertTrue("Wrong output: " + result, result.contains("custom"));
+		assertThat(result, containsString("custom"));
 	}
 
 	@Test
 	public void disableCache() {
-		EnvironmentTestUtils
-				.addEnvironment(this.context, "spring.freemarker.cache:false");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
-		assertEquals(0, this.context.getBean(FreeMarkerViewResolver.class)
-				.getCacheLimit());
+		registerAndRefreshContext("spring.freemarker.cache:false");
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit(),
+				equalTo(0));
 	}
 
 	@SuppressWarnings("deprecation")
 	@Test
 	public void customFreeMarkerSettings() {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.freemarker.settings.boolean_format:yup,nope");
-
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
-
-		assertEquals("yup,nope", this.context.getBean(FreeMarkerConfigurer.class)
-				.getConfiguration().getSetting("boolean_format"));
+		registerAndRefreshContext("spring.freemarker.settings.boolean_format:yup,nope");
+		assertThat(this.context.getBean(FreeMarkerConfigurer.class).getConfiguration()
+				.getSetting("boolean_format"), equalTo("yup,nope"));
 	}
 
 	@Test
 	public void renderTemplate() throws Exception {
-		this.context.register(FreeMarkerAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefreshContext();
 		FreeMarkerConfigurer freemarker = this.context
 				.getBean(FreeMarkerConfigurer.class);
 		StringWriter writer = new StringWriter();
 		freemarker.getConfiguration().getTemplate("message.ftl").process(this, writer);
-		assertTrue("Wrong content: " + writer, writer.toString().contains("Hello World"));
+		assertThat(writer.toString(), containsString("Hello World"));
+	}
+
+	@Test
+	public void renderNonWebAppTemplate() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				FreeMarkerAutoConfiguration.class);
+		try {
+			freemarker.template.Configuration freemarker = context
+					.getBean(freemarker.template.Configuration.class);
+			StringWriter writer = new StringWriter();
+			freemarker.getTemplate("message.ftl").process(this, writer);
+			assertThat(writer.toString(), containsString("Hello World"));
+		}
+		finally {
+			context.close();
+		}
+	}
+
+	private void registerAndRefreshContext(String... env) {
+		EnvironmentTestUtils.addEnvironment(this.context, env);
+		this.context.register(FreeMarkerAutoConfiguration.class);
+		this.context.refresh();
 	}
 
 	public String getGreeting() {
@@ -203,19 +177,15 @@ public class FreeMarkerAutoConfigurationTests {
 	}
 
 	private MockHttpServletResponse render(String viewName) throws Exception {
-
-		View view = this.context.getBean(FreeMarkerViewResolver.class).resolveViewName(
-				viewName, Locale.UK);
-		assertNotNull(view);
-
+		FreeMarkerViewResolver resolver = this.context
+				.getBean(FreeMarkerViewResolver.class);
+		View view = resolver.resolveViewName(viewName, Locale.UK);
+		assertThat(view, notNullValue());
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute(RequestContext.WEB_APPLICATION_CONTEXT_ATTRIBUTE,
 				this.context);
-
 		MockHttpServletResponse response = new MockHttpServletResponse();
-
 		view.render(null, request, response);
-
 		return response;
 	}
 }
