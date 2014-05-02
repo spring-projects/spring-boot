@@ -100,8 +100,10 @@ Once the build has been prepared, you can run a full build using the following c
 	$ mvn -s ../settings.xml -P full clean install
 ----
 
-We generate more artifacts when running the full build (such as Javadoc jars), so you
-may find the process a little slower than the standard build.
+NOTE: As for the standard build, you may need to increase the amount of memory available
+to Maven by setting a `MAVEN_OPTS` environment variable with the value
+`-Xmx512m -XX:MaxPermSize=128m`. We generate more artifacts when running the full build
+(such as Javadoc jars), so you may find the process a little slower than the standard build.
 
 === Importing into eclipse with m2eclipse
 We recommend the http://eclipse.org/m2e/[m2eclipe] eclipse plugin when working with
