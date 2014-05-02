@@ -1,0 +1,123 @@
+
+ -----
+ Usage
+ -----
+ Stephane Nicoll
+ -----
+ 2014-05-02
+ -----
+
+Usage
+
+  The plugin offers a goal for repackaging an application as an executable JAR/WAR as well as a goal
+  for running the application.
+
+* Repackaging an application
+
+  In order to repackage your application, you simply need to add a reference to the
+  plugin in your <<<pom.xml>>>:
+
+---
+<build>
+  ...
+  <plugins>
+    ...
+    <plugin>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>${project.artifactId}</artifactId>
+      <version>${project.version}</version>
+      <executions>
+        <execution>
+          <goals>
+            <goal>repackage</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    ...
+  </plugins>
+  ...
+</build>
+---
+
+  The example above repackages a jar or war that is built during the package phase of the Maven lifecycle. The
+  original (i.e. non exectuable) artifact is renamed to <<<.original>>> by default but it is also possible to
+  keep the original artifact using a custom classifier.
+
+  The plugin rewrites your manifest, and in particular it manages the <<Main-Class>> and <<Start-Class>>
+  entries, so if the defaults don't work you have to configure those there (not in the jar plugin). The
+  <<Main-Class>> in the manifest is actually controlled by the <<layout>> property of the boot plugin, e.g.
+
+---
+<build>
+  ...
+  <plugins>
+    ...
+    <plugin>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>${project.artifactId}</artifactId>
+      <version>${project.version}</version>
+      <configuration>
+        <mainClass>${start-class}</mainClass>
+        <layout>ZIP</layout>
+      </configuration>
+      <executions>
+        <execution>
+          <goals>
+            <goal>repackage</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    ...
+  </plugins>
+  ...
+</build>
+---
+
+  The layout property defaults to a guess based on the archive type (jar or war). For the
+  <<<PropertiesLauncher>>> the layout is <<<ZIP>>> (even though the output might be a jar file).
+
+  For more detailed examples of how to configure this goal see:
+
+    * {{{./examples/repackage-classifier.html}Custom repackage classifier}}
+
+	[]
+
+* Running the application
+
+  The plugin includes a run goal which can be used to launch your application from the command
+  line:
+
+---
+mvn spring-boot:run
+---
+
+  By default, any <<src/main/resources>> folder will be added to the application classpath
+  when you run the application. This allows hot refreshing of resources which can be very
+  useful when developing web applications. For example, you can work on HTML, CSS or JavaScipt
+  files and see your changes immediately without recompiling your application. It is also a
+  helpful way of allowing your front end developers to work without needing to download and
+  install a Java IDE.
+
+  Of course, if your resources are using tokens that are filtered by Maven, you may want
+  to disable that feature as follows:
+
+---
+<build>
+  ...
+  <plugins>
+    ...
+    <plugin>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>${project.artifactId}</artifactId>
+      <version>${project.version}</version>
+      <configuration>
+        <addResources>false</mainClass>
+      </configuration>
+    </plugin>
+    ...
+  </plugins>
+  ...
+</build>
+---
