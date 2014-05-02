@@ -37,39 +37,46 @@ import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 
 /**
- * MOJO that can can be used to repackage existing JAR and WAR archives so that they can
- * be executed from the command line using {@literal java -jar}. With
- * <code>layout=NONE</code> can also be used simply to package a JAR with nested
- * dependencies (and no main class, so not executable).
+ * Repackages existing JAR and WAR archives so that they can be executed from
+ * the command line using {@literal java -jar}. With <code>layout=NONE</code>
+ * can also be used simply to package a JAR with nested dependencies (and
+ * no main class, so not executable).
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Stephane Nicoll
  */
-@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true,
+		threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
+		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractMojo {
 
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	/**
 	 * The Maven project.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
 	/**
 	 * Maven project helper utils.
+	 * @since 1.0
 	 */
 	@Component
 	private MavenProjectHelper projectHelper;
 
 	/**
 	 * Directory containing the generated archive.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
 	private File outputDirectory;
 
 	/**
 	 * Name of the generated archive.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", required = true)
 	private String finalName;
@@ -77,7 +84,10 @@ public class RepackageMojo extends AbstractMojo {
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
 	 * attached. If this is not given, it will merely be written to the output directory
-	 * according to the finalName.
+	 * according to the finalName. Attaching the artifact allows to deploy it alongside
+	 * to the original one, see <a href="http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html">
+	 * the maven documentation for more details</a>.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String classifier;
@@ -85,12 +95,16 @@ public class RepackageMojo extends AbstractMojo {
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String mainClass;
 
 	/**
-	 * The layout to use (JAR, WAR, ZIP, DIR, NONE) in case it cannot be inferred.
+	 * The type of archive (which corresponds to how the dependencies are laid out
+	 * inside it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a
+	 * guess based on the archive type.
+	 * @since 1.0
 	 */
 	@Parameter
 	private LayoutType layout;

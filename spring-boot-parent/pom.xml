@@ -31,6 +31,14 @@
 		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
 	</scm>
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/spring-projects/spring-boot/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Bamboo</system>
+		<url>https://build.spring.io/browse/BOOT-PUB</url>
+	</ciManagement>
 	<dependencyManagement>
 		<dependencies>
 			<!-- Additional Dependencies the consumers of spring-boot-dependencies
@@ -241,6 +249,7 @@
 					</executions>
 				</plugin>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
 					<version>3.2</version>
 				</plugin>
@@ -248,6 +257,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
 					<version>1.7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.3</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
