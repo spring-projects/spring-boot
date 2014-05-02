@@ -45,7 +45,7 @@ public final class AsciiBytes {
 	 * @param string
 	 */
 	public AsciiBytes(String string) {
-		this(string.getBytes());
+		this(string.getBytes(UTF_8));
 		this.string = string;
 	}
 
@@ -125,7 +125,7 @@ public final class AsciiBytes {
 		if (string == null || string.length() == 0) {
 			return this;
 		}
-		return append(string.getBytes());
+		return append(string.getBytes(UTF_8));
 	}
 
 	public AsciiBytes append(byte[] bytes) {
