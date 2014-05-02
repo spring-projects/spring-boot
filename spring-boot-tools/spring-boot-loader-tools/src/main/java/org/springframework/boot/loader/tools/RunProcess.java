@@ -62,6 +62,12 @@ public class RunProcess {
 			if (!inheritedIO) {
 				redirectOutput(this.process);
 			}
+			SignalUtils.attachSignalHandler(new Runnable() {
+				@Override
+				public void run() {
+					handleSigInt();
+				}
+			});
 			try {
 				this.process.waitFor();
 			}

@@ -48,8 +48,7 @@ import edu.emory.mathcs.backport.java.util.Arrays;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE,
-		requiresDependencyResolution = ResolutionScope.TEST)
+@Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractMojo {
 
@@ -64,10 +63,10 @@ public class RunMojo extends AbstractMojo {
 
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing or
-	 * resources. Since resources will be added directly, and via the target/classes folder
-	 * they will appear twice if {@code ClassLoader.getResources()} is called. In practice,
-	 * however, most applications call {@code ClassLoader.getResource()} which will always
-	 * return the first resource.
+	 * resources. Since resources will be added directly, and via the target/classes
+	 * folder they will appear twice if {@code ClassLoader.getResources()} is called. In
+	 * practice, however, most applications call {@code ClassLoader.getResource()} which
+	 * will always return the first resource.
 	 * @since 1.0
 	 */
 	@Parameter(property = "run.addResources", defaultValue = "true")
@@ -104,8 +103,8 @@ public class RunMojo extends AbstractMojo {
 	private String mainClass;
 
 	/**
-	 * Additional folders besides the classes directory that should be added to
-	 * the classpath.
+	 * Additional folders besides the classes directory that should be added to the
+	 * classpath.
 	 * @since 1.0
 	 */
 	@Parameter
