@@ -37,18 +37,15 @@ import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Repackager;
 
 /**
- * Repackages existing JAR and WAR archives so that they can be executed from
- * the command line using {@literal java -jar}. With <code>layout=NONE</code>
- * can also be used simply to package a JAR with nested dependencies (and
- * no main class, so not executable).
+ * Repackages existing JAR and WAR archives so that they can be executed from the command
+ * line using {@literal java -jar}. With <code>layout=NONE</code> can also be used simply
+ * to package a JAR with nested dependencies (and no main class, so not executable).
  * 
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true,
-		threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
+@Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class RepackageMojo extends AbstractMojo {
 
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
@@ -84,9 +81,10 @@ public class RepackageMojo extends AbstractMojo {
 	/**
 	 * Classifier to add to the artifact generated. If given, the artifact will be
 	 * attached. If this is not given, it will merely be written to the output directory
-	 * according to the finalName. Attaching the artifact allows to deploy it alongside
-	 * to the original one, see <a href="http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html">
-	 * the maven documentation for more details</a>.
+	 * according to the finalName. Attaching the artifact allows to deploy it alongside to
+	 * the original one, see <a href=
+	 * "http://maven.apache.org/plugins/maven-deploy-plugin/examples/deploying-with-classifiers.html"
+	 * > the maven documentation for more details</a>.
 	 * @since 1.0
 	 */
 	@Parameter
@@ -101,9 +99,9 @@ public class RepackageMojo extends AbstractMojo {
 	private String mainClass;
 
 	/**
-	 * The type of archive (which corresponds to how the dependencies are laid out
-	 * inside it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a
-	 * guess based on the archive type.
+	 * The type of archive (which corresponds to how the dependencies are laid out inside
+	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
+	 * archive type.
 	 * @since 1.0
 	 */
 	@Parameter
