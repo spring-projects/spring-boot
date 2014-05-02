@@ -50,6 +50,31 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>full</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assemble/site.xml</descriptor>
+							</descriptors>
+						</configuration>
+						<executions>
+							<execution>
+								<id>create-site-zip</id>
+								<phase>site</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 	<dependencies>
 		<!-- Compile -->
@@ -120,27 +145,52 @@
 				<artifactId>maven-jar-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-plugin-plugin</artifactId>
 				<configuration>
 					<goalPrefix>spring-boot</goalPrefix>
+					<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
 				</configuration>
 				<executions>
 					<execution>
-						<id>default-descriptor</id>
+						<id>generate-descriptor</id>
 						<goals>
 							<goal>descriptor</goal>
 						</goals>
-						<phase>process-classes</phase>
 					</execution>
 					<execution>
-						<id>help-descriptor</id>
+						<id>generated-helpmojo</id>
 						<goals>
 							<goal>helpmojo</goal>
 						</goals>
-						<phase>process-classes</phase>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.7</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+							<report>cim</report>
+							<report>issue-tracking</report>
+							<report>license</report>
+							<report>scm</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+
+	</reporting>
 </project>

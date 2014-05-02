@@ -25,6 +25,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :dc-spring-boot: {dc-root}/org/springframework/boot
 :dc-spring-boot-autoconfigure: {dc-root}/org/springframework/boot/autoconfigure
 :dc-spring-boot-actuator: {dc-root}/org/springframework/boot/actuate
+:mp-root: http://docs.spring.io/spring-boot/docs/{spring-boot-docs-version}/maven-plugin
 :spring-reference: http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle
 :spring-security-reference: http://docs.spring.io/spring-security/site/docs/current/reference/htmlsingle
 :spring-javadoc: http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework

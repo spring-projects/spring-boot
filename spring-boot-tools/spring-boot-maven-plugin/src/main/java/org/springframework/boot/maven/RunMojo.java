@@ -43,11 +43,13 @@ import org.springframework.boot.loader.tools.RunProcess;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
- * MOJO that can be used to run a executable archive application directly from Maven.
+ * Run an executable archive application.
  * 
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
-@Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
+@Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE,
+		requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
 public class RunMojo extends AbstractMojo {
 
@@ -55,25 +57,32 @@ public class RunMojo extends AbstractMojo {
 
 	/**
 	 * The Maven project.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing or
-	 * resources.
+	 * resources. Since resources will be added directly, and via the target/classes folder
+	 * they will appear twice if {@code ClassLoader.getResources()} is called. In practice,
+	 * however, most applications call {@code ClassLoader.getResource()} which will always
+	 * return the first resource.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.addResources", defaultValue = "true")
 	private boolean addResources;
 
 	/**
 	 * Path to agent jar.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.agent")
 	private File[] agent;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.noverify")
 	private Boolean noverify;
@@ -81,6 +90,7 @@ public class RunMojo extends AbstractMojo {
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
 	 * separate multiple arguments.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.arguments")
 	private String[] arguments;
@@ -88,12 +98,15 @@ public class RunMojo extends AbstractMojo {
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String mainClass;
 
 	/**
-	 * Folders that should be added to the classpath.
+	 * Additional folders besides the classes directory that should be added to
+	 * the classpath.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String[] folders;
@@ -101,6 +114,7 @@ public class RunMojo extends AbstractMojo {
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
 	 * the archive.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
 	private File classesDirectory;
