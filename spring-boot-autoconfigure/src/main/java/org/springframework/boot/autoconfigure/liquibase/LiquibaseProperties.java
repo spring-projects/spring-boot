@@ -26,7 +26,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties to configure {@link SpringLiquibase}.
  * 
  * @author Marcel Overdijk
- * 
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "liquibase", ignoreUnknownFields = false)
@@ -41,7 +40,7 @@ public class LiquibaseProperties {
 
 	private String defaultSchema;
 
-	private boolean dropFirst = false;
+	private boolean dropFirst;
 
 	private boolean enabled = true;
 
