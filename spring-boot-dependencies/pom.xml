@@ -45,7 +45,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<activemq.version>5.7.0</activemq.version>
+		<activemq.version>5.9.0</activemq.version>
 		<aspectj.version>1.7.4</aspectj.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
@@ -209,7 +209,12 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-core</artifactId>
+				<artifactId>activemq-broker</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-client</artifactId>
 				<version>${activemq.version}</version>
 			</dependency>
 			<dependency>
