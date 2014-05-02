@@ -41,6 +41,8 @@ import org.springframework.util.Assert;
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
  * 
  * @author Marcel Overdijk
+ * 
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(SpringLiquibase.class)
