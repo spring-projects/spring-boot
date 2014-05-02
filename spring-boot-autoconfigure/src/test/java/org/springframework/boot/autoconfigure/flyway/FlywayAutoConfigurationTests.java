@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
 
+import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,8 +30,6 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfigurati
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.googlecode.flyway.core.Flyway;
 
 import static org.junit.Assert.assertEquals;
 

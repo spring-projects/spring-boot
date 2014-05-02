@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.flyway;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,8 +35,6 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
-
-import com.googlecode.flyway.core.Flyway;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
