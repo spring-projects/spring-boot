@@ -52,7 +52,7 @@ content into your application; rather pick only the properties that you need.
 	# EMBEDDED SERVER CONFIGURATION ({sc-spring-boot-autoconfigure}/web/ServerProperties.{sc-ext}[ServerProperties])
 	server.port=8080
 	server.address= # bind to a specific NIC
-	server.session-timeout= # session timeout in sections
+	server.session-timeout= # session timeout in seconds
 	server.context-path= # the context path, defaults to '/'
 	server.servlet-path= # the servlet path, defaults to '/'
 	server.tomcat.access-log-pattern= # log pattern of the access log
