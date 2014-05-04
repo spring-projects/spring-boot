@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -38,6 +39,7 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.SimpleHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
@@ -75,7 +77,7 @@ public class EndpointAutoConfiguration {
 	private HealthIndicator<? extends Object> healthIndicator;
 
 	@Autowired(required = false)
-	private DataSource dataSource;
+	private Map<String, DataSource> dataSources;
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
@@ -99,16 +101,28 @@ public class EndpointAutoConfiguration {
 	@ConditionalOnMissingBean
 	public HealthEndpoint<Object> healthEndpoint() {
 		if (this.healthIndicator == null) {
-			if (this.dataSource == null) {
+			if (this.dataSources == null || this.dataSources.isEmpty()) {
 				this.healthIndicator = new VanillaHealthIndicator();
 			}
+			else if (this.dataSources.size() == 1) {
+				this.healthIndicator = simpleHealthIndicator(this.dataSources.values().iterator().next());
+			}
 			else {
-				SimpleHealthIndicator healthIndicator = new SimpleHealthIndicator();
-				healthIndicator.setDataSource(this.dataSource);
-				this.healthIndicator = healthIndicator;
+				Map<String, HealthIndicator<?>> healthIndicators = new HashMap<String, HealthIndicator<?>>();
+				for (String dataSourceName : this.dataSources.keySet()) {
+					SimpleHealthIndicator healthIndicator = simpleHealthIndicator(this.dataSources.get(dataSourceName));
+					healthIndicators.put(dataSourceName, healthIndicator);
+				}
+				this.healthIndicator = new CompositeHealthIndicator(healthIndicators);
 			}
 		}
 		return new HealthEndpoint<Object>(this.healthIndicator);
+	}
+
+	private SimpleHealthIndicator simpleHealthIndicator(DataSource dataSource) {
+		SimpleHealthIndicator healthIndicator = new SimpleHealthIndicator();
+		healthIndicator.setDataSource(dataSource);
+		return healthIndicator;
 	}
 
 	@Bean
