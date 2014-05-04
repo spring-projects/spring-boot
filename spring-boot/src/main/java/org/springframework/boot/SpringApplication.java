@@ -459,7 +459,6 @@ public class SpringApplication {
 	 * content from the Environment (banner.location and banner.charset). The defaults are
 	 * banner.location=classpath:banner.txt, banner.charest=UTF-8. If the banner file does
 	 * not exist or cannot be printed, a simple default is created.
-	 * 
 	 * @see #setShowBanner(boolean)
 	 * @see #printBanner()
 	 */
@@ -476,9 +475,9 @@ public class SpringApplication {
 								Charset.forName("UTF-8"))));
 				return;
 			}
-			catch (Exception e) {
-				System.out.println("Banner not printable: " + resource + " ("
-						+ e.getClass() + ": '" + e.getMessage() + "')");
+			catch (Exception ex) {
+				this.log.warn("Banner not printable: " + resource + " (" + ex.getClass()
+						+ ": '" + ex.getMessage() + "')", ex);
 			}
 		}
 		printBanner();
@@ -488,6 +487,7 @@ public class SpringApplication {
 	 * Print a simple banner message to the console. Subclasses can override this method
 	 * to provide additional or alternative banners.
 	 * @see #setShowBanner(boolean)
+	 * @see #printBanner(Environment)
 	 */
 	protected void printBanner() {
 		Banner.write(System.out);

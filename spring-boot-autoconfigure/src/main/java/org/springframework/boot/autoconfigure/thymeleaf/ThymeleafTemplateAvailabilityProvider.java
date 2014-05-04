@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.thymeleaf;
 
-import org.springframework.boot.web.TemplateAvailabilityProvider;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ClassUtils;
@@ -24,9 +24,9 @@ import org.springframework.util.ClassUtils;
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
  * Thymeleaf view templates
- *
+ * 
  * @author Andy Wilkinson
- *
+ * @since 1.1.0
  */
 public class ThymeleafTemplateAvailabilityProvider implements
 		TemplateAvailabilityProvider {

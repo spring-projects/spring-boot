@@ -35,10 +35,8 @@ import org.springframework.boot.cli.command.CommandFactory;
 import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
+import org.springframework.boot.loader.tools.SignalUtils;
 import org.springframework.util.StringUtils;
-
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 
 /**
  * A shell for Spring Boot. Drops the user into an event loop (REPL) where command line
@@ -48,7 +46,6 @@ import sun.misc.SignalHandler;
  * @author Dave Syer
  * @author Phillip Webb
  */
-@SuppressWarnings("restriction")
 public class Shell {
 
 	private static final Set<Class<?>> NON_FORKED_COMMANDS;
@@ -57,8 +54,6 @@ public class Shell {
 		nonForked.add(VersionCommand.class);
 		NON_FORKED_COMMANDS = Collections.unmodifiableSet(nonForked);
 	}
-
-	private static final Signal SIG_INT = new Signal("INT");
 
 	private final ShellCommandRunner commandRunner;
 
@@ -123,9 +118,8 @@ public class Shell {
 	}
 
 	private void attachSignalHandler() {
-		Signal.handle(SIG_INT, new SignalHandler() {
-			@Override
-			public void handle(sun.misc.Signal signal) {
+		SignalUtils.attachSignalHandler(new Runnable() {
+			public void run() {
 				handleSigInt();
 			}
 		});

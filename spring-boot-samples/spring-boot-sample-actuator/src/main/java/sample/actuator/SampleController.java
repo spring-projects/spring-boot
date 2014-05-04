@@ -37,18 +37,18 @@ public class SampleController {
 	@Autowired
 	private HelloWorldService helloWorldService;
 
-	@RequestMapping(value="/",  method=RequestMethod.GET)
+	@RequestMapping(value = "/", method = RequestMethod.GET)
 	@ResponseBody
 	public Map<String, String> hello() {
 		return Collections.singletonMap("message",
 				this.helloWorldService.getHelloMessage());
 	}
 
-	@RequestMapping(value="/", method=RequestMethod.POST)
+	@RequestMapping(value = "/", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> olleh(@Validated Message message) {
 		Map<String, Object> model = new LinkedHashMap<String, Object>();
-		model .put("message", message.getValue());
+		model.put("message", message.getValue());
 		model.put("title", "Hello Home");
 		model.put("date", new Date());
 		return model;
@@ -59,20 +59,19 @@ public class SampleController {
 	public String foo() {
 		throw new IllegalArgumentException("Server error");
 	}
-	
+
 	protected static class Message {
-		
-		@NotBlank(message="Message value cannot be empty")
+
+		@NotBlank(message = "Message value cannot be empty")
 		private String value;
 
 		public String getValue() {
-			return value;
+			return this.value;
 		}
 
 		public void setValue(String value) {
 			this.value = value;
 		}
 	}
-
 
 }

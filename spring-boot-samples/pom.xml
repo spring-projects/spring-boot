@@ -32,8 +32,10 @@
 		<module>spring-boot-sample-data-mongodb</module>
 		<module>spring-boot-sample-data-redis</module>
 		<module>spring-boot-sample-data-rest</module>
+		<module>spring-boot-sample-flyway</module>
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jetty</module>
+		<module>spring-boot-sample-liquibase</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-servlet</module>
@@ -55,6 +57,7 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
 					<useProjectReferences>false</useProjectReferences>
@@ -71,6 +74,7 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>

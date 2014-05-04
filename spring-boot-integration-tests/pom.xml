@@ -30,6 +30,7 @@
 					<plugin>
 						<!-- Invoke integration tests in the install phase, after the maven-plugin
 							is available -->
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-invoker-plugin</artifactId>
 						<configuration>
 							<settingsFile>src/it/settings.xml</settingsFile>

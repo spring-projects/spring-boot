@@ -34,10 +34,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
-import org.springframework.boot.web.TemplateAvailabilityProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
@@ -58,7 +58,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to render errors via a MVC error
  * controller.
- *
+ * 
  * @author Dave Syer
  * @author Andy Wilkinson
  */

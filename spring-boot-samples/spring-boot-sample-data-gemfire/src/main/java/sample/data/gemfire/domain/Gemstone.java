@@ -23,16 +23,12 @@ import org.springframework.data.gemfire.mapping.Region;
 import org.springframework.util.ObjectUtils;
 
 /**
- * The Gemstone class is an abstract data type modeling a Gemstone, such as a diamond or a ruby.
- * <p/>
+ * The Gemstone class is an abstract data type modeling a Gemstone, such as a diamond or a
+ * ruby.
+ * 
  * @author John Blum
- * @see java.io.Serializable
- * @see org.springframework.data.annotation.Id
- * @see org.springframework.data.gemfire.mapping.Region
- * @since 1.0.0
  */
 @Region("Gemstones")
-@SuppressWarnings("unused")
 public class Gemstone implements Serializable {
 
 	@Id
@@ -53,7 +49,7 @@ public class Gemstone implements Serializable {
 	}
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(final Long id) {
@@ -61,7 +57,7 @@ public class Gemstone implements Serializable {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(final String name) {
@@ -92,8 +88,8 @@ public class Gemstone implements Serializable {
 
 	@Override
 	public String toString() {
-		return String.format("{ @type = %1$s, id = %2$d, name = %3$s }",
-			getClass().getName(), getId(), getName());
+		return String.format("{ @type = %1$s, id = %2$d, name = %3$s }", getClass()
+				.getName(), getId(), getName());
 	}
 
 }

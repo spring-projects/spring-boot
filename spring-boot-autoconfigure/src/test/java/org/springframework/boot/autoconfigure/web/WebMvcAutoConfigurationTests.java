@@ -16,12 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -49,7 +44,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.MessageCodesResolver;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
@@ -61,6 +55,14 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.AbstractView;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
@@ -181,15 +183,16 @@ public class WebMvcAutoConfigurationTests {
 		assertThat(locale.toString(), equalTo("en_UK"));
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void noMessageCodeResolver() throws Exception {
+	@Test
+	public void noMessageCodesResolver() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(MessageCodesResolver.class);
+		assertNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
+				.getMessageCodesResolver());
 	}
 
 	@Test
@@ -202,7 +205,8 @@ public class WebMvcAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		this.context.getBean(MessageCodesResolver.class);
+		assertNotNull(this.context.getBean(WebMvcAutoConfigurationAdapter.class)
+				.getMessageCodesResolver());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:gfe="http://www.springframework.org/schema/gemfire"
-	   xmlns:util="http://www.springframework.org/schema/util"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="
+	xmlns:gfe="http://www.springframework.org/schema/gemfire" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
 	      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	      http://www.springframework.org/schema/gemfire http://www.springframework.org/schema/gemfire/spring-gemfire.xsd
-	      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
-">
+	      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<util:properties id="gemfireCacheConfigurationSettings">
 		<prop key="name">GemstonesSpringGemFireApp</prop>
@@ -15,11 +13,13 @@
 		<prop key="mcast-port">0</prop>
 	</util:properties>
 
-	<gfe:cache properties-ref="gemfireCacheConfigurationSettings"/>
+	<gfe:cache properties-ref="gemfireCacheConfigurationSettings" />
 
-	<gfe:replicated-region id="Gemstones" ignore-jta="true" persistent="false"
-						   key-constraint="java.lang.Long" value-constraint="sample.data.gemfire.domain.Gemstone"/>
+	<gfe:replicated-region id="Gemstones" ignore-jta="true"
+		persistent="false" key-constraint="java.lang.Long"
+		value-constraint="sample.data.gemfire.domain.Gemstone" />
 
-	<gfe:transaction-manager id="transactionManager" copy-on-read="true"/>
+	<gfe:transaction-manager id="transactionManager"
+		copy-on-read="true" />
 
 </beans>

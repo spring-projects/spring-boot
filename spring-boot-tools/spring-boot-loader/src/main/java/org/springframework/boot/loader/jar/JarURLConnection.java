@@ -22,8 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.jar.Manifest;
+
+import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
@@ -65,11 +66,11 @@ class JarURLConnection extends java.net.JarURLConnection {
 		 * sensible for #getJarFileURL().
 		 */
 		if (separator + SEPARATOR.length() != spec.length()) {
-			this.jarFileUrl = new URL("jar:" + spec);
 			this.jarEntryName = decode(spec.substring(separator + 2));
+			this.jarFileUrl = new URL("jar:" + spec.substring(0, separator) + SEPARATOR
+					+ this.jarEntryName);
 		}
 		else {
-			// The root of the archive (!/)
 			this.jarFileUrl = new URL("jar:" + spec.substring(0, separator));
 		}
 	}
@@ -182,7 +183,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 			}
 			bos.write(ch);
 		}
-		return new String(bos.toByteArray(), Charset.defaultCharset());
+		// AsciiBytes is what is used to store the JarEntries so make it symmetric
+		return new AsciiBytes(bos.toByteArray()).toString();
 
 	}
 

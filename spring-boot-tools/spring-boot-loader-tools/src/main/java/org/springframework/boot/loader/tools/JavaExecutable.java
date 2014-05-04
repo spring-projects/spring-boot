@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.util;
+package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +47,7 @@ public class JavaExecutable {
 		return command;
 	}
 
+	// TODO: is this used?
 	public ProcessBuilder processBuilder(String... arguments) {
 		ProcessBuilder processBuilder = new ProcessBuilder(toString());
 		processBuilder.command().addAll(Arrays.asList(arguments));

@@ -51,6 +51,7 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<executions>
 							<execution>
@@ -219,6 +220,34 @@
 										</copy>
 										<move file="${basedir}/target/contents/reference/epub/index.epub" tofile="${basedir}/target/contents/reference/epub/spring-boot-reference.epub" />
 									</postProcess>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>unpack-maven-plugin</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-maven-plugin</artifactId>
+											<version>${project.version}</version>
+											<classifier>site</classifier>
+											<type>jar</type>
+											<outputDirectory>
+												${project.build.directory}/contents/maven-plugin
+											</outputDirectory>
+											<excludes>META-INF/**</excludes>
+										</artifactItem>
+									</artifactItems>
 								</configuration>
 							</execution>
 						</executions>

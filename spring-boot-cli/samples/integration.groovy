@@ -1,8 +1,11 @@
 package org.test
 
-@Component
-@EnableIntegrationPatterns
+@Configuration
+@EnableIntegration
 class SpringIntegrationExample implements CommandLineRunner {
+
+	@Autowired
+	private ApplicationContext context;
 
 	@Bean
 	DirectChannel input() {
@@ -11,7 +14,17 @@ class SpringIntegrationExample implements CommandLineRunner {
 
 	@Override
 	void run(String... args) {
-		print new MessagingTemplate(input()).convertSendAndReceive("World")
+		println()
+		println '>>>> ' + new MessagingTemplate(input()).convertSendAndReceive("World", String) + ' <<<<'
+		println()
+		/*
+		 *  Since this is a simple application that we want to exit right away,
+		 *  close the context. For an active integration application, with pollers
+		 *  etc, you can either suspend the main thread here (e.g. with System.in.read()),
+		 *  or exit the run() method without closing he context, and stop the
+		 *  application later using some other technique (kill, JMX etc).
+		 */
+		context.close()
 	}
 }
 

@@ -16,12 +16,11 @@
 
 package org.springframework.boot.autoconfigure;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfigurationTests;
-import org.springframework.boot.autoconfigure.web.DefaultErrorViewIntegrationTests;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurationTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
@@ -29,9 +28,9 @@ import org.springframework.boot.autoconfigure.web.DefaultErrorViewIntegrationTes
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ DefaultErrorViewIntegrationTests.class,
-		SecurityAutoConfigurationTests.class })
-@Ignore
+@SuiteClasses({ HibernateJpaAutoConfigurationTests.class,
+		LiquibaseAutoConfigurationTests.class })
+// @Ignore
 public class AdhocTestSuite {
 
 }

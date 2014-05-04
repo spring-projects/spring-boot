@@ -18,10 +18,8 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +35,18 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.springframework.boot.loader.tools.AgentAttacher;
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
+import org.springframework.boot.loader.tools.RunProcess;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
- * MOJO that can be used to run a executable archive application directly from Maven.
+ * Run an executable archive application.
  * 
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
@@ -54,25 +56,32 @@ public class RunMojo extends AbstractMojo {
 
 	/**
 	 * The Maven project.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	private MavenProject project;
 
 	/**
 	 * Add maven resources to the classpath directly, this allows live in-place editing or
-	 * resources.
+	 * resources. Since resources will be added directly, and via the target/classes
+	 * folder they will appear twice if {@code ClassLoader.getResources()} is called. In
+	 * practice, however, most applications call {@code ClassLoader.getResource()} which
+	 * will always return the first resource.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.addResources", defaultValue = "true")
 	private boolean addResources;
 
 	/**
 	 * Path to agent jar.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.agent")
-	private File agent;
+	private File[] agent;
 
 	/**
 	 * Flag to say that the agent requires -noverify.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.noverify")
 	private Boolean noverify;
@@ -80,6 +89,7 @@ public class RunMojo extends AbstractMojo {
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
 	 * separate multiple arguments.
+	 * @since 1.0
 	 */
 	@Parameter(property = "run.arguments")
 	private String[] arguments;
@@ -87,12 +97,15 @@ public class RunMojo extends AbstractMojo {
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
 	 * contains a 'main' method will be used.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String mainClass;
 
 	/**
-	 * Folders that should be added to the classpath.
+	 * Additional folders besides the classes directory that should be added to the
+	 * classpath.
+	 * @since 1.0
 	 */
 	@Parameter
 	private String[] folders;
@@ -100,30 +113,20 @@ public class RunMojo extends AbstractMojo {
 	/**
 	 * Directory containing the classes and resource files that should be packaged into
 	 * the archive.
+	 * @since 1.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
 	private File classesDirectory;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		findAgent();
-		if (this.agent != null) {
-			getLog().info("Attaching agent: " + this.agent);
-			if (this.noverify != null && this.noverify && !AgentAttacher.hasNoVerify()) {
-				throw new MojoExecutionException(
-						"The JVM must be started with -noverify for "
-								+ "this agent to work. You can use MAVEN_OPTS=-noverify "
-								+ "to add that flag.");
-			}
-			AgentAttacher.attach(this.agent);
-		}
 		final String startClassName = getStartClass();
 		run(startClassName);
 	}
 
 	private void findAgent() {
 		try {
-			if (this.agent == null) {
+			if (this.agent == null || this.agent.length == 0) {
 				Class<?> loaded = Class.forName(SPRING_LOADED_AGENT_CLASSNAME);
 				if (loaded != null) {
 					if (this.noverify == null) {
@@ -131,7 +134,7 @@ public class RunMojo extends AbstractMojo {
 					}
 					CodeSource source = loaded.getProtectionDomain().getCodeSource();
 					if (source != null) {
-						this.agent = new File(source.getLocation().getFile());
+						this.agent = new File[] { new File(source.getLocation().getFile()) };
 					}
 				}
 			}
@@ -139,16 +142,59 @@ public class RunMojo extends AbstractMojo {
 		catch (ClassNotFoundException ex) {
 			// ignore;
 		}
+		if (this.noverify == null) {
+			this.noverify = false;
+		}
 	}
 
 	private void run(String startClassName) throws MojoExecutionException {
-		IsolatedThreadGroup threadGroup = new IsolatedThreadGroup(startClassName);
-		Thread launchThread = new Thread(threadGroup, new LaunchRunner(startClassName,
-				this.arguments), startClassName + ".main()");
-		launchThread.setContextClassLoader(getClassLoader());
-		launchThread.start();
-		join(threadGroup);
-		threadGroup.rethrowUncaughtException();
+		List<String> args = new ArrayList<String>();
+		addAgents(args);
+		addClasspath(args);
+		args.add(startClassName);
+		addArgs(args);
+		try {
+			new RunProcess(new JavaExecutable().toString()).run(args
+					.toArray(new String[args.size()]));
+		}
+		catch (Exception e) {
+			throw new MojoExecutionException("Could not exec java", e);
+		}
+	}
+
+	private void addArgs(List<String> args) {
+		for (String arg : this.arguments) {
+			args.add(arg);
+		}
+	}
+
+	private void addClasspath(List<String> args) throws MojoExecutionException {
+		try {
+			StringBuilder classpath = new StringBuilder();
+			for (URL ele : getClassPathUrls()) {
+				classpath = classpath.append((classpath.length() > 0 ? File.pathSeparator
+						: "") + new File(ele.toURI()));
+			}
+			getLog().debug("Classpath for forked process: " + classpath);
+			args.add("-cp");
+			args.add(classpath.toString());
+		}
+		catch (Exception e) {
+			throw new MojoExecutionException("Could not build classpath", e);
+		}
+	}
+
+	private void addAgents(List<String> args) {
+		findAgent();
+		if (this.agent != null) {
+			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
+			for (File agent : this.agent) {
+				args.add("-javaagent:" + agent);
+			}
+		}
+		if (this.noverify) {
+			args.add("-noverify");
+		}
 	}
 
 	private final String getStartClass() throws MojoExecutionException {
@@ -166,11 +212,6 @@ public class RunMojo extends AbstractMojo {
 					+ "please add a 'mainClass' property");
 		}
 		return mainClass;
-	}
-
-	private ClassLoader getClassLoader() throws MojoExecutionException {
-		URL[] urls = getClassPathUrls();
-		return new URLClassLoader(urls);
 	}
 
 	private URL[] getClassPathUrls() throws MojoExecutionException {
@@ -219,94 +260,6 @@ public class RunMojo extends AbstractMojo {
 				if (!Artifact.SCOPE_TEST.equals(artifact.getScope())) {
 					urls.add(artifact.getFile().toURI().toURL());
 				}
-			}
-		}
-	}
-
-	private void join(ThreadGroup threadGroup) {
-		boolean hasNonDaemonThreads;
-		do {
-			hasNonDaemonThreads = false;
-			Thread[] threads = new Thread[threadGroup.activeCount()];
-			threadGroup.enumerate(threads);
-			for (Thread thread : threads) {
-				if (thread != null && !thread.isDaemon()) {
-					try {
-						hasNonDaemonThreads = true;
-						thread.join();
-					}
-					catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-				}
-			}
-		}
-		while (hasNonDaemonThreads);
-	}
-
-	/**
-	 * Isolated {@link ThreadGroup} to capture uncaught exceptions.
-	 */
-	class IsolatedThreadGroup extends ThreadGroup {
-
-		private Throwable exception;
-
-		public IsolatedThreadGroup(String name) {
-			super(name);
-		}
-
-		@Override
-		public void uncaughtException(Thread thread, Throwable ex) {
-			if (!(ex instanceof ThreadDeath)) {
-				synchronized (this) {
-					this.exception = (this.exception == null ? ex : this.exception);
-				}
-				getLog().warn(ex);
-			}
-		}
-
-		public synchronized void rethrowUncaughtException() throws MojoExecutionException {
-			if (this.exception != null) {
-				throw new MojoExecutionException("An exception occured while running. "
-						+ this.exception.getMessage(), this.exception);
-			}
-		}
-	}
-
-	/**
-	 * Runner used to launch the application.
-	 */
-	class LaunchRunner implements Runnable {
-
-		private final String startClassName;
-		private final String[] args;
-
-		public LaunchRunner(String startClassName, String... args) {
-			this.startClassName = startClassName;
-			this.args = (args != null ? args : new String[] {});
-		}
-
-		@Override
-		public void run() {
-			Thread thread = Thread.currentThread();
-			ClassLoader classLoader = thread.getContextClassLoader();
-			try {
-				Class<?> startClass = classLoader.loadClass(this.startClassName);
-				Method mainMethod = startClass.getMethod("main",
-						new Class[] { String[].class });
-				if (!mainMethod.isAccessible()) {
-					mainMethod.setAccessible(true);
-				}
-				mainMethod.invoke(null, new Object[] { this.args });
-			}
-			catch (NoSuchMethodException ex) {
-				Exception wrappedEx = new Exception(
-						"The specified mainClass doesn't contain a "
-								+ "main method with appropriate signature.", ex);
-				thread.getThreadGroup().uncaughtException(thread, wrappedEx);
-			}
-			catch (Exception ex) {
-				thread.getThreadGroup().uncaughtException(thread, ex);
 			}
 		}
 	}
