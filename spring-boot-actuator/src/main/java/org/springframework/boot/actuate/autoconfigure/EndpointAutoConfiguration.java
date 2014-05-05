@@ -38,6 +38,7 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.SimpleHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
@@ -75,7 +76,7 @@ public class EndpointAutoConfiguration {
 	private HealthIndicator<? extends Object> healthIndicator;
 
 	@Autowired(required = false)
-	private DataSource dataSource;
+	private Map<String, DataSource> dataSources;
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
@@ -97,18 +98,28 @@ public class EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthEndpoint<Object> healthEndpoint() {
+	public HealthEndpoint<?> healthEndpoint() {
 		if (this.healthIndicator == null) {
-			if (this.dataSource == null) {
-				this.healthIndicator = new VanillaHealthIndicator();
-			}
-			else {
-				SimpleHealthIndicator healthIndicator = new SimpleHealthIndicator();
-				healthIndicator.setDataSource(this.dataSource);
-				this.healthIndicator = healthIndicator;
-			}
+			this.healthIndicator = createHealthIndicator();
 		}
 		return new HealthEndpoint<Object>(this.healthIndicator);
+	}
+
+	private HealthIndicator<? extends Object> createHealthIndicator() {
+		if (this.dataSources == null || this.dataSources.isEmpty()) {
+			return new VanillaHealthIndicator();
+		}
+
+		if (this.dataSources.size() == 1) {
+			return new SimpleHealthIndicator(this.dataSources.values().iterator().next());
+		}
+
+		CompositeHealthIndicator composite = new CompositeHealthIndicator();
+		for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
+			composite.addHealthIndicator(entry.getKey(),
+					new SimpleHealthIndicator(entry.getValue()));
+		}
+		return composite;
 	}
 
 	@Bean
