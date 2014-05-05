@@ -54,6 +54,21 @@ public class SimpleHealthIndicator implements HealthIndicator<Map<String, Object
 
 	private String query = null;
 
+	/**
+	 * Create a new {@link SimpleHealthIndicator} instance.
+	 */
+	public SimpleHealthIndicator() {
+	}
+
+	/**
+	 * Create a new {@link SimpleHealthIndicator} using the specified datasource.
+	 * @param dataSource the data source
+	 */
+	public SimpleHealthIndicator(DataSource dataSource) {
+		this.dataSource = dataSource;
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
 	@Override
 	public Map<String, Object> health() {
 		LinkedHashMap<String, Object> health = new LinkedHashMap<String, Object>();
