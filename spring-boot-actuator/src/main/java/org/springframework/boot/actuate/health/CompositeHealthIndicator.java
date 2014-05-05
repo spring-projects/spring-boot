@@ -24,6 +24,7 @@ import java.util.Map;
  * 
  * @author Tyler J. Frederick
  * @author Phillip Webb
+ * @since 1.1.0
  */
 public class CompositeHealthIndicator implements HealthIndicator<Map<String, Object>> {
 
