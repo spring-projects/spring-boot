@@ -1089,9 +1089,16 @@ Additional information can be found in the {spring-security-reference}#jc-method
 Security Reference].
 
 The default `AuthenticationManager` has a single user (``user'' username and random
-password, printed at INFO level when the application starts up). You can change the
-password by providing a `security.user.password`. This and other useful properties are
-externalized via {sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
+password, printed at INFO level when the application starts up)
+
+[indent=0]
+----
+	Using default security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
+----
+
+You can change the password by providing a `security.user.password`. This and other
+useful properties are externalized via
+{sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[`SecurityProperties`]
 (properties prefix "security").
 
 The default security configuration is implemented in `SecurityAutoConfiguration` and in

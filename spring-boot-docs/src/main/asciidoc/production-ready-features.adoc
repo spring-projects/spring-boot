@@ -256,9 +256,9 @@ protected. By default ``basic'' authentication will be used with the username `u
 and a generated password (which is printed on the console when the application starts).
 
 TIP: Generated passwords are logged as the application starts. Search for ``Using default
-password for application endpoints''.
+security password''.
 
-You can use Spring properties to change the username and passsword and to change the
+You can use Spring properties to change the username and password and to change the
 security role required to access the endpoints. For example, you might set the following
 in your `application.properties`:
 
@@ -453,7 +453,9 @@ on `org.crsh:crsh.shell.telnet`.
 === Connecting to the remote shell
 By default the remote shell will listen for connections on port `2000`. The default user
 is `user` and the default password will be randomly generated and displayed in the log
-output, you should see a message like this:
+output. If your application is using Spring Security, the shell will use
+<<boot-features-security, the same configuration>> by default. If not, a simple
+authentication will be applied and you should see a message like this:
 
 [indent=0]
 ----
