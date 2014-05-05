@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-dependencies</artifactId>
@@ -45,8 +43,8 @@
 		</developer>
 	</developers>
 	<properties>
-		<!-- Spring Boot -->
-		<spring-boot.version>1.1.0.BUILD-SNAPSHOT</spring-boot.version>
+		<!-- Spring Boot (replaced during a full build to a real value) -->
+		<spring-boot.version>${project.version}</spring-boot.version>
 		<!-- Third Party -->
 		<activemq.version>5.7.0</activemq.version>
 		<aspectj.version>1.7.4</aspectj.version>
@@ -147,7 +145,6 @@
 				<artifactId>spring-boot-loader-tools</artifactId>
 				<version>${spring-boot.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter</artifactId>
@@ -885,6 +882,11 @@
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>${spring-boot.version}</version>
+				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
