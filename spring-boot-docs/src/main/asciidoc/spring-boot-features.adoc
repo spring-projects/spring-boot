@@ -693,7 +693,7 @@ The following items are output:
 
 [[boot-features-logging-console-output]]
 === Console output
-The default log configuration will echo messages to the console as they written. By
+The default log configuration will echo messages to the console as they are written. By
 default `ERROR`, `WARN` and `INFO` level messages are logged. To also log `DEBUG` level
 messages to the console you can start your application with a `--debug` flag.
 

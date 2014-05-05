@@ -524,7 +524,7 @@ http://maven.apache.org/plugins/maven-idea-plugin/[IDEA]; Gradle offers plugins
 for http://www.gradle.org/docs/current/userguide/ide_support.html[various IDEs].
 
 TIP: If you accidentally run a web application twice you will see a ``Port already in
-use'' error. STS users can use the `Relauch` button rather than `Run` to ensure that
+use'' error. STS users can use the `Relaunch` button rather than `Run` to ensure that
 any existing instance is closed.
 
 
