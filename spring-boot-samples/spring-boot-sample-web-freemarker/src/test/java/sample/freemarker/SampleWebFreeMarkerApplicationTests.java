@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -45,14 +46,17 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWebFreeMarkerApplication.class)
 @WebAppConfiguration
-@IntegrationTest
+@IntegrationTest("server.port=0")
 @DirtiesContext
 public class SampleWebFreeMarkerApplicationTests {
+
+	@Value("${local.server.port}")
+	private int port;
 
 	@Test
 	public void testFreeMarkerTemplate() throws Exception {
 		ResponseEntity<String> entity = new TestRestTemplate().getForEntity(
-				"http://localhost:8080", String.class);
+				"http://localhost:" + port, String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body:\n" + entity.getBody(),
 				entity.getBody().contains("Hello, Andy"));
@@ -65,7 +69,7 @@ public class SampleWebFreeMarkerApplicationTests {
 		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 
 		ResponseEntity<String> responseEntity = new TestRestTemplate().exchange(
-				"http://localhost:8080/does-not-exist", HttpMethod.GET, requestEntity,
+				"http://localhost:" +port+ "/does-not-exist", HttpMethod.GET, requestEntity,
 				String.class);
 
 		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
