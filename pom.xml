@@ -153,7 +153,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>fixup-starter-parent</id>
+								<id>fixup-dependencies-pom</id>
 								<phase>verify</phase>
 								<goals>
 									<goal>run</goal>
@@ -161,7 +161,7 @@
 								<inherited>false</inherited>
 								<configuration>
 									<target>
-										<property name="sourceFile" value="spring-boot-starters/spring-boot-starter-parent/pom.xml" />
+										<property name="sourceFile" value="spring-boot-dependencies/pom.xml" />
 										<xslt in="${sourceFile}" out="${sourceFile}.new" force="true">
 											<style>
 												<string><![CDATA[
@@ -177,19 +177,8 @@
 
 	<xsl:template
 		match="m:properties/m:spring-boot.version/text()">
-		<xsl:value-of select="/m:project/m:parent/m:version/text()"/>
+		<xsl:value-of select="/m:project/m:version/text()"/>
 	</xsl:template>
-
-	<xsl:template
-		match="m:dependency[m:groupId='org.springframework.boot']/m:version/text()">
-		<xsl:text>${spring-boot.version}</xsl:text>
-	</xsl:template>
-
-	<xsl:template
-		match="m:plugin[m:groupId='org.springframework.boot']/m:version/text()">
-		<xsl:text>${spring-boot.version}</xsl:text>
-	</xsl:template>
-
 </xsl:stylesheet>
 				]]>
 												</string>
