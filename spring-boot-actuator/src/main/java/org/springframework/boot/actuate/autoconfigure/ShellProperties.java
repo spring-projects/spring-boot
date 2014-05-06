@@ -55,6 +55,8 @@ public class ShellProperties {
 
 	private String[] configPathPatterns = new String[] { "classpath*:/crash/*" };
 
+	private String[] disabledCommands = new String[] { "jpa*", "jdbc*", "jndi*" };
+
 	private String[] disabledPlugins = new String[0];
 
 	private final Ssh ssh = new Ssh();
@@ -104,6 +106,15 @@ public class ShellProperties {
 
 	public String[] getConfigPathPatterns() {
 		return this.configPathPatterns;
+	}
+
+	public void setDisabledCommands(String[] disabledCommands) {
+		Assert.notEmpty(disabledCommands);
+		this.disabledCommands = disabledCommands;
+	}
+
+	public String[] getDisabledCommands() {
+		return this.disabledCommands;
 	}
 
 	public void setDisabledPlugins(String[] disabledPlugins) {

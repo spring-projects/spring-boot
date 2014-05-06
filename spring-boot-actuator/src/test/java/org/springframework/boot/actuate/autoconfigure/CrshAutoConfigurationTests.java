@@ -132,7 +132,8 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 
-		assertEquals("~/.ssh/id.pem", lifeCycle.getConfig().getProperty("crash.ssh.keypath"));
+		assertEquals("~/.ssh/id.pem",
+				lifeCycle.getConfig().getProperty("crash.ssh.keypath"));
 	}
 
 	@Test
@@ -160,6 +161,24 @@ public class CrshAutoConfigurationTests {
 			resources.next();
 		}
 		assertEquals(1, count);
+	}
+
+	@Test
+	public void testDisabledCommandResolution() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(CrshAutoConfiguration.class);
+		this.context.refresh();
+
+		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
+
+		int count = 0;
+		Iterator<Resource> resources = lifeCycle.getContext()
+				.loadResources("jdbc.groovy", ResourceKind.COMMAND).iterator();
+		while (resources.hasNext()) {
+			count++;
+			resources.next();
+		}
+		assertEquals(0, count);
 	}
 
 	@Test
@@ -210,7 +229,8 @@ public class CrshAutoConfigurationTests {
 
 		PluginLifeCycle lifeCycle = this.context.getBean(PluginLifeCycle.class);
 		assertEquals("jaas", lifeCycle.getConfig().get("crash.auth"));
-		assertEquals("my-test-domain", lifeCycle.getConfig().get("crash.auth.jaas.domain"));
+		assertEquals("my-test-domain", lifeCycle.getConfig()
+				.get("crash.auth.jaas.domain"));
 	}
 
 	@Test
@@ -258,7 +278,8 @@ public class CrshAutoConfigurationTests {
 		}
 		assertNotNull(authenticationPlugin);
 		assertTrue(authenticationPlugin.authenticate("user", "password"));
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(), "password"));
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+				"password"));
 	}
 
 	@Test
@@ -284,9 +305,11 @@ public class CrshAutoConfigurationTests {
 				break;
 			}
 		}
-		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME, SecurityConfiguration.PASSWORD));
+		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
+				SecurityConfiguration.PASSWORD));
 
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(), SecurityConfiguration.PASSWORD));
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+				SecurityConfiguration.PASSWORD));
 	}
 
 	@Test
@@ -311,9 +334,11 @@ public class CrshAutoConfigurationTests {
 				break;
 			}
 		}
-		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME, SecurityConfiguration.PASSWORD));
+		assertTrue(authenticationPlugin.authenticate(SecurityConfiguration.USERNAME,
+				SecurityConfiguration.PASSWORD));
 
-		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(), SecurityConfiguration.PASSWORD));
+		assertFalse(authenticationPlugin.authenticate(UUID.randomUUID().toString(),
+				SecurityConfiguration.PASSWORD));
 	}
 
 	@Configuration
