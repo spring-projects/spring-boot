@@ -453,7 +453,7 @@ you can use the exclude attribute of `@EnableAutoConfiguration` to disable them.
 	import org.springframework.context.annotation.*;
 
 	@Configuration
-	@EnableAutoConfiguration(exclude={EmbeddedDatabaseConfiguration.class})
+	@EnableAutoConfiguration(exclude={EmbeddedDataSourceConfiguration.class})
 	public class MyConfiguration {
 	}
 ----
