@@ -18,9 +18,11 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -31,6 +33,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
+
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
@@ -46,7 +50,7 @@ import org.springframework.boot.loader.tools.Repackager;
  * @author Stephane Nicoll
  */
 @Mojo(name = "repackage", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME, requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-public class RepackageMojo extends AbstractMojo {
+public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
@@ -134,7 +138,12 @@ public class RepackageMojo extends AbstractMojo {
 			getLog().info("Layout: " + this.layout);
 			repackager.setLayout(this.layout.layout());
 		}
-		Libraries libraries = new ArtifactsLibraries(this.project.getArtifacts());
+
+		FilterArtifacts filters = new FilterArtifacts();
+		initializeFilterArtifacts(filters);
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
+
+		Libraries libraries = new ArtifactsLibraries(artifacts);
 		try {
 			repackager.repackage(target, libraries);
 		}

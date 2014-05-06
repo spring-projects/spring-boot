@@ -24,10 +24,10 @@ import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Execute;
@@ -36,6 +36,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
+import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
+
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -43,13 +46,13 @@ import org.springframework.boot.loader.tools.RunProcess;
 
 /**
  * Run an executable archive application.
- * 
+ *
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
 @Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE, requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
-public class RunMojo extends AbstractMojo {
+public class RunMojo extends AbstractDependencyFilterMojo {
 
 	private static final String SPRING_LOADED_AGENT_CLASSNAME = "org.springsource.loaded.agent.SpringLoadedAgent";
 
@@ -253,13 +256,26 @@ public class RunMojo extends AbstractMojo {
 		urls.add(this.classesDirectory.toURI().toURL());
 	}
 
-	private void addDependencies(List<URL> urls) throws MalformedURLException {
-		for (Artifact artifact : this.project.getArtifacts()) {
+	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
+		FilterArtifacts filters = new FilterArtifacts();
+		filters.addFilter(new TestArtifactFilter());
+		initializeFilterArtifacts(filters);
+
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
+		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
-				if (!Artifact.SCOPE_TEST.equals(artifact.getScope())) {
-					urls.add(artifact.getFile().toURI().toURL());
-				}
+				urls.add(artifact.getFile().toURI().toURL());
 			}
+		}
+	}
+
+	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
+		public TestArtifactFilter() {
+			super("", Artifact.SCOPE_TEST);
+		}
+
+		protected String getArtifactFeature(Artifact artifact) {
+			return artifact.getScope();
 		}
 	}
 
