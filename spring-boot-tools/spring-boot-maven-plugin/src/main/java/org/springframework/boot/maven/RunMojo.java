@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
@@ -39,8 +40,6 @@ import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
 import org.springframework.boot.loader.tools.RunProcess;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Run an executable archive application.
