@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -215,10 +216,11 @@ public class CrshAutoConfiguration {
 
 		@PostConstruct
 		public void init() throws Exception {
-			FS commandFileSystem = createFileSystem(this.properties
-					.getCommandPathPatterns());
-			FS configurationFileSystem = createFileSystem(this.properties
-					.getConfigPathPatterns());
+			FS commandFileSystem = createFileSystem(
+					this.properties.getCommandPathPatterns(),
+					this.properties.getDisabledCommands());
+			FS configurationFileSystem = createFileSystem(
+					this.properties.getConfigPathPatterns(), new String[0]);
 
 			PluginDiscovery discovery = new BeanFactoryFilteringPluginDiscovery(
 					this.resourceLoader.getClassLoader(), this.beanFactory,
@@ -232,13 +234,14 @@ public class CrshAutoConfiguration {
 			start(context);
 		}
 
-		protected FS createFileSystem(String[] pathPatterns) throws IOException,
-				URISyntaxException {
+		protected FS createFileSystem(String[] pathPatterns, String[] filterPatterns)
+				throws IOException, URISyntaxException {
 			Assert.notNull(pathPatterns, "PathPatterns must not be null");
+			Assert.notNull(filterPatterns, "FilterPatterns must not be null");
 			FS fileSystem = new FS();
 			for (String pathPattern : pathPatterns) {
 				fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
-						pathPattern, this.resourceLoader)));
+						pathPattern, this.resourceLoader, filterPatterns)));
 			}
 			return fileSystem;
 		}
@@ -487,22 +490,36 @@ public class CrshAutoConfiguration {
 
 		private final ResourcePatternResolver resourceLoader;
 
-		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader) {
+		private final String[] filterPatterns;
+
+		private final AntPathMatcher matcher = new AntPathMatcher();
+
+		public DirectoryHandle(String name, ResourcePatternResolver resourceLoader,
+				String[] filterPatterns) {
 			super(name);
 			this.resourceLoader = resourceLoader;
+			this.filterPatterns = filterPatterns;
 		}
 
 		public List<ResourceHandle> members() throws IOException {
 			Resource[] resources = this.resourceLoader.getResources(getName());
 			List<ResourceHandle> files = new ArrayList<ResourceHandle>();
 			for (Resource resource : resources) {
-				if (!resource.getURL().getPath().endsWith("/")) {
+				if (!resource.getURL().getPath().endsWith("/") && !shouldFilter(resource)) {
 					files.add(new FileHandle(resource.getFilename(), resource));
 				}
 			}
 			return files;
 		}
 
+		private boolean shouldFilter(Resource resource) {
+			for (String filterPattern : this.filterPatterns) {
+				if (this.matcher.match(filterPattern, resource.getFilename())) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 	/**
