@@ -44,14 +44,20 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency> <groupId>org.crashub</groupId> <artifactId>crash.connectors.telnet</artifactId>
-			<exclusions> <exclusion> <groupId>log4j</groupId> <artifactId>log4j</artifactId>
-			</exclusion> <exclusion> <groupId>commons-logging</groupId> <artifactId>commons-logging</artifactId>
-			</exclusion> </exclusions> </dependency> -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-		</dependency>
+<!--		<dependency>
+			<groupId>org.crashub</groupId>
+			<artifactId>crash.connectors.telnet</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>-->
 	</dependencies>
 	<build>
 		<plugins>
