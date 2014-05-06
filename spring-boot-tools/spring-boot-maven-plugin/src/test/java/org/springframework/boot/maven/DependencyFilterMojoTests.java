@@ -16,10 +16,6 @@
 
 package org.springframework.boot.maven;
 
-import static org.junit.Assert.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,11 +25,15 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
 /**
- *
+ * 
  * @author Stephane Nicoll
  */
 public class DependencyFilterMojoTests {
@@ -41,18 +41,15 @@ public class DependencyFilterMojoTests {
 	@Test
 	public void filterDependencies() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.<Exclude>emptyList(), "com.foo", "exclude-id");
+				Collections.<Exclude> emptyList(), "com.foo", "exclude-id");
 
 		Artifact artifact = createArtifact("com.bar", "one");
-		Set<Artifact> artifacts = mojo.filterDependencies(createArtifact("com.foo", "one"),
-				createArtifact("com.foo", "two"),
-				createArtifact("com.bar", "exclude-id"),
-				artifact);
+		Set<Artifact> artifacts = mojo.filterDependencies(
+				createArtifact("com.foo", "one"), createArtifact("com.foo", "two"),
+				createArtifact("com.bar", "exclude-id"), artifact);
 		assertEquals("wrong filtering of artifacts", 1, artifacts.size());
 		assertSame("Wrong filtered artifact", artifact, artifacts.iterator().next());
 	}
-
-
 
 	private Artifact createArtifact(String groupId, String artifactId) {
 		Artifact a = mock(Artifact.class);
@@ -61,20 +58,20 @@ public class DependencyFilterMojoTests {
 		return a;
 	}
 
+	private static class TestableDependencyFilterMojo extends
+			AbstractDependencyFilterMojo {
 
-	private static class TestableDependencyFilterMojo extends AbstractDependencyFilterMojo {
-
-		private TestableDependencyFilterMojo(List<Exclude> excludes, String excludeGroupIds, String excludeArtifactIds) {
+		private TestableDependencyFilterMojo(List<Exclude> excludes,
+				String excludeGroupIds, String excludeArtifactIds) {
 			setExcludes(excludes);
 			setExcludeGroupIds(excludeGroupIds);
 			setExcludeArtifactIds(excludeArtifactIds);
 		}
 
-		public Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
+		public Set<Artifact> filterDependencies(Artifact... artifacts)
+				throws MojoExecutionException {
 			Set<Artifact> input = new HashSet<Artifact>(Arrays.asList(artifacts));
-			FilterArtifacts filters = new FilterArtifacts();
-			initializeFilterArtifacts(filters);
-			return filterDependencies(input, filters);
+			return filterDependencies(input, getFilters());
 		}
 
 		@Override

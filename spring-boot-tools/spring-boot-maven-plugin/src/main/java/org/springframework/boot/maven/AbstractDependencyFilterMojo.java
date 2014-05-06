@@ -26,21 +26,22 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactIdFilter;
+import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 import org.apache.maven.shared.artifact.filter.collection.GroupIdFilter;
 
 /**
  * A base mojo filtering the dependencies of the project.
- *
+ * 
  * @author Stephane Nicoll
  * @since 1.1
  */
 public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
-	 * Collection of artifact definitions to exclude. The {@link Exclude}
-	 * element defines a {@code groupId} and {@code artifactId} mandatory
-	 * properties and an optional {@code classifier} property.
+	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
+	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
+	 * {@code classifier} property.
 	 * @since 1.1
 	 */
 	@Parameter
@@ -51,15 +52,14 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * @since 1.1
 	 */
 	@Parameter(property = "excludeGroupIds", defaultValue = "")
-	protected String excludeGroupIds;
+	private String excludeGroupIds;
 
 	/**
 	 * Comma separated list of artifact names to exclude.
 	 * @since 1.1
 	 */
 	@Parameter(property = "excludeArtifactIds", defaultValue = "")
-	protected String excludeArtifactIds;
-
+	private String excludeArtifactIds;
 
 	protected void setExcludes(List<Exclude> excludes) {
 		this.excludes = excludes;
@@ -74,8 +74,8 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
-			throws MojoExecutionException {
+	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
+			FilterArtifacts filters) throws MojoExecutionException {
 		try {
 			return filters.filter(dependencies);
 		}
@@ -84,28 +84,37 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		}
 	}
 
-	protected void initializeFilterArtifacts(FilterArtifacts filters) {
-		filters.addFilter(new ArtifactIdFilter("", cleanConfigItem(this.excludeArtifactIds)));
-		filters.addFilter(new GroupIdFilter("", cleanConfigItem(this.excludeGroupIds)));
+	/**
+	 * Return artifact filters configured for this MOJO.
+	 * @param additionalFilters optional additional filters to apply
+	 * @return the filters
+	 */
+	protected final FilterArtifacts getFilters(ArtifactsFilter... additionalFilters) {
+		FilterArtifacts filters = new FilterArtifacts();
+		for (ArtifactsFilter additionalFilter : additionalFilters) {
+			filters.addFilter(additionalFilter);
+		}
+		filters.addFilter(new ArtifactIdFilter("",
+				cleanFilterConfig(this.excludeArtifactIds)));
+		filters.addFilter(new GroupIdFilter("", cleanFilterConfig(this.excludeGroupIds)));
 		if (this.excludes != null) {
 			filters.addFilter(new ExcludeFilter(this.excludes));
 		}
+		return filters;
 	}
 
-
-	static String cleanConfigItem(String content) {
+	private String cleanFilterConfig(String content) {
 		if (content == null || content.trim().isEmpty()) {
 			return "";
 		}
-		StringBuilder sb = new StringBuilder();
-		StringTokenizer st = new StringTokenizer(content, ",");
-		while (st.hasMoreElements()) {
-			String t = st.nextToken();
-			sb.append(t.trim());
-			if (st.hasMoreElements()) {
-				sb.append(",");
+		StringBuilder cleaned = new StringBuilder();
+		StringTokenizer tokenizer = new StringTokenizer(content, ",");
+		while (tokenizer.hasMoreElements()) {
+			cleaned.append(tokenizer.nextToken().trim());
+			if (tokenizer.hasMoreElements()) {
+				cleaned.append(",");
 			}
 		}
-		return sb.toString();
+		return cleaned.toString();
 	}
 }

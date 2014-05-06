@@ -81,8 +81,8 @@ public class Verify {
 		public void assertHasNoEntryNameStartingWith(String entry) {
 			for (String name : this.content.keySet()) {
 				if (name.startsWith(entry)) {
-					throw new IllegalStateException("Entry starting with "
-							+ entry + " should not have been found");
+					throw new IllegalStateException("Entry starting with " + entry
+							+ " should not have been found");
 				}
 			}
 		}
@@ -98,7 +98,7 @@ public class Verify {
 		public InputStream getEntryContent(String entry) throws IOException {
 			ZipEntry zipEntry = getEntry(entry);
 			if (zipEntry == null) {
-				throw new IllegalArgumentException("No entry with name ["+entry+"]");
+				throw new IllegalArgumentException("No entry with name [" + entry + "]");
 			}
 			return this.zipFile.getInputStream(zipEntry);
 		}
@@ -127,13 +127,13 @@ public class Verify {
 			}
 		}
 
-		protected void verifyZipEntries(ArchiveVerifier verifier)
-				throws Exception {
+		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
 			verifyManifest(verifier);
 		}
 
 		private void verifyManifest(ArchiveVerifier verifier) throws Exception {
-			Manifest manifest = new Manifest(verifier.getEntryContent("META-INF/MANIFEST.MF"));
+			Manifest manifest = new Manifest(
+					verifier.getEntryContent("META-INF/MANIFEST.MF"));
 			verifyManifest(manifest);
 		}
 
@@ -151,8 +151,7 @@ public class Verify {
 		}
 
 		@Override
-		protected void verifyZipEntries(ArchiveVerifier verifier)
-				throws Exception {
+		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("lib/spring-core");
@@ -179,13 +178,11 @@ public class Verify {
 		}
 
 		@Override
-		protected void verifyZipEntries(ArchiveVerifier verifier)
-				throws Exception {
+		protected void verifyZipEntries(ArchiveVerifier verifier) throws Exception {
 			super.verifyZipEntries(verifier);
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-context");
 			verifier.assertHasEntryNameStartingWith("WEB-INF/lib/spring-core");
-			verifier.assertHasEntryNameStartingWith(
-					"WEB-INF/lib-provided/javax.servlet-api-3.0.1.jar");
+			verifier.assertHasEntryNameStartingWith("WEB-INF/lib-provided/javax.servlet-api-3.0.1.jar");
 			assertTrue("Unpacked launcher classes", verifier.hasEntry("org/"
 					+ "springframework/boot/loader/JarLauncher.class"));
 			assertTrue("Own classes", verifier.hasEntry("WEB-INF/classes/org/"

@@ -26,25 +26,25 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterExceptio
 
 /**
  * An {@link org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter
- * ArtifactsFilter} that filters out any artifact matching a configurable list
- * of {@link Exclude} instances.
- *
+ * ArtifactsFilter} that filters out any artifact matching a configurable list of
+ * {@link Exclude} instances.
+ * 
  * @author Stephane Nicoll
  * @since 1.1
  */
-public class ExcludeFilter extends AbstractArtifactsFilter{
+public class ExcludeFilter extends AbstractArtifactsFilter {
 
 	private final List<Exclude> excludes;
 
 	/**
-	 * Create a new instance with the list of {@link Exclude}
-	 * instance(s) to use.
+	 * Create a new instance with the list of {@link Exclude} instance(s) to use.
 	 */
 	public ExcludeFilter(List<Exclude> excludes) {
 		this.excludes = excludes;
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Set filter(Set artifacts) throws ArtifactFilterException {
 		Set<Artifact> result = new HashSet<Artifact>();
 		for (Object a : artifacts) {
@@ -57,11 +57,11 @@ public class ExcludeFilter extends AbstractArtifactsFilter{
 	}
 
 	/**
-	 * Check if the specified {@link Artifact} matches one of the
-	 * known excludes. Returns {@code true} if it should be excluded
+	 * Check if the specified {@link Artifact} matches one of the known excludes. Returns
+	 * {@code true} if it should be excluded
 	 */
 	private boolean matchExclude(Artifact artifact) {
-		for (Exclude exclude : excludes) {
+		for (Exclude exclude : this.excludes) {
 			if (match(artifact, exclude)) {
 				return true;
 			}
@@ -70,8 +70,8 @@ public class ExcludeFilter extends AbstractArtifactsFilter{
 	}
 
 	/**
-	 * Check if the specified {@link Artifact} matches the specified
-	 * {@link Exclude}. Returns {@code true} if it should be excluded
+	 * Check if the specified {@link Artifact} matches the specified {@link Exclude}.
+	 * Returns {@code true} if it should be excluded
 	 */
 	private boolean match(Artifact artifact, Exclude exclude) {
 		if (!exclude.getGroupId().equals(artifact.getGroupId())) {
@@ -80,8 +80,8 @@ public class ExcludeFilter extends AbstractArtifactsFilter{
 		if (!exclude.getArtifactId().equals(artifact.getArtifactId())) {
 			return false;
 		}
-		return exclude.getClassifier() == null ||
-				artifact.getClassifier() != null && exclude.getClassifier().equals(artifact.getClassifier());
+		return (exclude.getClassifier() == null || artifact.getClassifier() != null
+				&& exclude.getClassifier().equals(artifact.getClassifier()));
 
 	}
 

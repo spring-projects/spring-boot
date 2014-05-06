@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -33,8 +32,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
-import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
-
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.boot.loader.tools.Libraries;
@@ -139,9 +136,8 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 			repackager.setLayout(this.layout.layout());
 		}
 
-		FilterArtifacts filters = new FilterArtifacts();
-		initializeFilterArtifacts(filters);
-		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
+		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
+				getFilters());
 
 		Libraries libraries = new ArtifactsLibraries(artifacts);
 		try {
