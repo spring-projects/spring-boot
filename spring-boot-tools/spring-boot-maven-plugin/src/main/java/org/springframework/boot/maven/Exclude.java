@@ -20,7 +20,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * A model for a dependency to exclude.
- *
+ * 
  * @author Stephane Nicoll
  * @since 1.1
  */
@@ -45,7 +45,7 @@ public class Exclude {
 	private String classifier;
 
 	public String getGroupId() {
-		return groupId;
+		return this.groupId;
 	}
 
 	public void setGroupId(String groupId) {
@@ -53,7 +53,7 @@ public class Exclude {
 	}
 
 	public String getArtifactId() {
-		return artifactId;
+		return this.artifactId;
 	}
 
 	public void setArtifactId(String artifactId) {
@@ -61,7 +61,7 @@ public class Exclude {
 	}
 
 	public String getClassifier() {
-		return classifier;
+		return this.classifier;
 	}
 
 	public void setClassifier(String classifier) {

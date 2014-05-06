@@ -38,7 +38,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
-
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -46,7 +45,7 @@ import org.springframework.boot.loader.tools.RunProcess;
 
 /**
  * Run an executable archive application.
- *
+ * 
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
@@ -256,11 +255,9 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		urls.add(this.classesDirectory.toURI().toURL());
 	}
 
-	private void addDependencies(List<URL> urls) throws MalformedURLException, MojoExecutionException {
-		FilterArtifacts filters = new FilterArtifacts();
-		filters.addFilter(new TestArtifactFilter());
-		initializeFilterArtifacts(filters);
-
+	private void addDependencies(List<URL> urls) throws MalformedURLException,
+			MojoExecutionException {
+		FilterArtifacts filters = getFilters(new TestArtifactFilter());
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(), filters);
 		for (Artifact artifact : artifacts) {
 			if (artifact.getFile() != null) {
@@ -274,6 +271,7 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 			super("", Artifact.SCOPE_TEST);
 		}
 
+		@Override
 		protected String getArtifactFeature(Artifact artifact) {
 			return artifact.getScope();
 		}
