@@ -80,6 +80,7 @@ public class ApplicationPidListener implements
 		if (created.compareAndSet(false, true)) {
 			try {
 				new ApplicationPid().write(this.file);
+				this.file.deleteOnExit();
 			}
 			catch (Exception ex) {
 				logger.warn(String.format("Cannot create pid file %s", this.file));
