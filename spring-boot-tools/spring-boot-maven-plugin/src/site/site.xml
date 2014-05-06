@@ -8,6 +8,7 @@
 		</menu>
 		<menu name="Examples">
 			<item name="Custom repackage classifier" href="examples/repackage-classifier.html"/>
+			<item name="Exclude a dependency" href="examples/exclude-dependency.html"/>
 		</menu>
 		<menu ref="reports"/>
 	</body>

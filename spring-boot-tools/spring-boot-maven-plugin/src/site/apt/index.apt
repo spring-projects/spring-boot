@@ -38,6 +38,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/repackage-classifier.html}Custom repackage classifier}}
 
+  * {{{./examples/exclude-dependency.html}Exclude a dependency}}
+
   []
 
 

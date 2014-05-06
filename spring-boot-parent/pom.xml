@@ -99,6 +99,11 @@
 				<version>${maven.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.maven.shared</groupId>
+				<artifactId>maven-common-artifact-filters</artifactId>
+				<version>1.4</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.2</version>
