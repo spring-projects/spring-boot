@@ -32,7 +32,7 @@ import org.springframework.boot.gradle.task.RunWithAgent;
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -44,6 +44,9 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+
+		project.getConfigurations().create(
+				SpringBootResolutionStrategy.VERSION_MANAGEMENT_CONFIGURATION);
 
 		applyRepackage(project);
 		applyRun(project);
@@ -80,12 +83,12 @@ public class SpringBootPlugin implements Plugin<Project> {
 		project.getTasks().whenTaskAdded(new ComputeMain(project));
 	}
 
-	private void applyResolutionStrategy(Project project) {
+	private void applyResolutionStrategy(final Project project) {
 		project.getConfigurations().all(new Action<Configuration>() {
 
 			@Override
 			public void execute(Configuration configuration) {
-				SpringBootResolutionStrategy.apply(configuration.getResolutionStrategy());
+				SpringBootResolutionStrategy.apply(project, configuration);
 			}
 
 		});

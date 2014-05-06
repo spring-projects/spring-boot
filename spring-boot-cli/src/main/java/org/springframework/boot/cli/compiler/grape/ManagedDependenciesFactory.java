@@ -24,10 +24,12 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
+import org.springframework.boot.dependency.tools.PomManagedDependencies;
+import org.springframework.boot.dependency.tools.VersionManagedDependencies;
 
 /**
  * Factory to create Maven {@link Dependency} objects from Boot
- * {@link ManagedDependencies}.
+ * {@link PomManagedDependencies}.
  * 
  * @author Phillip Webb
  */
@@ -36,7 +38,7 @@ public class ManagedDependenciesFactory {
 	private final ManagedDependencies dependencies;
 
 	ManagedDependenciesFactory() {
-		this(ManagedDependencies.get());
+		this(new VersionManagedDependencies());
 	}
 
 	ManagedDependenciesFactory(ManagedDependencies dependencies) {

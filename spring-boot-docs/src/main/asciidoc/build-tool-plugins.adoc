@@ -225,6 +225,33 @@ actual Spring Boot version that you wish to use.
 
 
 
+[[build-tool-plugins-gradle-custom-version-management]]
+==== Custom version management
+If is possible to customize the versions used by the `ResolutionStrategy` if you need
+to deviate from Spring Boot's ``blessed'' dependencies. Alternative version meta-data
+is consulted using the `versionManagement` configuration. For example:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	dependencies {
+		versionManagement("com.mycorp:mycorp-versions:1.0.0.RELEASE@properties")
+		compile("org.springframework.data:spring-data-hadoop")
+	}
+----
+
+Version information needs to be published to a repository as a `.properties` file. For
+the above example `mycorp-versions.properties` file might contain the following:
+
+[source,properties,indent=0,subs="verbatim,attributes"]
+----
+	org.springframework.data\:spring-data-hadoop=2.0.0.RELEASE
+----
+
+The properties file takes precedence over Spring Boot's defaults, and can be used
+to override version numbers if necessary.
+
+
+
 [[build-tool-plugins-gradle-packaging]]
 === Packaging executable jar and war files
 Once the `spring-boot` plugin has been applied to your project it will automatically
