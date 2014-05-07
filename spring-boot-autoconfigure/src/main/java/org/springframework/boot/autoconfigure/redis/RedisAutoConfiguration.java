@@ -96,10 +96,10 @@ public class RedisAutoConfiguration {
 		private JedisPoolConfig jedisPoolConfig() {
 			JedisPoolConfig config = new JedisPoolConfig();
 			RedisProperties.Pool props = this.properties.getPool();
-			config.setMaxActive(props.getMaxActive());
+			config.setMaxTotal(props.getMaxActive());
 			config.setMaxIdle(props.getMaxIdle());
 			config.setMinIdle(props.getMinIdle());
-			config.setMaxWait(props.getMaxWait());
+			config.setMaxWaitMillis(props.getMaxWait());
 			return config;
 		}
 
