@@ -31,6 +31,7 @@ org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration,\
 org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.FallbackWebSecurityAutoConfiguration,\
+org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.DispatcherServletAutoConfiguration,\
@@ -46,4 +47,5 @@ org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider=\
 org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
+org.springframework.boot.autoconfigure.velocity.VelocityTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.JspTemplateAvailabilityProvider

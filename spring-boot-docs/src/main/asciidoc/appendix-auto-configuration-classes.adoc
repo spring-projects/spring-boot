@@ -41,6 +41,9 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/groovy/templates/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/groovy/templates/GroovyTemplateAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{dc-ext}[javadoc]
 
@@ -94,6 +97,9 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 
 |{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[VelocityAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[WebMvcAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{dc-ext}[javadoc]

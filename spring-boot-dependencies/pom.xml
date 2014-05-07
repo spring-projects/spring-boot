@@ -114,6 +114,8 @@
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.2.4</thymeleaf-layout-dialect.version>
 		<tomcat.version>7.0.53</tomcat.version>
+		<velocity.version>1.7</velocity.version>
+		<velocity-tools.version>2.0</velocity-tools.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.0</maven>
@@ -266,6 +268,11 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-tomcat</artifactId>
 				<version>1.1.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-velocity</artifactId>
+				<version>${spring-boot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -449,6 +456,16 @@
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jsp-api</artifactId>
 				<version>${tomcat.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>${velocity.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity-tools</artifactId>
+				<version>${velocity-tools.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.aspectj</groupId>

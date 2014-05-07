@@ -813,20 +813,28 @@ added.
   ``freeMarkerViewResolver''. It looks for resources in a loader path (externalized to
   `spring.freemarker.templateLoaderPath`, default ``classpath:/templates/'') by
   surrounding the view name with a prefix and suffix (externalized to `spring.freemarker.prefix`
-  and `spring.freemarker.suffix`, defaults ``'' and ``.ftl'' respectively). It can be overriden
+  and `spring.freemarker.suffix`, with empty and ``.ftl'' defaults respectively). It can be overriden
   by providing a bean of the same name.
 
-* If you use Groovy templates (actually if groovy-templates is on your classpath) you
-also have a `Groovy TemplateViewResolver` with id
+* If you use Groovy templates (actually if groovy-templates is on your classpath) you will
+  also have a `Groovy TemplateViewResolver` with id
   ``groovyTemplateViewResolver''. It looks for resources in a loader path by
-  surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix`
-  and `spring.groovy.template.suffix`, defaults ``classpath:/templates/'' and ``.tpl'' respectively). It can be overriden
-  by providing a bean of the same name.
+  surrounding the view name with a prefix and suffix (externalized to
+  `spring.groovy.template.prefix` and `spring.groovy.template.suffix`, defaults
+  ``classpath:/templates/'' and ``.tpl'' respectively). It can be overriden by providing a bean of
+  the same name.
+
+* If you use Velocity you will also have a `VelocityViewResolver` with id ``velocityViewResolver''.
+  It looks for resources in a loader path (externalized to `spring.velocity.resourceLoaderPath`,
+  default ``classpath:/templates/'') by surrounding the view name with a prefix and suffix
+  (externalized to `spring.velocity.prefix' and `spring.velocity.suffix`, with empty  and ``.vm''
+  defaults respectively). It can be overridden by providing a bean of the same name.
 
 Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`], 
-{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}['GroovyTemplateAutoConfiguration'] and
-{sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}['FreeMarkerAutoConfiguration']
+{sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`],
+{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`] and
+{sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
 
 
 
@@ -1279,12 +1287,13 @@ The Actuator installs a ``whitelabel'' error page that you will see in browser c
 you encounter a server error (machine clients consuming JSON and other media types should
 see a sensible response with the right error code). To switch it off you can set
 `error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
-will want to add your own error page replacing the whitelabel one. If you are using
-Thymeleaf or FreeMarker you can do this by adding an `error.html` or `error.ftl` template
-respectively. In general what you need is a `View` that resolves with a name of `error`,
-and/or a `@Controller` that handles the `/error` path. Unless you replaced some of the
-default configuration you should find a `BeanNameViewResolver` in your `ApplicationContext`
-so a `@Bean` with id `error` would be a simple way of doing that.
+will want to add your own error page replacing the whitelabel one. Exactly how you do this
+dependns on the templating technology that you are using. For example, if you are using
+Thymeleaf you would add an `error.html` template and if you are using FreeMarker you would
+add an `error.ftl` template. In general what you need is a `View` that resolves with a name
+of `error`, and/or a `@Controller` that handles the `/error` path. Unless you replaced some
+of the default configuration you should find a `BeanNameViewResolver` in your
+`ApplicationContext` so a `@Bean` with id `error` would be a simple way of doing that.
 Look at {sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[`ErrorMvcAutoConfiguration`] for more options.
 
 
@@ -1401,6 +1410,13 @@ for other FreeMarker customization options.
 If you are using Groovy templates, then set `spring.groovy.template.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
 for other Groovy customization options.
+
+
+[[howto-reload-velocity-content]]
+=== Reload Velocity templates without restarting the container
+If you are using Velocity, then set `spring.velocity.cache` to `false`. See
+{sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
+for other Velocity customization options.
 
 
 [[howto-reload-java-classes-without-restarting]]

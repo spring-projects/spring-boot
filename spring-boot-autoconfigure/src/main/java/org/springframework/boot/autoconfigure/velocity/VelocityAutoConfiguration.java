@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.freemarker;
+package org.springframework.boot.autoconfigure.velocity;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.exception.VelocityException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -36,68 +39,65 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
-import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
+import org.springframework.ui.velocity.VelocityEngineFactory;
+import org.springframework.ui.velocity.VelocityEngineFactoryBean;
 import org.springframework.util.Assert;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
+import org.springframework.web.servlet.view.velocity.VelocityConfig;
+import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
+import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for FreeMarker.
+ * {@link EnableAutoConfiguration Auto-configuration} for Velocity.
  *
  * @author Andy Wilkinson
- * @author Dave Syer
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(freemarker.template.Configuration.class)
+@ConditionalOnClass(VelocityEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties(FreeMarkerProperties.class)
-public class FreeMarkerAutoConfiguration {
+@EnableConfigurationProperties(VelocityProperties.class)
+public class VelocityAutoConfiguration {
 
 	@Autowired
 	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	@Autowired
-	private FreeMarkerProperties properties;
+	private VelocityProperties properties;
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
 			Resource resource = this.resourceLoader.getResource(this.properties
-					.getTemplateLoaderPath());
+					.getResourceLoaderPath());
 			Assert.state(resource.exists(), "Cannot find template location: " + resource
 					+ " (please add some templates "
-					+ "or check your FreeMarker configuration)");
+					+ "or check your Velocity configuration)");
 		}
 	}
 
-	protected static class FreeMarkerConfiguration {
+	protected static class VelocityConfiguration {
 
 		@Autowired
-		protected FreeMarkerProperties properties;
+		protected VelocityProperties properties;
 
-		protected void applyProperties(FreeMarkerConfigurationFactory factory) {
-			factory.setTemplateLoaderPath(this.properties.getTemplateLoaderPath());
-			factory.setDefaultEncoding(this.properties.getCharSet());
-			Properties settings = new Properties();
-			settings.putAll(this.properties.getSettings());
-			factory.setFreemarkerSettings(settings);
+		protected void applyProperties(VelocityEngineFactory factory) {
+			factory.setResourceLoaderPath(this.properties.getResourceLoaderPath());
+			Properties velocityProperties = new Properties();
+			velocityProperties.putAll(this.properties.getProperties());
+			factory.setVelocityProperties(velocityProperties);
 		}
-
 	}
 
 	@Configuration
 	@ConditionalOnNotWebApplication
-	public static class FreeMarkerNonWebConfiguration extends FreeMarkerConfiguration {
+	public static class VelocityNonWebConfiguration extends VelocityConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public FreeMarkerConfigurationFactoryBean freeMarkerConfiguration() {
-			FreeMarkerConfigurationFactoryBean freeMarkerFactoryBean = new FreeMarkerConfigurationFactoryBean();
-			applyProperties(freeMarkerFactoryBean);
-			return freeMarkerFactoryBean;
+		public VelocityEngineFactoryBean velocityConfiguration() {
+			VelocityEngineFactoryBean velocityEngineFactoryBean = new VelocityEngineFactoryBean();
+			applyProperties(velocityEngineFactoryBean);
+			return velocityEngineFactoryBean;
 		}
 
 	}
@@ -105,30 +105,32 @@ public class FreeMarkerAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(Servlet.class)
 	@ConditionalOnWebApplication
-	public static class FreeMarkerWebConfiguration extends FreeMarkerConfiguration {
+	public static class VelocityWebConfiguration extends VelocityConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(FreeMarkerConfig.class)
-		public FreeMarkerConfigurer freeMarkerConfigurer() {
-			FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+		@ConditionalOnMissingBean(VelocityConfig.class)
+		public VelocityConfigurer velocityConfigurer() {
+			VelocityConfigurer configurer = new VelocityConfigurer();
 			applyProperties(configurer);
 			return configurer;
 		}
 
 		@Bean
-		public freemarker.template.Configuration freeMarkerConfiguration(
-				FreeMarkerConfig configurer) {
-			return configurer.getConfiguration();
+		public VelocityEngine velocityEngine(VelocityConfigurer configurer)
+				throws VelocityException, IOException {
+			return configurer.createVelocityEngine();
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
-		public FreeMarkerViewResolver freeMarkerViewResolver() {
-			FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
+		@ConditionalOnMissingBean(name = "velocityViewResolver")
+		public VelocityViewResolver velocityViewResolver() {
+			VelocityViewResolver resolver = new VelocityViewResolver();
 			new TemplateViewResolverConfigurer().configureTemplateViewResolver(resolver,
 					this.properties);
+			resolver.setToolboxConfigLocation(this.properties.getToolboxConfigLocation());
+			resolver.setDateToolAttribute(this.properties.getDateToolAttribute());
+			resolver.setNumberToolAttribute(this.properties.getNumberToolAttribute());
 			return resolver;
 		}
-
 	}
 }
