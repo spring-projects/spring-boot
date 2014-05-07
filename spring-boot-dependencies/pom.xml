@@ -98,6 +98,8 @@
 		<spring-rabbit.version>1.2.2.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
+		<spring-security-oauth.version>2.0.0.RC2</spring-security-oauth.version>
+		<spring-security-jwt.version>1.0.2.RELEASE</spring-security-jwt.version>
 		<thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.2.3</thymeleaf-layout-dialect.version>
@@ -941,6 +943,21 @@
 				<version>${spring-security.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-jwt</artifactId>
+				<version>${spring-security-jwt.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security.oauth</groupId>
+				<artifactId>spring-security-oauth</artifactId>
+				<version>${spring-security-oauth.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security.oauth</groupId>
+				<artifactId>spring-security-oauth2</artifactId>
+				<version>${spring-security-oauth.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.thymeleaf</groupId>
