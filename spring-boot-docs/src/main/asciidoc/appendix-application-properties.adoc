@@ -94,6 +94,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.exposeSpringMacroHelpers=false
 	spring.freemarker.prefix=
 	spring.freemarker.requestContextAttribute=
+	spring.freemarker.settings.*=
 	spring.freemarker.suffix=.ftl
 	spring.freemarker.templateEncoding=UTF-8
 	spring.freemarker.templateLoaderPath=classpath:/templates/
@@ -103,17 +104,36 @@ content into your application; rather pick only the properties that you need.
 	spring.groovy.template.allowRequestOverride=false
 	spring.groovy.template.allowSessionOverride=false
 	spring.groovy.template.cache=true
+	spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
 	spring.groovy.template.contentType=text/html
 	spring.groovy.template.prefix=classpath:/templates/
 	spring.groovy.template.suffix=.tpl
 	spring.groovy.template.templateEncoding=UTF-8
 	spring.groovy.template.viewNames= # whitelist of view names that can be resolved
-    spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
+
+	# VELOCITY TEMPLATES ({sc-spring-boot-autoconfigure}}/velocity/VelocityAutoConfiguration.{sc-ext}[VelocityAutoConfiguration])
+	spring.velocity.allowRequestOverride=false
+	spring.velocity.allowSessionOverride=false
+	spring.velocity.cache=true
+	spring.velocity.checkTemplateLocation=true
+	spring.velocity.contentType=text/html
+	spring.velocity.dateToolAttribute=
+	spring.velocity.exposeRequestAttributes=false
+	spring.velocity.exposeSessionAttributes=false
+	spring.velocity.exposeSpringMacroHelpers=false
+	spring.velocity.numberToolAttribute=
+	spring.velocity.prefix=
+	spring.velocity.properties.*=
+	spring.velocity.requestContextAttribute=
+	spring.velocity.resourceLoaderPath=classpath:/templates/
+	spring.velocity.suffix=.ftl
+	spring.velocity.templateEncoding=UTF-8
+	spring.velocity.viewNames= # whitelist of view names that can be resolved
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
 	spring.messages.basename=messages
+	spring.messages.cacheSeconds=-1
 	spring.messages.encoding=UTF-8
-    spring.messages.cacheSeconds=-1
 
 	[[common-application-properties-security]]
 	# SECURITY ({sc-spring-boot-autoconfigure}/security/SecurityProperties.{sc-ext}[SecurityProperties])

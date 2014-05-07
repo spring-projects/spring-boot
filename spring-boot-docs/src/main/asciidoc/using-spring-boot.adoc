@@ -258,6 +258,9 @@ and Hibernate.
 |`spring-boot-starter-thymeleaf`
 |Support for the Thymeleaf templating engine, including integration with Spring.
 
+|`spring-boot-starter-velocity`
+|Support for the Velocity templating engine
+
 |`spring-boot-starter-web`
 |Support for full-stack web development, including Tomcat and `spring-webmvc`.
 
