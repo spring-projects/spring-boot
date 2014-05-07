@@ -48,7 +48,7 @@
 		<spring-boot.version>1.1.0.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
 		<activemq.version>5.9.1</activemq.version>
-		<aspectj.version>1.7.4</aspectj.version>
+		<aspectj.version>1.8.0</aspectj.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
 		<commons-pool.version>1.6</commons-pool.version>
@@ -442,6 +442,11 @@
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjrt</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjtools</artifactId>
 				<version>${aspectj.version}</version>
 			</dependency>
 			<dependency>
