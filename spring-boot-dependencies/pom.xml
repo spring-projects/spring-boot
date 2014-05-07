@@ -95,7 +95,7 @@
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.0.0.RELEASE</spring-integration.version>
 		<spring-plugin.version>1.0.0.RELEASE</spring-plugin.version>
-		<spring-rabbit.version>1.2.2.RELEASE</spring-rabbit.version>
+		<spring-amqp.version>1.3.2.RELEASE</spring-amqp.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
 		<spring-security.version>3.2.3.RELEASE</spring-security.version>
 		<spring-security-oauth.version>2.0.0.RC2</spring-security-oauth.version>
@@ -872,8 +872,18 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.amqp</groupId>
+				<artifactId>spring-amqp</artifactId>
+				<version>${spring-amqp.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.amqp</groupId>
+				<artifactId>spring-erlang</artifactId>
+				<version>${spring-amqp.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.amqp</groupId>
 				<artifactId>spring-rabbit</artifactId>
-				<version>${spring-rabbit.version}</version>
+				<version>${spring-amqp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.batch</groupId>
