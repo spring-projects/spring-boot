@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -36,6 +37,21 @@ import org.springframework.util.ClassUtils;
 public class ManagementServerProperties implements SecurityPrequisite {
 
 	private static final String SECURITY_CHECK_CLASS = "org.springframework.security.config.http.SessionCreationPolicy";
+
+	/**
+	 * Order applied to the WebSecurityConfigurerAdapter that is used to configure basic
+	 * authentication for management endpoints. If you want to add your own authentication
+	 * for all or some of those endpoints the best thing to do is add your own
+	 * WebSecurityConfigurerAdapter with lower order.
+	 */
+	public static final int BASIC_AUTH_ORDER = SecurityProperties.BASIC_AUTH_ORDER - 5;
+
+	/**
+	 * Order after the basic authentication access control provided automatically for the
+	 * management endpoints. This is a useful place to put user-defined access rules if
+	 * you want to override the default access rules.
+	 */
+	public static final int ACCESS_OVERRIDE_ORDER = ManagementServerProperties.BASIC_AUTH_ORDER - 1;
 
 	private Integer port;
 

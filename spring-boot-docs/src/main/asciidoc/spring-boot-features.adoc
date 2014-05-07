@@ -1124,7 +1124,9 @@ The basic features you get out of the box in a web application are:
   on by default.
 
 All of the above can be switched on and off or modified using external properties
-(`security.*`).
+(`security.*`). To override the access rules without changing any other autoconfigured 
+features add a `@Bean` of type `WebConfigurerAdapter` with 
+`@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
 
 If the Actuator is also in use, you will find:
 
@@ -1133,7 +1135,12 @@ If the Actuator is also in use, you will find:
 * The default user will have the "ADMIN" role as well as the "USER" role.
 
 The Actuator security features can be modified using external properties
-(`management.security.*`).
+(`management.security.*`). To override the application access rules 
+add a `@Bean` of type `WebConfigurerAdapter` and use
+`@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)` if you _don't_ want to override
+the actuator access rules, or `@Order(ManagementServerProperties.ACCESS_OVERRIDE_ORDER)` 
+if you _do_ want to override the actuator access rules.
+
 
 
 

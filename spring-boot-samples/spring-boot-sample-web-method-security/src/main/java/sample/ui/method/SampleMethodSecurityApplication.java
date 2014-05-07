@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -58,7 +59,8 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
+		new SpringApplicationBuilder(SampleMethodSecurityApplication.class)
+				.run(args);
 	}
 
 	@Override
@@ -74,29 +76,33 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	@Configuration
-	protected static class AuthenticationSecurity extends GlobalAuthenticationConfigurerAdapter {
-		
+	protected static class AuthenticationSecurity extends
+			GlobalAuthenticationConfigurerAdapter {
+
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
 			// @formatter:off
 			auth.inMemoryAuthentication().withUser("admin").password("admin")
-					.roles("ADMIN", "USER").and().withUser("user").password("user")
-					.roles("USER");
+					.roles("ADMIN", "USER").and().withUser("user")
+					.password("user").roles("USER");
 			// @formatter:on
 		}
 	}
-	
-	@Order(Ordered.LOWEST_PRECEDENCE - 8)
-	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+
+	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+	protected static class ApplicationSecurity extends
+			WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-			http.authorizeRequests().antMatchers("/login").permitAll().anyRequest()
-					.fullyAuthenticated().and().formLogin().loginPage("/login")
-					.failureUrl("/login?error").and().logout()
-					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
-					.exceptionHandling().accessDeniedPage("/access?error");
+			http.authorizeRequests().antMatchers("/login").permitAll()
+					.anyRequest().fullyAuthenticated().and().formLogin()
+					.loginPage("/login").failureUrl("/login?error").and()
+					.logout()
+					.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+					.and().exceptionHandling()
+					.accessDeniedPage("/access?error");
 			// @formatter:on
 		}
 
