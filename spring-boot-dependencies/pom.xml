@@ -467,11 +467,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.codehaus.groovy</groupId>
-				<artifactId>groovy-binary</artifactId>
-				<version>${groovy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.codehaus.groovy</groupId>
 				<artifactId>groovy-bsf</artifactId>
 				<version>${groovy.version}</version>
 			</dependency>
