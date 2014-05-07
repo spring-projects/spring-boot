@@ -52,6 +52,7 @@ public class MongoAutoConfigurationTests {
 		assertEquals(1, this.context.getBeanNamesForType(Mongo.class).length);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void optionsAdded() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -64,6 +65,7 @@ public class MongoAutoConfigurationTests {
 				.getSocketTimeout());
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void optionsAddedButNoHost() {
 		this.context = new AnnotationConfigApplicationContext();
