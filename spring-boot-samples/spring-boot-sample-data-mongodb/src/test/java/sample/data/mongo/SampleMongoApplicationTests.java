@@ -16,18 +16,18 @@
 
 package sample.data.mongo;
 
-import java.net.ConnectException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
+import com.mongodb.MongoServerSelectionException;
+
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleMongoApplication}.
- * 
+ *
  * @author Dave Syer
  */
 public class SampleMongoApplicationTests {
@@ -54,9 +54,9 @@ public class SampleMongoApplicationTests {
 		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
-		if (nested.contains(ConnectException.class)) {
-			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("Connection refused")) {
+		Throwable root = nested.getRootCause();
+		if (root instanceof MongoServerSelectionException) {
+			if (root.getMessage().contains("Unable to connect to any server")) {
 				return true;
 			}
 		}
