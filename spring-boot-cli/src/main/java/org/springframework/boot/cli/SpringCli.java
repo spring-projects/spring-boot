@@ -24,6 +24,7 @@ import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 import org.springframework.boot.cli.command.core.VersionCommand;
 import org.springframework.boot.cli.command.shell.ShellCommand;
+import org.springframework.boot.loader.tools.LogbackInitializer;
 
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
@@ -37,6 +38,7 @@ public class SpringCli {
 
 	public static void main(String... args) {
 		System.setProperty("java.awt.headless", Boolean.toString(true));
+		LogbackInitializer.initialize();
 
 		CommandRunner runner = new CommandRunner("spring");
 		runner.addCommand(new HelpCommand(runner));
