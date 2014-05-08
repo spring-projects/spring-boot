@@ -89,6 +89,17 @@
 		<spring.version>4.0.4.RELEASE</spring.version>
 		<spring-batch.version>2.2.6.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Dijkstra-RC1</spring-data-releasetrain.version>
+		<spring-data-cassandra.version>1.0.0.RC1</spring-data-cassandra.version>
+		<spring-data-commons.version>1.8.0.RC1</spring-data-commons.version>
+		<spring-data-couchbase.version>1.1.0.RC1</spring-data-couchbase.version>
+		<spring-data-elasticsearch.version>1.0.0.RC1</spring-data-elasticsearch.version>
+		<spring-data-gemfire.version>1.4.0.RC1</spring-data-gemfire.version>
+		<spring-data-jpa.version>1.6.0.RC1</spring-data-jpa.version>
+		<spring-data-mongodb.version>1.5.0.RC1</spring-data-mongodb.version>
+		<spring-data-neo4j.version>3.1.0.RC1</spring-data-neo4j.version>
+		<spring-data-redis.version>1.3.0.RC1</spring-data-redis.version>
+		<spring-data-rest-webmvc.version>2.1.0.RC1</spring-data-rest-webmvc.version>
+		<spring-data-solr.version>1.2.0.RC1</spring-data-solr.version>
 		<spring-hateoas.version>0.11.0.RELEASE</spring-hateoas.version>
 		<spring-integration.version>4.0.0.RELEASE</spring-integration.version>
 		<spring-plugin.version>1.0.0.RELEASE</spring-plugin.version>
@@ -879,10 +890,58 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-releasetrain</artifactId>
-				<version>${spring-data-releasetrain.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
+				<artifactId>spring-data-cassandra</artifactId>
+				<version>${spring-data-cassandra.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-commons</artifactId>
+				<version>${spring-data-commons.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-couchbase</artifactId>
+				<version>${spring-data-couchbase.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-elasticsearch</artifactId>
+				<version>${spring-data-elasticsearch.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-gemfire</artifactId>
+				<version>${spring-data-gemfire.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-jpa</artifactId>
+				<version>${spring-data-jpa.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-mongodb</artifactId>
+				<version>${spring-data-mongodb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-neo4j</artifactId>
+				<version>${spring-data-neo4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-redis</artifactId>
+				<version>${spring-data-redis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-rest-webmvc</artifactId>
+				<version>${spring-data-rest-webmvc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-solr</artifactId>
+				<version>${spring-data-solr.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.hateoas</groupId>
