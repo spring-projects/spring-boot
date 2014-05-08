@@ -20,8 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -38,10 +36,6 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
-import org.springframework.boot.actuate.health.CompositeHealthIndicator;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.actuate.health.SimpleHealthIndicator;
-import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
@@ -64,19 +58,14 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
  * {@link Endpoint}s.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
+ * @author Chiristian Dupuis
  */
 @Configuration
 public class EndpointAutoConfiguration {
-
-	@Autowired(required = false)
-	private HealthIndicator<? extends Object> healthIndicator;
-
-	@Autowired(required = false)
-	private Map<String, DataSource> dataSources;
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
@@ -98,28 +87,8 @@ public class EndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HealthEndpoint<?> healthEndpoint() {
-		if (this.healthIndicator == null) {
-			this.healthIndicator = createHealthIndicator();
-		}
-		return new HealthEndpoint<Object>(this.healthIndicator);
-	}
-
-	private HealthIndicator<? extends Object> createHealthIndicator() {
-		if (this.dataSources == null || this.dataSources.isEmpty()) {
-			return new VanillaHealthIndicator();
-		}
-
-		if (this.dataSources.size() == 1) {
-			return new SimpleHealthIndicator(this.dataSources.values().iterator().next());
-		}
-
-		CompositeHealthIndicator composite = new CompositeHealthIndicator();
-		for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
-			composite.addHealthIndicator(entry.getKey(),
-					new SimpleHealthIndicator(entry.getValue()));
-		}
-		return composite;
+	public HealthEndpoint healthEndpoint() {
+		return new HealthEndpoint();
 	}
 
 	@Bean
