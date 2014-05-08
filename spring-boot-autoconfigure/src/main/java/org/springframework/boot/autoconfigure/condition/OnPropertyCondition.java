@@ -44,7 +44,7 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		for (String property : onProperties) {
 			if (!context.getEnvironment().containsProperty(property)
-                    || context.getEnvironment().getProperty(property).toLowerCase().equals("false")) {
+                    || "false".equals(context.getEnvironment().getProperty(property).toLowerCase())) {
 				missingProperties.add(property);
 			}
 		}
