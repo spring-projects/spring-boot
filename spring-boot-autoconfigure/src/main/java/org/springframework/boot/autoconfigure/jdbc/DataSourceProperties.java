@@ -20,12 +20,15 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
  * Base class for configuration of a database pool.
  * 
  * @author Dave Syer
+ * @author Maciej Walkowiak
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
@@ -53,6 +56,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
+	private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
+
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -64,11 +69,22 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 				.get(this.classLoader);
 	}
 
-	public String getDriverClassName() {
+	protected String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
+			Assert.state(ClassUtils.isPresent(this.driverClassName, null),
+					"Cannot load driver class: " + this.driverClassName);
 			return this.driverClassName;
 		}
-		String driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
+		String driverClassName = null;
+
+		if (StringUtils.hasText(this.url)) {
+			driverClassName = this.driverClassNameProvider.getDriverClassName(this.url);
+		}
+
+		if (!StringUtils.hasText(driverClassName)) {
+			driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
+		}
+
 		if (!StringUtils.hasText(driverClassName)) {
 			throw new BeanCreationException(
 					"Cannot determine embedded database driver class for database type "
@@ -173,5 +189,4 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	public ClassLoader getClassLoader() {
 		return this.classLoader;
 	}
-
 }
