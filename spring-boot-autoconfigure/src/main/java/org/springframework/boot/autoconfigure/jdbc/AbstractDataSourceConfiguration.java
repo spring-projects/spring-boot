@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * Base class for configuration of a database pool.
  * 
  * @author Dave Syer
+ * @author Maciej Walkowiak
  */
 @ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 @EnableConfigurationProperties
@@ -67,7 +68,9 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
-	@Override
+    private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
+
+    @Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
@@ -78,20 +81,30 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 				.get(this.classLoader);
 	}
 
-	protected String getDriverClassName() {
-		if (StringUtils.hasText(this.driverClassName)) {
-			return this.driverClassName;
-		}
-		String driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
-		if (!StringUtils.hasText(driverClassName)) {
-			throw new BeanCreationException(
-					"Cannot determine embedded database driver class for database type "
-							+ this.embeddedDatabaseConnection
-							+ ". If you want an embedded "
-							+ "database please put a supported one on the classpath.");
-		}
-		return driverClassName;
-	}
+    protected String getDriverClassName() {
+        if (StringUtils.hasText(this.driverClassName)) {
+            return this.driverClassName;
+        }
+        String driverClassName = null;
+
+        if (StringUtils.hasText(this.url)) {
+            driverClassName = driverClassNameProvider.getDriverClassName(this.url);
+        }
+
+        if (!StringUtils.hasText(driverClassName)) {
+            driverClassName = this.embeddedDatabaseConnection.getDriverClassName();
+        }
+
+        if (!StringUtils.hasText(driverClassName)) {
+            throw new BeanCreationException(
+                    "Cannot determine embedded database driver class for database type "
+                            + this.embeddedDatabaseConnection
+                            + ". If you want an embedded "
+                            + "database please put a supported one on the classpath."
+            );
+        }
+        return driverClassName;
+    }
 
 	protected String getUrl() {
 		if (StringUtils.hasText(this.url)) {
@@ -231,5 +244,4 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 	protected Integer getMaxWaitMillis() {
 		return this.maxWaitMillis;
 	}
-
 }
