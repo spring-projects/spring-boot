@@ -12,11 +12,21 @@ import java.util.Map;
  * @since 1.1.0
  */
 class DriverClassNameProvider {
-    private static final String JDBC_URL_PREFIX = "jdbc:";
+    private static final String JDBC_URL_PREFIX = "jdbc";
     private static final Map<String, String> driverMap = new HashMap<String, String>() {{
-        put("mysql","com.mysql.jdbc.Driver");
-        put("postgresql","org.postgresql.Driver");
+        put("db2","com.ibm.db2.jcc.DB2Driver");
+        put("derby","org.apache.derby.jdbc.EmbeddedDriver");
         put("h2","org.h2.Driver");
+        put("hsqldb","org.hsqldb.jdbcDriver");
+        put("sqlite","org.sqlite.JDBC");
+        put("mysql","com.mysql.jdbc.Driver");
+        put("mariadb","org.mariadb.jdbc.Driver");
+        put("google","com.google.appengine.api.rdbms.AppEngineDriver");
+        put("oracle","oracle.jdbc.OracleDriver");
+        put("postgresql","org.postgresql.Driver");
+        put("jtds","net.sourceforge.jtds.jdbc.Driver");
+        put("sqlserver","com.microsoft.sqlserver.jdbc.SQLServerDriver");
+
     }};
 
     /**
@@ -36,7 +46,7 @@ class DriverClassNameProvider {
         String result = null;
 
         for (Map.Entry<String, String> driver : driverMap.entrySet()) {
-            if (urlWithoutPrefix.startsWith(driver.getKey())) {
+            if (urlWithoutPrefix.startsWith(":" + driver.getKey() + ":")) {
                 result = driver.getValue();
 
                 break;
