@@ -36,13 +36,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link SimpleHealthIndicator}.
+ * Tests for {@link SimpleDataSourceHealthIndicator}.
  * 
  * @author Dave Syer
  */
-public class SimpleHealthIndicatorTests {
+public class SimpleDataSourceHealthIndicatorTests {
 
-	private final SimpleHealthIndicator indicator = new SimpleHealthIndicator();
+	private final SimpleDataSourceHealthIndicator indicator = new SimpleDataSourceHealthIndicator();
 	private DriverManagerDataSource dataSource;
 
 	@Before

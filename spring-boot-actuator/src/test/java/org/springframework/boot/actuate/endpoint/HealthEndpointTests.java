@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,10 +30,10 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HealthEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
-public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<String>> {
+public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
 	public HealthEndpointTests() {
 		super(Config.class, HealthEndpoint.class, "health", false, "endpoints.health");
@@ -38,7 +41,9 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<St
 
 	@Test
 	public void invoke() throws Exception {
-		assertThat(getEndpointBean().invoke(), equalTo("fine"));
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("status", "fine");
+		assertThat(getEndpointBean().invoke(), equalTo(result));
 	}
 
 	@Configuration
@@ -46,14 +51,18 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint<St
 	public static class Config {
 
 		@Bean
-		public HealthEndpoint<String> endpoint() {
-			return new HealthEndpoint<String>(new HealthIndicator<String>() {
+		public HealthEndpoint endpoint() {
+			return new HealthEndpoint();
+		}
+
+		@Bean
+		public HealthIndicator<String> statusHealthIndicator() {
+			return new HealthIndicator<String>() {
 				@Override
 				public String health() {
 					return "fine";
 				}
-			});
+			};
 		}
-
 	}
 }

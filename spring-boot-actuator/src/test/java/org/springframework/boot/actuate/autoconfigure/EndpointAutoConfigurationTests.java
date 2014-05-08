@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
@@ -80,18 +80,33 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void healthEndpoint() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class,
-				EmbeddedDataSourceConfiguration.class);
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
-		HealthEndpoint<?> bean = this.context.getBean(HealthEndpoint.class);
+		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
 		assertNotNull(bean);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> result = (Map<String, Object>) bean.invoke();
+		Map<String, Object> result = bean.invoke();
+		assertNotNull(result);
+		assertTrue("Wrong result: " + result,
+				((Map<String, Object>) result.get("db")).containsKey("status"));
+		assertTrue("Wrong result: " + result,
+				((Map<String, Object>) result.get("db")).containsKey("database"));
+	}
+
+	@Test
+	public void healthEndpointWithDefaultHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EndpointAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
+		assertNotNull(bean);
+		Map<String, Object> result = bean.invoke();
 		assertNotNull(result);
 		assertTrue("Wrong result: " + result, result.containsKey("status"));
-		assertTrue("Wrong result: " + result, result.containsKey("database"));
 	}
 
 	@Test
