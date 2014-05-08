@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.util.Assert;
 
 import com.mongodb.CommandResult;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
  * Mongo data stores.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
@@ -35,6 +36,7 @@ public class MongoHealthIndicator implements HealthIndicator<Map<String, Object>
 	private final MongoTemplate mongoTemplate;
 
 	public MongoHealthIndicator(MongoTemplate mongoTemplate) {
+		Assert.notNull(mongoTemplate, "MongoTemplate must not be null");
 		this.mongoTemplate = mongoTemplate;
 	}
 

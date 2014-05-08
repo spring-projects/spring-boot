@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,12 @@ import java.util.Properties;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisConnectionUtils;
+import org.springframework.util.Assert;
 
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
  * Redis data stores.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
@@ -36,6 +37,7 @@ public class RedisHealthIndicator implements HealthIndicator<Map<String, Object>
 	private final RedisConnectionFactory redisConnectionFactory;
 
 	public RedisHealthIndicator(RedisConnectionFactory connectionFactory) {
+		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		this.redisConnectionFactory = connectionFactory;
 	}
 
