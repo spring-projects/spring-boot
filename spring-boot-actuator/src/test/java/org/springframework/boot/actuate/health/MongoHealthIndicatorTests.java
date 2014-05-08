@@ -16,8 +16,11 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.actuate.autoconfigure.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.HealthIndicatorAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -26,14 +29,17 @@ import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.mongodb.CommandResult;
+import com.mongodb.MongoException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
  *
  * @author Christian Dupuis
- * @since 1.1.0
  */
 public class MongoHealthIndicatorTests {
 
@@ -47,7 +53,7 @@ public class MongoHealthIndicatorTests {
 	}
 
 	@Test
-	public void healthIndicatorExists() {
+	public void indicatorExists() {
 		this.context = new AnnotationConfigApplicationContext(
 				PropertyPlaceholderAutoConfiguration.class, MongoAutoConfiguration.class,
 				MongoDataAutoConfiguration.class, EndpointAutoConfiguration.class,
@@ -58,6 +64,34 @@ public class MongoHealthIndicatorTests {
 		assertNotNull(healthIndicator);
 	}
 
-	// TODO add tests for actual health check
+	@Test
+	public void mongoIsUp() throws Exception {
+		CommandResult commandResult = Mockito.mock(CommandResult.class);
+		Mockito.when(commandResult.getString("version")).thenReturn("2.6.4");
+		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
+		Mockito.when(mongoTemplate.executeCommand("{ serverStatus: 1 }")).thenReturn(
+				commandResult);
+		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
+		Map<String, Object> health = healthIndicator.health();
+		assertEquals("ok", health.get("status"));
+		assertEquals("2.6.4", health.get("version"));
+
+		Mockito.verify(commandResult).getString("version");
+		Mockito.verify(mongoTemplate).executeCommand("{ serverStatus: 1 }");
+	}
+
+	@Test
+	public void mongoIsDown() throws Exception {
+		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
+		Mockito.when(mongoTemplate.executeCommand("{ serverStatus: 1 }")).thenThrow(
+				new MongoException("Connection failed"));
+		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
+
+		Map<String, Object> health = healthIndicator.health();
+		assertEquals("error", health.get("status"));
+		assertTrue(((String) health.get("error")).contains("Connection failed"));
+
+		Mockito.verify(mongoTemplate).executeCommand("{ serverStatus: 1 }");
+	}
 }

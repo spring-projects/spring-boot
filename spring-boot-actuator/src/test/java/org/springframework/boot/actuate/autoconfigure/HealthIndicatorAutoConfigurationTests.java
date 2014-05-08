@@ -38,7 +38,6 @@ import static org.junit.Assert.assertEquals;
  * Tests for {@link HealthIndicatorAutoConfiguration}.
  *
  * @author Christian Dupuis
- * @since 1.1.0
  */
 public class HealthIndicatorAutoConfigurationTests {
 
