@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
 
@@ -42,8 +43,11 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		List<String> missingProperties = new ArrayList<String>();
 
+		Environment environment = context.getEnvironment();
 		for (String property : onProperties) {
-			if (!context.getEnvironment().containsProperty(property)) {
+			if (!environment.containsProperty(property)
+					|| StringUtils.endsWithIgnoreCase(environment.getProperty(property),
+							"false")) {
 				missingProperties.add(property);
 			}
 		}
@@ -57,5 +61,4 @@ class OnPropertyCondition extends SpringBootCondition {
 						+ StringUtils.arrayToCommaDelimitedString(missingProperties
 								.toArray()) + " not found");
 	}
-
 }

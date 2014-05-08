@@ -52,6 +52,22 @@ public class ConditionalOnPropertyTests {
 		assertFalse(this.context.containsBean("foo"));
 	}
 
+	@Test
+	public void testBeanIsNotCreatedWhenPropertyValueEqualsFalse() {
+		EnvironmentTestUtils.addEnvironment(this.context.getEnvironment(),
+				"property1=false", "property2=value2");
+		setupContext();
+		assertFalse(this.context.containsBean("foo"));
+	}
+
+	@Test
+	public void testBeanIsNotCreatedWhenPropertyValueEqualsFALSE() {
+		EnvironmentTestUtils.addEnvironment(this.context.getEnvironment(),
+				"property1=FALSE", "property2=value2");
+		setupContext();
+		assertFalse(this.context.containsBean("foo"));
+	}
+
 	private void setupContext() {
 		this.context.register(MultiplePropertiesRequiredConfiguration.class);
 		this.context.refresh();
