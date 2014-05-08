@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.CommonsDataSourceConfiguration;
@@ -44,6 +45,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
@@ -72,14 +75,14 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
 		public HealthIndicator<? extends Object> dbHealthIndicator() {
 			if (this.dataSources.size() == 1) {
-				return new SimpleDataSourceHealthIndicator(this.dataSources.values().iterator()
-						.next());
+				return new SimpleDataSourceHealthIndicator(this.dataSources.values()
+						.iterator().next());
 			}
 
 			CompositeHealthIndicator composite = new CompositeHealthIndicator();
 			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new SimpleDataSourceHealthIndicator(
-						entry.getValue()));
+				composite.addHealthIndicator(entry.getKey(),
+						new SimpleDataSourceHealthIndicator(entry.getValue()));
 			}
 			return composite;
 		}

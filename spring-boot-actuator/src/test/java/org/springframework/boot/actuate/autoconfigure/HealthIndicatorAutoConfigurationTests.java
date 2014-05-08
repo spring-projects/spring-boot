@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link HealthIndicatorAutoConfiguration}.
- *
+ * 
  * @author Christian Dupuis
  */
 public class HealthIndicatorAutoConfigurationTests {
@@ -120,7 +120,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(SimpleDataSourceHealthIndicator.class, beans.values().iterator().next()
-				.getClass());
+		assertEquals(SimpleDataSourceHealthIndicator.class, beans.values().iterator()
+				.next().getClass());
 	}
 }

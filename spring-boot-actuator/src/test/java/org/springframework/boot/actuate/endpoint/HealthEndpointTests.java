@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HealthEndpoint}.
- *
+ * 
  * @author Phillip Webb
  */
 public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {

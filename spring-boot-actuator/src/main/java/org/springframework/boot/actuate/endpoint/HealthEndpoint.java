@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link Endpoint} to expose application health.
- *
+ * 
  * @author Dave Syer
  * @author Christian Dupuis
  */
@@ -59,9 +59,9 @@ public class HealthEndpoint extends AbstractEndpoint<Map<String, Object>> {
 	 * Turns the bean name into a key that can be used in the map of health information.
 	 */
 	private String getKey(String name) {
-		int x = name.toLowerCase().indexOf("healthindicator");
-		if (x > 0) {
-			return name.substring(0, x);
+		int index = name.toLowerCase().indexOf("healthindicator");
+		if (index > 0) {
+			return name.substring(0, index);
 		}
 		return name;
 	}
