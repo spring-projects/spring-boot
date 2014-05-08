@@ -17,20 +17,23 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.lang.management.ClassLoadingMXBean;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.lang.management.ThreadMXBean;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of {@link PublicMetrics} that exposes all metrics from a
  * {@link MetricReader} along with memory information.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  */
@@ -54,6 +57,7 @@ public class VanillaPublicMetrics implements PublicMetrics {
 		addHeapMetrics(result);
 		addThreadMetrics(result);
 		addClassLoadingMetrics(result);
+		addGarbageCollecitonMetrics(result);
 
 		return result;
 	}
@@ -110,4 +114,28 @@ public class VanillaPublicMetrics implements PublicMetrics {
 				.getUnloadedClassCount())));
 	}
 
+	/**
+	 * Add garbage collection metrics.
+	 */
+	protected void addGarbageCollecitonMetrics(Collection<Metric<?>> result) {
+		List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory
+				.getGarbageCollectorMXBeans();
+		for (int i = 0; i < garbageCollectorMxBeans.size(); i++) {
+			GarbageCollectorMXBean garbageCollectorMXBean = garbageCollectorMxBeans
+					.get(i);
+			String name = beautifyGcName(garbageCollectorMXBean.getName());
+			result.add(new Metric<Long>("gc." + name + ".count", new Long(
+					garbageCollectorMXBean.getCollectionCount())));
+			result.add(new Metric<Long>("gc." + name + ".time", new Long(
+					garbageCollectorMXBean.getCollectionTime())));
+		}
+	}
+
+	/**
+	 * Turn GC names like 'PS Scavenge' or 'PS MarkSweep' into something that is more
+	 * metrics friendly.
+	 */
+	private String beautifyGcName(String name) {
+		return StringUtils.replace(name, " ", "_").toLowerCase();
+	}
 }
