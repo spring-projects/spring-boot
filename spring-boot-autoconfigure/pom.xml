@@ -227,8 +227,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jms_1.1_spec</artifactId>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms-api</artifactId>
 			<optional>true</optional>
 		</dependency>
 		<dependency>

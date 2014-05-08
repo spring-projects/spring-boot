@@ -339,6 +339,11 @@
 				<version>${jedis.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>javax.jms</groupId>
+				<artifactId>jms-api</artifactId>
+				<version>1.1-rev-1</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>${servlet-api.version}</version>
@@ -382,11 +387,6 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-pool</artifactId>
 				<version>${activemq.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.geronimo.specs</groupId>
-				<artifactId>geronimo-jms_1.1_spec</artifactId>
-				<version>1.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
