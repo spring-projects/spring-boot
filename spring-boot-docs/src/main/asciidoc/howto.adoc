@@ -1340,6 +1340,52 @@ third-party dependencies. Overriding versions may cause compatibilty issues.
 
 
 
+[[howto-create-an-executable-jar-with-maven]]
+=== Create an executable JAR with Maven
+The `spring-boot-maven-plugin` can be used to create an executable ``fat'' JAR. If you
+are using the `spring-boot-starter-parent` POM you can simply declare the plugin and
+your jars will be repackaged:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+If you are not using the parent POM you can still use the plugin, however, you must
+additionally add an `<executions>` section:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>{spring-boot-version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+See the {spring-boot-maven-plugin-site}/usage.html[plugin documentation] for full usage
+details.
+
+
+
 [[howto-remote-debug-maven-run]]
 === Remote debug a Spring Boot application started with Maven
 To attach a remote debugger to a Spring Boot application started with Maven you can use

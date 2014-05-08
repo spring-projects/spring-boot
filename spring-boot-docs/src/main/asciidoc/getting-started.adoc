@@ -654,6 +654,11 @@ To create an executable jar we need to add the `spring-boot-maven-plugin` to our
 	</build>
 ----
 
+NOTE: The `spring-boot-starter-parent` POM includes `<executions>` configuration to
+bind the `repackage` goal. If you are not using the parent POM you will need to declare
+this configuration yourself. See the {spring-boot-maven-plugin-site}/usage.html[plugin
+documentation] for details.
+
 Save your `pom.xml` and run `mvn package` from the command line:
 
 [indent=0,subs="attributes"]
