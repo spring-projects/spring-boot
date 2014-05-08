@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.mongodb.DBPort;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientOptions.Builder;
@@ -42,7 +41,7 @@ public class MongoProperties {
 
 	private String host;
 
-	private int port = DBPort.PORT;
+	private int port = 27017;
 
 	private String uri = "mongodb://localhost/test";
 
@@ -153,14 +152,12 @@ public class MongoProperties {
 		Builder builder = MongoClientOptions.builder();
 		if (options != null) {
 			builder.alwaysUseMBeans(options.isAlwaysUseMBeans());
-			builder.autoConnectRetry(options.isAutoConnectRetry());
 			builder.connectionsPerHost(options.getConnectionsPerHost());
 			builder.connectTimeout(options.getConnectTimeout());
 			builder.cursorFinalizerEnabled(options.isCursorFinalizerEnabled());
 			builder.dbDecoderFactory(options.getDbDecoderFactory());
 			builder.dbEncoderFactory(options.getDbEncoderFactory());
 			builder.description(options.getDescription());
-			builder.maxAutoConnectRetryTime(options.getMaxAutoConnectRetryTime());
 			builder.maxWaitTime(options.getMaxWaitTime());
 			builder.readPreference(options.getReadPreference());
 			builder.socketFactory(options.getSocketFactory());
