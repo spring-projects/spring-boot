@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
  * 
  * @author Dave Syer
  */
-public class SimpleHealthIndicatorTests {
+public class SimpleDataSourceHealthIndicatorTests {
 
 	private final SimpleDataSourceHealthIndicator indicator = new SimpleDataSourceHealthIndicator();
 	private DriverManagerDataSource dataSource;
