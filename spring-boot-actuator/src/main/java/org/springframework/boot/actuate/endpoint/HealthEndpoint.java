@@ -16,34 +16,53 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose application health.
- * 
+ *
  * @author Dave Syer
+ * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = false)
-public class HealthEndpoint<T> extends AbstractEndpoint<T> {
+public class HealthEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	private final HealthIndicator<? extends T> indicator;
+	@Autowired(required = false)
+	private Map<String, HealthIndicator<? extends Object>> healthIndicators;
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.
-	 * 
-	 * @param indicator the health indicator
 	 */
-	public HealthEndpoint(HealthIndicator<? extends T> indicator) {
+	public HealthEndpoint() {
 		super("health", false, true);
-		Assert.notNull(indicator, "Indicator must not be null");
-		this.indicator = indicator;
 	}
 
+	/**
+	 * Invoke all {@link HealthIndicator} delegates and collect their health information.
+	 */
 	@Override
-	public T invoke() {
-		return this.indicator.health();
+	public Map<String, Object> invoke() {
+		Map<String, Object> health = new LinkedHashMap<String, Object>();
+		for (Entry<String, HealthIndicator<?>> entry : this.healthIndicators.entrySet()) {
+			health.put(getKey(entry.getKey()), entry.getValue().health());
+		}
+		return health;
 	}
 
+	/**
+	 * Turns the bean name into a key that can be used in the map of health information.
+	 */
+	private String getKey(String name) {
+		int x = name.toLowerCase().indexOf("healthindicator");
+		if (x > 0) {
+			return name.substring(0, x);
+		}
+		return name;
+	}
 }
