@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
-import org.springframework.boot.actuate.health.SimpleHealthIndicator;
+import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -120,7 +120,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(SimpleHealthIndicator.class, beans.values().iterator().next()
+		assertEquals(SimpleDataSourceHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
 }

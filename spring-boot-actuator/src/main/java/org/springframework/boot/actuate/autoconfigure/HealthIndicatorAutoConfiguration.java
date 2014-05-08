@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
-import org.springframework.boot.actuate.health.SimpleHealthIndicator;
+import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -72,13 +72,13 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
 		public HealthIndicator<? extends Object> dbHealthIndicator() {
 			if (this.dataSources.size() == 1) {
-				return new SimpleHealthIndicator(this.dataSources.values().iterator()
+				return new SimpleDataSourceHealthIndicator(this.dataSources.values().iterator()
 						.next());
 			}
 
 			CompositeHealthIndicator composite = new CompositeHealthIndicator();
 			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
-				composite.addHealthIndicator(entry.getKey(), new SimpleHealthIndicator(
+				composite.addHealthIndicator(entry.getKey(), new SimpleDataSourceHealthIndicator(
 						entry.getValue()));
 			}
 			return composite;
