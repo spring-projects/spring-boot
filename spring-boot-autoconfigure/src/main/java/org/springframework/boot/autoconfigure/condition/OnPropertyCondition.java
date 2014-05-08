@@ -43,7 +43,8 @@ class OnPropertyCondition extends SpringBootCondition {
 		List<String> missingProperties = new ArrayList<String>();
 
 		for (String property : onProperties) {
-			if (!context.getEnvironment().containsProperty(property)) {
+			if (!context.getEnvironment().containsProperty(property)
+                    || context.getEnvironment().getProperty(property).toLowerCase().equals("false")) {
 				missingProperties.add(property);
 			}
 		}
