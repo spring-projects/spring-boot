@@ -67,6 +67,6 @@ public class EndpointsPropertiesSampleActuatorApplicationTests {
 				"http://localhost:" + this.port + "/admin/health", String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		String body = entity.getBody();
-		assertEquals("ok", body);
+		assertEquals("{\"status\":\"ok\"}", body);
 	}
 }

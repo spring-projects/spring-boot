@@ -157,7 +157,7 @@ installed you can follow the instructions at http://www.gradle.org/.
 Spring Boot dependencies can be declared using the `org.springframework.boot` `group`.
 Typically your project will declare dependencies to one or more
 <<using-spring-boot.adoc#using-boot-starter-poms, ``Starter POMs''>>. Spring Boot
-provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle, Gradle plugin>>
+provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle plugin>>
 that can be used to simplify dependency declarations and to create executable jars.
 
 .Gradle Wrapper
@@ -653,6 +653,11 @@ To create an executable jar we need to add the `spring-boot-maven-plugin` to our
 		</plugins>
 	</build>
 ----
+
+NOTE: The `spring-boot-starter-parent` POM includes `<executions>` configuration to
+bind the `repackage` goal. If you are not using the parent POM you will need to declare
+this configuration yourself. See the {spring-boot-maven-plugin-site}/usage.html[plugin
+documentation] for details.
 
 Save your `pom.xml` and run `mvn package` from the command line:
 

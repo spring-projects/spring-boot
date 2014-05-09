@@ -18,7 +18,7 @@
  * Utilities for working with the managed dependencies declared in the
  * {@literal spring-boot-dependencies} project.
  *
- * @see org.springframework.boot.dependency.tools.ManagedDependencies
+ * @see org.springframework.boot.dependency.tools.VersionManagedDependencies
  */
 package org.springframework.boot.dependency.tools;
 
