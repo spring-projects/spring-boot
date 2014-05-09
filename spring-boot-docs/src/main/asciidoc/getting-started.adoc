@@ -147,6 +147,12 @@ endif::[]
 	</project>
 ----
 
+TIP: The `spring-boot-starter-parent` is a great way to use Spring Boot, but it might
+not be suitable all of the time. Sometimes you may need to inherit from a different
+parent POM, or you might just not like our default settings. See
+<<using-boot-maven-without-a-parent>> for an alternative solution that uses an `import`
+scope.
+
 
 
 [[getting-started-gradle-installation]]
