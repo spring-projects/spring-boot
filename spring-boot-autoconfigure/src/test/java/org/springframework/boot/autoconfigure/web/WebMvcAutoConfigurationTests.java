@@ -220,7 +220,7 @@ public class WebMvcAutoConfigurationTests {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		// set fixed date format
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.date-format:dd*MM*yyyy");
+				"spring.mvc.dateFormat:dd*MM*yyyy");
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -248,7 +248,7 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideMessageCodesFormat() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.mvc.message-codes-resolver.format:POSTFIX_ERROR_CODE");
+				"spring.mvc.messageCodesResolverFormat:POSTFIX_ERROR_CODE");
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,

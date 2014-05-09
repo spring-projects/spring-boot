@@ -35,8 +35,8 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -128,7 +128,7 @@ public class WebMvcAutoConfiguration {
 	// on the classpath
 	@Configuration
 	@EnableWebMvc
-	@EnableConfigurationProperties(ResourceProperties.class)
+	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
 		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
@@ -142,14 +142,8 @@ public class WebMvcAutoConfiguration {
 		@Autowired
 		private ResourceProperties resourceProperties = new ResourceProperties();
 
-		@Value("${spring.mvc.message-codes-resolver.format:}")
-		private DefaultMessageCodesResolver.Format messageCodesResolverFormat = null;
-
-		@Value("${spring.mvc.locale:}")
-		private String locale = "";
-
-		@Value("${spring.mvc.date-format:}")
-		private String dateFormat = "";
+		@Autowired
+		private WebMvcProperties mvcProperties = new WebMvcProperties();
 
 		@Autowired
 		private ListableBeanFactory beanFactory;
@@ -203,22 +197,24 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(LocaleResolver.class)
-		@ConditionalOnExpression("'${spring.mvc.locale:}' != ''")
+		@ConditionalOnProperty(prefix = "spring.mvc.", value = "locale")
 		public LocaleResolver localeResolver() {
-			return new FixedLocaleResolver(StringUtils.parseLocaleString(this.locale));
+			return new FixedLocaleResolver(
+					StringUtils.parseLocaleString(this.mvcProperties.getLocale()));
 		}
 
 		@Bean
-		@ConditionalOnExpression("'${spring.mvc.date-format:}' != ''")
+		@ConditionalOnProperty(prefix = "spring.mvc.", value = "date-format")
 		public Formatter<Date> dateFormatter() {
-			return new DateFormatter(this.dateFormat);
+			return new DateFormatter(this.mvcProperties.getDateFormat());
 		}
 
 		@Override
 		public MessageCodesResolver getMessageCodesResolver() {
-			if (this.messageCodesResolverFormat != null) {
+			if (this.mvcProperties.getMessageCodesResolverFormat() != null) {
 				DefaultMessageCodesResolver resolver = new DefaultMessageCodesResolver();
-				resolver.setMessageCodeFormatter(this.messageCodesResolverFormat);
+				resolver.setMessageCodeFormatter(this.mvcProperties
+						.getMessageCodesResolverFormat());
 				return resolver;
 			}
 			return null;
