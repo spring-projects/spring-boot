@@ -73,6 +73,7 @@ content into your application; rather pick only the properties that you need.
 	spring.view.prefix= # MVC view prefix
 	spring.view.suffix= # ... and suffix
 	spring.resources.cache-period= # cache timeouts in headers sent to browser
+	spring.resources.add-mappings=true # if default mappings should be added
 
 	# THYMELEAF ({sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration])
 	spring.thymeleaf.prefix=classpath:/templates/
