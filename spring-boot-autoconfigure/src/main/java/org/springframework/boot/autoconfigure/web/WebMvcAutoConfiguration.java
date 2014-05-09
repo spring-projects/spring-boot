@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -114,6 +115,7 @@ public class WebMvcAutoConfiguration {
 	}
 
 	public static String DEFAULT_PREFIX = "";
+
 	public static String DEFAULT_SUFFIX = "";
 
 	@Bean
@@ -126,6 +128,7 @@ public class WebMvcAutoConfiguration {
 	// on the classpath
 	@Configuration
 	@EnableWebMvc
+	@EnableConfigurationProperties(ResourceProperties.class)
 	public static class WebMvcAutoConfigurationAdapter extends WebMvcConfigurerAdapter {
 
 		private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
@@ -136,8 +139,8 @@ public class WebMvcAutoConfiguration {
 		@Value("${spring.view.suffix:}")
 		private String suffix = "";
 
-		@Value("${spring.resources.cachePeriod:}")
-		private Integer cachePeriod;
+		@Autowired
+		private ResourceProperties resourceProperties = new ResourceProperties();
 
 		@Value("${spring.mvc.message-codes-resolver.format:}")
 		private DefaultMessageCodesResolver.Format messageCodesResolverFormat = null;
@@ -242,15 +245,21 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
+			if (!this.resourceProperties.isAddMappings()) {
+				logger.debug("Default resource handling disabled");
+				return;
+			}
+
+			Integer cachePeriod = this.resourceProperties.getCachePeriod();
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/")
-						.setCachePeriod(this.cachePeriod);
+						.setCachePeriod(cachePeriod);
 			}
 			if (!registry.hasMappingForPattern("/**")) {
 				registry.addResourceHandler("/**")
 						.addResourceLocations(RESOURCE_LOCATIONS)
-						.setCachePeriod(this.cachePeriod);
+						.setCachePeriod(cachePeriod);
 			}
 		}
 

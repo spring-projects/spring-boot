@@ -156,6 +156,19 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	public void resourceHandlerMappingDisabled() throws Exception {
+		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.resources.add-mappings:false");
+		this.context.register(Config.class, WebMvcAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, List<Resource>> mappingLocations = getMappingLocations();
+		assertThat(mappingLocations.size(), equalTo(0));
+	}
+
+	@Test
 	public void noLocaleResolver() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(AllResources.class, Config.class,
@@ -195,7 +208,8 @@ public class WebMvcAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		FormattingConversionService cs = this.context.getBean(FormattingConversionService.class);
+		FormattingConversionService cs = this.context
+				.getBean(FormattingConversionService.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
 		// formatting cs should use simple toString()
 		assertThat(cs.convert(date, String.class), equalTo(date.toString()));
@@ -205,13 +219,15 @@ public class WebMvcAutoConfigurationTests {
 	public void overrideDateFormat() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		// set fixed date format
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.mvc.date-format:dd*MM*yyyy");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mvc.date-format:dd*MM*yyyy");
 		this.context.register(AllResources.class, Config.class,
 				WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		FormattingConversionService cs = this.context.getBean(FormattingConversionService.class);
+		FormattingConversionService cs = this.context
+				.getBean(FormattingConversionService.class);
 		Date date = new DateTime(1988, 6, 25, 20, 30).toDate();
 		assertThat(cs.convert(date, String.class), equalTo("25*06*1988"));
 	}
@@ -245,17 +261,20 @@ public class WebMvcAutoConfigurationTests {
 	@SuppressWarnings("unchecked")
 	protected Map<String, List<Resource>> getMappingLocations()
 			throws IllegalAccessException {
-		SimpleUrlHandlerMapping mapping = (SimpleUrlHandlerMapping) this.context
+		HandlerMapping mapping = (HandlerMapping) this.context
 				.getBean("resourceHandlerMapping");
-		Field locationsField = ReflectionUtils.findField(
-				ResourceHttpRequestHandler.class, "locations");
-		locationsField.setAccessible(true);
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<String, List<Resource>>();
-		for (Map.Entry<String, Object> entry : mapping.getHandlerMap().entrySet()) {
-			ResourceHttpRequestHandler handler = (ResourceHttpRequestHandler) entry
-					.getValue();
-			mappingLocations.put(entry.getKey(),
-					(List<Resource>) locationsField.get(handler));
+		if (mapping instanceof SimpleUrlHandlerMapping) {
+			Field locationsField = ReflectionUtils.findField(
+					ResourceHttpRequestHandler.class, "locations");
+			locationsField.setAccessible(true);
+			for (Map.Entry<String, Object> entry : ((SimpleUrlHandlerMapping) mapping)
+					.getHandlerMap().entrySet()) {
+				ResourceHttpRequestHandler handler = (ResourceHttpRequestHandler) entry
+						.getValue();
+				mappingLocations.put(entry.getKey(),
+						(List<Resource>) locationsField.get(handler));
+			}
 		}
 		return mappingLocations;
 	}
