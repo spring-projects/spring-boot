@@ -19,9 +19,10 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
 
@@ -29,6 +30,7 @@ import org.springframework.util.StringUtils;
  * {@link Condition} that checks if properties are defined in environment.
  * 
  * @author Maciej Walkowiak
+ * @author Phillip Webb
  * @see ConditionalOnProperty
  * @since 1.1.0
  */
@@ -38,17 +40,27 @@ class OnPropertyCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
-		String[] onProperties = (String[]) metadata.getAnnotationAttributes(
+		String prefix = (String) metadata.getAnnotationAttributes(
+				ConditionalOnProperty.class.getName()).get("prefix");
+		String[] names = (String[]) metadata.getAnnotationAttributes(
 				ConditionalOnProperty.class.getName()).get("value");
+		Boolean relaxedNames = (Boolean) metadata.getAnnotationAttributes(
+				ConditionalOnProperty.class.getName()).get("relaxedNames");
 
 		List<String> missingProperties = new ArrayList<String>();
 
-		Environment environment = context.getEnvironment();
-		for (String property : onProperties) {
-			if (!environment.containsProperty(property)
-					|| StringUtils.endsWithIgnoreCase(environment.getProperty(property),
-							"false")) {
-				missingProperties.add(property);
+		PropertyResolver resolver = context.getEnvironment();
+		if (relaxedNames) {
+			resolver = new RelaxedPropertyResolver(resolver, prefix);
+			prefix = "";
+		}
+
+		for (String name : names) {
+			name = prefix + name;
+			if (!resolver.containsProperty(name)
+					|| "false".equalsIgnoreCase(resolver.getProperty(name))) {
+				missingProperties.add(name);
+
 			}
 		}
 
@@ -56,9 +68,9 @@ class OnPropertyCondition extends SpringBootCondition {
 			return ConditionOutcome.match();
 		}
 
-		return ConditionOutcome
-				.noMatch("@ConditionalOnProperty missing required properties: "
-						+ StringUtils.arrayToCommaDelimitedString(missingProperties
-								.toArray()) + " not found");
+		return ConditionOutcome.noMatch("@ConditionalOnProperty "
+				+ "missing required properties: "
+				+ StringUtils.arrayToCommaDelimitedString(missingProperties.toArray())
+				+ " not found");
 	}
 }
