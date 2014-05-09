@@ -64,11 +64,15 @@ If you import additional starters, you can safely omit the version number.
 
 
 
-[[using-boot-maven-your-own-parent]]
-==== Using your own parent POM
-If you don't want to use the Spring Boot starter parent, you can use your own and still
-keep the benefit of the dependency management (but not the plugin management) using a
-`scope=import` dependency:
+[[using-boot-maven-without-a-parent]]
+==== Using Spring Boot without the parent POM
+No everyone likes inheriting from the `spring-boot-starter-parent` POM. You may have your
+own corporate standard parent that you need to use, or you may just prefer to explicitly
+declare all your Maven configuration.
+
+If you don't want to use the `spring-boot-starter-parent`, you can still keep the benefit
+of the dependency management (but not the plugin management) by using a `scope=import`
+dependency:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
