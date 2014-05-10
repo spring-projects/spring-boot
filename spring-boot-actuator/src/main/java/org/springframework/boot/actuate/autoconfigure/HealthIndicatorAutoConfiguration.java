@@ -149,7 +149,7 @@ public class HealthIndicatorAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "rabbitHealthIndicator")
-		public HealthIndicator<?> redisHealthIndicator() {
+		public HealthIndicator<?> rabbitHealthIndicator() {
 			if (this.rabbitTemplates.size() == 1) {
 				return new RabbitHealthIndicator(this.rabbitTemplates.values().iterator()
 						.next());

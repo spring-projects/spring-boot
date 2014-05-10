@@ -28,7 +28,7 @@ import com.rabbitmq.client.Channel;
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for the
  * RabbitMQ messaging system.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
