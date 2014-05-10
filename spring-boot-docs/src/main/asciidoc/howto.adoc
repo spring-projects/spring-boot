@@ -1062,7 +1062,8 @@ not something you want to be on the classpath in production. It is a Hibernate f
 === Initialize a database using Spring JDBC
 Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
 loads SQL from the standard locations `schema.sql` and `data.sql` (in the root of the
-classpath). In addition Spring Boot will load a file `schema-${platform}.sql` where
+classpath). In addition Spring Boot will load the `schema-${platform}.sql`
+and `data-${platform}.sql` files (if present), where
 `platform` is the value of `spring.datasource.platform`, e.g. you might choose to set
 it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
 `postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
