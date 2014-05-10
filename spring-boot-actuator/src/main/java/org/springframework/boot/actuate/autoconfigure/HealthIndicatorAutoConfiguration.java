@@ -20,15 +20,18 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.CommonsDataSourceConfiguration;
@@ -46,7 +49,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */
@@ -55,7 +58,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 		EmbeddedDataSourceConfiguration.class, CommonsDataSourceConfiguration.class,
 		HikariDataSourceConfiguration.class, TomcatDataSourceConfiguration.class,
 		MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		RedisAutoConfiguration.class })
+		RedisAutoConfiguration.class, RabbitAutoConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 
 	@Bean
@@ -131,6 +134,31 @@ public class HealthIndicatorAutoConfiguration {
 			for (Map.Entry<String, RedisConnectionFactory> entry : this.redisConnectionFactories
 					.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(), new RedisHealthIndicator(
+						entry.getValue()));
+			}
+			return composite;
+		}
+	}
+
+	@Configuration
+	@ConditionalOnBean(RabbitTemplate.class)
+	public static class RabbitHealthIndicatorConfiguration {
+
+		@Autowired
+		private Map<String, RabbitTemplate> rabbitTemplates;
+
+		@Bean
+		@ConditionalOnMissingBean(name = "rabbitHealthIndicator")
+		public HealthIndicator<?> redisHealthIndicator() {
+			if (this.rabbitTemplates.size() == 1) {
+				return new RabbitHealthIndicator(this.rabbitTemplates.values().iterator()
+						.next());
+			}
+
+			CompositeHealthIndicator composite = new CompositeHealthIndicator();
+			for (Map.Entry<String, RabbitTemplate> entry : this.rabbitTemplates
+					.entrySet()) {
+				composite.addHealthIndicator(entry.getKey(), new RabbitHealthIndicator(
 						entry.getValue()));
 			}
 			return composite;
