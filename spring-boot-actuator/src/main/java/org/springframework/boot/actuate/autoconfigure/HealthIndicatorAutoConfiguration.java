@@ -49,7 +49,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
