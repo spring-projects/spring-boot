@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -75,7 +74,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory" };
 
-	private BeanMetaDataStore beans = new BeanMetaDataStore();
+	private ConfigurationBeanFactoryMetaData beans = new ConfigurationBeanFactoryMetaData();
 
 	private PropertySources propertySources;
 
@@ -138,7 +137,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	/**
 	 * @param beans the bean meta data to set
 	 */
-	public void setBeanMetaDataStore(BeanMetaDataStore beans) {
+	public void setBeanMetaDataStore(ConfigurationBeanFactoryMetaData beans) {
 		this.beans = beans;
 	}
 
@@ -287,22 +286,12 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
 			postProcessBeforeInitialization(bean, beanName, annotation);
 		}
-		annotation = maybePostProcessAnnotatedFactoryMethod(bean, beanName);
+		annotation = this.beans.findFactoryAnnotation(beanName,
+				ConfigurationProperties.class);
 		if (annotation != null) {
 			postProcessBeforeInitialization(bean, beanName, annotation);
 		}
 		return bean;
-	}
-
-	private ConfigurationProperties maybePostProcessAnnotatedFactoryMethod(Object bean,
-			String beanName) {
-		Method method = this.beans.findFactoryMethod(beanName);
-		if (method != null) {
-			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(method,
-					ConfigurationProperties.class);
-			return annotation;
-		}
-		return null;
 	}
 
 	@Override

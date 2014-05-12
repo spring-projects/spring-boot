@@ -47,6 +47,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -71,13 +72,16 @@ public class EndpointAutoConfiguration {
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
-	private final MetricReader metricRepository = new InMemoryMetricRepository();
+	private MetricReader metricRepository = new InMemoryMetricRepository();
 
 	@Autowired(required = false)
 	private PublicMetrics metrics;
 
 	@Autowired(required = false)
-	private final TraceRepository traceRepository = new InMemoryTraceRepository();
+	private TraceRepository traceRepository = new InMemoryTraceRepository();
+
+	@Autowired(required = false)
+	private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -159,7 +163,9 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
-		return new ConfigurationPropertiesReportEndpoint();
+		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
+		endpoint.setConfigurationBeanFactoryMetaData(this.beanFactoryMetaData);
+		return endpoint;
 	}
 
 	@Configuration

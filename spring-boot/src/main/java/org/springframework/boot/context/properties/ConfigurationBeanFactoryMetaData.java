@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
@@ -34,7 +36,7 @@ import org.springframework.util.ReflectionUtils.MethodCallback;
  * 
  * @author Dave Syer
  */
-class BeanMetaDataStore implements BeanFactoryPostProcessor {
+public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcessor {
 
 	private ConfigurableListableBeanFactory beanFactory;
 
@@ -54,7 +56,26 @@ class BeanMetaDataStore implements BeanFactoryPostProcessor {
 		}
 	}
 
-	public Method findFactoryMethod(String beanName) {
+	public <A extends Annotation> Map<String, Object> getBeansWithFactoryAnnotation(
+			Class<A> type) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		for (String name : this.beans.keySet()) {
+			if (findFactoryAnnotation(name, type) != null) {
+				result.put(name, this.beanFactory.getBean(name));
+			}
+		}
+		return result;
+	}
+
+	public <A extends Annotation> A findFactoryAnnotation(String beanName, Class<A> type) {
+		Method method = findFactoryMethod(beanName);
+		if (method != null) {
+			return AnnotationUtils.findAnnotation(method, type);
+		}
+		return null;
+	}
+
+	private Method findFactoryMethod(String beanName) {
 		if (!this.beans.containsKey(beanName)) {
 			return null;
 		}
