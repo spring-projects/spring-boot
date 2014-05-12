@@ -78,6 +78,7 @@ public class RunApp extends DefaultTask {
 						FileUtils.removeDuplicatesFromOutputDirectory(outputDir, directory);
 					}
 				}
+        exec.setSystemProperties(project.getProperties());
 				exec.exec();
 			}
 
