@@ -16,14 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.request.RequestAttributes;
 
 /**
  * Marker interface used to indicate that a {@link Controller @Controller} is used to
- * render errors.
+ * render errors. Primarily used to know the error paths that will not need to be secured.
  * 
  * @author Phillip Webb
  */
@@ -33,15 +30,5 @@ public interface ErrorController {
 	 * Returns the path of the error page.
 	 */
 	public String getErrorPath();
-
-	/**
-	 * Extract a useful model of the error from the request attributes.
-	 * @param attributes the request attributes
-	 * @param trace flag to indicate that stack trace information should be included
-	 * @param log flag to indicate that an error should be logged
-	 * @return a model containing error messages and codes etc.
-	 */
-	public Map<String, Object> extract(RequestAttributes attributes, boolean trace,
-			boolean log);
 
 }

@@ -34,8 +34,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.web.BasicErrorController;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,7 +59,7 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
-	private BasicErrorController errorController;
+	private ErrorAttributes errorAttributes;
 
 	/**
 	 * @param traceRepository
@@ -156,13 +157,13 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 		trace.put("method", request.getMethod());
 		trace.put("path", request.getRequestURI());
 		trace.put("headers", allHeaders);
-		Throwable error = (Throwable) request
+		Throwable exception = (Throwable) request
 				.getAttribute("javax.servlet.error.exception");
-		if (error != null) {
-			if (this.errorController != null) {
-				trace.put("error", this.errorController.extract(
-						new ServletRequestAttributes(request), true, false));
-			}
+		if (exception != null && this.errorAttributes != null) {
+			RequestAttributes requestAttributes = new ServletRequestAttributes(request);
+			Map<String, Object> error = this.errorAttributes.getErrorAttributes(
+					requestAttributes, true);
+			trace.put("error", error);
 		}
 		return trace;
 	}
@@ -175,8 +176,8 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 	public void destroy() {
 	}
 
-	public void setErrorController(BasicErrorController errorController) {
-		this.errorController = errorController;
+	public void setErrorAttributes(ErrorAttributes errorAttributes) {
+		this.errorAttributes = errorAttributes;
 	}
 
 }

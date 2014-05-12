@@ -73,9 +73,15 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	private String errorPath = "/error";
 
 	@Bean
+	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
+	public DefaulErrorAttributes errorAttributes() {
+		return new DefaulErrorAttributes();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
-	public BasicErrorController basicErrorController() {
-		return new BasicErrorController();
+	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes) {
+		return new BasicErrorController(errorAttributes);
 	}
 
 	@Override
@@ -136,6 +142,9 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	}
 
+	/**
+	 * Simple {@link View} implementation that resolves variables as SpEL expressions.
+	 */
 	private static class SpelView implements View {
 
 		private final String template;
@@ -156,8 +165,13 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 				@Override
 				public String resolvePlaceholder(String name) {
 					Expression expression = SpelView.this.parser.parseExpression(name);
-					Object value = expression.getValue(SpelView.this.context);
-					return value == null ? null : value.toString();
+					try {
+						Object value = expression.getValue(SpelView.this.context);
+						return (value == null ? null : value.toString());
+					}
+					catch (Exception ex) {
+						return null;
+					}
 				}
 			};
 		}
