@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -47,6 +48,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
  * in your Spring Boot application configuration.
  * 
  * @author Christian Dupuis
+ * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.configprops", ignoreUnknownFields = false)
 public class ConfigurationPropertiesReportEndpoint extends
@@ -57,6 +59,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	private String[] keysToSanitize = new String[] { "password", "secret" };
 
 	private ApplicationContext context;
+
+	private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
 
 	public ConfigurationPropertiesReportEndpoint() {
 		super("configprops");
@@ -69,6 +73,11 @@ public class ConfigurationPropertiesReportEndpoint extends
 	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		this.context = context;
+	}
+
+	public void setConfigurationBeanFactoryMetaData(
+			ConfigurationBeanFactoryMetaData beanFactoryMetaData) {
+		this.beanFactoryMetaData = beanFactoryMetaData;
 	}
 
 	public void setKeysToSanitize(String... keysToSanitize) {
@@ -87,9 +96,14 @@ public class ConfigurationPropertiesReportEndpoint extends
 	 */
 	@SuppressWarnings("unchecked")
 	protected Map<String, Object> extract(ApplicationContext context) {
+
 		Map<String, Object> result = new HashMap<String, Object>();
-		Map<String, Object> beans = context
-				.getBeansWithAnnotation(ConfigurationProperties.class);
+		Map<String, Object> beans = new HashMap<String, Object>(
+				context.getBeansWithAnnotation(ConfigurationProperties.class));
+		if (this.beanFactoryMetaData != null) {
+			beans.putAll(this.beanFactoryMetaData
+					.getBeansWithFactoryAnnotation(ConfigurationProperties.class));
+		}
 
 		// Serialize beans into map structure and sanitize values
 		ObjectMapper mapper = new ObjectMapper();
@@ -100,7 +114,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 			Object bean = entry.getValue();
 
 			Map<String, Object> root = new HashMap<String, Object>();
-			root.put("prefix", extractPrefix(bean));
+			root.put("prefix", extractPrefix(beanName, bean));
 			root.put("properties", sanitize(mapper.convertValue(bean, Map.class)));
 			result.put(beanName, root);
 		}
@@ -134,9 +148,19 @@ public class ConfigurationPropertiesReportEndpoint extends
 	/**
 	 * Extract configuration prefix from {@link ConfigurationProperties} annotation.
 	 */
-	private String extractPrefix(Object bean) {
+	private String extractPrefix(String beanName, Object bean) {
 		ConfigurationProperties annotation = AnnotationUtils.findAnnotation(
 				bean.getClass(), ConfigurationProperties.class);
+		if (this.beanFactoryMetaData != null) {
+			ConfigurationProperties override = this.beanFactoryMetaData
+					.findFactoryAnnotation(beanName, ConfigurationProperties.class);
+			if (override != null) {
+				// The @Bean-level @ConfigurationProperties overrides the one at type
+				// level when binding. Arguably we should render them both, but this one
+				// might be the most relevant for a starting point.
+				annotation = override;
+			}
+		}
 		return (StringUtils.hasLength(annotation.value()) ? annotation.value()
 				: annotation.prefix());
 	}
