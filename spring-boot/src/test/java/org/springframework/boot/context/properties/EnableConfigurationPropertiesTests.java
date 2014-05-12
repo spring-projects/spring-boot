@@ -370,6 +370,27 @@ public class EnableConfigurationPropertiesTests {
 		assertEquals("value12", bean.mymap.get("key1.key2"));
 	}
 
+	@Test
+	public void testAnnotatedBean() {
+		EnvironmentTestUtils.addEnvironment(this.context, "external.name:bar",
+				"spam.name:foo");
+		this.context.register(TestConfigurationWithAnnotatedBean.class);
+		this.context.refresh();
+		assertEquals("foo", this.context.getBean(External.class).getName());
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class TestConfigurationWithAnnotatedBean {
+
+		@Bean
+		@ConfigurationProperties(prefix = "spam")
+		public External testProperties() {
+			return new External();
+		}
+
+	}
+
 	/**
 	 * Strict tests need a known set of properties so we remove system items which may be
 	 * environment specific.

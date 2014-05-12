@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -74,6 +75,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
 			"javax.validation.ValidatorFactory" };
 
+	private BeanMetaDataStore beans = new BeanMetaDataStore();
+
 	private PropertySources propertySources;
 
 	private Validator validator;
@@ -130,6 +133,13 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	 */
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
+	}
+
+	/**
+	 * @param beans the bean meta data to set
+	 */
+	public void setBeanMetaDataStore(BeanMetaDataStore beans) {
+		this.beans = beans;
 	}
 
 	@Override
@@ -277,7 +287,22 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		if (annotation != null || bean instanceof ConfigurationPropertiesHolder) {
 			postProcessBeforeInitialization(bean, beanName, annotation);
 		}
+		annotation = maybePostProcessAnnotatedFactoryMethod(bean, beanName);
+		if (annotation != null) {
+			postProcessBeforeInitialization(bean, beanName, annotation);
+		}
 		return bean;
+	}
+
+	private ConfigurationProperties maybePostProcessAnnotatedFactoryMethod(Object bean,
+			String beanName) {
+		Method method = this.beans.findFactoryMethod(beanName);
+		if (method != null) {
+			ConfigurationProperties annotation = AnnotationUtils.findAnnotation(method,
+					ConfigurationProperties.class);
+			return annotation;
+		}
+		return null;
 	}
 
 	@Override
@@ -353,7 +378,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private ConversionService getDefaultConversionService() {
-		if (!this.initialized && this.beanFactory instanceof ListableBeanFactory) {
+		if (!this.initialized) {
 			for (Converter<?, ?> converter : ((ListableBeanFactory) this.beanFactory)
 					.getBeansOfType(Converter.class).values()) {
 				this.defaultConversionService.addConverter(converter);
