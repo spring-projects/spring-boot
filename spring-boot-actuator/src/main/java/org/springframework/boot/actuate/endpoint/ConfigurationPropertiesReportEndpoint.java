@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
@@ -25,15 +27,23 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
+import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
+import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
@@ -133,6 +143,16 @@ public class ConfigurationPropertiesReportEndpoint extends
 	protected void configureObjectMapper(ObjectMapper mapper) {
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 		applyCglibFilters(mapper);
+		applySerializationModifier(mapper);
+	}
+
+	/**
+	 * Ensure only bindable and non-cyclic bean properties are reported.
+	 */
+	private void applySerializationModifier(ObjectMapper mapper) {
+		SerializerFactory factory = BeanSerializerFactory.instance
+				.withSerializerModifier(new GenericSerializerModifier());
+		mapper.setSerializerFactory(factory);
 	}
 
 	/**
@@ -227,6 +247,29 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 		private boolean include(String name) {
 			return !name.startsWith("$$");
+		}
+
+	}
+
+	protected static class GenericSerializerModifier extends BeanSerializerModifier {
+
+		private ConversionService conversionService = new DefaultConversionService();
+
+		@Override
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
+				BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+			List<BeanPropertyWriter> result = new ArrayList<BeanPropertyWriter>();
+			for (BeanPropertyWriter writer : beanProperties) {
+				AnnotatedMethod setter = beanDesc.findMethod(
+						"set" + StringUtils.capitalize(writer.getName()),
+						new Class<?>[] { writer.getPropertyType() });
+				if (setter != null
+						&& this.conversionService.canConvert(String.class,
+								writer.getPropertyType())) {
+					result.add(writer);
+				}
+			}
+			return result;
 		}
 
 	}
