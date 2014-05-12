@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegratio
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -47,6 +48,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.View;
@@ -87,6 +89,16 @@ public class BasicErrorControllerIntegrationTests {
 	public void testErrorForMachineClient() throws Exception {
 		MvcResult result = this.mockMvc.perform(get("/"))
 				.andExpect(status().is5xxServerError()).andReturn();
+		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
+				.andReturn();
+		String content = response.getResponse().getContentAsString();
+		assertTrue("Wrong content: " + content, content.contains("Expected!"));
+	}
+
+	@Test
+	public void testErrorWithResponseStatus() throws Exception {
+		MvcResult result = this.mockMvc.perform(get("/bang"))
+				.andExpect(status().isNotFound()).andReturn();
 		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
 				.andReturn();
 		String content = response.getResponse().getContentAsString();
@@ -151,6 +163,11 @@ public class BasicErrorControllerIntegrationTests {
 				throw new IllegalStateException("Expected!");
 			}
 
+			@RequestMapping("/bang")
+			public String bang() {
+				throw new NotFoundException("Expected!");
+			}
+
 			@RequestMapping("/bind")
 			public String bind() throws Exception {
 				BindException error = new BindException(this, "test");
@@ -158,6 +175,15 @@ public class BasicErrorControllerIntegrationTests {
 				throw error;
 			}
 
+		}
+
+	}
+
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	private static class NotFoundException extends RuntimeException {
+
+		public NotFoundException(String string) {
+			super(string);
 		}
 
 	}
