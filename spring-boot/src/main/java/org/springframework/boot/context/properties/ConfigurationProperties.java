@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * @author Dave Syer
  * @see ConfigurationPropertiesBindingPostProcessor
  */
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ConfigurationProperties {

@@ -16,9 +16,8 @@
 
 package org.springframework.boot.context.properties;
 
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
@@ -35,14 +34,19 @@ public class ConfigurationPropertiesBindingPostProcessorRegistrar implements
 	public static final String BINDER_BEAN_NAME = ConfigurationPropertiesBindingPostProcessor.class
 			.getName();
 
+	private static final String METADATA_BEAN_NAME = BINDER_BEAN_NAME + ".store";
+
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(BINDER_BEAN_NAME)) {
-			BeanDefinition beanDefinition = new RootBeanDefinition(
-					ConfigurationPropertiesBindingPostProcessor.class);
-			registry.registerBeanDefinition(BINDER_BEAN_NAME, beanDefinition);
+			BeanDefinitionBuilder meta = BeanDefinitionBuilder
+					.genericBeanDefinition(BeanMetaDataStore.class);
+			BeanDefinitionBuilder bean = BeanDefinitionBuilder
+					.genericBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class);
+			bean.addPropertyReference("beanMetaDataStore", METADATA_BEAN_NAME);
+			registry.registerBeanDefinition(BINDER_BEAN_NAME, bean.getBeanDefinition());
+			registry.registerBeanDefinition(METADATA_BEAN_NAME, meta.getBeanDefinition());
 		}
 	}
-
 }
