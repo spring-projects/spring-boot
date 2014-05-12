@@ -29,7 +29,7 @@ import org.crsh.lang.groovy.GroovyRepl;
 import org.crsh.plugin.PluginContext;
 import org.crsh.plugin.PluginLifeCycle;
 import org.crsh.plugin.ResourceKind;
-import org.crsh.processor.term.ProcessorIOHandler;
+import org.crsh.telnet.term.processor.ProcessorIOHandler;
 import org.crsh.vfs.Resource;
 import org.junit.After;
 import org.junit.Test;
