@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 /**
@@ -65,6 +66,8 @@ public class BasicErrorController implements ErrorController {
 
 	private DefaultHandlerExceptionResolver resolver = new DefaultHandlerExceptionResolver();
 
+	private ResponseStatusExceptionResolver statuses = new ResponseStatusExceptionResolver();
+
 	@Value("${error.path:/error}")
 	private String errorPath;
 
@@ -76,7 +79,9 @@ public class BasicErrorController implements ErrorController {
 	@ExceptionHandler(Exception.class)
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			Exception e) throws Exception {
-		this.resolver.resolveException(request, response, null, e);
+		if (this.statuses.resolveException(request, response, null, e) == null) {
+			this.resolver.resolveException(request, response, null, e);
+		}
 		if (response.getStatus() == HttpServletResponse.SC_OK) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
