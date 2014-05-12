@@ -19,12 +19,12 @@ package org.springframework.boot.actuate.endpoint.mvc;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.Endpoint;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
@@ -37,21 +37,21 @@ import org.springframework.web.context.request.RequestContextHolder;
 @ConfigurationProperties(prefix = "error")
 public class ManagementErrorEndpoint implements MvcEndpoint {
 
-	private final ErrorController controller;
+	private final ErrorAttributes errorAttributes;
 
 	private final String path;
 
-	public ManagementErrorEndpoint(String path, ErrorController controller) {
-		Assert.notNull(controller, "Controller must not be null");
+	public ManagementErrorEndpoint(String path, ErrorAttributes errorAttributes) {
+		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
 		this.path = path;
-		this.controller = controller;
+		this.errorAttributes = errorAttributes;
 	}
 
 	@RequestMapping
 	@ResponseBody
 	public Map<String, Object> invoke() {
-		RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
-		return this.controller.extract(attributes, false, true);
+		return this.errorAttributes.getErrorAttributes(
+				RequestContextHolder.currentRequestAttributes(), false);
 	}
 
 	@Override

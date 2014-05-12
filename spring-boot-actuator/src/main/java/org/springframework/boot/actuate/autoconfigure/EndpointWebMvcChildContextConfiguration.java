@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.web.ErrorController;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -125,12 +125,11 @@ public class EndpointWebMvcChildContextConfiguration {
 	/*
 	 * The error controller is present but not mapped as an endpoint in this context
 	 * because of the DispatcherServlet having had it's HandlerMapping explicitly
-	 * disabled. So this tiny shim exposes the same feature but only for machine
-	 * endpoints.
+	 * disabled. So we expose the same feature but only for machine endpoints.
 	 */
 	@Bean
-	public ManagementErrorEndpoint errorEndpoint(final ErrorController controller) {
-		return new ManagementErrorEndpoint(this.errorPath, controller);
+	public ManagementErrorEndpoint errorEndpoint(final ErrorAttributes errorAttributes) {
+		return new ManagementErrorEndpoint(this.errorPath, errorAttributes);
 	}
 
 	@Configuration

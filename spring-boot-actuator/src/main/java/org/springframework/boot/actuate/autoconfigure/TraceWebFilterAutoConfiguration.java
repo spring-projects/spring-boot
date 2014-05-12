@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.trace.WebRequestTraceFilter;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.web.BasicErrorController;
+import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -45,7 +45,7 @@ public class TraceWebFilterAutoConfiguration {
 	private TraceRepository traceRepository;
 
 	@Autowired(required = false)
-	private BasicErrorController errorController;
+	private ErrorAttributes errorAttributes;
 
 	@Value("${management.dump_requests:false}")
 	private boolean dumpRequests;
@@ -54,8 +54,8 @@ public class TraceWebFilterAutoConfiguration {
 	public WebRequestTraceFilter webRequestLoggingFilter(BeanFactory beanFactory) {
 		WebRequestTraceFilter filter = new WebRequestTraceFilter(this.traceRepository);
 		filter.setDumpRequests(this.dumpRequests);
-		if (this.errorController != null) {
-			filter.setErrorController(this.errorController);
+		if (this.errorAttributes != null) {
+			filter.setErrorAttributes(this.errorAttributes);
 		}
 		return filter;
 	}

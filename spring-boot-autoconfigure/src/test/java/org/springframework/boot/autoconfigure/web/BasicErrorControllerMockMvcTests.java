@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.BasicErrorControllerIntegrationTests.TestConfiguration;
+import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.TestConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,13 +59,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * Tests for {@link BasicErrorController} using {@link MockMvc} and
+ * {@link SpringJUnit4ClassRunner}.
+ * 
  * @author Dave Syer
  */
 @SpringApplicationConfiguration(classes = TestConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @DirtiesContext
-public class BasicErrorControllerIntegrationTests {
+public class BasicErrorControllerMockMvcTests {
 
 	@Autowired
 	private WebApplicationContext wac;
@@ -83,16 +86,6 @@ public class BasicErrorControllerIntegrationTests {
 				.andExpect(status().is5xxServerError()).andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertTrue("Wrong content: " + content, content.contains("999"));
-	}
-
-	@Test
-	public void testErrorForMachineClient() throws Exception {
-		MvcResult result = this.mockMvc.perform(get("/"))
-				.andExpect(status().is5xxServerError()).andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
-				.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertTrue("Wrong content: " + content, content.contains("Expected!"));
 	}
 
 	@Test
