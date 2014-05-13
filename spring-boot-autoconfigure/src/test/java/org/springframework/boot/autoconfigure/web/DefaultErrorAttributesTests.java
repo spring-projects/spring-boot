@@ -41,13 +41,13 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link DefaulErrorAttributes}.
+ * Tests for {@link DefaultErrorAttributes}.
  * 
  * @author Phillip Webb
  */
 public class DefaultErrorAttributesTests {
 
-	private DefaulErrorAttributes errorAttributes = new DefaulErrorAttributes();
+	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 
