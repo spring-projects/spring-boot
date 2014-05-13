@@ -21,8 +21,12 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.junit.Test;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -81,6 +85,18 @@ public class CommonsDataSourceConfigurationTests {
 		assertEquals(GenericObjectPool.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS,
 				ds.getMinEvictableIdleTimeMillis());
 		assertEquals(GenericObjectPool.DEFAULT_MAX_WAIT, ds.getMaxWait());
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class CommonsDataSourceConfiguration {
+
+		@Bean
+		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
+		public DataSource dataSource() {
+			return DataSourceFactory.create().type(BasicDataSource.class).build();
+		}
+
 	}
 
 }

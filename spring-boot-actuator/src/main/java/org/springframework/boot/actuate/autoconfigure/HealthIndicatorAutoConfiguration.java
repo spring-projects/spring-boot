@@ -34,11 +34,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.jdbc.CommonsDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.HikariDataSourceConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.TomcatDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
@@ -54,11 +50,9 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
  * @since 1.1.0
  */
 @Configuration
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		EmbeddedDataSourceConfiguration.class, CommonsDataSourceConfiguration.class,
-		HikariDataSourceConfiguration.class, TomcatDataSourceConfiguration.class,
-		MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-		RedisAutoConfiguration.class, RabbitAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
+		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
+		RabbitAutoConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 
 	@Bean

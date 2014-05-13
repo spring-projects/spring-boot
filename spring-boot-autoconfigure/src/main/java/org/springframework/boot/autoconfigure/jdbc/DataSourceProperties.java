@@ -20,7 +20,6 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
@@ -29,9 +28,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
-@EnableConfigurationProperties
-public abstract class AbstractDataSourceConfiguration implements BeanClassLoaderAware,
-		InitializingBean {
+public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {
 
 	private String driverClassName;
 
@@ -41,29 +38,17 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	private String password;
 
-	private int maxActive = 100;
-
-	private int maxIdle = 8;
-
-	private int minIdle = 8;
-
-	private int initialSize = 10;
-
-	private String validationQuery;
-
-	private boolean testOnBorrow;
-
-	private boolean testOnReturn;
-
-	private boolean testWhileIdle;
-
-	private Integer timeBetweenEvictionRunsMillis;
-
-	private Integer minEvictableIdleTimeMillis;
-
-	private Integer maxWaitMillis;
-
 	private ClassLoader classLoader;
+
+	private boolean initialize = true;
+
+	private String platform = "all";
+
+	private String schema;
+
+	private boolean continueOnError = false;
+
+	private String separator = ";";
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
@@ -78,7 +63,7 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 				.get(this.classLoader);
 	}
 
-	protected String getDriverClassName() {
+	public String getDriverClassName() {
 		if (StringUtils.hasText(this.driverClassName)) {
 			return this.driverClassName;
 		}
@@ -93,7 +78,7 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		return driverClassName;
 	}
 
-	protected String getUrl() {
+	public String getUrl() {
 		if (StringUtils.hasText(this.url)) {
 			return this.url;
 		}
@@ -108,7 +93,7 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		return url;
 	}
 
-	protected String getUsername() {
+	public String getUsername() {
 		if (StringUtils.hasText(this.username)) {
 			return this.username;
 		}
@@ -118,7 +103,7 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		return null;
 	}
 
-	protected String getPassword() {
+	public String getPassword() {
 		if (StringUtils.hasText(this.password)) {
 			return this.password;
 		}
@@ -130,10 +115,6 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 
 	public void setDriverClassName(String driverClassName) {
 		this.driverClassName = driverClassName;
-	}
-
-	public void setInitialSize(int initialSize) {
-		this.initialSize = initialSize;
 	}
 
 	public void setUrl(String url) {
@@ -148,88 +129,48 @@ public abstract class AbstractDataSourceConfiguration implements BeanClassLoader
 		this.password = password;
 	}
 
-	public void setMaxActive(int maxActive) {
-		this.maxActive = maxActive;
+	public boolean isInitialize() {
+		return this.initialize;
 	}
 
-	public void setMaxIdle(int maxIdle) {
-		this.maxIdle = maxIdle;
+	public void setInitialize(boolean initialize) {
+		this.initialize = initialize;
 	}
 
-	public void setMinIdle(int minIdle) {
-		this.minIdle = minIdle;
+	public String getPlatform() {
+		return this.platform;
 	}
 
-	public void setValidationQuery(String validationQuery) {
-		this.validationQuery = validationQuery;
+	public void setPlatform(String platform) {
+		this.platform = platform;
 	}
 
-	public void setTestOnBorrow(boolean testOnBorrow) {
-		this.testOnBorrow = testOnBorrow;
+	public String getSchema() {
+		return this.schema;
 	}
 
-	public void setTestOnReturn(boolean testOnReturn) {
-		this.testOnReturn = testOnReturn;
+	public void setSchema(String schema) {
+		this.schema = schema;
 	}
 
-	public void setTestWhileIdle(boolean testWhileIdle) {
-		this.testWhileIdle = testWhileIdle;
+	public boolean isContinueOnError() {
+		return this.continueOnError;
 	}
 
-	public void setTimeBetweenEvictionRunsMillis(int timeBetweenEvictionRunsMillis) {
-		this.timeBetweenEvictionRunsMillis = timeBetweenEvictionRunsMillis;
+	public void setContinueOnError(boolean continueOnError) {
+		this.continueOnError = continueOnError;
 	}
 
-	public void setMinEvictableIdleTimeMillis(int minEvictableIdleTimeMillis) {
-		this.minEvictableIdleTimeMillis = minEvictableIdleTimeMillis;
+	public String getSeparator() {
+		return this.separator;
 	}
 
-	public void setMaxWait(int maxWaitMillis) {
-		this.maxWaitMillis = maxWaitMillis;
+	public void setSeparator(String separator) {
+		this.separator = separator;
 	}
 
-	public int getInitialSize() {
-		return this.initialSize;
-	}
-
-	protected int getMaxActive() {
-		return this.maxActive;
-	}
-
-	protected int getMaxIdle() {
-		return this.maxIdle;
-	}
-
-	protected int getMinIdle() {
-		return this.minIdle;
-	}
-
-	protected String getValidationQuery() {
-		return this.validationQuery;
-	}
-
-	protected boolean isTestOnBorrow() {
-		return this.testOnBorrow;
-	}
-
-	protected boolean isTestOnReturn() {
-		return this.testOnReturn;
-	}
-
-	protected boolean isTestWhileIdle() {
-		return this.testWhileIdle;
-	}
-
-	protected Integer getTimeBetweenEvictionRunsMillis() {
-		return this.timeBetweenEvictionRunsMillis;
-	}
-
-	protected Integer getMinEvictableIdleTimeMillis() {
-		return this.minEvictableIdleTimeMillis;
-	}
-
-	protected Integer getMaxWaitMillis() {
-		return this.maxWaitMillis;
+	public ClassLoader getClassLoader() {
+		return this.classLoader;
 	}
 
 }
