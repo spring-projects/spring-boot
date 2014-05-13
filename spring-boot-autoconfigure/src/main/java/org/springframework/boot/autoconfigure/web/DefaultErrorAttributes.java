@@ -55,10 +55,10 @@ import org.springframework.web.servlet.ModelAndView;
  * @see ErrorAttributes
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class DefaulErrorAttributes implements ErrorAttributes, HandlerExceptionResolver,
+public class DefaultErrorAttributes implements ErrorAttributes, HandlerExceptionResolver,
 		Ordered {
 
-	private static final String ERROR_ATTRIBUTE = DefaulErrorAttributes.class.getName()
+	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName()
 			+ ".ERROR";
 
 	@Override

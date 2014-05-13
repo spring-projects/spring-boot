@@ -74,8 +74,8 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
-	public DefaulErrorAttributes errorAttributes() {
-		return new DefaulErrorAttributes();
+	public DefaultErrorAttributes errorAttributes() {
+		return new DefaultErrorAttributes();
 	}
 
 	@Bean

@@ -27,7 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
  * 
  * @author Phillip Webb
  * @since 1.1.0
- * @see DefaulErrorAttributes
+ * @see DefaultErrorAttributes
  */
 public interface ErrorAttributes {
 
