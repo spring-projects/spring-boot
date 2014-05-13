@@ -40,9 +40,11 @@ dependencies {
 	}
 
 	compile("org.springframework.boot:spring-boot-starter-actuator")
+	compile("org.springframework.boot:spring-boot-starter-jdbc")
 	compile("org.springframework.boot:spring-boot-starter-security")
 	compile("org.springframework.boot:spring-boot-starter-web")
-
+	compile("com.h2database:h2")
+	
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 
 	insecure configurations.runtime

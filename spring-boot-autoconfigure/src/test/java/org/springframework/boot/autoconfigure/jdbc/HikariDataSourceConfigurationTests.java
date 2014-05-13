@@ -22,10 +22,12 @@ import javax.sql.DataSource;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
 import com.zaxxer.hikari.HikariDataSource;
@@ -61,8 +63,8 @@ public class HikariDataSourceConfigurationTests {
 	public void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "url:jdbc:foo//bar/spam");
-		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxWait:1234");
+				+ "jdbcUrl:jdbc:foo//bar/spam");
+		EnvironmentTestUtils.addEnvironment(this.context, PREFIX + "maxLifetime:1234");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
 		assertEquals("jdbc:foo//bar/spam", ds.getJdbcUrl());
@@ -74,11 +76,11 @@ public class HikariDataSourceConfigurationTests {
 	public void testDataSourceGenericPropertiesOverridden() throws Exception {
 		this.context.register(HikariDataSourceConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, PREFIX
-				+ "hikari.databaseName:foo", PREFIX
-				+ "dataSourceClassName:org.h2.JDBCDataSource");
+				+ "dataSourceProperties.dataSourceClassName:org.h2.JDBCDataSource");
 		this.context.refresh();
 		HikariDataSource ds = this.context.getBean(HikariDataSource.class);
-		assertEquals("foo", ds.getDataSourceProperties().getProperty("databaseName"));
+		assertEquals("org.h2.JDBCDataSource",
+				ds.getDataSourceProperties().getProperty("dataSourceClassName"));
 	}
 
 	@Test
@@ -89,28 +91,23 @@ public class HikariDataSourceConfigurationTests {
 		assertEquals(1800000, ds.getMaxLifetime());
 	}
 
-	@Test(expected = BeanCreationException.class)
-	public void testBadUrl() throws Exception {
-		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
-		this.context.register(HikariDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-	}
-
-	@Test(expected = BeanCreationException.class)
-	public void testBadDriverClass() throws Exception {
-		EmbeddedDatabaseConnection.override = EmbeddedDatabaseConnection.NONE;
-		this.context.register(HikariDataSourceConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		assertNotNull(this.context.getBean(DataSource.class));
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> T getField(Class<?> target, String name) {
 		Field field = ReflectionUtils.findField(target, name, null);
 		ReflectionUtils.makeAccessible(field);
 		return (T) ReflectionUtils.getField(field, target);
 	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class HikariDataSourceConfiguration {
+
+		@Bean
+		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
+		public DataSource dataSource() {
+			return DataSourceFactory.create().type(HikariDataSource.class).build();
+		}
+
+	}
+
 }
