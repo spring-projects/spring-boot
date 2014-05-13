@@ -42,6 +42,7 @@ import redis.clients.jedis.JedisPoolConfig;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Christian Dupuis
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
@@ -79,12 +80,13 @@ public class RedisAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-			if (this.properties.getPool() != null) {
-				JedisConnectionFactory factory = new JedisConnectionFactory(
-						jedisPoolConfig());
-				return factory;
+			JedisConnectionFactory factory = null;
+			if (this.properties.getPool() == null) {
+				factory = new JedisConnectionFactory();
 			}
-			JedisConnectionFactory factory = new JedisConnectionFactory();
+			else {
+				factory = new JedisConnectionFactory(jedisPoolConfig());
+			}
 			factory.setHostName(this.properties.getHost());
 			factory.setPort(this.properties.getPort());
 			if (this.properties.getPassword() != null) {
