@@ -82,7 +82,7 @@
 		<mockito.version>1.9.5</mockito.version>
 		<mongodb.version>2.12.1</mongodb.version>
 		<mysql.version>5.1.30</mysql.version>
-		<reactor.version>1.1.0.RELEASE</reactor.version>
+		<reactor.version>1.1.1.BUILD-SNAPSHOT</reactor.version>
 		<servlet-api.version>3.0.1</servlet-api.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<snakeyaml.version>1.13</snakeyaml.version>
