@@ -1,0 +1,54 @@
+ -----
+ Debug the application
+ -----
+ Stephane Nicoll
+ -----
+ 2014-05-14
+ -----
+
+  The <<<run>>> goal forks a process for the boot application. It is possible to specify jvm arguments
+  to that forked process. The following configuration suspend the process until a debugger has joined
+  on port 5005
+
+---
+<project>
+  ...
+  <build>
+    ...
+    <plugins>
+      ...
+      <plugin>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>${project.artifactId}</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <jvmArguments>
+                  -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
+              </jvmArguments>
+            </configuration>
+          </execution>
+        </executions>
+        ...
+      </plugin>
+      ...
+    </plugins>
+    ...
+  </build>
+  ...
+</project>
+---
+
+  These arguments can be specified on the command line as well, make sure to wrap that properly,
+  that is:
+
+---
+mvn spring-boot:run -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
+---
+
+
+

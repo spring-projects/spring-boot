@@ -99,6 +99,10 @@ Usage
 mvn spring-boot:run
 ---
 
+  The application is forked in a separate process. If you need to specify some JVM arguments
+  (i.e. for debugging purposes), you can use the <<<jvmArguments>>> parameter, see
+  {{{./examples/run-debug.html}Debug the application}} for more details.
+
   By default, any <<src/main/resources>> folder will be added to the application classpath
   when you run the application. This allows hot refreshing of resources which can be very
   useful when developing web applications. For example, you can work on HTML, CSS or JavaScipt

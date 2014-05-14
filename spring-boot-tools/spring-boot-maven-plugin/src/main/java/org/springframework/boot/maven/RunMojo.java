@@ -23,6 +23,7 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -38,6 +39,8 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -86,6 +89,15 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "run.noverify")
 	private Boolean noverify;
+
+	/**
+	 * JVM arguments that should be associated with the forked process used
+	 * to run the application. On command line, make sure to wrap multiple
+	 * values between quotes.
+	 * @since 1.1
+	 */
+	@Parameter(property = "run.jvmArguments")
+	private String jvmArguments;
 
 	/**
 	 * Arguments that should be passed to the application. On command line use commas to
@@ -151,6 +163,7 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	private void run(String startClassName) throws MojoExecutionException {
 		List<String> args = new ArrayList<String>();
 		addAgents(args);
+		addJvmArgs(args);
 		addClasspath(args);
 		args.add(startClassName);
 		addArgs(args);
@@ -163,10 +176,15 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
+	private void addJvmArgs(List<String> args) {
+		String[] jvmArgs = parseArgs(this.jvmArguments);
+		Collections.addAll(args, jvmArgs);
+		logArguments("JVM argument(s): ", jvmArgs);
+	}
+
 	private void addArgs(List<String> args) {
-		for (String arg : this.arguments) {
-			args.add(arg);
-		}
+		Collections.addAll(args, this.arguments);
+		logArguments("Application argument(s): ", this.arguments);
 	}
 
 	private void addClasspath(List<String> args) throws MojoExecutionException {
@@ -240,7 +258,7 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addResources(List<URL> urls) throws MalformedURLException, IOException {
+	private void addResources(List<URL> urls) throws IOException {
 		if (this.addResources) {
 			for (Resource resource : this.project.getResources()) {
 				File directory = new File(resource.getDirectory());
@@ -265,6 +283,36 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 			}
 		}
 	}
+
+	private void logArguments(String message, String[] args) {
+		StringBuffer sb = new StringBuffer(message);
+		for (String arg : args) {
+			sb.append(arg).append(" ");
+		}
+		getLog().debug(sb.toString().trim());
+	}
+
+	/**
+	 * Parse the arguments parameters and return individual arguments.
+	 *
+	 * @param arguments the arguments line to parse
+	 * @return the individual arguments
+	 */
+	static String[] parseArgs(String arguments) {
+		if (arguments == null || arguments.trim().isEmpty()) {
+			return new String[]{};
+		}
+		String args = arguments.replace('\n', ' ');
+		args = args.replace('\t', ' ');
+
+		try {
+			return CommandLineUtils.translateCommandline(args);
+		}
+		catch (Exception e) {
+			throw new IllegalArgumentException("Failed to parse arguments [" + arguments + "]", e);
+		}
+	}
+
 
 	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
 		public TestArtifactFilter() {

@@ -40,6 +40,8 @@ Spring Boot Maven Plugin
 
   * {{{./examples/exclude-dependency.html}Exclude a dependency}}
 
+  * {{{./examples/run-debug.html}Debug the application}}
+
   []
 
 
