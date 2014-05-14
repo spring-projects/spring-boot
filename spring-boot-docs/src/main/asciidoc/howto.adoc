@@ -1099,7 +1099,7 @@ independence: usually only one or at most couple of platforms is needed.
 [[howto-execute-flyway-database-migrations-on-startup]]
 ==== Execute Flyway database migrations on startup
 To automatically run Flyway database migrations on startup, add the
-`spring-boot-starter-flyway` to your classpath.
+`org.flywaydb:flyway-core` to your classpath.
 
 The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with
 `<VERSION>` an underscore-separated version, e.g. "1" or "2_1"). By
@@ -1116,7 +1116,7 @@ you can see how to set things up.
 [[howto-execute-liquibase-database-migrations-on-startup]]
 ==== Execute Liquibase database migrations on startup
 To automatically run Liquibase database migrations on startup, add the
-`spring-boot-starter-liquibase` to your classpath.
+`org.liquibase:liquibase-core` to your classpath.
 
 The master change log is by default read from `db/changelog/db.changelog-master.yaml` but
 can be set using `liquibase.change-log`. See
