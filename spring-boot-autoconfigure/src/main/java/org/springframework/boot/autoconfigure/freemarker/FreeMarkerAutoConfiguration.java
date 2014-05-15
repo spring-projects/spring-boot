@@ -66,7 +66,7 @@ public class FreeMarkerAutoConfiguration {
 	public void checkTemplateLocationExists() {
 		if (this.properties.isCheckTemplateLocation()) {
 			Resource resource = this.resourceLoader
-					.getResource(this.properties.getPath());
+					.getResource(this.properties.getTemplateLoaderPath());
 			Assert.state(resource.exists(), "Cannot find template location: " + resource
 					+ " (please add some templates "
 					+ "or check your FreeMarker configuration)");
@@ -79,7 +79,7 @@ public class FreeMarkerAutoConfiguration {
 		protected FreeMarkerProperties properties;
 
 		protected void applyProperties(FreeMarkerConfigurationFactory factory) {
-			factory.setTemplateLoaderPath(this.properties.getPath());
+			factory.setTemplateLoaderPath(this.properties.getTemplateLoaderPath());
 			factory.setDefaultEncoding(this.properties.getCharSet());
 			Properties settings = new Properties();
 			settings.putAll(this.properties.getSettings());
