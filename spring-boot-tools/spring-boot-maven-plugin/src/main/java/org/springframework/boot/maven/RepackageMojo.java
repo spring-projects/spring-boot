@@ -110,6 +110,11 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (project.getPackaging().equals("pom")) {
+			getLog().debug("repackage goal could not be applied to pom project.");
+			return;
+		}
+
 		File source = this.project.getArtifact().getFile();
 		File target = getTargetFile();
 		Repackager repackager = new Repackager(source) {
