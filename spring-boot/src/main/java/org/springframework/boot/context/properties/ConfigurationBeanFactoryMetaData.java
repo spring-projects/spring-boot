@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,11 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 
 /**
- * Utility class to memoize <code>@Bean</code> definition meta data during initialization
+ * Utility class to memorize <code>@Bean</code> definition meta data during initialization
  * of the bean factory.
  * 
  * @author Dave Syer
+ * @since 1.1.0
  */
 public class ConfigurationBeanFactoryMetaData implements BeanFactoryPostProcessor {
 

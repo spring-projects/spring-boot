@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
  * Base class for configuration of a database pool.
  * 
  * @author Dave Syer
+ * @since 1.1.0
  */
 @ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 public class DataSourceProperties implements BeanClassLoaderAware, InitializingBean {

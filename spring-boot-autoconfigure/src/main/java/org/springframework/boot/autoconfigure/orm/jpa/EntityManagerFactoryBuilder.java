@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.util.ClassUtils;
  * <code>@Bean</code> definition.
  * 
  * @author Dave Syer
+ * @since 1.1.0
  */
 public class EntityManagerFactoryBuilder {
 
@@ -48,7 +49,6 @@ public class EntityManagerFactoryBuilder {
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
-	 * 
 	 * @param jpaVendorAdapter a vendor adapter
 	 * @param properties common configuration options, including generic map for JPA
 	 * vendor properties
@@ -68,8 +68,6 @@ public class EntityManagerFactoryBuilder {
 
 	/**
 	 * A fluent builder for a LocalContainerEntityManagerFactoryBean.
-	 * 
-	 * @author Dave Syer
 	 */
 	public class Builder {
 
@@ -85,7 +83,6 @@ public class EntityManagerFactoryBuilder {
 
 		/**
 		 * The names of packages to scan for <code>@Entity</code> annotations.
-		 * 
 		 * @param packagesToScan packages to scan
 		 * @return the builder for fluent usage
 		 */
@@ -97,7 +94,6 @@ public class EntityManagerFactoryBuilder {
 		/**
 		 * The classes whose packages should be scanned for <code>@Entity</code>
 		 * annotations.
-		 * 
 		 * @param basePackageClasses the classes to use
 		 * @return the builder for fluent usage
 		 */
@@ -114,7 +110,6 @@ public class EntityManagerFactoryBuilder {
 		 * The name of the persistence unit. If only building one EntityManagerFactory you
 		 * can omit this, but if there are more than one in the same application you
 		 * should give them distinct names.
-		 * 
 		 * @param persistenceUnit the name of the persistence unit
 		 * @return the builder for fluent usage
 		 */
@@ -127,7 +122,6 @@ public class EntityManagerFactoryBuilder {
 		 * Generic properties for standard JPA or vendor-specific configuration. These
 		 * properties override any values provided in the {@link JpaProperties} used to
 		 * create the builder.
-		 * 
 		 * @param properties the properties to use
 		 * @return the builder for fluent usage
 		 */

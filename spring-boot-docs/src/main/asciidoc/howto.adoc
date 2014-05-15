@@ -298,7 +298,7 @@ to specify profile-specific values.
 [[howto-discover-build-in-options-for-external-properties]]
 === Discover built-in options for external properties
 Spring Boot binds external properties from `application.properties` (or `.yml`) (and
-other places) into an application at runtime.  There is not (and technically cannot be)
+other places) into an application at runtime. There is not (and technically cannot be)
 an exhaustive list of all supported properties in a single location because contributions
 can come from additional jar files on your classpath.
 
@@ -739,7 +739,7 @@ exposed in the `MultipartProperties` class. If you want to specify that files be
 unlimited, for example, set the `multipart.maxFileSize` property to `-1`.
 
 The multipart support is helpful when you want to receive multipart encoded file data as
-a `@RequestParam`-annotated parameter of  type `MultipartFile` in a Spring MVC controller
+a `@RequestParam`-annotated parameter of type `MultipartFile` in a Spring MVC controller
 handler method.
 
 See the {sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[`MultipartAutoConfiguration`] s
@@ -769,7 +769,7 @@ configuration in your hands.
 [[howto-customize-view-resolvers]]
 === Customize ViewResolvers
 A `ViewResolver` is a core component of Spring MVC, translating view names in
-`@Controller` to actual `View` implementations.  Note that `ViewResolvers` are mainly
+`@Controller` to actual `View` implementations. Note that `ViewResolvers` are mainly
 used in UI applications, rather than REST-style services (a `View` is not used to render
 a `@ResponseBody`). There are many implementations of `ViewResolver` to choose from, and
 Spring on its own is not opinionated about which ones you should use. Spring Boot, on the
@@ -833,7 +833,7 @@ Spring Boot has no mandatory logging dependence, except for the `commons-logging
 which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
 you need to include it, and some bindings for `commons-logging` on the classpath. The
 simplest way to do that is through the starter poms which all depend on
-`spring-boot-starter-logging`.  For a web application you only need
+`spring-boot-starter-logging`. For a web application you only need
 `spring-boot-starter-web` since it depends transitively on the logging starter.
 For example, using Maven:
 
@@ -894,7 +894,7 @@ requires some jiggling with excludes, e.g. in Maven:
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
+	</dependency>
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter</artifactId>
@@ -925,55 +925,56 @@ action.
 
 [[howto-configure-a-datasource]]
 === Configure a DataSource
-To override the default settings just define a `@Bean` of your own of type `DataSource`. 
+To override the default settings just define a `@Bean` of your own of type `DataSource`.
 Spring Boot provides a utility builder class `DataSourceBuilder` that can be used
-to create one of the standard ones (if it is on the classpath), or you can just create 
+to create one of the standard ones (if it is on the classpath), or you can just create
 your own, and bind it to a set of `Environment` properties e.g.
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-    @ConfigurationProperties(prefix="datasource.mine")
-    public DataSource dataSource() {
-        return new FancyDataSource();
-    }
+	@ConfigurationProperties(prefix="datasource.mine")
+	public DataSource dataSource() {
+		return new FancyDataSource();
+	}
 ----
 
 [source,properties,indent=0]
 ----
 	datasource.mine.jdbcUrl=jdbc:h2:mem:mydb
 	datasource.mine.user=sa
-    datasource.mine.poolSize=30
+	datasource.mine.poolSize=30
 ----
-
 
 See '<<spring-boot-features.adoc#boot-features-configure-datasource>>' in the
 ``Spring Boot features'' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
 
+
+
 [[howto-two-datasources]]
 === Configure Two DataSources
-Creating more than one data source works the same as creating the first one. 
-You might want to mark one of them as `@Primary` if you are using the default 
-auto-configuration for JDBC or JPA (then that one will be picked up by any
-`@Autowired` injections).
+Creating more than one data source works the same as creating the first one. You might
+want to mark one of them as `@Primary` if you are using the default auto-configuration for
+JDBC or JPA (then that one will be picked up by any `@Autowired` injections).
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-    @Primary
-    @ConfigurationProperties(prefix="datasource.primary")
-    public DataSource primaryDataSource() {
-        return new FancyDataSource();
-    }
+	@Primary
+	@ConfigurationProperties(prefix="datasource.primary")
+	public DataSource primaryDataSource() {
+		return new FancyDataSource();
+	}
 
 	@Bean
-    @ConfigurationProperties(prefix="datasource.secondary")
-    public DataSource secondaryDataSource() {
-        return new FancyDataSource();
-    }
+	@ConfigurationProperties(prefix="datasource.secondary")
+	public DataSource secondaryDataSource() {
+		return new FancyDataSource();
+	}
 ----
+
 
 
 [[howto-use-spring-data-repositories]]
@@ -1030,7 +1031,7 @@ configuration properties. The most common options to set are:
 ----
 
 (Because of relaxed data binding hyphens or underscores should work equally well as
-property keys.)  The `ddl-auto` setting is a special case in that it has different
+property keys.) The `ddl-auto` setting is a special case in that it has different
 defaults depending on whether you are using an embedded database (`create-drop`) or not
 (`none`). In addition all properties in `spring.jpa.properties.*` are passed through as
 normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is
@@ -1041,22 +1042,24 @@ and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBas
 for more details.
 
 
+
 [[howto-use-custom-entity-manager]]
 === Use a custom EntityManagerFactory
 To take full control of the configuration of the `EntityManagerFactory`, you need to add
-a `@Bean` named "entityManagerFactory". Spring Boot auto-configuration switches off its entity manager
-based on the presence of a bean of that type.
+a `@Bean` named "entityManagerFactory". Spring Boot auto-configuration switches off its
+entity manager based on the presence of a bean of that type.
+
 
 
 [[howto-use-two-entity-managers]]
 === Use Two EntityManagers
 
-Even if the default `EntityManagerFactory` works fine, you will need
-to define a new one because otherwise the presence of the second bean
-of that type will switch off the default.  To make it easy to do that
-you can use the convenient `EntityManagerBuilder` provided by Spring
-Boot, or if you prefer you can just use the
+Even if the default `EntityManagerFactory` works fine, you will need to define a new one
+because otherwise the presence of the second bean of that type will switch off the
+default. To make it easy to do that you can use the convenient `EntityManagerBuilder`
+provided by Spring Boot, or if you prefer you can just use the
 `LocalContainerEntityManagerFactoryBean` directly from Spring ORM.
+
 Example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
@@ -1069,8 +1072,8 @@ Example:
 		return builder
 				.dataSource(customerDataSource())
 				.packages(Customer.class)
-                .persistenceUnit("customers")
-                .build();
+				.persistenceUnit("customers")
+				.build();
 	}
 
 	@Bean
@@ -1079,19 +1082,19 @@ Example:
 		return builder
 				.dataSource(orderDataSource())
 				.packages(Order.class)
-                .persistenceUnit("orders")
-                .build();
+				.persistenceUnit("orders")
+				.build();
 	}
 
 ----
 
-The configuration above almost works on its own. To complete the
-picture you need to configure `TransactionManagers` for the two
-`EntityManagers` as well. One of them could be picked up by the
-default `JpaTransactionManager` in Spring Boot if you mark it as
-`@Primary`. The other would have to be explicitly injected into a new
-instance. Or you might be able to use a JTA transaction manager
-spanning both.
+The configuration above almost works on its own. To complete the picture you need to
+configure `TransactionManagers` for the two `EntityManagers` as well. One of them could
+be picked up by the default `JpaTransactionManager` in Spring Boot if you mark it as
+`@Primary`. The other would have to be explicitly injected into a new instance. Or you
+might be able to use a JTA transaction manager spanning both.
+
+
 
 [[howto-use-traditional-persistence-xml]]
 === Use a traditional persistence.xml
@@ -1312,7 +1315,7 @@ use this in a webapp is to inject it into a void method in a
 		@Autowired
 		public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 				auth.inMemoryAuthentication()
-					.withUser("barry").password("password").roles("USER"); // ...  etc.
+					.withUser("barry").password("password").roles("USER"); // ... etc.
 		}
 
 		// ... other stuff for application security
@@ -1330,7 +1333,7 @@ is a useful template to follow.
 [[howto-enable-https]]
 === Enable HTTPS when running behind a proxy server
 Ensuring that all your main endpoints are only available over HTTPS is an important
-chore for any application.  If you are using Tomcat as a servlet container, then
+chore for any application. If you are using Tomcat as a servlet container, then
 Spring Boot will add Tomcat's own `RemoteIpValve` automatically if it detects some
 environment settings, and you should be able to rely on the `HttpServletRequest` to
 report whether it is secure or not (even downstream of a proxy server that handles the
@@ -1573,7 +1576,7 @@ For a non-web application it should be easy (throw away the code that creates yo
 `ApplicationContext` and replace it with calls to `SpringApplication` or
 `SpringApplicationBuilder`). Spring MVC web applications are generally amenable to first
 creating a deployable war application, and then migrating it later to an executable war
-and/or jar.  Useful reading is in the http://spring.io/guides/gs/convert-jar-to-war/[Getting
+and/or jar. Useful reading is in the http://spring.io/guides/gs/convert-jar-to-war/[Getting
 Started Guide on Converting a jar to a war].
 
 Create a deployable war by extending `SpringBootServletInitializer` (e.g. in a class

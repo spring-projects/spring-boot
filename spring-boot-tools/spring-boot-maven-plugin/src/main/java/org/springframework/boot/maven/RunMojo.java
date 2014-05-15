@@ -39,8 +39,6 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JavaExecutable;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -91,9 +89,8 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 	private Boolean noverify;
 
 	/**
-	 * JVM arguments that should be associated with the forked process used
-	 * to run the application. On command line, make sure to wrap multiple
-	 * values between quotes.
+	 * JVM arguments that should be associated with the forked process used to run the
+	 * application. On command line, make sure to wrap multiple values between quotes.
 	 * @since 1.1
 	 */
 	@Parameter(property = "run.jvmArguments")
@@ -176,15 +173,23 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addJvmArgs(List<String> args) {
-		String[] jvmArgs = parseArgs(this.jvmArguments);
-		Collections.addAll(args, jvmArgs);
-		logArguments("JVM argument(s): ", jvmArgs);
+	private void addAgents(List<String> args) {
+		findAgent();
+		if (this.agent != null) {
+			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
+			for (File agent : this.agent) {
+				args.add("-javaagent:" + agent);
+			}
+		}
+		if (this.noverify) {
+			args.add("-noverify");
+		}
 	}
 
-	private void addArgs(List<String> args) {
-		Collections.addAll(args, this.arguments);
-		logArguments("Application argument(s): ", this.arguments);
+	private void addJvmArgs(List<String> args) {
+		RunArguments jvmArguments = new RunArguments(this.jvmArguments);
+		Collections.addAll(args, jvmArguments.asArray());
+		logArguments("JVM argument(s): ", jvmArguments.asArray());
 	}
 
 	private void addClasspath(List<String> args) throws MojoExecutionException {
@@ -203,17 +208,9 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addAgents(List<String> args) {
-		findAgent();
-		if (this.agent != null) {
-			getLog().info("Attaching agents: " + Arrays.asList(this.agent));
-			for (File agent : this.agent) {
-				args.add("-javaagent:" + agent);
-			}
-		}
-		if (this.noverify) {
-			args.add("-noverify");
-		}
+	private void addArgs(List<String> args) {
+		Collections.addAll(args, this.arguments);
+		logArguments("Application argument(s): ", this.arguments);
 	}
 
 	private final String getStartClass() throws MojoExecutionException {
@@ -291,28 +288,6 @@ public class RunMojo extends AbstractDependencyFilterMojo {
 		}
 		getLog().debug(sb.toString().trim());
 	}
-
-	/**
-	 * Parse the arguments parameters and return individual arguments.
-	 *
-	 * @param arguments the arguments line to parse
-	 * @return the individual arguments
-	 */
-	static String[] parseArgs(String arguments) {
-		if (arguments == null || arguments.trim().isEmpty()) {
-			return new String[]{};
-		}
-		String args = arguments.replace('\n', ' ');
-		args = args.replace('\t', ' ');
-
-		try {
-			return CommandLineUtils.translateCommandline(args);
-		}
-		catch (Exception e) {
-			throw new IllegalArgumentException("Failed to parse arguments [" + arguments + "]", e);
-		}
-	}
-
 
 	private static class TestArtifactFilter extends AbstractArtifactFeatureFilter {
 		public TestArtifactFilter() {
