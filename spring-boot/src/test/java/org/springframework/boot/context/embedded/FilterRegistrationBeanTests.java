@@ -18,10 +18,12 @@ package org.springframework.boot.context.embedded;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
@@ -220,6 +222,25 @@ public class FilterRegistrationBeanTests {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("ServletNames must not be null");
 		bean.addServletNames((String[]) null);
+	}
+
+	@Test
+	public void withSpecificDispatcherTypes() throws Exception {
+		FilterRegistrationBean bean = new FilterRegistrationBean(this.filter);
+		bean.setDispatcherTypes(DispatcherType.INCLUDE, DispatcherType.FORWARD);
+		bean.onStartup(this.servletContext);
+		verify(this.registration).addMappingForUrlPatterns(
+				EnumSet.of(DispatcherType.INCLUDE, DispatcherType.FORWARD), false, "/*");
+	}
+
+	@Test
+	public void withSpecificDispatcherTypesEnumSet() throws Exception {
+		FilterRegistrationBean bean = new FilterRegistrationBean(this.filter);
+		EnumSet<DispatcherType> types = EnumSet.of(DispatcherType.INCLUDE,
+				DispatcherType.FORWARD);
+		bean.setDispatcherTypes(types);
+		bean.onStartup(this.servletContext);
+		verify(this.registration).addMappingForUrlPatterns(types, false, "/*");
 	}
 
 	private ServletRegistrationBean mockServletRegistation(String name) {
