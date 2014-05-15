@@ -24,7 +24,6 @@ import groovy.text.markup.TemplateConfiguration;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -44,7 +43,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.Assert;
 
 /**
  * Autoconfiguration support for Groovy templates in MVC. By default creates a
@@ -65,17 +63,6 @@ public class GroovyTemplateAutoConfiguration {
 
 	@Autowired
 	private GroovyTemplateProperties properties;
-
-	@PostConstruct
-	public void checkTemplateLocationExists() {
-		if (this.properties.isCheckTemplateLocation()) {
-			Resource resource = this.resourceLoader.getResource(this.properties
-					.getPrefix());
-			Assert.state(resource.exists(), "Cannot find template location: " + resource
-					+ " (please add some templates "
-					+ "or check your FreeMarker configuration)");
-		}
-	}
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class })
@@ -108,8 +95,15 @@ public class GroovyTemplateAutoConfiguration {
 		}
 
 		private ClassLoader createParentLoaderForTemplates() throws Exception {
-			return new URLClassLoader(new URL[] { this.resourceLoader.getResource(
-					this.properties.getPrefix()).getURL() }, this.classLoader);
+			Resource resource = this.resourceLoader.getResource(this.properties
+					.getPrefix());
+			if (resource.exists()) {
+				return new URLClassLoader(new URL[] { resource.getURL() },
+						this.classLoader);
+			}
+			else {
+				return this.classLoader;
+			}
 		}
 
 		@Bean
