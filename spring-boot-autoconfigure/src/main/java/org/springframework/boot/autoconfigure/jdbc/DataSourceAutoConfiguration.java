@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,7 +87,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 	}
 
 	@PostConstruct
-	protected void initialize() throws Exception {
+	protected void initialize() {
 		boolean initialize = this.datasourceProperties.getProperty("initialize",
 				Boolean.class, true);
 		if (this.dataSource == null || !initialize) {
@@ -101,11 +102,7 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 					+ ".sql,classpath*:schema.sql,classpath*:data.sql";
 		}
 
-		List<Resource> resources = new ArrayList<Resource>();
-		for (String schemaLocation : StringUtils.commaDelimitedListToStringArray(schema)) {
-			resources.addAll(Arrays.asList(this.applicationContext
-					.getResources(schemaLocation)));
-		}
+		List<Resource> resources = getSchemaResources(schema);
 
 		boolean continueOnError = this.datasourceProperties.getProperty(
 				"continueOnError", Boolean.class, false);
@@ -123,6 +120,21 @@ public class DataSourceAutoConfiguration implements EnvironmentAware {
 		if (exists) {
 			DatabasePopulatorUtils.execute(populator, this.dataSource);
 		}
+	}
+
+	private List<Resource> getSchemaResources(String schema) {
+		List<Resource> resources = new ArrayList<Resource>();
+		for (String schemaLocation : StringUtils.commaDelimitedListToStringArray(schema)) {
+			try {
+				resources.addAll(Arrays.asList(this.applicationContext
+						.getResources(schemaLocation)));
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Unable to load resource from "
+						+ schemaLocation, ex);
+			}
+		}
+		return resources;
 	}
 
 	/**

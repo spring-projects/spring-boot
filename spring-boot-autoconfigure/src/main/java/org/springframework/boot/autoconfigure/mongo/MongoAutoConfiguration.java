@@ -32,7 +32,7 @@ import com.mongodb.Mongo;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Phillip Webb
@@ -48,7 +48,7 @@ public class MongoAutoConfiguration {
 	private Mongo mongo;
 
 	@PreDestroy
-	public void close() throws UnknownHostException {
+	public void close() {
 		if (this.mongo != null) {
 			this.mongo.close();
 		}
