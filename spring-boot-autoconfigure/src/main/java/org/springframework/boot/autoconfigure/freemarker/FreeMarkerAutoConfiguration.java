@@ -69,7 +69,7 @@ public class FreeMarkerAutoConfiguration implements EnvironmentAware {
 
 	@Override
 	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment, "spring.freeMarker.");
+		this.environment = new RelaxedPropertyResolver(environment, "spring.freemarker.");
 	}
 
 	@PostConstruct
