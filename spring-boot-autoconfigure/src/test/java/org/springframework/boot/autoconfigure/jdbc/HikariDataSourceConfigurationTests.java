@@ -105,7 +105,7 @@ public class HikariDataSourceConfigurationTests {
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 		public DataSource dataSource() {
-			return DataSourceFactory.create().type(HikariDataSource.class).build();
+			return DataSourceBuilder.create().type(HikariDataSource.class).build();
 		}
 
 	}
