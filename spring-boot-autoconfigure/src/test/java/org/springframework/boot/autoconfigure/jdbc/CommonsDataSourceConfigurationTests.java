@@ -94,7 +94,7 @@ public class CommonsDataSourceConfigurationTests {
 		@Bean
 		@ConfigurationProperties(prefix = DataSourceAutoConfiguration.CONFIGURATION_PREFIX)
 		public DataSource dataSource() {
-			return DataSourceFactory.create().type(BasicDataSource.class).build();
+			return DataSourceBuilder.create().type(BasicDataSource.class).build();
 		}
 
 	}

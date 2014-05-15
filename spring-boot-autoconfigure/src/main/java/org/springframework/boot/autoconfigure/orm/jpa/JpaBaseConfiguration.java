@@ -30,11 +30,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -42,7 +41,6 @@ import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.orm.jpa.vendor.AbstractJpaVendorAdapter;
-import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -54,19 +52,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Dave Syer
  * @author Oliver Gierke
  */
-public abstract class JpaBaseConfiguration implements BeanFactoryAware, EnvironmentAware {
+@EnableConfigurationProperties(JpaProperties.class)
+public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
 
-	private RelaxedPropertyResolver environment;
+	@Autowired
+	private DataSource dataSource;
 
 	@Autowired(required = false)
 	private PersistenceUnitManager persistenceUnitManager;
 
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment, "spring.jpa.");
-	}
+	@Autowired
+	private JpaProperties jpaProperties;
 
 	@Bean
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
@@ -75,46 +73,34 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware, Environm
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(name = "entityManagerFactory")
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-			JpaVendorAdapter jpaVendorAdapter) {
-		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-		if (this.persistenceUnitManager != null) {
-			entityManagerFactoryBean
-					.setPersistenceUnitManager(this.persistenceUnitManager);
-		}
-		entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
-		entityManagerFactoryBean.setDataSource(getDataSource());
-		entityManagerFactoryBean.setPackagesToScan(getPackagesToScan());
-		entityManagerFactoryBean.getJpaPropertyMap().putAll(
-				this.environment.getSubProperties("properties."));
-		configure(entityManagerFactoryBean);
-		return entityManagerFactoryBean;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(JpaVendorAdapter.class)
+	@ConditionalOnMissingBean
 	public JpaVendorAdapter jpaVendorAdapter() {
 		AbstractJpaVendorAdapter adapter = createJpaVendorAdapter();
-		adapter.setShowSql(this.environment.getProperty("show-sql", Boolean.class, true));
-		adapter.setDatabasePlatform(this.environment.getProperty("database-platform"));
-		adapter.setDatabase(this.environment.getProperty("database", Database.class,
-				Database.DEFAULT));
-		adapter.setGenerateDdl(this.environment.getProperty("generate-ddl",
-				Boolean.class, false));
+		adapter.setShowSql(this.jpaProperties.isShowSql());
+		adapter.setDatabase(this.jpaProperties.getDatabase());
+		adapter.setDatabasePlatform(this.jpaProperties.getDatabasePlatform());
+		adapter.setGenerateDdl(this.jpaProperties.isGenerateDdl());
 		return adapter;
 	}
 
-	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
-
-	protected DataSource getDataSource() {
-		try {
-			return this.beanFactory.getBean("dataSource", DataSource.class);
-		}
-		catch (RuntimeException ex) {
-			return this.beanFactory.getBean(DataSource.class);
-		}
+	@Bean
+	@ConditionalOnMissingBean
+	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(
+			JpaVendorAdapter jpaVendorAdapter) {
+		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
+				jpaVendorAdapter, this.jpaProperties, this.persistenceUnitManager);
+		return builder;
 	}
+
+	@Bean
+	@Primary
+	@ConditionalOnMissingBean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
+			EntityManagerFactoryBuilder factory) {
+		return factory.dataSource(this.dataSource).packages(getPackagesToScan()).build();
+	}
+
+	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
 
 	protected String[] getPackagesToScan() {
 		List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);

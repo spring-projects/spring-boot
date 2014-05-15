@@ -38,7 +38,7 @@ import org.springframework.util.ClassUtils;
  * 
  * @author Dave Syer
  */
-public class DataSourceFactory {
+public class DataSourceBuilder {
 
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] {
 			"org.apache.tomcat.jdbc.pool.DataSource",
@@ -51,15 +51,15 @@ public class DataSourceFactory {
 
 	private Map<String, String> properties = new HashMap<String, String>();
 
-	public static DataSourceFactory create() {
-		return new DataSourceFactory(null);
+	public static DataSourceBuilder create() {
+		return new DataSourceBuilder(null);
 	}
 
-	public static DataSourceFactory create(ClassLoader classLoader) {
-		return new DataSourceFactory(classLoader);
+	public static DataSourceBuilder create(ClassLoader classLoader) {
+		return new DataSourceBuilder(classLoader);
 	}
 
-	public DataSourceFactory(ClassLoader classLoader) {
+	public DataSourceBuilder(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
@@ -82,27 +82,27 @@ public class DataSourceFactory {
 		return new MutablePropertyValues(this.properties);
 	}
 
-	public DataSourceFactory type(Class<? extends DataSource> type) {
+	public DataSourceBuilder type(Class<? extends DataSource> type) {
 		this.type = type;
 		return this;
 	}
 
-	public DataSourceFactory url(String url) {
+	public DataSourceBuilder url(String url) {
 		this.properties.put("url", url);
 		return this;
 	}
 
-	public DataSourceFactory driverClassName(String driverClassName) {
+	public DataSourceBuilder driverClassName(String driverClassName) {
 		this.properties.put("driverClassName", driverClassName);
 		return this;
 	}
 
-	public DataSourceFactory username(String username) {
+	public DataSourceBuilder username(String username) {
 		this.properties.put("username", username);
 		return this;
 	}
 
-	public DataSourceFactory password(String password) {
+	public DataSourceBuilder password(String password) {
 		this.properties.put("password", password);
 		return this;
 	}

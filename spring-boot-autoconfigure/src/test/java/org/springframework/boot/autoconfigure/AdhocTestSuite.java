@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -30,7 +31,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 @RunWith(Suite.class)
 @SuiteClasses({ HibernateJpaAutoConfigurationTests.class,
 		LiquibaseAutoConfigurationTests.class })
-// @Ignore
+@Ignore
 public class AdhocTestSuite {
 
 }

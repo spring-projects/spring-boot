@@ -925,12 +925,55 @@ action.
 
 [[howto-configure-a-datasource]]
 === Configure a DataSource
-To override the default settings just define a `@Bean` of your own of type `DataSource`.
+To override the default settings just define a `@Bean` of your own of type `DataSource`. 
+Spring Boot provides a utility builder class `DataSourceBuilder` that can be used
+to create one of the standard ones (if it is on the classpath), or you can just create 
+your own, and bind it to a set of `Environment` properties e.g.
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+    @ConfigurationProperties(prefix="datasource.mine")
+    public DataSource dataSource() {
+        return new FancyDataSource();
+    }
+----
+
+[source,properties,indent=0]
+----
+	datasource.mine.jdbcUrl=jdbc:h2:mem:mydb
+	datasource.mine.user=sa
+    datasource.mine.poolSize=30
+----
+
+
 See '<<spring-boot-features.adoc#boot-features-configure-datasource>>' in the
 ``Spring Boot features'' section and the
 {sc-spring-boot-autoconfigure}/jdbc/DataSourceAutoConfiguration.{sc-ext}[`DataSourceAutoConfiguration`]
 class for more details.
 
+[[howto-two-datasources]]
+=== Configure Two DataSources
+Creating more than one data source works the same as creating the first one. 
+You might want to mark one of them as `@Primary` if you are using the default 
+auto-configuration for JDBC or JPA (then that one will be picked up by any
+`@Autowired` injections).
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+    @Primary
+    @ConfigurationProperties(prefix="datasource.primary")
+    public DataSource primaryDataSource() {
+        return new FancyDataSource();
+    }
+
+	@Bean
+    @ConfigurationProperties(prefix="datasource.secondary")
+    public DataSource secondaryDataSource() {
+        return new FancyDataSource();
+    }
+----
 
 
 [[howto-use-spring-data-repositories]]
@@ -998,15 +1041,57 @@ and {sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[`JpaBas
 for more details.
 
 
-
 [[howto-use-custom-entity-manager]]
 === Use a custom EntityManagerFactory
 To take full control of the configuration of the `EntityManagerFactory`, you need to add
-a `@Bean` named "entityManagerFactory". To avoid eager initialization of JPA
-infrastructure, Spring Boot auto-configuration does not switch on its entity manager
-based on the presence of a bean of that type. Instead it has to do it by name.
+a `@Bean` named "entityManagerFactory". Spring Boot auto-configuration switches off its entity manager
+based on the presence of a bean of that type.
 
 
+[[howto-use-two-entity-managers]]
+=== Use Two EntityManagers
+
+Even if the default `EntityManagerFactory` works fine, you will need
+to define a new one because otherwise the presence of the second bean
+of that type will switch off the default.  To make it easy to do that
+you can use the convenient `EntityManagerBuilder` provided by Spring
+Boot, or if you prefer you can just use the
+`LocalContainerEntityManagerFactoryBean` directly from Spring ORM.
+Example:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	// add two data sources configured as above
+
+	@Bean
+	public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
+			EntityManagerFactoryBuilder builder) {
+		return builder
+				.dataSource(customerDataSource())
+				.packages(Customer.class)
+                .persistenceUnit("customers")
+                .build();
+	}
+
+	@Bean
+	public LocalContainerEntityManagerFactoryBean orderEntityManagerFactory(
+			EntityManagerFactoryBuilder builder) {
+		return builder
+				.dataSource(orderDataSource())
+				.packages(Order.class)
+                .persistenceUnit("orders")
+                .build();
+	}
+
+----
+
+The configuration above almost works on its own. To complete the
+picture you need to configure `TransactionManagers` for the two
+`EntityManagers` as well. One of them could be picked up by the
+default `JpaTransactionManager` in Spring Boot if you mark it as
+`@Primary`. The other would have to be explicitly injected into a new
+instance. Or you might be able to use a JTA transaction manager
+spanning both.
 
 [[howto-use-traditional-persistence-xml]]
 === Use a traditional persistence.xml

@@ -21,6 +21,7 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -39,7 +40,7 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	@Test
 	public void testCustomNamingStrategy() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.jpa.hibernate.namingstrategy:"
+				"spring.jpa.hibernate.namingStrategy:"
 						+ "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
 		this.context.refresh();
@@ -48,6 +49,22 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		String actual = (String) bean.getJpaPropertyMap().get(
 				"hibernate.ejb.naming_strategy");
 		assertThat(actual, equalTo("org.hibernate.cfg.EJB3NamingStrategy"));
+	}
+
+	@Test
+	public void testCustomNamingStrategyViaJpaProperties() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.properties.hibernate.ejb.naming_strategy:"
+						+ "org.hibernate.cfg.EJB3NamingStrategy");
+		setupTestConfiguration();
+		this.context.refresh();
+		LocalContainerEntityManagerFactoryBean bean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
+		String actual = (String) bean.getJpaPropertyMap().get(
+				"hibernate.ejb.naming_strategy");
+		// You can't override this one from spring.jpa.properties because it has an
+		// opinionated default
+		assertThat(actual, not(equalTo("org.hibernate.cfg.EJB3NamingStrategy")));
 	}
 
 }

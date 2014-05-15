@@ -1392,7 +1392,7 @@ following to your `application.properties`.
 NOTE: Hibernate's own internal property name for this (if you happen to remember it
 better) is `hibernate.hbm2ddl.auto`. You can set it, along with other Hibernate native
 properties, using `spring.jpa.properties.*` (the prefix is stripped before adding them
-to the entity manager). Alternatively, `spring.jpa.generate-ddl=false` switches off all
+to the entity manager). Also, `spring.jpa.generate-ddl=false` switches off all
 DDL generation.
 
 

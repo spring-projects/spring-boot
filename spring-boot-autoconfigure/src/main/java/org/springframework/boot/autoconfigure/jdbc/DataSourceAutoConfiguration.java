@@ -154,7 +154,7 @@ public class DataSourceAutoConfiguration {
 		@Bean
 		public DataSource dataSource() {
 			// @formatter:off
-			DataSourceFactory factory = DataSourceFactory
+			DataSourceBuilder factory = DataSourceBuilder
 					.create(this.properties.getClassLoader())
 					.driverClassName(this.properties.getDriverClassName())
 					.url(this.properties.getUrl())
@@ -209,7 +209,7 @@ public class DataSourceAutoConfiguration {
 		 * the driver class can actually be loaded by the data source.
 		 */
 		private ClassLoader getDataSourceClassLoader(ConditionContext context) {
-			Class<?> dataSourceClass = new DataSourceFactory(context.getClassLoader())
+			Class<?> dataSourceClass = new DataSourceBuilder(context.getClassLoader())
 					.findType();
 			if (dataSourceClass == null) {
 				return null;
