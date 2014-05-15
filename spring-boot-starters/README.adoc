@@ -19,4 +19,7 @@ list it here. Just send a pull request for this page.
 
 | https://code.google.com/p/wro4j/[WRO4J]
 | https://github.com/sbuettner/spring-boot-autoconfigure-wro4j
+
+| http://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
+| https://github.com/codecentric/spring-boot-starter-batch-web
 |===
