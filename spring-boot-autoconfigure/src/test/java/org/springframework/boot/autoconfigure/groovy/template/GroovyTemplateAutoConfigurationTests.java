@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplateViewResolver;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -73,12 +72,6 @@ public class GroovyTemplateAutoConfigurationTests {
 	public void defaultConfiguration() {
 		registerAndRefreshContext();
 		assertThat(this.context.getBean(GroovyTemplateViewResolver.class), notNullValue());
-	}
-
-	@Test(expected = BeanCreationException.class)
-	public void nonExistentTemplateLocation() {
-		registerAndRefreshContext("spring.groovy.template.prefix:"
-				+ "classpath:/does-not-exist/");
 	}
 
 	@Test

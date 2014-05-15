@@ -43,7 +43,7 @@ public class GroovyTemplateProperties {
 
 	private String[] viewNames;
 
-	private boolean checkTemplateLocation = true;
+	private boolean checkTemplateLocation = false;
 
 	private TemplateConfiguration configuration = new TemplateConfiguration();
 
