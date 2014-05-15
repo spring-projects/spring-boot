@@ -16,15 +16,15 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.core.env.StandardEnvironment;
 
+import static org.junit.Assert.assertEquals;
+
 /**
- *
+ * Tests for {@link ActiveMQProperties}.
+ * 
  * @author Stephane Nicoll
  */
 public class ActiveMQPropertiesTests {
@@ -34,7 +34,7 @@ public class ActiveMQPropertiesTests {
 
 	@Test
 	public void determineBrokerUrlDefault() {
-	 	assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
+		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
 				ActiveMQProperties.determineBrokerUrl(this.environment));
 	}
 
@@ -56,25 +56,27 @@ public class ActiveMQPropertiesTests {
 
 	@Test
 	public void getBrokerUrlIsInMemoryByDefault() {
-		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL, this.properties.getBrokerUrl());
+		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
+				this.properties.determineBrokerUrl());
 	}
 
 	@Test
 	public void getBrokerUrlUseExplicitBrokerUrl() {
 		this.properties.setBrokerUrl("vm://foo-bar");
-		assertEquals("vm://foo-bar", this.properties.getBrokerUrl());
+		assertEquals("vm://foo-bar", this.properties.determineBrokerUrl());
 	}
 
 	@Test
 	public void getBrokerUrlWithInMemorySetToFalse() {
 		this.properties.setInMemory(false);
-		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL, this.properties.getBrokerUrl());
+		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
+				this.properties.determineBrokerUrl());
 	}
 
 	@Test
 	public void getExplicitBrokerUrlAlwaysWins() {
 		this.properties.setBrokerUrl("vm://foo-bar");
 		this.properties.setInMemory(false);
-		assertEquals("vm://foo-bar", this.properties.getBrokerUrl());
+		assertEquals("vm://foo-bar", this.properties.determineBrokerUrl());
 	}
 }
