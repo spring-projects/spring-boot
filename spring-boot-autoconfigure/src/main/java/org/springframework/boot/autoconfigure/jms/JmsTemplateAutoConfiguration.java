@@ -18,25 +18,24 @@ package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.pool.PooledConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link JmsTemplate}.
- * 
+ *
  * @author Greg Turnquist
  */
 @Configuration
-@ConditionalOnClass({ JmsTemplate.class, ConnectionFactory.class })
+@ConditionalOnClass(JmsTemplate.class)
+@ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsTemplateProperties.class)
 public class JmsTemplateAutoConfiguration {
 
@@ -52,36 +51,6 @@ public class JmsTemplateAutoConfiguration {
 		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
 		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
 		return jmsTemplate;
-	}
-
-	@Configuration
-	@ConditionalOnClass(ActiveMQConnectionFactory.class)
-	@ConditionalOnMissingBean(ConnectionFactory.class)
-	@EnableConfigurationProperties(ActiveMQProperties.class)
-	protected static class ActiveMQConnectionFactoryCreator {
-
-		@Autowired
-		private ActiveMQProperties config;
-
-		@Bean
-		public ConnectionFactory jmsConnectionFactory() {
-			ConnectionFactory connectionFactory = getActiveMQConnectionFactory();
-			if (this.config.isPooled()) {
-				PooledConnectionFactory pool = new PooledConnectionFactory();
-				pool.setConnectionFactory(connectionFactory);
-				return pool;
-			}
-			return connectionFactory;
-		}
-
-		private ConnectionFactory getActiveMQConnectionFactory() {
-			if (StringUtils.hasLength(this.config.getUser())
-					&& StringUtils.hasLength(this.config.getPassword())) {
-				return new ActiveMQConnectionFactory(this.config.getUser(),
-						this.config.getPassword(), this.config.getBrokerUrl());
-			}
-			return new ActiveMQConnectionFactory(this.config.getBrokerUrl());
-		}
 	}
 
 }

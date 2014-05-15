@@ -45,9 +45,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testDefaultJmsTemplate() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		ActiveMQConnectionFactory connectionFactory = this.context
@@ -55,14 +53,13 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals("vm://localhost", ((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
+		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
+				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
 	}
 
 	@Test
 	public void testConnectionFactoryBackoff() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration2.class,
-				JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration2.class);
 		this.context.refresh();
 		assertEquals("foobar", this.context.getBean(ActiveMQConnectionFactory.class)
 				.getBrokerURL());
@@ -70,9 +67,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testJmsTemplateBackoff() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration3.class,
-				JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration3.class);
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertEquals(999, jmsTemplate.getPriority());
@@ -80,9 +75,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testJmsTemplateBackoffEverything() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration2.class, TestConfiguration3.class,
-				JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration2.class, TestConfiguration3.class);
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertEquals(999, jmsTemplate.getPriority());
@@ -92,9 +85,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testPubSubDisabledByDefault() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertFalse(jmsTemplate.isPubSubDomain());
@@ -102,9 +93,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testJmsTemplatePostProcessedSoThatPubSubIsTrue() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration4.class,
-				JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration4.class);
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
 		assertTrue(jmsTemplate.isPubSubDomain());
@@ -112,9 +101,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testJmsTemplateOverridden() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		EnvironmentTestUtils
 				.addEnvironment(this.context, "spring.jms.pubSubDomain:false");
 		this.context.refresh();
@@ -129,9 +116,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testActiveMQOverriddenStandalone() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.activemq.inMemory:false");
 		this.context.refresh();
@@ -141,17 +126,14 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(jmsTemplate);
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
-		assertEquals("tcp://localhost:61616",
+		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
 					 ((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
 	}
 
 	@Test
 	public void testActiveMQOverriddenRemoteHost() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.activemq.inMemory:false",
 				"spring.activemq.brokerUrl:tcp://remote-host:10000");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
@@ -166,9 +148,7 @@ public class JmsTemplateAutoConfigurationTests {
 
 	@Test
 	public void testActiveMQOverriddenPool() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
@@ -179,14 +159,12 @@ public class JmsTemplateAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals("vm://localhost", factory.getBrokerURL());
+		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL, factory.getBrokerURL());
 	}
 
 	@Test
 	public void testActiveMQOverriddenPoolAndStandalone() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true",
 				"spring.activemq.inMemory:false");
 		this.context.refresh();
@@ -198,16 +176,13 @@ public class JmsTemplateAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals("tcp://localhost:61616", factory.getBrokerURL());
+		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL, factory.getBrokerURL());
 	}
 
 	@Test
 	public void testActiveMQOverriddenPoolAndRemoteServer() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context
-				.register(TestConfiguration.class, JmsTemplateAutoConfiguration.class);
+		this.context = createContext(TestConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "spring.activemq.pooled:true",
-				"spring.activemq.inMemory:false",
 				"spring.activemq.brokerUrl:tcp://remote-host:10000");
 		this.context.refresh();
 		JmsTemplate jmsTemplate = this.context.getBean(JmsTemplate.class);
@@ -219,6 +194,13 @@ public class JmsTemplateAutoConfigurationTests {
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
 		assertEquals("tcp://remote-host:10000", factory.getBrokerURL());
+	}
+
+	private AnnotationConfigApplicationContext createContext(Class<?>... additionalClasses) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(additionalClasses);
+		context.register(ActiveMQAutoConfiguration.class, JmsTemplateAutoConfiguration.class);
+		return context;
 	}
 
 	@Configuration
