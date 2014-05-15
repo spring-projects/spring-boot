@@ -35,13 +35,12 @@ public class FreeMarkerTemplateAvailabilityProvider implements
 	public boolean isTemplateAvailable(String view, Environment environment,
 			ClassLoader classLoader, ResourceLoader resourceLoader) {
 		if (ClassUtils.isPresent("freemarker.template.Configuration", classLoader)) {
-			String loaderPath = environment.getProperty(
-					"spring.freemarker.templateLoaderPath",
-					FreeMarkerAutoConfiguration.DEFAULT_TEMPLATE_LOADER_PATH);
+			String loaderPath = environment.getProperty("spring.freemarker.path",
+					FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH);
 			String prefix = environment.getProperty("spring.freemarker.prefix",
-					FreeMarkerAutoConfiguration.DEFAULT_PREFIX);
+					FreeMarkerProperties.DEFAULT_PREFIX);
 			String suffix = environment.getProperty("spring.freemarker.suffix",
-					FreeMarkerAutoConfiguration.DEFAULT_SUFFIX);
+					FreeMarkerProperties.DEFAULT_SUFFIX);
 			return resourceLoader.getResource(loaderPath + prefix + view + suffix)
 					.exists();
 		}
