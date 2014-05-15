@@ -52,7 +52,7 @@ public class FreeMarkerTemplateAvailabilityProviderTests {
 
 	@Test
 	public void availabilityOfTemplateWithCustomLoaderPath() {
-		this.environment.setProperty("spring.freemarker.templateLoaderPath",
+		this.environment.setProperty("spring.freemarker.path",
 				"classpath:/custom-templates/");
 
 		assertTrue(this.provider.isTemplateAvailable("custom", this.environment,
