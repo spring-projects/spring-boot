@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -215,7 +214,7 @@ public class CrshAutoConfiguration {
 		}
 
 		@PostConstruct
-		public void init() throws Exception {
+		public void init() {
 			FS commandFileSystem = createFileSystem(
 					this.properties.getCommandPathPatterns(),
 					this.properties.getDisabledCommands());
@@ -234,8 +233,7 @@ public class CrshAutoConfiguration {
 			start(context);
 		}
 
-		protected FS createFileSystem(String[] pathPatterns, String[] filterPatterns)
-				throws IOException, URISyntaxException {
+		protected FS createFileSystem(String[] pathPatterns, String[] filterPatterns) {
 			Assert.notNull(pathPatterns, "PathPatterns must not be null");
 			Assert.notNull(filterPatterns, "FilterPatterns must not be null");
 			FS fileSystem = new FS();

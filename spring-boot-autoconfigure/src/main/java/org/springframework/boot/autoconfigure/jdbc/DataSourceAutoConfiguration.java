@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +81,7 @@ public class DataSourceAutoConfiguration {
 	private DataSourceProperties properties;
 
 	@PostConstruct
-	protected void initialize() throws Exception {
+	protected void initialize() {
 		boolean initialize = this.properties.isInitialize();
 		if (this.dataSource == null || !initialize) {
 			logger.debug("No DataSource found so not initializing");
@@ -96,11 +97,7 @@ public class DataSourceAutoConfiguration {
 			schema += "classpath*:data.sql";
 		}
 
-		List<Resource> resources = new ArrayList<Resource>();
-		for (String schemaLocation : StringUtils.commaDelimitedListToStringArray(schema)) {
-			resources.addAll(Arrays.asList(this.applicationContext
-					.getResources(schemaLocation)));
-		}
+		List<Resource> resources = getSchemaResources(schema);
 
 		boolean continueOnError = this.properties.isContinueOnError();
 		boolean exists = false;
@@ -117,6 +114,21 @@ public class DataSourceAutoConfiguration {
 		if (exists) {
 			DatabasePopulatorUtils.execute(populator, this.dataSource);
 		}
+	}
+
+	private List<Resource> getSchemaResources(String schema) {
+		List<Resource> resources = new ArrayList<Resource>();
+		for (String schemaLocation : StringUtils.commaDelimitedListToStringArray(schema)) {
+			try {
+				resources.addAll(Arrays.asList(this.applicationContext
+						.getResources(schemaLocation)));
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException("Unable to load resource from "
+						+ schemaLocation, ex);
+			}
+		}
+		return resources;
 	}
 
 	/**
