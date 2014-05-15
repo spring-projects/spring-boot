@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JmsTemplateAutoConfiguration}.
- *
+ * 
  * @author Greg Turnquist
  */
 public class JmsTemplateAutoConfigurationTests {
@@ -54,7 +54,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
 		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
-				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
+				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+						.getBrokerURL());
 	}
 
 	@Test
@@ -127,7 +128,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
 		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
-					 ((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
+				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+						.getBrokerURL());
 	}
 
 	@Test
@@ -143,7 +145,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertNotNull(connectionFactory);
 		assertEquals(jmsTemplate.getConnectionFactory(), connectionFactory);
 		assertEquals("tcp://remote-host:10000",
-					 ((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory()).getBrokerURL());
+				((ActiveMQConnectionFactory) jmsTemplate.getConnectionFactory())
+						.getBrokerURL());
 	}
 
 	@Test
@@ -159,7 +162,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL, factory.getBrokerURL());
+		assertEquals(ActiveMQProperties.DEFAULT_EMBEDDED_BROKER_URL,
+				factory.getBrokerURL());
 	}
 
 	@Test
@@ -176,7 +180,8 @@ public class JmsTemplateAutoConfigurationTests {
 		assertEquals(jmsTemplate.getConnectionFactory(), pool);
 		ActiveMQConnectionFactory factory = (ActiveMQConnectionFactory) pool
 				.getConnectionFactory();
-		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL, factory.getBrokerURL());
+		assertEquals(ActiveMQProperties.DEFAULT_NETWORK_BROKER_URL,
+				factory.getBrokerURL());
 	}
 
 	@Test
@@ -196,10 +201,12 @@ public class JmsTemplateAutoConfigurationTests {
 		assertEquals("tcp://remote-host:10000", factory.getBrokerURL());
 	}
 
-	private AnnotationConfigApplicationContext createContext(Class<?>... additionalClasses) {
+	private AnnotationConfigApplicationContext createContext(
+			Class<?>... additionalClasses) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(additionalClasses);
-		context.register(ActiveMQAutoConfiguration.class, JmsTemplateAutoConfiguration.class);
+		context.register(ActiveMQAutoConfiguration.class,
+				JmsTemplateAutoConfiguration.class);
 		return context;
 	}
 
