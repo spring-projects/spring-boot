@@ -48,9 +48,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Test that a {@link DataSource} can be exposed as JSON for actuator endpoints.
+ * 
  * @author Dave Syer
  */
-public class JsonSerializationTests {
+public class DataSourceJsonSerializationTests {
 
 	@Test
 	public void serializerFactory() throws Exception {
@@ -69,7 +71,6 @@ public class JsonSerializationTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixInAnnotations(DataSource.class, DataSourceJson.class);
 		String value = mapper.writeValueAsString(dataSource);
-		System.err.println(value);
 		assertTrue(value.contains("\"url\":"));
 		assertEquals(1, StringUtils.countOccurrencesOf(value, "\"url\""));
 	}

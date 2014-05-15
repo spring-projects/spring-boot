@@ -39,7 +39,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.
- *
+ * 
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Christian Dupuis
@@ -80,19 +80,20 @@ public class RedisAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-			JedisConnectionFactory factory = null;
-			if (this.properties.getPool() == null) {
-				factory = new JedisConnectionFactory();
-			}
-			else {
-				factory = new JedisConnectionFactory(jedisPoolConfig());
-			}
+			JedisConnectionFactory factory = createJedisConnectionFactory();
 			factory.setHostName(this.properties.getHost());
 			factory.setPort(this.properties.getPort());
 			if (this.properties.getPassword() != null) {
 				factory.setPassword(this.properties.getPassword());
 			}
 			return factory;
+		}
+
+		private JedisConnectionFactory createJedisConnectionFactory() {
+			if (this.properties.getPool() != null) {
+				return new JedisConnectionFactory(jedisPoolConfig());
+			}
+			return new JedisConnectionFactory();
 		}
 
 		private JedisPoolConfig jedisPoolConfig() {

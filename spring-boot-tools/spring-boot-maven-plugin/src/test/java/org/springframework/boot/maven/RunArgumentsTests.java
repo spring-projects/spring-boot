@@ -16,41 +16,44 @@
 
 package org.springframework.boot.maven;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
- *
+ * Tests for {@link RunArguments}.
+ * 
  * @author Stephane Nicoll
  */
-public class RunMojoTests {
+public class RunArgumentsTests {
 
 	@Test
 	public void parseNull() {
-		String[] args = RunMojo.parseArgs(null);
+		String[] args = parseArgs(null);
 		assertNotNull(args);
 		assertEquals(0, args.length);
 	}
 
 	@Test
 	public void parseEmpty() {
-		String[] args = RunMojo.parseArgs("   ");
+		String[] args = parseArgs("   ");
 		assertNotNull(args);
 		assertEquals(0, args.length);
 	}
 
 	@Test
 	public void parseDebugFlags() {
-		String[] args = RunMojo.parseArgs("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
+		String[] args = parseArgs("-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005");
 		assertEquals(2, args.length);
 		assertEquals("-Xdebug", args[0]);
-		assertEquals("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005", args[1]);
+		assertEquals("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005",
+				args[1]);
 	}
 
 	@Test
 	public void parseWithExtraSpaces() {
-		String[] args = RunMojo.parseArgs("     -Dfoo=bar        -Dfoo2=bar2  ");
+		String[] args = parseArgs("     -Dfoo=bar        -Dfoo2=bar2  ");
 		assertEquals(2, args.length);
 		assertEquals("-Dfoo=bar", args[0]);
 		assertEquals("-Dfoo2=bar2", args[1]);
@@ -58,8 +61,7 @@ public class RunMojoTests {
 
 	@Test
 	public void parseWithNewLinesAndTabs() {
-		String[] args = RunMojo.parseArgs("     -Dfoo=bar \n" +
-				"\t\t -Dfoo2=bar2  ");
+		String[] args = parseArgs("     -Dfoo=bar \n" + "\t\t -Dfoo2=bar2  ");
 		assertEquals(2, args.length);
 		assertEquals("-Dfoo=bar", args[0]);
 		assertEquals("-Dfoo2=bar2", args[1]);
@@ -67,9 +69,13 @@ public class RunMojoTests {
 
 	@Test
 	public void quoteHandledProperly() {
-		String[] args = RunMojo.parseArgs("-Dvalue=\"My Value\"    ");
+		String[] args = parseArgs("-Dvalue=\"My Value\"    ");
 		assertEquals(1, args.length);
 		assertEquals("-Dvalue=My Value", args[0]);
+	}
+
+	private String[] parseArgs(String args) {
+		return new RunArguments(args).asArray();
 	}
 
 }
