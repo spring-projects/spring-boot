@@ -96,7 +96,7 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.requestContextAttribute=
 	spring.freemarker.suffix=
 	spring.freemarker.templateEncoding=UTF-8
-	spring.freemarker.path=classpath:/templates/
+	spring.freemarker.templateLoaderPath=classpath:/templates/
 	spring.freemarker.viewNames=
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
