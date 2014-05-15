@@ -39,7 +39,7 @@ public class FreeMarkerProperties {
 
 	private String suffix = DEFAULT_SUFFIX;
 
-	private String path = DEFAULT_TEMPLATE_LOADER_PATH;
+	private String templateLoaderPath = DEFAULT_TEMPLATE_LOADER_PATH;
 
 	private boolean cache;
 
@@ -121,12 +121,12 @@ public class FreeMarkerProperties {
 		this.suffix = suffix;
 	}
 
-	public String getPath() {
-		return this.path;
+	public String getTemplateLoaderPath() {
+		return this.templateLoaderPath;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setTemplateLoaderPath(String templateLoaderPath) {
+		this.templateLoaderPath = templateLoaderPath;
 	}
 
 	public String getRequestContextAttribute() {
