@@ -21,18 +21,11 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
         <version>${project.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <jvmArguments>
-                  -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
-              </jvmArguments>
-            </configuration>
-          </execution>
-        </executions>
+        <configuration>
+          <jvmArguments>
+            -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
+          </jvmArguments>
+        </configuration>
         ...
       </plugin>
       ...
