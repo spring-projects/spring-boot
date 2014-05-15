@@ -72,14 +72,14 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test(expected = BeanCreationException.class)
 	public void nonExistentTemplateLocation() {
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
+		registerAndRefreshContext("spring.freemarker.path:"
 				+ "classpath:/does-not-exist/");
 	}
 
 	@Test
 	public void emptyTemplateLocation() {
 		new File("target/test-classes/templates/empty-directory").mkdir();
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:"
+		registerAndRefreshContext("spring.freemarker.path:"
 				+ "classpath:/templates/empty-directory/");
 	}
 
@@ -89,7 +89,7 @@ public class FreeMarkerAutoConfigurationTests {
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("home"));
-		assertThat(response.getContentType(), equalTo("text/html"));
+		assertThat(response.getContentType(), equalTo("text/html;charset=UTF-8"));
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class FreeMarkerAutoConfigurationTests {
 		MockHttpServletResponse response = render("home");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("home"));
-		assertThat(response.getContentType(), equalTo("application/json"));
+		assertThat(response.getContentType(), equalTo("application/json;charset=UTF-8"));
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class FreeMarkerAutoConfigurationTests {
 
 	@Test
 	public void customTemplateLoaderPath() throws Exception {
-		registerAndRefreshContext("spring.freemarker.templateLoaderPath:classpath:/custom-templates/");
+		registerAndRefreshContext("spring.freemarker.path:classpath:/custom-templates/");
 		MockHttpServletResponse response = render("custom");
 		String result = response.getContentAsString();
 		assertThat(result, containsString("custom"));

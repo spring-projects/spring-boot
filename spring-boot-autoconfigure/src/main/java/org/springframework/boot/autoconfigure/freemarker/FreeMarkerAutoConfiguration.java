@@ -29,12 +29,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -49,65 +47,45 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
  * {@link EnableAutoConfiguration Auto-configuration} for FreeMarker.
  * 
  * @author Andy Wilkinson
+ * @author Dave Syer
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(freemarker.template.Configuration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class FreeMarkerAutoConfiguration implements EnvironmentAware {
-
-	public static final String DEFAULT_TEMPLATE_LOADER_PATH = "classpath:/templates/";
-
-	public static final String DEFAULT_PREFIX = "";
-
-	public static final String DEFAULT_SUFFIX = ".ftl";
+@EnableConfigurationProperties(FreeMarkerProperties.class)
+public class FreeMarkerAutoConfiguration {
 
 	@Autowired
 	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-	private RelaxedPropertyResolver environment;
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = new RelaxedPropertyResolver(environment, "spring.freemarker.");
-	}
+	@Autowired
+	private FreeMarkerProperties properties;
 
 	@PostConstruct
 	public void checkTemplateLocationExists() {
-		Boolean checkTemplateLocation = this.environment.getProperty(
-				"checkTemplateLocation", Boolean.class, true);
-		if (checkTemplateLocation) {
-			Resource resource = this.resourceLoader.getResource(this.environment
-					.getProperty("templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
+		if (this.properties.isCheckTemplateLocation()) {
+			Resource resource = this.resourceLoader
+					.getResource(this.properties.getPath());
 			Assert.state(resource.exists(), "Cannot find template location: " + resource
 					+ " (please add some templates "
 					+ "or check your FreeMarker configuration)");
 		}
 	}
 
-	protected static class FreeMarkerConfiguration implements EnvironmentAware {
+	protected static class FreeMarkerConfiguration {
 
-		private RelaxedPropertyResolver properties;
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.properties = new RelaxedPropertyResolver(environment,
-					"spring.freemarker.");
-		}
+		@Autowired
+		protected FreeMarkerProperties properties;
 
 		protected void applyProperties(FreeMarkerConfigurationFactory factory) {
-			factory.setTemplateLoaderPath(this.properties.getProperty(
-					"templateLoaderPath", DEFAULT_TEMPLATE_LOADER_PATH));
-			factory.setDefaultEncoding(this.properties.getProperty("templateEncoding",
-					"UTF-8"));
+			factory.setTemplateLoaderPath(this.properties.getPath());
+			factory.setDefaultEncoding(this.properties.getCharSet());
 			Properties settings = new Properties();
-			settings.putAll(this.properties.getSubProperties("settings."));
+			settings.putAll(this.properties.getSettings());
 			factory.setFreemarkerSettings(settings);
 		}
 
-		protected final RelaxedPropertyResolver getProperties() {
-			return this.properties;
-		}
 	}
 
 	@Configuration
@@ -147,24 +125,20 @@ public class FreeMarkerAutoConfiguration implements EnvironmentAware {
 		@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
 		public FreeMarkerViewResolver freeMarkerViewResolver() {
 			FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
-			RelaxedPropertyResolver properties = getProperties();
-			resolver.setPrefix(properties.getProperty("prefix", DEFAULT_PREFIX));
-			resolver.setSuffix(properties.getProperty("suffix", DEFAULT_SUFFIX));
-			resolver.setCache(properties.getProperty("cache", Boolean.class, true));
-			resolver.setContentType(properties.getProperty("contentType", "text/html"));
-			resolver.setViewNames(properties.getProperty("viewNames", String[].class));
-			resolver.setExposeRequestAttributes(properties.getProperty(
-					"exposeRequestAttributes", Boolean.class, false));
-			resolver.setAllowRequestOverride(properties.getProperty(
-					"allowRequestOverride", Boolean.class, false));
-			resolver.setExposeSessionAttributes(properties.getProperty(
-					"exposeSessionAttributes", Boolean.class, false));
-			resolver.setAllowSessionOverride(properties.getProperty(
-					"allowSessionOverride", Boolean.class, false));
-			resolver.setExposeSpringMacroHelpers(properties.getProperty(
-					"exposeSpringMacroHelpers", Boolean.class, true));
-			resolver.setRequestContextAttribute(properties
-					.getProperty("requestContextAttribute"));
+			resolver.setPrefix(this.properties.getPrefix());
+			resolver.setSuffix(this.properties.getSuffix());
+			resolver.setCache(this.properties.isCache());
+			resolver.setContentType(this.properties.getContentType());
+			resolver.setViewNames(this.properties.getViewNames());
+			resolver.setExposeRequestAttributes(this.properties
+					.isExposeRequestAttributes());
+			resolver.setExposeRequestAttributes(this.properties.isAllowRequestOverride());
+			resolver.setExposeRequestAttributes(this.properties
+					.isExposeSessionAttributes());
+			resolver.setExposeRequestAttributes(this.properties
+					.isExposeSpringMacroHelpers());
+			resolver.setRequestContextAttribute(this.properties
+					.getRequestContextAttribute());
 
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
