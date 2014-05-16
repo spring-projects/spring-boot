@@ -23,6 +23,8 @@ import groovy.text.markup.TemplateConfiguration;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Servlet;
 
@@ -99,11 +101,14 @@ public class GroovyTemplateAutoConfiguration {
 			Resource[] resources = this.resourceLoader.getResources(this.properties
 					.getPrefix());
 			if (resources.length > 0) {
-				URL[] urls = new URL[resources.length];
-				for (int i = 0; i < resources.length; i++) {
-					urls[i] = resources[i].getURL();
+				List<URL> urls = new ArrayList<URL>();
+				for (Resource resource : resources) {
+					if (resource.exists()) {
+						urls.add(resource.getURL());
+					}
 				}
-				return new URLClassLoader(urls, this.classLoader);
+				return new URLClassLoader(urls.toArray(new URL[urls.size()]),
+						this.classLoader);
 			}
 			else {
 				return this.classLoader;
