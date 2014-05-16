@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplate
 import org.springframework.boot.autoconfigure.groovy.template.web.LocaleAwareTemplate;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -70,7 +71,7 @@ public class GroovyTemplateAutoConfiguration {
 	public static class GroovyWebConfiguration implements BeanClassLoaderAware {
 
 		@Autowired
-		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
+		private ApplicationContext resourceLoader;
 
 		@Autowired
 		private GroovyTemplateProperties properties;
@@ -95,11 +96,14 @@ public class GroovyTemplateAutoConfiguration {
 		}
 
 		private ClassLoader createParentLoaderForTemplates() throws Exception {
-			Resource resource = this.resourceLoader.getResource(this.properties
+			Resource[] resources = this.resourceLoader.getResources(this.properties
 					.getPrefix());
-			if (resource.exists()) {
-				return new URLClassLoader(new URL[] { resource.getURL() },
-						this.classLoader);
+			if (resources.length > 0) {
+				URL[] urls = new URL[resources.length];
+				for (int i = 0; i < resources.length; i++) {
+					urls[i] = resources[i].getURL();
+				}
+				return new URLClassLoader(urls, this.classLoader);
 			}
 			else {
 				return this.classLoader;
@@ -114,7 +118,6 @@ public class GroovyTemplateAutoConfiguration {
 			resolver.setSuffix(this.properties.getSuffix());
 			resolver.setCache(this.properties.isCache());
 			resolver.setContentType(this.properties.getContentType());
-			resolver.setCharSet(this.properties.getCharSet());
 			resolver.setViewNames(this.properties.getViewNames());
 			resolver.setTemplateEngine(engine);
 

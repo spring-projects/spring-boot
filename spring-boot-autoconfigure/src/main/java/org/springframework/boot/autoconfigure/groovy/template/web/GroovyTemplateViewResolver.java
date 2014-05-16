@@ -20,7 +20,6 @@ import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import groovy.text.TemplateEngine;
 
-import java.io.InputStreamReader;
 import java.util.Locale;
 
 import org.springframework.beans.propertyeditors.LocaleEditor;
@@ -36,8 +35,6 @@ public class GroovyTemplateViewResolver extends UrlBasedViewResolver {
 
 	private TemplateEngine engine = new SimpleTemplateEngine();
 
-	private String charSet = "UTF-8";
-
 	public GroovyTemplateViewResolver() {
 		setViewClass(GroovyTemplateView.class);
 	}
@@ -49,21 +46,13 @@ public class GroovyTemplateViewResolver extends UrlBasedViewResolver {
 		this.engine = engine;
 	}
 
-	/**
-	 * @param charSet the charSet to set
-	 */
-	public void setCharSet(String charSet) {
-		this.charSet = charSet;
-	}
-
 	@Override
 	protected View loadView(String viewName, Locale locale) throws Exception {
 		Resource resource = resolveResource(viewName, locale);
 		if (resource == null) {
 			return null;
 		}
-		Template template = this.engine.createTemplate(new InputStreamReader(resource
-				.getInputStream(), this.charSet));
+		Template template = this.engine.createTemplate(resource.getURL());
 		GroovyTemplateView view = new GroovyTemplateView(template);
 		view.setApplicationContext(getApplicationContext());
 		view.setServletContext(getServletContext());
