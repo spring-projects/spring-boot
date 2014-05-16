@@ -366,11 +366,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	}
 
 	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
 	public int size() {
 		return (int) this.size;
 	}
@@ -378,11 +373,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	@Override
 	public void close() throws IOException {
 		this.rootFile.close();
-	}
-
-	@Override
-	public String toString() {
-		return getName();
 	}
 
 	/**
@@ -393,7 +383,26 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 */
 	public URL getUrl() throws MalformedURLException {
 		Handler handler = new Handler(this);
-		return new URL("jar", "", -1, "file:" + getName() + "!/", handler);
+		String file = "file:" + getName(PathForm.SYSTEM_INDEPENDENT) + "!/";
+		return new URL("jar", "", -1, file, handler);
+	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	@Override
+	public String getName() {
+		return getName(PathForm.SYSTEM_DEPENDENT);
+	}
+
+	private String getName(PathForm pathForm) {
+		if (pathForm == PathForm.SYSTEM_INDEPENDENT && File.separatorChar != '/') {
+			return this.name.replace(File.separatorChar, '/');
+		}
+		return this.name;
+
 	}
 
 	/**
@@ -419,5 +428,21 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		catch (Error ex) {
 			// Ignore
 		}
+	}
+
+	/**
+	 * Different forms that paths can be returned.
+	 */
+	private static enum PathForm {
+
+		/**
+		 * Use system dependent paths (i.e. include backslashes on Windows)
+		 */
+		SYSTEM_DEPENDENT,
+
+		/**
+		 * Use system independent paths (i.e. replace backslashes on Windows)
+		 */
+		SYSTEM_INDEPENDENT
 	}
 }
