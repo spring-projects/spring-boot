@@ -94,10 +94,21 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.exposeSpringMacroHelpers=false
 	spring.freemarker.prefix=
 	spring.freemarker.requestContextAttribute=
-	spring.freemarker.suffix=
+	spring.freemarker.suffix=.ftl
 	spring.freemarker.templateEncoding=UTF-8
 	spring.freemarker.templateLoaderPath=classpath:/templates/
-	spring.freemarker.viewNames=
+	spring.freemarker.viewNames= # whitelist of view names that can be resolved
+
+	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])
+	spring.groovy.template.allowRequestOverride=false
+	spring.groovy.template.allowSessionOverride=false
+	spring.groovy.template.cache=true
+	spring.groovy.template.contentType=text/html
+	spring.groovy.template.prefix=classpath:/templates/
+	spring.groovy.template.suffix=.tpl
+	spring.groovy.template.templateEncoding=UTF-8
+	spring.groovy.template.viewNames= # whitelist of view names that can be resolved
+    spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
 	spring.messages.basename=messages

@@ -816,8 +816,16 @@ added.
   and `spring.freemarker.suffix`, defaults ``'' and ``.ftl'' respectively). It can be overriden
   by providing a bean of the same name.
 
+* If you use Groovy templates (actually if groovy-templates is on your classpath) you
+also have a `Groovy TemplateViewResolver` with id
+  ``groovyTemplateViewResolver''. It looks for resources in a loader path by
+  surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix`
+  and `spring.groovy.template.suffix`, defaults ``classpath:/templates/'' and ``.tpl'' respectively). It can be overriden
+  by providing a bean of the same name.
+
 Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
-{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`], and
+{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`], 
+{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}['GroovyTemplateAutoConfiguration'] and
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}['FreeMarkerAutoConfiguration']
 
 
@@ -1381,13 +1389,18 @@ If you are using Thymeleaf, then set `spring.thymeleaf.cache` to `false`. See
 for other Thymeleaf customization options.
 
 
-
 [[howto-reload-freemarker-content]]
 === Reload FreeMarker templates without restarting the container
 If you are using FreeMarker, then set `spring.freemarker.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`]
 for other FreeMarker customization options.
 
+
+[[howto-reload-groovy-template-content]]
+=== Reload Groovy templates without restarting the container
+If you are using Groovy templates, then set `spring.groovy.template.cache` to `false`. See
+{sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`]
+for other Groovy customization options.
 
 
 [[howto-reload-java-classes-without-restarting]]
