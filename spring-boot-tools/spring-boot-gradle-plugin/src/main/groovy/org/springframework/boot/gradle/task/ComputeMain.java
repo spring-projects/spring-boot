@@ -29,7 +29,7 @@ import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
  * Add a main class if one is missing from the build
- * 
+ *
  * @author Dave Syer
  */
 public class ComputeMain implements Action<Task> {
@@ -68,7 +68,7 @@ public class ComputeMain implements Action<Task> {
 		project.getLogger().debug(
 				"Looking for main in: " + main.getOutput().getClassesDir());
 		try {
-			String mainClass = MainClassFinder.findMainClass(main.getOutput()
+			String mainClass = MainClassFinder.findSingleMainClass(main.getOutput()
 					.getClassesDir());
 			project.getLogger().info("Computed main class: " + mainClass);
 			return mainClass;
