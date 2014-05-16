@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.groovy.template")
+@ConfigurationProperties(prefix = "spring.groovy.template", ignoreUnknownFields = false)
 public class GroovyTemplateProperties {
 
 	public static final String DEFAULT_PREFIX = "classpath:/templates/";

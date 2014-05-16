@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 /**
@@ -43,6 +44,8 @@ public class GroovyTemplateView extends AbstractUrlBasedView {
 	protected void renderMergedOutputModel(Map<String, Object> model,
 			HttpServletRequest request, HttpServletResponse response) throws Exception {
 		applyContentType(response);
+		model.put("spring", new RequestContext(request, response, getServletContext(),
+				model));
 		this.template.make(model).writeTo(new BufferedWriter(response.getWriter()));
 	}
 
