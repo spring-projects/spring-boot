@@ -68,6 +68,9 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 			if ("postgres".equals(platform)) {
 				platform = "postgresql";
 			}
+			if ("oracle".equals(platform)) {
+				platform = "oracle10g";
+			}
 			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 			String schemaLocation = this.environment.getProperty("schema",
 					DEFAULT_SCHEMA_LOCATION);
