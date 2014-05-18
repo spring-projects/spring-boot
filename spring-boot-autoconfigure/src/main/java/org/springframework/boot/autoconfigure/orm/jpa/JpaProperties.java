@@ -95,8 +95,27 @@ public class JpaProperties {
 		this.hibernate = hibernate;
 	}
 
+	/**
+	 * Get configuration properties for the initialization of the main
+	 * EntityManagerFactory. The result will always have ddl-auto=none, so that the schema
+	 * generation or validation can be deferred to a later stage.
+	 * 
+	 * @param dataSource the DataSource in case it is needed to determine the properties
+	 * @return some Hibernate properties for configuration
+	 */
+	public Map<String, Object> getInitialHibernateProperties(DataSource dataSource) {
+		return this.hibernate.getAdditionalProperties(this.properties);
+	}
+
+	/**
+	 * Get the full configuration properties the Hibernate EntityManagerFactory.
+	 * 
+	 * @param dataSource the DataSource in case it is needed to determine the properties
+	 * @return some Hibernate properties for configuration
+	 */
 	public Map<String, Object> getHibernateProperties(DataSource dataSource) {
-		return this.hibernate.getAdditionalProperties(this.properties, dataSource);
+		return this.hibernate
+				.getDeferredAdditionalProperties(this.properties, dataSource);
 	}
 
 	public static class Hibernate {
@@ -116,15 +135,35 @@ public class JpaProperties {
 		}
 
 		public String getDdlAuto() {
-			return this.ddlAuto;
+			return "none";
+		}
+
+		private String getDeferredDdlAuto(Map<String, Object> existing,
+				DataSource dataSource) {
+			String ddlAuto = this.ddlAuto != null ? this.ddlAuto
+					: getDefaultDdlAuto(dataSource);
+			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
+				return ddlAuto;
+			}
+			if (isAlreadyProvided(existing, "hbm2ddl.auto")) {
+				return (String) existing.get("hibernate.hbm2ddl.auto");
+			}
+			return "none";
 		}
 
 		public void setDdlAuto(String ddlAuto) {
 			this.ddlAuto = ddlAuto;
 		}
 
-		private Map<String, Object> getAdditionalProperties(Map<String, Object> existing,
-				DataSource dataSource) {
+		private Map<String, Object> getDeferredAdditionalProperties(
+				Map<String, Object> properties, DataSource dataSource) {
+			Map<String, Object> deferred = getAdditionalProperties(properties);
+			deferred.put("hibernate.hbm2ddl.auto",
+					getDeferredDdlAuto(properties, dataSource));
+			return deferred;
+		}
+
+		private Map<String, Object> getAdditionalProperties(Map<String, Object> existing) {
 			Map<String, Object> result = new HashMap<String, Object>();
 			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
 					&& this.namingStrategy != null) {
@@ -134,11 +173,7 @@ public class JpaProperties {
 				result.put("hibernate.ejb.naming_strategy",
 						DEFAULT_NAMING_STRATEGY.getName());
 			}
-			String ddlAuto = this.ddlAuto != null ? this.ddlAuto
-					: getDefaultDdlAuto(dataSource);
-			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
-				result.put("hibernate.hbm2ddl.auto", ddlAuto);
-			}
+			result.put("hibernate.hbm2ddl.auto", "none");
 			return result;
 		}
 
