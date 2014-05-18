@@ -146,9 +146,6 @@ public class EntityManagerFactoryBuilder {
 			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(
 					EntityManagerFactoryBuilder.this.properties.getProperties());
-			entityManagerFactoryBean.getJpaPropertyMap().putAll(
-					EntityManagerFactoryBuilder.this.properties
-							.getHibernateProperties(this.dataSource));
 			return entityManagerFactoryBean;
 		}
 

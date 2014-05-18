@@ -20,9 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -33,7 +31,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -96,26 +93,6 @@ public class FlywayAutoConfiguration {
 			return flyway;
 		}
 
-		@Bean
-		@DependsOn("flyway")
-		protected BeanPostProcessor forceFlywayToInitialize() {
-
-			return new BeanPostProcessor() {
-
-				@Override
-				public Object postProcessAfterInitialization(Object bean, String beanName)
-						throws BeansException {
-					return bean;
-				}
-
-				@Override
-				public Object postProcessBeforeInitialization(Object bean, String beanName)
-						throws BeansException {
-					return bean;
-				}
-
-			};
-		}
 	}
 
 }

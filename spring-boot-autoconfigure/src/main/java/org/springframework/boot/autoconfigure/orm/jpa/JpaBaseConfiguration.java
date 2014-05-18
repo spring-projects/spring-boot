@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -97,10 +98,13 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnMissingBean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(
 			EntityManagerFactoryBuilder factory) {
-		return factory.dataSource(this.dataSource).packages(getPackagesToScan()).build();
+		return factory.dataSource(this.dataSource).packages(getPackagesToScan())
+				.properties(getVendorProperties()).build();
 	}
 
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
+
+	protected abstract Map<String, Object> getVendorProperties();
 
 	protected String[] getPackagesToScan() {
 		List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
