@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HealthEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
@@ -51,8 +51,8 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 	public static class Config {
 
 		@Bean
-		public HealthEndpoint endpoint() {
-			return new HealthEndpoint();
+		public HealthEndpoint endpoint(Map<String, HealthIndicator<?>> healthIndicators) {
+			return new HealthEndpoint(healthIndicators);
 		}
 
 		@Bean

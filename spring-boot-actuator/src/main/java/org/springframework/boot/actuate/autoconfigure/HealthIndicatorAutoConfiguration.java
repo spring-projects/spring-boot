@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -45,11 +46,12 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */
 @Configuration
+@AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
 		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
 		RabbitAutoConfiguration.class })

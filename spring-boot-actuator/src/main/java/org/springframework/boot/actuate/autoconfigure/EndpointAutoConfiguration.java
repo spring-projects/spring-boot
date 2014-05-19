@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +37,7 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 import org.springframework.boot.actuate.trace.InMemoryTraceRepository;
@@ -59,7 +61,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
  * {@link Endpoint}s.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
@@ -70,6 +72,9 @@ public class EndpointAutoConfiguration {
 
 	@Autowired
 	private InfoPropertiesConfiguration properties;
+
+	@Autowired(required = false)
+	Map<String, HealthIndicator<? extends Object>> healthIndicators = new HashMap<String, HealthIndicator<? extends Object>>();
 
 	@Autowired(required = false)
 	private MetricReader metricRepository = new InMemoryMetricRepository();
@@ -92,7 +97,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		return new HealthEndpoint();
+		return new HealthEndpoint(this.healthIndicators);
 	}
 
 	@Bean

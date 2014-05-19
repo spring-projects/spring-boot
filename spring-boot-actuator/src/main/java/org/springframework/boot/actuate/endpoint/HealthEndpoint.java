@@ -20,27 +20,28 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose application health.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = false)
 public class HealthEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
-	@Autowired(required = false)
-	private Map<String, HealthIndicator<? extends Object>> healthIndicators;
+	private final Map<String, HealthIndicator<? extends Object>> healthIndicators;
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.
 	 */
-	public HealthEndpoint() {
+	public HealthEndpoint(Map<String, HealthIndicator<? extends Object>> healthIndicators) {
 		super("health", false, true);
+		Assert.notNull(healthIndicators, "HealthIndicator must not be null");
+		this.healthIndicators = healthIndicators;
 	}
 
 	/**
