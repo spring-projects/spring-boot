@@ -67,9 +67,12 @@ public class FreeMarkerAutoConfiguration {
 		if (this.properties.isCheckTemplateLocation()) {
 			Resource resource = this.resourceLoader.getResource(this.properties
 					.getTemplateLoaderPath());
-			Assert.state(resource.exists(), "Cannot find template location: " + resource
-					+ " (please add some templates "
-					+ "or check your FreeMarker configuration)");
+			Assert.state(
+					resource.exists(),
+					"Cannot find template location: "
+							+ resource
+							+ " (please add some templates, check your FreeMarker configuration, or set "
+							+ "spring.freemarker.checkTemplateLocation=false)");
 		}
 	}
 
