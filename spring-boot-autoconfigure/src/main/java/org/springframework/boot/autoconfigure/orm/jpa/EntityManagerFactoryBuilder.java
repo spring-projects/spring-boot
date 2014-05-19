@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,8 @@ public class EntityManagerFactoryBuilder {
 
 	private JpaProperties properties;
 
+	private EntityManagerFactoryBeanCallback callback;
+
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
 	 * EntityManagerFactory instances are created.
@@ -67,6 +70,15 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
+	 * An optional callback for new entity manager factory beans.
+	 * 
+	 * @author Dave Syer
+	 */
+	public void setCallback(EntityManagerFactoryBeanCallback callback) {
+		this.callback = callback;
+	}
+
+	/**
 	 * A fluent builder for a LocalContainerEntityManagerFactoryBean.
 	 */
 	public class Builder {
@@ -76,6 +88,8 @@ public class EntityManagerFactoryBuilder {
 		private String[] packagesToScan;
 
 		private String persistenceUnit;
+
+		private Map<String, Object> properties = new HashMap<String, Object>();
 
 		private Builder(DataSource dataSource) {
 			this.dataSource = dataSource;
@@ -126,8 +140,7 @@ public class EntityManagerFactoryBuilder {
 		 * @return the builder for fluent usage
 		 */
 		public Builder properties(Map<String, Object> properties) {
-			EntityManagerFactoryBuilder.this.properties.getProperties()
-					.putAll(properties);
+			this.properties.putAll(properties);
 			return this;
 		}
 
@@ -146,8 +159,24 @@ public class EntityManagerFactoryBuilder {
 			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(
 					EntityManagerFactoryBuilder.this.properties.getProperties());
+			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
+			if (EntityManagerFactoryBuilder.this.callback != null) {
+				EntityManagerFactoryBuilder.this.callback
+						.execute(entityManagerFactoryBean);
+			}
 			return entityManagerFactoryBean;
 		}
+
+	}
+
+	/**
+	 * A callback for new entity manager factory beans created by a Builder.
+	 * 
+	 * @author Dave Syer
+	 */
+	public static interface EntityManagerFactoryBeanCallback {
+
+		void execute(LocalContainerEntityManagerFactoryBean factory);
 
 	}
 

@@ -167,8 +167,9 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.show-sql=true
 	spring.jpa.database-platform=
 	spring.jpa.database=
-	spring.jpa.generate-ddl=
+	spring.jpa.generate-ddl=false # ignored by Hibernate, might be useful for other vendors
 	spring.jpa.hibernate.naming-strategy= # naming classname
+	spring.jpa.hibernate.defer-ddl=true # defer processing of DDL until application is running
 	spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])

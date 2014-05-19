@@ -90,6 +90,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			JpaVendorAdapter jpaVendorAdapter) {
 		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
 				jpaVendorAdapter, this.jpaProperties, this.persistenceUnitManager);
+		builder.setCallback(getVendorCallback());
 		return builder;
 	}
 
@@ -105,6 +106,8 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
 
 	protected abstract Map<String, Object> getVendorProperties();
+
+	protected abstract EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback();
 
 	protected String[] getPackagesToScan() {
 		List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
