@@ -30,7 +30,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -39,7 +39,7 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies.ifAnyMissingClasses("org.springframework.boot.SpringApplication")
-				.add("spring-boot-starter");
+		.add("spring-boot-starter");
 	}
 
 	@Override
@@ -63,7 +63,8 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 				"org.springframework.core.annotation.Order",
 				"org.springframework.core.io.ResourceLoader",
 				"org.springframework.boot.CommandLineRunner",
-				"org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+				"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
+				"org.springframework.boot.groovy.GrabMetadata");
 		imports.addStarImports("org.springframework.stereotype",
 				"org.springframework.scheduling.annotation");
 	}
