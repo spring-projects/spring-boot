@@ -69,9 +69,11 @@ public class VelocityAutoConfiguration {
 		if (this.properties.isCheckTemplateLocation()) {
 			Resource resource = this.resourceLoader.getResource(this.properties
 					.getResourceLoaderPath());
-			Assert.state(resource.exists(), "Cannot find template location: " + resource
-					+ " (please add some templates "
-					+ "or check your Velocity configuration)");
+			Assert.state(
+					resource.exists(),
+					"Cannot find template location: "
+							+ resource
+							+ " (please add some templates, check your Velocity configuration, or set spring.velocity.checkTemplateLocation=false)");
 		}
 	}
 
