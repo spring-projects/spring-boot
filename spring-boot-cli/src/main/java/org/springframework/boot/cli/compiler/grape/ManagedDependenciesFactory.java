@@ -30,7 +30,7 @@ import org.springframework.boot.dependency.tools.VersionManagedDependencies;
 /**
  * Factory to create Maven {@link Dependency} objects from Boot
  * {@link PomManagedDependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesFactory {
@@ -41,7 +41,7 @@ public class ManagedDependenciesFactory {
 		this(new VersionManagedDependencies());
 	}
 
-	ManagedDependenciesFactory(ManagedDependencies dependencies) {
+	public ManagedDependenciesFactory(ManagedDependencies dependencies) {
 		this.dependencies = dependencies;
 	}
 

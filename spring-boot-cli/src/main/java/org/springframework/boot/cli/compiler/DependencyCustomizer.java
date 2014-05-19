@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
  * <p>
  * This class provides a fluent API for conditionally adding dependencies. For example:
  * {@code dependencies.ifMissing("com.corp.SomeClass").add(module)}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -42,17 +42,17 @@ public class DependencyCustomizer {
 
 	private final ClassNode classNode;
 
-	private final ArtifactCoordinatesResolver coordinatesResolver;
+	private final DependencyResolutionContext dependencyResolutionContext;
 
 	/**
 	 * Create a new {@link DependencyCustomizer} instance.
 	 * @param loader
 	 */
 	public DependencyCustomizer(GroovyClassLoader loader, ModuleNode moduleNode,
-			ArtifactCoordinatesResolver coordinatesResolver) {
+			DependencyResolutionContext dependencyResolutionContext) {
 		this.loader = loader;
 		this.classNode = moduleNode.getClasses().get(0);
-		this.coordinatesResolver = coordinatesResolver;
+		this.dependencyResolutionContext = dependencyResolutionContext;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class DependencyCustomizer {
 	protected DependencyCustomizer(DependencyCustomizer parent) {
 		this.loader = parent.loader;
 		this.classNode = parent.classNode;
-		this.coordinatesResolver = parent.coordinatesResolver;
+		this.dependencyResolutionContext = parent.dependencyResolutionContext;
 	}
 
 	public String getVersion(String artifactId) {
@@ -71,7 +71,8 @@ public class DependencyCustomizer {
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.coordinatesResolver.getVersion(artifactId);
+		String version = this.dependencyResolutionContext
+				.getArtifactCoordinatesResolver().getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -201,9 +202,11 @@ public class DependencyCustomizer {
 	 */
 	public DependencyCustomizer add(String module, boolean transitive) {
 		if (canAdd()) {
+			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
+					.getArtifactCoordinatesResolver();
 			this.classNode.addAnnotation(createGrabAnnotation(
-					this.coordinatesResolver.getGroupId(module), module,
-					this.coordinatesResolver.getVersion(module), transitive));
+					artifactCoordinatesResolver.getGroupId(module), module,
+					artifactCoordinatesResolver.getVersion(module), transitive));
 		}
 		return this;
 	}

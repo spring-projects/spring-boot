@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ResolveDependencyCoordinatesTransformation}
- * 
+ *
  * @author Andy Wilkinson
  */
 public final class ResolveDependencyCoordinatesTransformationTests {
@@ -64,8 +64,11 @@ public final class ResolveDependencyCoordinatesTransformationTests {
 
 	private final ArtifactCoordinatesResolver coordinatesResolver = mock(ArtifactCoordinatesResolver.class);
 
-	private final ASTTransformation transformation = new ResolveDependencyCoordinatesTransformation(
+	private final DependencyResolutionContext resolutionContext = new DependencyResolutionContext(
 			this.coordinatesResolver);
+
+	private final ASTTransformation transformation = new ResolveDependencyCoordinatesTransformation(
+			this.resolutionContext);
 
 	@Before
 	public void setupExpectations() {
