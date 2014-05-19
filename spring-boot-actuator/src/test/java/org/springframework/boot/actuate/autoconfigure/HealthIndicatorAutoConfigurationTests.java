@@ -23,20 +23,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link HealthIndicatorAutoConfiguration}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class HealthIndicatorAutoConfigurationTests {
@@ -86,6 +89,21 @@ public class HealthIndicatorAutoConfigurationTests {
 
 	@SuppressWarnings("rawtypes")
 	@Test
+	public void notRedisHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(RedisAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "health.redis.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
 	public void mongoHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MongoAutoConfiguration.class,
@@ -95,6 +113,21 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
 		assertEquals(MongoHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void notMongoHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(MongoAutoConfiguration.class,
+				MongoDataAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "health.mongo.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
 				.getClass());
 	}
 
@@ -122,5 +155,49 @@ public class HealthIndicatorAutoConfigurationTests {
 		assertEquals(1, beans.size());
 		assertEquals(SimpleDataSourceHealthIndicator.class, beans.values().iterator()
 				.next().getClass());
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void notDataSourceHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "health.db.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void rabbitHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(RabbitAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(RabbitHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Test
+	public void notRabbitHealthIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(RabbitAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "health.rabbit.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
 	}
 }

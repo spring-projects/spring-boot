@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -53,8 +54,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 @Configuration
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
-		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
-		RabbitAutoConfiguration.class })
+	MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
+	RabbitAutoConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 
 	@Bean
@@ -65,6 +66,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(DataSource.class)
+	@ConditionalOnExpression("${health.db.enabled:true}")
 	public static class DataSourcesHealthIndicatorConfiguration {
 
 		@Autowired(required = false)
@@ -89,6 +91,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(MongoTemplate.class)
+	@ConditionalOnExpression("${health.mongo.enabled:true}")
 	public static class MongoHealthIndicatorConfiguration {
 
 		@Autowired
@@ -113,6 +116,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RedisConnectionFactory.class)
+	@ConditionalOnExpression("${health.redis.enabled:true}")
 	public static class RedisHealthIndicatorConfiguration {
 
 		@Autowired
@@ -138,6 +142,7 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnBean(RabbitTemplate.class)
+	@ConditionalOnExpression("${health.rabbit.enabled:true}")
 	public static class RabbitHealthIndicatorConfiguration {
 
 		@Autowired
