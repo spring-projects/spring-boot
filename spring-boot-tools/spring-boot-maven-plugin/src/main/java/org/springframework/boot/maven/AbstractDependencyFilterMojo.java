@@ -28,7 +28,6 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterExceptio
 import org.apache.maven.shared.artifact.filter.collection.ArtifactIdFilter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
-import org.apache.maven.shared.artifact.filter.collection.GroupIdFilter;
 
 /**
  * A base mojo filtering the dependencies of the project.
@@ -96,7 +95,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		}
 		filters.addFilter(new ArtifactIdFilter("",
 				cleanFilterConfig(this.excludeArtifactIds)));
-		filters.addFilter(new GroupIdFilter("", cleanFilterConfig(this.excludeGroupIds)));
+		filters.addFilter(new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
 		if (this.excludes != null) {
 			filters.addFilter(new ExcludeFilter(this.excludes));
 		}
