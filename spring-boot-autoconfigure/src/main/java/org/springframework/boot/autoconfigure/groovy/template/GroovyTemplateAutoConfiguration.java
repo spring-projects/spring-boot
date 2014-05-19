@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.groovy.template;
 
 import groovy.text.TemplateEngine;
-import groovy.text.markup.BaseTemplate;
 import groovy.text.markup.MarkupTemplateEngine;
 import groovy.text.markup.TemplateConfiguration;
 
@@ -28,6 +27,7 @@ import java.util.List;
 
 import javax.servlet.Servlet;
 
+import groovy.text.markup.TemplateResolver;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplateViewResolver;
-import org.springframework.boot.autoconfigure.groovy.template.web.LocaleAwareTemplate;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -89,12 +88,9 @@ public class GroovyTemplateAutoConfiguration {
 		@ConditionalOnMissingBean(TemplateEngine.class)
 		public TemplateEngine groovyTemplateEngine() throws Exception {
 			TemplateConfiguration configuration = this.properties.getConfiguration();
-			if (configuration.getBaseTemplateClass() == BaseTemplate.class) {
-				// Enable locale-dependent includes
-				configuration.setBaseTemplateClass(LocaleAwareTemplate.class);
-			}
-			return new MarkupTemplateEngine(createParentLoaderForTemplates(),
-					configuration);
+
+            return new MarkupTemplateEngine(createParentLoaderForTemplates(),
+                    configuration, new GroovyTemplateResolver());
 		}
 
 		private ClassLoader createParentLoaderForTemplates() throws Exception {
@@ -132,6 +128,7 @@ public class GroovyTemplateAutoConfiguration {
 
 			return resolver;
 		}
-	}
+
+    }
 
 }
