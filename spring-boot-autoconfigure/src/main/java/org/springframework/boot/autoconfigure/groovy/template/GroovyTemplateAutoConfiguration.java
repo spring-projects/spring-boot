@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
+import groovy.text.SimpleTemplateEngine;
 import groovy.text.TemplateEngine;
 import groovy.text.markup.MarkupTemplateEngine;
 import groovy.text.markup.TemplateConfiguration;
@@ -27,15 +28,16 @@ import java.util.List;
 
 import javax.servlet.Servlet;
 
-import groovy.text.markup.TemplateResolver;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.groovy.template.web.GroovyTemplateViewResolver;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -66,16 +68,14 @@ public class GroovyTemplateAutoConfiguration {
 	@Autowired
 	private GroovyTemplateProperties properties;
 
-	@Configuration
-	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class })
-	@ConditionalOnWebApplication
-	public static class GroovyWebConfiguration implements BeanClassLoaderAware {
-
-		@Autowired
-		private ApplicationContext resourceLoader;
+	public abstract static class BaseGroovyTemplateConfiguration implements
+			BeanClassLoaderAware {
 
 		@Autowired
 		private GroovyTemplateProperties properties;
+
+		@Autowired
+		private ApplicationContext resourceLoader;
 
 		private ClassLoader classLoader = GroovyWebConfiguration.class.getClassLoader();
 
@@ -84,16 +84,7 @@ public class GroovyTemplateAutoConfiguration {
 			this.classLoader = classLoader;
 		}
 
-		@Bean
-		@ConditionalOnMissingBean(TemplateEngine.class)
-		public TemplateEngine groovyTemplateEngine() throws Exception {
-			TemplateConfiguration configuration = this.properties.getConfiguration();
-
-            return new MarkupTemplateEngine(createParentLoaderForTemplates(),
-                    configuration, new GroovyTemplateResolver());
-		}
-
-		private ClassLoader createParentLoaderForTemplates() throws Exception {
+		protected ClassLoader createParentLoaderForTemplates() throws Exception {
 			Resource[] resources = this.resourceLoader.getResources(this.properties
 					.getPrefix());
 			if (resources.length > 0) {
@@ -110,6 +101,55 @@ public class GroovyTemplateAutoConfiguration {
 				return this.classLoader;
 			}
 		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(MarkupTemplateEngine.class)
+	public static class GroovyMarkupConfiguration extends BaseGroovyTemplateConfiguration {
+
+		@Autowired
+		private GroovyTemplateProperties properties;
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.groovy.template.configuration")
+		public TemplateConfiguration groovyTemplateConfiguration() {
+			return new TemplateConfiguration();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(TemplateEngine.class)
+		public TemplateEngine groovyTemplateEngine() throws Exception {
+			TemplateConfiguration configuration = groovyTemplateConfiguration();
+			configuration.setCacheTemplates(this.properties.isCache());
+			return new MarkupTemplateEngine(createParentLoaderForTemplates(),
+					configuration, new GroovyTemplateResolver());
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnMissingClass(name = "groovy.text.markup.MarkupTemplateEngine")
+	public static class GroovySimpleConfiguration extends BaseGroovyTemplateConfiguration {
+
+		@Autowired
+		private GroovyTemplateProperties properties;
+
+		@Bean
+		@ConditionalOnMissingBean(TemplateEngine.class)
+		public TemplateEngine groovyTemplateEngine() throws Exception {
+			return new SimpleTemplateEngine(createParentLoaderForTemplates());
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class })
+	@ConditionalOnWebApplication
+	public static class GroovyWebConfiguration {
+
+		@Autowired
+		private GroovyTemplateProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "groovyTemplateViewResolver")
@@ -129,6 +169,6 @@ public class GroovyTemplateAutoConfiguration {
 			return resolver;
 		}
 
-    }
+	}
 
 }
