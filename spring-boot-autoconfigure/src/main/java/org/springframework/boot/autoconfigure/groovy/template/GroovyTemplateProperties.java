@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.groovy.template;
 
-import groovy.text.markup.TemplateConfiguration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -45,7 +46,7 @@ public class GroovyTemplateProperties {
 
 	private boolean checkTemplateLocation = false;
 
-	private TemplateConfiguration configuration = new TemplateConfiguration();
+	private Map<String, Object> configuration = new HashMap<String, Object>();
 
 	public void setCheckTemplateLocation(boolean checkTemplateLocation) {
 		this.checkTemplateLocation = checkTemplateLocation;
@@ -105,11 +106,11 @@ public class GroovyTemplateProperties {
 		this.suffix = suffix;
 	}
 
-	public void setConfiguration(TemplateConfiguration configuration) {
+	public void setConfiguration(Map<String, Object> configuration) {
 		this.configuration = configuration;
 	}
 
-	public TemplateConfiguration getConfiguration() {
+	public Map<String, Object> getConfiguration() {
 		return this.configuration;
 	}
 
