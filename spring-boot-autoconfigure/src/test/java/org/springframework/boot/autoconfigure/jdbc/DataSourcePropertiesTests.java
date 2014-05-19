@@ -23,9 +23,9 @@ public class DataSourcePropertiesTests {
 	public void driverClassNameFromDriverClassNamePropertyWhenDefined() {
 		DataSourceProperties configuration = new DataSourceProperties();
 		configuration.setUrl("jdbc:mysql://mydb");
-		configuration.setDriverClassName("my.driver.ClassName");
+		configuration.setDriverClassName("org.hsqldb.jdbcDriver");
 		String driverClassName = configuration.getDriverClassName();
-		assertEquals(driverClassName, "my.driver.ClassName");
+		assertEquals(driverClassName, "org.hsqldb.jdbcDriver");
 	}
 
 }
