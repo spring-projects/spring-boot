@@ -65,7 +65,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
- * @author Chiristian Dupuis
+ * @author Christian Dupuis
  */
 @Configuration
 public class EndpointAutoConfiguration {
