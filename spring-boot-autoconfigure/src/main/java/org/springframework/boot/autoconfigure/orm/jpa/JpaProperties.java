@@ -96,7 +96,7 @@ public class JpaProperties {
 	}
 
 	/**
-	 * Get configuration properties for the initialization of the main
+	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory. The result will always have ddl-auto=none, so that the schema
 	 * generation or validation can be deferred to a later stage.
 	 * 
@@ -108,7 +108,7 @@ public class JpaProperties {
 	}
 
 	/**
-	 * Get the full configuration properties the Hibernate EntityManagerFactory.
+	 * Get the full configuration properties for the Hibernate EntityManagerFactory.
 	 * 
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
@@ -126,6 +126,8 @@ public class JpaProperties {
 
 		private String ddlAuto;
 
+		private boolean deferDdl = true;
+
 		public Class<?> getNamingStrategy() {
 			return this.namingStrategy;
 		}
@@ -135,11 +137,22 @@ public class JpaProperties {
 		}
 
 		public String getDdlAuto() {
-			return "none";
+			return this.ddlAuto;
+		}
+
+		public void setDeferDdl(boolean deferDdl) {
+			this.deferDdl = deferDdl;
+		}
+
+		public boolean isDeferDdl() {
+			return this.deferDdl;
 		}
 
 		private String getDeferredDdlAuto(Map<String, Object> existing,
 				DataSource dataSource) {
+			if (!this.deferDdl) {
+				return "none";
+			}
 			String ddlAuto = this.ddlAuto != null ? this.ddlAuto
 					: getDefaultDdlAuto(dataSource);
 			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
@@ -173,7 +186,12 @@ public class JpaProperties {
 				result.put("hibernate.ejb.naming_strategy",
 						DEFAULT_NAMING_STRATEGY.getName());
 			}
-			result.put("hibernate.hbm2ddl.auto", "none");
+			if (this.deferDdl) {
+				result.put("hibernate.hbm2ddl.auto", "none");
+			}
+			else {
+				result.put("hibernate.hbm2ddl.auto", this.ddlAuto);
+			}
 			return result;
 		}
 

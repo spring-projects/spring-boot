@@ -78,7 +78,7 @@ class Person {
 
 	@Override
 	public String toString() {
-		return "Person [firstName=" + firstName + ", lastname=" + lastName
+		return "Person [firstName=" + firstName + ", lastName=" + lastName
 				+ "]";
 	}
 }
