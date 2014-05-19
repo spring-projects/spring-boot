@@ -911,9 +911,10 @@ dynamic HTML content.  Spring MVC supports a variety of templating
 technologies including: Velocity, FreeMarker and JSPs. Many
 other templating engines also ship their own Spring MVC integrations.
 
-Spring Boot includes auto-configuration support for the Thymeleaf,
-[FreeMarker](http://freemarker.org/docs/) and
-[Groovy](http://beta.groovy-lang.org/docs/groovy-2.3.0/html/documentation/markup-template-engine.html)
+Spring Boot includes auto-configuration support for the
+http://www.thymeleaf.org/documentation.html[Thymeleaf],
+http://freemarker.org/docs/[FreeMarker] and
+http://beta.groovy-lang.org/docs/groovy-2.3.0/html/documentation/markup-template-engine.html[Groovy]
 templating engines. Thymeleaf is an XML/XHTML/HTML5 template engine
 that can work both in web and non-web environments. If allows you to
 create natural templates that can be correctly displayed by browsers
