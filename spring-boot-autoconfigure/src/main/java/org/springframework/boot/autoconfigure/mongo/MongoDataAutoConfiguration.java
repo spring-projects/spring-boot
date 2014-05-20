@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.net.UnknownHostException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,6 +48,7 @@ import com.mongodb.Mongo;
  */
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoTemplate.class })
+@AutoConfigureAfter(MongoAutoConfiguration.class)
 public class MongoDataAutoConfiguration {
 
 	@Autowired
