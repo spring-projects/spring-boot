@@ -16,59 +16,30 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.flywaydb.core.Flyway;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for Flyway database migrations.
+ * Configuration properties for Flyway database migrations. These are only the properties
+ * that Spring needs to validate and enable the migrations. If you want to control the
+ * location or format of the scripts you can use the same prefix ("flyway") to inject
+ * properties into the {@link Flyway} instance.
  * 
  * @author Dave Syer
  * 
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
 public class FlywayProperties {
 
-	private List<String> locations = Arrays.asList("db/migrations");
-
-	private List<String> schemas = new ArrayList<String>();
-
-	private String prefix = "V";
-
-	private String suffix = ".sql";
-
-	private String initVersion = "1";
+	private List<String> locations = Arrays.asList("db/migration");
 
 	private boolean checkLocation = false;
 
 	private boolean enabled = true;
-
-	public String getPrefix() {
-		return this.prefix;
-	}
-
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
-
-	public String getSuffix() {
-		return this.suffix;
-	}
-
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
-
-	public String getInitVersion() {
-		return this.initVersion;
-	}
-
-	public void setInitVersion(String initVersion) {
-		this.initVersion = initVersion;
-	}
 
 	public void setLocations(List<String> locations) {
 		this.locations = locations;
@@ -76,14 +47,6 @@ public class FlywayProperties {
 
 	public List<String> getLocations() {
 		return this.locations;
-	}
-
-	public List<String> getSchemas() {
-		return this.schemas;
-	}
-
-	public void setSchemas(List<String> schemas) {
-		this.schemas = schemas;
 	}
 
 	public void setCheckLocation(boolean checkLocation) {

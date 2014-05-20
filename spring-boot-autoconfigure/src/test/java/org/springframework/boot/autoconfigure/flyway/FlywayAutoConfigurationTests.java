@@ -74,22 +74,22 @@ public class FlywayAutoConfigurationTests {
 						PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[classpath:db/migrations]", Arrays.asList(flyway.getLocations())
+		assertEquals("[classpath:db/migration]", Arrays.asList(flyway.getLocations())
 				.toString());
 	}
 
 	@Test
 	public void testOverrideLocations() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"flyway.locations:classpath:db/changelog");
+				"flyway.locations:classpath:db/changelog,classpath:db/migration");
 		this.context
 				.register(EmbeddedDataSourceConfiguration.class,
 						FlywayAutoConfiguration.class,
 						PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		Flyway flyway = this.context.getBean(Flyway.class);
-		assertEquals("[classpath:db/changelog]", Arrays.asList(flyway.getLocations())
-				.toString());
+		assertEquals("[classpath:db/changelog, classpath:db/migration]",
+				Arrays.asList(flyway.getLocations()).toString());
 	}
 
 	@Test
