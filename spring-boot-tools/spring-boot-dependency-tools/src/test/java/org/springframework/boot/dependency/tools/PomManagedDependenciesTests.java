@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link PomManagedDependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class PomManagedDependenciesTests {
@@ -39,8 +39,7 @@ public class PomManagedDependenciesTests {
 	@Before
 	public void setup() {
 		InputStream x = getResource("test-effective-pom.xml");
-		InputStream y = getResource("test-dependencies-pom.xml");
-		this.dependencies = new PomManagedDependencies(x, y);
+		this.dependencies = new PomManagedDependencies(x);
 	}
 
 	private InputStream getResource(String name) {
@@ -74,11 +73,6 @@ public class PomManagedDependenciesTests {
 	@Test
 	public void findByArtifactAndGroupIdMissing() throws Exception {
 		assertThat(this.dependencies.find("org.sample", "missing"), nullValue());
-	}
-
-	@Test
-	public void findByArtifactAndGroupIdOnlyInEffectivePom() throws Exception {
-		assertThat(this.dependencies.find("org.extra", "extra01"), nullValue());
 	}
 
 	@Test

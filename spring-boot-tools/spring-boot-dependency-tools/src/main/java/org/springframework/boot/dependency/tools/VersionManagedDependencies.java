@@ -24,7 +24,7 @@ import java.util.Collections;
  * {@link ManagedDependencies} used by various spring boot tools. Provides programmatic
  * access to 'spring-boot-dependencies' and can also support user defined version managed
  * dependencies.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1.0
  */
@@ -70,7 +70,7 @@ public class VersionManagedDependencies extends AbstractManagedDependencies {
 	private static ManagedDependencies getSpringBootDependencies() {
 		if (springBootDependencies == null) {
 			springBootDependencies = new PomManagedDependencies(
-					getResource("effective-pom.xml"), getResource("dependencies-pom.xml"));
+					getResource("effective-pom.xml"));
 		}
 		return springBootDependencies;
 	}

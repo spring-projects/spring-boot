@@ -18,9 +18,7 @@ package org.springframework.boot.dependency.tools;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +30,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * {@link ManagedDependencies} implementation backed a maven POM.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1.0
  */
@@ -42,36 +40,13 @@ public class PomManagedDependencies extends AbstractManagedDependencies {
 	 * Create a new {@link PomManagedDependencies} instance.
 	 * @param effectivePomInputStream the effective POM containing resolved versions. The
 	 * input stream will be closed once content has been loaded.
-	 * @param dependenciesInputStream and optional POM used to limit the dependencies. The
-	 * input stream will be closed once content has been loaded. which will be added from
-	 * the effective POM
 	 */
-	public PomManagedDependencies(InputStream effectivePomInputStream,
-			InputStream dependenciesInputStream) {
+	public PomManagedDependencies(InputStream effectivePomInputStream) {
 		try {
 			Document effectivePom = readDocument(effectivePomInputStream);
-			Document dependenciesPom = readDocument(dependenciesInputStream);
 
-			if (dependenciesPom == null) {
-				// No dependencies POM, add all items
-				for (Dependency dependency : readDependencies(effectivePom)) {
-					add(new ArtifactAndGroupId(dependency), dependency);
-				}
-			}
-			else {
-				// Only add items that are also in the dependencies POM
-				Map<ArtifactAndGroupId, Dependency> all = new HashMap<ArtifactAndGroupId, Dependency>();
-				for (Dependency dependency : readDependencies(effectivePom)) {
-					all.put(new ArtifactAndGroupId(dependency), dependency);
-				}
-				for (Dependency dependency : readDependencies(dependenciesPom)) {
-					ArtifactAndGroupId artifactAndGroupId = new ArtifactAndGroupId(
-							dependency);
-					Dependency effectiveDependency = all.get(artifactAndGroupId);
-					if (effectiveDependency != null) {
-						add(artifactAndGroupId, effectiveDependency);
-					}
-				}
+			for (Dependency dependency : readDependencies(effectivePom)) {
+				add(new ArtifactAndGroupId(dependency), dependency);
 			}
 		}
 		catch (Exception ex) {
