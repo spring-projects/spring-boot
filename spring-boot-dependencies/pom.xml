@@ -1026,16 +1026,6 @@
 				<version>${spring-security-jwt.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.security.oauth</groupId>
-				<artifactId>spring-security-oauth</artifactId>
-				<version>${spring-security-oauth.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.security.oauth</groupId>
-				<artifactId>spring-security-oauth2</artifactId>
-				<version>${spring-security-oauth.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf</artifactId>
 				<version>${thymeleaf.version}</version>
