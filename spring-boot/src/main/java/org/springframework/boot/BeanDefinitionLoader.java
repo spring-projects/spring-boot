@@ -273,7 +273,7 @@ class BeanDefinitionLoader {
 		}
 		// Nested anonymous classes are not eligible for registration, nor are groovy
 		// closures
-		if (type.isAnonymousClass() || type.getName().matches(".*\\$_.*closure.*")
+		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass()
 				|| type.getConstructors() == null || type.getConstructors().length == 0) {
 			return false;
 		}
