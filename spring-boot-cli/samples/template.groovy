@@ -8,6 +8,7 @@ class Example implements CommandLineRunner {
 	@Autowired
 	private MyService myService
 
+	@Override
 	void run(String... args) {
 		print template("test.txt", ["message":myService.sayWorld()])
 	}

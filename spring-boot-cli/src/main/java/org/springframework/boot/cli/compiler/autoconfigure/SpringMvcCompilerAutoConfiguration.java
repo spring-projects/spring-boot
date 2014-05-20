@@ -51,7 +51,7 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 				"org.springframework.web.servlet.config.annotation",
 				"org.springframework.web.servlet",
 				"org.springframework.web.servlet.handler", "org.springframework.http",
-				"org.springframework.ui");
+				"org.springframework.ui", "groovy.text");
 		imports.addStaticImport(GroovyTemplate.class.getName(), "template");
 	}
 
