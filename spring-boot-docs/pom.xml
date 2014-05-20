@@ -96,23 +96,30 @@
 									</artifactItems>
 								</configuration>
 							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
 							<execution>
-								<id>unpack-dependency-tools-effective-pom</id>
+								<id>copy-versions-effective-pom</id>
 								<phase>generate-resources</phase>
 								<goals>
-									<goal>unpack</goal>
+									<goal>copy</goal>
 								</goals>
 								<configuration>
 									<artifactItems>
 										<artifactItem>
 											<groupId>org.springframework.boot</groupId>
-											<artifactId>spring-boot-dependency-tools</artifactId>
+											<artifactId>spring-boot-versions</artifactId>
 											<version>${project.version}</version>
-											<type>jar</type>
+											<type>effective-pom</type>
+											<overWrite>true</overWrite>
+											<outputDirectory>${project.build.directory}/external-resource</outputDirectory>
+											<destFileName>effective-pom.xml</destFileName>
 										</artifactItem>
 									</artifactItems>
-									<includes>**/effective-pom.xml</includes>
-									<outputDirectory>${project.build.directory}/external-resources</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
