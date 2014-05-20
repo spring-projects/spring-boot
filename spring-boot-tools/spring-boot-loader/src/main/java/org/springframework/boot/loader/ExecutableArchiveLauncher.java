@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,20 +30,28 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * Base class for executable archive {@link Launcher}s.
- * 
+ *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	private final Archive archive;
 
+	private final JavaAgentDetector javaAgentDetector;
+
 	public ExecutableArchiveLauncher() {
+		this(new InputArgumentsJavaAgentDetector());
+	}
+
+	public ExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
 		try {
 			this.archive = createArchive();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
+		this.javaAgentDetector = javaAgentDetector;
 	}
 
 	protected final Archive getArchive() {
@@ -74,7 +82,9 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		ClassLoader loader = getDefaultClassLoader();
 		if (loader instanceof URLClassLoader) {
 			for (URL url : ((URLClassLoader) loader).getURLs()) {
-				copy.add(url);
+				if (!this.javaAgentDetector.isJavaAgentJar(url)) {
+					copy.add(url);
+				}
 			}
 		}
 		for (URL url : urls) {
