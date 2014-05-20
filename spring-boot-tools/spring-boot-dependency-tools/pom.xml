@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-dependencies</artifactId>
+		<artifactId>spring-boot-tools</artifactId>
 		<version>1.1.0.BUILD-SNAPSHOT</version>
-		<relativePath>../../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-dependency-tools</artifactId>
 	<name>Spring Boot Dependency Tools</name>
@@ -19,18 +19,6 @@
 		<main.basedir>${basedir}/../..</main.basedir>
 		<generated.pom.dir>${project.build.directory}/generated-resources/org/springframework/boot/dependency/tools</generated.pom.dir>
 	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 	<build>
 		<resources>
 			<resource>
@@ -40,93 +28,30 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>copy-dependencies-pom</id>
+						<id>copy-effective-pom</id>
 						<phase>generate-resources</phase>
 						<goals>
-							<goal>run</goal>
+							<goal>copy</goal>
 						</goals>
 						<configuration>
-							<target>
-								<copy file="${main.basedir}/spring-boot-dependencies/pom.xml" tofile="${generated.pom.dir}/dependencies-pom.xml" />
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-help-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>generate-effective-dependencies-pom</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>effective-pom</goal>
-						</goals>
-						<configuration>
-							<output>${generated.pom.dir}/effective-pom.xml</output>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.springframework.boot</groupId>
+									<artifactId>spring-boot-versions</artifactId>
+									<version>${project.version}</version>
+									<type>effective-pom</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${generated.pom.dir}</outputDirectory>
+									<destFileName>effective-pom.xml</destFileName>
+								</artifactItem>
+							</artifactItems>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-help-plugin
-										</artifactId>
-										<versionRange>
-											[2.2,)
-										</versionRange>
-										<goals>
-											<goal>effective-pom</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-antrun-plugin
-										</artifactId>
-										<versionRange>
-											[1.7,)
-										</versionRange>
-										<goals>
-											<goal>run</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 </project>

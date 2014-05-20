@@ -45,7 +45,6 @@ public class PomManagedDependencies extends AbstractManagedDependencies {
 	public PomManagedDependencies(InputStream effectivePomInputStream) {
 		try {
 			Document effectivePom = readDocument(effectivePomInputStream);
-
 			for (Dependency dependency : readDependencies(effectivePom)) {
 				add(new ArtifactAndGroupId(dependency), dependency);
 			}
