@@ -37,7 +37,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
  * Once in effect, the auto-configuration is the equivalent of importing the
  * {@link RepositoryRestMvcConfiguration}.
  * </p>
- *
+ * 
  * @author Rob Winch
  * @since 1.1.0
  */

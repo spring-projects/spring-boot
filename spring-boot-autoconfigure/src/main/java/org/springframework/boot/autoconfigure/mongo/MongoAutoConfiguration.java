@@ -33,7 +33,7 @@ import com.mongodb.MongoClientOptions;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
- *
+ * 
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Phillip Webb

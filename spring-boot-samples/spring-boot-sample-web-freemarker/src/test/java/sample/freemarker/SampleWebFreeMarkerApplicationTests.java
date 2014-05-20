@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for FreeMarker application.
- *
+ * 
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -69,8 +69,8 @@ public class SampleWebFreeMarkerApplicationTests {
 		HttpEntity<String> requestEntity = new HttpEntity<String>(headers);
 
 		ResponseEntity<String> responseEntity = new TestRestTemplate().exchange(
-				"http://localhost:" +port+ "/does-not-exist", HttpMethod.GET, requestEntity,
-				String.class);
+				"http://localhost:" + port + "/does-not-exist", HttpMethod.GET,
+				requestEntity, String.class);
 
 		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
 		assertTrue("Wrong body:\n" + responseEntity.getBody(), responseEntity.getBody()

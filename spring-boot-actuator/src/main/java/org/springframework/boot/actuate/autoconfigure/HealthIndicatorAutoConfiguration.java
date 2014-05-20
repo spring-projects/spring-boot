@@ -47,15 +47,15 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
 @Configuration
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
-	MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
-	RabbitAutoConfiguration.class })
+		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
+		RabbitAutoConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 
 	@Bean

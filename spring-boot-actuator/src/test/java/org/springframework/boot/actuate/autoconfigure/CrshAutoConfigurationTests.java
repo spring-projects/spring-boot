@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CrshAutoConfiguration}.
- *
+ * 
  * @author Christian Dupuis
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })

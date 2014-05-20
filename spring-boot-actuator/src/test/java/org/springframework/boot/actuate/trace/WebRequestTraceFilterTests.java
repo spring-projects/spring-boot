@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link WebRequestTraceFilter}.
- *
+ * 
  * @author Dave Syer
  */
 public class WebRequestTraceFilterTests {

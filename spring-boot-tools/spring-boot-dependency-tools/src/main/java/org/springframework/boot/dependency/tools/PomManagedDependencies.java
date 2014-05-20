@@ -30,8 +30,9 @@ import org.w3c.dom.NodeList;
 
 /**
  * {@link ManagedDependencies} implementation backed a maven POM.
- *
+ * 
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 public class PomManagedDependencies extends AbstractManagedDependencies {

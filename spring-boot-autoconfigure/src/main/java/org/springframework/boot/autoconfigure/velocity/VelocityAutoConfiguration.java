@@ -31,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.template.TemplateViewResolverConfigurer;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +47,7 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Velocity.
- *
+ * 
  * @author Andy Wilkinson
  * @since 1.1.0
  */
@@ -69,11 +68,9 @@ public class VelocityAutoConfiguration {
 		if (this.properties.isCheckTemplateLocation()) {
 			Resource resource = this.resourceLoader.getResource(this.properties
 					.getResourceLoaderPath());
-			Assert.state(
-					resource.exists(),
-					"Cannot find template location: "
-							+ resource
-							+ " (please add some templates, check your Velocity configuration, or set spring.velocity.checkTemplateLocation=false)");
+			Assert.state(resource.exists(), "Cannot find template location: " + resource
+					+ " (please add some templates, check your Velocity configuration, "
+					+ "or set spring.velocity.checkTemplateLocation=false)");
 		}
 	}
 
@@ -88,6 +85,7 @@ public class VelocityAutoConfiguration {
 			velocityProperties.putAll(this.properties.getProperties());
 			factory.setVelocityProperties(velocityProperties);
 		}
+
 	}
 
 	@Configuration
@@ -127,12 +125,10 @@ public class VelocityAutoConfiguration {
 		@ConditionalOnMissingBean(name = "velocityViewResolver")
 		public VelocityViewResolver velocityViewResolver() {
 			VelocityViewResolver resolver = new VelocityViewResolver();
-			new TemplateViewResolverConfigurer().configureTemplateViewResolver(resolver,
-					this.properties);
-			resolver.setToolboxConfigLocation(this.properties.getToolboxConfigLocation());
-			resolver.setDateToolAttribute(this.properties.getDateToolAttribute());
-			resolver.setNumberToolAttribute(this.properties.getNumberToolAttribute());
+			this.properties.applyToViewResolver(resolver);
 			return resolver;
 		}
+
 	}
+
 }

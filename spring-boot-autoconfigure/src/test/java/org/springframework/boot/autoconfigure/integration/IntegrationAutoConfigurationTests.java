@@ -16,12 +16,11 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Artem Bilan

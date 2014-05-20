@@ -788,12 +788,10 @@ added.
   (defaults are both empty, but accessible for external configuration via
   `spring.view.prefix` and `spring.view.suffix`). It can be overridden by providing a
   bean of the same type.
-
 * A `BeanNameViewResolver` with id ``beanNameViewResolver''. This is a useful member of the
   view resolver chain and will pick up any beans with the same name as the `View` being
   resolved. It can be overridden by providing a bean of the same type, but it's unlikely
   you will need to do that.
-
 * A `ContentNegotiatingViewResolver` with id ``viewResolver'' is only added if there *are*
   actually beans of type `View` present. This is a ``master'' resolver, delegating to all
   the others and attempting to find a match to the ``Accept'' HTTP header sent by the
@@ -802,28 +800,23 @@ added.
   that you might like to study to learn more, and also look at the source code for detail.
   You can switch off the auto-configured
   `ContentNegotiatingViewResolver` by defining a bean named ``viewResolver''.
-
 * If you use Thymeleaf you will also have a `ThymeleafViewResolver` with id
   ``thymeleafViewResolver''. It looks for resources by surrounding the view name with a
   prefix and suffix (externalized to `spring.thymeleaf.prefix` and
   `spring.thymeleaf.suffix`, defaults ``classpath:/templates/'' and ``.html''
   respectively). It can be overridden by providing a bean of the same name.
-
 * If you use FreeMarker you will also have a `FreeMarkerViewResolver` with id
   ``freeMarkerViewResolver''. It looks for resources in a loader path (externalized to
   `spring.freemarker.templateLoaderPath`, default ``classpath:/templates/'') by
   surrounding the view name with a prefix and suffix (externalized to `spring.freemarker.prefix`
-  and `spring.freemarker.suffix`, with empty and ``.ftl'' defaults respectively). It can be overriden
-  by providing a bean of the same name.
-
+  and `spring.freemarker.suffix`, with empty and ``.ftl'' defaults respectively). It can
+  be overridden by providing a bean of the same name.
 * If you use Groovy templates (actually if groovy-templates is on your classpath) you will
-  also have a `Groovy TemplateViewResolver` with id
-  ``groovyTemplateViewResolver''. It looks for resources in a loader path by
-  surrounding the view name with a prefix and suffix (externalized to
-  `spring.groovy.template.prefix` and `spring.groovy.template.suffix`, defaults
-  ``classpath:/templates/'' and ``.tpl'' respectively). It can be overriden by providing a bean of
-  the same name.
-
+  also have a `Groovy TemplateViewResolver` with id ``groovyTemplateViewResolver''. It
+  looks for resources in a loader path by surrounding the view name with a prefix and
+  suffix (externalized to `spring.groovy.template.prefix` and
+  `spring.groovy.template.suffix`, defaults ``classpath:/templates/'' and ``.tpl''
+  respectively). It can be overriden by providing a bean of the same name.
 * If you use Velocity you will also have a `VelocityViewResolver` with id ``velocityViewResolver''.
   It looks for resources in a loader path (externalized to `spring.velocity.resourceLoaderPath`,
   default ``classpath:/templates/'') by surrounding the view name with a prefix and suffix
@@ -831,7 +824,7 @@ added.
   defaults respectively). It can be overridden by providing a bean of the same name.
 
 Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],
-{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`], 
+{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[`ThymeleafAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`],
 {sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[`GroovyTemplateAutoConfiguration`] and
 {sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
@@ -1400,11 +1393,13 @@ If you are using Thymeleaf, then set `spring.thymeleaf.cache` to `false`. See
 for other Thymeleaf customization options.
 
 
+
 [[howto-reload-freemarker-content]]
 === Reload FreeMarker templates without restarting the container
 If you are using FreeMarker, then set `spring.freemarker.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[`FreeMarkerAutoConfiguration`]
 for other FreeMarker customization options.
+
 
 
 [[howto-reload-groovy-template-content]]
@@ -1414,11 +1409,13 @@ If you are using Groovy templates, then set `spring.groovy.template.cache` to `f
 for other Groovy customization options.
 
 
+
 [[howto-reload-velocity-content]]
 === Reload Velocity templates without restarting the container
 If you are using Velocity, then set `spring.velocity.cache` to `false`. See
 {sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[`VelocityAutoConfiguration`]
 for other Velocity customization options.
+
 
 
 [[howto-reload-java-classes-without-restarting]]

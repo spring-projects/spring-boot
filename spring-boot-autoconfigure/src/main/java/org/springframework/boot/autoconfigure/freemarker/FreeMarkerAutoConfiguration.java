@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.template.TemplateViewResolverConfigurer;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,7 +44,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for FreeMarker.
- *
+ * 
  * @author Andy Wilkinson
  * @author Dave Syer
  * @since 1.1.0
@@ -67,12 +66,10 @@ public class FreeMarkerAutoConfiguration {
 		if (this.properties.isCheckTemplateLocation()) {
 			Resource resource = this.resourceLoader.getResource(this.properties
 					.getTemplateLoaderPath());
-			Assert.state(
-					resource.exists(),
-					"Cannot find template location: "
-							+ resource
-							+ " (please add some templates, check your FreeMarker configuration, or set "
-							+ "spring.freemarker.checkTemplateLocation=false)");
+			Assert.state(resource.exists(), "Cannot find template location: " + resource
+					+ " (please add some templates, "
+					+ "check your FreeMarker configuration, or set "
+					+ "spring.freemarker.checkTemplateLocation=false)");
 		}
 	}
 
@@ -128,8 +125,7 @@ public class FreeMarkerAutoConfiguration {
 		@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
 		public FreeMarkerViewResolver freeMarkerViewResolver() {
 			FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
-			new TemplateViewResolverConfigurer().configureTemplateViewResolver(resolver,
-					this.properties);
+			this.properties.applyToViewResolver(resolver);
 			return resolver;
 		}
 

@@ -59,8 +59,7 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(SampleMethodSecurityApplication.class)
-				.run(args);
+		new SpringApplicationBuilder(SampleMethodSecurityApplication.class).run(args);
 	}
 
 	@Override
@@ -83,26 +82,23 @@ public class SampleMethodSecurityApplication extends WebMvcConfigurerAdapter {
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
 			// @formatter:off
 			auth.inMemoryAuthentication().withUser("admin").password("admin")
-					.roles("ADMIN", "USER").and().withUser("user")
-					.password("user").roles("USER");
+					.roles("ADMIN", "USER").and().withUser("user").password("user")
+					.roles("USER");
 			// @formatter:on
 		}
 	}
 
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	protected static class ApplicationSecurity extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
-			http.authorizeRequests().antMatchers("/login").permitAll()
-					.anyRequest().fullyAuthenticated().and().formLogin()
-					.loginPage("/login").failureUrl("/login?error").and()
-					.logout()
-					.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-					.and().exceptionHandling()
-					.accessDeniedPage("/access?error");
+			http.authorizeRequests().antMatchers("/login").permitAll().anyRequest()
+					.fullyAuthenticated().and().formLogin().loginPage("/login")
+					.failureUrl("/login?error").and().logout()
+					.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).and()
+					.exceptionHandling().accessDeniedPage("/access?error");
 			// @formatter:on
 		}
 

@@ -28,7 +28,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link java.net.JarURLConnection} used to support {@link JarFile#getUrl()}.
- *
+ * 
  * @author Phillip Webb
  */
 class JarURLConnection extends java.net.JarURLConnection {

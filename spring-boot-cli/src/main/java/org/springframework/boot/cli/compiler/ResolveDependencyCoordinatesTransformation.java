@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,12 @@ import org.codehaus.groovy.transform.ASTTransformation;
 
 /**
  * {@link ASTTransformation} to resolve {@link Grab} artifact coordinates.
- *
+ * 
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 public class ResolveDependencyCoordinatesTransformation extends
-AnnotatedNodeASTTransformation {
+		AnnotatedNodeASTTransformation {
 
 	private static final Set<String> GRAB_ANNOTATION_NAMES = Collections
 			.unmodifiableSet(new HashSet<String>(Arrays.asList(Grab.class.getName(),

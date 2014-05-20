@@ -906,16 +906,16 @@ and it will be silently ignored by most build tools if you generate a jar.
 [[boot-features-spring-mvc-template-engines]]
 ==== Template engines
 
-As well as REST web services, you can also use Spring MVC to serve dynamic HTML content. Spring
-MVC supports a variety of templating technologies including Velocity, FreeMarker and JSPs. Many
-other templating engines also ship their own Spring MVC integrations.
+As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
+Spring MVC supports a variety of templating technologies including Velocity, FreeMarker
+and JSPs. Many other templating engines also ship their own Spring MVC integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- - http://freemarker.org/docs/[FreeMarker]
- - http://beta.groovy-lang.org/docs/groovy-2.3.0/html/documentation/markup-template-engine.html[Groovy]
- - http://www.thymeleaf.org[Thymeleaf]
- - http://velocity.apache.org[Velocity]
+ * http://freemarker.org/docs/[FreeMarker]
+ * http://beta.groovy-lang.org/docs/groovy-2.3.0/html/documentation/markup-template-engine.html[Groovy]
+ * http://www.thymeleaf.org[Thymeleaf]
+ * http://velocity.apache.org[Velocity]
 
 When you're using one of these templating engines with the default configuration, your templates
 will be picked up automatically from `src/main/resources/templates`.
@@ -1131,8 +1131,8 @@ The basic features you get out of the box in a web application are:
   on by default.
 
 All of the above can be switched on and off or modified using external properties
-(`security.*`). To override the access rules without changing any other autoconfigured 
-features add a `@Bean` of type `WebConfigurerAdapter` with 
+(`security.*`). To override the access rules without changing any other autoconfigured
+features add a `@Bean` of type `WebConfigurerAdapter` with
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)`.
 
 If the Actuator is also in use, you will find:
@@ -1142,10 +1142,10 @@ If the Actuator is also in use, you will find:
 * The default user will have the "ADMIN" role as well as the "USER" role.
 
 The Actuator security features can be modified using external properties
-(`management.security.*`). To override the application access rules 
+(`management.security.*`). To override the application access rules
 add a `@Bean` of type `WebConfigurerAdapter` and use
 `@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)` if you _don't_ want to override
-the actuator access rules, or `@Order(ManagementServerProperties.ACCESS_OVERRIDE_ORDER)` 
+the actuator access rules, or `@Order(ManagementServerProperties.ACCESS_OVERRIDE_ORDER)`
 if you _do_ want to override the actuator access rules.
 
 
