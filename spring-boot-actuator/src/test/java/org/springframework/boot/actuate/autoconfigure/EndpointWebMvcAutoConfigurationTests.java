@@ -59,7 +59,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EndpointWebMvcAutoConfiguration}.
- *
+ * 
  * @author Phillip Webb
  * @author Greg Turnquist
  */
@@ -84,8 +84,7 @@ public class EndpointWebMvcAutoConfigurationTests {
 	@Test
 	public void onSamePort() throws Exception {
 		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
-				ServerPortConfig.class,
-				EndpointWebMvcAutoConfiguration.class);
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/endpoint", ports.get().server, "endpointoutput");

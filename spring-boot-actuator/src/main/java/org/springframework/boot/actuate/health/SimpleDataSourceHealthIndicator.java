@@ -35,7 +35,8 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  */
-public class SimpleDataSourceHealthIndicator implements HealthIndicator<Map<String, Object>> {
+public class SimpleDataSourceHealthIndicator implements
+		HealthIndicator<Map<String, Object>> {
 
 	private DataSource dataSource;
 
@@ -61,7 +62,8 @@ public class SimpleDataSourceHealthIndicator implements HealthIndicator<Map<Stri
 	}
 
 	/**
-	 * Create a new {@link SimpleDataSourceHealthIndicator} using the specified datasource.
+	 * Create a new {@link SimpleDataSourceHealthIndicator} using the specified
+	 * datasource.
 	 * @param dataSource the data source
 	 */
 	public SimpleDataSourceHealthIndicator(DataSource dataSource) {

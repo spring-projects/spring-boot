@@ -52,8 +52,8 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 
 	public static void main(String[] args) throws Exception {
 		// Set user password to "password" for demo purposes only
-		new SpringApplicationBuilder(SampleWebSecureApplication.class)
-				.properties("security.user.password=password").run(args);
+		new SpringApplicationBuilder(SampleWebSecureApplication.class).properties(
+				"security.user.password=password").run(args);
 	}
 
 	@Override
@@ -67,13 +67,11 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 	}
 
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-	protected static class ApplicationSecurity extends
-			WebSecurityConfigurerAdapter {
+	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().fullyAuthenticated().and()
-					.formLogin().loginPage("/login").failureUrl("/login?error")
-					.permitAll();
+			http.authorizeRequests().anyRequest().fullyAuthenticated().and().formLogin()
+					.loginPage("/login").failureUrl("/login?error").permitAll();
 		}
 	}
 

@@ -71,8 +71,6 @@ public class EntityManagerFactoryBuilder {
 
 	/**
 	 * An optional callback for new entity manager factory beans.
-	 * 
-	 * @author Dave Syer
 	 */
 	public void setCallback(EntityManagerFactoryBeanCallback callback) {
 		this.callback = callback;
@@ -171,8 +169,6 @@ public class EntityManagerFactoryBuilder {
 
 	/**
 	 * A callback for new entity manager factory beans created by a Builder.
-	 * 
-	 * @author Dave Syer
 	 */
 	public static interface EntityManagerFactoryBeanCallback {
 

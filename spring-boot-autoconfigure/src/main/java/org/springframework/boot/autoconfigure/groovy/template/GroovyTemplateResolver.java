@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2012 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,38 +18,43 @@ package org.springframework.boot.autoconfigure.groovy.template;
 import groovy.text.markup.MarkupTemplateEngine;
 import groovy.text.markup.TemplateConfiguration;
 import groovy.text.markup.TemplateResolver;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.io.IOException;
 import java.net.URL;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 /**
- * A custom {@link groovy.text.markup.TemplateResolver template resolver} which resolves templates using the locale
- * found in the thread locale. This resolver ignores the template engine configuration locale.
- *
+ * A custom {@link groovy.text.markup.TemplateResolver template resolver} which resolves
+ * templates using the locale found in the thread locale. This resolver ignores the
+ * template engine configuration locale.
+ * 
  * @author Cédric Champeau
  * @since 1.1.0
  */
-
 public class GroovyTemplateResolver implements TemplateResolver {
-    private ClassLoader templateClassLoader;
+	private ClassLoader templateClassLoader;
 
-    @Override
-    public void configure(final ClassLoader templateClassLoader, final TemplateConfiguration configuration) {
-        this.templateClassLoader = templateClassLoader;
-    }
+	@Override
+	public void configure(final ClassLoader templateClassLoader,
+			final TemplateConfiguration configuration) {
+		this.templateClassLoader = templateClassLoader;
+	}
 
-    @Override
-    public URL resolveTemplate(final String templatePath) throws IOException {
-        MarkupTemplateEngine.TemplateResource templateResource = MarkupTemplateEngine.TemplateResource.parse(templatePath);
-        URL resource = templateClassLoader.getResource(templateResource.withLocale(LocaleContextHolder.getLocale().toString().replace("-", "_")).toString());
-        if (resource == null) {
-            // no resource found with the default locale, try without any locale
-            resource = templateClassLoader.getResource(templateResource.withLocale(null).toString());
-        }
-        if (resource == null) {
-            throw new IOException("Unable to load template:" + templatePath);
-        }
-        return resource;
-    }
+	@Override
+	public URL resolveTemplate(final String templatePath) throws IOException {
+		MarkupTemplateEngine.TemplateResource templateResource = MarkupTemplateEngine.TemplateResource
+				.parse(templatePath);
+		URL resource = this.templateClassLoader.getResource(templateResource.withLocale(
+				LocaleContextHolder.getLocale().toString().replace("-", "_")).toString());
+		if (resource == null) {
+			// no resource found with the default locale, try without any locale
+			resource = this.templateClassLoader.getResource(templateResource.withLocale(
+					null).toString());
+		}
+		if (resource == null) {
+			throw new IOException("Unable to load template:" + templatePath);
+		}
+		return resource;
+	}
 }

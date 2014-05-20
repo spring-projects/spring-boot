@@ -45,7 +45,7 @@ import org.springframework.boot.groovy.GrabMetadata;
 
 /**
  * {@link ASTTransformation} for processing {@link GrabMetadata @GrabMetadata}
- *
+ * 
  * @author Andy Wilkinson
  * @since 1.1.0
  */
@@ -78,7 +78,6 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 
 	private void processGrabMetadataAnnotation(AnnotationNode annotationNode) {
 		Expression valueExpression = annotationNode.getMember("value");
-
 		List<Map<String, String>> metadataDependencies = createDependencyMaps(valueExpression);
 		updateArtifactCoordinatesResolver(metadataDependencies);
 	}
@@ -86,32 +85,7 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 	private List<Map<String, String>> createDependencyMaps(Expression valueExpression) {
 		Map<String, String> dependency = null;
 
-		List<ConstantExpression> constantExpressions = new ArrayList<ConstantExpression>();
-
-		if (valueExpression instanceof ListExpression) {
-			ListExpression listExpression = (ListExpression) valueExpression;
-			for (Expression expression : listExpression.getExpressions()) {
-				if (expression instanceof ConstantExpression
-						&& ((ConstantExpression) expression).getValue() instanceof String) {
-					constantExpressions.add((ConstantExpression) expression);
-				}
-				else {
-					reportError(
-							"Each entry in the array must be an inline string constant",
-							expression);
-				}
-			}
-		}
-		else if (valueExpression instanceof ConstantExpression
-				&& ((ConstantExpression) valueExpression).getValue() instanceof String) {
-			constantExpressions = Arrays.asList((ConstantExpression) valueExpression);
-		}
-		else {
-			reportError(
-					"@GrabMetadata requires an inline constant that is a string or a string array",
-					valueExpression);
-		}
-
+		List<ConstantExpression> constantExpressions = getConstantExpressions(valueExpression);
 		List<Map<String, String>> dependencies = new ArrayList<Map<String, String>>(
 				constantExpressions.size());
 
@@ -125,7 +99,6 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 					dependency.put("module", components[1]);
 					dependency.put("version", components[2]);
 					dependency.put("type", "properties");
-
 					dependencies.add(dependency);
 				}
 				else {
@@ -135,6 +108,36 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 		}
 
 		return dependencies;
+	}
+
+	private List<ConstantExpression> getConstantExpressions(Expression valueExpression) {
+		if (valueExpression instanceof ListExpression) {
+			return getConstantExpressions((ListExpression) valueExpression);
+		}
+
+		if (valueExpression instanceof ConstantExpression
+				&& ((ConstantExpression) valueExpression).getValue() instanceof String) {
+			return Arrays.asList((ConstantExpression) valueExpression);
+		}
+
+		reportError("@GrabMetadata requires an inline constant that is a "
+				+ "string or a string array", valueExpression);
+		return Collections.emptyList();
+	}
+
+	private List<ConstantExpression> getConstantExpressions(ListExpression valueExpression) {
+		List<ConstantExpression> expressions = new ArrayList<ConstantExpression>();
+		for (Expression expression : valueExpression.getExpressions()) {
+			if (expression instanceof ConstantExpression
+					&& ((ConstantExpression) expression).getValue() instanceof String) {
+				expressions.add((ConstantExpression) expression);
+			}
+			else {
+				reportError("Each entry in the array must be an "
+						+ "inline string constant", expression);
+			}
+		}
+		return expressions;
 	}
 
 	private void handleMalformedDependency(Expression expression) {
@@ -154,7 +157,7 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 				managedDependencies.add(new PropertiesFileManagedDependencies(uri.toURL()
 						.openStream()));
 			}
-			catch (IOException e) {
+			catch (IOException ex) {
 				throw new IllegalStateException("Failed to parse '" + uris[0]
 						+ "'. Is it a valid properties file?");
 			}

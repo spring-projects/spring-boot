@@ -39,7 +39,7 @@ import org.springframework.boot.cli.compiler.DependencyResolutionContext;
 
 /**
  * Utility class to create a pre-configured {@link AetherGrapeEngine}.
- *
+ * 
  * @author Andy Wilkinson
  */
 public abstract class AetherGrapeEngineFactory {
@@ -86,7 +86,7 @@ public abstract class AetherGrapeEngineFactory {
 		for (RepositoryConfiguration repositoryConfiguration : repositoryConfigurations) {
 			RemoteRepository.Builder builder = new RemoteRepository.Builder(
 					repositoryConfiguration.getName(), "default", repositoryConfiguration
-					.getUri().toASCIIString());
+							.getUri().toASCIIString());
 
 			if (!repositoryConfiguration.getSnapshotsEnabled()) {
 				builder.setSnapshotPolicy(new RepositoryPolicy(false,

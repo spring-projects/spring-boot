@@ -24,7 +24,7 @@ import java.util.Collections;
  * {@link ManagedDependencies} used by various spring boot tools. Provides programmatic
  * access to 'spring-boot-dependencies' and can also support user defined version managed
  * dependencies.
- *
+ * 
  * @author Phillip Webb
  * @since 1.1.0
  */

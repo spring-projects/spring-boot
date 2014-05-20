@@ -21,12 +21,12 @@ import java.util.Map;
 
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
  * {@link ConfigurationProperties} for configuring Velocity
- *
+ * 
  * @author Andy Wilkinson
- *
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.velocity")
@@ -91,4 +91,16 @@ public class VelocityProperties extends AbstractTemplateViewResolverProperties {
 	public void setToolboxConfigLocation(String toolboxConfigLocation) {
 		this.toolboxConfigLocation = toolboxConfigLocation;
 	}
+
+	/**
+	 * Apply the given properties to a {@link VelocityViewResolver}.
+	 * @param resolver the resolver to apply the properties to.
+	 */
+	public void applyToViewResolver(VelocityViewResolver resolver) {
+		super.applyToViewResolver(resolver);
+		resolver.setToolboxConfigLocation(getToolboxConfigLocation());
+		resolver.setDateToolAttribute(getDateToolAttribute());
+		resolver.setNumberToolAttribute(getNumberToolAttribute());
+	}
+
 }

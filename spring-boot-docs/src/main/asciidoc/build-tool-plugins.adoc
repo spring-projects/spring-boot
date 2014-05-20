@@ -232,6 +232,8 @@ example:
 	}
 ----
 
+
+
 [[build-tool-plugins-gradle-custom-version-management]]
 ==== Custom version management
 If is possible to customize the versions used by the `ResolutionStrategy` if you need
@@ -256,6 +258,8 @@ the above example `mycorp-versions.properties` file might contain the following:
 
 The properties file takes precedence over Spring Boot's defaults, and can be used
 to override version numbers if necessary.
+
+
 
 [[build-tool-plugins-gradle-packaging]]
 === Packaging executable jar and war files

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
  * <p>
  * This class provides a fluent API for conditionally adding dependencies. For example:
  * {@code dependencies.ifMissing("com.corp.SomeClass").add(module)}.
- *
+ * 
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

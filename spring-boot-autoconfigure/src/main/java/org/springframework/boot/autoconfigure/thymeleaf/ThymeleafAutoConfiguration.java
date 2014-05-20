@@ -50,7 +50,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
- *
+ * 
  * @author Dave Syer
  * @author Andy Wilkinson
  */

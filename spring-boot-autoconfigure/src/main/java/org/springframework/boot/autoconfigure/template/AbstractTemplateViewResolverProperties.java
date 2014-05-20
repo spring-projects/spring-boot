@@ -17,12 +17,13 @@
 package org.springframework.boot.autoconfigure.template;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.Ordered;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
  * Abstract base class for {@link ConfigurationProperties} for
  * {@link AbstractTemplateViewResolver view resolvers}.
- *
+ * 
  * @author Andy Wilkinson
  * @since 1.1.0
  */
@@ -155,4 +156,25 @@ public abstract class AbstractTemplateViewResolverProperties {
 	public void setExposeSpringMacroHelpers(boolean exposeSpringMacroHelpers) {
 		this.exposeSpringMacroHelpers = exposeSpringMacroHelpers;
 	}
+
+	/**
+	 * Apply the given properties to a {@link AbstractTemplateViewResolver}.
+	 * @param resolver the resolver to apply the properties to.
+	 */
+	protected void applyToViewResolver(AbstractTemplateViewResolver resolver) {
+		resolver.setPrefix(getPrefix());
+		resolver.setSuffix(getSuffix());
+		resolver.setCache(isCache());
+		resolver.setContentType(getContentType());
+		resolver.setViewNames(getViewNames());
+		resolver.setExposeRequestAttributes(isExposeRequestAttributes());
+		resolver.setAllowRequestOverride(isAllowRequestOverride());
+		resolver.setExposeSessionAttributes(isExposeSessionAttributes());
+		resolver.setExposeSpringMacroHelpers(isExposeSpringMacroHelpers());
+		resolver.setRequestContextAttribute(getRequestContextAttribute());
+		// The resolver usually acts as a fallback resolver (e.g. like a
+		// InternalResourceViewResolver) so it needs to have low precedence
+		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
+	}
+
 }

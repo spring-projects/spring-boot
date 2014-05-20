@@ -21,9 +21,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegration;
 
 /**
- * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration}
- * for Spring Integration.
- *
+ * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
+ * Auto-configuration} for Spring Integration.
+ * 
  * @author Artem Bilan
  * @since 1.1
  */

@@ -26,7 +26,7 @@ import java.util.TreeMap;
  * {@link ManagedDependencies} backed by an external properties file (of the form created
  * by the Spring IO platform). The property key should be the groupId and artifactId (in
  * the form {@literal groupId:artifactId}) and the value should be the version.
- *
+ * 
  * @author Phillip Webb
  * @since 1.1.0
  */

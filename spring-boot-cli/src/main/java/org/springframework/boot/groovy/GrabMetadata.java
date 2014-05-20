@@ -24,12 +24,12 @@ import java.lang.annotation.Target;
 /**
  * Used to provide an alternative source of dependency metadata that is used to deduce
  * groups and versions when processing {@code @Grab} dependencies.
- *
+ * 
  * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.LOCAL_VARIABLE,
-	ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE })
+		ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE })
 @Retention(RetentionPolicy.SOURCE)
 public @interface GrabMetadata {
 
@@ -39,4 +39,5 @@ public @interface GrabMetadata {
 	 * default metadata.
 	 */
 	String[] value();
+
 }

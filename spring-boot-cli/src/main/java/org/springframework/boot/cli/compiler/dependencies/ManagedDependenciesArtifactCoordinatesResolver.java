@@ -22,7 +22,7 @@ import org.springframework.boot.dependency.tools.VersionManagedDependencies;
 
 /**
  * {@link ArtifactCoordinatesResolver} backed by {@link ManagedDependencies}.
- *
+ * 
  * @author Phillip Webb
  */
 public class ManagedDependenciesArtifactCoordinatesResolver implements

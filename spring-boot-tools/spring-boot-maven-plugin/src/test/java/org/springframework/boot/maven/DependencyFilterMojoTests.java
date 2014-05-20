@@ -33,6 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
+ * Tests for {@link AbstractDependencyFilterMojo}.
  * 
  * @author Stephane Nicoll
  */
@@ -54,7 +55,7 @@ public class DependencyFilterMojoTests {
 	@Test
 	public void filterGroupIdExactMatch() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(
-				Collections.<Exclude>emptyList(), "com.foo", "");
+				Collections.<Exclude> emptyList(), "com.foo", "");
 
 		Artifact artifact = createArtifact("com.foo.bar", "one");
 		Set<Artifact> artifacts = mojo.filterDependencies(
@@ -91,5 +92,6 @@ public class DependencyFilterMojoTests {
 		public void execute() throws MojoExecutionException, MojoFailureException {
 
 		}
+
 	}
 }

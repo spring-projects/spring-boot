@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ import java.util.Map;
 
 import org.springframework.boot.autoconfigure.template.AbstractTemplateViewResolverProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /**
  * {@link ConfigurationProperties} for configuring FreeMarker
- *
+ * 
  * @author Dave Syer
  * @author Andy Wilkinson
- *
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.freemarker")
@@ -61,5 +61,13 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 
 	public void setTemplateLoaderPath(String templateLoaderPath) {
 		this.templateLoaderPath = templateLoaderPath;
+	}
+
+	/**
+	 * Apply the given properties to a {@link FreeMarkerViewResolver}.
+	 * @param resolver the resolver to apply the properties to.
+	 */
+	public void applyToViewResolver(FreeMarkerViewResolver resolver) {
+		super.applyToViewResolver(resolver);
 	}
 }

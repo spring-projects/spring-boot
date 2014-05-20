@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link PomManagedDependencies}.
- *
+ * 
  * @author Phillip Webb
  */
 public class PomManagedDependenciesTests {
