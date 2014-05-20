@@ -933,7 +933,9 @@ sensible way, and it is registered as a ``global'' error page in the servlet con
 For machine clients it will produce a JSON response with details of the error, the HTTP
 status and the exception message. For browser clients there is a ``whitelabel'' error
 view that renders the same data in HTML format (to customize it just add a `View` that
-resolves to ``error'').
+resolves to ``error''). To replace the default behaviour completely you can implement
+`ErrorController` and register a bean definition of that type, or simply add a bean
+of type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
 If you want more specific error pages for some conditions, the embedded servlet containers
 support a uniform Java DSL for customizing the error handling. For example:
@@ -959,6 +961,7 @@ support a uniform Java DSL for customizing the error handling. For example:
 
 You can also use regular Spring MVC features like http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-exception-handlers[`@ExceptionHandler`
 methods] and http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-controller-advice[`@ControllerAdvice`].
+The `ErrorController` will then pick up any unhandled exceptions.
 
 
 
