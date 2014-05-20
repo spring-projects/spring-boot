@@ -1207,10 +1207,12 @@ To automatically run Flyway database migrations on startup, add the
 
 The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with
 `<VERSION>` an underscore-separated version, e.g. "1" or "2_1"). By
-default they live in a folder `classpath:db/migrations` but you can
-modify that using `flyway.locations` (a list). See
+default they live in a folder `classpath:db/migration` but you can
+modify that using `flyway.locations` (a list). See the Flyway class from
+flyway-core for details of available settings like schemas etc. In
+addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
-for details of available settings like schemas etc.
+that can be used to disable the migrations, or switch off the location checking.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
 you can see how to set things up.

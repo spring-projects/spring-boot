@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -80,16 +81,11 @@ public class FlywayAutoConfiguration {
 			}
 		}
 
-		@Bean
+		@Bean(initMethod = "migrate")
+		@ConfigurationProperties(prefix = "flyway")
 		public Flyway flyway(DataSource dataSource) {
 			Flyway flyway = new Flyway();
-			flyway.setLocations(this.properties.getLocations().toArray(new String[0]));
-			flyway.setSchemas(this.properties.getSchemas().toArray(new String[0]));
-			flyway.setInitVersion(this.properties.getInitVersion());
-			flyway.setSqlMigrationPrefix(this.properties.getPrefix());
-			flyway.setSqlMigrationSuffix(this.properties.getSuffix());
 			flyway.setDataSource(dataSource);
-			flyway.migrate();
 			return flyway;
 		}
 
