@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.rest;
 
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,7 +45,6 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @ConditionalOnMissingBean(RepositoryRestMvcConfiguration.class)
 @ConditionalOnClass(RepositoryRestMvcConfiguration.class)
 @Import(RepositoryRestMvcConfiguration.class)
-@AutoConfigureBefore(JpaRepositoriesAutoConfiguration.class)
 public class RepositoryRestMvcAutoConfiguration {
 
 }
