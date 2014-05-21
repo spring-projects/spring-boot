@@ -20,9 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
@@ -31,64 +35,99 @@ import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link CompositeHealthIndicator}
- * 
+ *
  * @author Tyler J. Frederick
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
 public class CompositeHealthIndicatorTests {
 
-	@Mock
-	private HealthIndicator<String> one;
+	private HealthAggregator healthAggregator;
 
 	@Mock
-	private HealthIndicator<String> two;
+	private HealthIndicator one;
 
 	@Mock
-	private HealthIndicator<String> three;
+	private HealthIndicator two;
+
+	@Mock
+	private HealthIndicator three;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.one.health()).willReturn("1");
-		given(this.two.health()).willReturn("2");
-		given(this.three.health()).willReturn("3");
+		given(this.one.health()).willReturn(new Health().withDetail("1", "1"));
+		given(this.two.health()).willReturn(new Health().withDetail("2", "2"));
+		given(this.three.health()).willReturn(new Health().withDetail("3", "3"));
+
+		this.healthAggregator = new OrderedHealthAggregator();
 	}
 
 	@Test
 	public void createWithIndicators() throws Exception {
-		Map<String, HealthIndicator<?>> indicators = new HashMap<String, HealthIndicator<?>>();
+		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(indicators);
-		Map<String, Object> result = composite.health();
-		assertThat(result.size(), equalTo(2));
-		assertThat(result, hasEntry("one", (Object) "1"));
-		assertThat(result, hasEntry("two", (Object) "2"));
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(
+				this.healthAggregator, indicators);
+		Health result = composite.health();
+		assertThat(result.getDetails().size(), equalTo(2));
+		assertThat(result.getDetails(),
+				hasEntry("one", (Object) new Health().withDetail("1", "1")));
+		assertThat(result.getDetails(),
+				hasEntry("two", (Object) new Health().withDetail("2", "2")));
 	}
 
 	@Test
 	public void createWithIndicatorsAndAdd() throws Exception {
-		Map<String, HealthIndicator<?>> indicators = new HashMap<String, HealthIndicator<?>>();
+		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
 		indicators.put("one", this.one);
 		indicators.put("two", this.two);
-		CompositeHealthIndicator composite = new CompositeHealthIndicator(indicators);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(
+				this.healthAggregator, indicators);
 		composite.addHealthIndicator("three", this.three);
-		Map<String, Object> result = composite.health();
-		assertThat(result.size(), equalTo(3));
-		assertThat(result, hasEntry("one", (Object) "1"));
-		assertThat(result, hasEntry("two", (Object) "2"));
-		assertThat(result, hasEntry("three", (Object) "3"));
+		Health result = composite.health();
+		assertThat(result.getDetails().size(), equalTo(3));
+		assertThat(result.getDetails(),
+				hasEntry("one", (Object) new Health().withDetail("1", "1")));
+		assertThat(result.getDetails(),
+				hasEntry("two", (Object) new Health().withDetail("2", "2")));
+		assertThat(result.getDetails(),
+				hasEntry("three", (Object) new Health().withDetail("3", "3")));
 	}
 
 	@Test
 	public void createWithoutAndAdd() throws Exception {
-		CompositeHealthIndicator composite = new CompositeHealthIndicator();
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(
+				this.healthAggregator);
 		composite.addHealthIndicator("one", this.one);
 		composite.addHealthIndicator("two", this.two);
-		Map<String, Object> result = composite.health();
-		assertThat(result.size(), equalTo(2));
-		assertThat(result, hasEntry("one", (Object) "1"));
-		assertThat(result, hasEntry("two", (Object) "2"));
+		Health result = composite.health();
+		assertThat(result.getDetails().size(), equalTo(2));
+		assertThat(result.getDetails(),
+				hasEntry("one", (Object) new Health().withDetail("1", "1")));
+		assertThat(result.getDetails(),
+				hasEntry("two", (Object) new Health().withDetail("2", "2")));
+	}
+
+	@Test
+	@Ignore
+	public void testSerialization() throws Exception {
+		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
+		indicators.put("db1", this.one);
+		indicators.put("db2", this.two);
+		CompositeHealthIndicator innerComposite = new CompositeHealthIndicator(
+				this.healthAggregator, indicators);
+		CompositeHealthIndicator composite = new CompositeHealthIndicator(
+				this.healthAggregator);
+		composite.addHealthIndicator("db", innerComposite);
+
+		Health result = composite.health();
+
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+		String test = mapper.writeValueAsString(result);
+		System.out.println(test);
 	}
 
 }

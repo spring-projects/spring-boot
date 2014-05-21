@@ -16,11 +16,14 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +35,7 @@ import static org.junit.Assert.assertThat;
  * Tests for {@link HealthEndpoint}.
  * 
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
 public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
@@ -41,9 +45,8 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
 	@Test
 	public void invoke() throws Exception {
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("status", "fine");
-		assertThat(getEndpointBean().invoke(), equalTo(result));
+		Status result = new Status("FINE");
+		assertThat(getEndpointBean().invoke().getStatus(), equalTo(result));
 	}
 
 	@Configuration
@@ -51,18 +54,25 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 	public static class Config {
 
 		@Bean
-		public HealthEndpoint endpoint(Map<String, HealthIndicator<?>> healthIndicators) {
-			return new HealthEndpoint(healthIndicators);
+		public HealthEndpoint endpoint(HealthAggregator healthAggregator,
+				Map<String, HealthIndicator> healthIndicators) {
+			return new HealthEndpoint(healthAggregator, healthIndicators);
 		}
 
 		@Bean
-		public HealthIndicator<String> statusHealthIndicator() {
-			return new HealthIndicator<String>() {
+		public HealthIndicator statusHealthIndicator() {
+			return new HealthIndicator() {
+
 				@Override
-				public String health() {
-					return "fine";
+				public Health health() {
+					return new Health().status(new Status("FINE"));
 				}
 			};
+		}
+
+		@Bean
+		public HealthAggregator healthAggregator() {
+			return new OrderedHealthAggregator();
 		}
 	}
 }
