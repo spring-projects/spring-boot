@@ -218,13 +218,16 @@ The following application starters are provided by Spring Boot under the
 |Support for the ``Advanced Message Queuing Protocol'' via `spring-rabbit`.
 
 |`spring-boot-starter-aop`
-|Full AOP programming support including `spring-aop` and AspectJ.
+|Support for aspect-oriented programming including `spring-aop` and AspectJ.
 
 |`spring-boot-starter-batch`
 |Support for ``Spring Batch'' including HSQLDB database.
 
+|`spring-boot-starter-data-gemfire`|
+|Support for the GemFire distributed data store including `spring-data-gemfire`.
+
 |`spring-boot-starter-data-jpa`
-|Full support for the ``Java Persistence API'' including `spring-data-jpa`, `spring-orm`
+|Support for the ``Java Persistence API'' including `spring-data-jpa`, `spring-orm`
 and Hibernate.
 
 |`spring-boot-starter-data-mongodb`
