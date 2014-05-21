@@ -5,4 +5,4 @@ The table below provides details of all of the dependency versions that are prov
 in its CLI, Maven dependency management and Gradle plugin. When you declare a dependency on one of
 these artifacts without declaring a version the version that is listed in the table will be used.
 
-include::../../../target/generated-resources/org/springframework/boot/dependency/tools/effective-pom.adoc[]
+include::../../../target/generated-resources/effective-pom.adoc[]
