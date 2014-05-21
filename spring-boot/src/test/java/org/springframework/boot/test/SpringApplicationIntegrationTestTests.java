@@ -44,11 +44,14 @@ import static org.junit.Assert.assertNotEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Config.class)
 @WebAppConfiguration
-@IntegrationTest("server.port=0")
+@IntegrationTest({ "server.port=0", "value=123" })
 public class SpringApplicationIntegrationTestTests {
 
 	@Value("${local.server.port}")
 	private int port = 0;
+
+	@Value("${value}")
+	private int value = 0;
 
 	@Test
 	public void runAndTestHttpEndpoint() {
@@ -57,6 +60,11 @@ public class SpringApplicationIntegrationTestTests {
 		String body = new RestTemplate().getForObject("http://localhost:" + this.port
 				+ "/", String.class);
 		assertEquals("Hello World", body);
+	}
+
+	@Test
+	public void annotationAttributesOverridePropertiesFile() throws Exception {
+		assertEquals(123, this.value);
 	}
 
 	@Configuration

@@ -33,6 +33,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.core.SpringVersion;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextLoader;
@@ -43,6 +46,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
  * A {@link ContextLoader} that can be used to test Spring Boot applications (those that
@@ -74,7 +78,17 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		if (!ObjectUtils.isEmpty(config.getActiveProfiles())) {
 			application.setAdditionalProfiles(config.getActiveProfiles());
 		}
-		application.setDefaultProperties(getEnvironmentProperties(config));
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		if (config instanceof WebMergedContextConfiguration) {
+			environment = new StandardServletEnvironment();
+		}
+		// Ensure @IntegrationTest properties go before external config and after system
+		environment.getPropertySources()
+				.addAfter(
+						StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+						new MapPropertySource("integrationTest",
+								getEnvironmentProperties(config)));
+		application.setEnvironment(environment);
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(config,
 				application);
 		if (config instanceof WebMergedContextConfiguration) {
