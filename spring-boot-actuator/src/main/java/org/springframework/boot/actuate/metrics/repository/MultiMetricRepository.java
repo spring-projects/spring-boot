@@ -52,6 +52,6 @@ public interface MultiMetricRepository extends PrefixMetricReader {
 	/**
 	 * @return the number of groups available
 	 */
-	long count();
+	long countGroups();
 
 }

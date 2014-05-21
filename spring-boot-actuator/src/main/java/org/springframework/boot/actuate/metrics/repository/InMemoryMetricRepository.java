@@ -89,6 +89,11 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 	}
 
 	@Override
+	public long countGroups() {
+		return this.groups.size();
+	}
+
+	@Override
 	public void reset(String metricName) {
 		this.metrics.remove(metricName);
 	}
