@@ -21,6 +21,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Value object to express state of a component or subsystem.
@@ -58,7 +59,7 @@ public class Status {
 	 */
 	public static final Status OUT_OF_SERVICE = new Status("OUT_OF_SERVICE");
 
-	private final String status;
+	private final String code;
 
 	private final String description;
 
@@ -67,14 +68,15 @@ public class Status {
 	}
 
 	public Status(String code, String description) {
-		Assert.notNull(code, "Status must not be null");
+		Assert.notNull(code, "Code must not be null");
 		Assert.notNull(description, "Description must not be null");
-		this.status = code;
+		this.code = code;
 		this.description = description;
 	}
 
-	public String getStatus() {
-		return this.status;
+	@JsonProperty("status")
+	public String getCode() {
+		return this.code;
 	}
 
 	@JsonInclude(Include.NON_EMPTY)
@@ -88,13 +90,13 @@ public class Status {
 			return true;
 		}
 		if (obj != null && obj instanceof Status) {
-			return ObjectUtils.nullSafeEquals(this.status, ((Status) obj).status);
+			return ObjectUtils.nullSafeEquals(this.code, ((Status) obj).code);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return this.status.hashCode();
+		return this.code.hashCode();
 	}
 }

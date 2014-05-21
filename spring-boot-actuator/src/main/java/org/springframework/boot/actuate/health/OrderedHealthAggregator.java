@@ -66,8 +66,8 @@ public class OrderedHealthAggregator implements HealthAggregator {
 			@Override
 			public int compare(Status s1, Status s2) {
 				return Integer.valueOf(
-						OrderedHealthAggregator.this.statusOrder.indexOf(s1.getStatus())).compareTo(
-						Integer.valueOf(OrderedHealthAggregator.this.statusOrder.indexOf(s2.getStatus())));
+						OrderedHealthAggregator.this.statusOrder.indexOf(s1.getCode())).compareTo(
+						Integer.valueOf(OrderedHealthAggregator.this.statusOrder.indexOf(s2.getCode())));
 
 			}
 		});
