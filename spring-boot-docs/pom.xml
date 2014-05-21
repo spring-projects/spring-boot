@@ -116,7 +116,7 @@
 											<version>${project.version}</version>
 											<type>effective-pom</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>${project.build.directory}/external-resource</outputDirectory>
+											<outputDirectory>${project.build.directory}/external-resources</outputDirectory>
 											<destFileName>effective-pom.xml</destFileName>
 										</artifactItem>
 									</artifactItems>
