@@ -16,16 +16,18 @@
 
 package org.springframework.boot.actuate.health;
 
+
 /**
  * Default implementation of {@link HealthIndicator} that simply returns {@literal "ok"}.
- * 
+ *
  * @author Dave Syer
+ * @author Christian Dupuis
  */
-public class VanillaHealthIndicator implements HealthIndicator<String> {
+public class VanillaHealthIndicator implements HealthIndicator {
 
 	@Override
-	public String health() {
-		return "ok";
+	public Health health() {
+		return new Health(Status.UP);
 	}
 
 }

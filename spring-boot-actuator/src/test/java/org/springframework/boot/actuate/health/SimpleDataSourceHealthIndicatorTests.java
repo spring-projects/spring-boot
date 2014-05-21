@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.health;
 
 import java.sql.Connection;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link SimpleDataSourceHealthIndicator}.
- * 
+ *
  * @author Dave Syer
  */
 public class SimpleDataSourceHealthIndicatorTests {
@@ -55,31 +54,31 @@ public class SimpleDataSourceHealthIndicatorTests {
 	@Test
 	public void database() {
 		this.indicator.setDataSource(this.dataSource);
-		Map<String, Object> health = this.indicator.health();
-		assertNotNull(health.get("database"));
-		assertNotNull(health.get("hello"));
+		Health health = this.indicator.health();
+		assertNotNull(health.getDetails().get("database"));
+		assertNotNull(health.getDetails().get("hello"));
 	}
 
 	@Test
 	public void customQuery() {
 		this.indicator.setDataSource(this.dataSource);
 		new JdbcTemplate(this.dataSource)
-				.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
+		.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
 		this.indicator.setQuery("SELECT COUNT(*) from FOO");
-		Map<String, Object> health = this.indicator.health();
+		Health health = this.indicator.health();
 		System.err.println(health);
-		assertNotNull(health.get("database"));
-		assertEquals("ok", health.get("status"));
-		assertNotNull(health.get("hello"));
+		assertNotNull(health.getDetails().get("database"));
+		assertEquals(Status.UP, health.getStatus());
+		assertNotNull(health.getDetails().get("hello"));
 	}
 
 	@Test
 	public void error() {
 		this.indicator.setDataSource(this.dataSource);
 		this.indicator.setQuery("SELECT COUNT(*) from BAR");
-		Map<String, Object> health = this.indicator.health();
-		assertNotNull(health.get("database"));
-		assertEquals("error", health.get("status"));
+		Health health = this.indicator.health();
+		assertNotNull(health.getDetails().get("database"));
+		assertEquals(Status.DOWN, health.getStatus());
 	}
 
 	@Test
@@ -90,8 +89,8 @@ public class SimpleDataSourceHealthIndicatorTests {
 				this.dataSource.getConnection().getMetaData());
 		when(dataSource.getConnection()).thenReturn(connection);
 		this.indicator.setDataSource(dataSource);
-		Map<String, Object> health = this.indicator.health();
-		assertNotNull(health.get("database"));
+		Health health = this.indicator.health();
+		assertNotNull(health.getDetails().get("database"));
 		verify(connection, times(2)).close();
 	}
 

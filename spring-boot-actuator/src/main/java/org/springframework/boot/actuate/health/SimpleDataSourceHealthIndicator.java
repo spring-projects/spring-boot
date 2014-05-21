@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.health;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -32,8 +31,9 @@ import org.springframework.util.StringUtils;
 /**
  * Simple implementation of {@link HealthIndicator} that returns a status and also
  * attempts a simple database test.
- * 
+ *
  * @author Dave Syer
+ * @author Christian Dupuis
  */
 public class SimpleDataSourceHealthIndicator implements
 		HealthIndicator<Map<String, Object>> {
@@ -72,9 +72,10 @@ public class SimpleDataSourceHealthIndicator implements
 	}
 
 	@Override
-	public Map<String, Object> health() {
-		LinkedHashMap<String, Object> health = new LinkedHashMap<String, Object>();
-		health.put("status", "ok");
+	public Health health() {
+		Health health = new Health();
+		health.up();
+
 		String product = "unknown";
 		if (this.dataSource != null) {
 			try {
@@ -85,21 +86,19 @@ public class SimpleDataSourceHealthIndicator implements
 						return connection.getMetaData().getDatabaseProductName();
 					}
 				});
-				health.put("database", product);
+				health.withDetail("database", product);
 			}
 			catch (DataAccessException ex) {
-				health.put("status", "error");
-				health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+				health.down().withException(ex);
 			}
 			String query = detectQuery(product);
 			if (StringUtils.hasText(query)) {
 				try {
-					health.put("hello",
+					health.withDetail("hello",
 							this.jdbcTemplate.queryForObject(query, Object.class));
 				}
 				catch (Exception ex) {
-					health.put("status", "error");
-					health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+					health.down().withException(ex);
 				}
 			}
 		}

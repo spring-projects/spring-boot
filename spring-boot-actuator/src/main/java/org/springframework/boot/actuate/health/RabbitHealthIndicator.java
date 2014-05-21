@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.amqp.rabbit.core.ChannelCallback;
@@ -28,11 +27,11 @@ import com.rabbitmq.client.Channel;
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for the
  * RabbitMQ messaging system.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */
-public class RabbitHealthIndicator implements HealthIndicator<Map<String, Object>> {
+public class RabbitHealthIndicator implements HealthIndicator {
 
 	private final RabbitTemplate rabbitTemplate;
 
@@ -42,10 +41,10 @@ public class RabbitHealthIndicator implements HealthIndicator<Map<String, Object
 	}
 
 	@Override
-	public Map<String, Object> health() {
-		Map<String, Object> health = new HashMap<String, Object>();
+	public Health health() {
+		Health health = new Health();
 		try {
-			health.put("version",
+			health.up().withDetail("version",
 					this.rabbitTemplate.execute(new ChannelCallback<String>() {
 
 						@Override
@@ -55,12 +54,9 @@ public class RabbitHealthIndicator implements HealthIndicator<Map<String, Object
 							return serverProperties.get("version").toString();
 						}
 					}));
-
-			health.put("status", "ok");
 		}
 		catch (Exception ex) {
-			health.put("status", "error");
-			health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+			health.down().withException(ex);
 		}
 		return health;
 	}

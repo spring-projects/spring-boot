@@ -16,9 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.util.Assert;
 
@@ -27,11 +24,11 @@ import com.mongodb.CommandResult;
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
  * Mongo data stores.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */
-public class MongoHealthIndicator implements HealthIndicator<Map<String, Object>> {
+public class MongoHealthIndicator implements HealthIndicator {
 
 	private final MongoTemplate mongoTemplate;
 
@@ -41,17 +38,15 @@ public class MongoHealthIndicator implements HealthIndicator<Map<String, Object>
 	}
 
 	@Override
-	public Map<String, Object> health() {
-		Map<String, Object> health = new HashMap<String, Object>();
+	public Health health() {
+		Health health = new Health();
 		try {
 			CommandResult result = this.mongoTemplate
 					.executeCommand("{ serverStatus: 1 }");
-			health.put("status", "ok");
-			health.put("version", result.getString("version"));
+			health.up().withDetail("version", result.getString("version"));
 		}
 		catch (Exception ex) {
-			health.put("status", "error");
-			health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+			health.down().withException(ex);
 		}
 		return health;
 	}

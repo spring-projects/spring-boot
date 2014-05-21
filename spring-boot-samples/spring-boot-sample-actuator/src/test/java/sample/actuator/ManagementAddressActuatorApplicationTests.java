@@ -73,7 +73,7 @@ public class ManagementAddressActuatorApplicationTests {
 						String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertTrue("Wrong body: " + entity.getBody(),
-				entity.getBody().contains("\"status\":\"ok\""));
+				entity.getBody().contains("\"status\":\"UP\""));
 	}
 
 }

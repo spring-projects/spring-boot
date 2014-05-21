@@ -16,15 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
@@ -58,9 +62,22 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 		RabbitAutoConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 
+	@Value("${health.status.order:}")
+	private List<String> statusOrder = null;
+
+	@Bean
+	@ConditionalOnMissingBean
+	public HealthAggregator healthAggregator() {
+		OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
+		if (this.statusOrder != null) {
+			healthAggregator.setStatusOrder(this.statusOrder);
+		}
+		return healthAggregator;
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(HealthIndicator.class)
-	public HealthIndicator<?> statusHealthIndicator() {
+	public HealthIndicator statusHealthIndicator() {
 		return new VanillaHealthIndicator();
 	}
 
@@ -69,18 +86,22 @@ public class HealthIndicatorAutoConfiguration {
 	@ConditionalOnExpression("${health.db.enabled:true}")
 	public static class DataSourcesHealthIndicatorConfiguration {
 
+		@Autowired
+		private HealthAggregator healthAggregator;
+
 		@Autowired(required = false)
 		private Map<String, DataSource> dataSources;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
-		public HealthIndicator<? extends Object> dbHealthIndicator() {
+		public HealthIndicator dbHealthIndicator() {
 			if (this.dataSources.size() == 1) {
 				return new SimpleDataSourceHealthIndicator(this.dataSources.values()
 						.iterator().next());
 			}
 
-			CompositeHealthIndicator composite = new CompositeHealthIndicator();
+			CompositeHealthIndicator composite = new CompositeHealthIndicator(
+					this.healthAggregator);
 			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(),
 						new SimpleDataSourceHealthIndicator(entry.getValue()));
@@ -95,17 +116,21 @@ public class HealthIndicatorAutoConfiguration {
 	public static class MongoHealthIndicatorConfiguration {
 
 		@Autowired
+		private HealthAggregator healthAggregator;
+
+		@Autowired
 		private Map<String, MongoTemplate> mongoTemplates;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "mongoHealthIndicator")
-		public HealthIndicator<?> mongoHealthIndicator() {
+		public HealthIndicator mongoHealthIndicator() {
 			if (this.mongoTemplates.size() == 1) {
 				return new MongoHealthIndicator(this.mongoTemplates.values().iterator()
 						.next());
 			}
 
-			CompositeHealthIndicator composite = new CompositeHealthIndicator();
+			CompositeHealthIndicator composite = new CompositeHealthIndicator(
+					this.healthAggregator);
 			for (Map.Entry<String, MongoTemplate> entry : this.mongoTemplates.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(), new MongoHealthIndicator(
 						entry.getValue()));
@@ -120,17 +145,21 @@ public class HealthIndicatorAutoConfiguration {
 	public static class RedisHealthIndicatorConfiguration {
 
 		@Autowired
+		private HealthAggregator healthAggregator;
+
+		@Autowired
 		private Map<String, RedisConnectionFactory> redisConnectionFactories;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisHealthIndicator")
-		public HealthIndicator<?> redisHealthIndicator() {
+		public HealthIndicator redisHealthIndicator() {
 			if (this.redisConnectionFactories.size() == 1) {
 				return new RedisHealthIndicator(this.redisConnectionFactories.values()
 						.iterator().next());
 			}
 
-			CompositeHealthIndicator composite = new CompositeHealthIndicator();
+			CompositeHealthIndicator composite = new CompositeHealthIndicator(
+					this.healthAggregator);
 			for (Map.Entry<String, RedisConnectionFactory> entry : this.redisConnectionFactories
 					.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(), new RedisHealthIndicator(
@@ -146,17 +175,21 @@ public class HealthIndicatorAutoConfiguration {
 	public static class RabbitHealthIndicatorConfiguration {
 
 		@Autowired
+		private HealthAggregator healthAggregator;
+
+		@Autowired
 		private Map<String, RabbitTemplate> rabbitTemplates;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "rabbitHealthIndicator")
-		public HealthIndicator<?> rabbitHealthIndicator() {
+		public HealthIndicator rabbitHealthIndicator() {
 			if (this.rabbitTemplates.size() == 1) {
 				return new RabbitHealthIndicator(this.rabbitTemplates.values().iterator()
 						.next());
 			}
 
-			CompositeHealthIndicator composite = new CompositeHealthIndicator();
+			CompositeHealthIndicator composite = new CompositeHealthIndicator(
+					this.healthAggregator);
 			for (Map.Entry<String, RabbitTemplate> entry : this.rabbitTemplates
 					.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(), new RabbitHealthIndicator(

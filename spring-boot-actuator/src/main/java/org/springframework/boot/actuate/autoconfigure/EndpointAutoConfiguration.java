@@ -37,6 +37,8 @@ import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
+import org.springframework.boot.actuate.health.OrderedHealthAggregator;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
@@ -74,7 +76,10 @@ public class EndpointAutoConfiguration {
 	private InfoPropertiesConfiguration properties;
 
 	@Autowired(required = false)
-	Map<String, HealthIndicator<? extends Object>> healthIndicators = new HashMap<String, HealthIndicator<? extends Object>>();
+	private HealthAggregator healthAggregator = new OrderedHealthAggregator();
+
+	@Autowired(required = false)
+	Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
 
 	@Autowired(required = false)
 	private MetricReader metricRepository = new InMemoryMetricRepository();
@@ -97,7 +102,7 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthEndpoint healthEndpoint() {
-		return new HealthEndpoint(this.healthIndicators);
+		return new HealthEndpoint(this.healthAggregator, this.healthIndicators);
 	}
 
 	@Bean

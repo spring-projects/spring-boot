@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.data.redis.connection.RedisConnection;
@@ -28,11 +26,11 @@ import org.springframework.util.Assert;
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
  * Redis data stores.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */
-public class RedisHealthIndicator implements HealthIndicator<Map<String, Object>> {
+public class RedisHealthIndicator implements HealthIndicator {
 
 	private final RedisConnectionFactory redisConnectionFactory;
 
@@ -42,19 +40,17 @@ public class RedisHealthIndicator implements HealthIndicator<Map<String, Object>
 	}
 
 	@Override
-	public Map<String, Object> health() {
-		Map<String, Object> health = new HashMap<String, Object>();
+	public Health health() {
+		Health health = new Health();
 
 		RedisConnection connection = null;
 		try {
 			connection = RedisConnectionUtils.getConnection(this.redisConnectionFactory);
 			Properties info = connection.info();
-			health.put("status", "ok");
-			health.put("version", info.getProperty("redis_version"));
+			health.up().withDetail("version", info.getProperty("redis_version"));
 		}
 		catch (Exception ex) {
-			health.put("status", "error");
-			health.put("error", ex.getClass().getName() + ": " + ex.getMessage());
+			health.down().withException(ex);
 		}
 		finally {
 			RedisConnectionUtils.releaseConnection(connection,
