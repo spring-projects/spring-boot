@@ -1014,9 +1014,9 @@ public class SpringApplication {
 		}
 	}
 
-	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elemements) {
+	private static <E> Set<E> asUnmodifiableOrderedSet(Collection<E> elements) {
 		List<E> list = new ArrayList<E>();
-		list.addAll(elemements);
+		list.addAll(elements);
 		Collections.sort(list, AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<E>(list);
 	}

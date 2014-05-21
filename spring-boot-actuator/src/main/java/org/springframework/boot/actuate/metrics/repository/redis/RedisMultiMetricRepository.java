@@ -108,7 +108,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	}
 
 	@Override
-	public long count() {
+	public long countGroups() {
 		return this.zSetOperations.size();
 	}
 
