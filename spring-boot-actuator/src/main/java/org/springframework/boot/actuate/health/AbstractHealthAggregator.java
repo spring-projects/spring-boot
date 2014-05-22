@@ -41,6 +41,11 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 		return health;
 	}
 
+	/**
+	 * Actual aggregation logic.
+	 * @param status list of given {@link Status} instances to aggregate
+	 * @return aggregated {@link Status}
+	 */
 	protected abstract Status aggregateStatus(List<Status> status);
 
 }
