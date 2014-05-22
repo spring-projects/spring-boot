@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.metrics.repository.redis;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,6 +31,7 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import static org.junit.Assert.assertEquals;
@@ -78,27 +81,44 @@ public class RedisMultiMetricRepositoryTests {
 
 	@Test
 	public void setAndGet() {
-		this.repository.save("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
+		this.repository.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
 				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
 		assertEquals(2, Iterables.collection(this.repository.findAll("foo")).size());
 	}
 
 	@Test
 	public void groups() {
-		this.repository.save("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
+		this.repository.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
 				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
-		this.repository.save("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
+		this.repository.set("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
 				"bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
 		assertEquals(2, Iterables.collection(this.repository.groups()).size());
 	}
 
 	@Test
 	public void count() {
-		this.repository.save("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
+		this.repository.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
 				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
-		this.repository.save("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
+		this.repository.set("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
 				"bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
 		assertEquals(2, this.repository.countGroups());
 	}
 
+	@Test
+	public void increment() {
+		this.repository.increment("foo", new Delta<Number>("bar", 1));
+		this.repository.increment("foo", new Delta<Number>("bar", 2));
+		this.repository.increment("foo", new Delta<Number>("spam", 1));
+		Metric<?> bar = null;
+		Set<String> names = new HashSet<String>();
+		for (Metric<?> metric : this.repository.findAll("foo")) {
+			names.add(metric.getName());
+			if (metric.getName().equals("foo.bar")) {
+				bar = metric;
+			}
+		}
+		assertEquals(2, names.size());
+		assertTrue("Wrong names: " + names, names.contains("foo.bar"));
+		assertEquals(3d, bar.getValue());
+	}
 }

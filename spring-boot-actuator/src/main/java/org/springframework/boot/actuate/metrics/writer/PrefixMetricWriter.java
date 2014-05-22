@@ -33,7 +33,14 @@ public interface PrefixMetricWriter {
 	 * @param group the name of the group
 	 * @param values the metric values to save
 	 */
-	void save(String group, Collection<Metric<?>> values);
+	void set(String group, Collection<Metric<?>> values);
+
+	/**
+	 * Increment the value of a metric (or decrement if the delta is negative). The name
+	 * of the metric to increment is <code>group + "." + delta.name</code>.
+	 * @param delta the amount to increment by
+	 */
+	void increment(String group, Delta<?> delta);
 
 	/**
 	 * Rest the values of all metrics in the group. Implementations may choose to discard

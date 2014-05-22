@@ -85,7 +85,7 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	@Override
 	protected void write(String group, Collection<Metric<?>> values) {
-		this.writer.save(group, values);
+		this.writer.set(group, values);
 	}
 
 }

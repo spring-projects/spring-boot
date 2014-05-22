@@ -71,7 +71,7 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 	}
 
 	@Override
-	public void save(String group, Collection<Metric<?>> values) {
+	public void set(String group, Collection<Metric<?>> values) {
 		String prefix = group;
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
@@ -83,6 +83,20 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 			}
 			set(metric);
 		}
+		this.groups.add(group);
+	}
+
+	@Override
+	public void increment(String group, Delta<?> delta) {
+		String prefix = group;
+		if (!prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
+		if (!delta.getName().startsWith(prefix)) {
+			delta = new Delta<Number>(prefix + delta.getName(), delta.getValue(),
+					delta.getTimestamp());
+		}
+		increment(delta);
 		this.groups.add(group);
 	}
 
