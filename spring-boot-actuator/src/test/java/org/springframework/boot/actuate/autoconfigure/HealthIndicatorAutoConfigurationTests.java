@@ -26,12 +26,14 @@ import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
+import org.springframework.boot.actuate.health.SolrHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -39,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link HealthIndicatorAutoConfiguration}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class HealthIndicatorAutoConfigurationTests {
@@ -130,11 +132,12 @@ public class HealthIndicatorAutoConfigurationTests {
 	public void combinedHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(MongoAutoConfiguration.class, RedisAutoConfiguration.class,
-				MongoDataAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
+				MongoDataAutoConfiguration.class, SolrAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
-		assertEquals(2, beans.size());
+		assertEquals(3, beans.size());
 	}
 
 	@Test
@@ -183,6 +186,33 @@ public class HealthIndicatorAutoConfigurationTests {
 		this.context.register(RabbitAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "health.rabbit.enabled:false");
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(VanillaHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@Test
+	public void solrHeathIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(SolrAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		this.context.refresh();
+		Map<String, HealthIndicator> beans = this.context
+				.getBeansOfType(HealthIndicator.class);
+		assertEquals(1, beans.size());
+		assertEquals(SolrHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
+	}
+
+	@Test
+	public void notSolrHeathIndicator() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(SolrAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context, "health.solr.enabled:false");
 		this.context.refresh();
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
