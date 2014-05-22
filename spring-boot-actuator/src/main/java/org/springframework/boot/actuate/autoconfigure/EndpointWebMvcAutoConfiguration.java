@@ -33,10 +33,12 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
+import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.EndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.mvc.EnvironmentMvcEndpoint;
+import org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint;
 import org.springframework.boot.actuate.endpoint.mvc.MvcEndpoints;
 import org.springframework.boot.actuate.endpoint.mvc.ShutdownMvcEndpoint;
@@ -54,6 +56,7 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerException;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -72,22 +75,27 @@ import org.springframework.web.servlet.DispatcherServlet;
  * different port to {@link ServerProperties} a new child context is created, otherwise it
  * is assumed that endpoint requests will be mapped and handled via an already registered
  * {@link DispatcherServlet}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
 @Configuration
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
-		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-		ManagementServerPropertiesAutoConfiguration.class })
+	EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
+	ManagementServerPropertiesAutoConfiguration.class })
+@EnableConfigurationProperties(HealthMvcEndpointProperties.class)
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
 
 	private static Log logger = LogFactory.getLog(EndpointWebMvcAutoConfiguration.class);
 
 	private ApplicationContext applicationContext;
+
+	@Autowired
+	private HealthMvcEndpointProperties healthMvcEndpointProperties;
 
 	@Autowired
 	private ManagementServerProperties managementServerProperties;
@@ -101,8 +109,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(mvcEndpoints()
-				.getEndpoints());
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
+				mvcEndpoints().getEndpoints());
 		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
 		mapping.setDisabled(disabled);
 		if (!disabled) {
@@ -125,10 +133,12 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	// instantiation of ManagementServerProperties.
 	@Configuration
 	protected static class ApplicationContextFilterConfiguration {
+
 		@Bean
 		public Filter applicationContextIdFilter(ApplicationContext context) {
 			final String id = context.getId();
 			return new OncePerRequestFilter() {
+
 				@Override
 				protected void doFilterInternal(HttpServletRequest request,
 						HttpServletResponse response, FilterChain filterChain)
@@ -151,6 +161,17 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnExpression("${endpoints.env.enabled:true}")
 	public EnvironmentMvcEndpoint environmentMvcEndpoint(EnvironmentEndpoint delegate) {
 		return new EnvironmentMvcEndpoint(delegate);
+	}
+
+	@Bean
+	@ConditionalOnBean(HealthEndpoint.class)
+	@ConditionalOnExpression("${endpoints.health.enabled:true}")
+	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
+		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
+		if (this.healthMvcEndpointProperties.getMapping() != null) {
+			healthMvcEndpoint.setStatusMapping(this.healthMvcEndpointProperties.getMapping());
+		}
+		return healthMvcEndpoint;
 	}
 
 	@Bean
@@ -184,27 +205,25 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		// Ensure close on the parent also closes the child
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			((ConfigurableApplicationContext) this.applicationContext)
-					.addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
-						@Override
-						public void onApplicationEvent(ContextClosedEvent event) {
-							if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
-								childContext.close();
-							}
-						}
-					});
+			((ConfigurableApplicationContext) this.applicationContext).addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
+
+				@Override
+				public void onApplicationEvent(ContextClosedEvent event) {
+					if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
+						childContext.close();
+					}
+				}
+			});
 		}
 		try {
 			childContext.refresh();
-		}
-		catch (RuntimeException ex) {
+		} catch (RuntimeException ex) {
 			// No support currently for deploying a war with management.port=<different>,
 			// and this is the signature of that happening
 			if (ex instanceof EmbeddedServletContainerException
 					|| ex.getCause() instanceof EmbeddedServletContainerException) {
 				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
-			}
-			else {
+			} else {
 				throw ex;
 			}
 		}
@@ -219,17 +238,14 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			ServerProperties serverProperties;
 			try {
 				serverProperties = beanFactory.getBean(ServerProperties.class);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
+			} catch (NoSuchBeanDefinitionException ex) {
 				serverProperties = new ServerProperties();
 			}
 
 			ManagementServerProperties managementServerProperties;
 			try {
-				managementServerProperties = beanFactory
-						.getBean(ManagementServerProperties.class);
-			}
-			catch (NoSuchBeanDefinitionException ex) {
+				managementServerProperties = beanFactory.getBean(ManagementServerProperties.class);
+			} catch (NoSuchBeanDefinitionException ex) {
 				managementServerProperties = new ManagementServerProperties();
 			}
 
