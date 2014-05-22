@@ -31,15 +31,15 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 /**
  * Value object used to carry information about the health information of a component or
  * subsystem.
- *
+ * 
  * <p>
  * {@link Health} contains a {@link Status} to express the state of a component or
  * subsystem and some additional details to carry some contextual information.
- *
+ * 
  * <p>
  * {@link Health} has a fluent API to make it easy to construct instances. Typical usage
  * in a {@link HealthIndicator} would be:
- *
+ * 
  * <code>
  * 		Health health = new Health();
  * 		try {
@@ -52,7 +52,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * 		}
  * 		return health;
  * </code>
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */

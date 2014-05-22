@@ -23,7 +23,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link HealthIndicator} that returns health indications from all registered delegates.
- *
+ * 
  * @author Tyler J. Frederick
  * @author Phillip Webb
  * @author Christian Dupuis

@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
 /**
  * Simple implementation of {@link HealthIndicator} that returns a status and also
  * attempts a simple database test.
- *
+ * 
  * @author Dave Syer
  * @author Christian Dupuis
  */
@@ -88,7 +88,8 @@ public class SimpleDataSourceHealthIndicator implements HealthIndicator {
 					}
 				});
 				health.withDetail("database", product);
-			} catch (DataAccessException ex) {
+			}
+			catch (DataAccessException ex) {
 				health.down().withException(ex);
 			}
 			String query = detectQuery(product);
@@ -96,7 +97,8 @@ public class SimpleDataSourceHealthIndicator implements HealthIndicator {
 				try {
 					health.withDetail("hello",
 							this.jdbcTemplate.queryForObject(query, Object.class));
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					health.down().withException(ex);
 				}
 			}

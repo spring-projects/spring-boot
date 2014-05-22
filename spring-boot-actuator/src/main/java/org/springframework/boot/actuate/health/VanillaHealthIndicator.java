@@ -16,10 +16,9 @@
 
 package org.springframework.boot.actuate.health;
 
-
 /**
  * Default implementation of {@link HealthIndicator} that simply returns {@literal "ok"}.
- *
+ * 
  * @author Dave Syer
  * @author Christian Dupuis
  */

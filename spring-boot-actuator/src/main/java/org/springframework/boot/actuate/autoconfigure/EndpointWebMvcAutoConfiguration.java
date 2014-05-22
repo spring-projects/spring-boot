@@ -75,7 +75,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * different port to {@link ServerProperties} a new child context is created, otherwise it
  * is assumed that endpoint requests will be mapped and handled via an already registered
  * {@link DispatcherServlet}.
- *
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis
@@ -84,8 +84,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @ConditionalOnWebApplication
 @AutoConfigureAfter({ PropertyPlaceholderAutoConfiguration.class,
-	EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
-	ManagementServerPropertiesAutoConfiguration.class })
+		EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		ManagementServerPropertiesAutoConfiguration.class })
 @EnableConfigurationProperties(HealthMvcEndpointProperties.class)
 public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		ApplicationListener<ContextRefreshedEvent> {
@@ -109,8 +109,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Bean
 	@ConditionalOnMissingBean
 	public EndpointHandlerMapping endpointHandlerMapping() {
-		EndpointHandlerMapping mapping = new EndpointHandlerMapping(
-				mvcEndpoints().getEndpoints());
+		EndpointHandlerMapping mapping = new EndpointHandlerMapping(mvcEndpoints()
+				.getEndpoints());
 		boolean disabled = ManagementServerPort.get(this.applicationContext) != ManagementServerPort.SAME;
 		mapping.setDisabled(disabled);
 		if (!disabled) {
@@ -169,7 +169,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
-			healthMvcEndpoint.setStatusMapping(this.healthMvcEndpointProperties.getMapping());
+			healthMvcEndpoint.setStatusMapping(this.healthMvcEndpointProperties
+					.getMapping());
 		}
 		return healthMvcEndpoint;
 	}
@@ -205,25 +206,28 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		// Ensure close on the parent also closes the child
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
-			((ConfigurableApplicationContext) this.applicationContext).addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
+			((ConfigurableApplicationContext) this.applicationContext)
+					.addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
 
-				@Override
-				public void onApplicationEvent(ContextClosedEvent event) {
-					if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
-						childContext.close();
-					}
-				}
-			});
+						@Override
+						public void onApplicationEvent(ContextClosedEvent event) {
+							if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {
+								childContext.close();
+							}
+						}
+					});
 		}
 		try {
 			childContext.refresh();
-		} catch (RuntimeException ex) {
+		}
+		catch (RuntimeException ex) {
 			// No support currently for deploying a war with management.port=<different>,
 			// and this is the signature of that happening
 			if (ex instanceof EmbeddedServletContainerException
 					|| ex.getCause() instanceof EmbeddedServletContainerException) {
 				logger.warn("Could not start embedded container (management endpoints are still available through JMX)");
-			} else {
+			}
+			else {
 				throw ex;
 			}
 		}
@@ -238,14 +242,17 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			ServerProperties serverProperties;
 			try {
 				serverProperties = beanFactory.getBean(ServerProperties.class);
-			} catch (NoSuchBeanDefinitionException ex) {
+			}
+			catch (NoSuchBeanDefinitionException ex) {
 				serverProperties = new ServerProperties();
 			}
 
 			ManagementServerProperties managementServerProperties;
 			try {
-				managementServerProperties = beanFactory.getBean(ManagementServerProperties.class);
-			} catch (NoSuchBeanDefinitionException ex) {
+				managementServerProperties = beanFactory
+						.getBean(ManagementServerProperties.class);
+			}
+			catch (NoSuchBeanDefinitionException ex) {
 				managementServerProperties = new ManagementServerProperties();
 			}
 

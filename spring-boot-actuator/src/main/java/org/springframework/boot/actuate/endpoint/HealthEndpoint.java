@@ -48,7 +48,8 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 
 		if (healthIndicators.size() == 1) {
 			this.healthIndicator = healthIndicators.values().iterator().next();
-		} else {
+		}
+		else {
 			CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
 					healthAggregator);
 			for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {

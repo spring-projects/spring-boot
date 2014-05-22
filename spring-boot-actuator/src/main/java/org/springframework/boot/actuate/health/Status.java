@@ -25,14 +25,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Value object to express state of a component or subsystem.
- *
+ * 
  * <p>
  * Status provides convenient constants for commonly used states like {@link #UP},
  * {@link #DOWN} or {@link #OUT_OF_SERVICE}.
- *
+ * 
  * <p>
  * Custom states can also be created and used throughout the Spring Boot Health subsystem.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
