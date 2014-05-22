@@ -24,6 +24,7 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.ProxySelector;
+import org.eclipse.aether.util.repository.JreProxySelector;
 import org.springframework.util.StringUtils;
 
 /**
