@@ -22,58 +22,62 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
 import org.springframework.mobile.device.DeviceResolver;
-import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
+import org.springframework.mobile.device.site.SitePreferenceHandler;
+import org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor;
+import org.springframework.mobile.device.site.SitePreferenceHandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
- * {@link DeviceResolver}.
- * 
+ * {@link SitePreferenceHandler}. The site preference feature depends on a
+ * {@link DeviceResolver} first being registered.
+ *
  * @author Roy Clarkson
+ * @since 1.1
  */
 @Configuration
-@ConditionalOnClass({ DeviceResolverHandlerInterceptor.class,
-	DeviceHandlerMethodArgumentResolver.class })
-@AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class DeviceResolverAutoConfiguration {
+@ConditionalOnClass({ SitePreferenceHandlerInterceptor.class,
+	SitePreferenceHandlerMethodArgumentResolver.class })
+@AutoConfigureAfter(DeviceResolverAutoConfiguration.class)
+@ConditionalOnExpression("${spring.mobile.enableSitePreference:true}")
+public class SitePreferenceAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnWebApplication
-	protected static class DeviceResolverAutoConfigurationAdapter extends
+	protected static class SitePreferenceAutoConfigurationAdapter extends
 			WebMvcConfigurerAdapter {
 
 		@Autowired
-		private DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor;
+		private SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor;
 
 		@Bean
-		@ConditionalOnMissingBean(DeviceResolverHandlerInterceptor.class)
-		public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
-			return new DeviceResolverHandlerInterceptor();
+		@ConditionalOnMissingBean(SitePreferenceHandlerInterceptor.class)
+		public SitePreferenceHandlerInterceptor sitePreferenceHandlerInterceptor() {
+			return new SitePreferenceHandlerInterceptor();
 		}
 
 		@Bean
-		public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
-			return new DeviceHandlerMethodArgumentResolver();
+		public SitePreferenceHandlerMethodArgumentResolver sitePreferenceHandlerMethodArgumentResolver() {
+			return new SitePreferenceHandlerMethodArgumentResolver();
 		}
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(deviceResolverHandlerInterceptor);
+			registry.addInterceptor(sitePreferenceHandlerInterceptor);
 		}
 
 		@Override
 		public void addArgumentResolvers(
 				List<HandlerMethodArgumentResolver> argumentResolvers) {
-			argumentResolvers.add(deviceHandlerMethodArgumentResolver());
+			argumentResolvers.add(sitePreferenceHandlerMethodArgumentResolver());
 		}
 
 	}
