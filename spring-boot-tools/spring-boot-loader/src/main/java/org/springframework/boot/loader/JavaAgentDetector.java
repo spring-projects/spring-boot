@@ -20,9 +20,8 @@ import java.net.URL;
 
 /**
  * A strategy for detecting Java agents
- *
+ * 
  * @author Andy Wilkinson
- *
  * @since 1.1
  */
 public interface JavaAgentDetector {
@@ -30,7 +29,6 @@ public interface JavaAgentDetector {
 	/**
 	 * Returns {@code true} if {@code url} points to a Java agent jar file, otherwise
 	 * {@code false} is returned.
-	 *
 	 * @param url The url to examine
 	 */
 	public boolean isJavaAgentJar(URL url);

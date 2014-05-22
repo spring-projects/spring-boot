@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * A {@link JavaAgentDetector} that detects jars supplied via the {@code -javaagent} JVM
  * input argument.
- *
+ * 
  * @author Andy Wilkinson
  * @since 1.1.0
  */
@@ -58,7 +58,7 @@ public class InputArgumentsJavaAgentDetector implements JavaAgentDetector {
 			});
 		}
 		catch (Exception ex) {
-			return Collections.<String> emptyList();
+			return Collections.emptyList();
 		}
 	}
 
@@ -89,7 +89,6 @@ public class InputArgumentsJavaAgentDetector implements JavaAgentDetector {
 			}
 			return path;
 		}
-
 		return null;
 	}
 

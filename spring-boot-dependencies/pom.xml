@@ -948,7 +948,7 @@
 				<version>${spring-integration.version}</version>
 				<scope>import</scope>
 				<type>pom</type>
-			</dependency>			
+			</dependency>
 			<dependency>
 				<groupId>org.springframework.mobile</groupId>
 				<artifactId>spring-mobile-device</artifactId>

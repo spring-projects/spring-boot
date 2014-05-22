@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties properties} for a web server (e.g. port and path
  * settings). Will be used to customize an {@link EmbeddedServletContainerFactory} when an
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
- *
+ * 
  * @author Dave Syer
  * @author Stephane Nicoll
  */
@@ -159,7 +159,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		}
 
 		public int getMaxHttpHeaderSize() {
-			return maxHttpHeaderSize;
+			return this.maxHttpHeaderSize;
 		}
 
 		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {

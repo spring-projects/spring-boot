@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JpaRepositoriesAutoConfiguration}.
- *
+ * 
  * @author Dave Syer
  * @author Oliver Gierke
  */
