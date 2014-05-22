@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Solr.
- * 
+ *
  * @author Christoph Strobl
+ * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.data.solr")
 public class SolrProperties {
@@ -31,7 +32,7 @@ public class SolrProperties {
 	private String zkHost;
 
 	public String getHost() {
-		return host;
+		return this.host;
 	}
 
 	public void setHost(String host) {
@@ -39,7 +40,7 @@ public class SolrProperties {
 	}
 
 	public String getZkHost() {
-		return zkHost;
+		return this.zkHost;
 	}
 
 	public void setZkHost(String zkHost) {

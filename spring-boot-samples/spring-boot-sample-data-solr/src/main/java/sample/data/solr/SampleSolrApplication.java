@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * @author Christoph Strobl
- */
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
@@ -37,17 +34,17 @@ public class SampleSolrApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		repository.deleteAll();
+		this.repository.deleteAll();
 
 		// insert some products
-		repository.save(new Product("1", "Nintendo Entertainment System"));
-		repository.save(new Product("2", "Sega Megadrive"));
-		repository.save(new Product("3", "Sony Playstation"));
+		this.repository.save(new Product("1", "Nintendo Entertainment System"));
+		this.repository.save(new Product("2", "Sega Megadrive"));
+		this.repository.save(new Product("3", "Sony Playstation"));
 
 		// fetch all
 		System.out.println("Products found by findAll():");
 		System.out.println("----------------------------");
-		for (Product product : repository.findAll()) {
+		for (Product product : this.repository.findAll()) {
 			System.out.println(product);
 		}
 		System.out.println();
@@ -55,7 +52,7 @@ public class SampleSolrApplication implements CommandLineRunner {
 		// fetch a single product
 		System.out.println("Products founds with findByNameStartingWith('So'):");
 		System.out.println("--------------------------------");
-		for (Product product : repository.findByNameStartingWith("So")) {
+		for (Product product : this.repository.findByNameStartingWith("So")) {
 			System.out.println(product);
 		}
 		System.out.println();
