@@ -24,7 +24,7 @@ import org.apache.solr.client.solrj.SolrServer;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public class SolrHealthIndicator implements HealthIndicator {
+public class SolrHealthIndicator extends AbstractHealthIndicator {
 
 	private final SolrServer solrServer;
 
@@ -33,15 +33,9 @@ public class SolrHealthIndicator implements HealthIndicator {
 	}
 
 	@Override
-	public Health health() {
-		Health health = new Health();
-		try {
-			this.solrServer.ping();
-			return health.up().withDetail("solrStatus",
-					this.solrServer.ping().getResponse().get("status"));
-		}
-		catch (Exception e) {
-			return health.down().withException(e);
-		}
+	protected void doHealthCheck(Health health) throws Exception {
+		this.solrServer.ping();
+		health.up().withDetail("solrStatus",
+				this.solrServer.ping().getResponse().get("status"));
 	}
 }
