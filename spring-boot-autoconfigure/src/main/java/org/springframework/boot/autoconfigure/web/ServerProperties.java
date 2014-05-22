@@ -146,7 +146,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private int maxThreads = 0; // Number of threads in protocol handler
 
-        private int maxHttpHeaderSize = 0; // bytes
+		private int maxHttpHeaderSize = 0; // bytes
 
 		private String uriEncoding;
 
@@ -158,15 +158,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			this.maxThreads = maxThreads;
 		}
 
-        public int getMaxHttpHeaderSize() {
-            return maxHttpHeaderSize;
-        }
+		public int getMaxHttpHeaderSize() {
+			return maxHttpHeaderSize;
+		}
 
-        public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
-            this.maxHttpHeaderSize = maxHttpHeaderSize;
-        }
+		public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+			this.maxHttpHeaderSize = maxHttpHeaderSize;
+		}
 
-        public boolean getAccessLogEnabled() {
+		public boolean getAccessLogEnabled() {
 			return this.accessLogEnabled;
 		}
 
@@ -246,15 +246,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 			if (this.maxThreads > 0) {
 				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
-                    @Override
-                    public void customize(Connector connector) {
-                        ProtocolHandler handler = connector.getProtocolHandler();
-                        if (handler instanceof AbstractProtocol) {
-                            AbstractProtocol protocol = (AbstractProtocol) handler;
-                            protocol.setMaxThreads(Tomcat.this.maxThreads);
-                        }
-                    }
-                });
+					@Override
+					public void customize(Connector connector) {
+						ProtocolHandler handler = connector.getProtocolHandler();
+						if (handler instanceof AbstractProtocol) {
+							AbstractProtocol protocol = (AbstractProtocol) handler;
+							protocol.setMaxThreads(Tomcat.this.maxThreads);
+						}
+					}
+				});
 			}
 
 			if (this.maxHttpHeaderSize > 0) {
@@ -263,7 +263,7 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 					public void customize(Connector connector) {
 						ProtocolHandler handler = connector.getProtocolHandler();
 						if (handler instanceof AbstractHttp11Protocol) {
-                            AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+							AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
 							protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
 						}
 					}
