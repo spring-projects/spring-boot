@@ -18,12 +18,11 @@ package org.springframework.boot.actuate.health;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link VanillaHealthIndicator}.
- * 
+ *
  * @author Phillip Webb
  */
 public class VanillaHealthIndicatorTests {
@@ -31,7 +30,7 @@ public class VanillaHealthIndicatorTests {
 	@Test
 	public void ok() throws Exception {
 		VanillaHealthIndicator healthIndicator = new VanillaHealthIndicator();
-		assertThat(healthIndicator.health(), equalTo("ok"));
+		assertEquals(Status.UP, healthIndicator.health().getStatus());
 	}
 
 }

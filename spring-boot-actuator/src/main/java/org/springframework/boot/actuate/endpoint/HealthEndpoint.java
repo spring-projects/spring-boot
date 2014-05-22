@@ -16,10 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -30,30 +31,39 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Christian Dupuis
  */
-@ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = false)
-public class HealthEndpoint extends AbstractEndpoint<Map<String, Object>> {
+@ConfigurationProperties(prefix = "endpoints.health", ignoreUnknownFields = true)
+public class HealthEndpoint extends AbstractEndpoint<Health> {
 
-	private final Map<String, HealthIndicator<? extends Object>> healthIndicators;
+	private final HealthIndicator healthIndicator;
 
 	/**
 	 * Create a new {@link HealthIndicator} instance.
 	 */
-	public HealthEndpoint(Map<String, HealthIndicator<? extends Object>> healthIndicators) {
+	public HealthEndpoint(HealthAggregator healthAggregator,
+			Map<String, HealthIndicator> healthIndicators) {
 		super("health", false, true);
-		Assert.notNull(healthIndicators, "HealthIndicator must not be null");
-		this.healthIndicators = healthIndicators;
+
+		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
+		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
+
+		if (healthIndicators.size() == 1) {
+			this.healthIndicator = healthIndicators.values().iterator().next();
+		} else {
+			CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
+					healthAggregator);
+			for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
+				healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
+			}
+			this.healthIndicator = healthIndicator;
+		}
 	}
 
 	/**
 	 * Invoke all {@link HealthIndicator} delegates and collect their health information.
 	 */
 	@Override
-	public Map<String, Object> invoke() {
-		Map<String, Object> health = new LinkedHashMap<String, Object>();
-		for (Entry<String, HealthIndicator<?>> entry : this.healthIndicators.entrySet()) {
-			health.put(getKey(entry.getKey()), entry.getValue().health());
-		}
-		return health;
+	public Health invoke() {
+		return this.healthIndicator.health();
 	}
 
 	/**

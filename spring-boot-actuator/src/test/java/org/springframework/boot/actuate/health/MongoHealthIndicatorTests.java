@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.Map;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -38,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class MongoHealthIndicatorTests {
@@ -73,9 +71,9 @@ public class MongoHealthIndicatorTests {
 				commandResult);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
-		Map<String, Object> health = healthIndicator.health();
-		assertEquals("ok", health.get("status"));
-		assertEquals("2.6.4", health.get("version"));
+		Health health = healthIndicator.health();
+		assertEquals(Status.UP, health.getStatus());
+		assertEquals("2.6.4", health.getDetails().get("version"));
 
 		Mockito.verify(commandResult).getString("version");
 		Mockito.verify(mongoTemplate).executeCommand("{ serverStatus: 1 }");
@@ -88,9 +86,10 @@ public class MongoHealthIndicatorTests {
 				new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
-		Map<String, Object> health = healthIndicator.health();
-		assertEquals("error", health.get("status"));
-		assertTrue(((String) health.get("error")).contains("Connection failed"));
+		Health health = healthIndicator.health();
+		assertEquals(Status.DOWN, health.getStatus());
+		assertTrue(((String) health.getDetails().get("error"))
+				.contains("Connection failed"));
 
 		Mockito.verify(mongoTemplate).executeCommand("{ serverStatus: 1 }");
 	}

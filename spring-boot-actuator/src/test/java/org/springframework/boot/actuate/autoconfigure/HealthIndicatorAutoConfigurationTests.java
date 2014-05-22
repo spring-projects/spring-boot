@@ -60,7 +60,6 @@ public class HealthIndicatorAutoConfigurationTests {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void defaultHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -73,7 +72,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void redisHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -87,7 +85,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void notRedisHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -102,7 +99,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void mongoHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -116,7 +112,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void notMongoHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -131,7 +126,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void combinedHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -143,7 +137,6 @@ public class HealthIndicatorAutoConfigurationTests {
 		assertEquals(2, beans.size());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void dataSourceHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -157,7 +150,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.next().getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void notDataSourceHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -172,7 +164,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void rabbitHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();
@@ -186,7 +177,6 @@ public class HealthIndicatorAutoConfigurationTests {
 				.getClass());
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Test
 	public void notRabbitHealthIndicator() {
 		this.context = new AnnotationConfigApplicationContext();

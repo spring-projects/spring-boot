@@ -19,22 +19,27 @@ package org.springframework.boot.actuate.health;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.util.Assert;
+
 /**
  * {@link HealthIndicator} that returns health indications from all registered delegates.
- * 
+ *
  * @author Tyler J. Frederick
  * @author Phillip Webb
+ * @author Christian Dupuis
  * @since 1.1.0
  */
-public class CompositeHealthIndicator implements HealthIndicator<Map<String, Object>> {
+public class CompositeHealthIndicator implements HealthIndicator {
 
-	private final Map<String, HealthIndicator<?>> indicators;
+	private final Map<String, HealthIndicator> indicators;
+
+	private final HealthAggregator healthAggregator;
 
 	/**
 	 * Create a new {@link CompositeHealthIndicator}.
 	 */
-	public CompositeHealthIndicator() {
-		this.indicators = new LinkedHashMap<String, HealthIndicator<?>>();
+	public CompositeHealthIndicator(HealthAggregator healthAggregator) {
+		this(healthAggregator, new LinkedHashMap<String, HealthIndicator>());
 	}
 
 	/**
@@ -42,21 +47,25 @@ public class CompositeHealthIndicator implements HealthIndicator<Map<String, Obj
 	 * @param indicators a map of {@link HealthIndicator}s with the key being used as an
 	 * indicator name.
 	 */
-	public CompositeHealthIndicator(Map<String, HealthIndicator<?>> indicators) {
-		this.indicators = new LinkedHashMap<String, HealthIndicator<?>>(indicators);
+	public CompositeHealthIndicator(HealthAggregator healthAggregator,
+			Map<String, HealthIndicator> indicators) {
+		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
+		Assert.notNull(healthAggregator, "Indicators must not be null");
+		this.indicators = new LinkedHashMap<String, HealthIndicator>(indicators);
+		this.healthAggregator = healthAggregator;
 	}
 
-	public void addHealthIndicator(String name, HealthIndicator<?> indicator) {
+	public void addHealthIndicator(String name, HealthIndicator indicator) {
 		this.indicators.put(name, indicator);
 	}
 
 	@Override
-	public Map<String, Object> health() {
-		Map<String, Object> health = new LinkedHashMap<String, Object>();
-		for (Map.Entry<String, HealthIndicator<?>> entry : this.indicators.entrySet()) {
-			health.put(entry.getKey(), entry.getValue().health());
+	public Health health() {
+		Map<String, Health> healths = new LinkedHashMap<String, Health>();
+		for (Map.Entry<String, HealthIndicator> entry : this.indicators.entrySet()) {
+			healths.put(entry.getKey(), entry.getValue().health());
 		}
-		return health;
+		return this.healthAggregator.aggregate(healths);
 	}
 
 }

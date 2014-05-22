@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
@@ -37,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link RedisHealthIndicator}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class RedisHealthIndicatorTests {
@@ -76,9 +75,9 @@ public class RedisHealthIndicatorTests {
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
 
-		Map<String, Object> health = healthIndicator.health();
-		assertEquals("ok", health.get("status"));
-		assertEquals("2.8.9", health.get("version"));
+		Health health = healthIndicator.health();
+		assertEquals(Status.UP, health.getStatus());
+		assertEquals("2.8.9", health.getDetails().get("version"));
 
 		Mockito.verify(redisConnectionFactory).getConnection();
 		Mockito.verify(redisConnection).info();
@@ -95,9 +94,10 @@ public class RedisHealthIndicatorTests {
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(
 				redisConnectionFactory);
 
-		Map<String, Object> health = healthIndicator.health();
-		assertEquals("error", health.get("status"));
-		assertTrue(((String) health.get("error")).contains("Connection failed"));
+		Health health = healthIndicator.health();
+		assertEquals(Status.DOWN, health.getStatus());
+		assertTrue(((String) health.getDetails().get("error"))
+				.contains("Connection failed"));
 
 		Mockito.verify(redisConnectionFactory).getConnection();
 		Mockito.verify(redisConnection).info();
