@@ -400,8 +400,9 @@ The following configuration options are available:
 |Name |Description
 
 |`mainClass`
-|The main class that should be run. If not specified the value from the manifest will be
- used, or if no manifest entry is the archive will be searched for a suitable class.
+|The main class that should be run. If not specified the `mainClassName` project property
+ will be used or, if the no `mainClassName` id defined the archive will be searched for a
+ suitable class.
 
 |`providedConfiguration`
 |The name of the provided configuration (defaults to `providedRuntime`).

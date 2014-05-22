@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.task;
+package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
@@ -31,11 +30,11 @@ import org.springframework.boot.loader.tools.Repackager;
 
 /**
  * Repackage task.
- * 
+ *
  * @author Phillip Webb
  * @author Janne Valkealahti
  */
-public class Repackage extends DefaultTask {
+public class RepackageTask extends DefaultTask {
 
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
@@ -72,11 +71,6 @@ public class Repackage extends DefaultTask {
 		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
-		JavaExec runner = (JavaExec) project.getTasks().findByName("run");
-		if (runner != null && this.mainClass == null) {
-			getLogger().info("Found main in run task: " + runner.getMain());
-			setMainClass(runner.getMain());
-		}
 		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
 	}
 
@@ -95,8 +89,8 @@ public class Repackage extends DefaultTask {
 		@Override
 		public void execute(Jar archive) {
 			// if withJarTask is set, compare tasks and bail out if we didn't match
-			if (Repackage.this.withJarTask != null
-					&& !archive.equals(Repackage.this.withJarTask)) {
+			if (RepackageTask.this.withJarTask != null
+					&& !archive.equals(RepackageTask.this.withJarTask)) {
 				return;
 			}
 
@@ -104,10 +98,7 @@ public class Repackage extends DefaultTask {
 				File file = archive.getArchivePath();
 				if (file.exists()) {
 					Repackager repackager = new LoggingRepackager(file);
-					repackager.setMainClass(this.extension.getMainClass());
-					if (Repackage.this.mainClass != null) {
-						repackager.setMainClass(Repackage.this.mainClass);
-					}
+					setMainClass(repackager);
 					if (this.extension.convertLayout() != null) {
 						repackager.setLayout(this.extension.convertLayout());
 					}
@@ -119,6 +110,16 @@ public class Repackage extends DefaultTask {
 						throw new IllegalStateException(ex.getMessage(), ex);
 					}
 				}
+			}
+		}
+
+		private void setMainClass(Repackager repackager) {
+			repackager.setMainClass((String) getProject().property("mainClassName"));
+			if (this.extension.getMainClass() != null) {
+				repackager.setMainClass(this.extension.getMainClass());
+			}
+			if (RepackageTask.this.mainClass != null) {
+				repackager.setMainClass(RepackageTask.this.mainClass);
 			}
 		}
 	}

@@ -19,6 +19,7 @@ package org.springframework.boot.gradle
 import org.springframework.boot.loader.tools.Layout
 import org.springframework.boot.loader.tools.Layouts
 
+
 /**
  * Gradle DSL Extension for 'Spring Boot'.  Most of the time Spring Boot can guess the
  * settings in this extension, but occasionally you might need to explicitly set one

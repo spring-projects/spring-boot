@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.task;
+package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
