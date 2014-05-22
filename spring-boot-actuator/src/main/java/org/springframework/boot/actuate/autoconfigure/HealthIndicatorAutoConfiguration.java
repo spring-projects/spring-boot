@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,7 @@ import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
+import org.springframework.boot.actuate.health.SolrHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -44,6 +46,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -51,15 +54,16 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HealthIndicator}s.
- * 
+ *
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
 @AutoConfigureBefore({ EndpointAutoConfiguration.class })
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, MongoAutoConfiguration.class,
 		MongoDataAutoConfiguration.class, RedisAutoConfiguration.class,
-		RabbitAutoConfiguration.class })
+		RabbitAutoConfiguration.class, SolrAutoConfiguration.class })
 public class HealthIndicatorAutoConfiguration {
 
 	@Value("${health.status.order:}")
@@ -193,6 +197,35 @@ public class HealthIndicatorAutoConfiguration {
 			for (Map.Entry<String, RabbitTemplate> entry : this.rabbitTemplates
 					.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(), new RabbitHealthIndicator(
+						entry.getValue()));
+			}
+			return composite;
+		}
+	}
+
+	@Configuration
+	@ConditionalOnBean(SolrServer.class)
+	@ConditionalOnExpression("${health.solr.enabled:true}")
+	public static class SolrHealthIndicatorConfiguration {
+
+		@Autowired
+		private HealthAggregator healthAggregator;
+
+		@Autowired
+		private Map<String, SolrServer> solrServers;
+
+		@Bean
+		@ConditionalOnMissingBean(name = "solrHealthIndicator")
+		public HealthIndicator rabbitHealthIndicator() {
+			if (this.solrServers.size() == 1) {
+				return new SolrHealthIndicator(this.solrServers.entrySet().iterator()
+						.next().getValue());
+			}
+
+			CompositeHealthIndicator composite = new CompositeHealthIndicator(
+					this.healthAggregator);
+			for (Map.Entry<String, SolrServer> entry : this.solrServers.entrySet()) {
+				composite.addHealthIndicator(entry.getKey(), new SolrHealthIndicator(
 						entry.getValue()));
 			}
 			return composite;
