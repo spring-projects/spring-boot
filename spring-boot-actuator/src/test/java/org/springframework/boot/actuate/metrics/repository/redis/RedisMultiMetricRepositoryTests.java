@@ -116,9 +116,9 @@ public class RedisMultiMetricRepositoryTests {
 
 	@Test
 	public void increment() {
-		this.repository.increment("foo", new Delta<Number>("bar", 1));
-		this.repository.increment("foo", new Delta<Number>("bar", 2));
-		this.repository.increment("foo", new Delta<Number>("spam", 1));
+		this.repository.increment("foo", new Delta<Number>("foo.bar", 1));
+		this.repository.increment("foo", new Delta<Number>("foo.bar", 2));
+		this.repository.increment("foo", new Delta<Number>("foo.spam", 1));
 		Metric<?> bar = null;
 		Set<String> names = new HashSet<String>();
 		for (Metric<?> metric : this.repository.findAll("foo")) {

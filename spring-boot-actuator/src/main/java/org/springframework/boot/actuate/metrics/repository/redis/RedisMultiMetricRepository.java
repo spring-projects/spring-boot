@@ -144,12 +144,8 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	}
 
 	private Metric<?> deserialize(String group, String redisKey, String v, Double value) {
-		String prefix = group;
-		if (!group.endsWith(".")) {
-			prefix = group + ".";
-		}
 		Date timestamp = new Date(Long.valueOf(v));
-		return new Metric<Double>(prefix + nameFor(redisKey), value, timestamp);
+		return new Metric<Double>(nameFor(redisKey), value, timestamp);
 	}
 
 	private String serialize(Metric<?> entity) {
