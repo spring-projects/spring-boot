@@ -118,9 +118,9 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		Set<String> range = this.zSetOperations.range(0, -1);
 		Collection<String> result = new ArrayList<String>();
 		for (String key : range) {
-			result.add(nameFor(this.prefix + key));
+			result.add(key.substring(this.prefix.length()));
 		}
-		return range;
+		return result;
 	}
 
 	@Override
