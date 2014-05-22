@@ -44,7 +44,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 
 	private String prefix = DEFAULT_METRICS_PREFIX;
 
-	private String keys = this.prefix + "keys";
+	private String keys = "keys." + this.prefix;
 
 	private final BoundZSetOperations<String, String> zSetOperations;
 
@@ -61,8 +61,11 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	 * @param prefix the prefix to set for all metrics keys
 	 */
 	public void setPrefix(String prefix) {
+		if (!prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
 		this.prefix = prefix;
-		this.keys = this.prefix + "keys";
+		this.keys = "keys." + this.prefix;
 	}
 
 	@Override

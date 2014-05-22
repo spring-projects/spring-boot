@@ -81,7 +81,9 @@ public abstract class AbstractMetricExporter implements Exporter {
 					}
 					values.add(value);
 				}
-				write(group, values);
+				if (!values.isEmpty()) {
+					write(group, values);
+				}
 			}
 		}
 		finally {
