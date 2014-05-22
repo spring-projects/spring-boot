@@ -23,7 +23,7 @@ import java.util.Set;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.PrefixMetricReader;
 import org.springframework.boot.actuate.metrics.repository.MultiMetricRepository;
-import org.springframework.boot.actuate.metrics.writer.MetricWriter;
+import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
 
 /**
  * A convenient exporter for a group of metrics from a {@link PrefixMetricReader}. Exports
@@ -35,7 +35,7 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	private final PrefixMetricReader reader;
 
-	private final MetricWriter writer;
+	private final PrefixMetricWriter writer;
 
 	private Set<String> groups = new HashSet<String>();
 
@@ -45,7 +45,7 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	 * @param reader a reader as the source of metrics
 	 * @param writer the writer to send the metrics to
 	 */
-	public PrefixMetricGroupExporter(PrefixMetricReader reader, MetricWriter writer) {
+	public PrefixMetricGroupExporter(PrefixMetricReader reader, PrefixMetricWriter writer) {
 		this(reader, writer, "");
 	}
 
@@ -56,8 +56,8 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 	 * @param writer the writer to send the metrics to
 	 * @param prefix the prefix for metrics to export
 	 */
-	public PrefixMetricGroupExporter(PrefixMetricReader reader, MetricWriter writer,
-			String prefix) {
+	public PrefixMetricGroupExporter(PrefixMetricReader reader,
+			PrefixMetricWriter writer, String prefix) {
 		super(prefix);
 		this.reader = reader;
 		this.writer = writer;
@@ -72,6 +72,9 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	@Override
 	protected Iterable<String> groups() {
+		if ((this.reader instanceof MultiMetricRepository) && this.groups.isEmpty()) {
+			return ((MultiMetricRepository) this.reader).groups();
+		}
 		return this.groups;
 	}
 
@@ -82,14 +85,7 @@ public class PrefixMetricGroupExporter extends AbstractMetricExporter {
 
 	@Override
 	protected void write(String group, Collection<Metric<?>> values) {
-		if (this.writer instanceof MultiMetricRepository && !values.isEmpty()) {
-			((MultiMetricRepository) this.writer).save(group, values);
-		}
-		else {
-			for (Metric<?> value : values) {
-				this.writer.set(value);
-			}
-		}
+		this.writer.save(group, values);
 	}
 
 }

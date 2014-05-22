@@ -72,7 +72,15 @@ public class InMemoryMetricRepository implements MetricRepository, MultiMetricRe
 
 	@Override
 	public void save(String group, Collection<Metric<?>> values) {
+		String prefix = group;
+		if (!prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
 		for (Metric<?> metric : values) {
+			if (!metric.getName().startsWith(prefix)) {
+				metric = new Metric<Number>(prefix + metric.getName(), metric.getValue(),
+						metric.getTimestamp());
+			}
 			set(metric);
 		}
 		this.groups.add(group);
