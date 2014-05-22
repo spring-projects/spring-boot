@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -30,16 +31,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * Enables auto configuration for Solr.
- * 
+ * {@link EnableAutoConfiguration Auto-configuration} for Solr
+ *
  * @author Christoph Strobl
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(SolrServer.class)
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 
-	private @Autowired SolrProperties properties;
+	@Autowired
+	private SolrProperties properties;
 
 	private SolrServer solrServer;
 
@@ -53,13 +56,11 @@ public class SolrAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SolrServer solrServer() {
-
 		this.solrServer = createSolrServer();
 		return this.solrServer;
 	}
 
 	private SolrServer createSolrServer() {
-
 		if (StringUtils.hasText(this.properties.getZkHost())) {
 			return new CloudSolrServer(this.properties.getZkHost());
 		}

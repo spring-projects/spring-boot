@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,13 @@
 
 package sample.data.solr;
 
-import static org.junit.Assert.*;
-
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
-/**
- * @author Christoph Strobl
- */
+import static org.junit.Assert.assertTrue;
+
 public class SampleSolrApplicationTests {
 
 	@Rule
@@ -37,7 +33,8 @@ public class SampleSolrApplicationTests {
 
 		try {
 			SampleSolrApplication.main(new String[0]);
-		} catch (IllegalStateException ex) {
+		}
+		catch (IllegalStateException ex) {
 			if (serverNotRunning(ex)) {
 				return;
 			}
@@ -51,11 +48,9 @@ public class SampleSolrApplicationTests {
 		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
-		if (nested.contains(SolrServerException.class)) {
-			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("Connection refused")) {
-				return true;
-			}
+		Throwable root = nested.getRootCause();
+		if (root.getMessage().contains("Connection refused")) {
+			return true;
 		}
 		return false;
 	}

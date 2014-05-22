@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,40 +26,23 @@ import org.springframework.data.solr.repository.config.SolrRepositoryConfigExten
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Solr
  * repositories.
- * 
+ *
  * @author Christoph Strobl
+ * @since 1.1.0
  */
-public class SolrRepositoriesAutoConfigureRegstrar extends
+public class SolrRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.boot.autoconfigure.data.
-	 * AbstractRepositoryConfigurationSourceSupport#getAnnotation()
-	 */
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
 		return EnableSolrRepositories.class;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.boot.autoconfigure.data.
-	 * AbstractRepositoryConfigurationSourceSupport#getConfiguration()
-	 */
 	@Override
 	protected Class<?> getConfiguration() {
 		return EnableSolrRepositoriesConfiguration.class;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.boot.autoconfigure.data.
-	 * AbstractRepositoryConfigurationSourceSupport#getRepositoryConfigurationExtension()
-	 */
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
 		return new SolrRepositoryConfigExtension();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.geo.Point;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-/**
- * @author Christoph Strobl
- */
 @SolrDocument(solrCoreName = "collection1")
 public class Product {
 
@@ -55,7 +52,7 @@ public class Product {
 	}
 
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(String id) {
@@ -63,7 +60,7 @@ public class Product {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -71,7 +68,7 @@ public class Product {
 	}
 
 	public Double getPrice() {
-		return price;
+		return this.price;
 	}
 
 	public void setPrice(Double price) {
@@ -79,7 +76,7 @@ public class Product {
 	}
 
 	public List<String> getCategory() {
-		return category;
+		return this.category;
 	}
 
 	public void setCategory(List<String> category) {
@@ -87,7 +84,7 @@ public class Product {
 	}
 
 	public Point getLocation() {
-		return location;
+		return this.location;
 	}
 
 	public void setLocation(Point location) {
@@ -96,8 +93,8 @@ public class Product {
 
 	@Override
 	public String toString() {
-		return "Product [id=" + id + ", name=" + name + ", price=" + price
-				+ ", category=" + category + ", location=" + location + "]";
+		return "Product [id=" + this.id + ", name=" + this.name + ", price=" + this.price
+				+ ", category=" + this.category + ", location=" + this.location + "]";
 	}
 
 }
