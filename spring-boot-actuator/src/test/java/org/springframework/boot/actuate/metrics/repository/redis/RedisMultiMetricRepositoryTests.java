@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.metrics.repository.redis;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -102,7 +103,9 @@ public class RedisMultiMetricRepositoryTests {
 				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
 		this.repository.set("bar", Arrays.<Metric<?>> asList(new Metric<Number>(
 				"bar.val", 12.3), new Metric<Number>("bar.foo", 11.3)));
-		assertEquals(2, Iterables.collection(this.repository.groups()).size());
+		Collection<String> groups = Iterables.collection(this.repository.groups());
+		assertEquals(2, groups.size());
+		assertTrue("Wrong groups: " + groups, groups.contains("foo"));
 	}
 
 	@Test
