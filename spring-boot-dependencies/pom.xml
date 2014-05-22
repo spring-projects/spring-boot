@@ -94,7 +94,7 @@
 		<spring-batch.version>3.0.0.RC2</spring-batch.version>
 		<spring-data-releasetrain.version>Dijkstra-RELEASE</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.12.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.0.0.RELEASE</spring-integration.version>
+		<spring-integration.version>4.0.1.RELEASE</spring-integration.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
 		<spring-security.version>3.2.4.RELEASE</spring-security.version>
 		<spring-security-jwt.version>1.0.2.RELEASE</spring-security-jwt.version>
@@ -944,29 +944,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-core</artifactId>
+				<artifactId>spring-integration-bom</artifactId>
 				<version>${spring-integration.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-file</artifactId>
-				<version>${spring-integration.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-http</artifactId>
-				<version>${spring-integration.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-ip</artifactId>
-				<version>${spring-integration.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.integration</groupId>
-				<artifactId>spring-integration-stream</artifactId>
-				<version>${spring-integration.version}</version>
-			</dependency>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>			
 			<dependency>
 				<groupId>org.springframework.mobile</groupId>
 				<artifactId>spring-mobile-device</artifactId>
