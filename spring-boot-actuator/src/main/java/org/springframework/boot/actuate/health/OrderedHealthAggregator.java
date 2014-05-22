@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.health;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -61,13 +62,13 @@ public class OrderedHealthAggregator implements HealthAggregator {
 			return Status.UNKOWN;
 		}
 
-		status.sort(new Comparator<Status>() {
+		Collections.sort(status, new Comparator<Status>() {
 
 			@Override
 			public int compare(Status s1, Status s2) {
 				return Integer.valueOf(
 						OrderedHealthAggregator.this.statusOrder.indexOf(s1.getCode())).compareTo(
-						Integer.valueOf(OrderedHealthAggregator.this.statusOrder.indexOf(s2.getCode())));
+								Integer.valueOf(OrderedHealthAggregator.this.statusOrder.indexOf(s2.getCode())));
 
 			}
 		});
