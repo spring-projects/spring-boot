@@ -121,7 +121,7 @@ work with m2eclipse, we provide an additional eclipse plugin that you can instal
 * Install "Maven Integration for the maven-eclipse-plugin"
 
 NOTE: This plugin is optional. Projects can be imported without the plugin, your code
-changes just won't be automatically formatted._
+changes just won't be automatically formatted.
 
 With the requisite eclipse plugins installed you can select
 `import existing maven projects` from the `file` menu to import the code. You will
