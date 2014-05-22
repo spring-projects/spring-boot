@@ -28,7 +28,7 @@ import com.mongodb.CommandResult;
  * @author Christian Dupuis
  * @since 1.1.0
  */
-public class MongoHealthIndicator implements HealthIndicator {
+public class MongoHealthIndicator extends AbstractHealthIndicator {
 
 	private final MongoTemplate mongoTemplate;
 
@@ -38,17 +38,9 @@ public class MongoHealthIndicator implements HealthIndicator {
 	}
 
 	@Override
-	public Health health() {
-		Health health = new Health();
-		try {
-			CommandResult result = this.mongoTemplate
-					.executeCommand("{ serverStatus: 1 }");
-			health.up().withDetail("version", result.getString("version"));
-		}
-		catch (Exception ex) {
-			health.down().withException(ex);
-		}
-		return health;
+	protected void doHealthCheck(Health health) throws Exception {
+		CommandResult result = this.mongoTemplate.executeCommand("{ serverStatus: 1 }");
+		health.up().withDetail("version", result.getString("version"));
 	}
 
 }

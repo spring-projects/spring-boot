@@ -31,7 +31,7 @@ import com.rabbitmq.client.Channel;
  * @author Christian Dupuis
  * @since 1.1.0
  */
-public class RabbitHealthIndicator implements HealthIndicator {
+public class RabbitHealthIndicator extends AbstractHealthIndicator {
 
 	private final RabbitTemplate rabbitTemplate;
 
@@ -41,23 +41,17 @@ public class RabbitHealthIndicator implements HealthIndicator {
 	}
 
 	@Override
-	public Health health() {
-		Health health = new Health();
-		try {
-			health.up().withDetail("version",
-					this.rabbitTemplate.execute(new ChannelCallback<String>() {
+	protected void doHealthCheck(Health health) throws Exception {
+		health.up().withDetail("version",
+				this.rabbitTemplate.execute(new ChannelCallback<String>() {
 
-						@Override
-						public String doInRabbit(Channel channel) throws Exception {
-							Map<String, Object> serverProperties = channel
-									.getConnection().getServerProperties();
-							return serverProperties.get("version").toString();
-						}
-					}));
-		}
-		catch (Exception ex) {
-			health.down().withException(ex);
-		}
-		return health;
+					@Override
+					public String doInRabbit(Channel channel) throws Exception {
+						Map<String, Object> serverProperties = channel.getConnection()
+								.getServerProperties();
+						return serverProperties.get("version").toString();
+					}
+				}));
 	}
+
 }

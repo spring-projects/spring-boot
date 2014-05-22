@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @since 1.1.0
  */
-public class RedisHealthIndicator implements HealthIndicator {
+public class RedisHealthIndicator extends AbstractHealthIndicator {
 
 	private final RedisConnectionFactory redisConnectionFactory;
 
@@ -40,22 +40,17 @@ public class RedisHealthIndicator implements HealthIndicator {
 	}
 
 	@Override
-	public Health health() {
-		Health health = new Health();
-
+	protected void doHealthCheck(Health health) throws Exception {
 		RedisConnection connection = null;
 		try {
 			connection = RedisConnectionUtils.getConnection(this.redisConnectionFactory);
 			Properties info = connection.info();
 			health.up().withDetail("version", info.getProperty("redis_version"));
 		}
-		catch (Exception ex) {
-			health.down().withException(ex);
-		}
 		finally {
 			RedisConnectionUtils.releaseConnection(connection,
 					this.redisConnectionFactory);
 		}
-		return health;
 	}
+
 }
