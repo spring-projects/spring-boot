@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.util.repository.JreProxySelector;
 import org.junit.Test;
 import org.springframework.boot.cli.compiler.DependencyResolutionContext;
 import org.springframework.test.util.ReflectionTestUtils;
