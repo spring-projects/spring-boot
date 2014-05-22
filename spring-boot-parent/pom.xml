@@ -410,6 +410,18 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-source-plugin</artifactId>
+			  <executions>
+				<execution>
+				  <id>attach-sources</id>
+				  <goals>
+					<goal>jar-no-fork</goal>
+				  </goals>
+				</execution>
+			  </executions>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>
@@ -469,18 +481,6 @@
 									<goal>jar</goal>
 								</goals>
 								<inherited>true</inherited>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
 							</execution>
 						</executions>
 					</plugin>
