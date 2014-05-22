@@ -17,11 +17,13 @@
 package org.springframework.boot.cli.compiler.grape;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.ProxySelector;
 import org.springframework.util.StringUtils;
 
 /**
@@ -44,8 +46,12 @@ public class DefaultRepositorySystemSessionAutoConfiguration implements
 			session.setLocalRepositoryManager(localRepositoryManager);
 		}
 
-		if (session.getProxySelector() == null) {
-			session.setProxySelector(new JreProxySelector());
+		ProxySelector existing = session.getProxySelector();
+		if (existing == null || !(existing instanceof CompositeProxySelector)) {
+			JreProxySelector fallback = new JreProxySelector();
+			ProxySelector selector = existing == null ? fallback
+					: new CompositeProxySelector(Arrays.asList(existing, fallback));
+			session.setProxySelector(selector);
 		}
 	}
 

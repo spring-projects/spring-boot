@@ -23,10 +23,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.junit.Test;
 import org.springframework.boot.cli.compiler.DependencyResolutionContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link AetherGrapeEngine}.
@@ -50,6 +53,14 @@ public class AetherGrapeEngineTests {
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
 
 		assertEquals(6, this.groovyClassLoader.getURLs().length);
+	}
+
+	@Test
+	public void proxySelector() {
+		DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
+				.getField(this.grapeEngine, "session");
+		assertTrue((session.getProxySelector() instanceof CompositeProxySelector)
+				|| (session.getProxySelector() instanceof JreProxySelector));
 	}
 
 	@SuppressWarnings("unchecked")
