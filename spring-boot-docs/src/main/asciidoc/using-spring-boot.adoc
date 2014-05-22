@@ -236,6 +236,9 @@ and Hibernate.
 |`spring-boot-starter-data-rest`
 |Support for exposing Spring Data repositories over REST via `spring-data-rest-webmvc`.
 
+|`spring-boot-starter-data-solr`
+|Support for the Apache Solr search platform, including `spring-data-solr`.
+
 |`spring-boot-starter-freemarker`
 |Support for the FreeMarker templating engine
 

@@ -95,6 +95,12 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{sc-ext}[ServerPropertiesAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/solr/SolrAutoConfiguration.{sc-ext}[SolrAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/solr/SolrAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/data/SolrRepositoriesAutoConfiguration.{sc-ext}[SolrRepositoriesAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/SolrRepositoriesAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{sc-ext}[ThymeleafAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/thymeleaf/ThymeleafAutoConfiguration.{dc-ext}[javadoc]
 
