@@ -27,6 +27,7 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
+import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
@@ -41,7 +42,7 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties properties} for a web server (e.g. port and path
  * settings). Will be used to customize an {@link EmbeddedServletContainerFactory} when an
  * {@link EmbeddedServletContainerCustomizerBeanPostProcessor} is active.
- * 
+ *
  * @author Dave Syer
  * @author Stephane Nicoll
  */
@@ -145,6 +146,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 		private int maxThreads = 0; // Number of threads in protocol handler
 
+        private int maxHttpHeaderSize = 0; // bytes
+
 		private String uriEncoding;
 
 		public int getMaxThreads() {
@@ -155,7 +158,15 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			this.maxThreads = maxThreads;
 		}
 
-		public boolean getAccessLogEnabled() {
+        public int getMaxHttpHeaderSize() {
+            return maxHttpHeaderSize;
+        }
+
+        public void setMaxHttpHeaderSize(int maxHttpHeaderSize) {
+            this.maxHttpHeaderSize = maxHttpHeaderSize;
+        }
+
+        public boolean getAccessLogEnabled() {
 			return this.accessLogEnabled;
 		}
 
@@ -235,12 +246,25 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 
 			if (this.maxThreads > 0) {
 				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
+                    @Override
+                    public void customize(Connector connector) {
+                        ProtocolHandler handler = connector.getProtocolHandler();
+                        if (handler instanceof AbstractProtocol) {
+                            AbstractProtocol protocol = (AbstractProtocol) handler;
+                            protocol.setMaxThreads(Tomcat.this.maxThreads);
+                        }
+                    }
+                });
+			}
+
+			if (this.maxHttpHeaderSize > 0) {
+				factory.addConnectorCustomizers(new TomcatConnectorCustomizer() {
 					@Override
 					public void customize(Connector connector) {
 						ProtocolHandler handler = connector.getProtocolHandler();
-						if (handler instanceof AbstractProtocol) {
-							AbstractProtocol protocol = (AbstractProtocol) handler;
-							protocol.setMaxThreads(Tomcat.this.maxThreads);
+						if (handler instanceof AbstractHttp11Protocol) {
+                            AbstractHttp11Protocol protocol = (AbstractHttp11Protocol) handler;
+							protocol.setMaxHttpHeaderSize(Tomcat.this.maxHttpHeaderSize);
 						}
 					}
 				});
