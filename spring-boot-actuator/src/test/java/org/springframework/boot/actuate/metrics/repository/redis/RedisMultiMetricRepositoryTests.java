@@ -17,11 +17,16 @@
 package org.springframework.boot.actuate.metrics.repository.redis;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.actuate.metrics.Iterables;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -33,27 +38,42 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Dave Syer
  */
+@RunWith(Parameterized.class)
 public class RedisMultiMetricRepositoryTests {
 
 	@Rule
 	public RedisServer redis = RedisServer.running();
 	private RedisMultiMetricRepository repository;
+	@Parameter(0)
+	public String prefix;
+
+	@Parameters
+	public static List<Object[]> parameters() {
+		return Arrays.<Object[]> asList(new Object[] { null }, new Object[] { "test" });
+	}
 
 	@Before
 	public void init() {
-		this.repository = new RedisMultiMetricRepository(this.redis.getResource());
+		if (this.prefix == null) {
+			this.prefix = "spring.groups";
+			this.repository = new RedisMultiMetricRepository(this.redis.getResource());
+		}
+		else {
+			this.repository = new RedisMultiMetricRepository(this.redis.getResource(),
+					this.prefix);
+		}
 	}
 
 	@After
 	public void clear() {
 		assertTrue(new StringRedisTemplate(this.redis.getResource()).opsForZSet().size(
-				"spring.groups.foo") > 0);
+				"keys." + this.prefix) > 0);
 		this.repository.reset("foo");
 		this.repository.reset("bar");
 		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				"spring.groups.foo"));
+				this.prefix + ".foo"));
 		assertNull(new StringRedisTemplate(this.redis.getResource()).opsForValue().get(
-				"spring.groups.bar"));
+				this.prefix + ".bar"));
 	}
 
 	@Test
