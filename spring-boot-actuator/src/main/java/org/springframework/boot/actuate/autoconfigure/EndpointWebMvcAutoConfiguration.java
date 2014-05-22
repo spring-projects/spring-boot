@@ -208,7 +208,6 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 		if (this.applicationContext instanceof ConfigurableApplicationContext) {
 			((ConfigurableApplicationContext) this.applicationContext)
 					.addApplicationListener(new ApplicationListener<ContextClosedEvent>() {
-
 						@Override
 						public void onApplicationEvent(ContextClosedEvent event) {
 							if (event.getApplicationContext() == EndpointWebMvcAutoConfiguration.this.applicationContext) {

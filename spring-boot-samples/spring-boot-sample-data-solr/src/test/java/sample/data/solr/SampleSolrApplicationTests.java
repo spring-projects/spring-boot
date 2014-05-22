@@ -54,4 +54,5 @@ public class SampleSolrApplicationTests {
 		}
 		return false;
 	}
+
 }

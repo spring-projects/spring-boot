@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServerProperties}.
- *
+ * 
  * @author Dave Syer
  * @author Stephane Nicoll
  */
@@ -98,7 +98,7 @@ public class ServerPropertiesTests {
 	}
 
 	@Test
-    public void testCustomizeTomcatHeaderSize() throws Exception {
+	public void testCustomizeTomcatHeaderSize() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("server.tomcat.maxHttpHeaderSize", "9999");
 		new RelaxedDataBinder(this.properties, "server").bind(new MutablePropertyValues(

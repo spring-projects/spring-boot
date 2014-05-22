@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.solr;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for Solr.
- *
+ * {@link ConfigurationProperties} for Solr.
+ * 
  * @author Christoph Strobl
  * @since 1.1.0
  */

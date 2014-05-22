@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.data.alt;
 
 import org.springframework.boot.autoconfigure.data.solr.City;
 import org.springframework.data.repository.Repository;
 
-/**
- * @author Christoph Strobl
- */
 public interface CitySolrRepository extends Repository<City, String> {
 
 }

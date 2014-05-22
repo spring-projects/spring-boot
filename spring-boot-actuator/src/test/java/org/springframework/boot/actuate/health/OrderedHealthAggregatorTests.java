@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link OrderedHealthAggregator}.
- *
+ * 
  * @author Christian Dupuis
  */
 public class OrderedHealthAggregatorTests {
@@ -40,35 +40,47 @@ public class OrderedHealthAggregatorTests {
 	}
 
 	@Test
-	public void testDefaultOrdering() {
+	public void defaultOrder() {
 		Map<String, Health> healths = new HashMap<String, Health>();
 		healths.put("h1", new Health(Status.DOWN));
 		healths.put("h2", new Health(Status.UP));
-		healths.put("h3", new Health(Status.UNKOWN));
+		healths.put("h3", new Health(Status.UNKNOWN));
 		healths.put("h4", new Health(Status.OUT_OF_SERVICE));
 		assertEquals(Status.DOWN, this.healthAggregator.aggregate(healths).getStatus());
 	}
 
 	@Test
-	public void testDefaultOrderingWithCustomStatus() {
+	public void customOrder() {
+		this.healthAggregator.setStatusOrder(Status.UNKNOWN, Status.UP,
+				Status.OUT_OF_SERVICE, Status.DOWN);
 		Map<String, Health> healths = new HashMap<String, Health>();
 		healths.put("h1", new Health(Status.DOWN));
 		healths.put("h2", new Health(Status.UP));
-		healths.put("h3", new Health(Status.UNKOWN));
+		healths.put("h3", new Health(Status.UNKNOWN));
 		healths.put("h4", new Health(Status.OUT_OF_SERVICE));
-		healths.put("h5", new Health(new Status("CUSTOM")));
-		assertEquals(new Status("CUSTOM"),
-				this.healthAggregator.aggregate(healths).getStatus());
+		assertEquals(Status.UNKNOWN, this.healthAggregator.aggregate(healths).getStatus());
 	}
 
 	@Test
-	public void testDefaultOrderingWithCustomStatusAndOrder() {
-		this.healthAggregator.setStatusOrder(Arrays.asList("DOWN", "OUT_OF_SERVICE",
-				"UP", "UNKOWN", "CUSTOM"));
+	public void defaultOrderWithCustomStatus() {
 		Map<String, Health> healths = new HashMap<String, Health>();
 		healths.put("h1", new Health(Status.DOWN));
 		healths.put("h2", new Health(Status.UP));
-		healths.put("h3", new Health(Status.UNKOWN));
+		healths.put("h3", new Health(Status.UNKNOWN));
+		healths.put("h4", new Health(Status.OUT_OF_SERVICE));
+		healths.put("h5", new Health(new Status("CUSTOM")));
+		assertEquals(new Status("CUSTOM"), this.healthAggregator.aggregate(healths)
+				.getStatus());
+	}
+
+	@Test
+	public void customOrderWithCustomStatus() {
+		this.healthAggregator.setStatusOrder(Arrays.asList("DOWN", "OUT_OF_SERVICE",
+				"UP", "UNKNOWN", "CUSTOM"));
+		Map<String, Health> healths = new HashMap<String, Health>();
+		healths.put("h1", new Health(Status.DOWN));
+		healths.put("h2", new Health(Status.UP));
+		healths.put("h3", new Health(Status.UNKNOWN));
 		healths.put("h4", new Health(Status.OUT_OF_SERVICE));
 		healths.put("h5", new Health(new Status("CUSTOM")));
 		assertEquals(Status.DOWN, this.healthAggregator.aggregate(healths).getStatus());

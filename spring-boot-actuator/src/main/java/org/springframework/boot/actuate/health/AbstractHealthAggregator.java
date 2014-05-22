@@ -32,15 +32,15 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 	@Override
 	public final Health aggregate(Map<String, Health> healths) {
 		Health health = new Health();
-
 		List<Status> status = new ArrayList<Status>();
-		for (Map.Entry<String, Health> h : healths.entrySet()) {
-			health.withDetail(h.getKey(), h.getValue());
-			status.add(h.getValue().getStatus());
+		for (Map.Entry<String, Health> entry : healths.entrySet()) {
+			health.withDetail(entry.getKey(), entry.getValue());
+			status.add(entry.getValue().getStatus());
 		}
 		health.status(aggregateStatus(status));
 		return health;
 	}
 
 	protected abstract Status aggregateStatus(List<Status> status);
+
 }

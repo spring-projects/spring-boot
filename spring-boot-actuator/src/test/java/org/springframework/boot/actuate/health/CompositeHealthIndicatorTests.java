@@ -123,8 +123,9 @@ public class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 
 		ObjectMapper mapper = new ObjectMapper();
-		assertEquals(
-				"{\"status\":\"UNKOWN\",\"db\":{\"status\":\"UNKOWN\",\"db1\":{\"status\":\"UNKOWN\",\"1\":\"1\"},\"db2\":{\"status\":\"UNKOWN\",\"2\":\"2\"}}}",
+		assertEquals("{\"status\":\"UNKNOWN\",\"db\":{\"status\":\"UNKNOWN\""
+				+ ",\"db1\":{\"status\":\"UNKNOWN\",\"1\":\"1\"},"
+				+ "\"db2\":{\"status\":\"UNKNOWN\",\"2\":\"2\"}}}",
 				mapper.writeValueAsString(result));
 	}
 

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.data;
 
 import org.apache.solr.client.solrj.SolrServer;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SolrRepositoriesAutoConfiguration}
- *
+ * 
  * @author Christoph Strobl
  */
 public class SolrRepositoriesAutoConfigurationTests {

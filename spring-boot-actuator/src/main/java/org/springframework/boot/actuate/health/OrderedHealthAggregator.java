@@ -21,38 +21,64 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.util.Assert;
+
 /**
  * Default {@link HealthAggregator} implementation that aggregates {@link Health}
  * instances and determines the final system state based on a simple ordered list.
- * 
  * <p>
  * If a different order is required or a new {@link Status} type will be used, the order
  * can be set by calling {@link #setStatusOrder(List)}.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */
 public class OrderedHealthAggregator extends AbstractHealthAggregator {
 
-	private List<String> statusOrder = Arrays.asList("DOWN", "OUT_OF_SERVICE", "UP",
-			"UNKOWN");
+	private List<String> statusOrder;
 
+	/**
+	 * Create a new {@link OrderedHealthAggregator} instance.
+	 */
+	public OrderedHealthAggregator() {
+		setStatusOrder(Status.DOWN, Status.OUT_OF_SERVICE, Status.UP, Status.UNKNOWN);
+	}
+
+	/**
+	 * Set the ordering of the status.
+	 * @param statusOrder an ordered list of the status
+	 */
+	public void setStatusOrder(Status... statusOrder) {
+		String[] order = new String[statusOrder.length];
+		for (int i = 0; i < statusOrder.length; i++) {
+			order[i] = statusOrder[i].getCode();
+		}
+		setStatusOrder(Arrays.asList(order));
+	}
+
+	/**
+	 * Set the ordering of the status.
+	 * @param statusOrder an ordered list of the status codes
+	 */
 	public void setStatusOrder(List<String> statusOrder) {
+		Assert.notNull(statusOrder, "StatusOrder must not be null");
 		this.statusOrder = statusOrder;
 	}
 
 	@Override
 	protected Status aggregateStatus(List<Status> status) {
-		// If no status is given return UNKOWN
+		// If no status is given return UNKNOWN
 		if (status.size() == 0) {
-			return Status.UNKOWN;
+			return Status.UNKNOWN;
 		}
-
 		// Sort given Status instances by configured order
 		Collections.sort(status, new StatusComparator(this.statusOrder));
 		return status.get(0);
 	}
 
+	/**
+	 * {@link Comparator} used to order {@link Status}.
+	 */
 	private class StatusComparator implements Comparator<Status> {
 
 		private final List<String> statusOrder;
@@ -63,8 +89,9 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 
 		@Override
 		public int compare(Status s1, Status s2) {
-			return Integer.valueOf(this.statusOrder.indexOf(s1.getCode())).compareTo(
-					Integer.valueOf(this.statusOrder.indexOf(s2.getCode())));
+			int i1 = this.statusOrder.indexOf(s1.getCode());
+			int i2 = this.statusOrder.indexOf(s2.getCode());
+			return (i1 < i2 ? -1 : (i1 == i2 ? s1.getCode().compareTo(s2.getCode()) : 1));
 		}
 
 	}

@@ -26,11 +26,11 @@ import org.springframework.data.solr.repository.config.SolrRepositoryConfigExten
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Solr
  * repositories.
- *
+ * 
  * @author Christoph Strobl
  * @since 1.1.0
  */
-public class SolrRepositoriesAutoConfigureRegistrar extends
+class SolrRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
 	@Override

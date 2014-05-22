@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.health;
 /**
  * Base {@link HealthIndicator} implementations that encapsulates creation of
  * {@link Health} instance and error handling.
- * 
  * <p>
  * This implementation is only suitable if an {@link Exception} raised from
  * {@link #doHealthCheck(Health)} should create a {@link Status#DOWN} health status.

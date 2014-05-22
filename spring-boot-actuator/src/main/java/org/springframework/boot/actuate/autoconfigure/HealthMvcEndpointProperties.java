@@ -41,4 +41,5 @@ public class HealthMvcEndpointProperties {
 	public void setMapping(Map<String, HttpStatus> mapping) {
 		this.mapping = mapping;
 	}
+
 }

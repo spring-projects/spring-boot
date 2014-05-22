@@ -31,22 +31,53 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Adapter to expose {@link HealthEndpoint} as an {@link MvcEndpoint}.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
 public class HealthMvcEndpoint extends EndpointMvcAdapter {
 
-	private Map<String, HttpStatus> statusMapping;
+	private Map<String, HttpStatus> statusMapping = new HashMap<String, HttpStatus>();
 
 	public HealthMvcEndpoint(HealthEndpoint delegate) {
 		super(delegate);
 		setupDefaultStatusMapping();
 	}
 
+	private void setupDefaultStatusMapping() {
+		addStatusMapping(Status.DOWN, HttpStatus.SERVICE_UNAVAILABLE);
+		addStatusMapping(Status.OUT_OF_SERVICE, HttpStatus.SERVICE_UNAVAILABLE);
+	}
+
+	/**
+	 * Set specific status mappings
+	 * @param statusMapping a map of status code to {@link HttpStatus}
+	 */
 	public void setStatusMapping(Map<String, HttpStatus> statusMapping) {
 		Assert.notNull(statusMapping, "StatusMapping must not be null");
-		this.statusMapping = statusMapping;
+		this.statusMapping = new HashMap<String, HttpStatus>(statusMapping);
+	}
+
+	/**
+	 * Add a status mapping to the existing set
+	 * @param status the status to map
+	 * @param httpStatus the http status
+	 */
+	public void addStatusMapping(Status status, HttpStatus httpStatus) {
+		Assert.notNull(status, "Status must not be null");
+		Assert.notNull(httpStatus, "HttpStatus must not be null");
+		addStatusMapping(status.getCode(), httpStatus);
+	}
+
+	/**
+	 * Add a status mapping to the existing set
+	 * @param statusCode the status code to map
+	 * @param httpStatus the http status
+	 */
+	public void addStatusMapping(String statusCode, HttpStatus httpStatus) {
+		Assert.notNull(statusCode, "StatusCode must not be null");
+		Assert.notNull(httpStatus, "HttpStatus must not be null");
+		this.statusMapping.put(statusCode, httpStatus);
 	}
 
 	@RequestMapping
@@ -62,16 +93,10 @@ public class HealthMvcEndpoint extends EndpointMvcAdapter {
 		Health health = (Health) getDelegate().invoke();
 		Status status = health.getStatus();
 		if (this.statusMapping.containsKey(status.getCode())) {
-			return new ResponseEntity<Health>(health,
-					this.statusMapping.get(status.getCode()));
+			return new ResponseEntity<Health>(health, this.statusMapping.get(status
+					.getCode()));
 		}
 		return health;
 	}
 
-	private void setupDefaultStatusMapping() {
-		this.statusMapping = new HashMap<String, HttpStatus>();
-		this.statusMapping.put(Status.DOWN.getCode(), HttpStatus.SERVICE_UNAVAILABLE);
-		this.statusMapping.put(Status.OUT_OF_SERVICE.getCode(),
-				HttpStatus.SERVICE_UNAVAILABLE);
-	}
 }

@@ -36,12 +36,13 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link SimpleDataSourceHealthIndicator}.
- *
+ * 
  * @author Dave Syer
  */
 public class SimpleDataSourceHealthIndicatorTests {
 
 	private final SimpleDataSourceHealthIndicator indicator = new SimpleDataSourceHealthIndicator();
+
 	private DriverManagerDataSource dataSource;
 
 	@Before
@@ -63,7 +64,7 @@ public class SimpleDataSourceHealthIndicatorTests {
 	public void customQuery() {
 		this.indicator.setDataSource(this.dataSource);
 		new JdbcTemplate(this.dataSource)
-		.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
+				.execute("CREATE TABLE FOO (id INTEGER IDENTITY PRIMARY KEY)");
 		this.indicator.setQuery("SELECT COUNT(*) from FOO");
 		Health health = this.indicator.health();
 		System.err.println(health);
