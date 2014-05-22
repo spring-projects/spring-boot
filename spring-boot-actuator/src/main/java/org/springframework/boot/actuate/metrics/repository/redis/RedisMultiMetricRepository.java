@@ -33,9 +33,9 @@ import org.springframework.util.Assert;
 
 /**
  * {@link MultiMetricRepository} implementation backed by a redis store. Metric values are
- * stored as regular values against a key composed of the group name prefixed with a
- * constant prefix (default "spring.groups."). The group names are stored as a zset under
- * "keys." + <code>[prefix]</code>.
+ * stored as zset values and the timestamps as regular values, both against a key composed
+ * of the group name prefixed with a constant prefix (default "spring.groups."). The group
+ * names are stored as a zset under "keys." + <code>[prefix]</code>.
  * 
  * @author Dave Syer
  */
@@ -167,7 +167,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 	}
 
 	private void trackMembership(String redisKey) {
-		this.zSetOperations.add(redisKey, 0.0D);
+		this.zSetOperations.incrementScore(redisKey, 0.0D);
 	}
 
 }
