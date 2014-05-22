@@ -658,12 +658,19 @@ http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitorin
 Metric service implementations are usually bound to a
 {sc-spring-boot-actuator}/metrics/repository/MetricRepository.{sc-ext}[`MetricRepository`].
 A `MetricRepository` is responsible for storing and retrieving metric information. Spring
-Boot provides an `InMemoryMessageRespository` and a `RedisMetricRepository` out of the
+Boot provides an `InMemoryMetricRespository` and a `RedisMetricRepository` out of the
 box (the in-memory repository is the default) but you can also write your own. The
 `MetricRepository` interface is actually composed of higher level `MetricReader` and
 `MetricWriter` interfaces. For full details refer to the
 {dc-spring-boot-actuator}/metrics/repository/MetricRepository.{dc-ext}[Javadoc].
 
+There's nothing to stop you hooking a `MetricRepository` with back-end storage directly
+into your app, but we recommend using the default `InMemoryMetricRespository` 
+(possibly with a custom `Map` instance if you are worried about heap usage) and 
+populating a back-end repository through a scheduled export job. In that way you get
+some buffering in memory of the metric values and you can reduce the network
+chatter by exporting less frequently or in batches. Spring Boot provides
+an `Exporter` interface and a few basic implementations for you to get started with that.
 
 
 [[production-ready-code-hale-metrics]]
