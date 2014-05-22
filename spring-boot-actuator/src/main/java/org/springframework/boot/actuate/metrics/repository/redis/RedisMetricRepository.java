@@ -28,8 +28,6 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.BoundZSetOperations;
 import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.Assert;
 
 /**
@@ -51,14 +49,9 @@ public class RedisMetricRepository implements MetricRepository {
 
 	private final RedisOperations<String, String> redisOperations;
 
-	private final ValueOperations<String, Long> longOperations;
-
 	public RedisMetricRepository(RedisConnectionFactory redisConnectionFactory) {
 		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
 		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
-		RedisTemplate<String, Long> longRedisTemplate = RedisUtils.createRedisTemplate(
-				redisConnectionFactory, Long.class);
-		this.longOperations = longRedisTemplate.opsForValue();
 		this.zSetOperations = this.redisOperations.boundZSetOps(this.key);
 	}
 
@@ -89,7 +82,7 @@ public class RedisMetricRepository implements MetricRepository {
 	public Metric<?> findOne(String metricName) {
 		String redisKey = keyFor(metricName);
 		String raw = this.redisOperations.opsForValue().get(redisKey);
-		return deserialize(redisKey, raw);
+		return deserialize(redisKey, raw, this.zSetOperations.score(redisKey));
 	}
 
 	@Override
@@ -102,7 +95,8 @@ public class RedisMetricRepository implements MetricRepository {
 		List<Metric<?>> result = new ArrayList<Metric<?>>(keys.size());
 		List<String> values = this.redisOperations.opsForValue().multiGet(keys);
 		for (String v : values) {
-			Metric<?> value = deserialize(keysIt.next(), v);
+			String key = keysIt.next();
+			Metric<?> value = deserialize(key, v, this.zSetOperations.score(key));
 			if (value != null) {
 				result.add(value);
 			}
@@ -121,15 +115,19 @@ public class RedisMetricRepository implements MetricRepository {
 		String name = delta.getName();
 		String key = keyFor(name);
 		trackMembership(key);
-		this.longOperations.increment(key, delta.getValue().longValue());
+		double value = this.zSetOperations.incrementScore(key, delta.getValue()
+				.doubleValue());
+		String raw = serialize(new Metric<Double>(name, value, delta.getTimestamp()));
+		this.redisOperations.opsForValue().set(key, raw);
 	}
 
 	@Override
 	public void set(Metric<?> value) {
-		String raw = serialize(value);
 		String name = value.getName();
 		String key = keyFor(name);
 		trackMembership(key);
+		this.zSetOperations.add(key, value.getValue().doubleValue());
+		String raw = serialize(value);
 		this.redisOperations.opsForValue().set(key, raw);
 	}
 
@@ -141,18 +139,16 @@ public class RedisMetricRepository implements MetricRepository {
 		}
 	}
 
-	private Metric<?> deserialize(String redisKey, String v) {
+	private Metric<?> deserialize(String redisKey, String v, Double value) {
 		if (redisKey == null || v == null || !redisKey.startsWith(this.prefix)) {
 			return null;
 		}
-		String[] vals = v.split("@");
-		Double value = Double.valueOf(vals[0]);
-		Date timestamp = vals.length > 1 ? new Date(Long.valueOf(vals[1])) : new Date();
+		Date timestamp = new Date(Long.valueOf(v));
 		return new Metric<Double>(nameFor(redisKey), value, timestamp);
 	}
 
 	private String serialize(Metric<?> entity) {
-		return String.valueOf(entity.getValue()) + "@" + entity.getTimestamp().getTime();
+		return String.valueOf(entity.getTimestamp().getTime());
 	}
 
 	private String keyFor(String name) {
@@ -164,7 +160,7 @@ public class RedisMetricRepository implements MetricRepository {
 	}
 
 	private void trackMembership(String redisKey) {
-		this.zSetOperations.add(redisKey, 0.0D);
+		this.zSetOperations.incrementScore(redisKey, 0.0D);
 	}
 
 }

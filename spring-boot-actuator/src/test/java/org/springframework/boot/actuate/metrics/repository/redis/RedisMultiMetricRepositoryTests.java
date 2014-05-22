@@ -81,6 +81,16 @@ public class RedisMultiMetricRepositoryTests {
 
 	@Test
 	public void setAndGet() {
+		this.repository.set("foo",
+				Arrays.<Metric<?>> asList(new Metric<Number>("foo.bar", 12.3)));
+		this.repository.set("foo",
+				Arrays.<Metric<?>> asList(new Metric<Number>("foo.bar", 15.3)));
+		assertEquals(15.3, Iterables.collection(this.repository.findAll("foo"))
+				.iterator().next().getValue());
+	}
+
+	@Test
+	public void setAndGetMultiple() {
 		this.repository.set("foo", Arrays.<Metric<?>> asList(new Metric<Number>(
 				"foo.val", 12.3), new Metric<Number>("foo.bar", 11.3)));
 		assertEquals(2, Iterables.collection(this.repository.findAll("foo")).size());
