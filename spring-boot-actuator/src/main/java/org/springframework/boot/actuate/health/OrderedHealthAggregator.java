@@ -16,12 +16,10 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Default {@link HealthAggregator} implementation that aggregates {@link Health}
@@ -34,48 +32,41 @@ import java.util.Map;
  * @author Christian Dupuis
  * @since 1.1.0
  */
-public class OrderedHealthAggregator implements HealthAggregator {
+public class OrderedHealthAggregator extends AbstractHealthAggregator {
 
 	private List<String> statusOrder = Arrays.asList("DOWN", "OUT_OF_SERVICE", "UP",
 			"UNKOWN");
-
-	@Override
-	public Health aggregate(Map<String, Health> healths) {
-		Health health = new Health();
-
-		List<Status> status = new ArrayList<Status>();
-		for (Map.Entry<String, Health> h : healths.entrySet()) {
-			health.withDetail(h.getKey(), h.getValue());
-			status.add(h.getValue().getStatus());
-		}
-		health.status(aggregateStatus(status));
-		return health;
-	}
 
 	public void setStatusOrder(List<String> statusOrder) {
 		this.statusOrder = statusOrder;
 	}
 
+	@Override
 	protected Status aggregateStatus(List<Status> status) {
-
+		// If no status is given return UNKOWN
 		if (status.size() == 0) {
 			return Status.UNKOWN;
 		}
 
-		Collections.sort(status, new Comparator<Status>() {
-
-			@Override
-			public int compare(Status s1, Status s2) {
-				return Integer.valueOf(
-						OrderedHealthAggregator.this.statusOrder.indexOf(s1.getCode()))
-						.compareTo(
-								Integer.valueOf(OrderedHealthAggregator.this.statusOrder
-										.indexOf(s2.getCode())));
-
-			}
-		});
-
+		// Sort given Status instances by configured order
+		Collections.sort(status, new StatusComparator(this.statusOrder));
 		return status.get(0);
+	}
+
+	private class StatusComparator implements Comparator<Status> {
+
+		private final List<String> statusOrder;
+
+		public StatusComparator(List<String> statusOrder) {
+			this.statusOrder = statusOrder;
+		}
+
+		@Override
+		public int compare(Status s1, Status s2) {
+			return Integer.valueOf(this.statusOrder.indexOf(s1.getCode())).compareTo(
+					Integer.valueOf(this.statusOrder.indexOf(s2.getCode())));
+		}
+
 	}
 
 }
