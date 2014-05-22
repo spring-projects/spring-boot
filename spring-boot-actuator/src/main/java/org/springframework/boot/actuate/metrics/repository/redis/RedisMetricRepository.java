@@ -75,7 +75,7 @@ public class RedisMetricRepository implements MetricRepository {
 
 	/**
 	 * The redis key to use to store the index of other keys. The redis store will hold a
-	 * zset under this key. Defaults to "keys.spring.metrics". REad operations, especially
+	 * zset under this key. Defaults to "keys.spring.metrics". Read operations, especially
 	 * {@link #findAll()} and {@link #count()}, will be much more efficient if the key is
 	 * unique to the {@link #setPrefix(String) prefix} of this repository.
 	 * @param key the key to set

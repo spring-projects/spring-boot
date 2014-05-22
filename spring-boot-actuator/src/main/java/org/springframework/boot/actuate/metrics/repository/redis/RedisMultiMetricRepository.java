@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  * {@link MultiMetricRepository} implementation backed by a redis store. Metric values are
  * stored as regular values against a key composed of the group name prefixed with a
  * constant prefix (default "spring.groups."). The group names are stored as a zset under
- * <code>[prefix]</code> + "keys".
+ * "keys." + <code>[prefix]</code>.
  * 
  * @author Dave Syer
  */
@@ -42,30 +42,28 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 
 	private static final String DEFAULT_METRICS_PREFIX = "spring.groups.";
 
-	private String prefix = DEFAULT_METRICS_PREFIX;
+	private final String prefix;
 
-	private String keys = "keys." + this.prefix;
+	private final String keys;
 
 	private final BoundZSetOperations<String, String> zSetOperations;
 
 	private final RedisOperations<String, String> redisOperations;
 
 	public RedisMultiMetricRepository(RedisConnectionFactory redisConnectionFactory) {
-		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
-		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
-		this.zSetOperations = this.redisOperations.boundZSetOps(this.keys);
+		this(redisConnectionFactory, DEFAULT_METRICS_PREFIX);
 	}
 
-	/**
-	 * The prefix for all metrics keys.
-	 * @param prefix the prefix to set for all metrics keys
-	 */
-	public void setPrefix(String prefix) {
+	public RedisMultiMetricRepository(RedisConnectionFactory redisConnectionFactory,
+			String prefix) {
+		Assert.notNull(redisConnectionFactory, "RedisConnectionFactory must not be null");
+		this.redisOperations = RedisUtils.stringTemplate(redisConnectionFactory);
 		if (!prefix.endsWith(".")) {
 			prefix = prefix + ".";
 		}
 		this.prefix = prefix;
-		this.keys = "keys." + this.prefix;
+		this.keys = "keys." + this.prefix.substring(0, prefix.length() - 1);
+		this.zSetOperations = this.redisOperations.boundZSetOps(this.keys);
 	}
 
 	@Override
@@ -105,7 +103,7 @@ public class RedisMultiMetricRepository implements MultiMetricRepository {
 		Set<String> range = this.zSetOperations.range(0, -1);
 		Collection<String> result = new ArrayList<String>();
 		for (String key : range) {
-			result.add(nameFor(key));
+			result.add(nameFor(this.prefix + key));
 		}
 		return range;
 	}
