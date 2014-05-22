@@ -26,11 +26,11 @@ import java.util.Map;
 /**
  * Default {@link HealthAggregator} implementation that aggregates {@link Health}
  * instances and determines the final system state based on a simple ordered list.
- *
+ * 
  * <p>
  * If a different order is required or a new {@link Status} type will be used, the order
  * can be set by calling {@link #setStatusOrder(List)}.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
@@ -67,8 +67,10 @@ public class OrderedHealthAggregator implements HealthAggregator {
 			@Override
 			public int compare(Status s1, Status s2) {
 				return Integer.valueOf(
-						OrderedHealthAggregator.this.statusOrder.indexOf(s1.getCode())).compareTo(
-								Integer.valueOf(OrderedHealthAggregator.this.statusOrder.indexOf(s2.getCode())));
+						OrderedHealthAggregator.this.statusOrder.indexOf(s1.getCode()))
+						.compareTo(
+								Integer.valueOf(OrderedHealthAggregator.this.statusOrder
+										.indexOf(s2.getCode())));
 
 			}
 		});
