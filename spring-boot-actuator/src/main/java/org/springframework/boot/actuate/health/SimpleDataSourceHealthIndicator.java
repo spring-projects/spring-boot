@@ -35,8 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Christian Dupuis
  */
-public class SimpleDataSourceHealthIndicator implements
-		HealthIndicator<Map<String, Object>> {
+public class SimpleDataSourceHealthIndicator implements HealthIndicator {
 
 	private DataSource dataSource;
 
@@ -64,6 +63,7 @@ public class SimpleDataSourceHealthIndicator implements
 	/**
 	 * Create a new {@link SimpleDataSourceHealthIndicator} using the specified
 	 * datasource.
+	 * 
 	 * @param dataSource the data source
 	 */
 	public SimpleDataSourceHealthIndicator(DataSource dataSource) {
@@ -80,6 +80,7 @@ public class SimpleDataSourceHealthIndicator implements
 		if (this.dataSource != null) {
 			try {
 				product = this.jdbcTemplate.execute(new ConnectionCallback<String>() {
+
 					@Override
 					public String doInConnection(Connection connection)
 							throws SQLException, DataAccessException {
@@ -87,8 +88,7 @@ public class SimpleDataSourceHealthIndicator implements
 					}
 				});
 				health.withDetail("database", product);
-			}
-			catch (DataAccessException ex) {
+			} catch (DataAccessException ex) {
 				health.down().withException(ex);
 			}
 			String query = detectQuery(product);
@@ -96,8 +96,7 @@ public class SimpleDataSourceHealthIndicator implements
 				try {
 					health.withDetail("hello",
 							this.jdbcTemplate.queryForObject(query, Object.class));
-				}
-				catch (Exception ex) {
+				} catch (Exception ex) {
 					health.down().withException(ex);
 				}
 			}
