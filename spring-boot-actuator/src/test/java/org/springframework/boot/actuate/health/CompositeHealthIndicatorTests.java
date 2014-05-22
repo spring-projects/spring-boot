@@ -20,16 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 
@@ -111,7 +110,6 @@ public class CompositeHealthIndicatorTests {
 	}
 
 	@Test
-	@Ignore
 	public void testSerialization() throws Exception {
 		Map<String, HealthIndicator> indicators = new HashMap<String, HealthIndicator>();
 		indicators.put("db1", this.one);
@@ -125,9 +123,9 @@ public class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-		String test = mapper.writeValueAsString(result);
-		System.out.println(test);
+		assertEquals(
+				"{\"status\":\"UNKOWN\",\"db\":{\"status\":\"UNKOWN\",\"db1\":{\"status\":\"UNKOWN\",\"1\":\"1\"},\"db2\":{\"status\":\"UNKOWN\",\"2\":\"2\"}}}",
+				mapper.writeValueAsString(result));
 	}
 
 }
