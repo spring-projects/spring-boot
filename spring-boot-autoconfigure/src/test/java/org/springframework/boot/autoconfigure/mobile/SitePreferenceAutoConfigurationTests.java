@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -31,20 +32,21 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.MockEmbeddedServletContainerFactory;
+import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
-import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
+import org.springframework.mobile.device.site.SitePreferenceHandlerInterceptor;
+import org.springframework.mobile.device.site.SitePreferenceHandlerMethodArgumentResolver;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 /**
- * Tests for {@link DeviceResolverAutoConfiguration}.
- * 
+ * Tests for {@link SitePreferenceAutoConfiguration}.
+ *
  * @author Roy Clarkson
  */
-public class DeviceResolverAutoConfigurationTests {
+public class SitePreferenceAutoConfigurationTests {
 
 	private static final MockEmbeddedServletContainerFactory containerFactory = new MockEmbeddedServletContainerFactory();
 
@@ -58,28 +60,64 @@ public class DeviceResolverAutoConfigurationTests {
 	}
 
 	@Test
-	public void deviceResolverHandlerInterceptorCreated() throws Exception {
+	public void sitePreferenceHandlerInterceptorCreated() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(DeviceResolverAutoConfiguration.class);
+		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceResolverHandlerInterceptor.class));
+		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
 	}
 
 	@Test
-	public void deviceHandlerMethodArgumentResolverCreated() throws Exception {
+	public void sitePreferenceHandlerInterceptorEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(DeviceResolverAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:true");
+		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(DeviceHandlerMethodArgumentResolver.class));
+		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void sitePreferenceHandlerInterceptorDisabled() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:false");
+		this.context.register(SitePreferenceAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(SitePreferenceHandlerInterceptor.class);
+	}
+
+	@Test
+	public void sitePreferenceMethodArgumentResolverCreated() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(SitePreferenceAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+	}
+
+	@Test
+	public void sitePreferenceMethodArgumentResolverEnabled() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:true");
+		this.context.register(SitePreferenceAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void sitePreferenceMethodArgumentResolverDisabled() {
+		this.context = new AnnotationConfigWebApplicationContext();
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:false");
+		this.context.register(SitePreferenceAutoConfiguration.class);
+		this.context.refresh();
+		this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class);
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void deviceResolverHandlerInterceptorRegistered() throws Exception {
+	public void sitePreferenceHandlerInterceptorRegistered() throws Exception {
 		AnnotationConfigEmbeddedWebApplicationContext context = new AnnotationConfigEmbeddedWebApplicationContext();
 		context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
-				DeviceResolverAutoConfiguration.class,
+				SitePreferenceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		context.refresh();
 		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context.getBean("requestMappingHandlerMapping");
@@ -90,11 +128,11 @@ public class DeviceResolverAutoConfigurationTests {
 				interceptorsField, mapping);
 		context.close();
 		for (Object o : interceptors) {
-			if (o instanceof DeviceResolverHandlerInterceptor) {
+			if (o instanceof SitePreferenceHandlerInterceptor) {
 				return;
 			}
 		}
-		fail("DeviceResolverHandlerInterceptor was not registered.");
+		fail("SitePreferenceHandlerInterceptor was not registered.");
 	}
 
 	@Configuration
