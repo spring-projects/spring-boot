@@ -26,9 +26,10 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
@@ -43,6 +44,21 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 				"spring.jpa.hibernate.namingStrategy:"
 						+ "org.hibernate.cfg.EJB3NamingStrategy");
 		setupTestConfiguration();
+		this.context.refresh();
+		LocalContainerEntityManagerFactoryBean bean = this.context
+				.getBean(LocalContainerEntityManagerFactoryBean.class);
+		String actual = (String) bean.getJpaPropertyMap().get(
+				"hibernate.ejb.naming_strategy");
+		assertThat(actual, equalTo("org.hibernate.cfg.EJB3NamingStrategy"));
+	}
+
+	@Test
+	public void testNamingStrategyThatWorkedInOneDotOhContinuesToWork() {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.jpa.hibernate.namingstrategy:"
+						+ "org.hibernate.cfg.EJB3NamingStrategy");
+		setupTestConfiguration();
+
 		this.context.refresh();
 		LocalContainerEntityManagerFactoryBean bean = this.context
 				.getBean(LocalContainerEntityManagerFactoryBean.class);
