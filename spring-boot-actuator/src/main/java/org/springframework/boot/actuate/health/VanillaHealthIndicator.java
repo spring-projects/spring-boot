@@ -22,11 +22,11 @@ package org.springframework.boot.actuate.health;
  * @author Dave Syer
  * @author Christian Dupuis
  */
-public class VanillaHealthIndicator implements HealthIndicator {
+public class VanillaHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
-	public Health health() {
-		return new Health(Status.UP);
+	protected void doHealthCheck(Health health) throws Exception {
+		health.up();
 	}
 
 }
