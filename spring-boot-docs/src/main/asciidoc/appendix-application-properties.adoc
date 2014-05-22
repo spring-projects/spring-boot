@@ -192,6 +192,10 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.hibernate.defer-ddl=true # defer processing of DDL until application is running
 	spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
 
+	# SOLR ({sc-spring-boot-autoconfigure}/solr/SolrProperties.{sc-ext}[SolrProperties}])
+	spring.data.solr.host=http://127.0.0.1:8983/solr
+	spring.data.solr.zkHost=
+
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
 	flyway.locations=classpath:db/migrations # locations of migrations scripts
 	flyway.schemas= # schemas to update
