@@ -32,8 +32,11 @@ import org.springframework.util.Assert;
 
 /**
  * A {@link MetricRepository} implementation for a redis backend. Metric values are stored
- * as regular hash values against a key composed of the metric name prefixed with a
- * constant (default "spring.metrics.").
+ * as zset values plus a regular hash value for the timestamp, both against a key composed
+ * of the metric name prefixed with a constant (default "spring.metrics."). If you have
+ * multiple metrics repositories all point at the same instance of Redis, it may be useful
+ * to change the prefix to be unique (but not if you want them to contribute to the same
+ * metrics).
  * 
  * @author Dave Syer
  */
