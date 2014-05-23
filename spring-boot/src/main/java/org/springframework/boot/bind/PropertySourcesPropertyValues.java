@@ -88,8 +88,10 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 						catch (RuntimeException ex) {
 							// Probably could not resolve placeholders, ignore it here
 						}
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
+						if (!this.propertyValues.containsKey(propertyName)) {
+							this.propertyValues.put(propertyName, new PropertyValue(
+									propertyName, value));
+						}
 					}
 				}
 			}
@@ -99,13 +101,13 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 				for (String propertyName : exacts) {
 					Object value;
 					value = source.getProperty(propertyName);
-					if (value != null) {
+					if (value != null && !this.propertyValues.containsKey(propertyName)) {
 						this.propertyValues.put(propertyName, new PropertyValue(
 								propertyName, value));
 						continue;
 					}
 					value = source.getProperty(propertyName.toUpperCase());
-					if (value != null) {
+					if (value != null && !this.propertyValues.containsKey(propertyName)) {
 						this.propertyValues.put(propertyName, new PropertyValue(
 								propertyName, value));
 						continue;
