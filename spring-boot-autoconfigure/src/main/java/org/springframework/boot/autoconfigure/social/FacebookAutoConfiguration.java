@@ -46,6 +46,7 @@ import org.springframework.web.servlet.View;
  * with Facebook.
  * 
  * @author Craig Walls
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ FacebookConnectionFactory.class })
