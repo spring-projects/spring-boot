@@ -26,13 +26,13 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.CompositeHealthIndicator;
+import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
-import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -100,15 +100,14 @@ public class HealthIndicatorAutoConfiguration {
 		@ConditionalOnMissingBean(name = "dbHealthIndicator")
 		public HealthIndicator dbHealthIndicator() {
 			if (this.dataSources.size() == 1) {
-				return new SimpleDataSourceHealthIndicator(this.dataSources.values()
-						.iterator().next());
+				return new DataSourceHealthIndicator(this.dataSources.values().iterator()
+						.next());
 			}
-
 			CompositeHealthIndicator composite = new CompositeHealthIndicator(
 					this.healthAggregator);
 			for (Map.Entry<String, DataSource> entry : this.dataSources.entrySet()) {
 				composite.addHealthIndicator(entry.getKey(),
-						new SimpleDataSourceHealthIndicator(entry.getValue()));
+						new DataSourceHealthIndicator(entry.getValue()));
 			}
 			return composite;
 		}

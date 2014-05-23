@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
-import org.springframework.boot.actuate.health.SimpleDataSourceHealthIndicator;
+import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
@@ -149,7 +149,7 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(SimpleDataSourceHealthIndicator.class, beans.values().iterator()
+		assertEquals(DataSourceHealthIndicator.class, beans.values().iterator()
 				.next().getClass());
 	}
 
