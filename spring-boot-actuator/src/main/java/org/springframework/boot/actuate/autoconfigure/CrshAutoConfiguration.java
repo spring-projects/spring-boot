@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedding an extensible shell
  * into a Spring Boot enabled application. By default a SSH daemon is started on port
- * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet deamon will be
+ * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet daemon will be
  * launched on port 5000.
  * 
  * <p>

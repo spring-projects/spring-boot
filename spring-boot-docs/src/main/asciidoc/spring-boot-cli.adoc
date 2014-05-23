@@ -193,7 +193,7 @@ your application to see what fails before adding imports.
 
 [[cli-automatic-main-method]]
 ==== Automatic main method
-Unlike the equilvement Java application, you do not need to include a
+Unlike the equivalent Java application, you do not need to include a
 `public static void main(String[] args)` method with your `Groovy` scripts. A
 `SpringApplication` is automatically created, with your compiled code acting as the
 `source`.

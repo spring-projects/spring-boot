@@ -70,7 +70,7 @@ public class VanillaPublicMetricsTests {
 		assertTrue(results.containsKey("heap"));
 
 		assertTrue(results.containsKey("threads.peak"));
-		assertTrue(results.containsKey("threads.deamon"));
+		assertTrue(results.containsKey("threads.daemon"));
 		assertTrue(results.containsKey("threads"));
 
 		assertTrue(results.containsKey("classes.loaded"));

@@ -96,7 +96,7 @@ public class VanillaPublicMetrics implements PublicMetrics {
 		ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
 		result.add(new Metric<Long>("threads.peak", new Long(threadMxBean
 				.getPeakThreadCount())));
-		result.add(new Metric<Long>("threads.deamon", new Long(threadMxBean
+		result.add(new Metric<Long>("threads.daemon", new Long(threadMxBean
 				.getDaemonThreadCount())));
 		result.add(new Metric<Long>("threads", new Long(threadMxBean.getThreadCount())));
 	}
