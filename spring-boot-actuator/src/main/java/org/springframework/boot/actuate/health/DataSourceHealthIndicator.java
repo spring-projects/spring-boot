@@ -29,13 +29,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 /**
- * Simple implementation of {@link HealthIndicator} that returns a status and also
- * attempts a simple database test.
+ * {@link HealthIndicator} that tests the status of a {@link DataSource} and optionally
+ * runs a test query.
  * 
  * @author Dave Syer
  * @author Christian Dupuis
  */
-public class SimpleDataSourceHealthIndicator extends AbstractHealthIndicator {
+public class DataSourceHealthIndicator extends AbstractHealthIndicator {
 
 	private DataSource dataSource;
 
@@ -55,17 +55,16 @@ public class SimpleDataSourceHealthIndicator extends AbstractHealthIndicator {
 	private String query = null;
 
 	/**
-	 * Create a new {@link SimpleDataSourceHealthIndicator} instance.
+	 * Create a new {@link DataSourceHealthIndicator} instance.
 	 */
-	public SimpleDataSourceHealthIndicator() {
+	public DataSourceHealthIndicator() {
 	}
 
 	/**
-	 * Create a new {@link SimpleDataSourceHealthIndicator} using the specified
-	 * datasource.
+	 * Create a new {@link DataSourceHealthIndicator} using the specified datasource.
 	 * @param dataSource the data source
 	 */
-	public SimpleDataSourceHealthIndicator(DataSource dataSource) {
+	public DataSourceHealthIndicator(DataSource dataSource) {
 		this.dataSource = dataSource;
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
