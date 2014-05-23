@@ -142,7 +142,7 @@ public class JpaProperties {
 		@Deprecated
 		public void setNamingstrategy(Class<?> namingStrategy) {
 			logger.warn("The property spring.jpa.namingstrategy has been renamed, "
-					+ "please update your configuration to use nameing-strategy");
+					+ "please update your configuration to use naming-strategy");
 			this.setNamingStrategy(namingStrategy);
 		}
 
