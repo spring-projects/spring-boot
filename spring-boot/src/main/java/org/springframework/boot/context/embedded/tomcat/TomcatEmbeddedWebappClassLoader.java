@@ -16,7 +16,11 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.net.URL;
+
 import org.apache.catalina.loader.WebappClassLoader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Extension of Tomcat's {@link WebappClassLoader} that does not consider the
@@ -27,6 +31,9 @@ import org.apache.catalina.loader.WebappClassLoader;
  * @author Phillip Webb
  */
 public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
+
+	private static final Log logger = LogFactory
+			.getLog(TomcatEmbeddedWebappClassLoader.class);
 
 	public TomcatEmbeddedWebappClassLoader() {
 		super();
@@ -76,6 +83,14 @@ public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {
 			resolveClass(resultClass);
 		}
 		return (resultClass);
+	}
+
+	@Override
+	protected void addURL(URL url) {
+		// Ignore URLs added by the Tomcat 8 implementation (see gh-919)
+		if (logger.isTraceEnabled()) {
+			logger.trace("Ignoring request to add " + url + " to the tomcat classloader");
+		}
 	}
 
 	private Class<?> loadFromParent(String name) {

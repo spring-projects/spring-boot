@@ -230,6 +230,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 			ServletContextInitializer[] initializers) {
 		context.addLifecycleListener(new ServletContextInitializerLifecycleListener(
 				initializers));
+		context.addLifecycleListener(new JasperInitializerLifecycleListener());
 		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
 			context.addLifecycleListener(lifecycleListener);
 		}
