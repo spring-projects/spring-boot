@@ -21,6 +21,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.SpringNamingStrategy;
@@ -28,13 +30,15 @@ import org.springframework.orm.jpa.vendor.Database;
 
 /**
  * External configuration properties for a JPA EntityManagerFactory created by Spring.
- *
+ * 
  * @author Dave Syer
  * @author Andy Wilkinson
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.jpa")
 public class JpaProperties {
+
+	private static final Log logger = LogFactory.getLog(JpaProperties.class);
 
 	private Map<String, Object> properties = new HashMap<String, Object>();
 
@@ -100,7 +104,6 @@ public class JpaProperties {
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory. The result will always have ddl-auto=none, so that the schema
 	 * generation or validation can be deferred to a later stage.
-	 *
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */
@@ -110,7 +113,6 @@ public class JpaProperties {
 
 	/**
 	 * Get the full configuration properties for the Hibernate EntityManagerFactory.
-	 *
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */
@@ -137,7 +139,10 @@ public class JpaProperties {
 			this.namingStrategy = namingStrategy;
 		}
 
+		@Deprecated
 		public void setNamingstrategy(Class<?> namingStrategy) {
+			logger.warn("The property spring.jpa.namingstrategy has been renamed, "
+					+ "please update your configuration to use nameing-strategy");
 			this.setNamingStrategy(namingStrategy);
 		}
 
