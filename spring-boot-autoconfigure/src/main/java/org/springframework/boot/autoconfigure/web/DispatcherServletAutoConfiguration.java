@@ -86,7 +86,7 @@ public class DispatcherServletAutoConfiguration {
 		@Bean(name = DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		public ServletRegistrationBean dispatcherServletRegistration() {
 			ServletRegistrationBean registration = new ServletRegistrationBean(
-					dispatcherServlet(), this.server.getServletPath());
+					dispatcherServlet(), this.server.getServletMapping());
 			registration.setName(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
 			if (this.multipartConfig != null) {
 				registration.setMultipartConfig(this.multipartConfig);

@@ -98,7 +98,7 @@ public class DispatcherServletAutoConfigurationTests {
 		assertNotNull(this.context.getBean(DispatcherServlet.class));
 		ServletRegistrationBean registration = this.context
 				.getBean(ServletRegistrationBean.class);
-		assertEquals("[/spring]", registration.getUrlMappings().toString());
+		assertEquals("[/spring/*]", registration.getUrlMappings().toString());
 		assertNull(registration.getMultipartConfig());
 	}
 

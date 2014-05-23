@@ -78,6 +78,33 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		return this.servletPath;
 	}
 
+	public String getServletMapping() {
+		if (this.servletPath.equals("") || this.servletPath.equals("/")) {
+			return "/";
+		}
+		if (this.servletPath.contains("*")) {
+			if (this.servletPath.endsWith("*")) {
+				return this.servletPath;
+			}
+			return this.servletPath;
+		}
+		if (this.servletPath.endsWith("/")) {
+			return this.servletPath + "*";
+		}
+		return this.servletPath + "/*";
+	}
+
+	public String getServletPrefix() {
+		String result = this.servletPath;
+		if (result.contains("*")) {
+			result = result.substring(0, result.indexOf("*"));
+		}
+		if (result.endsWith("/")) {
+			result = result.substring(0, result.length() - 1);
+		}
+		return result;
+	}
+
 	public void setServletPath(String servletPath) {
 		this.servletPath = servletPath;
 	}

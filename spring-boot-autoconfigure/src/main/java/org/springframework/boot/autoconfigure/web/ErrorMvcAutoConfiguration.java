@@ -24,6 +24,7 @@ import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -67,10 +68,14 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 // Ensure this loads before the main WebMvcAutoConfiguration so that the error View is
 // available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
+@Configuration
 public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustomizer {
 
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
+
+	@Autowired
+	private ServerProperties properties;
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorAttributes.class, search = SearchStrategy.CURRENT)
@@ -86,7 +91,8 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
-		container.addErrorPages(new ErrorPage(this.errorPath));
+		container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
+				+ this.errorPath));
 	}
 
 	@Configuration
