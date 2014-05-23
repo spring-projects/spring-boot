@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Christian Dupuis
  */
-public class SimpleDataSourceHealthIndicator implements HealthIndicator {
+public class SimpleDataSourceHealthIndicator extends AbstractHealthIndicator {
 
 	private DataSource dataSource;
 
@@ -63,7 +63,6 @@ public class SimpleDataSourceHealthIndicator implements HealthIndicator {
 	/**
 	 * Create a new {@link SimpleDataSourceHealthIndicator} using the specified
 	 * datasource.
-	 * 
 	 * @param dataSource the data source
 	 */
 	public SimpleDataSourceHealthIndicator(DataSource dataSource) {
@@ -72,38 +71,37 @@ public class SimpleDataSourceHealthIndicator implements HealthIndicator {
 	}
 
 	@Override
-	public Health health() {
-		Health health = new Health();
-		health.up();
+	protected Health doHealthCheck() throws Exception {
+		if (this.dataSource == null) {
+			return Health.up().withDetail("database", "unknown");
+		}
+		return doDataSourceHealthCheck();
+	}
 
-		String product = "unknown";
-		if (this.dataSource != null) {
+	private Health doDataSourceHealthCheck() throws Exception {
+		String product = getProduct();
+		Health health = Health.up().withDetail("database", product);
+		String query = detectQuery(product);
+		if (StringUtils.hasText(query)) {
 			try {
-				product = this.jdbcTemplate.execute(new ConnectionCallback<String>() {
-
-					@Override
-					public String doInConnection(Connection connection)
-							throws SQLException, DataAccessException {
-						return connection.getMetaData().getDatabaseProductName();
-					}
-				});
-				health.withDetail("database", product);
+				health = health.withDetail("hello",
+						this.jdbcTemplate.queryForObject(query, Object.class));
 			}
-			catch (DataAccessException ex) {
-				health.down().withException(ex);
-			}
-			String query = detectQuery(product);
-			if (StringUtils.hasText(query)) {
-				try {
-					health.withDetail("hello",
-							this.jdbcTemplate.queryForObject(query, Object.class));
-				}
-				catch (Exception ex) {
-					health.down().withException(ex);
-				}
+			catch (Exception ex) {
+				return Health.down().withDetail("database", product).withException(ex);
 			}
 		}
 		return health;
+	}
+
+	private String getProduct() {
+		return this.jdbcTemplate.execute(new ConnectionCallback<String>() {
+			@Override
+			public String doInConnection(Connection connection) throws SQLException,
+					DataAccessException {
+				return connection.getMetaData().getDatabaseProductName();
+			}
+		});
 	}
 
 	protected String detectQuery(String product) {

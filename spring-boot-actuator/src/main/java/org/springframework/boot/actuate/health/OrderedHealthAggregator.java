@@ -66,14 +66,14 @@ public class OrderedHealthAggregator extends AbstractHealthAggregator {
 	}
 
 	@Override
-	protected Status aggregateStatus(List<Status> status) {
+	protected Status aggregateStatus(List<Status> candidates) {
 		// If no status is given return UNKNOWN
-		if (status.size() == 0) {
+		if (candidates.size() == 0) {
 			return Status.UNKNOWN;
 		}
 		// Sort given Status instances by configured order
-		Collections.sort(status, new StatusComparator(this.statusOrder));
-		return status.get(0);
+		Collections.sort(candidates, new StatusComparator(this.statusOrder));
+		return candidates.get(0);
 	}
 
 	/**

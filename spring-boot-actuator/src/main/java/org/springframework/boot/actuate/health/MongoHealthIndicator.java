@@ -38,9 +38,9 @@ public class MongoHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(Health health) throws Exception {
+	protected Health doHealthCheck() throws Exception {
 		CommandResult result = this.mongoTemplate.executeCommand("{ serverStatus: 1 }");
-		health.up().withDetail("version", result.getString("version"));
+		return Health.up().withDetail("version", result.getString("version"));
 	}
 
 }

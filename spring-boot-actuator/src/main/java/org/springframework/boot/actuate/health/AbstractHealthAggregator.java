@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,21 +32,21 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 
 	@Override
 	public final Health aggregate(Map<String, Health> healths) {
-		Health health = new Health();
-		List<Status> status = new ArrayList<Status>();
+		List<Status> statusCandidates = new ArrayList<Status>();
+		Map<String, Object> details = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, Health> entry : healths.entrySet()) {
-			health.withDetail(entry.getKey(), entry.getValue());
-			status.add(entry.getValue().getStatus());
+			details.put(entry.getKey(), entry.getValue());
+			statusCandidates.add(entry.getValue().getStatus());
 		}
-		health.status(aggregateStatus(status));
-		return health;
+		return new Health(aggregateStatus(statusCandidates), details);
 	}
 
 	/**
-	 * Actual aggregation logic.
-	 * @param status list of given {@link Status} instances to aggregate
-	 * @return aggregated {@link Status}
+	 * Return the single 'aggregate' status that should be used from the specified
+	 * candidates.
+	 * @param candidates
+	 * @return a single status
 	 */
-	protected abstract Status aggregateStatus(List<Status> status);
+	protected abstract Status aggregateStatus(List<Status> candidates);
 
 }

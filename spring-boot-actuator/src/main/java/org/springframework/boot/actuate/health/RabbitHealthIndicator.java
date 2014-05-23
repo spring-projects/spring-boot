@@ -41,17 +41,19 @@ public class RabbitHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(Health health) throws Exception {
-		health.up().withDetail("version",
-				this.rabbitTemplate.execute(new ChannelCallback<String>() {
+	protected Health doHealthCheck() throws Exception {
+		return Health.up().withDetail("version", getVersion());
+	}
 
-					@Override
-					public String doInRabbit(Channel channel) throws Exception {
-						Map<String, Object> serverProperties = channel.getConnection()
-								.getServerProperties();
-						return serverProperties.get("version").toString();
-					}
-				}));
+	private String getVersion() {
+		return this.rabbitTemplate.execute(new ChannelCallback<String>() {
+			@Override
+			public String doInRabbit(Channel channel) throws Exception {
+				Map<String, Object> serverProperties = channel.getConnection()
+						.getServerProperties();
+				return serverProperties.get("version").toString();
+			}
+		});
 	}
 
 }

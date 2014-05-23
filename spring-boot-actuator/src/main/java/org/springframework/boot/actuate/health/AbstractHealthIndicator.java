@@ -21,7 +21,7 @@ package org.springframework.boot.actuate.health;
  * {@link Health} instance and error handling.
  * <p>
  * This implementation is only suitable if an {@link Exception} raised from
- * {@link #doHealthCheck(Health)} should create a {@link Status#DOWN} health status.
+ * {@link #doHealthCheck()} should create a {@link Status#DOWN} health status.
  * 
  * @author Christian Dupuis
  * @since 1.1.0
@@ -30,21 +30,19 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 
 	@Override
 	public final Health health() {
-		Health health = new Health();
 		try {
-			doHealthCheck(health);
+			return doHealthCheck();
 		}
 		catch (Exception ex) {
-			health.down().withException(ex);
+			return Health.down(ex);
 		}
-		return health;
 	}
 
 	/**
 	 * Actual health check logic.
-	 * @param health {@link Health} instance of report status.
+	 * @return the {@link Health}
 	 * @throws Exception any {@link Exception} that should create a {@link Status#DOWN}
 	 * system status.
 	 */
-	protected abstract void doHealthCheck(Health health) throws Exception;
+	protected abstract Health doHealthCheck() throws Exception;
 }
