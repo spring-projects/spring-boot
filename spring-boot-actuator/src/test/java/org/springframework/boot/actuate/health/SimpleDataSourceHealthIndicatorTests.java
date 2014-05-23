@@ -27,8 +27,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -78,7 +80,7 @@ public class SimpleDataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(this.dataSource);
 		this.indicator.setQuery("SELECT COUNT(*) from BAR");
 		Health health = this.indicator.health();
-		assertNotNull(health.getDetails().get("database"));
+		assertThat(health.getDetails().get("database"), notNullValue());
 		assertEquals(Status.DOWN, health.getStatus());
 	}
 

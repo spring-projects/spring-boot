@@ -25,8 +25,8 @@ package org.springframework.boot.actuate.health;
 public class VanillaHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
-	protected void doHealthCheck(Health health) throws Exception {
-		health.up();
+	protected Health doHealthCheck() throws Exception {
+		return Health.up();
 	}
 
 }

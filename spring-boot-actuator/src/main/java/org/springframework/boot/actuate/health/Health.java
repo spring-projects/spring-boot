@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -29,8 +29,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
- * Value object used to carry information about the health information of a component or
- * subsystem.
+ * Carries information about the health of a component or subsystem.
  * <p>
  * {@link Health} contains a {@link Status} to express the state of a component or
  * subsystem and some additional details to carry some contextual information.
@@ -39,68 +38,52 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * in a {@link HealthIndicator} would be:
  * 
  * <pre class="code">
- * Health health = new Health();
  * try {
  * 	// do some test to determine state of component
- * 	health.up().withDetail(&quot;version&quot;, &quot;1.1.2&quot;);
+ * 	return Health.up(&quot;version&quot;, &quot;1.1.2&quot;);
  * }
  * catch (Exception ex) {
- * 	health.down().withException(ex);
+ * 	return Health.down(ex);
  * }
- * return health;
  * </pre>
  * 
  * @author Christian Dupuis
+ * @author Phillip Webb
  * @since 1.1.0
  */
 @JsonInclude(Include.NON_EMPTY)
-public class Health {
+public final class Health {
 
-	private Status status;
+	private static final Map<String, Object> NO_DETAILS = Collections
+			.<String, Object> emptyMap();
 
-	private Map<String, Object> details;
+	private final Status status;
 
-	public Health() {
-		this(Status.UNKNOWN);
-	}
+	private final Map<String, Object> details;
 
-	public Health(Status status) {
-		this.status = status;
-		this.details = new LinkedHashMap<String, Object>();
-	}
-
-	public Health status(Status status) {
+	/**
+	 * Create a new {@link Health} instance with the specified status and details.
+	 * @param status the status
+	 * @param details the details or {@code null}
+	 */
+	public Health(Status status, Map<String, ?> details) {
 		Assert.notNull(status, "Status must not be null");
 		this.status = status;
-		return this;
+		this.details = Collections.unmodifiableMap(details == null ? NO_DETAILS
+				: new LinkedHashMap<String, Object>(details));
 	}
 
-	public Health up() {
-		return status(Status.UP);
-	}
-
-	public Health down() {
-		return status(Status.DOWN);
-	}
-
-	public Health withException(Exception ex) {
-		Assert.notNull(ex, "Exception must not be null");
-		return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
-	}
-
-	@JsonAnySetter
-	public Health withDetail(String key, Object data) {
-		Assert.notNull(key, "Key must not be null");
-		Assert.notNull(data, "Data must not be null");
-		this.details.put(key, data);
-		return this;
-	}
-
+	/**
+	 * @return the status of the health (never {@code null})
+	 */
 	@JsonUnwrapped
 	public Status getStatus() {
 		return this.status;
 	}
 
+	/**
+	 * @return the details of the health or an empty map.
+	 */
 	@JsonAnyGetter
 	public Map<String, Object> getDetails() {
 		return this.details;
@@ -112,19 +95,105 @@ public class Health {
 			return true;
 		}
 		if (obj != null && obj instanceof Health) {
-			return ObjectUtils.nullSafeEquals(this.status, ((Health) obj).status)
-					&& ObjectUtils.nullSafeEquals(this.details, ((Health) obj).details);
+			Health other = (Health) obj;
+			return this.status.equals(other.status) && this.details.equals(other.details);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		int hashCode = 0;
-		if (this.status != null) {
-			hashCode = this.status.hashCode();
-		}
+		int hashCode = this.status.hashCode();
 		return 13 * hashCode + this.details.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return getStatus() + " " + getDetails();
+	}
+
+	/**
+	 * Create a new {@link Health} object from this one, containing an additional
+	 * exception detail.
+	 * @param ex the exception
+	 * @return a new {@link Health} instance
+	 */
+	public Health withException(Exception ex) {
+		Assert.notNull(ex, "Exception must not be null");
+		return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
+	}
+
+	/**
+	 * Create a new {@link Health} object from this one, containing an additional detail.
+	 * @param key the detail key
+	 * @param data the detail data
+	 * @return a new {@link Health} instance
+	 */
+	@JsonAnySetter
+	public Health withDetail(String key, Object data) {
+		Assert.notNull(key, "Key must not be null");
+		Assert.notNull(data, "Data must not be null");
+		Map<String, Object> details = new LinkedHashMap<String, Object>(this.details);
+		details.put(key, data);
+		return new Health(this.status, details);
+	}
+
+	/**
+	 * Create a new {@link Health} instance with an {@link Status#UNKNOWN} status.
+	 * @return a new {@link Health} instance
+	 */
+	public static Health unknown() {
+		return status(Status.UNKNOWN);
+	}
+
+	/**
+	 * Create a new {@link Health} instance with an {@link Status#UP} status.
+	 * @return a new {@link Health} instance
+	 */
+	public static Health up() {
+		return status(Status.UP);
+	}
+
+	/**
+	 * Create a new {@link Health} instance with an {@link Status#DOWN} status an the
+	 * specified exception details.
+	 * @param ex the exception
+	 * @return a new {@link Health} instance
+	 */
+	public static Health down(Exception ex) {
+		return down().withException(ex);
+	}
+
+	/**
+	 * Create a new {@link Health} instance with a {@link Status#DOWN} status.
+	 * @return a new {@link Health} instance
+	 */
+	public static Health down() {
+		return status(Status.DOWN);
+	}
+
+	/**
+	 * Create a new {@link Health} instance with an {@link Status#OUT_OF_SERVICE} status.
+	 * @return a new {@link Health} instance
+	 */
+	public static Health outOfService() {
+		return status(Status.OUT_OF_SERVICE);
+	}
+
+	/**
+	 * Create a new {@link Health} instance with a specific status code.
+	 * @return a new {@link Health} instance
+	 */
+	public static Health status(String statusCode) {
+		return status(new Status(statusCode));
+	}
+
+	/**
+	 * Create a new {@link Health} instance with a specific {@link Status}.
+	 * @return a new {@link Health} instance
+	 */
+	public static Health status(Status status) {
+		return new Health(status, null);
 	}
 
 }

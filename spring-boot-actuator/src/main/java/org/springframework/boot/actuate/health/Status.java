@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @since 1.1.0
  */
 @JsonInclude(Include.NON_EMPTY)
-public class Status {
+public final class Status {
 
 	/**
 	 * Convenient constant value representing unknown state

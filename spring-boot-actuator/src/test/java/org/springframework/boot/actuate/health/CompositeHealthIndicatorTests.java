@@ -34,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link CompositeHealthIndicator}
- *
+ * 
  * @author Tyler J. Frederick
  * @author Phillip Webb
  * @author Christian Dupuis
@@ -55,9 +55,9 @@ public class CompositeHealthIndicatorTests {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.one.health()).willReturn(new Health().withDetail("1", "1"));
-		given(this.two.health()).willReturn(new Health().withDetail("2", "2"));
-		given(this.three.health()).willReturn(new Health().withDetail("3", "3"));
+		given(this.one.health()).willReturn(Health.unknown().withDetail("1", "1"));
+		given(this.two.health()).willReturn(Health.unknown().withDetail("2", "2"));
+		given(this.three.health()).willReturn(Health.unknown().withDetail("3", "3"));
 
 		this.healthAggregator = new OrderedHealthAggregator();
 	}
@@ -72,9 +72,9 @@ public class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 		assertThat(result.getDetails().size(), equalTo(2));
 		assertThat(result.getDetails(),
-				hasEntry("one", (Object) new Health().withDetail("1", "1")));
+				hasEntry("one", (Object) Health.unknown().withDetail("1", "1")));
 		assertThat(result.getDetails(),
-				hasEntry("two", (Object) new Health().withDetail("2", "2")));
+				hasEntry("two", (Object) Health.unknown().withDetail("2", "2")));
 	}
 
 	@Test
@@ -88,11 +88,11 @@ public class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 		assertThat(result.getDetails().size(), equalTo(3));
 		assertThat(result.getDetails(),
-				hasEntry("one", (Object) new Health().withDetail("1", "1")));
+				hasEntry("one", (Object) Health.unknown().withDetail("1", "1")));
 		assertThat(result.getDetails(),
-				hasEntry("two", (Object) new Health().withDetail("2", "2")));
+				hasEntry("two", (Object) Health.unknown().withDetail("2", "2")));
 		assertThat(result.getDetails(),
-				hasEntry("three", (Object) new Health().withDetail("3", "3")));
+				hasEntry("three", (Object) Health.unknown().withDetail("3", "3")));
 	}
 
 	@Test
@@ -104,9 +104,9 @@ public class CompositeHealthIndicatorTests {
 		Health result = composite.health();
 		assertThat(result.getDetails().size(), equalTo(2));
 		assertThat(result.getDetails(),
-				hasEntry("one", (Object) new Health().withDetail("1", "1")));
+				hasEntry("one", (Object) Health.unknown().withDetail("1", "1")));
 		assertThat(result.getDetails(),
-				hasEntry("two", (Object) new Health().withDetail("2", "2")));
+				hasEntry("two", (Object) Health.unknown().withDetail("2", "2")));
 	}
 
 	@Test

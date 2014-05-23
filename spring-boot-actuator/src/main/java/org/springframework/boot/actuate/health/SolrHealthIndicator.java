@@ -20,7 +20,7 @@ import org.apache.solr.client.solrj.SolrServer;
 
 /**
  * {@link HealthIndicator} for Apache Solr
- *
+ * 
  * @author Andy Wilkinson
  * @since 1.1.0
  */
@@ -33,9 +33,9 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected void doHealthCheck(Health health) throws Exception {
-		this.solrServer.ping();
-		health.up().withDetail("solrStatus",
-				this.solrServer.ping().getResponse().get("status"));
+	protected Health doHealthCheck() throws Exception {
+		Object status = this.solrServer.ping().getResponse().get("status");
+		return Health.up().withDetail("solrStatus", status);
 	}
+
 }
