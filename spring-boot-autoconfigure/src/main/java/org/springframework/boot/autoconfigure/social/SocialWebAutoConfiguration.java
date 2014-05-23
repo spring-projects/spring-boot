@@ -38,6 +38,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection support.
  * 
  * @author Craig Walls
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ ConnectController.class })

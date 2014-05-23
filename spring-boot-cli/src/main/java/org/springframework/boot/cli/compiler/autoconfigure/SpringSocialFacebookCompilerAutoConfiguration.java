@@ -27,6 +27,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
  * {@link CompilerAutoConfiguration} for Spring Social Facebook.
  * 
  * @author Craig Walls
+ * @since 1.1.0
  */
 public class SpringSocialFacebookCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
