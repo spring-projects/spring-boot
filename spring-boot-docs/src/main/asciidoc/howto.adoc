@@ -1283,7 +1283,7 @@ you encounter a server error (machine clients consuming JSON and other media typ
 see a sensible response with the right error code). To switch it off you can set
 `error.whitelabel.enabled=false`, but normally in addition or alternatively to that you
 will want to add your own error page replacing the whitelabel one. Exactly how you do this
-dependns on the templating technology that you are using. For example, if you are using
+depends on the templating technology that you are using. For example, if you are using
 Thymeleaf you would add an `error.html` template and if you are using FreeMarker you would
 add an `error.ftl` template. In general what you need is a `View` that resolves with a name
 of `error`, and/or a `@Controller` that handles the `/error` path. Unless you replaced some
@@ -1453,7 +1453,7 @@ you would add the following:
 ----
 
 WARNING: Each Spring Boot release is designed and tested against a specific set of
-third-party dependencies. Overriding versions may cause compatibilty issues.
+third-party dependencies. Overriding versions may cause compatibility issues.
 
 
 

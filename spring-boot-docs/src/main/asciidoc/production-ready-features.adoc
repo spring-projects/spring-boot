@@ -178,7 +178,7 @@ interface needs to be provided or the default implementation has to be configure
 
 Assuming a new `Status` with code `FATAL` is being used in one of your `HealthIndicator` 
 implementations. To configure the severity or order add the following to your application properties:
-`healt.status.order: FATAL, DOWN, UNKOWN, UP`.
+`health.status.order: FATAL, DOWN, UNKNOWN, UP`.
 
 
 
@@ -289,7 +289,7 @@ in your `application.properties`:
 === Customizing the management server context path
 Sometimes it is useful to group all management endpoints under a single path. For example,
 your application might already use `/info` for another purpose. You can use the
-`management.contextPath` property to set a prefix for your manangement endpoint:
+`management.contextPath` property to set a prefix for your management endpoint:
 
 [source,properties,indent=0]
 ----
@@ -605,7 +605,7 @@ decrement). Metrics for all HTTP requests are automatically recorded, so if you 
 		"mem.free": 933858,
 		"processors": 8,
 		"threads": 15,
-		"threads.deamon": 11,
+		"threads.daemon": 11,
 		"threads.peak": 15,
 		"uptime": 494836
 	}
@@ -668,15 +668,15 @@ http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitorin
 Metric service implementations are usually bound to a
 {sc-spring-boot-actuator}/metrics/repository/MetricRepository.{sc-ext}[`MetricRepository`].
 A `MetricRepository` is responsible for storing and retrieving metric information. Spring
-Boot provides an `InMemoryMetricRespository` and a `RedisMetricRepository` out of the
+Boot provides an `InMemoryMetricRepository` and a `RedisMetricRepository` out of the
 box (the in-memory repository is the default) but you can also write your own. The
 `MetricRepository` interface is actually composed of higher level `MetricReader` and
 `MetricWriter` interfaces. For full details refer to the
 {dc-spring-boot-actuator}/metrics/repository/MetricRepository.{dc-ext}[Javadoc].
 
 There's nothing to stop you hooking a `MetricRepository` with back-end storage directly
-into your app, but we recommend using the default `InMemoryMetricRespository` 
-(possibly with a custom `Map` instance if you are worried about heap usage) and 
+into your app, but we recommend using the default `InMemoryMetricRepository`
+(possibly with a custom `Map` instance if you are worried about heap usage) and
 populating a back-end repository through a scheduled export job. In that way you get
 some buffering in memory of the metric values and you can reduce the network
 chatter by exporting less frequently or in batches. Spring Boot provides

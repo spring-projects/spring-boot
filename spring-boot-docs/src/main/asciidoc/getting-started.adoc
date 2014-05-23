@@ -120,7 +120,7 @@ Here is a typical `pom.xml` file:
 		</build>
 
 ifeval::["{spring-boot-repo}" != "release"]
-		<!-- Add Spring repoistories -->
+		<!-- Add Spring repositories -->
 		<!-- (you don't need this if you are using a .RELEASE version) -->
 		<repositories>
 			<repository>
@@ -487,7 +487,7 @@ currently have.
 
 The `mvn dependency:tree` command prints tree representation of your project dependencies.
 You can see that `spring-boot-starter-parent` provides no
-dependenciesby itself. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
+dependencies by itself. Let's edit our `pom.xml` and add the `spring-boot-starter-web` dependency
 just below the `parent` section:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
