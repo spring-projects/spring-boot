@@ -171,12 +171,12 @@ Spring Boot adds the `HealthIndicator` instances automatically if beans of type 
 `MongoTemplate`, `RedisConnectionFactory`, `RabbitTemplate` are present in the `ApplicationContext`.
 
 Besides implementing custom `HealthIndicator`s and using out-of-box {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
-types, it is also possible to introduce custom `Status` types for different or more complex system 
+types, it is also possible to introduce custom `Status` types for different or more complex system
 states. In that case a custom implementation of the {sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`]
-interface needs to be provided or the default implementation has to be configured using the 
-`health.status.order` configuration property. 
+interface needs to be provided or the default implementation has to be configured using the
+`health.status.order` configuration property.
 
-Assuming a new `Status` with code `FATAL` is being used in one of your `HealthIndicator` 
+Assuming a new `Status` with code `FATAL` is being used in one of your `HealthIndicator`
 implementations. To configure the severity or order add the following to your application properties:
 `health.status.order: FATAL, DOWN, UNKNOWN, UP`.
 
