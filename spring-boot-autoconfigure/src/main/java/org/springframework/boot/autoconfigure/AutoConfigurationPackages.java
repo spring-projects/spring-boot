@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -64,11 +64,20 @@ public abstract class AutoConfigurationPackages {
 		}
 	}
 
-	static void set(BeanDefinitionRegistry registry, String packageName) {
+	/**
+	 * Programmatically set the auto-configuration package names. You can use this method
+	 * to manually define the base packages that will be used for a given
+	 * {@link BeanDefinitionRegistry}. Generally it's recommended that you don't call this
+	 * method directly, but instead rely on the default convention where the package name
+	 * is set from your {@code @EnableAutoConfiguration} configuration class.
+	 * @param registry the bean definition registry
+	 * @param packageNames the pacakge names to set
+	 */
+	public static void set(BeanDefinitionRegistry registry, String... packageNames) {
 		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
 		beanDefinition.setBeanClass(BasePackages.class);
 		beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-				packageName);
+				packageNames);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		registry.registerBeanDefinition(BEAN, beanDefinition);
 	}
@@ -97,9 +106,14 @@ public abstract class AutoConfigurationPackages {
 
 		private boolean loggedBasePackageInfo;
 
-		public BasePackages(String name) {
-			this.packages = (StringUtils.hasText(name) ? Collections.singletonList(name)
-					: Collections.<String> emptyList());
+		public BasePackages(String... names) {
+			List<String> packages = new ArrayList<String>();
+			for (String name : names) {
+				if (StringUtils.hasText(name)) {
+					packages.add(name);
+				}
+			}
+			this.packages = packages;
 		}
 
 		public List<String> get() {
