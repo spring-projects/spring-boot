@@ -44,13 +44,14 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for FreeMarker.
- * 
+ *
  * @author Andy Wilkinson
  * @author Dave Syer
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(freemarker.template.Configuration.class)
+@ConditionalOnClass({ freemarker.template.Configuration.class,
+		FreeMarkerConfigurationFactory.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(FreeMarkerProperties.class)
 public class FreeMarkerAutoConfiguration {
