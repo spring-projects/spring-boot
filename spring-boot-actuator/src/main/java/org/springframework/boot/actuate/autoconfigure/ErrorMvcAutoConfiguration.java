@@ -23,6 +23,7 @@ import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.web.BasicErrorController;
 import org.springframework.boot.actuate.web.ErrorController;
@@ -36,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration.DefaultTemplateResolverConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
@@ -73,6 +75,9 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 	@Value("${error.path:/error}")
 	private String errorPath = "/error";
 
+	@Autowired
+	private ServerProperties properties;
+
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
 	public BasicErrorController basicErrorController() {
@@ -81,7 +86,8 @@ public class ErrorMvcAutoConfiguration implements EmbeddedServletContainerCustom
 
 	@Override
 	public void customize(ConfigurableEmbeddedServletContainer container) {
-		container.addErrorPages(new ErrorPage(this.errorPath));
+		container.addErrorPages(new ErrorPage(this.properties.getServletPrefix()
+				+ this.errorPath));
 	}
 
 	@Configuration
