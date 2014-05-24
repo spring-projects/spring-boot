@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Collection;
 
 import javax.validation.constraints.NotNull;
 
@@ -314,6 +315,32 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			}
 		}
 
+	}
+
+	public String[] getPathsArray(Collection<String> paths) {
+		String[] result = new String[paths.size()];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public String[] getPathsArray(String[] paths) {
+		String[] result = new String[paths.length];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public String getPath(String path) {
+		String prefix = getServletPrefix();
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		return prefix + path;
 	}
 
 }
