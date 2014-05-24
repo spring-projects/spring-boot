@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -141,6 +142,9 @@ public class SpringBootWebSecurityConfiguration {
 		@Autowired
 		private SecurityProperties security;
 
+		@Autowired
+		private ServerProperties server;
+
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 		}
@@ -149,7 +153,8 @@ public class SpringBootWebSecurityConfiguration {
 		public void init(WebSecurity builder) throws Exception {
 			IgnoredRequestConfigurer ignoring = builder.ignoring();
 			List<String> ignored = getIgnored(this.security);
-			ignoring.antMatchers(ignored.toArray(new String[0]));
+			String[] paths = this.server.getPathsArray(ignored);
+			ignoring.antMatchers(paths);
 		}
 
 	}

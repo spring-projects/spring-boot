@@ -101,7 +101,7 @@ public class BatchAutoConfiguration {
 		JobExplorerFactoryBean factory = new JobExplorerFactoryBean();
 		factory.setDataSource(dataSource);
 		factory.afterPropertiesSet();
-		return (JobExplorer) factory.getObject();
+		return factory.getObject();
 	}
 
 	@Bean

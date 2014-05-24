@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration
 import org.springframework.boot.autoconfigure.security.SecurityPrequisite;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -122,6 +123,9 @@ public class ManagementSecurityAutoConfiguration {
 		@Autowired
 		private SecurityProperties security;
 
+		@Autowired
+		private ServerProperties server;
+
 		@Override
 		public void configure(WebSecurity builder) throws Exception {
 		}
@@ -145,7 +149,8 @@ public class ManagementSecurityAutoConfiguration {
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			ignoring.antMatchers(ignored.toArray(new String[0]));
+			String[] paths = this.server.getPathsArray(ignored);
+			ignoring.antMatchers(paths);
 		}
 
 		private String normalizePath(String errorPath) {
@@ -180,6 +185,9 @@ public class ManagementSecurityAutoConfiguration {
 		@Autowired
 		private ManagementServerProperties management;
 
+		@Autowired
+		private ServerProperties server;
+
 		@Autowired(required = false)
 		private EndpointHandlerMapping endpointHandlerMapping;
 
@@ -194,6 +202,7 @@ public class ManagementSecurityAutoConfiguration {
 					http.requiresChannel().anyRequest().requiresSecure();
 				}
 				http.exceptionHandling().authenticationEntryPoint(entryPoint());
+				paths = this.server.getPathsArray(paths);
 				http.requestMatchers().antMatchers(paths);
 				http.authorizeRequests().anyRequest()
 						.hasRole(this.management.getSecurity().getRole()) //
