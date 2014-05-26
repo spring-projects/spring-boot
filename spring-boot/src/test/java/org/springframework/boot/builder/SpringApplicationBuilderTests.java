@@ -22,7 +22,7 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Test;
-import org.springframework.boot.builder.packagetoscan.LoadMe;
+import org.springframework.boot.builder.packagetoscan.ConfigFromScannedPackage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -223,12 +223,12 @@ public class SpringApplicationBuilderTests {
 	}
 
     @Test
-    public void relaxedBinderIgnoringSystemProperties() throws Exception {
+    public void shouldBindSystemProperties() throws Exception {
         System.setProperty("spring.main.sources", "org.springframework.boot.builder.packagetoscan");
         SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class).web(false);
         context = application.run();
         assertEquals(2, application.application().getSources().size());
-        assertNotNull(context.getBean(LoadMe.class));
+        assertNotNull(context.getBean(ConfigFromScannedPackage.class));
     }
 
 	@Configuration
