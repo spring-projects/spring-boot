@@ -1660,7 +1660,7 @@ management one, something like:
 	@RunWith(SpringJUnit4ClassRunner.class)
 	@SpringApplicationConfiguration(classes = MyApplication.class)
 	@WebAppConfiguration
-	@IntegrationTest({"server.port=0", "management.port"})
+	@IntegrationTest({"server.port=0", "management.port=0"})
 	public class SomeIntegrationTests { ... }
 
 ----
