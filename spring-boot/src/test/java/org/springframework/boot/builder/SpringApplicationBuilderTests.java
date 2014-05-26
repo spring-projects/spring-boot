@@ -22,6 +22,7 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.boot.builder.packagetoscan.ConfigFromScannedPackage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -36,6 +37,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
@@ -218,6 +220,19 @@ public class SpringApplicationBuilderTests {
 				});
 		this.context = application.run();
 		assertEquals(3, application.application().getInitializers().size());
+	}
+
+	@Test
+	public void shouldBindSystemProperties() throws Exception {
+		try {
+			System.setProperty("spring.main.sources", "org.springframework.boot.builder.packagetoscan");
+			SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class).web(false);
+			context = application.run();
+			assertEquals(2, application.application().getSources().size());
+ 			assertNotNull(context.getBean(ConfigFromScannedPackage.class));
+		} finally {
+			System.clearProperty("spring.main.sources");
+		}
 	}
 
 	@Configuration
