@@ -82,6 +82,7 @@ public class ConfigFileApplicationListenerTests {
 	public void cleanup() {
 		System.clearProperty("my.property");
 		System.clearProperty("spring.config.location");
+		System.clearProperty("spring.main.showBanner");
 	}
 
 	@Test
@@ -554,6 +555,17 @@ public class ConfigFileApplicationListenerTests {
 	public void bindsToSpringApplication() throws Exception {
 		// gh-346
 		this.initializer.setSearchNames("bindtoapplication");
+		this.initializer.onApplicationEvent(this.event);
+		SpringApplication application = this.event.getSpringApplication();
+		Field field = ReflectionUtils.findField(SpringApplication.class, "showBanner");
+		field.setAccessible(true);
+		assertThat((Boolean) field.get(application), equalTo(false));
+	}
+
+	@Test
+	public void bindsSystemPropertyToSpringApplication() throws Exception {
+		// gh-951
+		System.setProperty("spring.main.showBanner", "false");
 		this.initializer.onApplicationEvent(this.event);
 		SpringApplication application = this.event.getSpringApplication();
 		Field field = ReflectionUtils.findField(SpringApplication.class, "showBanner");
