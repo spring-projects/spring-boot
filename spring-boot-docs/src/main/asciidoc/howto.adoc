@@ -974,13 +974,13 @@ JDBC or JPA (then that one will be picked up by any `@Autowired` injections).
 	@Primary
 	@ConfigurationProperties(prefix="datasource.primary")
 	public DataSource primaryDataSource() {
-		return new FancyDataSource();
+		return DataSourceBuilder.create().build();
 	}
 
 	@Bean
 	@ConfigurationProperties(prefix="datasource.secondary")
 	public DataSource secondaryDataSource() {
-		return new FancyDataSource();
+		return DataSourceBuilder.create().build();
 	}
 ----
 
@@ -1206,6 +1206,13 @@ flyway-core for details of available settings like schemas etc. In
 addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
 that can be used to disable the migrations, or switch off the location checking.
+
+By default Flyway will autowire the (`@Primary`) `DataSource` in your context and
+use that for migrations. If you like to use a different `DataSource` you can create
+one and mark its `@Bean` as `@FlywayDataSource` - if you do that remember to create
+another one and mark it as `@Primary` if you want 2 data sources. 
+Or you can use Flyway's native `DataSource` by setting `flyway.[url,user,password]` 
+in external properties.
 
 There is a {github-code}/spring-boot-samples/spring-boot-sample-flyway[Flyway sample] so
 you can see how to set things up.

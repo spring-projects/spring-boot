@@ -61,8 +61,12 @@ public class FlywayAutoConfiguration {
 		@Autowired
 		private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-		@Autowired
+		@Autowired(required = false)
 		private DataSource dataSource;
+
+		@Autowired(required = false)
+		@FlywayDataSource
+		private DataSource flywayDataSource;
 
 		@PostConstruct
 		public void checkLocationExists() {
@@ -83,9 +87,19 @@ public class FlywayAutoConfiguration {
 
 		@Bean(initMethod = "migrate")
 		@ConfigurationProperties(prefix = "flyway")
-		public Flyway flyway(DataSource dataSource) {
+		public Flyway flyway() {
 			Flyway flyway = new Flyway();
-			flyway.setDataSource(dataSource);
+			if (this.properties.isCreateDataSource()) {
+				flyway.setDataSource(this.properties.getUrl(), this.properties.getUser(),
+						this.properties.getPassword(), this.properties.getInitSqls()
+								.toArray(new String[0]));
+			}
+			else if (this.flywayDataSource != null) {
+				flyway.setDataSource(this.flywayDataSource);
+			}
+			else {
+				flyway.setDataSource(this.dataSource);
+			}
 			return flyway;
 		}
 
