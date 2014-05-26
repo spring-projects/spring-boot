@@ -39,13 +39,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
  * {@link SitePreferenceHandler}. The site preference feature depends on a
  * {@link DeviceResolver} first being registered.
- *
+ * 
  * @author Roy Clarkson
- * @since 1.1
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ SitePreferenceHandlerInterceptor.class,
-	SitePreferenceHandlerMethodArgumentResolver.class })
+		SitePreferenceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(DeviceResolverAutoConfiguration.class)
 @ConditionalOnExpression("${spring.mobile.enableSitePreference:true}")
 public class SitePreferenceAutoConfiguration {
@@ -71,7 +71,7 @@ public class SitePreferenceAutoConfiguration {
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(sitePreferenceHandlerInterceptor);
+			registry.addInterceptor(this.sitePreferenceHandlerInterceptor);
 		}
 
 		@Override

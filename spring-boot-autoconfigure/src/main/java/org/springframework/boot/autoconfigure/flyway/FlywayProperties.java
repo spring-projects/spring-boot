@@ -30,7 +30,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * properties into the {@link Flyway} instance.
  * 
  * @author Dave Syer
- * 
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "flyway", ignoreUnknownFields = true)
@@ -83,7 +82,7 @@ public class FlywayProperties {
 	}
 
 	public String getPassword() {
-		return this.password == null ? "" : this.password;
+		return (this.password == null ? "" : this.password);
 	}
 
 	public void setPassword(String password) {
