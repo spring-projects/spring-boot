@@ -324,16 +324,19 @@ public class SpringApplication {
 			return context;
 		}
 		catch (Exception ex) {
-			for (SpringApplicationRunListener runListener : runListeners) {
-				finishWithException(runListener, context, ex);
+			try {
+				for (SpringApplicationRunListener runListener : runListeners) {
+					finishWithException(runListener, context, ex);
+				}
+				this.log.error("Application startup failed", ex);
 			}
-			if (context != null) {
-				context.close();
+			finally {
+				if (context != null) {
+					context.close();
+				}
 			}
 			ReflectionUtils.rethrowRuntimeException(ex);
 			return context;
-		}
-		finally {
 		}
 	}
 
