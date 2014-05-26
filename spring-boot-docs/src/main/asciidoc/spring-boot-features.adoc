@@ -1649,7 +1649,24 @@ interaction. For Example:
 To change the port you can add environment properties to `@IntegrationTest` as colon- or
 equals-separated name-value pairs, e.g. `@IntegrationTest("server.port:9000")`.
 
+As long as you use the same configuration, the context will be cached amongst different
+tests by default. You can therefore use this feature to run a battery of integration tests
+where the server would actually start prior to the tests. In that case, it would be better
+to make sure that your integration tests use a random port for the main server and the
+management one, something like:
 
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@RunWith(SpringJUnit4ClassRunner.class)
+	@SpringApplicationConfiguration(classes = MyApplication.class)
+	@WebAppConfiguration
+	@IntegrationTest({"server.port=0", "management.port"})
+	public class SomeIntegrationTests { ... }
+
+----
+
+See <<howto-discover-the-http-port-at-runtime>> for a description of how you can discover
+the actual port that was allocated for the duration of the tests.
 
 [[boot-features-test-utilities]]
 === Test utilities
