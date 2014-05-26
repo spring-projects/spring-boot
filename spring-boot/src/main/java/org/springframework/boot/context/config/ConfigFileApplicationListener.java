@@ -31,8 +31,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.bind.PropertySourcesPropertyValues;
-import org.springframework.boot.bind.RelaxedDataBinder;
+import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.boot.env.EnumerableCompositePropertySource;
@@ -54,6 +53,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 
 /**
  * {@link ApplicationListener} that configures the context environment by loading
@@ -171,9 +171,17 @@ public class ConfigFileApplicationListener implements
 	 */
 	protected void bindToSpringApplication(ConfigurableEnvironment environment,
 			SpringApplication application) {
-		RelaxedDataBinder binder = new RelaxedDataBinder(application, "spring.main");
+		PropertiesConfigurationFactory<SpringApplication> binder = new PropertiesConfigurationFactory<SpringApplication>(
+				application);
+		binder.setTargetName("spring.main");
 		binder.setConversionService(this.conversionService);
-		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources()));
+		binder.setPropertySources(environment.getPropertySources());
+		try {
+			binder.bindPropertiesToTarget();
+		}
+		catch (BindException e) {
+			throw new IllegalStateException("Cannot bind to SpringApplication", e);
+		}
 	}
 
 	/**
