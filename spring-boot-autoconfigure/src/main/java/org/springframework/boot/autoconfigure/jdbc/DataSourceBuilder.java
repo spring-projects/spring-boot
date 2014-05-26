@@ -50,6 +50,8 @@ public class DataSourceBuilder {
 
 	private ClassLoader classLoader;
 
+	private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
+
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	public static DataSourceBuilder create() {
@@ -67,8 +69,17 @@ public class DataSourceBuilder {
 	public DataSource build() {
 		Class<? extends DataSource> type = getType();
 		DataSource result = BeanUtils.instantiate(type);
+		maybeGetDriverClassName();
 		bind(result);
 		return result;
+	}
+
+	private void maybeGetDriverClassName() {
+		if (!this.properties.containsKey("driverClassName")) {
+			String cls = this.driverClassNameProvider.getDriverClassName(this.properties
+					.get("url"));
+			this.properties.put("driverClassName", cls);
+		}
 	}
 
 	private void bind(DataSource result) {

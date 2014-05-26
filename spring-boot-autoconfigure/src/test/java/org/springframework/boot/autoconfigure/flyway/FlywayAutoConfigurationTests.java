@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
 
+import javax.sql.DataSource;
+
 import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Before;
@@ -26,12 +28,16 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link LiquibaseAutoConfiguration}.
@@ -64,6 +70,29 @@ public class FlywayAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(Flyway.class).length);
+	}
+
+	@Test
+	public void testCreateDataSource() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa");
+		this.context
+				.register(EmbeddedDataSourceConfiguration.class,
+						FlywayAutoConfiguration.class,
+						PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertNotNull(flyway.getDataSource());
+	}
+
+	@Test
+	public void testFlywayDataSource() throws Exception {
+		this.context.register(FlywayDataSourceConfiguration.class,
+				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		Flyway flyway = this.context.getBean(Flyway.class);
+		assertNotNull(flyway.getDataSource());
 	}
 
 	@Test
@@ -112,5 +141,17 @@ public class FlywayAutoConfigurationTests {
 						FlywayAutoConfiguration.class,
 						PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
+	}
+
+	@Configuration
+	protected static class FlywayDataSourceConfiguration {
+
+		@FlywayDataSource
+		@Bean
+		public DataSource flywayDataSource() {
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest")
+					.username("sa").build();
+		}
+
 	}
 }

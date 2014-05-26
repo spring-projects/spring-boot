@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.flywaydb.core.Flyway;
@@ -41,6 +42,14 @@ public class FlywayProperties {
 
 	private boolean enabled = true;
 
+	private String user;
+
+	private String password;
+
+	private String url;
+
+	private List<String> initSqls = Collections.emptyList();
+
 	public void setLocations(List<String> locations) {
 		this.locations = locations;
 	}
@@ -63,5 +72,41 @@ public class FlywayProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public String getUser() {
+		return this.user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return this.password == null ? "" : this.password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public List<String> getInitSqls() {
+		return this.initSqls;
+	}
+
+	public void setInitSqls(List<String> initSqls) {
+		this.initSqls = initSqls;
+	}
+
+	public boolean isCreateDataSource() {
+		return this.url != null && this.user != null;
 	}
 }
