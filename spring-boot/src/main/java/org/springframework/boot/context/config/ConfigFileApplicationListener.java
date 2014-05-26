@@ -171,10 +171,10 @@ public class ConfigFileApplicationListener implements
 	 */
 	protected void bindToSpringApplication(ConfigurableEnvironment environment,
 			SpringApplication application) {
-        String springMainPropertiesPrefix = "spring.main";
+		String springMainPropertiesPrefix = "spring.main";
 		RelaxedDataBinder binder = new RelaxedDataBinder(application, springMainPropertiesPrefix);
 		binder.setConversionService(this.conversionService);
-        List<String> includePatterns = Collections.singletonList(springMainPropertiesPrefix + ".*");
+		List<String> includePatterns = Collections.singletonList(springMainPropertiesPrefix + ".*");
 		binder.bind(new PropertySourcesPropertyValues(environment.getPropertySources(), includePatterns, null));
 	}
 

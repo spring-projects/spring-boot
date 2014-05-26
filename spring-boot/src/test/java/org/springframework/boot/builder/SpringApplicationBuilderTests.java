@@ -222,14 +222,18 @@ public class SpringApplicationBuilderTests {
 		assertEquals(3, application.application().getInitializers().size());
 	}
 
-    @Test
-    public void shouldBindSystemProperties() throws Exception {
-        System.setProperty("spring.main.sources", "org.springframework.boot.builder.packagetoscan");
-        SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class).web(false);
-        context = application.run();
-        assertEquals(2, application.application().getSources().size());
-        assertNotNull(context.getBean(ConfigFromScannedPackage.class));
-    }
+	@Test
+	public void shouldBindSystemProperties() throws Exception {
+		try {
+			System.setProperty("spring.main.sources", "org.springframework.boot.builder.packagetoscan");
+			SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class).web(false);
+			context = application.run();
+			assertEquals(2, application.application().getSources().size());
+ 			assertNotNull(context.getBean(ConfigFromScannedPackage.class));
+		} finally {
+			System.clearProperty("spring.main.sources");
+		}
+	}
 
 	@Configuration
 	static class ExampleConfig {
