@@ -220,6 +220,21 @@ public class SpringApplicationBuilderTests {
 		assertEquals(3, application.application().getInitializers().size());
 	}
 
+	@Test
+	public void shouldOverrideDefaultPropertiesFileName() throws Exception {
+		//given
+		ConfigurableApplicationContext application = new SpringApplicationBuilder(ExampleConfig.class)
+				.configFileNames("some")
+				.web(false)
+				.run();
+
+		//when
+		String fooProperty = application.getEnvironment().getProperty("foo");
+
+		//then
+		assertThat(fooProperty, equalTo("spam"));
+	}
+
 	@Configuration
 	static class ExampleConfig {
 

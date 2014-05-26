@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -468,6 +469,23 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder listeners(ApplicationListener<?>... listeners) {
 		this.application.addListeners(listeners);
+		return this;
+	}
+
+	/**
+	 * Set custom properties files to be loaded instead of the default.
+	 * Works similarly to "spring.config.name" property.
+	 * @param configFileNames comma-separated list of properties files names
+	 *                        (excluding extension) to be loaded
+	 *                        {@link org.springframework.boot.context.config.ConfigFileApplicationListener#setSearchNames(String)}
+	 *
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder configFileNames(String configFileNames) {
+		ConfigFileApplicationListener configFileApplicationListener
+				= new ConfigFileApplicationListener();
+		configFileApplicationListener.setSearchNames(configFileNames);
+		this.application.addListeners(configFileApplicationListener);
 		return this;
 	}
 
