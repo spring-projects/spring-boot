@@ -1646,14 +1646,15 @@ interaction. For Example:
 	}
 ----
 
+NOTE: Spring's test framework will cache application contexts between tests. Therefore,
+as long as your tests share the same configuration, the time consuming process of starting
+and stopping the server will only happen once, regardless of the number of tests that
+actually run.
+
 To change the port you can add environment properties to `@IntegrationTest` as colon- or
 equals-separated name-value pairs, e.g. `@IntegrationTest("server.port:9000")`.
-
-As long as you use the same configuration, the context will be cached amongst different
-tests by default. You can therefore use this feature to run a battery of integration tests
-where the server would actually start prior to the tests. In that case, it would be better
-to make sure that your integration tests use a random port for the main server and the
-management one, something like:
+Additionally you can set the `server.port` and `management.port` properties to `0`
+in order to run your integration tests using random ports. For example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1661,12 +1662,17 @@ management one, something like:
 	@SpringApplicationConfiguration(classes = MyApplication.class)
 	@WebAppConfiguration
 	@IntegrationTest({"server.port=0", "management.port=0"})
-	public class SomeIntegrationTests { ... }
+	public class SomeIntegrationTests {
 
+		// ...
+
+	}
 ----
 
 See <<howto-discover-the-http-port-at-runtime>> for a description of how you can discover
 the actual port that was allocated for the duration of the tests.
+
+
 
 [[boot-features-test-utilities]]
 === Test utilities

@@ -179,8 +179,8 @@ public class ConfigFileApplicationListener implements
 		try {
 			binder.bindPropertiesToTarget();
 		}
-		catch (BindException e) {
-			throw new IllegalStateException("Cannot bind to SpringApplication", e);
+		catch (BindException ex) {
+			throw new IllegalStateException("Cannot bind to SpringApplication", ex);
 		}
 	}
 

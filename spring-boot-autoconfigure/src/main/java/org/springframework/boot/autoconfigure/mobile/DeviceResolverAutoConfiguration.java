@@ -42,7 +42,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 @ConditionalOnClass({ DeviceResolverHandlerInterceptor.class,
-	DeviceHandlerMethodArgumentResolver.class })
+		DeviceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class DeviceResolverAutoConfiguration {
 
@@ -67,7 +67,7 @@ public class DeviceResolverAutoConfiguration {
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(deviceResolverHandlerInterceptor);
+			registry.addInterceptor(this.deviceResolverHandlerInterceptor);
 		}
 
 		@Override

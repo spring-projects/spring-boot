@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -38,6 +35,9 @@ import org.springframework.mobile.device.DeviceResolverHandlerInterceptor;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link DeviceResolverAutoConfiguration}.
@@ -82,7 +82,8 @@ public class DeviceResolverAutoConfigurationTests {
 				DeviceResolverAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		context.refresh();
-		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context.getBean("requestMappingHandlerMapping");
+		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
+				.getBean("requestMappingHandlerMapping");
 		Field interceptorsField = ReflectionUtils.findField(
 				RequestMappingHandlerMapping.class, "interceptors");
 		interceptorsField.setAccessible(true);
