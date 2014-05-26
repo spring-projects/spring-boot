@@ -75,7 +75,8 @@ public class DataSourceBuilder {
 	}
 
 	private void maybeGetDriverClassName() {
-		if (!this.properties.containsKey("driverClassName")) {
+		if (!this.properties.containsKey("driverClassName")
+				&& this.properties.containsKey("url")) {
 			String cls = this.driverClassNameProvider.getDriverClassName(this.properties
 					.get("url"));
 			this.properties.put("driverClassName", cls);
