@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
  * 
  * @author Phillip Webb
  */
-public class TraceWebFilterAutoConfigurationTest {
+public class TraceWebFilterAutoConfigurationTests {
 
 	@Test
 	public void configureFilter() {
