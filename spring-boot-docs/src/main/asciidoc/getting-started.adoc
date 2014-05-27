@@ -551,7 +551,7 @@ that any HTTP request with the path "`/`" should be mapped to the `home` method.
 `@RestController` annotation tells Spring to render the resulting string directly
 back to the caller.
 
-TIP: The `@RestController` and`@RequestMapping` annotations are Spring MVC
+TIP: The `@RestController` and `@RequestMapping` annotations are Spring MVC
 annotations (they are not specific to Spring Boot). See the
 <{spring-reference}/#mvc>[MVC section] in the Spring
 Reference Documentation for more details.
