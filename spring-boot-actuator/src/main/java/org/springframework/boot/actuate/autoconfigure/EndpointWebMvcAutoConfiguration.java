@@ -65,6 +65,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -122,31 +124,17 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		if (event.getApplicationContext() == this.applicationContext) {
-			if (ManagementServerPort.get(this.applicationContext) == ManagementServerPort.DIFFERENT
+			ManagementServerPort managementPort = ManagementServerPort
+					.get(this.applicationContext);
+			if (managementPort == ManagementServerPort.DIFFERENT
 					&& this.applicationContext instanceof WebApplicationContext) {
 				createChildManagementContext();
 			}
-		}
-	}
-
-	// Put Servlets and Filters in their own nested class so they don't force early
-	// instantiation of ManagementServerProperties.
-	@Configuration
-	protected static class ApplicationContextFilterConfiguration {
-
-		@Bean
-		public Filter applicationContextIdFilter(ApplicationContext context) {
-			final String id = context.getId();
-			return new OncePerRequestFilter() {
-
-				@Override
-				protected void doFilterInternal(HttpServletRequest request,
-						HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
-					response.addHeader("X-Application-Context", id);
-					filterChain.doFilter(request, response);
-				}
-			};
+			if (managementPort == ManagementServerPort.SAME
+					&& this.applicationContext.getEnvironment() instanceof ConfigurableEnvironment) {
+				addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.applicationContext
+						.getEnvironment());
+			}
 		}
 	}
 
@@ -231,6 +219,46 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 			}
 		}
 	};
+
+	/**
+	 * Add an alias for 'local.management.port' that actually resolves using
+	 * 'local.server.port'.
+	 * @param environment the environment
+	 */
+	private void addLocalManagementPortPropertyAlias(
+			final ConfigurableEnvironment environment) {
+		environment.getPropertySources().addLast(
+				new PropertySource<Object>("Management Server") {
+					@Override
+					public Object getProperty(String name) {
+						if ("local.management.port".equals(name)) {
+							return environment.getProperty("local.server.port");
+						}
+						return null;
+					}
+				});
+	}
+
+	// Put Servlets and Filters in their own nested class so they don't force early
+	// instantiation of ManagementServerProperties.
+	@Configuration
+	protected static class ApplicationContextFilterConfiguration {
+
+		@Bean
+		public Filter applicationContextIdFilter(ApplicationContext context) {
+			final String id = context.getId();
+			return new OncePerRequestFilter() {
+
+				@Override
+				protected void doFilterInternal(HttpServletRequest request,
+						HttpServletResponse response, FilterChain filterChain)
+						throws ServletException, IOException {
+					response.addHeader("X-Application-Context", id);
+					filterChain.doFilter(request, response);
+				}
+			};
+		}
+	}
 
 	protected static enum ManagementServerPort {
 

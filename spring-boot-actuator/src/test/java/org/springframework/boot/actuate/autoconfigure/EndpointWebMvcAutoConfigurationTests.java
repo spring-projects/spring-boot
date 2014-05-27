@@ -38,6 +38,7 @@ import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebAppl
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.boot.test.ServerPortInfoApplicationContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -55,6 +56,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -168,6 +170,43 @@ public class EndpointWebMvcAutoConfigurationTests {
 		this.applicationContext.refresh();
 		assertContent("/controller", ports.get().server, "controlleroutput");
 		assertContent("/test/endpoint", ports.get().server, "endpointoutput");
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void portPropertiesOnSamePort() throws Exception {
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
+		new ServerPortInfoApplicationContextInitializer()
+				.initialize(this.applicationContext);
+		this.applicationContext.refresh();
+		Integer localServerPort = this.applicationContext.getEnvironment().getProperty(
+				"local.server.port", Integer.class);
+		Integer localManagementPort = this.applicationContext.getEnvironment()
+				.getProperty("local.management.port", Integer.class);
+		assertThat(localServerPort, notNullValue());
+		assertThat(localManagementPort, notNullValue());
+		assertThat(localServerPort, equalTo(localManagementPort));
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void portPropertiesOnDifferentPort() throws Exception {
+		new ServerPortInfoApplicationContextInitializer()
+				.initialize(this.applicationContext);
+		this.applicationContext.register(RootConfig.class, DifferentPortConfig.class,
+				BaseConfiguration.class, EndpointWebMvcAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		Integer localServerPort = this.applicationContext.getEnvironment().getProperty(
+				"local.server.port", Integer.class);
+		Integer localManagementPort = this.applicationContext.getEnvironment()
+				.getProperty("local.management.port", Integer.class);
+		assertThat(localServerPort, notNullValue());
+		assertThat(localManagementPort, notNullValue());
+		assertThat(localServerPort, not(equalTo(localManagementPort)));
 		this.applicationContext.close();
 		assertAllClosed();
 	}
