@@ -40,28 +40,31 @@ public class HealthTests {
 	public void statusMustNotBeNull() throws Exception {
 		this.thrown.expect(IllegalArgumentException.class);
 		this.thrown.expectMessage("Status must not be null");
-		new Health(null, null);
+		new Health.Builder(null, null);
 	}
 
 	@Test
 	public void createWithStatus() throws Exception {
-		Health health = new Health(Status.UP, null);
+		Health health = Health.status(Status.UP).build();
 		assertThat(health.getStatus(), equalTo(Status.UP));
 		assertThat(health.getDetails().size(), equalTo(0));
 	}
 
 	@Test
 	public void createWithDetails() throws Exception {
-		Health health = new Health(Status.UP, Collections.singletonMap("a", "b"));
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
+				.build();
 		assertThat(health.getStatus(), equalTo(Status.UP));
 		assertThat(health.getDetails().get("a"), equalTo((Object) "b"));
 	}
 
 	@Test
 	public void equalsAndHashCode() throws Exception {
-		Health h1 = new Health(Status.UP, Collections.singletonMap("a", "b"));
-		Health h2 = new Health(Status.UP, Collections.singletonMap("a", "b"));
-		Health h3 = new Health(Status.UP, null);
+		Health h1 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
+				.build();
+		Health h2 = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
+				.build();
+		Health h3 = new Health.Builder(Status.UP).build();
 		assertThat(h1, equalTo(h1));
 		assertThat(h1, equalTo(h2));
 		assertThat(h1, not(equalTo(h3)));
@@ -73,8 +76,8 @@ public class HealthTests {
 	@Test
 	public void withException() throws Exception {
 		RuntimeException ex = new RuntimeException("bang");
-		Health health = new Health(Status.UP, Collections.singletonMap("a", "b"))
-				.withException(ex);
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
+				.withException(ex).build();
 		assertThat(health.getDetails().get("a"), equalTo((Object) "b"));
 		assertThat(health.getDetails().get("error"),
 				equalTo((Object) "java.lang.RuntimeException: bang"));
@@ -82,36 +85,36 @@ public class HealthTests {
 
 	@Test
 	public void withDetails() throws Exception {
-		Health health = new Health(Status.UP, Collections.singletonMap("a", "b"))
-				.withDetail("c", "d");
+		Health health = new Health.Builder(Status.UP, Collections.singletonMap("a", "b"))
+				.withDetail("c", "d").build();
 		assertThat(health.getDetails().get("a"), equalTo((Object) "b"));
 		assertThat(health.getDetails().get("c"), equalTo((Object) "d"));
 	}
 
 	@Test
 	public void unknownWithDetails() throws Exception {
-		Health health = Health.unknown().withDetail("a", "b");
+		Health health = new Health.Builder().unknown().withDetail("a", "b").build();
 		assertThat(health.getStatus(), equalTo(Status.UNKNOWN));
 		assertThat(health.getDetails().get("a"), equalTo((Object) "b"));
 	}
 
 	@Test
 	public void unknown() throws Exception {
-		Health health = Health.unknown();
+		Health health = new Health.Builder().unknown().build();
 		assertThat(health.getStatus(), equalTo(Status.UNKNOWN));
 		assertThat(health.getDetails().size(), equalTo(0));
 	}
 
 	@Test
 	public void upWithDetails() throws Exception {
-		Health health = Health.up().withDetail("a", "b");
+		Health health = new Health.Builder().up().withDetail("a", "b").build();
 		assertThat(health.getStatus(), equalTo(Status.UP));
 		assertThat(health.getDetails().get("a"), equalTo((Object) "b"));
 	}
 
 	@Test
 	public void up() throws Exception {
-		Health health = Health.up();
+		Health health = new Health.Builder().up().build();
 		assertThat(health.getStatus(), equalTo(Status.UP));
 		assertThat(health.getDetails().size(), equalTo(0));
 	}
@@ -119,7 +122,7 @@ public class HealthTests {
 	@Test
 	public void downWithException() throws Exception {
 		RuntimeException ex = new RuntimeException("bang");
-		Health health = Health.down(ex);
+		Health health = Health.down(ex).build();
 		assertThat(health.getStatus(), equalTo(Status.DOWN));
 		assertThat(health.getDetails().get("error"),
 				equalTo((Object) "java.lang.RuntimeException: bang"));
@@ -127,28 +130,28 @@ public class HealthTests {
 
 	@Test
 	public void down() throws Exception {
-		Health health = Health.down();
+		Health health = Health.down().build();
 		assertThat(health.getStatus(), equalTo(Status.DOWN));
 		assertThat(health.getDetails().size(), equalTo(0));
 	}
 
 	@Test
 	public void outOfService() throws Exception {
-		Health health = Health.outOfService();
+		Health health = Health.outOfService().build();
 		assertThat(health.getStatus(), equalTo(Status.OUT_OF_SERVICE));
 		assertThat(health.getDetails().size(), equalTo(0));
 	}
 
 	@Test
 	public void statusCode() throws Exception {
-		Health health = Health.status("UP");
+		Health health = Health.status("UP").build();
 		assertThat(health.getStatus(), equalTo(Status.UP));
 		assertThat(health.getDetails().size(), equalTo(0));
 	}
 
 	@Test
 	public void status() throws Exception {
-		Health health = Health.status(Status.UP);
+		Health health = Health.status(Status.UP).build();
 		assertThat(health.getStatus(), equalTo(Status.UP));
 		assertThat(health.getDetails().size(), equalTo(0));
 	}

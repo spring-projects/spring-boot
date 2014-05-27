@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.health;
 import org.apache.solr.client.solrj.SolrServer;
 
 /**
- * {@link HealthIndicator} for Apache Solr
+ * {@link HealthIndicator} for Apache Solr.
  * 
  * @author Andy Wilkinson
  * @since 1.1.0
@@ -33,9 +33,9 @@ public class SolrHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected Health doHealthCheck() throws Exception {
+	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Object status = this.solrServer.ping().getResponse().get("status");
-		return Health.up().withDetail("solrStatus", status);
+		builder.up().withDetail("solrStatus", status);
 	}
 
 }

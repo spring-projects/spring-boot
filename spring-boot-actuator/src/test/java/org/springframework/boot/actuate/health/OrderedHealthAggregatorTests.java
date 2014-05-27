@@ -42,10 +42,10 @@ public class OrderedHealthAggregatorTests {
 	@Test
 	public void defaultOrder() {
 		Map<String, Health> healths = new HashMap<String, Health>();
-		healths.put("h1", Health.status(Status.DOWN));
-		healths.put("h2", Health.status(Status.UP));
-		healths.put("h3", Health.status(Status.UNKNOWN));
-		healths.put("h4", Health.status(Status.OUT_OF_SERVICE));
+		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
+		healths.put("h2", new Health.Builder().status(Status.UP).build());
+		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
+		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
 		assertEquals(Status.DOWN, this.healthAggregator.aggregate(healths).getStatus());
 	}
 
@@ -54,21 +54,21 @@ public class OrderedHealthAggregatorTests {
 		this.healthAggregator.setStatusOrder(Status.UNKNOWN, Status.UP,
 				Status.OUT_OF_SERVICE, Status.DOWN);
 		Map<String, Health> healths = new HashMap<String, Health>();
-		healths.put("h1", Health.status(Status.DOWN));
-		healths.put("h2", Health.status(Status.UP));
-		healths.put("h3", Health.status(Status.UNKNOWN));
-		healths.put("h4", Health.status(Status.OUT_OF_SERVICE));
+		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
+		healths.put("h2", new Health.Builder().status(Status.UP).build());
+		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
+		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
 		assertEquals(Status.UNKNOWN, this.healthAggregator.aggregate(healths).getStatus());
 	}
 
 	@Test
 	public void defaultOrderWithCustomStatus() {
 		Map<String, Health> healths = new HashMap<String, Health>();
-		healths.put("h1", Health.status(Status.DOWN));
-		healths.put("h2", Health.status(Status.UP));
-		healths.put("h3", Health.status(Status.UNKNOWN));
-		healths.put("h4", Health.status(Status.OUT_OF_SERVICE));
-		healths.put("h5", Health.status(new Status("CUSTOM")));
+		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
+		healths.put("h2", new Health.Builder().status(Status.UP).build());
+		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
+		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
+		healths.put("h5", new Health.Builder().status(new Status("CUSTOM")).build());
 		assertEquals(new Status("CUSTOM"), this.healthAggregator.aggregate(healths)
 				.getStatus());
 	}
@@ -78,11 +78,11 @@ public class OrderedHealthAggregatorTests {
 		this.healthAggregator.setStatusOrder(Arrays.asList("DOWN", "OUT_OF_SERVICE",
 				"UP", "UNKNOWN", "CUSTOM"));
 		Map<String, Health> healths = new HashMap<String, Health>();
-		healths.put("h1", Health.status(Status.DOWN));
-		healths.put("h2", Health.status(Status.UP));
-		healths.put("h3", Health.status(Status.UNKNOWN));
-		healths.put("h4", Health.status(Status.OUT_OF_SERVICE));
-		healths.put("h5", Health.status(new Status("CUSTOM")));
+		healths.put("h1", new Health.Builder().status(Status.DOWN).build());
+		healths.put("h2", new Health.Builder().status(Status.UP).build());
+		healths.put("h3", new Health.Builder().status(Status.UNKNOWN).build());
+		healths.put("h4", new Health.Builder().status(Status.OUT_OF_SERVICE).build());
+		healths.put("h5", new Health.Builder().status(new Status("CUSTOM")).build());
 		assertEquals(Status.DOWN, this.healthAggregator.aggregate(healths).getStatus());
 	}
 

@@ -70,27 +70,28 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected Health doHealthCheck() throws Exception {
+	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		if (this.dataSource == null) {
-			return Health.up().withDetail("database", "unknown");
+			builder.up().withDetail("database", "unknown");
 		}
-		return doDataSourceHealthCheck();
+		else {
+			doDataSourceHealthCheck(builder);
+		}
 	}
 
-	private Health doDataSourceHealthCheck() throws Exception {
+	private void doDataSourceHealthCheck(Health.Builder builder) throws Exception {
 		String product = getProduct();
-		Health health = Health.up().withDetail("database", product);
+		builder.up().withDetail("database", product);
 		String query = detectQuery(product);
 		if (StringUtils.hasText(query)) {
 			try {
-				health = health.withDetail("hello",
+				builder.withDetail("hello",
 						this.jdbcTemplate.queryForObject(query, Object.class));
 			}
 			catch (Exception ex) {
-				return Health.down().withDetail("database", product).withException(ex);
+				builder.down(ex);
 			}
 		}
-		return health;
 	}
 
 	private String getProduct() {

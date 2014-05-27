@@ -51,7 +51,7 @@ public class HealthMvcEndpointTests {
 
 	@Test
 	public void up() {
-		when(this.endpoint.invoke()).thenReturn(Health.up());
+		when(this.endpoint.invoke()).thenReturn(new Health.Builder().up().build());
 		Object result = this.mvc.invoke();
 		assertTrue(result instanceof Health);
 		assertTrue(((Health) result).getStatus() == Status.UP);
@@ -60,7 +60,7 @@ public class HealthMvcEndpointTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void down() {
-		when(this.endpoint.invoke()).thenReturn(Health.down());
+		when(this.endpoint.invoke()).thenReturn(new Health.Builder().down().build());
 		Object result = this.mvc.invoke();
 		assertTrue(result instanceof ResponseEntity);
 		ResponseEntity<Health> response = (ResponseEntity<Health>) result;
@@ -71,7 +71,8 @@ public class HealthMvcEndpointTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void customMapping() {
-		when(this.endpoint.invoke()).thenReturn(Health.status("OK"));
+		when(this.endpoint.invoke())
+				.thenReturn(new Health.Builder().status("OK").build());
 		this.mvc.setStatusMapping(Collections.singletonMap("OK",
 				HttpStatus.INTERNAL_SERVER_ERROR));
 		Object result = this.mvc.invoke();
