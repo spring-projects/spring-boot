@@ -820,7 +820,7 @@ added.
 * If you use Velocity you will also have a `VelocityViewResolver` with id ``velocityViewResolver''.
   It looks for resources in a loader path (externalized to `spring.velocity.resourceLoaderPath`,
   default ``classpath:/templates/'') by surrounding the view name with a prefix and suffix
-  (externalized to `spring.velocity.prefix' and `spring.velocity.suffix`, with empty  and ``.vm''
+  (externalized to `spring.velocity.prefix` and `spring.velocity.suffix`, with empty  and ``.vm''
   defaults respectively). It can be overridden by providing a bean of the same name.
 
 Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`WebMvcAutoConfiguration`],

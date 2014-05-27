@@ -126,7 +126,7 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.properties.*=
 	spring.velocity.requestContextAttribute=
 	spring.velocity.resourceLoaderPath=classpath:/templates/
-	spring.velocity.suffix=.ftl
+	spring.velocity.suffix=.vm
 	spring.velocity.templateEncoding=UTF-8
 	spring.velocity.viewNames= # whitelist of view names that can be resolved
 
