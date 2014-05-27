@@ -152,12 +152,7 @@ public class ConfigFileApplicationListener implements
 			ResourceLoader resourceLoader) {
 		RandomValuePropertySource.addToEnvironment(environment);
 		try {
-			PropertySource<?> defaultProperties = environment.getPropertySources()
-					.remove(DEFAULT_PROPERTIES);
 			new Loader(environment, resourceLoader).load();
-			if (defaultProperties != null) {
-				environment.getPropertySources().addLast(defaultProperties);
-			}
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Unable to load configuration files", ex);
@@ -456,6 +451,7 @@ public class ConfigFileApplicationListener implements
 			for (PropertySource<?> item : sources) {
 				reorderedSources.add(item);
 			}
+			// Maybe we should add before the DEFAULT_PROPERTIES if it exists?
 			this.environment.getPropertySources().addLast(
 					new ConfigurationPropertySources(reorderedSources));
 		}
