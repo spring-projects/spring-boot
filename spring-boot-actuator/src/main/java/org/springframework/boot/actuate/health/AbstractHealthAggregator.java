@@ -38,7 +38,7 @@ public abstract class AbstractHealthAggregator implements HealthAggregator {
 			details.put(entry.getKey(), entry.getValue());
 			statusCandidates.add(entry.getValue().getStatus());
 		}
-		return new Health(aggregateStatus(statusCandidates), details);
+		return new Health.Builder(aggregateStatus(statusCandidates), details).build();
 	}
 
 	/**

@@ -65,7 +65,7 @@ public class HealthEndpointTests extends AbstractEndpointTests<HealthEndpoint> {
 
 				@Override
 				public Health health() {
-					return Health.status("FINE");
+					return new Health.Builder().status("FINE").build();
 				}
 			};
 		}

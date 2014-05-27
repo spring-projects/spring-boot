@@ -40,12 +40,12 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 	}
 
 	@Override
-	protected Health doHealthCheck() throws Exception {
+	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		RedisConnection connection = RedisConnectionUtils
 				.getConnection(this.redisConnectionFactory);
 		try {
 			Properties info = connection.info();
-			return Health.up().withDetail("version", info.getProperty("redis_version"));
+			builder.up().withDetail("version", info.getProperty("redis_version"));
 		}
 		finally {
 			RedisConnectionUtils.releaseConnection(connection,

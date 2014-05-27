@@ -23,7 +23,6 @@ import java.util.Map;
 import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -34,16 +33,16 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * {@link Health} contains a {@link Status} to express the state of a component or
  * subsystem and some additional details to carry some contextual information.
  * <p>
- * {@link Health} has a fluent API to make it easy to construct instances. Typical usage
- * in a {@link HealthIndicator} would be:
+ * {@link Health} instances can be created by using {@link Builder}'s fluent API. Typical
+ * usage in a {@link HealthIndicator} would be:
  * 
  * <pre class="code">
  * try {
  * 	// do some test to determine state of component
- * 	return Health.up(&quot;version&quot;, &quot;1.1.2&quot;);
+ * 	return new Health.Builder().up().withDetail(&quot;version&quot;, &quot;1.1.2&quot;).build();
  * }
  * catch (Exception ex) {
- * 	return Health.down(ex);
+ * 	return new Health.Builder().down(ex).build();
  * }
  * </pre>
  * 
@@ -54,23 +53,18 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 @JsonInclude(Include.NON_EMPTY)
 public final class Health {
 
-	private static final Map<String, Object> NO_DETAILS = Collections
-			.<String, Object> emptyMap();
-
 	private final Status status;
 
 	private final Map<String, Object> details;
 
 	/**
 	 * Create a new {@link Health} instance with the specified status and details.
-	 * @param status the status
-	 * @param details the details or {@code null}
+	 * @param builder the Builder to use
 	 */
-	public Health(Status status, Map<String, ?> details) {
-		Assert.notNull(status, "Status must not be null");
-		this.status = status;
-		this.details = Collections.unmodifiableMap(details == null ? NO_DETAILS
-				: new LinkedHashMap<String, Object>(details));
+	private Health(Builder builder) {
+		Assert.notNull(builder, "Builder must not be null");
+		this.status = builder.status;
+		this.details = Collections.unmodifiableMap(builder.details);
 	}
 
 	/**
@@ -113,87 +107,193 @@ public final class Health {
 	}
 
 	/**
-	 * Create a new {@link Health} object from this one, containing an additional
-	 * exception detail.
-	 * @param ex the exception
-	 * @return a new {@link Health} instance
+	 * Create a new {@link Builder} instance with an {@link Status#UNKNOWN} status.
+	 * @return a new {@link Builder} instance
 	 */
-	public Health withException(Exception ex) {
-		Assert.notNull(ex, "Exception must not be null");
-		return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
-	}
-
-	/**
-	 * Create a new {@link Health} object from this one, containing an additional detail.
-	 * @param key the detail key
-	 * @param data the detail data
-	 * @return a new {@link Health} instance
-	 */
-	@JsonAnySetter
-	public Health withDetail(String key, Object data) {
-		Assert.notNull(key, "Key must not be null");
-		Assert.notNull(data, "Data must not be null");
-		Map<String, Object> details = new LinkedHashMap<String, Object>(this.details);
-		details.put(key, data);
-		return new Health(this.status, details);
-	}
-
-	/**
-	 * Create a new {@link Health} instance with an {@link Status#UNKNOWN} status.
-	 * @return a new {@link Health} instance
-	 */
-	public static Health unknown() {
+	public static Builder unknown() {
 		return status(Status.UNKNOWN);
 	}
 
 	/**
-	 * Create a new {@link Health} instance with an {@link Status#UP} status.
-	 * @return a new {@link Health} instance
+	 * Create a new {@link Builder} instance with an {@link Status#UP} status.
+	 * @return a new {@link Builder} instance
 	 */
-	public static Health up() {
+	public static Builder up() {
 		return status(Status.UP);
 	}
 
 	/**
-	 * Create a new {@link Health} instance with an {@link Status#DOWN} status an the
+	 * Create a new {@link Builder} instance with an {@link Status#DOWN} status an the
 	 * specified exception details.
 	 * @param ex the exception
-	 * @return a new {@link Health} instance
+	 * @return a new {@link Builder} instance
 	 */
-	public static Health down(Exception ex) {
+	public static Builder down(Exception ex) {
 		return down().withException(ex);
 	}
 
 	/**
-	 * Create a new {@link Health} instance with a {@link Status#DOWN} status.
-	 * @return a new {@link Health} instance
+	 * Create a new {@link Builder} instance with a {@link Status#DOWN} status.
+	 * @return a new {@link Builder} instance
 	 */
-	public static Health down() {
+	public static Builder down() {
 		return status(Status.DOWN);
 	}
 
 	/**
-	 * Create a new {@link Health} instance with an {@link Status#OUT_OF_SERVICE} status.
-	 * @return a new {@link Health} instance
+	 * Create a new {@link Builder} instance with an {@link Status#OUT_OF_SERVICE} status.
+	 * @return a new {@link Builder} instance
 	 */
-	public static Health outOfService() {
+	public static Builder outOfService() {
 		return status(Status.OUT_OF_SERVICE);
 	}
 
 	/**
-	 * Create a new {@link Health} instance with a specific status code.
-	 * @return a new {@link Health} instance
+	 * Create a new {@link Builder} instance with a specific status code.
+	 * @return a new {@link Builder} instance
 	 */
-	public static Health status(String statusCode) {
+	public static Builder status(String statusCode) {
 		return status(new Status(statusCode));
 	}
 
 	/**
-	 * Create a new {@link Health} instance with a specific {@link Status}.
-	 * @return a new {@link Health} instance
+	 * Create a new {@link Builder} instance with a specific {@link Status}.
+	 * @return a new {@link Builder} instance
 	 */
-	public static Health status(Status status) {
-		return new Health(status, null);
+	public static Builder status(Status status) {
+		return new Builder(status);
+	}
+
+	/**
+	 * Builder for creating immutable {@link Health} instances.
+	 */
+	public static class Builder {
+
+		private Status status;
+
+		private Map<String, Object> details;
+
+		/**
+		 * Create new Builder instance.
+		 */
+		public Builder() {
+			this.status = Status.UNKNOWN;
+			this.details = new LinkedHashMap<String, Object>();
+		}
+
+		/**
+		 * Create new Builder instance, setting status to given <code>status</code>.
+		 * @param status the {@link Status} to use
+		 */
+		public Builder(Status status) {
+			Assert.notNull(status, "Status must not be null");
+			this.status = status;
+			this.details = new LinkedHashMap<String, Object>();
+		}
+
+		/**
+		 * Create new Builder instance, setting status to given <code>status</code> and
+		 * details to given <code>details</code>.
+		 * @param status the {@link Status} to use
+		 * @param details the details {@link Map} to use
+		 */
+		public Builder(Status status, Map<String, ?> details) {
+			Assert.notNull(status, "Status must not be null");
+			Assert.notNull(details, "Details must not be null");
+			this.status = status;
+			this.details = new LinkedHashMap<String, Object>(details);
+		}
+
+		/**
+		 * Record detail for given {@link Exception}.
+		 * @param ex the exception
+		 * @return this {@link Builder} instance
+		 */
+		public Builder withException(Exception ex) {
+			Assert.notNull(ex, "Exception must not be null");
+			return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
+		}
+
+		/**
+		 * Record detail using <code>key</code> and <code>value</code>.
+		 * @param key the detail key
+		 * @param data the detail data
+		 * @return this {@link Builder} instance
+		 */
+		public Builder withDetail(String key, Object data) {
+			Assert.notNull(key, "Key must not be null");
+			Assert.notNull(data, "Data must not be null");
+			this.details.put(key, data);
+			return this;
+		}
+
+		/**
+		 * Set status to {@link Status#UNKNOWN} status.
+		 * @return this {@link Builder} instance
+		 */
+		public Builder unknown() {
+			return status(Status.UNKNOWN);
+		}
+
+		/**
+		 * Set status to {@link Status#UP} status.
+		 * @return this {@link Builder} instance
+		 */
+		public Builder up() {
+			return status(Status.UP);
+		}
+
+		/**
+		 * Set status to {@link Status#DOWN} and add details for given {@link Exception}.
+		 * @param ex the exception
+		 * @return this {@link Builder} instance
+		 */
+		public Builder down(Exception ex) {
+			return down().withException(ex);
+		}
+
+		/**
+		 * Set status to {@link Status#DOWN}.
+		 * @return this {@link Builder} instance
+		 */
+		public Builder down() {
+			return status(Status.DOWN);
+		}
+
+		/**
+		 * Set status to {@link Status#OUT_OF_SERVICE}.
+		 * @return this {@link Builder} instance
+		 */
+		public Builder outOfService() {
+			return status(Status.OUT_OF_SERVICE);
+		}
+
+		/**
+		 * Set status to given <code>statusCode</code>.
+		 * @return this {@link Builder} instance
+		 */
+		public Builder status(String statusCode) {
+			return status(new Status(statusCode));
+		}
+
+		/**
+		 * Set status to given {@link Status} instance
+		 * @param status
+		 * @return this {@link Builder} instance
+		 */
+		public Builder status(Status status) {
+			this.status = status;
+			return this;
+		}
+
+		/**
+		 * Create a new {@link Health} instance with the previously specified code and
+		 * details.
+		 * @return a new {@link Health} instance
+		 */
+		public Health build() {
+			return new Health(this);
+		}
 	}
 
 }
