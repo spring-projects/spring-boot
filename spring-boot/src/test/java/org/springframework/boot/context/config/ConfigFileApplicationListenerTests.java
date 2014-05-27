@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,6 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.env.StandardEnvironment;
@@ -258,6 +260,33 @@ public class ConfigFileApplicationListenerTests {
 		this.initializer.onApplicationEvent(this.event);
 		String property = this.environment.getProperty("my.property");
 		assertThat(property, equalTo("fromsystem"));
+	}
+
+	@Test
+	public void defaultPropertyAsFallback() throws Exception {
+		this.event
+				.getEnvironment()
+				.getPropertySources()
+				.addLast(
+						new MapPropertySource("defaultProperties", Collections
+								.singletonMap("my.fallback", (Object) "foo")));
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.fallback");
+		assertThat(property, equalTo("foo"));
+	}
+
+	@Test
+	public void defaultPropertyAsFallbackDuringFileParsing() throws Exception {
+		this.event
+				.getEnvironment()
+				.getPropertySources()
+				.addLast(
+						new MapPropertySource("defaultProperties", Collections
+								.singletonMap("spring.config.name",
+										(Object) "testproperties")));
+		this.initializer.onApplicationEvent(this.event);
+		String property = this.environment.getProperty("my.property");
+		assertThat(property, equalTo("frompropertiesfile"));
 	}
 
 	@Test
