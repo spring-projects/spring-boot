@@ -292,7 +292,7 @@ public class GroovyCompiler {
 
 	@SuppressWarnings("unchecked")
 	private static ClassNode getMainClass(CompilationUnit source) {
-		return getMainClass((List<ClassNode>) source.getAST().getClasses());
+		return getMainClass(source.getAST().getClasses());
 	}
 
 	private static ClassNode getMainClass(List<ClassNode> classes) {
@@ -305,8 +305,7 @@ public class GroovyCompiler {
 				return node;
 			}
 		}
-		return classes.isEmpty() ? null : classes.get(0);
-
+		return (classes.isEmpty() ? null : classes.get(0));
 	}
 
 }
