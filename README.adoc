@@ -101,7 +101,10 @@ v3.0.5 or above. You also need JDK 1.7 (although Boot applications can run on Ja
 ----
 
 NOTE: You may need to increase the amount of memory available to Maven by setting
-a `MAVEN_OPTS` environment variable with the value `-Xmx512m -XX:MaxPermSize=128m`
+a `MAVEN_OPTS` environment variable with the value `-Xmx512m -XX:MaxPermSize=128m`. Remember
+to set the corresponding property in your IDE as well if you are building and running
+tests there (e.g. in Eclipse go to `Preferences->Java->Installed JREs` and edit the
+JRE definition so that all processes are launched with those arguments).
 
 _Also see link:CONTRIBUTING.adoc[CONTRIBUTING.adoc] if you wish to submit pull requests,
 and in particular please fill out the
