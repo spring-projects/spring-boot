@@ -16,14 +16,15 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogConfigurationException;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.LogFactoryImpl;
 import org.apache.commons.logging.impl.NoOpLog;
+import org.apache.commons.logging.impl.SLF4JLogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +42,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
@@ -56,7 +58,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigurationReportLoggingInitializer}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AutoConfigurationReportLoggingInitializerTests {
@@ -70,6 +72,10 @@ public class AutoConfigurationReportLoggingInitializerTests {
 	protected List<String> debugLog = new ArrayList<String>();
 
 	protected List<String> infoLog = new ArrayList<String>();
+
+	private Field logFactoryField;
+
+	private LogFactory originalLogFactory;
 
 	@Before
 	public void setup() {
@@ -98,15 +104,25 @@ public class AutoConfigurationReportLoggingInitializerTests {
 			}
 		}).given(this.log).info(anyObject());
 
-		LogFactory.releaseAll();
-		System.setProperty(LogFactory.FACTORY_PROPERTY, MockLogFactory.class.getName());
+		try {
+			this.logFactoryField = LogFactory.class.getDeclaredField("logFactory");
+			ReflectionUtils.makeAccessible(this.logFactoryField);
+
+			this.originalLogFactory = (LogFactory) ReflectionUtils.getField(
+					this.logFactoryField, null);
+
+			ReflectionUtils.setField(this.logFactoryField, null, new MockLogFactory());
+		}
+		catch (Exception e) {
+			throw new IllegalStateException("Failed to set logFactory", e);
+		}
+
 		this.initializer = new AutoConfigurationReportLoggingInitializer();
 	}
 
 	@After
 	public void cleanup() {
-		System.clearProperty(LogFactory.FACTORY_PROPERTIES);
-		LogFactory.releaseAll();
+		ReflectionUtils.setField(this.logFactoryField, null, this.originalLogFactory);
 	}
 
 	@Test
@@ -199,7 +215,7 @@ public class AutoConfigurationReportLoggingInitializerTests {
 				containsString("Unable to provide auto-configuration report"));
 	}
 
-	public static class MockLogFactory extends LogFactoryImpl {
+	public static class MockLogFactory extends SLF4JLogFactory {
 		@Override
 		public Log getInstance(String name) throws LogConfigurationException {
 			if (AutoConfigurationReportLoggingInitializer.class.getName().equals(name)) {
