@@ -567,6 +567,8 @@ This allows you to attach a debugger to your packaged application:
 	       -jar target/myproject-0.0.1-SNAPSHOT.jar
 ----
 
+
+
 [[using-boot-running-with-the-maven-plugin]]
 === Using the Maven plugin
 The Spring Boot Maven plugin includes a `run` goal which can be used to quickly compile
@@ -580,9 +582,10 @@ resources for instant ``hot'' reload.
 
 Useful operating system environment variable:
 
-```
-$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
-```
+[indent=0,subs="attributes"]
+----
+	$ export MAVEN_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+----
 
 (The "egd" setting is to speed up Tomcat startup by giving it a faster source of entropy for session keys.)
 
@@ -599,9 +602,11 @@ the `spring-boot-plugin`
 
 Useful operating system environment variable:
 
-```
-$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
-```
+[indent=0,subs="attributes"]
+----
+	$ export JAVA_OPTS=-Xmx1024m -XX:MaxPermSize=128M -Djava.security.egd=file:/dev/./urandom
+----
+
 
 
 [[using-boot-hot-swapping]]

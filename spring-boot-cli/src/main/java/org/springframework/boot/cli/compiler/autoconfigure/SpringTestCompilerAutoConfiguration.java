@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  * {@link CompilerAutoConfiguration} for Spring Test
  * 
  * @author Dave Syer
+ * @since 1.1.0
  */
-public class SpringTestCompilerAutoConfiguration extends
-		CompilerAutoConfiguration {
+public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
@@ -46,28 +46,22 @@ public class SpringTestCompilerAutoConfiguration extends
 
 	@Override
 	public void apply(GroovyClassLoader loader,
-			GroovyCompilerConfiguration configuration,
-			GeneratorContext generatorContext, SourceUnit source,
-			ClassNode classNode) throws CompilationFailedException {
+			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
+			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
 		if (!AstUtils.hasAtLeastOneAnnotation(classNode, "RunWith")) {
-			AnnotationNode runwith = new AnnotationNode(
-					ClassHelper.make("RunWith"));
-			runwith.addMember(
-					"value",
-					new ClassExpression(ClassHelper
-							.make("SpringJUnit4ClassRunner")));
+			AnnotationNode runwith = new AnnotationNode(ClassHelper.make("RunWith"));
+			runwith.addMember("value",
+					new ClassExpression(ClassHelper.make("SpringJUnit4ClassRunner")));
 			classNode.addAnnotation(runwith);
 		}
 	}
 
 	@Override
-	public void applyImports(ImportCustomizer imports)
-			throws CompilationFailedException {
+	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
 		imports.addStarImports("org.junit.runner")
 				.addStarImports("org.springframework.boot.test")
 				.addStarImports("org.springframework.test.context.junit4")
 				.addStarImports("org.springframework.test.annotation")
-				.addImports(
-						"org.springframework.test.context.web.WebAppConfiguration");
+				.addImports("org.springframework.test.context.web.WebAppConfiguration");
 	}
 }
