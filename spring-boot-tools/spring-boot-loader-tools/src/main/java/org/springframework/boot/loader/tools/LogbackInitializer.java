@@ -29,7 +29,8 @@ import ch.qos.logback.classic.Level;
 public class LogbackInitializer {
 
 	public static void initialize() {
-		if (ClassUtils.isPresent("org.slf4j.impl.StaticLoggerBinder", null)) {
+		if (ClassUtils.isPresent("org.slf4j.impl.StaticLoggerBinder", null)
+				&& ClassUtils.isPresent("ch.qos.logback.classic.Logger", null)) {
 			new Initializer().setRootLogLevel();
 		}
 	}

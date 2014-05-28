@@ -369,6 +369,12 @@
 								<requireJavaVersion>
 									<version>1.7</version>
 								</requireJavaVersion>
+								<bannedDependencies>
+									<excludes>
+										<exclude>commons-logging:commons-logging:*:compile</exclude>
+									</excludes>
+									<searchTransitive>true</searchTransitive>
+								</bannedDependencies>
 							</rules>
 						</configuration>
 					</execution>
