@@ -19,21 +19,18 @@ package org.springframework.boot.autoconfigure.social;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.env.Environment;
-import org.springframework.social.config.annotation.ConnectionFactoryConfigurer;
 import org.springframework.social.config.annotation.EnableSocial;
-import org.springframework.social.config.annotation.SocialConfigurerAdapter;
 import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.GenericConnectionStatusView;
 import org.springframework.social.twitter.api.Twitter;
@@ -44,7 +41,7 @@ import org.springframework.web.servlet.View;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
  * Twitter.
- *
+ * 
  * @author Craig Walls
  * @since 1.1.0
  */
@@ -57,24 +54,18 @@ public class TwitterAutoConfiguration {
 	@EnableSocial
 	@ConditionalOnWebApplication
 	protected static class TwitterAutoConfigurationAdapter extends
-			SocialConfigurerAdapter implements EnvironmentAware {
-
-		private String appId;
-		private String appSecret;
+			SocialAutoConfigurerAdapter {
 
 		@Override
-		public void setEnvironment(Environment env) {
-			RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env,
-					"spring.social.");
-			this.appId = propertyResolver.getRequiredProperty("twitter.appId");
-			this.appSecret = propertyResolver.getRequiredProperty("twitter.appSecret");
+		protected String getPropertyPrefix() {
+			return "spring.social.twitter.";
 		}
 
 		@Override
-		public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig,
-				Environment env) {
-			cfConfig.addConnectionFactory(new TwitterConnectionFactory(this.appId,
-					this.appSecret));
+		protected ConnectionFactory<?> createConnectionFactory(
+				RelaxedPropertyResolver properties) {
+			return new TwitterConnectionFactory(properties.getRequiredProperty("app-id"),
+					properties.getRequiredProperty("app-secret"));
 		}
 
 		@Bean
@@ -83,12 +74,16 @@ public class TwitterAutoConfiguration {
 		public Twitter twitter(ConnectionRepository repository) {
 			Connection<Twitter> connection = repository
 					.findPrimaryConnection(Twitter.class);
-			return connection != null ? connection.getApi() : new TwitterTemplate(
-					this.appId, this.appSecret);
+			if (connection != null) {
+				return connection.getApi();
+			}
+			String id = getProperties().getRequiredProperty("app-id");
+			String secret = getProperties().getRequiredProperty("app-secret");
+			return new TwitterTemplate(id, secret);
 		}
 
 		@Bean(name = { "connect/twitterConnect", "connect/twitterConnected" })
-		@ConditionalOnExpression("${spring.social.auto_connection_views:false}")
+		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
 		public View twitterConnectView() {
 			return new GenericConnectionStatusView("twitter", "Twitter");
 		}

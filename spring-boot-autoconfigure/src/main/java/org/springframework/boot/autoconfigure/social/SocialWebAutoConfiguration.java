@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.social;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +37,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection
  * support.
- *
+ * 
  * @author Craig Walls
  * @since 1.1.0
  */
@@ -50,6 +50,7 @@ public class SocialWebAutoConfiguration {
 	@EnableSocial
 	@ConditionalOnWebApplication
 	protected static class SocialAutoConfigurationAdapter extends SocialConfigurerAdapter {
+
 		@Bean
 		@ConditionalOnMissingBean(ConnectController.class)
 		public ConnectController connectController(
@@ -60,7 +61,7 @@ public class SocialWebAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(BeanNameViewResolver.class)
-		@ConditionalOnExpression("${spring.social.auto_connection_views:false}")
+		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
 		public ViewResolver beanNameViewResolver() {
 			BeanNameViewResolver bnvr = new BeanNameViewResolver();
 			bnvr.setOrder(Integer.MIN_VALUE);
@@ -76,6 +77,7 @@ public class SocialWebAutoConfiguration {
 				}
 			};
 		}
+
 	}
 
 }

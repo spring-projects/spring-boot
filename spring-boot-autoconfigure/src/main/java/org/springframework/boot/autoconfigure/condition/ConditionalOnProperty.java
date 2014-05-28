@@ -26,7 +26,7 @@ import org.springframework.core.env.Environment;
 
 /**
  * {@link Conditional} that only matches when the specified properties are defined in
- * {@link Environment}
+ * {@link Environment} and not "false".
  * 
  * @author Maciej Walkowiak
  * @since 1.1.0

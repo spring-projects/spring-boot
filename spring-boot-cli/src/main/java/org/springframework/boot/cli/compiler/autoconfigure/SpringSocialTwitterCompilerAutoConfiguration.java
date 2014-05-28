@@ -25,7 +25,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Social Twitter.
- *
+ * 
  * @author Craig Walls
  * @since 1.1.0
  */
@@ -42,7 +42,7 @@ public class SpringSocialTwitterCompilerAutoConfiguration extends
 			throws CompilationFailedException {
 		dependencies
 				.ifAnyMissingClasses("org.springframework.social.twitter.api.Twitter")
-		.add("spring-boot-starter-social-twitter");
+				.add("spring-boot-starter-social-twitter");
 	}
 
 	@Override
