@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 
 import org.apache.catalina.Context;
@@ -167,6 +168,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
 						.getClassLoader())) {
 			addJspServlet(context);
+			addJasperInitializer(context);
 			context.addLifecycleListener(new StoreMergedWebXmlListener());
 		}
 		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
@@ -197,6 +199,18 @@ public class TomcatEmbeddedServletContainerFactory extends
 		context.addChild(jspServlet);
 		context.addServletMapping("*.jsp", "jsp");
 		context.addServletMapping("*.jspx", "jsp");
+	}
+
+	private void addJasperInitializer(TomcatEmbeddedContext context) {
+		try {
+			ServletContainerInitializer initializer = (ServletContainerInitializer) ClassUtils
+					.forName("org.apache.jasper.servlet.JasperInitializer", null)
+					.newInstance();
+			context.addServletContainerInitializer(initializer, null);
+		}
+		catch (Exception ex) {
+			// Probably not Tomcat 8
+		}
 	}
 
 	// Needs to be protected so it can be used by subclasses
@@ -230,7 +244,6 @@ public class TomcatEmbeddedServletContainerFactory extends
 			ServletContextInitializer[] initializers) {
 		context.addLifecycleListener(new ServletContextInitializerLifecycleListener(
 				initializers));
-		context.addLifecycleListener(new JasperInitializerLifecycleListener());
 		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
 			context.addLifecycleListener(lifecycleListener);
 		}
