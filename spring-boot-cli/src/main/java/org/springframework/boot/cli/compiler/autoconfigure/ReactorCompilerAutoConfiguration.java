@@ -31,7 +31,7 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableReactor") || AstUtils.hasAtLeastOneFieldOrMethod(classNode, "Reactor");
 	}
 
 	@Override

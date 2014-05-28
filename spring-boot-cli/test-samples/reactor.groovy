@@ -1,0 +1,4 @@
+@Configuration
+@EnableReactor
+class ReactorApplication {
+}
