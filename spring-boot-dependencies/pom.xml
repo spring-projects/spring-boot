@@ -68,6 +68,7 @@
 		<hikaricp.version>1.3.8</hikaricp.version>
 		<httpclient.version>4.3.3</httpclient.version>
 		<httpasyncclient.version>4.0.1</httpasyncclient.version>
+		<hornetq.version>2.4.1.Final</hornetq.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 		<jackson.version>2.3.3</jackson.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
@@ -210,6 +211,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-groovy-templates</artifactId>
+				<version>1.1.0.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-hornetq</artifactId>
 				<version>1.1.0.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -713,6 +719,16 @@
 				<groupId>org.hibernate.javax.persistence</groupId>
 				<artifactId>hibernate-jpa-2.0-api</artifactId>
 				<version>${hibernate-jpa-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hornetq</groupId>
+				<artifactId>hornetq-jms-server</artifactId>
+				<version>${hornetq.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hornetq</groupId>
+				<artifactId>hornetq-jms-client</artifactId>
+				<version>${hornetq.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hsqldb</groupId>

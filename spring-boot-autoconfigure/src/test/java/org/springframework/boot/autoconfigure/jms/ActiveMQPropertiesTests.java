@@ -30,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 public class ActiveMQPropertiesTests {
 
 	private final ActiveMQProperties properties = new ActiveMQProperties();
+
 	private final StandardEnvironment environment = new StandardEnvironment();
 
 	@Test
