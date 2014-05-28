@@ -103,7 +103,7 @@ public class JarCommand extends OptionParsingCommand {
 		}
 
 		@Override
-		protected void run(OptionSet options) throws Exception {
+		protected ExitStatus run(OptionSet options) throws Exception {
 			List<?> nonOptionArguments = new ArrayList<Object>(
 					options.nonOptionArguments());
 			Assert.isTrue(nonOptionArguments.size() >= 2,
@@ -127,6 +127,7 @@ public class JarCommand extends OptionParsingCommand {
 			dependencies.removeAll(classpath);
 
 			writeJar(output, compiledClasses, classpathEntries, dependencies);
+			return ExitStatus.OK;
 		}
 
 		private void deleteIfExists(File file) {

@@ -31,7 +31,7 @@ class ExitCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public ExitStatus run(String... args) throws Exception {
 		throw new ShellExitException();
 	}
 

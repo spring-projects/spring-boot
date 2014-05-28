@@ -48,8 +48,8 @@ public abstract class OptionParsingCommand extends AbstractCommand {
 	}
 
 	@Override
-	public final void run(String... args) throws Exception {
-		this.handler.run(args);
+	public final ExitStatus run(String... args) throws Exception {
+		return this.handler.run(args);
 	}
 
 	protected OptionHandler getHandler() {

@@ -28,8 +28,9 @@ public class CustomCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public ExitStatus run(String... args) throws Exception {
 		System.err.println("Custom Command Hello");
+		return ExitStatus.OK;
 	}
 
 }

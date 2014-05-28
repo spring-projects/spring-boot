@@ -41,13 +41,19 @@ class RunProcessCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
-		run(Arrays.asList(args));
+	public ExitStatus run(String... args) throws Exception {
+		return run(Arrays.asList(args));
 	}
 
-	protected void run(Collection<String> args) throws IOException {
+	protected ExitStatus run(Collection<String> args) throws IOException {
 		this.process = new RunProcess(this.command);
-		this.process.run(args.toArray(new String[args.size()]));
+		int code = this.process.run(args.toArray(new String[args.size()]));
+		if (code == 0) {
+			return ExitStatus.OK;
+		}
+		else {
+			return new ExitStatus(code, "EXTERNAL_ERROR");
+		}
 	}
 
 	public boolean handleSigInt() {

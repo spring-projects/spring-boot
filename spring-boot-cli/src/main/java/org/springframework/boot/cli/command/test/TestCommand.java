@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.command.test;
 
 import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.OptionParsingCommand;
@@ -47,22 +46,14 @@ public class TestCommand extends OptionParsingCommand {
 		private TestRunner runner;
 
 		@Override
-		protected void doOptions() {
-			option("nohup",
-					"Flag to indicate that the JVM should not exit when tests are finished");
-		}
-
-		@Override
-		protected void run(OptionSet options) throws Exception {
+		protected ExitStatus run(OptionSet options) throws Exception {
 			SourceOptions sourceOptions = new SourceOptions(options);
 			TestRunnerConfiguration configuration = new TestRunnerConfigurationAdapter(
 					options, this);
 			this.runner = new TestRunner(configuration, sourceOptions.getSourcesArray(),
 					sourceOptions.getArgsArray());
 			this.runner.compileAndRunTests();
-			if (!options.has("nohup")) {
-				System.exit(0); // TODO: non-zero if test fails?
-			}
+			return ExitStatus.OK.hangup();
 		}
 
 		/**
@@ -77,5 +68,7 @@ public class TestCommand extends OptionParsingCommand {
 				super(options, optionHandler);
 			}
 		}
+
 	}
+
 }

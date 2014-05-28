@@ -32,8 +32,9 @@ public class ShellCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public ExitStatus run(String... args) throws Exception {
 		new Shell().run();
+		return ExitStatus.OK;
 	}
 
 }

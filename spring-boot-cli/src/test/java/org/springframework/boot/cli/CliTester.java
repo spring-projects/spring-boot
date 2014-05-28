@@ -75,10 +75,7 @@ public class CliTester implements TestRule {
 	}
 
 	public String test(String... args) throws Exception {
-		String[] argsToUse = new String[args.length + 1];
-		System.arraycopy(args, 0, argsToUse, 1, args.length);
-		argsToUse[0] = "--nohup";
-		Future<TestCommand> future = submitCommand(new TestCommand(), argsToUse);
+		Future<TestCommand> future = submitCommand(new TestCommand(), args);
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
 		return getOutput();
 	}
