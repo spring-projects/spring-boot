@@ -723,7 +723,10 @@ As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by 
 The various logging systems can be activated by including the appropriate libraries on
 the classpath, and further customized by providing a suitable configuration file in the
 root of the classpath, or in a location specified by the Spring `Environment` property
-`logging.config`.
+`logging.config`. (Note however that since logging is initialized *before* the `ApplicationContext
+is created, it isn't possible to control logging from `@PropertySources` in Spring
+`@Configuration` files.  System properties and the conventional Spring Boot external
+configuration files work just fine.)
 
 Depending on your logging system, the following files will be loaded:
 
