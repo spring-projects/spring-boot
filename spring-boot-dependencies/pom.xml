@@ -88,6 +88,7 @@
 		<spring-data-redis.version>1.1.1.RELEASE</spring-data-redis.version>
 		<spring-data-rest.version>2.0.2.RELEASE</spring-data-rest.version>
 		<spring-hateoas.version>0.9.0.RELEASE</spring-hateoas.version>
+		<spring-loaded.version>1.2.0.RELEASE</spring-loaded.version>
 		<spring-rabbit.version>1.2.2.RELEASE</spring-rabbit.version>
 		<spring-mobile.version>1.1.1.RELEASE</spring-mobile.version>
 		<spring-security.version>3.2.4.RELEASE</spring-security.version>
@@ -511,6 +512,11 @@
 						<groupId>commons-logging</groupId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>springloaded</artifactId>
+				<version>${spring-loaded.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.batch</groupId>
