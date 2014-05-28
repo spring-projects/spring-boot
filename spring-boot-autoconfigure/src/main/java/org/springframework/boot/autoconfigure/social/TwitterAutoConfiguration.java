@@ -42,9 +42,9 @@ import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 import org.springframework.web.servlet.View;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity
- * with Twitter.
- * 
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
+ * Twitter.
+ *
  * @author Craig Walls
  * @since 1.1.0
  */
@@ -56,32 +56,38 @@ public class TwitterAutoConfiguration {
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	protected static class TwitterAutoConfigurationAdapter extends SocialConfigurerAdapter implements EnvironmentAware {
+	protected static class TwitterAutoConfigurationAdapter extends
+			SocialConfigurerAdapter implements EnvironmentAware {
 
 		private String appId;
 		private String appSecret;
 
 		@Override
 		public void setEnvironment(Environment env) {
-			RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "spring.social.");
+			RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env,
+					"spring.social.");
 			this.appId = propertyResolver.getRequiredProperty("twitter.appId");
 			this.appSecret = propertyResolver.getRequiredProperty("twitter.appSecret");
 		}
-		
+
 		@Override
-		public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig, Environment env) {
-			cfConfig.addConnectionFactory(new TwitterConnectionFactory(appId, appSecret));
+		public void addConnectionFactories(ConnectionFactoryConfigurer cfConfig,
+				Environment env) {
+			cfConfig.addConnectionFactory(new TwitterConnectionFactory(this.appId,
+					this.appSecret));
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(TwitterConnectionFactory.class)
-		@Scope(value="request", proxyMode=ScopedProxyMode.INTERFACES)
+		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public Twitter twitter(ConnectionRepository repository) {
-			Connection<Twitter> connection = repository.findPrimaryConnection(Twitter.class);
-			return connection != null ? connection.getApi() : new TwitterTemplate(appId, appSecret);
+			Connection<Twitter> connection = repository
+					.findPrimaryConnection(Twitter.class);
+			return connection != null ? connection.getApi() : new TwitterTemplate(
+					this.appId, this.appSecret);
 		}
 
-		@Bean(name={"connect/twitterConnect", "connect/twitterConnected"})
+		@Bean(name = { "connect/twitterConnect", "connect/twitterConnected" })
 		@ConditionalOnExpression("${spring.social.auto_connection_views:false}")
 		public View twitterConnectView() {
 			return new GenericConnectionStatusView("twitter", "Twitter");

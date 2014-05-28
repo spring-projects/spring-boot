@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.social;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -28,9 +26,11 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Tests for {@link FacebookAutoConfiguration}.
- * 
+ *
  * @author Craig Walls
  */
 public class FacebookAutoConfigurationTests {
@@ -47,8 +47,10 @@ public class FacebookAutoConfigurationTests {
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.social.facebook.appId:12345");
-		EnvironmentTestUtils.addEnvironment(this.context, "spring.social.facebook.appSecret:secret");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.social.facebook.appId:12345");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.social.facebook.appSecret:secret");
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.refresh();

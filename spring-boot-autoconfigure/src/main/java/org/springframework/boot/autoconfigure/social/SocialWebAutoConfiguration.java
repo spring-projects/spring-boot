@@ -35,8 +35,9 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection support.
- * 
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection
+ * support.
+ *
  * @author Craig Walls
  * @since 1.1.0
  */
@@ -52,10 +53,11 @@ public class SocialWebAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(ConnectController.class)
 		public ConnectController connectController(
-				ConnectionFactoryLocator connectionFactoryLocator, ConnectionRepository connectionRepository) {
+				ConnectionFactoryLocator connectionFactoryLocator,
+				ConnectionRepository connectionRepository) {
 			return new ConnectController(connectionFactoryLocator, connectionRepository);
 		}
-		
+
 		@Bean
 		@ConditionalOnMissingBean(BeanNameViewResolver.class)
 		@ConditionalOnExpression("${spring.social.auto_connection_views:false}")
@@ -64,7 +66,7 @@ public class SocialWebAutoConfiguration {
 			bnvr.setOrder(Integer.MIN_VALUE);
 			return bnvr;
 		}
-		
+
 		@Override
 		public UserIdSource getUserIdSource() {
 			return new UserIdSource() {

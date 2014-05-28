@@ -42,9 +42,9 @@ import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.web.servlet.View;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity
- * with Facebook.
- * 
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
+ * Facebook.
+ *
  * @author Craig Walls
  * @since 1.1.0
  */
@@ -56,32 +56,37 @@ public class FacebookAutoConfiguration {
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	protected static class FacebookAutoConfigurationAdapter extends SocialConfigurerAdapter implements EnvironmentAware {
+	protected static class FacebookAutoConfigurationAdapter extends
+			SocialConfigurerAdapter implements EnvironmentAware {
 
 		private String appId;
 		private String appSecret;
 
 		@Override
 		public void setEnvironment(Environment env) {
-			RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "spring.social.");
+			RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env,
+					"spring.social.");
 			this.appId = propertyResolver.getRequiredProperty("facebook.appId");
 			this.appSecret = propertyResolver.getRequiredProperty("facebook.appSecret");
 		}
-		
+
 		@Override
-		public void addConnectionFactories(ConnectionFactoryConfigurer config, Environment env) {
-			config.addConnectionFactory(new FacebookConnectionFactory(appId, appSecret));
+		public void addConnectionFactories(ConnectionFactoryConfigurer config,
+				Environment env) {
+			config.addConnectionFactory(new FacebookConnectionFactory(this.appId,
+					this.appSecret));
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(Facebook.class)
-		@Scope(value="request", proxyMode=ScopedProxyMode.INTERFACES)
+		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public Facebook facebook(ConnectionRepository repository) {
-			Connection<Facebook> connection = repository.findPrimaryConnection(Facebook.class);
+			Connection<Facebook> connection = repository
+					.findPrimaryConnection(Facebook.class);
 			return connection != null ? connection.getApi() : new FacebookTemplate();
 		}
 
-		@Bean(name={"connect/facebookConnect", "connect/facebookConnected"})
+		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
 		@ConditionalOnExpression("${spring.social.auto_connection_views:false}")
 		public View facebookConnectView() {
 			return new GenericConnectionStatusView("facebook", "Facebook");

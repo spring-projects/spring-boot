@@ -25,11 +25,12 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Social LinkedIn.
- * 
+ *
  * @author Craig Walls
  * @since 1.1.0
  */
-public class SpringSocialLinkedInCompilerAutoConfiguration extends CompilerAutoConfiguration {
+public class SpringSocialLinkedInCompilerAutoConfiguration extends
+		CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
@@ -39,9 +40,9 @@ public class SpringSocialLinkedInCompilerAutoConfiguration extends CompilerAutoC
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies)
 			throws CompilationFailedException {
-		dependencies
-			.ifAnyMissingClasses("org.springframework.social.linkedin.api.LinkedIn")
-				.add("spring-boot-starter-social-linkedin");
+		dependencies.ifAnyMissingClasses(
+				"org.springframework.social.linkedin.api.LinkedIn").add(
+				"spring-boot-starter-social-linkedin");
 	}
 
 	@Override
