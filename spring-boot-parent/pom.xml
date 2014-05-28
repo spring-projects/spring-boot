@@ -230,7 +230,7 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-  </repositories>
+	</repositories>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -367,15 +367,10 @@
 						<configuration>
 							<rules>
 								<requireJavaVersion>
-									<version>1.7</version>
+									<version>(1.7,)</version>
 								</requireJavaVersion>
-								<bannedDependencies>
-									<excludes>
-										<exclude>commons-logging:commons-logging:*:compile</exclude>
-									</excludes>
-									<searchTransitive>true</searchTransitive>
-								</bannedDependencies>
 							</rules>
+							<fail>true</fail>
 						</configuration>
 					</execution>
 				</executions>
