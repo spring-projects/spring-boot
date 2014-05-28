@@ -50,6 +50,7 @@ public class SpringCli {
 
 		int exitCode = runner.runAndHandleErrors(args);
 		if (exitCode != 0) {
+			// If successful, leave it to run in case it's a server app
 			System.exit(exitCode);
 		}
 	}
