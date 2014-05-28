@@ -35,21 +35,27 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
  * 
  * @author Dave Syer
  */
-public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfiguration {
+public class SpringTestCompilerAutoConfiguration extends
+		CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "SpringApplicationConfiguration");
+		return AstUtils.hasAtLeastOneAnnotation(classNode,
+				"SpringApplicationConfiguration");
 	}
-	
+
 	@Override
 	public void apply(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration,
 			GeneratorContext generatorContext, SourceUnit source,
 			ClassNode classNode) throws CompilationFailedException {
 		if (!AstUtils.hasAtLeastOneAnnotation(classNode, "RunWith")) {
-			AnnotationNode runwith = new AnnotationNode(ClassHelper.make("RunWith"));
-			runwith.addMember("value", new ClassExpression(ClassHelper.make("SpringJUnit4ClassRunner")));
+			AnnotationNode runwith = new AnnotationNode(
+					ClassHelper.make("RunWith"));
+			runwith.addMember(
+					"value",
+					new ClassExpression(ClassHelper
+							.make("SpringJUnit4ClassRunner")));
 			classNode.addAnnotation(runwith);
 		}
 	}
@@ -59,6 +65,8 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 			throws CompilationFailedException {
 		imports.addStarImports("org.junit.runner")
 				.addStarImports("org.springframework.boot.test")
-				.addStarImports("org.springframework.test.context.junit4");
+				.addStarImports("org.springframework.test.context.junit4")
+				.addImports(
+						"org.springframework.test.context.web.WebAppConfiguration");
 	}
 }

@@ -191,8 +191,8 @@ public class GroovyCompiler {
 		for (Object loadedClass : collector.getLoadedClasses()) {
 			classes.add((Class<?>) loadedClass);
 		}
-		ClassNode mainClassNode = (ClassNode) compilationUnit.getAST().getClasses()
-				.get(0);
+		ClassNode mainClassNode = getMainClass(compilationUnit);
+
 		Class<?> mainClass = null;
 		for (Class<?> loadedClass : classes) {
 			if (mainClassNode.getName().equals(loadedClass.getName())) {
@@ -265,6 +265,7 @@ public class GroovyCompiler {
 				throws CompilationFailedException {
 
 			ImportCustomizer importCustomizer = new ImportCustomizer();
+			ClassNode mainClassNode = getMainClass(source.getAST().getClasses());
 
 			// Additional auto configuration
 			for (CompilerAutoConfiguration autoConfiguration : GroovyCompiler.this.compilerAutoConfigurations) {
@@ -273,8 +274,7 @@ public class GroovyCompiler {
 						autoConfiguration.applyImports(importCustomizer);
 						importCustomizer.call(source, context, classNode);
 					}
-					if (source.getAST().getClasses().size() > 0
-							&& classNode.equals(source.getAST().getClasses().get(0))) {
+					if (classNode.equals(mainClassNode)) {
 						autoConfiguration.applyToMainClass(GroovyCompiler.this.loader,
 								GroovyCompiler.this.configuration, context, source,
 								classNode);
@@ -287,6 +287,25 @@ public class GroovyCompiler {
 			}
 			importCustomizer.call(source, context, classNode);
 		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ClassNode getMainClass(CompilationUnit source) {
+		return getMainClass((List<ClassNode>) source.getAST().getClasses());
+	}
+
+	private static ClassNode getMainClass(List<ClassNode> classes) {
+		for (ClassNode node : classes) {
+			if (AstUtils.hasAtLeastOneAnnotation(node, "Enable*AutoConfiguration")) {
+				return null; // No need to enhance this
+			}
+			if (AstUtils.hasAtLeastOneAnnotation(node, "*Controller", "Configuration",
+					"Component", "*Service", "Repository", "Enable*")) {
+				return node;
+			}
+		}
+		return classes.isEmpty() ? null : classes.get(0);
 
 	}
 

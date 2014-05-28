@@ -34,6 +34,7 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
+import org.springframework.util.PatternMatchUtils;
 
 /**
  * General purpose AST utilities.
@@ -69,7 +70,7 @@ public abstract class AstUtils {
 			String... annotations) {
 		for (AnnotationNode annotationNode : node.getAnnotations()) {
 			for (String annotation : annotations) {
-				if (annotation.equals(annotationNode.getClassNode().getName())) {
+				if (PatternMatchUtils.simpleMatch(annotation, annotationNode.getClassNode().getName())) {
 					return true;
 				}
 			}
