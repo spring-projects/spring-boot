@@ -64,6 +64,8 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 				"org.springframework.core.annotation.Order",
 				"org.springframework.core.io.ResourceLoader",
 				"org.springframework.boot.CommandLineRunner",
+				"org.springframework.boot.context.properties.ConfigurationProperties",
+				"org.springframework.boot.context.properties.EnableConfigurationProperties",
 				"org.springframework.boot.autoconfigure.EnableAutoConfiguration",
 				"org.springframework.boot.groovy.GrabMetadata");
 		imports.addStarImports("org.springframework.stereotype",
