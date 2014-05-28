@@ -195,7 +195,8 @@ public class AetherGrapeEngine implements GrapeEngine {
 					.getManagedDependencies());
 
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest,
-					DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE));
+					DependencyFilterUtils.classpathFilter(JavaScopes.COMPILE,
+							JavaScopes.RUNTIME));
 
 			DependencyResult dependencyResult = this.repositorySystem
 					.resolveDependencies(this.session, dependencyRequest);
