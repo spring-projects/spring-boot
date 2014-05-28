@@ -242,6 +242,9 @@ and Hibernate.
 |`spring-boot-starter-freemarker`
 |Support for the FreeMarker templating engine
 
+|`spring-boot-starter-groovy-templates`
+|Support for the Groovy templating engine
+
 |`spring-boot-starter-integration`
 |Support for common `spring-integration` modules.
 
