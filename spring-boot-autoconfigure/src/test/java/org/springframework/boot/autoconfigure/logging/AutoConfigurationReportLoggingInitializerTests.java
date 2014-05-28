@@ -113,8 +113,8 @@ public class AutoConfigurationReportLoggingInitializerTests {
 
 			ReflectionUtils.setField(this.logFactoryField, null, new MockLogFactory());
 		}
-		catch (Exception e) {
-			throw new IllegalStateException("Failed to set logFactory", e);
+		catch (Exception ex) {
+			throw new IllegalStateException("Failed to set logFactory", ex);
 		}
 
 		this.initializer = new AutoConfigurationReportLoggingInitializer();

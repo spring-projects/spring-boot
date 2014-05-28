@@ -45,6 +45,7 @@ import org.springframework.security.config.annotation.authentication.configurers
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}.
  * 
  * @author Dave Syer
+ * @author Rob Winch
  */
 @Configuration
 @ConditionalOnBean(ObjectPostProcessor.class)
@@ -107,8 +108,6 @@ public class AuthenticationManagerConfiguration extends
 	 * allowed in the configure stage. It is not allowed because we guarantee all init
 	 * methods are invoked before configure, which cannot be guaranteed at this point.</li>
 	 * </ul>
-	 * 
-	 * @author Rob Winch
 	 */
 	private class BootDefaultingAuthenticationConfigurerAdapter extends
 			GlobalAuthenticationConfigurerAdapter {
