@@ -66,6 +66,7 @@ public class SpringTestCompilerAutoConfiguration extends
 		imports.addStarImports("org.junit.runner")
 				.addStarImports("org.springframework.boot.test")
 				.addStarImports("org.springframework.test.context.junit4")
+				.addStarImports("org.springframework.test.annotation")
 				.addImports(
 						"org.springframework.test.context.web.WebAppConfiguration");
 	}

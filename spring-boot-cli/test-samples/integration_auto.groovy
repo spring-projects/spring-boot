@@ -1,6 +1,7 @@
 @SpringApplicationConfiguration(classes=Application)
 @IntegrationTest('server.port:0')
 @WebAppConfiguration
+@DirtiesContext
 class RestTests {
 
 	@Value('${local.server.port}')
