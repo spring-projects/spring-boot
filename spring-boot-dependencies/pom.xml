@@ -1008,6 +1008,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.social</groupId>
+				<artifactId>spring-social-facebook-web</artifactId>
+				<version>${spring-social-facebook.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.social</groupId>
 				<artifactId>spring-social-twitter</artifactId>
 				<version>${spring-social-twitter.version}</version>
 			</dependency>
