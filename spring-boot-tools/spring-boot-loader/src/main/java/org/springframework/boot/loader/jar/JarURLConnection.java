@@ -51,6 +51,7 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	protected JarURLConnection(URL url, JarFile jarFile) throws MalformedURLException {
 		super(new URL(buildRootUrl(jarFile)));
+		this.url = url;
 		this.jarFile = jarFile;
 
 		String spec = url.getFile();
@@ -59,25 +60,17 @@ class JarURLConnection extends java.net.JarURLConnection {
 			throw new MalformedURLException("no " + SEPARATOR + " found in url spec:"
 					+ spec);
 		}
-		/*
-		 * The superclass constructor creates a jarFileUrl which is equal to the root URL
-		 * of the containing archive (therefore not unique if we are connecting to
-		 * multiple nested jars in the same archive). Therefore we need to make something
-		 * sensible for #getJarFileURL().
-		 */
-		if (separator + SEPARATOR.length() != spec.length()) {
+		if (separator + 2 != spec.length()) {
 			this.jarEntryName = decode(spec.substring(separator + 2));
-			this.jarFileUrl = new URL("jar:" + spec.substring(0, separator) + SEPARATOR
-					+ this.jarEntryName);
+		}
+
+		String container = spec.substring(0, separator);
+		if (container.indexOf(SEPARATOR) == -1) {
+			this.jarFileUrl = new URL(container);
 		}
 		else {
-			this.jarFileUrl = new URL("jar:" + spec.substring(0, separator));
+			this.jarFileUrl = new URL("jar:" + container);
 		}
-	}
-
-	@Override
-	public URL getJarFileURL() {
-		return this.jarFileUrl;
 	}
 
 	@Override
@@ -109,9 +102,19 @@ class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
+	public URL getJarFileURL() {
+		return this.jarFileUrl;
+	}
+
+	@Override
 	public JarEntry getJarEntry() throws IOException {
 		connect();
 		return (this.jarEntryData == null ? null : this.jarEntryData.asJarEntry());
+	}
+
+	@Override
+	public String getEntryName() {
+		return this.jarEntryName;
 	}
 
 	@Override
