@@ -83,6 +83,12 @@ public class TestCommandIntegrationTests {
 	}
 
 	@Test
+	public void integrationTest() throws Exception {
+		String output = this.cli.test("integration.groovy");
+		assertThat(output, containsString("OK (1 test)"));
+	}
+
+	@Test
 	public void spockTester() throws Exception {
 		String output = this.cli.test("spock.groovy");
 		assertThat(output, containsString("OK (1 test)"));
