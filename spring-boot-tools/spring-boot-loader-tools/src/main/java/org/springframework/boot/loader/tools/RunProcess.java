@@ -48,11 +48,11 @@ public class RunProcess {
 		this.command = command;
 	}
 
-	public void run(String... args) throws IOException {
-		run(Arrays.asList(args));
+	public int run(String... args) throws IOException {
+		return run(Arrays.asList(args));
 	}
 
-	protected void run(Collection<String> args) throws IOException {
+	protected int run(Collection<String> args) throws IOException {
 		ProcessBuilder builder = new ProcessBuilder(this.command);
 		builder.command().addAll(args);
 		builder.redirectErrorStream(true);
@@ -73,6 +73,12 @@ public class RunProcess {
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
+			}
+			try {
+				return this.process.exitValue();
+			}
+			catch (IllegalThreadStateException e) {
+				return 1;
 			}
 		}
 		finally {

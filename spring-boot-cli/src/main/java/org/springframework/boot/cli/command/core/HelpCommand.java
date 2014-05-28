@@ -85,7 +85,7 @@ public class HelpCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public ExitStatus run(String... args) throws Exception {
 		if (args.length == 0) {
 			throw new NoHelpCommandArgumentsException();
 		}
@@ -103,7 +103,7 @@ public class HelpCommand extends AbstractCommand {
 				if (command.getHelp() != null) {
 					Log.info(command.getHelp());
 				}
-				return;
+				return ExitStatus.OK;
 			}
 		}
 		throw new NoSuchCommandException(commandName);

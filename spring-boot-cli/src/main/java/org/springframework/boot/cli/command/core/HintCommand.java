@@ -42,7 +42,7 @@ public class HintCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void run(String... args) throws Exception {
+	public ExitStatus run(String... args) throws Exception {
 		try {
 			int index = (args.length == 0 ? 0 : Integer.valueOf(args[0]) - 1);
 			List<String> arguments = new ArrayList<String>(args.length);
@@ -64,7 +64,9 @@ public class HintCommand extends AbstractCommand {
 		}
 		catch (Exception ex) {
 			// Swallow and provide no hints
+			return ExitStatus.ERROR;
 		}
+		return ExitStatus.OK;
 	}
 
 	private void showCommandHints(String starting) {
