@@ -574,7 +574,7 @@ Tomcat 8 for it to work. For example, using the starter poms in Maven:
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	<properties>
-		<tomcat.version>8.0.3</tomcat.version>
+		<tomcat.version>8.0.8</tomcat.version>
 	</properties>
 	<dependencies>
 		...

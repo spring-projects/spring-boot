@@ -1,8 +1,13 @@
 package org.springframework.boot.context.embedded.tomcat;
 
+import javax.servlet.ServletContainerInitializer;
+import javax.servlet.ServletException;
+
+import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
-import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.apache.catalina.core.StandardContext;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -15,29 +20,35 @@ class JasperInitializerLifecycleListener implements LifecycleListener {
 
 	private static final String JASPER_INITIALIZER_CLASS = "org.apache.jasper.servlet.JasperInitializer";
 
-	private final ServletContextInitializerLifecycleListener delegate;
+	private ServletContainerInitializer initializer;
 
 	public JasperInitializerLifecycleListener() {
-		ServletContextInitializer initializer = getJasperInitializer();
-		if (initializer != null) {
-			this.delegate = new ServletContextInitializerLifecycleListener(initializer);
-		}
-		else {
-			this.delegate = null;
-		}
+		this.initializer = getJasperInitializer();
 	}
 
 	@Override
 	public void lifecycleEvent(LifecycleEvent event) {
-		if (this.delegate != null) {
-			this.delegate.lifecycleEvent(event);
+		if (this.initializer != null
+				&& Lifecycle.CONFIGURE_START_EVENT.equals(event.getType())) {
+			onStartup(event);
 		}
 	}
 
-	private ServletContextInitializer getJasperInitializer() {
+	private void onStartup(LifecycleEvent event) {
+		Assert.isInstanceOf(StandardContext.class, event.getSource());
+		StandardContext standardContext = (StandardContext) event.getSource();
+		try {
+			this.initializer.onStartup(null, standardContext.getServletContext());
+		}
+		catch (ServletException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private ServletContainerInitializer getJasperInitializer() {
 		try {
 			Class<?> jasperClass = ClassUtils.forName(JASPER_INITIALIZER_CLASS, null);
-			return (ServletContextInitializer) jasperClass.newInstance();
+			return (ServletContainerInitializer) jasperClass.newInstance();
 		}
 		catch (Exception ex) {
 			return null;
