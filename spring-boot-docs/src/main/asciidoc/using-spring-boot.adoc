@@ -257,6 +257,15 @@ and Hibernate.
 |`spring-boot-starter-security`
 |Support for `spring-security`.
 
+|`spring-boot-starter-social-facebook`
+|Support for `spring-social-facebook`.
+
+|`spring-boot-starter-social-linkedin`
+|Support for `spring-social-linkedin`.
+
+|`spring-boot-starter-social-twitter`
+|Support for `spring-social-twitter`.
+
 |`spring-boot-starter-test`
 |Support for common test dependencies, including JUnit, Hamcrest and Mockito along with
  the `spring-test` module.
