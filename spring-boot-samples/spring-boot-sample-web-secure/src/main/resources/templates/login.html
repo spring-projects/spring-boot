@@ -27,7 +27,7 @@
 				</fieldset>
 				<input type="submit" id="login" value="Login"
 					class="btn btn-primary" /> <input type="hidden"
-					th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+					th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf}"/>
 			</form>
 		</div>
 	</div>

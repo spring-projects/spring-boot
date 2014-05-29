@@ -16,6 +16,10 @@
 
 package sample.ui.secure;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -33,9 +37,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Basic integration tests for demo application.
@@ -45,7 +48,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWebSecureApplication.class)
 @WebAppConfiguration
-@IntegrationTest("server.port:0")
+@IntegrationTest({ "server.port:0", "security.enable_csrf:false" })
 @DirtiesContext
 public class SampleSecureApplicationTests {
 
@@ -60,8 +63,27 @@ public class SampleSecureApplicationTests {
 				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
 						headers), String.class);
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(), entity
-				.getBody().contains("<title>Login"));
+		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
+				entity.getBody().contains("<title>Login"));
+	}
+
+	@Test
+	public void testLogin() throws Exception {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		form.set("username", "user");
+		form.set("password", "password");
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(
+				"http://localhost:" + this.port + "/login", HttpMethod.POST,
+				new HttpEntity<MultiValueMap<String, String>>(form, headers),
+				String.class);
+		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
+		assertTrue("Wrong location:\n" + entity.getHeaders(),
+				entity.getHeaders().getLocation().toString().endsWith(port + "/"));
+		assertNotNull("Missing cookie:\n" + entity.getHeaders(),
+				entity.getHeaders().get("Set-Cookie"));
 	}
 
 	@Test

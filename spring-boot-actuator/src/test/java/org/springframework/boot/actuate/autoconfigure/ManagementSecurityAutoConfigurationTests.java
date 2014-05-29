@@ -145,8 +145,9 @@ public class ManagementSecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
-		// Just the management endpoints (one filter) and ignores now
-		assertEquals(7, this.context.getBean(FilterChainProxy.class).getFilterChains()
+		// Just the management endpoints (one filter) and ignores now plus the backup
+		// filter on app endpoints
+		assertEquals(8, this.context.getBean(FilterChainProxy.class).getFilterChains()
 				.size());
 	}
 
