@@ -21,38 +21,34 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
 import org.springframework.boot.cli.compiler.DependencyCustomizer;
+import org.springframework.boot.groovy.EnableGroovyTemplates;
 import org.springframework.boot.groovy.GroovyTemplate;
 
 /**
- * {@link CompilerAutoConfiguration} for Spring MVC.
+ * {@link CompilerAutoConfiguration} for Groovy Templates (outside MVC).
  * 
  * @author Dave Syer
- * @author Phillip Webb
+ * 
+ * @since 1.1
  */
-public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguration {
+public class GroovyTemplatesCompilerAutoConfiguration extends CompilerAutoConfiguration {
 
 	@Override
 	public boolean matches(ClassNode classNode) {
-		return AstUtils.hasAtLeastOneAnnotation(classNode, "Controller",
-				"RestController", "EnableWebMvc");
+		return AstUtils.hasAtLeastOneAnnotation(classNode, "EnableGroovyTemplates");
 	}
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
 		dependencies
-				.ifAnyMissingClasses("org.springframework.web.servlet.mvc.Controller")
-				.add("spring-boot-starter-web");
-		dependencies.ifAnyMissingClasses("groovy.text.TemplateEngine").add(
-				"groovy-templates");
+				.ifAnyMissingClasses("groovy.text.TemplateEngine")
+				.add("groovy-templates");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addStarImports("org.springframework.web.bind.annotation",
-				"org.springframework.web.servlet.config.annotation",
-				"org.springframework.web.servlet",
-				"org.springframework.web.servlet.handler", "org.springframework.http",
-				"org.springframework.ui", "groovy.text");
+		imports.addStarImports("groovy.text");
+		imports.addImports(EnableGroovyTemplates.class.getCanonicalName());
 		imports.addStaticImport(GroovyTemplate.class.getName(), "template");
 	}
 

@@ -55,7 +55,10 @@ import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link Command} to create a self-contained executable jar file from a CLI application
@@ -207,11 +210,21 @@ public class JarCommand extends OptionParsingCommand {
 
 		private void addCliClasses(JarWriter writer) throws IOException {
 			addClass(writer, PackagedSpringApplicationLauncher.class);
+			Resource[] resources = new PathMatchingResourcePatternResolver().getResources("org/springframework/boot/groovy/**");
+			for (Resource resource : resources) {
+				String url = resource.getURL().toString();
+				addResource(writer, resource, url.substring(url.indexOf("org/springframework/boot/groovy/")));
+			}
 		}
 
 		private void addClass(JarWriter writer, Class<?> sourceClass) throws IOException {
 			String name = sourceClass.getName().replace(".", "/") + ".class";
 			InputStream stream = sourceClass.getResourceAsStream("/" + name);
+			writer.writeEntry(name, stream);
+		}
+
+		private void addResource(JarWriter writer, Resource resource, String name) throws IOException {
+			InputStream stream = resource.getInputStream();
 			writer.writeEntry(name, stream);
 		}
 
@@ -263,6 +276,8 @@ public class JarCommand extends OptionParsingCommand {
 				AnnotationNode annotation = new AnnotationNode(new ClassNode(Grab.class));
 				annotation.addMember("value", new ConstantExpression("groovy"));
 				classNode.addAnnotation(annotation);
+				// We only need to do it at most once
+				break;
 			}
 		}
 
