@@ -30,14 +30,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.security.SecurityProperties.Headers;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -88,13 +84,6 @@ public class SpringBootWebSecurityConfiguration {
 
 	private static List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**",
 			"/images/**", "/**/favicon.ico");
-
-	@Bean
-	@ConditionalOnMissingBean
-	public AuthenticationEventPublisher authenticationEventPublisher(
-			ApplicationEventPublisher publisher) {
-		return new DefaultAuthenticationEventPublisher(publisher);
-	}
 
 	@Bean
 	@ConditionalOnMissingBean({ IgnoredPathsWebSecurityConfigurerAdapter.class })
@@ -164,7 +153,6 @@ public class SpringBootWebSecurityConfiguration {
 	// RequestDataValueProcessor
 	@ConditionalOnClass(RequestDataValueProcessor.class)
 	@ConditionalOnMissingBean(RequestDataValueProcessor.class)
-	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
 	protected static class WebMvcSecurityConfigurationConditions {
 
@@ -179,24 +167,21 @@ public class SpringBootWebSecurityConfiguration {
 	// Pull in a plain @EnableWebSecurity if Spring MVC is not available
 	@ConditionalOnMissingBean(WebMvcSecurityConfigurationConditions.class)
 	@ConditionalOnMissingClass(name = "org.springframework.web.servlet.support.RequestDataValueProcessor")
-	@ConditionalOnExpression("${security.basic.enabled:true}")
 	@Configuration
 	@EnableWebSecurity
 	protected static class DefaultWebSecurityConfiguration {
 
 	}
 
-	@ConditionalOnExpression("${security.basic.enabled:true}")
-	@Configuration
-	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationWebSecurityConfigurerAdapter extends
+	/**
+	 * Basic functionality for all web apps (whether or not we are providing basic auth).
+	 * @author Dave Syer
+	 */
+	private static class BaseApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
 		@Autowired
 		private SecurityProperties security;
-
-		@Autowired
-		private AuthenticationEventPublisher authenticationEventPublisher;
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
@@ -205,17 +190,6 @@ public class SpringBootWebSecurityConfiguration {
 				http.requiresChannel().anyRequest().requiresSecure();
 			}
 
-			String[] paths = getSecureApplicationPaths();
-			if (this.security.getBasic().isEnabled() && paths.length > 0) {
-				http.exceptionHandling().authenticationEntryPoint(entryPoint());
-				http.requestMatchers().antMatchers(paths);
-				http.authorizeRequests()
-						.anyRequest()
-						.hasAnyRole(
-								this.security.getUser().getRole().toArray(new String[0])) //
-						.and().httpBasic() //
-						.and().anonymous().disable();
-			}
 			if (!this.security.isEnableCsrf()) {
 				http.csrf().disable();
 			}
@@ -224,6 +198,9 @@ public class SpringBootWebSecurityConfiguration {
 
 			SpringBootWebSecurityConfiguration.configureHeaders(http.headers(),
 					this.security.getHeaders());
+
+			String[] paths = getSecureApplicationPaths();
+			configureAdditionalRules(http, paths);
 
 		}
 
@@ -241,20 +218,60 @@ public class SpringBootWebSecurityConfiguration {
 			return list.toArray(new String[list.size()]);
 		}
 
+		protected void configureAdditionalRules(HttpSecurity http, String... paths)
+				throws Exception {
+		}
+
+	}
+
+	@ConditionalOnExpression("!${security.basic.enabled:true}")
+	@Configuration
+	@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
+			BaseApplicationWebSecurityConfigurerAdapter {
+		@Override
+		protected void configureAdditionalRules(HttpSecurity http, String... paths)
+				throws Exception {
+
+			if (paths.length > 0) {
+				http.requestMatchers().antMatchers(paths);
+				// The basic security was disabled
+				http.authorizeRequests().anyRequest().permitAll();
+			}
+
+		}
+
+	}
+
+	@ConditionalOnExpression("${security.basic.enabled:true}")
+	@Configuration
+	@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	protected static class ApplicationWebSecurityConfigurerAdapter extends
+			BaseApplicationWebSecurityConfigurerAdapter {
+
+		@Autowired
+		private SecurityProperties security;
+
+		@Override
+		protected void configureAdditionalRules(HttpSecurity http, String... paths)
+				throws Exception {
+
+			if (paths.length > 0) {
+				http.exceptionHandling().authenticationEntryPoint(entryPoint());
+				http.httpBasic();
+				http.requestMatchers().antMatchers(paths);
+				http.authorizeRequests()
+						.anyRequest()
+						.hasAnyRole(
+								this.security.getUser().getRole().toArray(new String[0]));
+			}
+
+		}
+
 		private AuthenticationEntryPoint entryPoint() {
 			BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
 			entryPoint.setRealmName(this.security.getBasic().getRealm());
 			return entryPoint;
-		}
-
-		@Override
-		protected AuthenticationManager authenticationManager() throws Exception {
-			AuthenticationManager manager = super.authenticationManager();
-			if (manager instanceof ProviderManager) {
-				((ProviderManager) manager)
-						.setAuthenticationEventPublisher(this.authenticationEventPublisher);
-			}
-			return manager;
 		}
 
 	}

@@ -34,8 +34,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -66,6 +68,9 @@ public class AuthenticationManagerConfiguration extends
 	@Autowired
 	private SecurityProperties security;
 
+	@Autowired
+	private AuthenticationEventPublisher authenticationEventPublisher;
+
 	private BootDefaultingAuthenticationConfigurerAdapter configurer = new BootDefaultingAuthenticationConfigurerAdapter();
 
 	@Override
@@ -84,7 +89,13 @@ public class AuthenticationManagerConfiguration extends
 	@Lazy
 	@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 	protected AuthenticationManager lazyAuthenticationManager() {
-		return this.configurer.getAuthenticationManagerBuilder().getOrBuild();
+		AuthenticationManager manager = this.configurer.getAuthenticationManagerBuilder()
+				.getOrBuild();
+		if (manager instanceof ProviderManager) {
+			((ProviderManager) manager)
+					.setAuthenticationEventPublisher(this.authenticationEventPublisher);
+		}
+		return manager;
 	}
 
 	/**

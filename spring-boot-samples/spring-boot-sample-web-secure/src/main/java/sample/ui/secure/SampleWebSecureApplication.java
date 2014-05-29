@@ -19,6 +19,7 @@ package sample.ui.secure;
 import java.util.Date;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -36,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ComponentScan
 @Controller
 public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
-
+	
 	@RequestMapping("/")
 	public String home(Map<String, Object> model) {
 		model.put("message", "Hello World");
@@ -51,9 +52,7 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// Set user password to "password" for demo purposes only
-		new SpringApplicationBuilder(SampleWebSecureApplication.class).properties(
-				"security.user.password=password").run(args);
+		new SpringApplicationBuilder(SampleWebSecureApplication.class).run(args);
 	}
 
 	@Override
@@ -68,8 +67,16 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+
+		@Autowired
+		private SecurityProperties security;
+
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
+			if (!security.isEnableCsrf()) {
+				// For testing
+				http.csrf().disable();
+			}
 			http.authorizeRequests().anyRequest().fullyAuthenticated().and().formLogin()
 					.loginPage("/login").failureUrl("/login?error").permitAll();
 		}
