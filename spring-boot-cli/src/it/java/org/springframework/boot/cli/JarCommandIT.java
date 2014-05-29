@@ -80,5 +80,7 @@ public class JarCommandIT {
 		assertThat(invocation.getStandardOutput(), containsString("/static/static.txt"));
 		assertThat(invocation.getStandardOutput(),
 				containsString("/templates/template.txt"));
+		assertThat(invocation.getStandardOutput(),
+				containsString("Goodbye Mama"));
 	}
 }

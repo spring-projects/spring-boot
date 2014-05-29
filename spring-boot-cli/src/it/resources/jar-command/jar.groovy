@@ -1,5 +1,6 @@
 package org.test
 
+@EnableGroovyTemplates
 @Component
 class Example implements CommandLineRunner {
 
@@ -12,6 +13,7 @@ class Example implements CommandLineRunner {
 		println getClass().getResource('/resources/resource.txt')
 		println getClass().getResource('/static/static.txt')
 		println getClass().getResource('/templates/template.txt')
+		println template('template.txt', [world:'Mama'])
 	}
 }
 
