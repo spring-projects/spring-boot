@@ -29,24 +29,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for {@link JmsTemplate}.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring JMS.
  * 
  * @author Greg Turnquist
  */
 @Configuration
 @ConditionalOnClass(JmsTemplate.class)
 @ConditionalOnBean(ConnectionFactory.class)
-@EnableConfigurationProperties(JmsTemplateProperties.class)
-public class JmsTemplateAutoConfiguration {
+@EnableConfigurationProperties(JmsProperties.class)
+public class JmsAutoConfiguration {
 
 	@Autowired
-	private JmsTemplateProperties properties;
+	private JmsProperties properties;
 
 	@Autowired
 	private ConnectionFactory connectionFactory;
 
 	@Bean
-	@ConditionalOnMissingBean(JmsTemplate.class)
+	@ConditionalOnMissingBean
 	public JmsTemplate jmsTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
 		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());

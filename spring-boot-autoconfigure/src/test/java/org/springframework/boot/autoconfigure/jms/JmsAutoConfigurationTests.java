@@ -35,11 +35,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests for {@link JmsTemplateAutoConfiguration}.
+ * Tests for {@link JmsAutoConfiguration}.
  * 
  * @author Greg Turnquist
  */
-public class JmsTemplateAutoConfigurationTests {
+public class JmsAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -206,7 +206,7 @@ public class JmsTemplateAutoConfigurationTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(additionalClasses);
 		context.register(ActiveMQAutoConfiguration.class,
-				JmsTemplateAutoConfiguration.class);
+				JmsAutoConfiguration.class);
 		return context;
 	}
 
