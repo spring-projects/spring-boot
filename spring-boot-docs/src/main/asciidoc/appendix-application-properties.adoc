@@ -203,9 +203,9 @@ content into your application; rather pick only the properties that you need.
 	flyway.prefix=V
 	flyway.suffix=.sql
 	flyway.enabled=true
-    flyway.url= # JDBC url if you want Flyway to create its own DataSource
-    flyway.user= # JDBC username if you want Flyway to create its own DataSource
-    flyway.password= # JDBC password if you want Flyway to create its own DataSource
+	flyway.url= # JDBC url if you want Flyway to create its own DataSource
+	flyway.user= # JDBC username if you want Flyway to create its own DataSource
+	flyway.password= # JDBC password if you want Flyway to create its own DataSource
 
 	# LIQUIBASE ({sc-spring-boot-autoconfigure}/liquibase/LiquibaseProperties.{sc-ext}[LiquibaseProperties])
 	liquibase.change-log=classpath:/db/changelog/db.changelog-master.yaml
@@ -237,8 +237,8 @@ content into your application; rather pick only the properties that you need.
 
 	# ACTIVEMQ ({sc-spring-boot-autoconfigure}/jms/ActiveMQProperties.{sc-ext}[ActiveMQProperties])
 	spring.activemq.broker-url=tcp://localhost:61616 # connection URL
-    spring.activemq.user=
-    spring.activemq.password=
+	spring.activemq.user=
+	spring.activemq.password=
 	spring.activemq.in-memory=true # broker kind to create if no broker-url is specified
 	spring.activemq.pooled=false
 

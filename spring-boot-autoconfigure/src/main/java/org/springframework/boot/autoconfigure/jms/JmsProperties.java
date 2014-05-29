@@ -18,8 +18,14 @@ package org.springframework.boot.autoconfigure.jms;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * Configuration properties for JMS.
+ * 
+ * @author Greg Turnquist
+ * @author Phillip Webb
+ */
 @ConfigurationProperties(prefix = "spring.jms")
-public class JmsTemplateProperties {
+public class JmsProperties {
 
 	private boolean pubSubDomain = false;
 

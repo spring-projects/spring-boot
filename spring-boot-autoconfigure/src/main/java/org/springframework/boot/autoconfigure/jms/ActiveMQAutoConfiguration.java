@@ -41,7 +41,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @since 1.1.0
  */
 @Configuration
-@AutoConfigureBefore(JmsTemplateAutoConfiguration.class)
+@AutoConfigureBefore(JmsAutoConfiguration.class)
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })
 @ConditionalOnMissingBean(ConnectionFactory.class)
 public class ActiveMQAutoConfiguration {

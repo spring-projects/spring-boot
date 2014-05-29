@@ -22,8 +22,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.cli.compiler.autoconfigure.GroovyTemplatesCompilerAutoConfiguration;
+
 /**
- * Pseudo annotation used to trigger {@link GroovyTemplatesAutoConfiguration}.
+ * Pseudo annotation used to trigger {@link GroovyTemplatesCompilerAutoConfiguration}.
+ * 
+ * @author Dave Syer
+ * @since 1.1.0
  */
 @Target(ElementType.TYPE)
 @Documented
