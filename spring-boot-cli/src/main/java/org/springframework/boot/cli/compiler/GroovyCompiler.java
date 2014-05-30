@@ -264,7 +264,7 @@ public class GroovyCompiler {
 		public void call(SourceUnit source, GeneratorContext context, ClassNode classNode)
 				throws CompilationFailedException {
 
-			ImportCustomizer importCustomizer = new ImportCustomizer();
+			ImportCustomizer importCustomizer = new SmartImportCustomizer(source, context, classNode);
 			ClassNode mainClassNode = getMainClass(source.getAST().getClasses());
 
 			// Additional auto configuration
