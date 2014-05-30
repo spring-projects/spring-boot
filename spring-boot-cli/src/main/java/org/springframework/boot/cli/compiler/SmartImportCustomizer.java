@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.cli.compiler;
 
 import org.codehaus.groovy.ast.ClassHelper;
@@ -26,7 +27,6 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
  * class with the same name is not already explicitly imported.
  * 
  * @author Dave Syer
- *
  * @since 1.1
  */
 class SmartImportCustomizer extends ImportCustomizer {
@@ -40,8 +40,8 @@ class SmartImportCustomizer extends ImportCustomizer {
 
 	@Override
 	public ImportCustomizer addImport(String alias, String className) {
-		if (source.getAST()
-				.getImport(ClassHelper.make(className).getNameWithoutPackage()) == null) {
+		if (this.source.getAST().getImport(
+				ClassHelper.make(className).getNameWithoutPackage()) == null) {
 			super.addImport(alias, className);
 		}
 		return this;
@@ -50,8 +50,8 @@ class SmartImportCustomizer extends ImportCustomizer {
 	@Override
 	public ImportCustomizer addImports(String... imports) {
 		for (String alias : imports) {
-			if (source.getAST()
-					.getImport(ClassHelper.make(alias).getNameWithoutPackage()) == null) {
+			if (this.source.getAST().getImport(
+					ClassHelper.make(alias).getNameWithoutPackage()) == null) {
 				super.addImports(alias);
 			}
 		}
