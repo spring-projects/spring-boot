@@ -57,11 +57,14 @@ public class DependencyCustomizerTests {
 
 		when(this.resolver.getGroupId("spring-boot-starter-logging")).thenReturn(
 				"org.springframework.boot");
+		when(this.resolver.getArtifactId("spring-boot-starter-logging")).thenReturn(
+				"spring-boot-starter-logging");
 		when(this.resolver.getVersion("spring-boot-starter-logging")).thenReturn("1.2.3");
 
 		this.moduleNode.addClass(this.classNode);
 		this.dependencyCustomizer = new DependencyCustomizer(new GroovyClassLoader(
-				getClass().getClassLoader()), this.moduleNode, this.resolver);
+				getClass().getClassLoader()), this.moduleNode,
+				new DependencyResolutionContext(this.resolver));
 	}
 
 	@Test
