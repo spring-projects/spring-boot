@@ -93,8 +93,8 @@ public class SpringBootWebSecurityConfiguration {
 
 	public static void configureHeaders(HeadersConfigurer<?> configurer,
 			SecurityProperties.Headers headers) throws Exception {
-		if (headers.getHsts() != Headers.HSTS.none) {
-			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.all;
+		if (headers.getHsts() != Headers.HSTS.NONE) {
+			boolean includeSubdomains = headers.getHsts() == Headers.HSTS.ALL;
 			HstsHeaderWriter writer = new HstsHeaderWriter(includeSubdomains);
 			writer.setRequestMatcher(AnyRequestMatcher.INSTANCE);
 			configurer.addHeaderWriter(writer);
