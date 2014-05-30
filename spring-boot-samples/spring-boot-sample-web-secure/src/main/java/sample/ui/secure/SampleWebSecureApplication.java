@@ -73,10 +73,6 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			if (!security.isEnableCsrf()) {
-				// For testing
-				http.csrf().disable();
-			}
 			http.authorizeRequests().anyRequest().fullyAuthenticated().and().formLogin()
 					.loginPage("/login").failureUrl("/login?error").permitAll();
 		}
