@@ -121,7 +121,7 @@ public class SecurityProperties implements SecurityPrequisite {
 	public static class Headers {
 
 		public static enum HSTS {
-			none, domain, all
+			NONE, DOMAIN, ALL
 		}
 
 		private boolean xss;
@@ -132,7 +132,7 @@ public class SecurityProperties implements SecurityPrequisite {
 
 		private boolean contentType;
 
-		private HSTS hsts = HSTS.all;
+		private HSTS hsts = HSTS.ALL;
 
 		public boolean isXss() {
 			return this.xss;
