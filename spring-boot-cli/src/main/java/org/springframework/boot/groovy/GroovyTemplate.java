@@ -49,15 +49,14 @@ public abstract class GroovyTemplate {
 
 	public static String template(TemplateEngine engine, String name, Map<String, ?> model)
 			throws IOException, CompilationFailedException, ClassNotFoundException {
-		Writable writable = getTemplate(name).make(model);
+		Writable writable = getTemplate(engine, name).make(model);
 		StringWriter result = new StringWriter();
 		writable.writeTo(result);
 		return result.toString();
 	}
 
-	private static Template getTemplate(String name) throws CompilationFailedException,
+	private static Template getTemplate(TemplateEngine engine, String name) throws CompilationFailedException,
 			ClassNotFoundException, IOException {
-		GStringTemplateEngine engine = new GStringTemplateEngine();
 
 		File file = new File("templates", name);
 		if (file.exists()) {
