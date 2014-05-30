@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 /**
@@ -75,7 +76,30 @@ public class DependencyCustomizerTests {
 		assertEquals(1, grabAnnotations.size());
 		AnnotationNode annotationNode = grabAnnotations.get(0);
 		assertGrabAnnotation(annotationNode, "org.springframework.boot",
-				"spring-boot-starter-logging", true);
+				"spring-boot-starter-logging", "1.2.3", null, null, true);
+	}
+
+	@Test
+	public void nonTransitiveAdd() {
+		this.dependencyCustomizer.add("spring-boot-starter-logging", false);
+		List<AnnotationNode> grabAnnotations = this.classNode
+				.getAnnotations(new ClassNode(Grab.class));
+		assertEquals(1, grabAnnotations.size());
+		AnnotationNode annotationNode = grabAnnotations.get(0);
+		assertGrabAnnotation(annotationNode, "org.springframework.boot",
+				"spring-boot-starter-logging", "1.2.3", null, null, false);
+	}
+
+	@Test
+	public void fullyCustomized() {
+		this.dependencyCustomizer.add("spring-boot-starter-logging", "my-classifier",
+				"my-type", false);
+		List<AnnotationNode> grabAnnotations = this.classNode
+				.getAnnotations(new ClassNode(Grab.class));
+		assertEquals(1, grabAnnotations.size());
+		AnnotationNode annotationNode = grabAnnotations.get(0);
+		assertGrabAnnotation(annotationNode, "org.springframework.boot",
+				"spring-boot-starter-logging", "1.2.3", "my-classifier", "my-type", false);
 	}
 
 	@Test
@@ -120,21 +144,24 @@ public class DependencyCustomizerTests {
 		assertEquals(1, this.classNode.getAnnotations(new ClassNode(Grab.class)).size());
 	}
 
-	@Test
-	public void nonTransitiveAdd() {
-		this.dependencyCustomizer.add("spring-boot-starter-logging", false);
-		List<AnnotationNode> grabAnnotations = this.classNode
-				.getAnnotations(new ClassNode(Grab.class));
-		assertEquals(1, grabAnnotations.size());
-		AnnotationNode annotationNode = grabAnnotations.get(0);
-		assertGrabAnnotation(annotationNode, "org.springframework.boot",
-				"spring-boot-starter-logging", false);
-	}
-
 	private void assertGrabAnnotation(AnnotationNode annotationNode, String group,
-			String module, boolean transitive) {
+			String module, String version, String classifier, String type,
+			boolean transitive) {
 		assertEquals(group, getMemberValue(annotationNode, "group"));
 		assertEquals(module, getMemberValue(annotationNode, "module"));
+		assertEquals(version, getMemberValue(annotationNode, "version"));
+		if (type == null) {
+			assertNull(annotationNode.getMember("type"));
+		}
+		else {
+			assertEquals(type, getMemberValue(annotationNode, "type"));
+		}
+		if (classifier == null) {
+			assertNull(annotationNode.getMember("classifier"));
+		}
+		else {
+			assertEquals(classifier, getMemberValue(annotationNode, "classifier"));
+		}
 		assertEquals(transitive, getMemberValue(annotationNode, "transitive"));
 	}
 
