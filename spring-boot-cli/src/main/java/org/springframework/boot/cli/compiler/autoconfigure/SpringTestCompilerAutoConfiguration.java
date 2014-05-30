@@ -28,6 +28,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.springframework.boot.cli.compiler.AstUtils;
 import org.springframework.boot.cli.compiler.CompilerAutoConfiguration;
+import org.springframework.boot.cli.compiler.DependencyCustomizer;
 import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
@@ -45,6 +46,12 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 	}
 
 	@Override
+	public void applyDependencies(DependencyCustomizer dependencies) {
+		dependencies.ifAnyMissingClasses("org.springframework.http.HttpHeaders").add(
+				"spring-boot-starter-web");
+	}
+
+	@Override
 	public void apply(GroovyClassLoader loader,
 			GroovyCompilerConfiguration configuration, GeneratorContext generatorContext,
 			SourceUnit source, ClassNode classNode) throws CompilationFailedException {
@@ -58,10 +65,9 @@ public class SpringTestCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyImports(ImportCustomizer imports) throws CompilationFailedException {
-		imports.addStarImports("org.junit.runner")
-				.addStarImports("org.springframework.boot.test")
-				.addStarImports("org.springframework.test.context.junit4")
-				.addStarImports("org.springframework.test.annotation")
-				.addImports("org.springframework.test.context.web.WebAppConfiguration");
+		imports.addStarImports("org.junit.runner", "org.springframework.boot.test",
+				"org.springframework.http", "org.springframework.test.context.junit4",
+				"org.springframework.test.annotation").addImports(
+				"org.springframework.test.context.web.WebAppConfiguration");
 	}
 }
