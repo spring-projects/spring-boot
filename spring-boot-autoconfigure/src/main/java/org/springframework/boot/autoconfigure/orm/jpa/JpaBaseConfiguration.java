@@ -105,7 +105,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	protected abstract AbstractJpaVendorAdapter createJpaVendorAdapter();
 
-	protected abstract Map<String, Object> getVendorProperties();
+	protected abstract Map<String, String> getVendorProperties();
 
 	protected abstract EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback();
 
