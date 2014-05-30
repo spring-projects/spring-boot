@@ -80,6 +80,16 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Test
+	public void prefixWithoutPeriod() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context.getEnvironment(),
+				"spring.property=value1");
+		this.context
+				.register(RelaxedPropertiesRequiredConfigurationWithShortPrefix.class);
+		this.context.refresh();
+		assertTrue(this.context.containsBean("foo"));
+	}
+
+	@Test
 	public void nonRelaxedName() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context.getEnvironment(),
 				"theRelaxedProperty=value1");
@@ -102,6 +112,17 @@ public class ConditionalOnPropertyTests {
 	@Configuration
 	@ConditionalOnProperty(prefix = "spring.", value = "the-relaxed-property")
 	protected static class RelaxedPropertiesRequiredConfiguration {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnProperty(prefix = "spring", value = "property")
+	protected static class RelaxedPropertiesRequiredConfigurationWithShortPrefix {
 
 		@Bean
 		public String foo() {
