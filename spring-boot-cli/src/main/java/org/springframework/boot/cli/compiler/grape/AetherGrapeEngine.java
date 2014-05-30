@@ -48,7 +48,7 @@ import org.eclipse.aether.util.filter.DependencyFilterUtils;
  * A {@link GrapeEngine} implementation that uses <a
  * href="http://eclipse.org/aether">Aether</a>, the dependency resolution system used by
  * Maven.
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
@@ -168,7 +168,27 @@ public class AetherGrapeEngine implements GrapeEngine {
 		String group = (String) dependencyMap.get("group");
 		String module = (String) dependencyMap.get("module");
 		String version = (String) dependencyMap.get("version");
-		return new DefaultArtifact(group, module, "jar", version);
+		String classifier = (String) dependencyMap.get("classifier");
+		String type = determineType(dependencyMap);
+
+		return new DefaultArtifact(group, module, classifier, type, version);
+	}
+
+	private String determineType(Map<?, ?> dependencyMap) {
+		String type = (String) dependencyMap.get("type");
+		String ext = (String) dependencyMap.get("ext");
+
+		if (type == null) {
+			type = ext;
+			if (type == null) {
+				type = "jar";
+			}
+		}
+		else if (ext != null && !type.equals(ext)) {
+			throw new IllegalArgumentException(
+					"If both type and ext are specified they must have the same value");
+		}
+		return type;
 	}
 
 	private boolean isTransitive(Map<?, ?> dependencyMap) {
