@@ -40,8 +40,11 @@ class OnPropertyCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
-		String prefix = (String) metadata.getAnnotationAttributes(
-				ConditionalOnProperty.class.getName()).get("prefix");
+		String prefix = ((String) metadata.getAnnotationAttributes(
+				ConditionalOnProperty.class.getName()).get("prefix")).trim();
+		if (!"".equals(prefix) && !prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
 		String[] names = (String[]) metadata.getAnnotationAttributes(
 				ConditionalOnProperty.class.getName()).get("value");
 		Boolean relaxedNames = (Boolean) metadata.getAnnotationAttributes(
