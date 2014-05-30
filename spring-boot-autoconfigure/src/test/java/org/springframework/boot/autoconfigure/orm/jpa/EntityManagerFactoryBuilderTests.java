@@ -47,7 +47,7 @@ public class EntityManagerFactoryBuilderTests {
 				new HibernateJpaVendorAdapter(), this.properties, null);
 		LocalContainerEntityManagerFactoryBean result1 = factory
 				.dataSource(this.dataSource1)
-				.properties(Collections.singletonMap("foo", (Object) "spam")).build();
+				.properties(Collections.singletonMap("foo", "spam")).build();
 		assertFalse(result1.getJpaPropertyMap().isEmpty());
 		assertTrue(this.properties.getProperties().isEmpty());
 	}
@@ -58,7 +58,7 @@ public class EntityManagerFactoryBuilderTests {
 				new HibernateJpaVendorAdapter(), this.properties, null);
 		LocalContainerEntityManagerFactoryBean result1 = factory
 				.dataSource(this.dataSource1)
-				.properties(Collections.singletonMap("foo", (Object) "spam")).build();
+				.properties(Collections.singletonMap("foo", "spam")).build();
 		assertFalse(result1.getJpaPropertyMap().isEmpty());
 		LocalContainerEntityManagerFactoryBean result2 = factory.dataSource(
 				this.dataSource2).build();

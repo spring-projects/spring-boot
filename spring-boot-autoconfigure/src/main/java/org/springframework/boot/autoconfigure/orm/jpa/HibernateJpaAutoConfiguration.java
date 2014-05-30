@@ -71,13 +71,13 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	}
 
 	@Override
-	protected Map<String, Object> getVendorProperties() {
+	protected Map<String, String> getVendorProperties() {
 		return this.properties.getInitialHibernateProperties(this.dataSource);
 	}
 
 	@Override
 	protected EntityManagerFactoryBeanCallback getVendorCallback() {
-		final Map<String, Object> map = this.properties
+		final Map<String, String> map = this.properties
 				.getHibernateProperties(this.dataSource);
 		return new EntityManagerFactoryBeanCallback() {
 			@Override
@@ -93,18 +93,18 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 	private static class DeferredSchemaAction implements
 			ApplicationListener<ContextRefreshedEvent> {
 
-		private Map<String, Object> map;
+		private Map<String, String> map;
 		private LocalContainerEntityManagerFactoryBean factory;
 
 		public DeferredSchemaAction(LocalContainerEntityManagerFactoryBean factory,
-				Map<String, Object> map) {
+				Map<String, String> map) {
 			this.factory = factory;
 			this.map = map;
 		}
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
-			String ddlAuto = (String) this.map.get("hibernate.hbm2ddl.auto");
+			String ddlAuto = this.map.get("hibernate.hbm2ddl.auto");
 			if (ddlAuto == null || "none".equals(ddlAuto)) {
 				return;
 			}
