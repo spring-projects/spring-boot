@@ -442,7 +442,7 @@ public class RelaxedDataBinderTests {
 
 		result = bind(target, "bingo: oR");
 		assertThat(result.getErrorCount(), equalTo(0));
-		assertThat(target.getBingo(), equalTo(Bingo.OR));
+		assertThat(target.getBingo(), equalTo(Bingo.or));
 
 		result = bind(target, "bingo: that");
 		assertThat(result.getErrorCount(), equalTo(0));
@@ -755,7 +755,7 @@ public class RelaxedDataBinderTests {
 	}
 
 	static enum Bingo {
-		THIS, OR, THAT
+		THIS, or, THAT
 	}
 
 	public static class ValidatedTarget {

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.bind;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -117,7 +120,14 @@ class RelaxedConversionService implements ConversionService {
 					// It's an empty enum identifier: reset the enum value to null.
 					return null;
 				}
-				return (T) Enum.valueOf(this.enumType, source.trim().toUpperCase());
+				source = source.trim();
+				for (T candidate : (Set<T>) EnumSet.allOf(this.enumType)) {
+					if (candidate.name().equalsIgnoreCase(source)) {
+						return candidate;
+					}
+				}
+				throw new IllegalArgumentException("No enum constant "
+						+ this.enumType.getCanonicalName() + "." + source);
 			}
 		}
 
