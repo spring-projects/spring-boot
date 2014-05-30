@@ -185,7 +185,7 @@
 		<!-- Turn on filtering by default for application properties -->
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>${basedir}/src/main/resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>**/application.yml</include>
@@ -193,7 +193,7 @@
 				</includes>
 			</resource>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>${basedir}/src/main/resources</directory>
 				<excludes>
 					<exclude>**/application.yml</exclude>
 					<exclude>**/application.properties</exclude>
