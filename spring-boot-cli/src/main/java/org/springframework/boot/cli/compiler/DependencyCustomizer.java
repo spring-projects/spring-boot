@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesRes
  * <p>
  * This class provides a fluent API for conditionally adding dependencies. For example:
  * {@code dependencies.ifMissing("com.corp.SomeClass").add(module)}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -180,20 +180,21 @@ public class DependencyCustomizer {
 
 	/**
 	 * Add dependencies and all of their dependencies. The group ID and version of the
-	 * dependency are resolves using the customizer's {@link ArtifactCoordinatesResolver}.
+	 * dependencies are resolved from the modules using the customizer's
+	 * {@link ArtifactCoordinatesResolver}.
 	 * @param modules The module IDs
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String... modules) {
 		for (String module : modules) {
-			add(module, true);
+			add(module, null, null, true);
 		}
 		return this;
 	}
 
 	/**
 	 * Add a single dependency and, optionally, all of its dependencies. The group ID and
-	 * version of the dependency are resolves using the customizer's
+	 * version of the dependency are resolved from the module using the customizer's
 	 * {@link ArtifactCoordinatesResolver}.
 	 * @param module The module ID
 	 * @param transitive {@code true} if the transitive dependencies should also be added,
@@ -201,23 +202,46 @@ public class DependencyCustomizer {
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
 	public DependencyCustomizer add(String module, boolean transitive) {
+		return add(module, null, null, transitive);
+	}
+
+	/**
+	 * Add a single dependency with the specified classifier and type and, optionally, all
+	 * of its dependencies. The group ID and version of the dependency are resolved from
+	 * the module by using the customizer's {@link ArtifactCoordinatesResolver}.
+	 * @param module The module ID
+	 * @param classifier The classifier, may be {@code null}
+	 * @param type The type, may be {@code null}
+	 * @param transitive {@code true} if the transitive dependencies should also be added,
+	 * otherwise {@code false}.
+	 * @return this {@link DependencyCustomizer} for continued use
+	 */
+	public DependencyCustomizer add(String module, String classifier, String type,
+			boolean transitive) {
 		if (canAdd()) {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
 					.getArtifactCoordinatesResolver();
 			this.classNode.addAnnotation(createGrabAnnotation(
 					artifactCoordinatesResolver.getGroupId(module),
 					artifactCoordinatesResolver.getArtifactId(module),
-					artifactCoordinatesResolver.getVersion(module), transitive));
+					artifactCoordinatesResolver.getVersion(module), classifier, type,
+					transitive));
 		}
 		return this;
 	}
 
 	private AnnotationNode createGrabAnnotation(String group, String module,
-			String version, boolean transitive) {
+			String version, String classifier, String type, boolean transitive) {
 		AnnotationNode annotationNode = new AnnotationNode(new ClassNode(Grab.class));
 		annotationNode.addMember("group", new ConstantExpression(group));
 		annotationNode.addMember("module", new ConstantExpression(module));
 		annotationNode.addMember("version", new ConstantExpression(version));
+		if (classifier != null) {
+			annotationNode.addMember("classifier", new ConstantExpression(classifier));
+		}
+		if (type != null) {
+			annotationNode.addMember("type", new ConstantExpression(type));
+		}
 		annotationNode.addMember("transitive", new ConstantExpression(transitive));
 		annotationNode.addMember("initClass", new ConstantExpression(false));
 		return annotationNode;
