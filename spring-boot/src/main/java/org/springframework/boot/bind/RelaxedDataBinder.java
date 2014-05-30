@@ -38,6 +38,7 @@ import org.springframework.validation.DataBinder;
  * case for example).
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  * @see RelaxedNames
  */
 public class RelaxedDataBinder extends DataBinder {
@@ -73,6 +74,14 @@ public class RelaxedDataBinder extends DataBinder {
 	 */
 	public void setIgnoreNestedProperties(boolean ignoreNestedProperties) {
 		this.ignoreNestedProperties = ignoreNestedProperties;
+	}
+
+	@Override
+	public void initBeanPropertyAccess() {
+		super.initBeanPropertyAccess();
+		// Hook in the RelaxedConversionService
+		getInternalBindingResult().initConversion(
+				new RelaxedConversionService(getConversionService()));
 	}
 
 	@Override
