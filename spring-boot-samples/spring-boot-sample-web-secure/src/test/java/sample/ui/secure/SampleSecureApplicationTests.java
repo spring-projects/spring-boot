@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,7 +50,7 @@ import org.springframework.util.MultiValueMap;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleWebSecureApplication.class)
 @WebAppConfiguration
-@IntegrationTest({ "server.port:0", "security.enable_csrf:false" })
+@IntegrationTest("server.port:0")
 @DirtiesContext
 public class SampleSecureApplicationTests {
 
@@ -62,14 +64,14 @@ public class SampleSecureApplicationTests {
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port, HttpMethod.GET, new HttpEntity<Void>(
 						headers), String.class);
-		assertEquals(HttpStatus.OK, entity.getStatusCode());
-		assertTrue("Wrong body (title doesn't match):\n" + entity.getBody(),
-				entity.getBody().contains("<title>Login"));
+		assertEquals(HttpStatus.FOUND, entity.getStatusCode());
+		assertTrue("Wrong location:\n" + entity.getHeaders(),
+				entity.getHeaders().getLocation().toString().endsWith(port + "/login"));
 	}
 
 	@Test
 	public void testLogin() throws Exception {
-		HttpHeaders headers = new HttpHeaders();
+		HttpHeaders headers = getHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
@@ -84,6 +86,20 @@ public class SampleSecureApplicationTests {
 				entity.getHeaders().getLocation().toString().endsWith(port + "/"));
 		assertNotNull("Missing cookie:\n" + entity.getHeaders(),
 				entity.getHeaders().get("Set-Cookie"));
+	}
+
+	private HttpHeaders getHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		ResponseEntity<String> page = new TestRestTemplate().getForEntity(
+				"http://localhost:" + this.port + "/login", String.class);
+		assertEquals(HttpStatus.OK, page.getStatusCode());
+		String cookie = page.getHeaders().getFirst("Set-Cookie");
+		headers.set("Cookie", cookie);
+		Matcher matcher = Pattern.compile("(?s).*name=\"_csrf\".*?value=\"([^\"]+).*").matcher(
+				page.getBody());
+		assertTrue("No csrf token: " + page.getBody(), matcher.matches());
+		headers.set("X-CSRF-TOKEN", matcher.group(1));
+		return headers;
 	}
 
 	@Test
