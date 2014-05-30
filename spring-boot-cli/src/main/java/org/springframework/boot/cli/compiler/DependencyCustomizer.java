@@ -97,7 +97,7 @@ public class DependencyCustomizer {
 						return true;
 					}
 				}
-				return DependencyCustomizer.this.canAdd();
+				return false;
 			}
 		};
 	}
