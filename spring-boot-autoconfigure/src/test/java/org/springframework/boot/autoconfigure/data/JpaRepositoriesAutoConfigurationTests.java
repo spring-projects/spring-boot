@@ -18,11 +18,12 @@ package org.springframework.boot.autoconfigure.data;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.alt.CityMongoDbRepository;
-import org.springframework.boot.autoconfigure.data.alt.CitySolrRepository;
+import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
+import org.springframework.boot.autoconfigure.data.alt.solr.CitySolrRepository;
 import org.springframework.boot.autoconfigure.data.jpa.City;
 import org.springframework.boot.autoconfigure.data.jpa.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -45,6 +46,11 @@ import static org.junit.Assert.assertNotNull;
 public class JpaRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		this.context.close();
+	}
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
@@ -70,7 +76,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context
-				.getBean(org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class));
+				.getBean(org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class));
 		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
 		assertNotNull(this.context.getBean(EntityManagerFactory.class));
 	}
@@ -82,7 +88,7 @@ public class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.CityJpaRepository.class, excludeFilters = {
+	@EnableJpaRepositories(basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class, excludeFilters = {
 			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
 			@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
 	@TestAutoConfigurationPackage(City.class)

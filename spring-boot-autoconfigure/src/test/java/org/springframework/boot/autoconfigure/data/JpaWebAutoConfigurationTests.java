@@ -16,9 +16,11 @@
 
 package org.springframework.boot.autoconfigure.data;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.data.JpaRepositoriesAutoConfiguration.JpaWebConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.City;
 import org.springframework.boot.autoconfigure.data.jpa.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -34,11 +36,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Tests for {@link JpaWebConfiguration}.
+ * 
  * @author Dave Syer
  */
 public class JpaWebAutoConfigurationTests {
 
 	private AnnotationConfigWebApplicationContext context;
+
+	@After
+	public void close() {
+		this.context.close();
+	}
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
