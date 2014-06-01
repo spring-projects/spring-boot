@@ -43,6 +43,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
+import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.cli.compiler;
+package org.springframework.boot.cli.compiler.grape;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,6 @@ import java.util.List;
 import org.eclipse.aether.graph.Dependency;
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.dependencies.ManagedDependenciesArtifactCoordinatesResolver;
-import org.springframework.boot.cli.compiler.grape.ManagedDependenciesFactory;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
@@ -41,20 +40,20 @@ public class DependencyResolutionContext {
 		this(new ManagedDependenciesArtifactCoordinatesResolver());
 	}
 
-	DependencyResolutionContext(ArtifactCoordinatesResolver artifactCoordinatesResolver) {
+	public DependencyResolutionContext(
+			ArtifactCoordinatesResolver artifactCoordinatesResolver) {
 		this.artifactCoordinatesResolver = artifactCoordinatesResolver;
 	}
 
-	void setManagedDependencies(ManagedDependencies managedDependencies) {
+	public void setManagedDependencies(ManagedDependencies managedDependencies) {
 		this.artifactCoordinatesResolver = new ManagedDependenciesArtifactCoordinatesResolver(
 				managedDependencies);
 		this.managedDependencies = new ArrayList<Dependency>(
 				new ManagedDependenciesFactory(managedDependencies)
 						.getManagedDependencies());
-
 	}
 
-	ArtifactCoordinatesResolver getArtifactCoordinatesResolver() {
+	public ArtifactCoordinatesResolver getArtifactCoordinatesResolver() {
 		return this.artifactCoordinatesResolver;
 	}
 

@@ -28,6 +28,7 @@ import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.transform.ASTTransformation;
+import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 /**
  * {@link ASTTransformation} to resolve {@link Grab} artifact coordinates.
