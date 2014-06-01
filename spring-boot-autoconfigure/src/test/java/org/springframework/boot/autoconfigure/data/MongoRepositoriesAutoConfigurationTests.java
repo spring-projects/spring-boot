@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.data;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.alt.CityMongoDbRepository;
+import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
+import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.mongo.City;
 import org.springframework.boot.autoconfigure.data.mongo.CityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -45,6 +47,11 @@ import static org.junit.Assert.assertThat;
 public class MongoRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		this.context.close();
+	}
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
@@ -91,7 +98,7 @@ public class MongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(MongoRepositoriesAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	protected static class EmptyConfiguration {
 
 	}
