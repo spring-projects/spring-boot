@@ -25,10 +25,7 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,6 +35,7 @@ import org.springframework.boot.autoconfigure.web.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,15 +45,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author Dave Syer
  */
-public class WebRequestTraceFilter implements Filter, Ordered {
+public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {
 
 	private final Log logger = LogFactory.getLog(WebRequestTraceFilter.class);
 
 	private boolean dumpRequests = false;
 
-	private final TraceRepository traceRepository;
-
 	private int order = Integer.MAX_VALUE;
+
+	private final TraceRepository traceRepository;
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -69,18 +67,6 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 	}
 
 	/**
-	 * @param order the order to set
-	 */
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
-	@Override
-	public int getOrder() {
-		return this.order;
-	}
-
-	/**
 	 * Debugging feature. If enabled, and trace logging is enabled then web request
 	 * headers will be logged.
 	 */
@@ -89,10 +75,18 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 	}
 
 	@Override
-	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-			throws IOException, ServletException {
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) res;
+	public int getOrder() {
+		return this.order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	@Override
+	protected void doFilterInternal(HttpServletRequest request,
+			HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
 		Map<String, Object> trace = getTrace(request);
 		if (this.logger.isTraceEnabled()) {
@@ -113,7 +107,7 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 		}
 
 		try {
-			chain.doFilter(request, response);
+			filterChain.doFilter(request, response);
 		}
 		finally {
 			enhanceTrace(trace, response);
@@ -166,14 +160,6 @@ public class WebRequestTraceFilter implements Filter, Ordered {
 			trace.put("error", error);
 		}
 		return trace;
-	}
-
-	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-	}
-
-	@Override
-	public void destroy() {
 	}
 
 	public void setErrorAttributes(ErrorAttributes errorAttributes) {
