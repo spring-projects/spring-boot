@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
+import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 /**
  * {@link ASTTransformation} to apply

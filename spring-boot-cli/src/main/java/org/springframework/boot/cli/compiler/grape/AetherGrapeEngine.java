@@ -43,7 +43,6 @@ import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.aether.util.filter.DependencyFilterUtils;
-import org.springframework.boot.cli.compiler.DependencyResolutionContext;
 
 /**
  * A {@link GrapeEngine} implementation that uses <a
