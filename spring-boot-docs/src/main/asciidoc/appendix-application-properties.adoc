@@ -196,6 +196,11 @@ content into your application; rather pick only the properties that you need.
 	spring.data.solr.host=http://127.0.0.1:8983/solr
 	spring.data.solr.zkHost=
 
+	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties}])
+	spring.data.elasticsearch.cluster-name= # The cluster name (defaults to elasticsearch)
+	spring.data.elasticsearch.cluster-node= # The address of the server node (if not specified starts a client node)
+	spring.data.elasticsearch.local=true # if local mode should be used with client nodes
+
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
 	flyway.locations=classpath:db/migrations # locations of migrations scripts
 	flyway.schemas= # schemas to update
