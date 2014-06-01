@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.springframework.boot.cli.command.options.OptionHandler;
 import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * Base class for a {@link Command} that parse options using an {@link OptionHandler}.

@@ -17,6 +17,7 @@
 package cli.command;
 
 import org.springframework.boot.cli.command.AbstractCommand;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * @author Dave Syer

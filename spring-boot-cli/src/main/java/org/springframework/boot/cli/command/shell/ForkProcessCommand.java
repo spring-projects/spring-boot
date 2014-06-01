@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.loader.tools.JavaExecutable;
 
 /**

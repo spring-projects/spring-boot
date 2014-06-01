@@ -19,6 +19,7 @@ package org.springframework.boot.cli.command;
 import java.util.Collection;
 
 import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * A single command that can be run from the CLI.
@@ -63,84 +64,5 @@ public interface Command {
 	 * @throws Exception
 	 */
 	ExitStatus run(String... args) throws Exception;
-
-	/**
-	 * Encapsulation of the outcome of a command.
-	 * 
-	 * @author Dave Syer
-	 * 
-	 * @see ExitStatus#OK
-	 * @see ExitStatus#ERROR
-	 *
-	 */
-	public static class ExitStatus {
-		/**
-		 * Generic "OK" exit status with zero exit code and hangup=fa;se
-		 */
-		public static ExitStatus OK = new ExitStatus(0, "OK");
-		/**
-		 * Generic "not OK" exit status with non-zero exit code and hangup=true
-		 */
-		public static ExitStatus ERROR = new ExitStatus(-1, "ERROR", true);
-		private int code;
-		private String name;
-		private boolean hangup;
-
-		/**
-		 * Create a new ExitStatus with an exit code and name as specified.
-		 * 
-		 * @param code the exit code
-		 * @param name the name
-		 */
-		public ExitStatus(int code, String name) {
-			this(code, name, false);
-		}
-
-		/**
-		 * @param code the exit code
-		 * @param name the name
-		 * @param hangup true if it is OK for the caller to hangup
-		 */
-		public ExitStatus(int code, String name, boolean hangup) {
-			this.code = code;
-			this.name = name;
-			this.hangup = hangup;
-		}
-
-		/**
-		 * An exit code appropriate for use in System.exit()
-		 * @return an exit code
-		 */
-		public int getCode() {
-			return code;
-		}
-
-		/**
-		 * A name describing the outcome
-		 * @return a name
-		 */
-		public String getName() {
-			return name;
-		}
-
-		/**
-		 * Flag to signal that the caller can (or should) hangup. A server process with
-		 * non-daemon threads should set this to false.
-		 * @return the flag
-		 */
-		public boolean isHangup() {
-			return hangup;
-		}
-
-		/**
-		 * Convert the existing code to a hangup.
-		 * 
-		 * @return a new ExitStatus with hangup=true
-		 */
-		public ExitStatus hangup() {
-			return new ExitStatus(this.code, this.name, true);
-		}
-
-	}
 
 }
