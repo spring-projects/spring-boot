@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.core.env.StandardEnvironment;
 

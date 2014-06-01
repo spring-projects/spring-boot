@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.autoconfigure.jms.hornetq;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +42,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQMode;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

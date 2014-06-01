@@ -19,10 +19,10 @@ org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration,\
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
-org.springframework.boot.autoconfigure.jms.ActiveMQAutoConfiguration,\
-org.springframework.boot.autoconfigure.jms.HornetQAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
+org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration,\
+org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration,\
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration,\
 org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\

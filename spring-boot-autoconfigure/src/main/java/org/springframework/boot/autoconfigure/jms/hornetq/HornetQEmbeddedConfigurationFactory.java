@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.autoconfigure.jms.hornetq;
 
 import java.io.File;
 
@@ -25,7 +25,7 @@ import org.hornetq.core.config.Configuration;
 import org.hornetq.core.config.impl.ConfigurationImpl;
 import org.hornetq.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.hornetq.core.server.JournalType;
-import org.springframework.boot.autoconfigure.jms.HornetQProperties.Embedded;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties.Embedded;
 
 /**
  * Factory class to create a HornetQ {@link Configuration} from {@link HornetQProperties}.
