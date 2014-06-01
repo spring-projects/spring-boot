@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms;
+package org.springframework.boot.autoconfigure.jms.hornetq;
 
 import org.hornetq.core.config.Configuration;
 import org.hornetq.core.server.JournalType;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQEmbeddedConfigurationFactory;
+import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;

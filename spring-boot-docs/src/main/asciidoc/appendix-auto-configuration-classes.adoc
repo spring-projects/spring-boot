@@ -59,14 +59,14 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{sc-ext}[HttpMessageConvertersAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/jms/ActiveMQAutoConfiguration.{sc-ext}[ActiveMQAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/jms/ActiveMQAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQAutoConfiguration.{sc-ext}[ActiveMQAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jms/activemq/ActiveMQAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/jms/HornetQAutoConfiguration.{sc-ext}[HornetQAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/jms/HornetQAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/jms/hornetq/HornetQAutoConfiguration.{sc-ext}[HornetQAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jms/hornetq/HornetQAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/jms/JmsTemplateAutoConfiguration.{sc-ext}[JmsTemplateAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/jms/JmsTemplateAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/jms/JmsAutoConfiguration.{sc-ext}[JmsAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jms/JmsAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{sc-ext}[JmxAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{dc-ext}[javadoc]

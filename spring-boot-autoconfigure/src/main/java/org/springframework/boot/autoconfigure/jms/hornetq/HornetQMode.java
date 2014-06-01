@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms;
-
-import org.hornetq.core.config.Configuration;
-import org.hornetq.jms.server.embedded.EmbeddedJMS;
+package org.springframework.boot.autoconfigure.jms.hornetq;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize the HornetQ
- * JMS server {@link Configuration} before it is used by an auto-configured
- * {@link EmbeddedJMS} instance.
+ * Define the mode in which HornetQ can operate.
  * 
- * @author Phillip Webb
+ * @author Stephane Nicoll
  * @since 1.1.0
- * @see HornetQAutoConfiguration
  */
-public interface HornetQConfigurationCustomizer {
+public enum HornetQMode {
 
 	/**
-	 * Customize the configuration.
-	 * @param configuration the configuration to customize
+	 * Connect to a broker using the native HornetQ protocol (i.e. netty).
 	 */
-	void customize(Configuration configuration);
+	NATIVE,
+
+	/**
+	 * Embed (i.e. start) the broker in the application.
+	 */
+	EMBEDDED
 
 }
