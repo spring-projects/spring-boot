@@ -17,6 +17,7 @@
 		<url>http://www.spring.io</url>
 	</organization>
 	<properties>
+		<main.basedir>..</main.basedir>
 		<aether.version>0.9.1.v20140329</aether.version>
 		<java.version>1.6</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -369,6 +370,18 @@
 								<requireJavaVersion>
 									<version>(1.7,)</version>
 								</requireJavaVersion>
+								<requireProperty>
+									<property>main.basedir</property>
+								</requireProperty>
+								<requireProperty>
+									<property>project.organization.name</property>
+								</requireProperty>
+								<requireProperty>
+									<property>project.name</property>
+								</requireProperty>
+								<requireProperty>
+									<property>project.description</property>
+								</requireProperty>
 							</rules>
 							<fail>true</fail>
 						</configuration>
