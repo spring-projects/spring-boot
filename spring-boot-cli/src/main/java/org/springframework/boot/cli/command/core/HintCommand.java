@@ -24,6 +24,7 @@ import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
 import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 
 /**

@@ -38,8 +38,8 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 
-import org.springframework.boot.cli.command.Command.ExitStatus;
 import org.springframework.boot.cli.command.OptionParsingCommand;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * Delegate used by {@link OptionParsingCommand} to parse options and run the command.

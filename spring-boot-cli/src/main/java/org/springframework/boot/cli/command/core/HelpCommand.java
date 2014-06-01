@@ -28,6 +28,7 @@ import org.springframework.boot.cli.command.CommandRunner;
 import org.springframework.boot.cli.command.NoHelpCommandArgumentsException;
 import org.springframework.boot.cli.command.NoSuchCommandException;
 import org.springframework.boot.cli.command.options.OptionHelp;
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 
 /**

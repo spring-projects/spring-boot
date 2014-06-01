@@ -18,6 +18,7 @@ package org.springframework.boot.cli.command.core;
 
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
+import org.springframework.boot.cli.command.status.ExitStatus;
 import org.springframework.boot.cli.util.Log;
 
 /**

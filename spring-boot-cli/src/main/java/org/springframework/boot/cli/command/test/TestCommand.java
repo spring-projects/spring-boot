@@ -23,6 +23,7 @@ import org.springframework.boot.cli.command.OptionParsingCommand;
 import org.springframework.boot.cli.command.options.CompilerOptionHandler;
 import org.springframework.boot.cli.command.options.OptionSetGroovyCompilerConfiguration;
 import org.springframework.boot.cli.command.options.SourceOptions;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * {@link Command} to run a groovy test script or scripts.
