@@ -86,11 +86,11 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/mongo/MongoAutoConfiguration.{sc-ext}[MongoAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/mongo/MongoAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/mongo/MongoDataAutoConfiguration.{sc-ext}[MongoDataAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/mongo/MongoDataAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{sc-ext}[MongoRepositoriesAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/data/MongoRepositoriesAutoConfiguration.{dc-ext}[javadoc]
-
-|{sc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{sc-ext}[MongoTemplateAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/data/MongoTemplateAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{sc-ext}[MultipartAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/MultipartAutoConfiguration.{dc-ext}[javadoc]
