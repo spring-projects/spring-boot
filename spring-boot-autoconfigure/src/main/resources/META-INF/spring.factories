@@ -9,6 +9,7 @@ org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration,\
 org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration,\
 org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.ElasticsearchRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.JpaRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.MongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.SolrRepositoriesAutoConfiguration,\
@@ -22,6 +23,8 @@ org.springframework.boot.autoconfigure.jms.ActiveMQAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.HornetQAutoConfiguration,\
 org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration,\
 org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration,\
+org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration,\
+org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\

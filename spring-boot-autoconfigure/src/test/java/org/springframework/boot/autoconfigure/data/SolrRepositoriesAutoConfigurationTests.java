@@ -18,10 +18,12 @@ package org.springframework.boot.autoconfigure.data;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.alt.CitySolrRepository;
+import org.springframework.boot.autoconfigure.data.alt.solr.CitySolrRepository;
+import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.solr.City;
 import org.springframework.boot.autoconfigure.data.solr.CityRepository;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
@@ -41,6 +43,11 @@ import static org.junit.Assert.assertThat;
 public class SolrRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
+
+	@After
+	public void close() {
+		this.context.close();
+	}
 
 	@Test
 	public void testDefaultRepositoryConfiguration() {
@@ -80,7 +87,7 @@ public class SolrRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(SolrRepositoriesAutoConfigurationTests.class)
+	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	static class EmptyConfiguration {
 
 	}

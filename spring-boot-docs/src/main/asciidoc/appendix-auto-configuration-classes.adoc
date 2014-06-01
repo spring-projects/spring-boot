@@ -35,8 +35,14 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{sc-ext}[DispatcherServletAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/DispatcherServletAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchAutoConfiguration.{sc-ext}[ElasticsearchAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{sc-ext}[EmbeddedServletContainerAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/data/ElasticsearchRepositoriesAutoConfiguration.{sc-ext}[ElasticsearchRepositoriesAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/ElasticsearchRepositoriesAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/social/FacebookAutoConfiguration.{sc-ext}[FacebookAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/social/FacebookAutoConfiguration.{dc-ext}[javadoc]
