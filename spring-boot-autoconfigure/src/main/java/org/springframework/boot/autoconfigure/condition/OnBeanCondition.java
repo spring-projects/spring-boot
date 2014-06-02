@@ -346,7 +346,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 						}
 					});
 				}
-				catch (Exception ex) {
+				catch (Throwable ex) {
 					// swallow exception and continue
 				}
 			}
