@@ -110,8 +110,11 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	protected abstract EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback();
 
 	protected String[] getPackagesToScan() {
-		List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
-		return basePackages.toArray(new String[basePackages.size()]);
+		if (AutoConfigurationPackages.has(this.beanFactory)) {
+			List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
+			return basePackages.toArray(new String[basePackages.size()]);
+		}
+		return new String[0];
 	}
 
 	protected void configure(

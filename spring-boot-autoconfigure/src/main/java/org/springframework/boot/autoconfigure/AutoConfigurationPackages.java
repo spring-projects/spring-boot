@@ -47,6 +47,16 @@ public abstract class AutoConfigurationPackages {
 	private static final String BEAN = AutoConfigurationPackages.class.getName();
 
 	/**
+	 * Determine if the auto-configuration base packages for the given bean factory are
+	 * available
+	 * @param beanFactory the source bean factory
+	 * @return true if there are auto-config packages available
+	 */
+	public static boolean has(BeanFactory beanFactory) {
+		return beanFactory.containsBean(BEAN) && !get(beanFactory).isEmpty();
+	}
+
+	/**
 	 * Return the auto-configuration base packages for the given bean factory
 	 * @param beanFactory the source bean factory
 	 * @return a list of auto-configuration packages

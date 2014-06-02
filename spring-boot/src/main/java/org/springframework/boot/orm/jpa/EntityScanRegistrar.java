@@ -54,6 +54,9 @@ class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {
 			beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(
 					getPackagesToScan(importingClassMetadata));
 			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			// We don't need this one to be post processed otherwise it can cause a
+			// cascade of bean instantiation that we would rather avoid.
+			beanDefinition.setSynthetic(true);
 			registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
 		}
 	}
