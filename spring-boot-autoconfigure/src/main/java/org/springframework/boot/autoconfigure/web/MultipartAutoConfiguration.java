@@ -44,7 +44,8 @@ import org.springframework.web.multipart.support.StandardServletMultipartResolve
  * @author Josh Long
  */
 @Configuration
-@ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class })
+@ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class,
+		MultipartConfigElement.class })
 @ConditionalOnExpression("${multipart.enabled:true}")
 @EnableConfigurationProperties(MultipartProperties.class)
 public class MultipartAutoConfiguration {
