@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import javax.sql.DataSource;
+
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -36,6 +40,30 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	@Override
 	protected Class<?> getAutoConfigureClass() {
 		return HibernateJpaAutoConfiguration.class;
+	}
+
+	@Test
+	public void testDataScriptWithDdlAuto() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.data:classpath:/city.sql",
+				"spring.datasource.schema:classpath:/ddl.sql");
+		setupTestConfiguration();
+		this.context.refresh();
+		assertEquals(new Integer(1),
+				new JdbcTemplate(this.context.getBean(DataSource.class)).queryForObject(
+						"SELECT COUNT(*) from CITY", Integer.class));
+	}
+
+	@Test
+	public void testDataScriptWithDeferredDdl() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.data:classpath:/city.sql",
+				"spring.datasource.deferDdl:true");
+		setupTestConfiguration();
+		this.context.refresh();
+		assertEquals(new Integer(1),
+				new JdbcTemplate(this.context.getBean(DataSource.class)).queryForObject(
+						"SELECT COUNT(*) from CITY", Integer.class));
 	}
 
 	@Test

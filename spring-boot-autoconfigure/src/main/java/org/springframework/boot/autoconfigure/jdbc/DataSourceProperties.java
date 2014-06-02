@@ -46,9 +46,13 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	private boolean initialize = true;
 
+	private boolean deferDdl = false;
+
 	private String platform = "all";
 
 	private String schema;
+
+	private String data;
 
 	private boolean continueOnError = false;
 
@@ -154,6 +158,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		this.initialize = initialize;
 	}
 
+	public void setDeferDdl(boolean deferDdl) {
+		this.deferDdl = deferDdl;
+	}
+
+	public boolean isDeferDdl() {
+		return this.deferDdl;
+	}
+
 	public String getPlatform() {
 		return this.platform;
 	}
@@ -168,6 +180,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	public void setSchema(String schema) {
 		this.schema = schema;
+	}
+
+	public String getData() {
+		return this.data;
+	}
+
+	public void setData(String script) {
+		this.data = script;
 	}
 
 	public boolean isContinueOnError() {

@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceInitialization.DataSourceInitializedEvent;
 import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration.HibernateEntityManagerCondition;
 import org.springframework.context.ApplicationListener;
@@ -90,7 +91,7 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		};
 	}
 
-	private static class DeferredSchemaAction implements
+	private class DeferredSchemaAction implements
 			ApplicationListener<ContextRefreshedEvent> {
 
 		private Map<String, String> map;
@@ -105,11 +106,14 @@ public class HibernateJpaAutoConfiguration extends JpaBaseConfiguration {
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			String ddlAuto = this.map.get("hibernate.hbm2ddl.auto");
-			if (ddlAuto == null || "none".equals(ddlAuto)) {
+			if (ddlAuto == null || "none".equals(ddlAuto) || "".equals(ddlAuto)) {
 				return;
 			}
 			Bootstrap.getEntityManagerFactoryBuilder(
 					this.factory.getPersistenceUnitInfo(), this.map).generateSchema();
+			HibernateJpaAutoConfiguration.this.applicationContext
+					.publishEvent(new DataSourceInitializedEvent(
+							HibernateJpaAutoConfiguration.this.dataSource));
 		}
 	}
 
