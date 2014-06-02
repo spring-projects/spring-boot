@@ -59,7 +59,6 @@ import org.springframework.boot.loader.tools.Layouts;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 
 /**
  * {@link Command} to create a self-contained executable jar file from a CLI application
@@ -211,10 +210,12 @@ public class JarCommand extends OptionParsingCommand {
 
 		private void addCliClasses(JarWriter writer) throws IOException {
 			addClass(writer, PackagedSpringApplicationLauncher.class);
-			Resource[] resources = new PathMatchingResourcePatternResolver().getResources("org/springframework/boot/groovy/**");
+			Resource[] resources = new PathMatchingResourcePatternResolver()
+					.getResources("org/springframework/boot/groovy/**");
 			for (Resource resource : resources) {
 				String url = resource.getURL().toString();
-				addResource(writer, resource, url.substring(url.indexOf("org/springframework/boot/groovy/")));
+				addResource(writer, resource,
+						url.substring(url.indexOf("org/springframework/boot/groovy/")));
 			}
 		}
 
@@ -224,7 +225,8 @@ public class JarCommand extends OptionParsingCommand {
 			writer.writeEntry(name, stream);
 		}
 
-		private void addResource(JarWriter writer, Resource resource, String name) throws IOException {
+		private void addResource(JarWriter writer, Resource resource, String name)
+				throws IOException {
 			InputStream stream = resource.getInputStream();
 			writer.writeEntry(name, stream);
 		}
