@@ -16,16 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,23 +30,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
@@ -64,10 +51,9 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class)
+@Import(DataSourceInitialization.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceAutoConfiguration {
-
-	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
 	public static final String CONFIGURATION_PREFIX = "spring.datasource";
 
@@ -75,61 +61,7 @@ public class DataSourceAutoConfiguration {
 	private DataSource dataSource;
 
 	@Autowired
-	private ApplicationContext applicationContext;
-
-	@Autowired
 	private DataSourceProperties properties;
-
-	@PostConstruct
-	protected void initialize() {
-		boolean initialize = this.properties.isInitialize();
-		if (this.dataSource == null || !initialize) {
-			logger.debug("No DataSource found so not initializing");
-			return;
-		}
-
-		String schema = this.properties.getSchema();
-		if (schema == null) {
-			String platform = this.properties.getPlatform();
-			schema = "classpath*:schema-" + platform + ".sql,";
-			schema += "classpath*:schema.sql,";
-			schema += "classpath*:data-" + platform + ".sql,";
-			schema += "classpath*:data.sql";
-		}
-
-		List<Resource> resources = getSchemaResources(schema);
-
-		boolean continueOnError = this.properties.isContinueOnError();
-		boolean exists = false;
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		for (Resource resource : resources) {
-			if (resource.exists()) {
-				exists = true;
-				populator.addScript(resource);
-				populator.setContinueOnError(continueOnError);
-			}
-		}
-		populator.setSeparator(this.properties.getSeparator());
-
-		if (exists) {
-			DatabasePopulatorUtils.execute(populator, this.dataSource);
-		}
-	}
-
-	private List<Resource> getSchemaResources(String schema) {
-		List<Resource> resources = new ArrayList<Resource>();
-		for (String schemaLocation : StringUtils.commaDelimitedListToStringArray(schema)) {
-			try {
-				resources.addAll(Arrays.asList(this.applicationContext
-						.getResources(schemaLocation)));
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException("Unable to load resource from "
-						+ schemaLocation, ex);
-			}
-		}
-		return resources;
-	}
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from

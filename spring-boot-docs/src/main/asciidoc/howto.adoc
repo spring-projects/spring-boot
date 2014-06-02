@@ -1165,7 +1165,7 @@ and `data-${platform}.sql` files (if present), where
 it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`,
 `postgresql` etc.). Spring Boot enables the failfast feature of the Spring JDBC
 initializer by default, so if the scripts cause exceptions the application will fail
-to start.
+to start. The script locations can be changed by setting `spring.datasource.schema` and `spring.datasource.data`, and neither location will be processed if `spring.datasource.initialize=false`.
 
 To disable the failfast you can set `spring.datasource.continueOnError=true`. This can be
 useful once an application has matured and been deployed a few times, since the scripts
