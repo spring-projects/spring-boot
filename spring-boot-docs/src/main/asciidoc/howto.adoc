@@ -1513,14 +1513,9 @@ details.
 [[howto-remote-debug-maven-run]]
 === Remote debug a Spring Boot application started with Maven
 To attach a remote debugger to a Spring Boot application started with Maven you can use
-the `mvnDebug` command rather than `mvn`. For example:
+the `jvmArguments` property of the {spring-boot-maven-plugin-site}/[maven plugin].
 
-[indent=0]
-----
-	$ mvnDebug spring-boot:run
-----
-
-You can now attach a remote debugger to your running application on port `8000`.
+Check {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for more details.
 
 
 
