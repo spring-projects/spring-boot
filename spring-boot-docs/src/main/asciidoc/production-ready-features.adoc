@@ -163,14 +163,14 @@ To provide custom health information you can register a Spring bean that impleme
 ----
 
 Spring Boot provides a
-{sc-spring-boot-actuator}/health/SimpleDatabaseHealthIndicator.{sc-ext}[`SimpleDatabaseHealthIndicator`]
+{sc-spring-boot-actuator}/health/DataSourceHealthIndicator.{sc-ext}[`DataSourceHealthIndicator`]
 implementation that attempts a simple database test as well as implementations for
 Redis, MongoDB and RabbitMQ.
 
 Spring Boot adds the `HealthIndicator` instances automatically if beans of type `DataSource`,
 `MongoTemplate`, `RedisConnectionFactory`, `RabbitTemplate` are present in the `ApplicationContext`.
 
-Besides implementing custom `HealthIndicator`s and using out-of-box {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
+Besides implementing custom a `HealthIndicator` type and using out-of-box {sc-spring-boot-actuator}/health/Status.{sc-ext}[`Status`]
 types, it is also possible to introduce custom `Status` types for different or more complex system
 states. In that case a custom implementation of the {sc-spring-boot-actuator}/health/HealthAggregator.{sc-ext}[`HealthAggregator`]
 interface needs to be provided or the default implementation has to be configured using the
