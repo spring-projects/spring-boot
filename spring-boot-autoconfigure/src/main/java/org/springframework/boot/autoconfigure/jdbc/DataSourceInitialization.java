@@ -160,6 +160,7 @@ public class DataSourceInitialization implements
 		return resources;
 	}
 
+	@SuppressWarnings("serial")
 	public static class DataSourceInitializedEvent extends ApplicationEvent {
 
 		public DataSourceInitializedEvent(DataSource source) {
