@@ -43,7 +43,7 @@ public abstract class AgentAttacher {
 			vmClass.getDeclaredMethod("detach").invoke(vm);
 		}
 		catch (Exception ex) {
-			throw new RuntimeException("Unable to attach Spring Loaded to the JVM", ex);
+			throw new RuntimeException("Unable to attach agent to the JVM", ex);
 		}
 	}
 
