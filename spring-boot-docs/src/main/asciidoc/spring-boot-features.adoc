@@ -205,6 +205,7 @@ sensible overriding of values, properties are considered in the the following or
 . Command line arguments.
 . Java System properties (`System.getProperties()`).
 . OS environment variables.
+. JNDI attributes from `java:comp/env`
 . A `RandomValuePropertySource` that only has properties in `random.*`.
 . `@PropertySource` annotations on your `@Configuration` classes.
 . Application properties outside of your packaged jar (`application.properties`
@@ -306,6 +307,14 @@ is always used, irrespective of the value of `spring.config.location`. In that w
 can set up default values for your application in `application.properties` (or whatever
 other basename you choose with `spring.config.name`) and override it at runtime with a
 different file, keeping the defaults.
+
+> Note: if you use environment variables not system properties, most operating systems
+disallow period-separated key names, but you can use underscores instead (e.g. 
+`SPRING_CONFIG_NAME` instead of `spring.config.name`).
+
+> Note: If you are running in a container then JNDI properties (in `java:comp/env`) or 
+servlet context initialization parameters can be used instead of or as well as
+environment variables or system properties.
 
 
 
