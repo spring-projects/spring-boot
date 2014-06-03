@@ -235,6 +235,63 @@ an extensive  https://github.com/CloudBees-community/springboot-gradle-cloudbees
 that covers the steps that you need to follow when deploying to CloudBees.
 
 
+[[cloud-deployment-openshift]]
+=== Openshift
+https://www.openshift.com/[Openshift] is the RedHat public (and enterprise) PaaS solution.
+Like Heroku, it works by running scripts triggered by git commits, so you can script
+the launching of a Spring Boot app in pretty much any way you like as long as the
+Java runtime is available (which is a standard feature you can ask from at Openshift).
+To do this you can use the https://www.openshift.com/developers/do-it-yourself[DIY Cartridge]
+and hooks in your repository under `.openshift/action_scripts`:
+
+The basic model is to:
+
+1. Ensure Java and your build tool are installed remotely, e.g. using 
+a `pre_build` hook (Java and Maven are installed by default, Gradle is not)
+
+2. Use a `build` hook to build your jar (using Maven or Gradle), e.g.
+
+----
+#!/bin/bash
+cd $OPENSHIFT_REPO_DIR
+mvn package -s .openshift/settings.xml -DskipTests=true
+----
+
+3. Add a `start` hook that calls `java -jar ...`
+
+----
+#!/bin/bash
+cd $OPENSHIFT_REPO_DIR
+nohup java -jar target/*.jar --server.port=${OPENSHIFT_DIY_PORT} --server.address=${OPENSHIFT_DIY_IP} &
+----
+
+4. Use a `stop` hook (since the start is supposed to return cleanly), e.g.
+
+----
+#!/bin/bash
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+PID=$(ps -ef | grep java.*\.jar | grep -v grep | awk '{ print $2 }')
+if [ -z "$PID" ]
+then
+    client_result "Application is already stopped"
+else
+    kill $PID
+fi
+----
+
+5. Embed service bindings from environment variables provided by the platform
+in your `application.properties`, e.g.
+
+----
+spring.datasource.url: jdbc:mysql://${OPENSHIFT_MYSQL_DB_HOST}:${OPENSHIFT_MYSQL_DB_PORT}/${OPENSHIFT_APP_NAME}
+spring.datasource.username: ${OPENSHIFT_MYSQL_DB_USERNAME}
+spring.datasource.password: ${OPENSHIFT_MYSQL_DB_PASSWORD}
+----
+
+There's a blog on https://www.openshift.com/blogs/run-gradle-builds-on-openshift[running Gradle 
+in Openshift] on their website that will get you started with a gradle build to run
+the app. A http://issues.gradle.org/browse/GRADLE-2871[bug in Gradle] currently prevents you
+from using Gradle newer than 1.6.
 
 [[cloud-deployment-whats-next]]
 == What to read next
