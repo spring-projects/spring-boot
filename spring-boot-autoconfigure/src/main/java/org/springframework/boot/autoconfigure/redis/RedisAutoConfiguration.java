@@ -50,7 +50,7 @@ import redis.clients.jedis.JedisPoolConfig;
 public class RedisAutoConfiguration {
 
 	@Configuration
-	@ConditionalOnMissingClass(name = "org.apache.commons.pool.impl.GenericObjectPool")
+	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
 	protected static class RedisConnectionConfiguration {
 
 		@Autowired
