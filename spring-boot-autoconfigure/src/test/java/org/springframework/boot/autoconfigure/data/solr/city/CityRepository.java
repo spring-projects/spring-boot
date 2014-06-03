@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.mongo;
+package org.springframework.boot.autoconfigure.data.solr.city;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 
-public interface CityRepository extends Repository<City, Long> {
+/**
+ * @author Christoph Strobl
+ */
+public interface CityRepository extends Repository<City, String> {
 
-	Page<City> findAll(Pageable pageable);
-
-	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country,
-			Pageable pageable);
-
-	City findByNameAndCountryAllIgnoringCase(String name, String country);
-
+	Page<City> findByNameStartingWith(String name, Pageable page);
 }

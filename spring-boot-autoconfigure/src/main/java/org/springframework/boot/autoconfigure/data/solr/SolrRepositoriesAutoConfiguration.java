@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.data.solr;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

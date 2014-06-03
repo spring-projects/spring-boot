@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,41 +14,45 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import java.lang.annotation.Annotation;
 
+import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
+import org.springframework.data.elasticsearch.repository.config.ElasticsearchRepositoryConfigExtension;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data JPA
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Elasticsearch
  * Repositories.
  * 
- * @author Phillip Webb
- * @author Dave Syer
+ * @author Artur Konczak
+ * @author Mohsin Husen
+ * @since 1.1.0
  */
-class JpaRepositoriesAutoConfigureRegistrar extends
+class ElasticsearchRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableJpaRepositories.class;
+		return EnableElasticsearchRepositories.class;
 	}
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableJpaRepositoriesConfiguration.class;
+		return EnableElasticsearchRepositoriesConfiguration.class;
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new JpaRepositoryConfigExtension();
+		return new ElasticsearchRepositoryConfigExtension();
 	}
 
-	@EnableJpaRepositories
-	private static class EnableJpaRepositoriesConfiguration {
+	@EnableElasticsearchRepositories
+	private static class EnableElasticsearchRepositoriesConfiguration {
+
 	}
+
 }

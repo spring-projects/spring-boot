@@ -14,37 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.data.elasticsearch;
 
+import org.elasticsearch.client.Client;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
+import org.springframework.boot.autoconfigure.data.alt.elasticsearch.CityElasticsearchDbRepository;
+import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
+import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.autoconfigure.data.mongo.City;
-import org.springframework.boot.autoconfigure.data.mongo.CityRepository;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
-import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link MongoRepositoriesAutoConfiguration}.
+ * Tests for {@link ElasticsearchRepositoriesAutoConfiguration}.
  * 
- * @author Dave Syer
- * @author Oliver Gierke
+ * @author Phillip Webb
  */
-public class MongoRepositoriesAutoConfigurationTests {
+public class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -56,39 +51,38 @@ public class MongoRepositoriesAutoConfigurationTests {
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, MongoAutoConfiguration.class,
-				MongoRepositoriesAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
+		this.context.register(TestConfiguration.class,
+				ElasticsearchAutoConfiguration.class,
+				ElasticsearchRepositoriesAutoConfiguration.class,
+				ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(CityRepository.class));
-
-		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		assertNotNull(this.context.getBean(Client.class));
 	}
 
 	@Test
 	public void testNoRepositoryConfiguration() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmptyConfiguration.class, MongoAutoConfiguration.class,
-				MongoRepositoriesAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
+		this.context.register(EmptyConfiguration.class,
+				ElasticsearchAutoConfiguration.class,
+				ElasticsearchRepositoriesAutoConfiguration.class,
+				ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-
-		Mongo mongo = this.context.getBean(Mongo.class);
-		assertThat(mongo, is(instanceOf(MongoClient.class)));
+		assertNotNull(this.context.getBean(Client.class));
 	}
 
 	@Test
 	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(CustomizedConfiguration.class,
-				MongoAutoConfiguration.class, MongoRepositoriesAutoConfiguration.class,
-				MongoDataAutoConfiguration.class,
+				ElasticsearchAutoConfiguration.class,
+				ElasticsearchRepositoriesAutoConfiguration.class,
+				ElasticsearchDataAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(CityMongoDbRepository.class));
+		assertNotNull(this.context.getBean(CityElasticsearchDbRepository.class));
 	}
 
 	@Configuration
@@ -104,8 +98,8 @@ public class MongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@TestAutoConfigurationPackage(MongoRepositoriesAutoConfigurationTests.class)
-	@EnableMongoRepositories(basePackageClasses = CityMongoDbRepository.class)
+	@TestAutoConfigurationPackage(ElasticsearchRepositoriesAutoConfigurationTests.class)
+	@EnableElasticsearchRepositories(basePackageClasses = CityElasticsearchDbRepository.class)
 	protected static class CustomizedConfiguration {
 
 	}

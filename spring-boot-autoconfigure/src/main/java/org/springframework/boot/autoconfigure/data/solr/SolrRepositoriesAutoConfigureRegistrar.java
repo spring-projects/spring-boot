@@ -14,41 +14,43 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.data.solr;
 
 import java.lang.annotation.Annotation;
 
+import org.springframework.boot.autoconfigure.data.AbstractRepositoryConfigurationSourceSupport;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.data.mongodb.repository.config.MongoRepositoryConfigurationExtension;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
+import org.springframework.data.solr.repository.config.EnableSolrRepositories;
+import org.springframework.data.solr.repository.config.SolrRepositoryConfigExtension;
 
 /**
- * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Mongo
- * Repositories.
+ * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Solr
+ * repositories.
  * 
- * @author Dave Syer
+ * @author Christoph Strobl
+ * @since 1.1.0
  */
-class MongoRepositoriesAutoConfigureRegistrar extends
+class SolrRepositoriesAutoConfigureRegistrar extends
 		AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
-		return EnableMongoRepositories.class;
+		return EnableSolrRepositories.class;
 	}
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return EnableMongoRepositoriesConfiguration.class;
+		return EnableSolrRepositoriesConfiguration.class;
 	}
 
 	@Override
 	protected RepositoryConfigurationExtension getRepositoryConfigurationExtension() {
-		return new MongoRepositoryConfigurationExtension();
+		return new SolrRepositoryConfigExtension();
 	}
 
-	@EnableMongoRepositories
-	private static class EnableMongoRepositoriesConfiguration {
+	@EnableSolrRepositories(multicoreSupport = true)
+	private static class EnableSolrRepositoriesConfiguration {
 
 	}
 
