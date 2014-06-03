@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import org.crsh.auth.AuthenticationPlugin;
 import org.crsh.auth.JaasAuthenticationPlugin;
-import org.crsh.lang.groovy.GroovyRepl;
+import org.crsh.lang.impl.groovy.GroovyRepl;
 import org.crsh.plugin.PluginContext;
 import org.crsh.plugin.PluginLifeCycle;
 import org.crsh.plugin.ResourceKind;
@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CrshAutoConfiguration}.
- * 
+ *
  * @author Christian Dupuis
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })

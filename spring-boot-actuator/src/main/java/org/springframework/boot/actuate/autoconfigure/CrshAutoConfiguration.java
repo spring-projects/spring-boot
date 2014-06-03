@@ -81,14 +81,14 @@ import org.springframework.util.StringUtils;
  * into a Spring Boot enabled application. By default a SSH daemon is started on port
  * 2000. If the CRaSH Telnet plugin is available on the classpath, Telnet daemon will be
  * launched on port 5000.
- * 
+ *
  * <p>
  * The default shell authentication method uses a username and password combination. If no
  * configuration is provided the default username is 'user' and the password will be
  * printed to console during application startup. Those default values can be overridden
  * by using <code>shell.auth.simple.username</code> and
  * <code>shell.auth.simple.password</code>.
- * 
+ *
  * <p>
  * If a Spring Security {@link AuthenticationManager} is detected, this configuration will
  * create a {@link CRaSHPlugin} to forward shell authentication requests to Spring
@@ -98,21 +98,21 @@ import org.springframework.util.StringUtils;
  * restricted to users having roles that match those configured in
  * {@link ManagementServerProperties}. Required roles can be overridden by
  * <code>shell.auth.spring.roles</code>.
- * 
+ *
  * <p>
  * To add customizations to the shell simply define beans of type {@link CRaSHPlugin} in
  * the application context. Those beans will get auto detected during startup and
  * registered with the underlying shell infrastructure. To configure plugins and the CRaSH
  * infrastructure add beans of type {@link CrshShellProperties} to the application
  * context.
- * 
+ *
  * <p>
  * Additional shell commands can be implemented using the guide and documentation at <a
  * href="http://www.crashub.org">crashub.org</a>. By default Boot will search for commands
  * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
  * add different locations or override the default use
  * <code>shell.command_path_patterns</code> in your application configuration.
- * 
+ *
  * @author Christian Dupuis
  * @see ShellProperties
  */
@@ -238,8 +238,14 @@ public class CrshAutoConfiguration {
 			Assert.notNull(filterPatterns, "FilterPatterns must not be null");
 			FS fileSystem = new FS();
 			for (String pathPattern : pathPatterns) {
-				fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
-						pathPattern, this.resourceLoader, filterPatterns)));
+				try {
+					fileSystem.mount(new SimpleFileSystemDriver(new DirectoryHandle(
+							pathPattern, this.resourceLoader, filterPatterns)));
+				}
+				catch (IOException ex) {
+					throw new IllegalStateException("Failed to mount file system for '"
+							+ pathPattern + "'", ex);
+				}
 			}
 			return fileSystem;
 		}
