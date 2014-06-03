@@ -16,15 +16,11 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
-import org.elasticsearch.client.Client;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.elasticsearch.client.NodeClientFactoryBean;
-import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
-import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Elasticsearch.
- * 
+ *
  * @author Artur Konczak
  * @author Mohsin Husen
  * @since 1.1.0
@@ -35,8 +31,6 @@ public class ElasticsearchProperties {
 	private String clusterName = "elasticsearch";
 
 	private String clusterNodes;
-
-	private boolean local = true;
 
 	public String getClusterName() {
 		return this.clusterName;
@@ -53,30 +47,4 @@ public class ElasticsearchProperties {
 	public void setClusterNodes(String clusterNodes) {
 		this.clusterNodes = clusterNodes;
 	}
-
-	public Client createClient() {
-		try {
-			return (StringUtils.hasLength(this.clusterNodes) ? createTransportClient()
-					: createNodeClient());
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
-	private Client createNodeClient() throws Exception {
-		NodeClientFactoryBean factory = new NodeClientFactoryBean(this.local);
-		factory.setClusterName(this.clusterName);
-		factory.afterPropertiesSet();
-		return factory.getObject();
-	}
-
-	private Client createTransportClient() throws Exception {
-		TransportClientFactoryBean factory = new TransportClientFactoryBean();
-		factory.setClusterName(this.clusterName);
-		factory.setClusterNodes(this.clusterNodes);
-		factory.afterPropertiesSet();
-		return factory.getObject();
-	}
-
 }
