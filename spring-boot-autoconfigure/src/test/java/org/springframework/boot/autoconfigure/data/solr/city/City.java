@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.solr;
+package org.springframework.boot.autoconfigure.data.solr.city;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.solr.core.mapping.Indexed;

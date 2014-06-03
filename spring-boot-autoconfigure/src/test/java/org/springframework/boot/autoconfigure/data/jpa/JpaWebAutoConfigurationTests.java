@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.data.jpa;
 
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.JpaRepositoriesAutoConfiguration.JpaWebConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.City;
-import org.springframework.boot.autoconfigure.data.jpa.CityRepository;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.JpaWebConfiguration;
+import org.springframework.boot.autoconfigure.data.jpa.city.City;
+import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Configuration;

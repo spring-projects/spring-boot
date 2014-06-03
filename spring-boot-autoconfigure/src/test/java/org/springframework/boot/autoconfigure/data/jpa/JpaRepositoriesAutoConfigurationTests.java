@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data;
+package org.springframework.boot.autoconfigure.data.jpa;
 
 import javax.persistence.EntityManagerFactory;
 
@@ -24,8 +24,9 @@ import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfigurati
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
 import org.springframework.boot.autoconfigure.data.alt.solr.CitySolrRepository;
-import org.springframework.boot.autoconfigure.data.jpa.City;
-import org.springframework.boot.autoconfigure.data.jpa.CityRepository;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.jpa.city.City;
+import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
