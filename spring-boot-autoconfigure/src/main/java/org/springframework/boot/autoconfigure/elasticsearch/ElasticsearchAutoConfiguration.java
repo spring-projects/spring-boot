@@ -25,17 +25,22 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.elasticsearch.client.NodeClientFactoryBean;
+import org.springframework.data.elasticsearch.client.TransportClientFactoryBean;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
  * Auto-configuration} for Elasticsearch.
- * 
+ *
  * @author Artur Konczak
  * @author Mohsin Husen
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(Client.class)
+@ConditionalOnClass({ Client.class, TransportClientFactoryBean.class,
+		NodeClientFactoryBean.class })
 @EnableConfigurationProperties(ElasticsearchProperties.class)
 public class ElasticsearchAutoConfiguration implements DisposableBean {
 
@@ -48,8 +53,33 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 
 	@Bean
 	public Client elasticsearchClient() {
-		this.client = this.properties.createClient();
+		try {
+			if (StringUtils.hasLength(this.properties.getClusterNodes())) {
+				this.client = createTransportClient();
+			}
+			else {
+				this.client = createNodeClient();
+			}
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
 		return this.client;
+	}
+
+	private Client createNodeClient() throws Exception {
+		NodeClientFactoryBean factory = new NodeClientFactoryBean(true);
+		factory.setClusterName(this.properties.getClusterName());
+		factory.afterPropertiesSet();
+		return factory.getObject();
+	}
+
+	private Client createTransportClient() throws Exception {
+		TransportClientFactoryBean factory = new TransportClientFactoryBean();
+		factory.setClusterName(this.properties.getClusterName());
+		factory.setClusterNodes(this.properties.getClusterNodes());
+		factory.afterPropertiesSet();
+		return factory.getObject();
 	}
 
 	@Override
