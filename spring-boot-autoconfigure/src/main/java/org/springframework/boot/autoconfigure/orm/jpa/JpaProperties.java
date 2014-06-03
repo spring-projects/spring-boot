@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.SpringNamingStrategy;
 import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.util.StringUtils;
 
 /**
  * External configuration properties for a JPA EntityManagerFactory created by Spring.
@@ -181,8 +182,12 @@ public class JpaProperties {
 		private Map<String, String> getDeferredAdditionalProperties(
 				Map<String, String> properties, DataSource dataSource) {
 			Map<String, String> deferred = getAdditionalProperties(properties);
-			deferred.put("hibernate.hbm2ddl.auto",
-					getDeferredDdlAuto(properties, dataSource));
+			String ddlAuto = getDeferredDdlAuto(properties, dataSource);
+			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
+				deferred.put("hibernate.hbm2ddl.auto", ddlAuto);
+			} else {
+				deferred.remove("hibernate.hbm2ddl.auto");
+			}
 			return deferred;
 		}
 
@@ -197,7 +202,7 @@ public class JpaProperties {
 						DEFAULT_NAMING_STRATEGY.getName());
 			}
 			if (this.deferDdl) {
-				result.put("hibernate.hbm2ddl.auto", "none");
+				result.remove("hibernate.hbm2ddl.auto");
 			}
 			else {
 				result.put("hibernate.hbm2ddl.auto", this.ddlAuto);
