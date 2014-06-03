@@ -45,7 +45,7 @@ public class AetherGrapeEngineTests {
 	private final AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(
 			this.groovyClassLoader, Arrays.asList(new RepositoryConfiguration("central",
 					URI.create("http://repo1.maven.org/maven2"), false)),
-			new DependencyResolutionContext());
+					new DependencyResolutionContext());
 
 	@Test
 	public void dependencyResolution() {
@@ -54,7 +54,7 @@ public class AetherGrapeEngineTests {
 		this.grapeEngine.grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
 
-		assertEquals(6, this.groovyClassLoader.getURLs().length);
+		assertEquals(5, this.groovyClassLoader.getURLs().length);
 	}
 
 	@Test
@@ -76,7 +76,7 @@ public class AetherGrapeEngineTests {
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"),
 				createDependency("org.springframework", "spring-beans", "3.2.4.RELEASE"));
 
-		assertEquals(4, this.groovyClassLoader.getURLs().length);
+		assertEquals(3, this.groovyClassLoader.getURLs().length);
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class AetherGrapeEngineTests {
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"));
 
 		assertEquals(0, this.groovyClassLoader.getURLs().length);
-		assertEquals(6, customClassLoader.getURLs().length);
+		assertEquals(5, customClassLoader.getURLs().length);
 	}
 
 	@Test

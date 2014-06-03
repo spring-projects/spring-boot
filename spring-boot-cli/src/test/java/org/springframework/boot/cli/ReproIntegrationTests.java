@@ -25,8 +25,9 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests to exercise and reproduce specific issues.
- * 
+ *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 public class ReproIntegrationTests {
 
@@ -56,6 +57,12 @@ public class ReproIntegrationTests {
 		this.cli.run("crsh.groovy");
 		assertThat(this.cli.getHttpOutput(),
 				containsString("{\"message\":\"Hello World\"}"));
+	}
+
+	@Test
+	public void dataJpaDependencies() throws Exception {
+		this.cli.run("data-jpa.groovy");
+		assertThat(this.cli.getOutput(), containsString("Hello World"));
 	}
 
 	@Test
