@@ -1415,14 +1415,47 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 technologies including
 http://projects.spring.io/spring-data-mongodb/[MongoDB],
 http://projects.spring.io/spring-data-neo4j/[Neo4J],
+http://projects.spring.io/spring-data-elasticsearch/[Elasticsearch],
+http://projects.spring.io/spring-data-solr/[Solr],
 http://projects.spring.io/spring-data-redis/[Redis],
 http://projects.spring.io/spring-data-gemfire/[Gemfire],
 http://projects.spring.io/spring-data-couchbase/[Couchbase] and
 http://projects.spring.io/spring-data-cassandra/[Cassandra].
-Spring Boot provides auto-configuration for MongoDB; you can make use of the other
+Spring Boot provides auto-configuration for Redis, MongoDB, Elasticsearch, Solr and Gemfire; you can make use of the other
 projects, but you will need to configure them yourself. Refer to the appropriate
 reference documentation at http://projects.spring.io/spring-data.
 
+
+[[boot-features-redis]]
+=== Redis
+http://redis.io/[Redis] is a cache, message broker and richly-featured key-value store. Spring Boot offers basic autoconfiguration for the https://github.com/xetorthio/jedis/[Jedis] client library and abstractions on top of it provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis]. There is a `spring-boot-starter-redis` ``Starter POM`` for collecting the dependencies in a convenient way.
+
+[[boot-features-connecting-to-redis]]
+==== Connecting to Redis
+You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate` or vanilla `RedisTemplate` instance as you would any other
+Spring Bean. By default the instance will attempt to connect to a Redis server using
+`localhost:6379`:
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+	    private StringRedisTemplate template;
+
+		@Autowired
+		public MyBean(StringRedisTemplate template) {
+			this.template = template;
+		}
+
+		// ...
+
+	}
+----
+
+If you add a `@Bean` of your own of any of the autoconfigured types it will replace the default 
+(except in the case of `RedisTemplate` the exlcusion is based on the bean name "redisTemplate" not its type).
+If `commons-pool2` is on the classpath you will get a pooled connection factory by default.
 
 
 [[boot-features-mongodb]]
@@ -1442,9 +1475,6 @@ the URL `mongodb://localhost/test`:
 
 [source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.stereotype.Component;
-
 	import com.mongodb.Mongo;
 
 	@Component
@@ -1542,6 +1572,103 @@ TIP: For complete details of Spring Data MongoDB, including its rich object mapp
 technologies, refer to their http://projects.spring.io/spring-data-mongodb/[reference
 documentation].
 
+[[boot-features-gemfire]]
+=== Gemfire
+https://github.com/spring-projects/spring-data-gemfire[Spring Data Gemfire] provides convenient Spring-friendly
+tools for accessing the http://www.gopivotal.com/big-data/pivotal-gemfire#details[Pivotal Gemfire] data management platform.
+There is a `spring-boot-starter-data-gemfire` ``Starter POM`` for collecting the dependencies in a convenient way. There is currently no autoconfig support for Gemfire but you can enable Spring Data Repositories with a https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java/org/springframework/data/gemfire/repository/config/EnableGemfireRepositories.java[single annotation].
+
+
+
+[[boot-features-solr]]
+=== Solr
+http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic autoconfiguration for the solr client library and abstractions on top of it provided by https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Solr]. There is a `spring-boot-starter-data-solr` ``Starter POM`` for collecting the dependencies in a convenient way.
+
+[[boot-features-connecting-to-solr]]
+==== Connecting to Solr
+You can inject an auto-configured `SolrServer` instance as you would any other
+Spring Bean. By default the instance will attempt to connect to a server using
+`http://localhost:8983/solr`:
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+	    private SolrServer solr;
+
+		@Autowired
+		public MyBean(SolrServer solr) {
+			this.solr = solr;
+		}
+
+		// ...
+
+	}
+----
+
+If you add a `@Bean` of your own of type `SolrServer` it will replace the default.
+
+[[boot-features-spring-data-solr-repositories]]
+==== Spring Data Solr repositories
+Spring Data includes repository support for Apache Solr. As with the JPA repositories
+discussed earlier, the basic principle is that queries are constructed for you
+automatically based on method names.
+
+In fact, both Spring Data JPA and Spring Data Solr share the same common
+infrastructure; so you could take the JPA example from earlier and, assuming that
+`City` is now a `@SolrDocument` class rather than a JPA `@Entity`, it will work in the
+same way.
+
+TIP: For complete details of Spring Data Solr, including its rich object mapping
+technologies, refer to their http://projects.spring.io/spring-data-solr/[reference
+documentation].
+
+
+[[boot-features-elasticsearch]]
+=== Elasticsearch
+http://www.elasticsearch.org/[Elastic Search] is a search engine. Spring Boot offers basic autoconfiguration for the solr client library and abstractions on top of it provided by [Spring Data Solr](https://github.com/spring-projects/spring-data-elasticsearch). There is a `spring-boot-starter-data-elasticsearch` ``Starter POM`` for collecting the dependencies in a convenient way.
+
+[[boot-features-connecting-to-elasticsearch]]
+==== Connecting to Elasticsearch
+You can inject an auto-configured `ElasticsearchTemplate` or Elasticsearch `Client` instance as you would any other
+Spring Bean. By default the instance will attempt to connect to a local in-memory server (a `NodeClient` in Elasticsearch
+terms), but you can switch to a remote server (i.e. a `TransportClient`) by setting `spring.data.elasticsearch.clusterNodes`
+to a comma-separated "host:port" list.
+
+[source,java,indent=0]
+----
+	@Component
+	public class MyBean {
+
+	    private ElasticsearchTemplate template;
+
+		@Autowired
+		public MyBean(ElasticsearchTemplate template) {
+			this.template = template;
+		}
+
+		// ...
+
+	}
+----
+
+If you add a `@Bean` of your own of type `ElasticsearchTemplate` it will replace the default.
+
+[[boot-features-spring-data-elasticsearch-repositories]]
+==== Spring Data Elasticsearch repositories
+Spring Data includes repository support for Elasticsearch. As with the JPA repositories
+discussed earlier, the basic principle is that queries are constructed for you
+automatically based on method names.
+
+In fact, both Spring Data JPA and Spring Data Elasticsearch share the same common
+infrastructure; so you could take the JPA example from earlier and, assuming that
+`City` is now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it will work in the
+same way.
+
+TIP: For complete details of Spring Data Elasticsearch, including its rich object mapping
+technologies, refer to their http://projects.spring.io/spring-data-elasticsearch/[reference
+documentation].
 
 
 [[boot-features-testing]]
@@ -1567,7 +1694,6 @@ the following provided libraries:
 
 These are common libraries that we generally find useful when writing tests. You are free
 to add additional test dependencies of your own if these don't suit your needs.
-
 
 
 [[boot-features-testing-spring-applications]]
