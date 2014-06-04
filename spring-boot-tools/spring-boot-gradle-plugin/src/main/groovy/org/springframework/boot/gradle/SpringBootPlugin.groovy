@@ -21,6 +21,7 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.tasks.compile.Compile;
 import org.springframework.boot.gradle.agent.AgentPluginFeatures;
 import org.springframework.boot.gradle.repackage.RepackagePluginFeatures;
 import org.springframework.boot.gradle.resolve.ResolvePluginFeatures;
@@ -46,6 +47,15 @@ public class SpringBootPlugin implements Plugin<Project> {
 		new ResolvePluginFeatures().apply(project);
 		new RepackagePluginFeatures().apply(project);
 		new RunPluginFeatures().apply(project);
+
+		// default to UTF-8 encoding
+		project.tasks.withType(Compile).all { t->
+			t.doFirst {
+				if(!t.options.encoding) {
+					t.options.encoding = 'UTF-8'
+				}
+			}
+		}
 	}
 
 }
