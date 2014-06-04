@@ -18,9 +18,12 @@ package org.springframework.boot.autoconfigure.hateoas;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.LinkDiscoverer;
 import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.config.EnableHypermediaSupport;
+import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.hateoas.hal.HalLinkDiscoverer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -31,6 +34,7 @@ import static org.junit.Assert.assertTrue;
  * Tests for {@link HypermediaAutoConfiguration}.
  * 
  * @author Roy Clarkson
+ * @author Oliver Gierke
  */
 public class HypermediaAutoConfigurationTests {
 
@@ -52,6 +56,22 @@ public class HypermediaAutoConfigurationTests {
 		assertNotNull(discoverers);
 		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
 		assertTrue(HalLinkDiscoverer.class.isInstance(discoverer));
+	}
+	
+	@Test
+	public void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
+		
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(SampleConfig.class, HypermediaAutoConfiguration.class);
+		this.context.refresh();
+		
+		this.context.getBean(LinkDiscoverers.class);
+	}
+	
+	@Configuration
+	@EnableHypermediaSupport(type = HypermediaType.HAL)
+	static class SampleConfig {
+		
 	}
 
 }
