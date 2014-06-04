@@ -43,10 +43,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.hornetq.HornetQConfigurationCustomizer;
-import org.springframework.boot.autoconfigure.jms.hornetq.HornetQMode;
-import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -93,7 +89,8 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void nativeConnectionFactoryCustomHost() {
-		load(EmptyConfiguration.class, "spring.hornetq.host:192.168.1.144",
+		load(EmptyConfiguration.class, "spring.hornetq.mode:native",
+				"spring.hornetq.host:192.168.1.144",
 				"spring.hornetq.port:9876");
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
@@ -102,8 +99,7 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedConnectionFactory() {
-		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
-				"spring.hornetq.embedded.enabled:true");
+		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded");
 
 		HornetQProperties properties = this.context.getBean(HornetQProperties.class);
 		assertEquals(HornetQMode.EMBEDDED, properties.getMode());
@@ -121,26 +117,52 @@ public class HornetQAutoConfigurationTests {
 	}
 
 	@Test
-	public void nativeConnectionFactoryByDefault() {
+	public void embeddedConnectionFactoryByDefault() {
 		// No mode is specified
 		load(EmptyConfiguration.class);
-		HornetQConnectionFactory connectionFactory = this.context
-				.getBean(HornetQConnectionFactory.class);
-		assertNettyConnectionFactory(connectionFactory, "localhost", 5445);
-	}
 
-	@Test
-	public void embeddedConnectionFactoryIfEmbeddedServiceEnabled() {
-		// No mode enabled, embedded server required
-		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true");
+		assertEquals(1, this.context.getBeansOfType(EmbeddedJMS.class).size());
+		org.hornetq.core.config.Configuration configuration = this.context
+				.getBean(org.hornetq.core.config.Configuration.class);
+		assertFalse("Persistence disabled by default",
+				configuration.isPersistenceEnabled());
+		assertFalse("Security disabled by default", configuration.isSecurityEnabled());
+
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
 		assertInVmConnectionFactory(connectionFactory);
 	}
 
 	@Test
+	public void nativeConnectionFactoryIfEmbeddedServiceDisabledExplicitly() {
+		// No mode is specified
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:false");
+
+		assertEquals(0, this.context.getBeansOfType(EmbeddedJMS.class).size());
+
+		HornetQConnectionFactory connectionFactory = this.context
+				.getBean(HornetQConnectionFactory.class);
+		assertNettyConnectionFactory(connectionFactory, "localhost", 5445);
+	}
+
+	@Test
+	public void embeddedConnectionFactorEvenIfEmbeddedServiceDisabled() {
+		// No mode is specified
+		load(EmptyConfiguration.class,
+				"spring.hornetq.mode:embedded",
+				"spring.hornetq.embedded.enabled:false");
+
+		assertEquals(0, this.context.getBeansOfType(EmbeddedJMS.class).size());
+
+		HornetQConnectionFactory connectionFactory = this.context
+				.getBean(HornetQConnectionFactory.class);
+		assertInVmConnectionFactory(connectionFactory);
+	}
+
+
+	@Test
 	public void embeddedServerWithDestinations() {
-		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true",
+		load(EmptyConfiguration.class,
 				"spring.hornetq.embedded.queues=Queue1,Queue2",
 				"spring.hornetq.embedded.topics=Topic1");
 
@@ -155,7 +177,7 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServerWithDestinationConfig() {
-		load(DestinationConfiguration.class, "spring.hornetq.embedded.enabled:true");
+		load(DestinationConfiguration.class);
 
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("sampleQueue", true);
@@ -164,7 +186,7 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
-		load(CustomJmsConfiguration.class, "spring.hornetq.embedded.enabled:true",
+		load(CustomJmsConfiguration.class,
 				"spring.hornetq.embedded.queues=Queue1,Queue2"); // Ignored with custom
 																	// config
 		DestinationChecker checker = new DestinationChecker(this.context);
@@ -176,7 +198,7 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServiceWithCustomHornetQConfiguration() {
-		load(CustomHornetQConfiguration.class, "spring.hornetq.embedded.enabled:true");
+		load(CustomHornetQConfiguration.class);
 		org.hornetq.core.config.Configuration configuration = this.context
 				.getBean(org.hornetq.core.config.Configuration.class);
 		assertEquals("customFooBar", configuration.getName());
@@ -187,7 +209,7 @@ public class HornetQAutoConfigurationTests {
 		File dataFolder = this.folder.newFolder();
 
 		// Start the server and post a message to some queue
-		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true",
+		load(EmptyConfiguration.class,
 				"spring.hornetq.embedded.queues=TestQueue",
 				"spring.hornetq.embedded.persistent:true",
 				"spring.hornetq.embedded.dataDirectory:" + dataFolder.getAbsolutePath());
@@ -203,7 +225,7 @@ public class HornetQAutoConfigurationTests {
 		this.context.close(); // Shutdown the broker
 
 		// Start the server again and check if our message is still here
-		load(EmptyConfiguration.class, "spring.hornetq.embedded.enabled:true",
+		load(EmptyConfiguration.class,
 				"spring.hornetq.embedded.queues=TestQueue",
 				"spring.hornetq.embedded.persistent:true",
 				"spring.hornetq.embedded.dataDirectory:" + dataFolder.getAbsolutePath());

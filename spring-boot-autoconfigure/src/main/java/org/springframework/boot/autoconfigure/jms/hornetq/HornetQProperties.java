@@ -70,7 +70,7 @@ public class HornetQProperties {
 	 */
 	public static class Embedded {
 
-		private boolean enabled;
+		private boolean enabled = true;
 
 		private boolean persistent;
 
