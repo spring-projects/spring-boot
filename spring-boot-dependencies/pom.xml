@@ -480,12 +480,6 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>${httpclient.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
@@ -496,12 +490,6 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpasyncclient</artifactId>
 				<version>${httpasyncclient.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
@@ -547,12 +535,6 @@
 				<groupId>org.apache.velocity</groupId>
 				<artifactId>velocity-tools</artifactId>
 				<version>${velocity-tools.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -673,12 +655,6 @@
 				<groupId>org.crashub</groupId>
 				<artifactId>crash.connectors.ssh</artifactId>
 				<version>${crashub.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.crashub</groupId>
@@ -977,16 +953,6 @@
 				<groupId>org.springframework.integration</groupId>
 				<artifactId>spring-integration-http</artifactId>
 				<version>${spring-integration.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging-api</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.mobile</groupId>
