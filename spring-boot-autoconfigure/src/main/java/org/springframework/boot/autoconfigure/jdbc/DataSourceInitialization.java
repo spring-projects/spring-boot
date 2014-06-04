@@ -33,7 +33,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -44,12 +43,11 @@ import org.springframework.util.StringUtils;
  */
 @Configuration
 @EnableConfigurationProperties(DataSourceProperties.class)
-public class DataSourceInitialization implements
-		ApplicationListener<ContextRefreshedEvent> {
+public class DataSourceInitialization {
 
 	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
 
-	@Autowired(required = false)
+	@Autowired
 	private DataSource dataSource;
 
 	@Autowired
@@ -61,32 +59,9 @@ public class DataSourceInitialization implements
 	private boolean initialized = false;
 
 	@Bean
-	public ApplicationListener<DataSourceInitializedEvent> dataSourceInitializedListener() {
+	public ApplicationListener<DataSourceInitializedEvent> dataSourceInitializedListener(
+			DataSource dataSource) {
 		return new DataSourceInitializedListener();
-	}
-
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (this.properties.isDeferDdl()) {
-			boolean initialize = this.properties.isInitialize();
-			if (!initialize) {
-				logger.debug("Initialization disabled (not running DDL scripts)");
-				return;
-			}
-			runSchemaScripts();
-		}
-	}
-
-	@PostConstruct
-	protected void initialize() {
-		if (!this.properties.isDeferDdl()) {
-			boolean initialize = this.properties.isInitialize();
-			if (!initialize) {
-				logger.debug("Initialization disabled (not running DDL scripts)");
-				return;
-			}
-			runSchemaScripts();
-		}
 	}
 
 	private void runSchemaScripts() {
@@ -171,6 +146,18 @@ public class DataSourceInitialization implements
 
 	private class DataSourceInitializedListener implements
 			ApplicationListener<DataSourceInitializedEvent> {
+
+		// Keep this in the nested class so that it doesn't have to be called before the
+		// listener is instantiated (ordering problems otherwise)
+		@PostConstruct
+		protected void initialize() {
+			boolean initialize = DataSourceInitialization.this.properties.isInitialize();
+			if (!initialize) {
+				logger.debug("Initialization disabled (not running DDL scripts)");
+				return;
+			}
+			runSchemaScripts();
+		}
 
 		@Override
 		public void onApplicationEvent(DataSourceInitializedEvent event) {

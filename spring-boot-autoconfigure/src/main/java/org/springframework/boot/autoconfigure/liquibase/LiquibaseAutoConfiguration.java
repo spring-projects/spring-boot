@@ -16,12 +16,22 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
 
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -32,15 +42,24 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import static java.util.Arrays.asList;
+import static org.springframework.beans.factory.BeanFactoryUtils.beanNamesForTypeIncludingAncestors;
+import static org.springframework.beans.factory.BeanFactoryUtils.transformedBeanName;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
  * 
  * @author Marcel Overdijk
+ * @author Dave Syer
  * @since 1.1.0
  */
 @Configuration
@@ -53,6 +72,7 @@ public class LiquibaseAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties(LiquibaseProperties.class)
+	@Import(LiquibaseJpaDependencyConfiguration.class)
 	public static class LiquibaseConfiguration {
 
 		@Autowired
@@ -87,4 +107,58 @@ public class LiquibaseAutoConfiguration {
 			return liquibase;
 		}
 	}
+
+	@Configuration
+	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
+	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
+	protected static class LiquibaseJpaDependencyConfiguration implements
+			BeanFactoryPostProcessor {
+
+		public static final String LIQUIBASE_JPA_BEAN_NAME = "liquibase";
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+
+			for (String beanName : getEntityManagerFactoryBeanNames(beanFactory)) {
+				BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
+				definition.setDependsOn(StringUtils.addStringToArray(
+						definition.getDependsOn(), LIQUIBASE_JPA_BEAN_NAME));
+			}
+		}
+
+		private static BeanDefinition getBeanDefinition(String beanName,
+				ConfigurableListableBeanFactory beanFactory) {
+			try {
+				return beanFactory.getBeanDefinition(beanName);
+			}
+			catch (NoSuchBeanDefinitionException e) {
+
+				BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
+
+				if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
+					return getBeanDefinition(beanName,
+							(ConfigurableListableBeanFactory) parentBeanFactory);
+				}
+
+				throw e;
+			}
+		}
+
+		private static Iterable<String> getEntityManagerFactoryBeanNames(
+				ListableBeanFactory beanFactory) {
+
+			Set<String> names = new HashSet<String>();
+			names.addAll(asList(beanNamesForTypeIncludingAncestors(beanFactory,
+					EntityManagerFactory.class, true, false)));
+
+			for (String factoryBeanName : beanNamesForTypeIncludingAncestors(beanFactory,
+					AbstractEntityManagerFactoryBean.class, true, false)) {
+				names.add(transformedBeanName(factoryBeanName));
+			}
+
+			return names;
+		}
+
+	}
+
 }

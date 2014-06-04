@@ -103,23 +103,13 @@ public class JpaProperties {
 
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
-	 * EntityManagerFactory. The result will always have ddl-auto=none, so that the schema
-	 * generation or validation can be deferred to a later stage.
-	 * @param dataSource the DataSource in case it is needed to determine the properties
-	 * @return some Hibernate properties for configuration
-	 */
-	public Map<String, String> getInitialHibernateProperties(DataSource dataSource) {
-		return this.hibernate.getAdditionalProperties(this.properties);
-	}
-
-	/**
-	 * Get the full configuration properties for the Hibernate EntityManagerFactory.
+	 * EntityManagerFactory.
+	 * 
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */
 	public Map<String, String> getHibernateProperties(DataSource dataSource) {
-		return this.hibernate
-				.getDeferredAdditionalProperties(this.properties, dataSource);
+		return this.hibernate.getAdditionalProperties(this.properties, dataSource);
 	}
 
 	public static class Hibernate {
@@ -129,8 +119,6 @@ public class JpaProperties {
 		private static Class<?> DEFAULT_NAMING_STRATEGY = SpringNamingStrategy.class;
 
 		private String ddlAuto;
-
-		private boolean deferDdl = true;
 
 		public Class<?> getNamingStrategy() {
 			return this.namingStrategy;
@@ -143,7 +131,7 @@ public class JpaProperties {
 		@Deprecated
 		public void setNamingstrategy(Class<?> namingStrategy) {
 			logger.warn("The property spring.jpa.namingstrategy has been renamed, "
-					+ "please update your configuration to use naming-strategy");
+					+ "please update your configuration to use namingStrategy or naming-strategy or naming_strategy");
 			this.setNamingStrategy(namingStrategy);
 		}
 
@@ -151,19 +139,8 @@ public class JpaProperties {
 			return this.ddlAuto;
 		}
 
-		public void setDeferDdl(boolean deferDdl) {
-			this.deferDdl = deferDdl;
-		}
-
-		public boolean isDeferDdl() {
-			return this.deferDdl;
-		}
-
-		private String getDeferredDdlAuto(Map<String, String> existing,
+		private String getActualDdlAuto(Map<String, String> existing,
 				DataSource dataSource) {
-			if (!this.deferDdl) {
-				return "none";
-			}
 			String ddlAuto = this.ddlAuto != null ? this.ddlAuto
 					: getDefaultDdlAuto(dataSource);
 			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
@@ -179,19 +156,8 @@ public class JpaProperties {
 			this.ddlAuto = ddlAuto;
 		}
 
-		private Map<String, String> getDeferredAdditionalProperties(
-				Map<String, String> properties, DataSource dataSource) {
-			Map<String, String> deferred = getAdditionalProperties(properties);
-			String ddlAuto = getDeferredDdlAuto(properties, dataSource);
-			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
-				deferred.put("hibernate.hbm2ddl.auto", ddlAuto);
-			} else {
-				deferred.remove("hibernate.hbm2ddl.auto");
-			}
-			return deferred;
-		}
-
-		private Map<String, String> getAdditionalProperties(Map<String, String> existing) {
+		private Map<String, String> getAdditionalProperties(Map<String, String> existing,
+				DataSource dataSource) {
 			Map<String, String> result = new HashMap<String, String>();
 			if (!isAlreadyProvided(existing, "ejb.naming_strategy")
 					&& this.namingStrategy != null) {
@@ -201,11 +167,12 @@ public class JpaProperties {
 				result.put("hibernate.ejb.naming_strategy",
 						DEFAULT_NAMING_STRATEGY.getName());
 			}
-			if (this.deferDdl) {
-				result.remove("hibernate.hbm2ddl.auto");
+			String ddlAuto = getActualDdlAuto(existing, dataSource);
+			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
+				result.put("hibernate.hbm2ddl.auto", ddlAuto);
 			}
 			else {
-				result.put("hibernate.hbm2ddl.auto", this.ddlAuto);
+				result.remove("hibernate.hbm2ddl.auto");
 			}
 			return result;
 		}

@@ -25,16 +25,23 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaBaseConfiguration.DataSourceInitializedRegistrar;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -54,6 +61,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * @author Oliver Gierke
  */
 @EnableConfigurationProperties(JpaProperties.class)
+@Import(DataSourceInitializedRegistrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	private ConfigurableListableBeanFactory beanFactory;
@@ -107,7 +115,9 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
 	protected abstract Map<String, String> getVendorProperties();
 
-	protected abstract EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback();
+	protected EntityManagerFactoryBuilder.EntityManagerFactoryBeanCallback getVendorCallback() {
+		return null;
+	}
 
 	protected String[] getPackagesToScan() {
 		if (AutoConfigurationPackages.has(this.beanFactory)) {
@@ -143,6 +153,26 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			return new OpenEntityManagerInViewInterceptor();
 		}
 
+	}
+
+	protected static class DataSourceInitializedRegistrar implements
+			ImportBeanDefinitionRegistrar {
+
+		private static final String BEAN_NAME = "dataSourceInitializedPublisher";
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
+				BeanDefinitionRegistry registry) {
+			if (!registry.containsBeanDefinition(BEAN_NAME)) {
+				GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+				beanDefinition.setBeanClass(DataSourceInitializedPublisher.class);
+				beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+				// We don't need this one to be post processed otherwise it can cause a
+				// cascade of bean instantiation that we would rather avoid.
+				beanDefinition.setSynthetic(true);
+				registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
+			}
+		}
 	}
 
 }
