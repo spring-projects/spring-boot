@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -43,9 +45,10 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void testDataScriptWithDdlAuto() throws Exception {
+	public void testDataScriptWithMissingDdl() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.data:classpath:/city.sql",
+				// Missing:
 				"spring.datasource.schema:classpath:/ddl.sql");
 		setupTestConfiguration();
 		this.context.refresh();
@@ -55,10 +58,9 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 	}
 
 	@Test
-	public void testDataScriptWithDeferredDdl() throws Exception {
+	public void testDataScript() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.data:classpath:/city.sql",
-				"spring.datasource.deferDdl:true");
+				"spring.datasource.data:classpath:/city.sql");
 		setupTestConfiguration();
 		this.context.refresh();
 		assertEquals(new Integer(1),
@@ -109,6 +111,28 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 		// You can't override this one from spring.jpa.properties because it has an
 		// opinionated default
 		assertThat(actual, not(equalTo("org.hibernate.cfg.EJB3NamingStrategy")));
+	}
+
+	@Test
+	public void testFlywayPlusValidation() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false",
+				"flyway.locations:classpath:db/city",
+				"spring.jpa.hibernate.ddl-auto:validate");
+		setupTestConfiguration();
+		this.context.register(FlywayAutoConfiguration.class);
+		this.context.refresh();
+	}
+
+	@Test
+	public void testLiquibasePlusValidation() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.datasource.initialize:false",
+				"liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+				"spring.jpa.hibernate.ddl-auto:validate");
+		setupTestConfiguration();
+		this.context.register(LiquibaseAutoConfiguration.class);
+		this.context.refresh();
 	}
 
 }
