@@ -96,6 +96,9 @@ Need more details about Spring Boot's core features?
 * *Working with data:*
   <<spring-boot-features.adoc#boot-features-sql, SQL>> |
   <<spring-boot-features.adoc#boot-features-nosql, NO-SQL>>
+* *Messaging:*
+  <<spring-boot-features.adoc#boot-features-messaging, Overview>> |
+  <<spring-boot-features.adoc#boot-features-jms, JMS>>
 * *Testing:*
   <<spring-boot-features.adoc#boot-features-testing, Overview>> |
   <<spring-boot-features.adoc#boot-features-testing-spring-boot-applications, Boot Applications>> |
