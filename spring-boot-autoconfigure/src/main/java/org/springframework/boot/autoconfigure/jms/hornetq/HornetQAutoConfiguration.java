@@ -42,8 +42,8 @@ import org.hornetq.jms.server.embedded.EmbeddedJMS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -53,12 +53,13 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
- * Auto-configuration} to integrate with an HornetQ broker. Connect by default to a broker
- * available on the local machine with the default settings. If the necessary classes are
- * present, the broker can also be embedded in the application itself.
+ * Auto-configuration} to integrate with an HornetQ broker. If the necessary
+ * classes are present, embed the broker in the application by default. Otherwise,
+ * connect to a broker available on the local machine with the default settings.
  * 
  * @author Stephane Nicoll
  * @since 1.1.0
+ * @see HornetQProperties
  */
 @Configuration
 @AutoConfigureBefore(JmsAutoConfiguration.class)
@@ -73,9 +74,9 @@ public class HornetQAutoConfiguration {
 
 	/**
 	 * Create the {@link ConnectionFactory} to use if none is provided. If no
-	 * {@linkplain HornetQProperties#getMode() mode} has been explicitly set, connect to
-	 * the embedded server if it has been requested or to a broker available on the local
-	 * machine with the default settings otherwise.
+	 * {@linkplain HornetQProperties#getMode() mode} has been explicitly set, start an
+	 * embedded server unless it has been explicitly disabled, connect to a broker
+	 * available on the local machine with the default settings otherwise.
 	 */
 	@Bean
 	@ConditionalOnMissingBean
@@ -131,7 +132,7 @@ public class HornetQAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(name = EMBEDDED_JMS_CLASS)
-	@ConditionalOnProperty(prefix = "spring.hornetq.embedded", value = "enabled")
+	@ConditionalOnExpression("'${spring.hornetq.embedded.enabled:true}' == 'true'")
 	static class EmbeddedServerConfiguration {
 
 		@Autowired
@@ -159,14 +160,14 @@ public class HornetQAutoConfiguration {
 				org.hornetq.core.config.Configuration configuration,
 				JMSConfiguration jmsConfiguration) {
 			EmbeddedJMS server = new EmbeddedJMS();
-			applyCustomizers(configuration);
+			customize(configuration);
 			server.setConfiguration(configuration);
 			server.setJmsConfiguration(jmsConfiguration);
 			server.setRegistry(new HornetQNoOpBindingRegistry());
 			return server;
 		}
 
-		private void applyCustomizers(org.hornetq.core.config.Configuration configuration) {
+		private void customize(org.hornetq.core.config.Configuration configuration) {
 			if (this.configurationCustomizers != null) {
 				AnnotationAwareOrderComparator.sort(this.configurationCustomizers);
 				for (HornetQConfigurationCustomizer customizer : this.configurationCustomizers) {
@@ -182,7 +183,7 @@ public class HornetQAutoConfiguration {
 			addAll(configuration.getQueueConfigurations(), this.queuesConfiguration);
 			addAll(configuration.getTopicConfigurations(), this.topicsConfiguration);
 			addQueues(configuration, this.properties.getEmbedded().getQueues());
-			addTopis(configuration, this.properties.getEmbedded().getTopics());
+			addTopics(configuration, this.properties.getEmbedded().getTopics());
 			return configuration;
 		}
 
@@ -201,7 +202,7 @@ public class HornetQAutoConfiguration {
 			}
 		}
 
-		private void addTopis(JMSConfiguration configuration, String[] topics) {
+		private void addTopics(JMSConfiguration configuration, String[] topics) {
 			for (String topic : topics) {
 				configuration.getTopicConfigurations().add(
 						new TopicConfigurationImpl(topic, "/topic/" + topic));

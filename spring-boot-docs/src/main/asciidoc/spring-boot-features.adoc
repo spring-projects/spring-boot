@@ -1702,11 +1702,14 @@ components require a `ConnectionFactory` to operate.
 ==== HornetQ support
 
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that
-HornetQ is available on the classpath. By default, a `ConnectionFactory` using
-the `netty` transport protocol is configured, connecting to a broker running on
-the local machine with the default settings. It is also possible to connect to
-a running broker provided in the container or even embed the container in the
-application if the necessary classes are present.
+HornetQ is available on the classpath. If the broker is present, an embedded
+broker is started and configured automatically unless the mode property has
+been explicitly set. The supported modes are: `embedded` (to make explicit
+that an embedded broker is required and should lead to an error if the broker
+is not available in the classpath), and `native` to connect to a broker
+using the the `netty` transport protocol. When the latter is configured, boot
+configures a `ConnectionFactory` connecting to a broker running on the local
+machine with the default settings.
 
 NOTE: if you are using `spring-boot-starter-hornetq` the necessary dependencies
 to connect to an existing HornetQ instance are provided, as well as the Spring
@@ -1742,7 +1745,7 @@ names provided through configuration.
 ==== ActiveMQ support
 
 Spring Boot can also configure a `ConnectionFactory` when it detects that
-ActiveMQ is available on the classpath. If the complete broker is available,
+ActiveMQ is available on the classpath. If the broker is present,
 an embedded broker is started and configured automatically if no broker URL
 is specified through configuration.
 
