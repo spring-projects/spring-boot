@@ -19,9 +19,11 @@ package org.springframework.boot.autoconfigure.hateoas;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
@@ -31,10 +33,12 @@ import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType
  * {@link EnableHypermediaSupport}.
  * 
  * @author Roy Clarkson
+ * @author Oliver Gierke
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(Resource.class)
+@ConditionalOnMissingBean(LinkDiscoverers.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class HypermediaAutoConfiguration {
 
