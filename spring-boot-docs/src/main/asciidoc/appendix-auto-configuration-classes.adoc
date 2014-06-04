@@ -17,6 +17,9 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |===
 |Configuration Class | Links
 
+|{sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQAutoConfiguration.{sc-ext}[ActiveMQAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jms/activemq/ActiveMQAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/aop/AopAutoConfiguration.{sc-ext}[AopAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/aop/AopAutoConfiguration.{dc-ext}[javadoc]
 
@@ -38,14 +41,26 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchAutoConfiguration.{sc-ext}[ElasticsearchAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{sc-ext}[EmbeddedServletContainerAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchDataAutoConfiguration.{sc-ext}[ElasticsearchDataAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchDataAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/data/ElasticsearchRepositoriesAutoConfiguration.{sc-ext}[ElasticsearchRepositoriesAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/data/ElasticsearchRepositoriesAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{sc-ext}[EmbeddedServletContainerAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/EmbeddedServletContainerAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{sc-ext}[ErrorMvcAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/web/ErrorMvcAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/social/FacebookAutoConfiguration.{sc-ext}[FacebookAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/social/FacebookAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/security/FallbackWebSecurityAutoConfiguration.{sc-ext}[FallbackWebSecurityAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/security/FallbackWebSecurityAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/flyway/FlywayAutoConfiguration.{sc-ext}[FlywayAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/flyway/FlywayAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{dc-ext}[javadoc]
@@ -56,14 +71,17 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/jms/hornetq/HornetQAutoConfiguration.{sc-ext}[HornetQAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/jms/hornetq/HornetQAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{sc-ext}[HttpMessageConvertersAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/HttpMessageConvertersAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQAutoConfiguration.{sc-ext}[ActiveMQAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/jms/activemq/ActiveMQAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/hateoas/HypermediaAutoConfiguration.{sc-ext}[HypermediaAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/hateoas/HypermediaAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-autoconfigure}/jms/hornetq/HornetQAutoConfiguration.{sc-ext}[HornetQAutoConfiguration]
-|{dc-spring-boot-autoconfigure}/jms/hornetq/HornetQAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[IntegrationAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/jms/JmsAutoConfiguration.{sc-ext}[JmsAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/jms/JmsAutoConfiguration.{dc-ext}[javadoc]
@@ -107,11 +125,17 @@ The following auto-configuration classes are from the `spring-boot-autoconfigure
 |{sc-spring-boot-autoconfigure}/redis/RedisAutoConfiguration.{sc-ext}[RedisAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/redis/RedisAutoConfiguration.{dc-ext}[javadoc]
 
+|{sc-spring-boot-autoconfigure}/data/rest/RepositoryRestMvcAutoConfiguration.{sc-ext}[RepositoryRestMvcAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/data/rest/RepositoryRestMvcAutoConfiguration.{dc-ext}[javadoc]
+
 |{sc-spring-boot-autoconfigure}/security/SecurityAutoConfiguration.{sc-ext}[SecurityAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/security/SecurityAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{sc-ext}[ServerPropertiesAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/web/ServerPropertiesAutoConfiguration.{dc-ext}[javadoc]
+
+|{sc-spring-boot-autoconfigure}/mobile/SitePreferenceAutoConfiguration.{sc-ext}[SitePreferenceAutoConfiguration]
+|{dc-spring-boot-autoconfigure}/mobile/SitePreferenceAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration]
 |{dc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{dc-ext}[javadoc]
@@ -163,8 +187,8 @@ The following auto-configuration classes are from the `spring-boot-actuator` mod
 |{sc-spring-boot-actuator}/autoconfigure/EndpointWebMvcAutoConfiguration.{sc-ext}[EndpointWebMvcAutoConfiguration]
 |{dc-spring-boot-actuator}/autoconfigure/EndpointWebMvcAutoConfiguration.{dc-ext}[javadoc]
 
-|{sc-spring-boot-actuator}/autoconfigure/ErrorMvcAutoConfiguration.{sc-ext}[ErrorMvcAutoConfiguration]
-|{dc-spring-boot-actuator}/autoconfigure/ErrorMvcAutoConfiguration.{dc-ext}[javadoc]
+|{sc-spring-boot-actuator}/autoconfigure/HealthIndicatorAutoConfiguration.{sc-ext}[HealthIndicatorAutoConfiguration]
+|{dc-spring-boot-actuator}/autoconfigure/HealthIndicatorAutoConfiguration.{dc-ext}[javadoc]
 
 |{sc-spring-boot-actuator}/autoconfigure/JolokiaAutoConfiguration.{sc-ext}[JolokiaAutoConfiguration]
 |{dc-spring-boot-actuator}/autoconfigure/JolokiaAutoConfiguration.{dc-ext}[javadoc]
