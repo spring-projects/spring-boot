@@ -37,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @ComponentScan
 @Controller
 public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
-	
+
 	@RequestMapping("/")
 	public String home(Map<String, Object> model) {
 		model.put("message", "Hello World");

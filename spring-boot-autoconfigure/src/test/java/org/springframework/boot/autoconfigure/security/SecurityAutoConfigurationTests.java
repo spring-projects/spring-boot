@@ -89,7 +89,7 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context, "security.basic.enabled:false");
 		this.context.refresh();
-		// Ignores and permitAll() security on application endpoints
+		// Ignores and the "matches-none" filter only
 		assertEquals(1, this.context.getBeanNamesForType(FilterChainProxy.class).length);
 	}
 
