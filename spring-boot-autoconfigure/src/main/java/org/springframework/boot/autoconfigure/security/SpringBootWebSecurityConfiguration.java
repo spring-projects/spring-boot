@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,6 +49,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.security.web.header.writers.HstsHeaderWriter;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.support.RequestDataValueProcessor;
 
 /**
@@ -173,11 +176,26 @@ public class SpringBootWebSecurityConfiguration {
 
 	}
 
-	/**
-	 * Basic functionality for all web apps (whether or not we are providing basic auth).
-	 * @author Dave Syer
-	 */
-	private static class BaseApplicationWebSecurityConfigurerAdapter extends
+	@ConditionalOnExpression("!${security.basic.enabled:true}")
+	@Configuration
+	@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
+			WebSecurityConfigurerAdapter {
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.requestMatcher(new RequestMatcher() {
+				@Override
+				public boolean matches(HttpServletRequest request) {
+					return false;
+				}
+			});
+		}
+	}
+
+	@ConditionalOnExpression("${security.basic.enabled:true}")
+	@Configuration
+	@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	protected static class ApplicationWebSecurityConfigurerAdapter extends
 			WebSecurityConfigurerAdapter {
 
 		@Autowired
@@ -200,7 +218,16 @@ public class SpringBootWebSecurityConfiguration {
 					this.security.getHeaders());
 
 			String[] paths = getSecureApplicationPaths();
-			configureAdditionalRules(http, paths);
+
+			if (paths.length > 0) {
+				http.exceptionHandling().authenticationEntryPoint(entryPoint());
+				http.httpBasic();
+				http.requestMatchers().antMatchers(paths);
+				http.authorizeRequests()
+						.anyRequest()
+						.hasAnyRole(
+								this.security.getUser().getRole().toArray(new String[0]));
+			}
 
 		}
 
@@ -216,56 +243,6 @@ public class SpringBootWebSecurityConfiguration {
 				}
 			}
 			return list.toArray(new String[list.size()]);
-		}
-
-		protected void configureAdditionalRules(HttpSecurity http, String... paths)
-				throws Exception {
-		}
-
-	}
-
-	@ConditionalOnExpression("!${security.basic.enabled:true}")
-	@Configuration
-	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationNoWebSecurityConfigurerAdapter extends
-			BaseApplicationWebSecurityConfigurerAdapter {
-		@Override
-		protected void configureAdditionalRules(HttpSecurity http, String... paths)
-				throws Exception {
-
-			if (paths.length > 0) {
-				http.requestMatchers().antMatchers(paths);
-				// The basic security was disabled
-				http.authorizeRequests().anyRequest().permitAll();
-			}
-
-		}
-
-	}
-
-	@ConditionalOnExpression("${security.basic.enabled:true}")
-	@Configuration
-	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	protected static class ApplicationWebSecurityConfigurerAdapter extends
-			BaseApplicationWebSecurityConfigurerAdapter {
-
-		@Autowired
-		private SecurityProperties security;
-
-		@Override
-		protected void configureAdditionalRules(HttpSecurity http, String... paths)
-				throws Exception {
-
-			if (paths.length > 0) {
-				http.exceptionHandling().authenticationEntryPoint(entryPoint());
-				http.httpBasic();
-				http.requestMatchers().antMatchers(paths);
-				http.authorizeRequests()
-						.anyRequest()
-						.hasAnyRole(
-								this.security.getUser().getRole().toArray(new String[0]));
-			}
-
 		}
 
 		private AuthenticationEntryPoint entryPoint() {
