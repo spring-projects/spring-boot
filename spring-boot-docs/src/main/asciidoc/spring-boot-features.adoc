@@ -1679,6 +1679,116 @@ TIP: For complete details of Spring Data Elasticsearch, including its rich objec
 technologies, refer to their http://projects.spring.io/spring-data-elasticsearch/[reference
 documentation].
 
+[[boot-features-messaging]]
+== Messaging
+
+The Spring Framework provides extensive support for integrating with messaging
+systems: from simplified use of the JMS API using `JmsTemplate` to a complete
+infrastructure to receive messages asynchronously. Spring AMQP provides a similar
+feature set for the ``Advanced Message Queuing Protocol'' and Boot also provides
+auto-configuration options for `RabbitTemplate` and RabbitMQ.
+
+[[boot-features-jms]]
+== JMS
+
+The `javax.jms.ConnectionFactory` interface provides a standard method of
+creating a `javax.jms.Connection` to interact with a JMS broker. In practice,
+you don't need to handle that yourself even if the `ConnectionFactory` is a
+central piece of the JMS infrastructure as most of the higher-level JMS
+components require a `ConnectionFactory` to operate.
+
+
+[[boot-features-hornetq]]
+==== HornetQ support
+
+Spring Boot can auto-configure a `ConnectionFactory` when it detects that
+HornetQ is available on the classpath. By default, a `ConnectionFactory` using
+the `netty` transport protocol is configured, connecting to a broker running on
+the local machine with the default settings. It is also possible to connect to
+a running broker provided in the container or even embed the container in the
+application if the necessary classes are present.
+
+NOTE: if you are using `spring-boot-starter-hornetq` the necessary dependencies
+to connect to an existing HornetQ instance are provided, as well as the Spring
+infrastructure to integrate with JMS. Adding `org.hornetq:hornetq-jms-server`
+to your application allows you to use the embedded mode.
+
+HornetQ configuration is controlled by external configuration properties in
+`spring.hornetq.*`. For example, you might declare the following section
+in `application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.hornetq.mode=native
+	spring.hornetq.host=192.168.1.210
+	spring.hornetq.port=9876
+----
+
+When embedding the broker, you can chose if you want to enable persistence and
+the list of destinations that should be made available. These can be specified
+as a comma separated list to create them with the default options or you can
+define bean(s) of type `org.hornetq.jms.server.config.JMSQueueConfiguration`
+or `org.hornetq.jms.server.config.TopicConfiguration`, for advanced queue and
+topic configurations respectively.
+
+See {sc-spring-boot-autoconfigure}/jms/hornetq/HornetQProperties.{sc-ext}[`HornetQProperties`]
+for more of the supported options.
+
+No JNDI lookup is involved at all and destinations are resolved against their
+names, either using the ``name'' attribute in the HornetQ configuration or the
+names provided through configuration.
+
+[[boot-features-activemq]]
+==== ActiveMQ support
+
+Spring Boot can also configure a `ConnectionFactory` when it detects that
+ActiveMQ is available on the classpath. If the complete broker is available,
+an embedded broker is started and configured automatically if no broker URL
+is specified through configuration.
+
+ActiveMQ configuration is controlled by external configuration properties in
+`spring.activemq.*`. For example, you might declare the following section
+in `application.properties`:
+
+[source,properties,indent=0]
+----
+	spring.activemq.broker-url=tcp://192.168.1.210:9876
+	spring.activemq.user=admin
+	spring.activemq.password=secret
+----
+
+See {sc-spring-boot-autoconfigure}/jms/activemq/ActiveMQProperties.{sc-ext}[`ActiveMQProperties`]
+for more of the supported options.
+
+By default, ActiveMQ creates a destination if it does not exist yet so destinations
+are resolved against their provided names.
+
+[[boot-features-using-jms-template]]
+=== Using JmsTemplate
+Spring's `JmsTemplate` is auto-configured and you can `@Autowire` it directly
+into your own beans:
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.jms.core.JmsTemplate;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class MyBean {
+
+		private final JmsTemplate jmsTemplate;
+
+		@Autowired
+		public MyBean(JmsTemplate jmsTemplate) {
+			this.jmsTemplate = jmsTemplate;
+		}
+
+		// ...
+
+	}
+----
+
 
 [[boot-features-testing]]
 == Testing
