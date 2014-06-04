@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle;
+package org.springframework.boot.gradle
 
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.plugins.ApplicationPlugin;
-import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.tasks.compile.Compile;
-import org.springframework.boot.gradle.agent.AgentPluginFeatures;
-import org.springframework.boot.gradle.repackage.RepackagePluginFeatures;
-import org.springframework.boot.gradle.resolve.ResolvePluginFeatures;
-import org.springframework.boot.gradle.run.RunPluginFeatures;
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.api.plugins.BasePlugin
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.tasks.compile.Compile
+import org.springframework.boot.gradle.agent.AgentPluginFeatures
+import org.springframework.boot.gradle.repackage.RepackagePluginFeatures
+import org.springframework.boot.gradle.resolve.ResolvePluginFeatures
+import org.springframework.boot.gradle.run.RunPluginFeatures
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
@@ -33,20 +33,20 @@ import org.springframework.boot.gradle.run.RunPluginFeatures;
  * @author Phillip Webb
  * @author Dave Syer
  */
-public class SpringBootPlugin implements Plugin<Project> {
+class SpringBootPlugin implements Plugin<Project> {
 
 	@Override
-	public void apply(Project project) {
-		project.getPlugins().apply(BasePlugin.class);
-		project.getPlugins().apply(JavaPlugin.class);
-		project.getPlugins().apply(ApplicationPlugin.class);
+	void apply(Project project) {
+		project.getPlugins().apply(BasePlugin)
+		project.getPlugins().apply(JavaPlugin)
+		project.getPlugins().apply(ApplicationPlugin)
 
-		project.getExtensions().create("springBoot", SpringBootPluginExtension.class);
+		project.getExtensions().create("springBoot", SpringBootPluginExtension)
 
-		new AgentPluginFeatures().apply(project);
-		new ResolvePluginFeatures().apply(project);
-		new RepackagePluginFeatures().apply(project);
-		new RunPluginFeatures().apply(project);
+		new AgentPluginFeatures().apply(project)
+		new ResolvePluginFeatures().apply(project)
+		new RepackagePluginFeatures().apply(project)
+		new RunPluginFeatures().apply(project)
 
 		// default to UTF-8 encoding
 		project.tasks.withType(Compile).all { t->
