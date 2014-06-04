@@ -31,10 +31,10 @@ import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * A handy opinionated {@link WebApplicationInitializer} for applications that only have
- * one Spring servlet, and no more than a single filter (which itself is only enabled when
- * Spring Security is detected). If your application is more complicated consider using
- * one of the other WebApplicationInitializers.
+ * A handy opinionated {@link WebApplicationInitializer} for applications that starts a
+ * Spring Boot application and lets it bind to the servlet and filter mappings. If your
+ * application is more complicated consider using one of the other
+ * WebApplicationInitializers.
  * <p>
  * Note that a WebApplicationInitializer is only needed if you are building a war file and
  * deploying it. If you prefer to run an embedded container (we do) then you won't need
