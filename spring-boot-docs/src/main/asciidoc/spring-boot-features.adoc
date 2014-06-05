@@ -1699,7 +1699,7 @@ components require a `ConnectionFactory` to operate.
 
 
 [[boot-features-hornetq]]
-==== HornetQ support
+=== HornetQ support
 
 Spring Boot can auto-configure a `ConnectionFactory` when it detects that
 HornetQ is available on the classpath. If the broker is present, an embedded
@@ -1742,7 +1742,7 @@ names, either using the ``name'' attribute in the HornetQ configuration or the
 names provided through configuration.
 
 [[boot-features-activemq]]
-==== ActiveMQ support
+=== ActiveMQ support
 
 Spring Boot can also configure a `ConnectionFactory` when it detects that
 ActiveMQ is available on the classpath. If the broker is present,
