@@ -132,7 +132,7 @@ public class HornetQAutoConfiguration {
 	 */
 	@Configuration
 	@ConditionalOnClass(name = EMBEDDED_JMS_CLASS)
-	@ConditionalOnExpression("'${spring.hornetq.embedded.enabled:true}' == 'true'")
+	@ConditionalOnExpression("${spring.hornetq.embedded.enabled:true}")
 	static class EmbeddedServerConfiguration {
 
 		@Autowired
