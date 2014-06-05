@@ -727,8 +727,8 @@ Hopefully this section has provided you with some of the Spring Boot basics, and
 on your way to writing your own applications. If you're a task-oriented type of
 developer you might want to jump over to http://spring.io and check out some of the
 http://spring.io/guides/[getting started] guides that solve specific
-'``How do I do that with Spring''' problems; we also have a Spring Boot specific
-'<<howto.adoc#how-to, How-to>>' reference documentation.
+'``How do I do that with Spring''' problems; we also have Spring Boot-specific
+'<<howto.adoc#howto, How-to>>' reference documentation.
 
 Otherwise, the next logical step is to read '<<using-spring-boot.adoc#using-boot>>'. If
 you're really impatient, you could also jump ahead and read about
