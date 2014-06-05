@@ -38,7 +38,7 @@ Having trouble with Spring Boot, We'd like to help!
 * Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
 
 NOTE: All of Spring Boot is open source, including the documentation! If you find problems
-with the docs; or if you just want to improve them, please <<github-code, get involved>>.
+with the docs; or if you just want to improve them, please {github-code}[get involved].
 
 [[boot-documentation-first-steps]]
 == First steps
