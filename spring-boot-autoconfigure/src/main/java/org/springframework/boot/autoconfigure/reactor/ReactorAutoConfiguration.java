@@ -35,11 +35,11 @@ import reactor.spring.context.config.EnableReactor;
  */
 @Configuration
 @ConditionalOnClass(EnableReactor.class)
-@ConditionalOnMissingBean(Reactor.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ReactorAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(Reactor.class)
 	public Reactor rootReactor(Environment environment) {
 		return environment.getRootReactor();
 	}
