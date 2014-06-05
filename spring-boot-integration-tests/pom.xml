@@ -8,7 +8,7 @@
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-integration-tests</artifactId>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 	<name>Spring Boot Integration Tests</name>
 	<description>Spring Boot Integration Tests</description>
 	<url>http://projects.spring.io/spring-boot/</url>
@@ -19,6 +19,19 @@
 	<properties>
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.gradle</groupId>
+			<artifactId>gradle-tooling-api</artifactId>
+			<version>${gradle.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-dependency-tools</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<profiles>
 		<profile>
 			<id>default</id>
@@ -57,4 +70,16 @@
 			<id>full</id>
 		</profile>
 	</profiles>
+	<repositories>
+		<repository>
+			<id>gradle</id>
+			<url>http://repo.gradle.org/gradle/libs-releases-local</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 </project>
