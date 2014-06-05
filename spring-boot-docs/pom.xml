@@ -116,6 +116,35 @@
 									</artifactItems>
 								</configuration>
 							</execution>
+							<execution>
+								<id>unpack-spring-factories</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-autoconfigure</artifactId>
+											<version>${project.version}</version>
+											<outputDirectory>
+												${project.build.directory}/auto-config/spring-boot-autoconfigure
+											</outputDirectory>
+											<includes>META-INF/spring.factories</includes>
+										</artifactItem>
+										<artifactItem>
+											<groupId>org.springframework.boot</groupId>
+											<artifactId>spring-boot-actuator</artifactId>
+											<version>${project.version}</version>
+											<outputDirectory>
+												${project.build.directory}/auto-config/spring-boot-actuator
+											</outputDirectory>
+											<includes>META-INF/spring.factories</includes>
+										</artifactItem>
+									</artifactItems>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
@@ -143,6 +172,31 @@
 								</transformationSet>
 							</transformationSets>
 						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.gmavenplus</groupId>
+						<artifactId>gmavenplus-plugin</artifactId>
+						<version>1.2</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<phase>generate-resources</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<scripts>
+								<script>file:///${project.basedir}/src/main/groovy/generateAutoConfigurationClassTables.groovy</script>
+							</scripts>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>org.codehaus.groovy</groupId>
+								<artifactId>groovy-all</artifactId>
+								<version>${groovy.version}</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 					<plugin>
 						<groupId>org.asciidoctor</groupId>
