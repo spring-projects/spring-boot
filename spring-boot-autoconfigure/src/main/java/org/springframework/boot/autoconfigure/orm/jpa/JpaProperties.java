@@ -139,19 +139,6 @@ public class JpaProperties {
 			return this.ddlAuto;
 		}
 
-		private String getActualDdlAuto(Map<String, String> existing,
-				DataSource dataSource) {
-			String ddlAuto = this.ddlAuto != null ? this.ddlAuto
-					: getDefaultDdlAuto(dataSource);
-			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
-				return ddlAuto;
-			}
-			if (isAlreadyProvided(existing, "hbm2ddl.auto")) {
-				return existing.get("hibernate.hbm2ddl.auto");
-			}
-			return "none";
-		}
-
 		public void setDdlAuto(String ddlAuto) {
 			this.ddlAuto = ddlAuto;
 		}
@@ -167,7 +154,7 @@ public class JpaProperties {
 				result.put("hibernate.ejb.naming_strategy",
 						DEFAULT_NAMING_STRATEGY.getName());
 			}
-			String ddlAuto = getActualDdlAuto(existing, dataSource);
+			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
 				result.put("hibernate.hbm2ddl.auto", ddlAuto);
 			}
@@ -177,8 +164,17 @@ public class JpaProperties {
 			return result;
 		}
 
-		private boolean isAlreadyProvided(Map<String, String> existing, String key) {
-			return existing.containsKey("hibernate." + key);
+		private String getOrDeduceDdlAuto(Map<String, String> existing,
+				DataSource dataSource) {
+			String ddlAuto = (this.ddlAuto != null ? this.ddlAuto
+					: getDefaultDdlAuto(dataSource));
+			if (!isAlreadyProvided(existing, "hbm2ddl.auto") && !"none".equals(ddlAuto)) {
+				return ddlAuto;
+			}
+			if (isAlreadyProvided(existing, "hbm2ddl.auto")) {
+				return existing.get("hibernate.hbm2ddl.auto");
+			}
+			return "none";
 		}
 
 		private String getDefaultDdlAuto(DataSource dataSource) {
@@ -186,6 +182,10 @@ public class JpaProperties {
 				return "create-drop";
 			}
 			return "none";
+		}
+
+		private boolean isAlreadyProvided(Map<String, String> existing, String key) {
+			return existing.containsKey("hibernate." + key);
 		}
 
 	}

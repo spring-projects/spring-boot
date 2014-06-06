@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.jdbc;
 
-import static org.junit.Assert.*;
+package org.springframework.boot.autoconfigure.jdbc;
 
 import java.util.Random;
 
@@ -31,11 +30,16 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ClassUtils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
+ * Tests for {@link DataSourceInitializer}.
+ * 
  * @author Dave Syer
- *
  */
-public class DataSourceInitializationTests {
+public class DataSourceInitializerTests {
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -50,15 +54,15 @@ public class DataSourceInitializationTests {
 	@After
 	public void restore() {
 		EmbeddedDatabaseConnection.override = null;
-		if (context!=null) {
-			context.close();
+		if (this.context != null) {
+			this.context.close();
 		}
 	}
 
 	@Test
 	public void testDefaultDataSourceDoesNotExists() throws Exception {
-		this.context.register(DataSourceInitialization.class,
-				PropertyPlaceholderAutoConfiguration.class);
+		this.context.register(DataSourceInitializer.class,
+				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
 	}

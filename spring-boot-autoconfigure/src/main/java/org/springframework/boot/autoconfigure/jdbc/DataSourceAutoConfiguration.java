@@ -51,17 +51,21 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
  */
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class)
-@Import(DataSourceInitialization.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceAutoConfiguration {
 
 	public static final String CONFIGURATION_PREFIX = "spring.datasource";
 
+	@Autowired
+	private DataSourceProperties properties;
+
 	@Autowired(required = false)
 	private DataSource dataSource;
 
-	@Autowired
-	private DataSourceProperties properties;
+	@Bean
+	public DataSourceInitializer dataSourceAutoConfigurationInitializer() {
+		return new DataSourceInitializer();
+	}
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from

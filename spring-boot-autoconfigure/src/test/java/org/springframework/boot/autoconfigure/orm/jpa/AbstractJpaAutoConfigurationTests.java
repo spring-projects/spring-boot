@@ -30,7 +30,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceInitialization;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
@@ -191,7 +191,7 @@ public abstract class AbstractJpaAutoConfigurationTests {
 
 	protected void setupTestConfiguration(Class<?> configClass) {
 		this.context.register(configClass, EmbeddedDataSourceConfiguration.class,
-				DataSourceInitialization.class,
+				DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, getAutoConfigureClass());
 	}
 
