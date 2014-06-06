@@ -16,38 +16,23 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.IOException;
-
-import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link HttpMessageConvertersAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
+ * @author Oliver Gierke
  */
 public class HttpMessageConvertersAutoConfigurationTests {
 
@@ -62,50 +47,20 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	public void customJacksonConverter() throws Exception {
+
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JacksonConfig.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
+
 		MappingJackson2HttpMessageConverter converter = this.context
 				.getBean(MappingJackson2HttpMessageConverter.class);
 		assertEquals(this.context.getBean(ObjectMapper.class),
 				converter.getObjectMapper());
+
 		HttpMessageConverters converters = this.context
 				.getBean(HttpMessageConverters.class);
 		assertTrue(converters.getConverters().contains(converter));
-	}
-
-	@Test
-	public void defaultJacksonModules() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(HttpMessageConvertersAutoConfiguration.class);
-		this.context.refresh();
-		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
-		assertThat(objectMapper.canSerialize(LocalDateTime.class), equalTo(true));
-	}
-
-	@Test
-	public void customJacksonModules() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(ModulesConfig.class,
-				HttpMessageConvertersAutoConfiguration.class);
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-
-		@SuppressWarnings({ "unchecked", "unused" })
-		ObjectMapper result = verify(mapper).registerModules(
-				(Iterable<Module>) argThat(hasItem(this.context.getBean("jacksonModule",
-						Module.class))));
-	}
-
-	@Test
-	public void doubleModuleRegistration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(DoubleModulesConfig.class,
-				HttpMessageConvertersAutoConfiguration.class);
-		this.context.refresh();
-		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-		assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new Foo()));
 	}
 
 	@Configuration
@@ -122,75 +77,5 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		public ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
-
 	}
-
-	@Configuration
-	protected static class ModulesConfig {
-
-		@Bean
-		public Module jacksonModule() {
-			return new SimpleModule();
-		}
-
-		@Bean
-		@Primary
-		public ObjectMapper objectMapper() {
-			return Mockito.mock(ObjectMapper.class);
-		}
-
-	}
-
-	@Configuration
-	protected static class DoubleModulesConfig {
-
-		@Bean
-		public Module jacksonModule() {
-			SimpleModule module = new SimpleModule();
-			module.addSerializer(Foo.class, new JsonSerializer<Foo>() {
-
-				@Override
-				public void serialize(Foo value, JsonGenerator jgen,
-						SerializerProvider provider) throws IOException,
-						JsonProcessingException {
-					jgen.writeStartObject();
-					jgen.writeStringField("foo", "bar");
-					jgen.writeEndObject();
-				}
-			});
-			return module;
-		}
-
-		@Bean
-		@Primary
-		public ObjectMapper objectMapper() {
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.registerModule(jacksonModule());
-			return mapper;
-		}
-
-	}
-
-	protected static class Foo {
-
-		private String name;
-
-		private Foo() {
-
-		}
-
-		static Foo create() {
-			return new Foo();
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-	}
-
 }
