@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -40,17 +45,10 @@ import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.util.ClassUtils;
 
 import com.zaxxer.hikari.HikariDataSource;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
@@ -72,6 +70,9 @@ public class DataSourceAutoConfigurationTests {
 	@After
 	public void restore() {
 		EmbeddedDatabaseConnection.override = null;
+		if (context!=null) {
+			context.close();
+		}
 	}
 
 	@Test
@@ -212,64 +213,6 @@ public class DataSourceAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(NamedParameterJdbcOperations.class));
-	}
-
-	@Test
-	public void testDataSourceInitialized() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.datasource.initialize:true");
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
-		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
-	}
-
-	@Test
-	public void testDataSourceInitializedWithExplicitScript() throws Exception {
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(
-				this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"schema.sql"));
-		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
-		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
-	}
-
-	@Test
-	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
-		EnvironmentTestUtils.addEnvironment(
-				this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"schema.sql")
-						+ ","
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"another.sql"));
-		this.context.register(DataSourceAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
-		assertNotNull(dataSource);
-		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
-		assertEquals(new Integer(0),
-				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
 	}
 
 	@Configuration

@@ -40,14 +40,15 @@ import org.springframework.util.StringUtils;
 
 /**
  * @author Dave Syer
+ * @since 1.1
  */
 @Configuration
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceInitialization {
 
-	private static Log logger = LogFactory.getLog(DataSourceAutoConfiguration.class);
+	private static Log logger = LogFactory.getLog(DataSourceInitialization.class);
 
-	@Autowired
+	@Autowired(required=false)
 	private DataSource dataSource;
 
 	@Autowired
@@ -59,8 +60,7 @@ public class DataSourceInitialization {
 	private boolean initialized = false;
 
 	@Bean
-	public ApplicationListener<DataSourceInitializedEvent> dataSourceInitializedListener(
-			DataSource dataSource) {
+	public ApplicationListener<DataSourceInitializedEvent> dataSourceInitializedListener() {
 		return new DataSourceInitializedListener();
 	}
 
