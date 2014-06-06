@@ -18,24 +18,24 @@ import org.springframework.ws.transport.http.MessageDispatcherServlet;
 @ImportResource("classpath:/META-INF/spring/spring-ws-context.xml")
 public class SampleWsApplication {
 
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(SampleWsApplication.class, args);
-    }
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(SampleWsApplication.class, args);
+	}
 
-    @Bean
-    public ServletRegistrationBean messageDispatcherServletRegistration() {
-        MessageDispatcherServlet mds = new MessageDispatcherServlet();
-        mds.setTransformWsdlLocations(true);
+	@Bean
+	public ServletRegistrationBean messageDispatcherServletRegistration() {
+		MessageDispatcherServlet mds = new MessageDispatcherServlet();
+		mds.setTransformWsdlLocations(true);
 
-        ServletRegistrationBean srb = new ServletRegistrationBean(messageDispatcherServlet(), "/services/*");
-        srb.setLoadOnStartup(1);
-        return srb;
-    }
+		ServletRegistrationBean srb = new ServletRegistrationBean(messageDispatcherServlet(), "/services/*");
+		srb.setLoadOnStartup(1);
+		return srb;
+	}
 
-    @Bean
-    public MessageDispatcherServlet messageDispatcherServlet() {
-        MessageDispatcherServlet mds = new MessageDispatcherServlet();
-        mds.setTransformWsdlLocations(true);
-        return mds;
-    }
+	@Bean
+	public MessageDispatcherServlet messageDispatcherServlet() {
+		MessageDispatcherServlet mds = new MessageDispatcherServlet();
+		mds.setTransformWsdlLocations(true);
+		return mds;
+	}
 }

@@ -9,5 +9,4 @@
     <sws:dynamic-wsdl id="holiday" portTypeName="HumanResource" locationUri="/holidayService/" targetNamespace="http://mycompany.com/hr/definitions">
         <sws:xsd location="classpath:/META-INF/schemas/hr.xsd"/>
     </sws:dynamic-wsdl>
-    
 </beans>
