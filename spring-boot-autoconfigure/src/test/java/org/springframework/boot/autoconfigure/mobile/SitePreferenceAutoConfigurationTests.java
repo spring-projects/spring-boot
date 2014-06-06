@@ -70,7 +70,7 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test
 	public void sitePreferenceHandlerInterceptorEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:true");
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
@@ -79,7 +79,7 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceHandlerInterceptorDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:false");
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:false");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerInterceptor.class);
@@ -96,7 +96,7 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test
 	public void sitePreferenceMethodArgumentResolverEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:true");
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
@@ -105,7 +105,7 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceMethodArgumentResolverDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.enableSitePreference:false");
+		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:false");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class);
