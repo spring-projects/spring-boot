@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.integration;
 
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 
@@ -32,7 +33,8 @@ public class IntegrationAutoConfigurationTests {
 
 	@Test
 	public void integrationIsAvailable() {
-		this.context.register(IntegrationAutoConfiguration.class);
+		this.context.register(JmxAutoConfiguration.class,
+				IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
 		this.context.close();

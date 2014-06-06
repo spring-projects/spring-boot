@@ -26,6 +26,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointMBeanExporter;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +57,8 @@ public class EndpointMBeanExportAutoConfigurationTests {
 	@Test
 	public void testEndpointMBeanExporterIsInstalled() {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, EndpointAutoConfiguration.class,
+		this.context.register(TestConfiguration.class, JmxAutoConfiguration.class,
+				EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(EndpointMBeanExporter.class));
@@ -68,7 +70,8 @@ public class EndpointMBeanExportAutoConfigurationTests {
 		environment.setProperty("endpoints.jmx.enabled", "false");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(environment);
-		this.context.register(EndpointAutoConfiguration.class,
+		this.context.register(JmxAutoConfiguration.class,
+				EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(EndpointMBeanExporter.class);
@@ -84,7 +87,8 @@ public class EndpointMBeanExportAutoConfigurationTests {
 		environment.setProperty("endpoints.jmx.static_names", "key1=value1, key2=value2");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setEnvironment(environment);
-		this.context.register(EndpointAutoConfiguration.class,
+		this.context.register(JmxAutoConfiguration.class,
+				EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(EndpointMBeanExporter.class);
@@ -101,11 +105,12 @@ public class EndpointMBeanExportAutoConfigurationTests {
 	public void testEndpointMBeanExporterInParentChild() throws IntrospectionException,
 			InstanceNotFoundException, MalformedObjectNameException, ReflectionException {
 		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class,
+		this.context.register(JmxAutoConfiguration.class,
+				EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 
 		AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
-		parent.register(EndpointAutoConfiguration.class,
+		parent.register(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
 				EndpointMBeanExportAutoConfiguration.class);
 		this.context.setParent(parent);
 

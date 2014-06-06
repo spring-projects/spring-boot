@@ -16,24 +16,40 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
+import org.springframework.integration.jmx.config.IntegrationMBeanExportConfiguration;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
  * Auto-configuration} for Spring Integration.
  * 
  * @author Artem Bilan
+ * @author Dave Syer
  * @since 1.1
  */
 @Configuration
 @ConditionalOnClass(EnableIntegration.class)
+@AutoConfigureAfter(JmxAutoConfiguration.class)
 public class IntegrationAutoConfiguration {
 
 	@Configuration
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
+	}
+
+	@Configuration
+	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
+	@ConditionalOnMissingBean(IntegrationMBeanExportConfiguration.class)
+	@ConditionalOnExpression("${spring.jmx.enabled:true}")
+	@EnableIntegrationMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:mbeanServer}")
+	protected static class IntegrationJmxConfiguration {
 	}
 
 }

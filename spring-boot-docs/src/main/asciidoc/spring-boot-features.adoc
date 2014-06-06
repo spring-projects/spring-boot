@@ -1688,6 +1688,17 @@ infrastructure to receive messages asynchronously. Spring AMQP provides a simila
 feature set for the ``Advanced Message Queuing Protocol'' and Boot also provides
 auto-configuration options for `RabbitTemplate` and RabbitMQ.
 
+[[boot-features-messaging]]
+== Spring Integration
+
+Spring Integration provides abstractions over messaging and also other 
+transports such as HTTP, TCP etc. If Spring Integration is available
+on your classpath it will be initialized through the `@EnableIntegration`
+annotation. Message processing statistics will be published over JMX if
+``spring-integration-jmx'' is also on the classpath. 
+See the {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
+class for more details.
+
 [[boot-features-jms]]
 == JMS
 
@@ -1792,6 +1803,17 @@ into your own beans:
 	}
 ----
 
+[[boot-features-jmx]]
+== Monitoring and management over JMX
+
+Java Management Extensions (JMX) provide a standard mechanism to
+monitor and manage applications. By default Spring Boot will create an
+`MBeanServer` with bean id "mbeanServer" and expose any of your beans
+that are annotated with Spring JMX annotations (`@ManagedResource`,
+`@ManagedAttribute`, `@ManagedOperation`).
+
+See the {sc-spring-boot-autoconfigure}/jmx/JmxAutoConfiguration.{sc-ext}[`JmxAutoConfiguration`]
+class for more details.
 
 [[boot-features-testing]]
 == Testing
