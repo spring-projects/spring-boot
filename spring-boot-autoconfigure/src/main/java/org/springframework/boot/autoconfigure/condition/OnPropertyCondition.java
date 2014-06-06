@@ -18,11 +18,10 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
 
@@ -31,6 +30,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Maciej Walkowiak
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @see ConditionalOnProperty
  * @since 1.1.0
  */
@@ -39,30 +39,20 @@ class OnPropertyCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
+		Map<String, Object> attributes = metadata
+				.getAnnotationAttributes(ConditionalOnProperty.class.getName());
 
-		String prefix = ((String) metadata.getAnnotationAttributes(
-				ConditionalOnProperty.class.getName()).get("prefix")).trim();
-		if (!"".equals(prefix) && !prefix.endsWith(".")) {
-			prefix = prefix + ".";
-		}
-		String[] names = (String[]) metadata.getAnnotationAttributes(
-				ConditionalOnProperty.class.getName()).get("value");
-		Boolean relaxedNames = (Boolean) metadata.getAnnotationAttributes(
-				ConditionalOnProperty.class.getName()).get("relaxedNames");
+		String prefix = ((String) attributes.get("prefix")).trim();
+		Boolean relaxedNames = (Boolean) attributes.get("relaxedNames");
+		String[] names = (String[]) attributes.get("value");
 
+		PropertyHelper helper = new PropertyHelper(context.getEnvironment(), prefix, relaxedNames);
 		List<String> missingProperties = new ArrayList<String>();
-
-		PropertyResolver resolver = context.getEnvironment();
-		if (relaxedNames) {
-			resolver = new RelaxedPropertyResolver(resolver, prefix);
-			prefix = "";
-		}
-
 		for (String name : names) {
-			name = prefix + name;
-			if (!resolver.containsProperty(name)
-					|| "false".equalsIgnoreCase(resolver.getProperty(name))) {
-				missingProperties.add(name);
+			String propertyKey = helper.createPropertyKey(name);
+			if (!helper.getPropertyResolver().containsProperty(propertyKey)
+					|| "false".equalsIgnoreCase(helper.getPropertyResolver().getProperty(propertyKey))) {
+				missingProperties.add(propertyKey);
 
 			}
 		}
