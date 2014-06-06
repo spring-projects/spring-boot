@@ -1688,7 +1688,7 @@ infrastructure to receive messages asynchronously. Spring AMQP provides a simila
 feature set for the ``Advanced Message Queuing Protocol'' and Boot also provides
 auto-configuration options for `RabbitTemplate` and RabbitMQ.
 
-[[boot-features-messaging]]
+[[boot-features-integration]]
 == Spring Integration
 
 Spring Integration provides abstractions over messaging and also other 
