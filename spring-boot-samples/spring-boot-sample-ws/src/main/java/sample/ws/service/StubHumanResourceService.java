@@ -11,11 +11,10 @@ import java.util.Date;
  */
 @Service
 public class StubHumanResourceService implements HumanResourceService {
+	private final Logger logger = LoggerFactory.getLogger(StubHumanResourceService.class);
 
-    private final Logger logger = LoggerFactory.getLogger(StubHumanResourceService.class);
-
-    @Override
-    public void bookHoliday(Date startDate, Date endDate, String name) {
-        logger.info("Booking holiday for [{} - {}] for [{}] ", startDate, endDate, name);
-    }
+	@Override
+	public void bookHoliday(Date startDate, Date endDate, String name) {
+		logger.info("Booking holiday for [{} - {}] for [{}] ", startDate, endDate, name);
+	}
 }
