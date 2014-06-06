@@ -84,9 +84,6 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 			return "/";
 		}
 		if (this.servletPath.contains("*")) {
-			if (this.servletPath.endsWith("*")) {
-				return this.servletPath;
-			}
 			return this.servletPath;
 		}
 		if (this.servletPath.endsWith("/")) {
