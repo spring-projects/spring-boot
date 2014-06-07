@@ -1,7 +1,0 @@
-This sample application uses Spring Boot and
-[Groovy templates](http://beta.groovy-lang.org/docs/groovy-2.3.1/html/documentation/markup-template-engine.html)
-in the View layer. The templates for this app live in
-`classpath:/templates/`, which is the conventional location for Spring
-Boot. External configuration is available via
-"spring.groovy.template.*".
-
