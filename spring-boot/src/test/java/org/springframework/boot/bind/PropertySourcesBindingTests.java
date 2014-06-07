@@ -53,13 +53,23 @@ public class PropertySourcesBindingTests {
 	private Wrapper properties;
 
 	@Test
-	public void overridingOfPropertiesWorksAsExpected() {
+	public void overridingOfPropertiesOrderOfAtPropertySources() {
+		assertThat(this.properties.getBar(), is("override"));
+	}
+
+	@Test
+	public void overridingOfPropertiesAndBindToAtValue() {
 		assertThat(this.foo, is(this.properties.getFoo()));
 	}
 
+	@Test
+	public void overridingOfPropertiesOrderOfApplicationProperties() {
+		assertThat(this.properties.getFoo(), is("bucket"));
+	}
+
 	@Import({ SomeConfig.class })
-	@PropertySources({ @PropertySource("classpath:/override.properties"),
-			@PropertySource("classpath:/some.properties") })
+	@PropertySources({ @PropertySource("classpath:/some.properties"),
+			@PropertySource("classpath:/override.properties") })
 	@Configuration
 	@EnableConfigurationProperties(Wrapper.class)
 	public static class TestConfig {
@@ -80,6 +90,16 @@ public class PropertySourcesBindingTests {
 	@ConfigurationProperties
 	public static class Wrapper {
 		private String foo;
+
+		private String bar;
+
+		public String getBar() {
+			return this.bar;
+		}
+
+		public void setBar(String bar) {
+			this.bar = bar;
+		}
 
 		public String getFoo() {
 			return this.foo;

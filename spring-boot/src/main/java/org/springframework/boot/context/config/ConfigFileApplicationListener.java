@@ -497,19 +497,22 @@ public class ConfigFileApplicationListener implements
 
 		public static void finishAndRelocate(MutablePropertySources propertySources) {
 			ConfigurationPropertySources removed = (ConfigurationPropertySources) propertySources
-					.remove(ConfigurationPropertySources.NAME);
+					.get(ConfigurationPropertySources.NAME);
+			String name = ConfigurationPropertySources.NAME;
 			if (removed != null) {
 				for (PropertySource<?> propertySource : removed.sources) {
 					if (propertySource instanceof EnumerableCompositePropertySource) {
 						EnumerableCompositePropertySource composite = (EnumerableCompositePropertySource) propertySource;
 						for (PropertySource<?> nested : composite.getSource()) {
-							propertySources.addLast(nested);
+							propertySources.addAfter(name, nested);
+							name = nested.getName();
 						}
 					}
 					else {
-						propertySources.addLast(propertySource);
+						propertySources.addAfter(name, propertySource);
 					}
 				}
+				propertySources.remove(ConfigurationPropertySources.NAME);
 			}
 		}
 

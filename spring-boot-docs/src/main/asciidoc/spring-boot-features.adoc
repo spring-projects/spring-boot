@@ -207,11 +207,11 @@ sensible overriding of values, properties are considered in the the following or
 . OS environment variables.
 . JNDI attributes from `java:comp/env`
 . A `RandomValuePropertySource` that only has properties in `random.*`.
-. `@PropertySource` annotations on your `@Configuration` classes.
 . Application properties outside of your packaged jar (`application.properties`
   including YAML and profile variants).
 . Application properties packaged inside your jar (`application.properties`
   including YAML and profile variants).
+. `@PropertySource` annotations on your `@Configuration` classes.
 . Default properties (specified using `SpringApplication.setDefaultProperties`).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a
