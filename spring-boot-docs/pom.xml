@@ -176,7 +176,6 @@
 					<plugin>
 						<groupId>org.codehaus.gmavenplus</groupId>
 						<artifactId>gmavenplus-plugin</artifactId>
-						<version>1.2</version>
 						<executions>
 							<execution>
 								<goals>
