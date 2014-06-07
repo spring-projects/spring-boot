@@ -16,16 +16,19 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -85,18 +88,25 @@ public class BasicErrorControllerDirectMockMvcTests {
 		assertTrue("Wrong content: " + content, content.contains("status=999"));
 	}
 
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	protected static @interface MinimalWebConfiguration {
+	}
+
 	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class,
-			HornetQAutoConfiguration.class})
+	@MinimalWebConfiguration
 	protected static class ParentConfiguration {
 
 	}
 
 	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class,
-			HornetQAutoConfiguration.class})
+	@MinimalWebConfiguration
 	@EnableWebMvc
 	protected static class WebMvcIncludedConfiguration {
 		// For manual testing
@@ -107,11 +117,9 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class,
-			HornetQAutoConfiguration.class})
+	@MinimalWebConfiguration
 	protected static class VanillaConfiguration {
-		// For manual testingm
+		// For manual testing
 		public static void main(String[] args) {
 			SpringApplication.run(VanillaConfiguration.class, args);
 		}
@@ -119,9 +127,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class,
-			HornetQAutoConfiguration.class})
+	@MinimalWebConfiguration
 	protected static class ChildConfiguration {
 		// For manual testing
 		public static void main(String[] args) {

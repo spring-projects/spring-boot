@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Map;
 
 import javax.servlet.DispatcherType;
@@ -28,14 +33,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.BasicErrorControllerMockMvcTests.TestConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -122,9 +125,19 @@ public class BasicErrorControllerMockMvcTests {
 		assertTrue("Wrong content: " + content, content.contains("ERROR_BEAN"));
 	}
 
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	protected static @interface MinimalWebConfiguration {
+	}
+
 	@Configuration
-	@EnableAutoConfiguration(exclude = { SecurityAutoConfiguration.class,
-			DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
+	@MinimalWebConfiguration
 	public static class TestConfiguration {
 
 		// For manual testing

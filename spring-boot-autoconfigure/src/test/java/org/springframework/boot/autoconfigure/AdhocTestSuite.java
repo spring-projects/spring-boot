@@ -20,8 +20,9 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurationTests;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.jmx.JmxAutoConfigurationTests;
+import org.springframework.boot.autoconfigure.web.BasicErrorControllerDirectMockMvcTests;
 
 /**
  * A test suite for probing weird ordering problems in the tests.
@@ -29,8 +30,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
  * @author Dave Syer
  */
 @RunWith(Suite.class)
-@SuiteClasses({ HibernateJpaAutoConfigurationTests.class,
-		LiquibaseAutoConfigurationTests.class })
+@SuiteClasses({ BasicErrorControllerDirectMockMvcTests.class,
+		JmxAutoConfigurationTests.class, IntegrationAutoConfigurationTests.class })
 @Ignore
 public class AdhocTestSuite {
 

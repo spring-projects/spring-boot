@@ -16,17 +16,22 @@
 
 package org.springframework.boot.autoconfigure.web;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.DefaultErrorViewIntegrationTests.TestConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -69,9 +74,19 @@ public class DefaultErrorViewIntegrationTests {
 		assertTrue("Wrong content: " + content, content.contains("999"));
 	}
 
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@Import({ EmbeddedServletContainerAutoConfiguration.class,
+			ServerPropertiesAutoConfiguration.class,
+			DispatcherServletAutoConfiguration.class, WebMvcAutoConfiguration.class,
+			HttpMessageConvertersAutoConfiguration.class,
+			ErrorMvcAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
+	protected static @interface MinimalWebConfiguration {
+	}
+
 	@Configuration
-	@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class })
+	@MinimalWebConfiguration
 	public static class TestConfiguration {
 
 		// For manual testing
