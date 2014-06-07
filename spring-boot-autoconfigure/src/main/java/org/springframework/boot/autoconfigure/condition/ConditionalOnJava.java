@@ -22,13 +22,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.JdkVersion;
 import org.springframework.util.Assert;
 
 /**
  * {@link Conditional} that matches based on the JVM version the application is running
  * on.
- *
+ * 
  * @author Oliver Gierke
+ * @author Phillip Webb
  * @since 1.1.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -41,7 +43,6 @@ public @interface ConditionalOnJava {
 	 * Configures whether the value configured in {@link #value()} shall be considered the
 	 * upper exclusive or lower inclusive boundary. Defaults to
 	 * {@link Range#EQUAL_OR_NEWER}.
-	 * @return the range of the version
 	 */
 	Range range() default Range.EQUAL_OR_NEWER;
 
@@ -51,66 +52,91 @@ public @interface ConditionalOnJava {
 	 */
 	JavaVersion value();
 
+	/**
+	 * Range options.
+	 */
 	public enum Range {
 
-		OLDER_THAN("older than %s"), EQUAL_OR_NEWER("%s or newer");
+		/**
+		 * Equal to, or newer than the specified {@link JavaVersion}.
+		 */
+		EQUAL_OR_NEWER,
 
-		private final String message;
+		/**
+		 * Older than the specified {@link JavaVersion}.
+		 */
+		OLDER_THAN;
 
-		private Range(String message) {
-			this.message = message;
-		}
-
-		public String getMessage(JavaVersion version) {
-			return String.format(this.message, version);
-		}
 	}
 
 	/**
-	 * An enum to abstract major Java versions.
+	 * Java versions.
 	 */
 	public enum JavaVersion {
 
-		FIVE("1.5"), SIX("1.6"), SEVEN("1.7"), EIGHT("1.8"), NINE("1.9");
+		/**
+		 * Java 1.6.
+		 */
+		SIX(JdkVersion.JAVA_16, "1.6"),
 
-		private String value;
+		/**
+		 * Java 1.7.
+		 */
+		SEVEN(JdkVersion.JAVA_17, "1.7"),
 
-		private JavaVersion(String value) {
+		/**
+		 * Java 1.8.
+		 */
+		EIGHT(JdkVersion.JAVA_18, "1.8"),
+
+		/**
+		 * Java 1.9.
+		 */
+		NINE(JdkVersion.JAVA_19, "1.9");
+
+		private final int value;
+
+		private final String name;
+
+		private JavaVersion(int value, String name) {
 			this.value = value;
+			this.name = name;
+		}
+
+		/**
+		 * Determines if this version is within the specified range of versions.
+		 * @param range the range
+		 * @param version the bounds of the range
+		 * @return if this version is within the specified range
+		 */
+		public boolean isWithin(Range range, JavaVersion version) {
+			Assert.notNull(range, "Range must not be null");
+			Assert.notNull(version, "Version must not be null");
+			switch (range) {
+			case EQUAL_OR_NEWER:
+				return this.value >= version.value;
+			case OLDER_THAN:
+				return this.value < version.value;
+			}
+			throw new IllegalStateException("Unknown range " + range);
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
 		}
 
 		/**
 		 * Returns the {@link JavaVersion} of the current runtime.
 		 */
-		public static JavaVersion fromRuntime() {
-
-			String source = System.getProperty("java.version");
-
-			for (JavaVersion version : JavaVersion.values()) {
-				if (source.startsWith(version.value)) {
-					return version;
+		public static JavaVersion getJavaVersion() {
+			int version = JdkVersion.getMajorJavaVersion();
+			for (JavaVersion candidate : JavaVersion.values()) {
+				if (candidate.value == version) {
+					return candidate;
 				}
 			}
-
-			throw new IllegalArgumentException(String.format(
-					"Could not detect Java version for %s.", source));
-		}
-
-		/**
-		 * Returns whether the given {@link JavaVersion} is considered equal or better
-		 * than the given one.
-		 *
-		 * @param version must not be {code null}.
-		 */
-		public boolean isEqualOrBetter(JavaVersion version) {
-
-			Assert.notNull(version, "Java version must not be null!");
-			return this.value.compareTo(version.value) >= 0;
-		}
-
-		@Override
-		public String toString() {
-			return this.value;
+			return SIX;
 		}
 	}
 }

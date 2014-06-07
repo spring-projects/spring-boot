@@ -26,40 +26,35 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link Condition} that checks for a required version of Java
- *
+ * 
  * @author Oliver Gierke
+ * @author Phillip Webb
  * @see ConditionalOnJava
  * @since 1.1.0
  */
 class OnJavaCondition extends SpringBootCondition {
 
-	private static final JavaVersion JVM_VERSION = JavaVersion.fromRuntime();
-	private static final String MATCH_MESSAGE = "Required JVM version %s and found %s.";
-	private static final String NO_MATCH_MESSAGE = "Required JVM version %s but found %s.";
+	private static final JavaVersion JVM_VERSION = JavaVersion.getJavaVersion();
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
-
 		Map<String, Object> attributes = metadata
 				.getAnnotationAttributes(ConditionalOnJava.class.getName());
-
-		JavaVersion version = (JavaVersion) attributes.get("value");
 		Range range = (Range) attributes.get("range");
+		JavaVersion version = (JavaVersion) attributes.get("value");
+		return getMatchOutcome(range, JVM_VERSION, version);
+	}
 
-		ConditionOutcome match = ConditionOutcome.match(//
-				String.format(MATCH_MESSAGE, range.getMessage(version), JVM_VERSION));
-		ConditionOutcome noMatch = ConditionOutcome.noMatch(//
-				String.format(NO_MATCH_MESSAGE, range.getMessage(version), JVM_VERSION));
+	protected ConditionOutcome getMatchOutcome(Range range, JavaVersion runningVersion,
+			JavaVersion version) {
+		boolean match = runningVersion.isWithin(range, version);
+		return new ConditionOutcome(match, getMessage(range, runningVersion, version));
+	}
 
-		boolean equalOrBetter = JVM_VERSION.isEqualOrBetter(version);
-
-		switch (range) {
-		case OLDER_THAN:
-			return equalOrBetter ? noMatch : match;
-		case EQUAL_OR_NEWER:
-		default:
-			return equalOrBetter ? match : noMatch;
-		}
+	private String getMessage(Range range, JavaVersion runningVersion, JavaVersion version) {
+		String expected = String.format(range == Range.EQUAL_OR_NEWER ? "%s or newer"
+				: "older than %s", version);
+		return "Required JVM version " + expected + " found " + runningVersion;
 	}
 }
