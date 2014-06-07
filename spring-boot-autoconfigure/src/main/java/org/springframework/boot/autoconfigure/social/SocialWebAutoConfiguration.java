@@ -16,21 +16,37 @@
 
 package org.springframework.boot.autoconfigure.social;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.config.annotation.EnableSocial;
 import org.springframework.social.config.annotation.SocialConfigurerAdapter;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.web.ConnectController;
+import org.springframework.social.connect.web.ConnectInterceptor;
+import org.springframework.social.connect.web.DisconnectInterceptor;
+import org.springframework.social.connect.web.ProviderSignInController;
+import org.springframework.social.connect.web.ProviderSignInInterceptor;
+import org.springframework.social.connect.web.SignInAdapter;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
 
@@ -51,22 +67,60 @@ public class SocialWebAutoConfiguration {
 	@ConditionalOnWebApplication
 	protected static class SocialAutoConfigurationAdapter extends SocialConfigurerAdapter {
 
+		@Autowired(required = false)
+		private List<ConnectInterceptor<?>> connectInterceptors;
+
+		@Autowired(required = false)
+		private List<DisconnectInterceptor<?>> disconnectInterceptors;
+
+		@Autowired(required = false)
+		private List<ProviderSignInInterceptor<?>> signInInterceptors;
+
 		@Bean
 		@ConditionalOnMissingBean(ConnectController.class)
 		public ConnectController connectController(
-				ConnectionFactoryLocator connectionFactoryLocator,
-				ConnectionRepository connectionRepository) {
-			return new ConnectController(connectionFactoryLocator, connectionRepository);
+				ConnectionFactoryLocator factoryLocator, ConnectionRepository repository) {
+			ConnectController controller = new ConnectController(factoryLocator,
+					repository);
+			if (!CollectionUtils.isEmpty(this.connectInterceptors)) {
+				controller.setConnectInterceptors(this.connectInterceptors);
+			}
+			if (!CollectionUtils.isEmpty(this.disconnectInterceptors)) {
+				controller.setDisconnectInterceptors(this.disconnectInterceptors);
+			}
+			return controller;
 		}
 
 		@Bean
 		@ConditionalOnMissingBean(BeanNameViewResolver.class)
 		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
 		public ViewResolver beanNameViewResolver() {
-			BeanNameViewResolver bnvr = new BeanNameViewResolver();
-			bnvr.setOrder(Integer.MIN_VALUE);
-			return bnvr;
+			BeanNameViewResolver viewResolver = new BeanNameViewResolver();
+			viewResolver.setOrder(Integer.MIN_VALUE);
+			return viewResolver;
 		}
+
+		@Bean
+		@ConditionalOnBean(SignInAdapter.class)
+		@ConditionalOnMissingBean(ProviderSignInController.class)
+		public ProviderSignInController signInController(
+				ConnectionFactoryLocator factoryLocator,
+				UsersConnectionRepository usersRepository, SignInAdapter signInAdapter) {
+			ProviderSignInController controller = new ProviderSignInController(
+					factoryLocator, usersRepository, signInAdapter);
+			if (!CollectionUtils.isEmpty(this.signInInterceptors)) {
+				controller.setSignInInterceptors(this.signInInterceptors);
+			}
+			return controller;
+		}
+
+	}
+
+	@Configuration
+	@EnableSocial
+	@ConditionalOnWebApplication
+	@ConditionalOnMissingClass(SecurityContextHolder.class)
+	protected static class AnonymousUserIdSourceConfig extends SocialConfigurerAdapter {
 
 		@Override
 		public UserIdSource getUserIdSource() {
@@ -80,4 +134,30 @@ public class SocialWebAutoConfiguration {
 
 	}
 
+	@Configuration
+	@EnableSocial
+	@ConditionalOnWebApplication
+	@ConditionalOnClass(SecurityContextHolder.class)
+	protected static class AuthenticationUserIdSourceConfig extends
+			SocialConfigurerAdapter {
+
+		@Override
+		public UserIdSource getUserIdSource() {
+			return new SecurityContextUserIdSource();
+		}
+
+	}
+
+	private static class SecurityContextUserIdSource implements UserIdSource {
+
+		@Override
+		public String getUserId() {
+			SecurityContext context = SecurityContextHolder.getContext();
+			Authentication authentication = context.getAuthentication();
+			Assert.state(authentication != null, "Unable to get a "
+					+ "ConnectionRepository: no user signed in");
+			return authentication.getName();
+		}
+
+	}
 }
