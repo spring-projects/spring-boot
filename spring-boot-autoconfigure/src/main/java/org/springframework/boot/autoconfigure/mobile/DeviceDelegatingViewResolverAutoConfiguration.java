@@ -53,7 +53,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 @ConditionalOnWebApplication
 @ConditionalOnClass(LiteDeviceDelegatingViewResolver.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class DevceDelegatingViewResolverAutoConfiguration {
+public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
 
@@ -72,7 +72,7 @@ public class DevceDelegatingViewResolverAutoConfiguration {
 	@Configuration
 	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
 	@ConditionalOnExpression("${spring.mobile.deviceDelegatingViewResolver.enabled:false}")
-	protected static class DevceDelegatingViewResolverConfiguration {
+	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration
 		@ConditionalOnBean(ThymeleafViewResolver.class)

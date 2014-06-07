@@ -26,7 +26,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.mobile.DevceDelegatingViewResolverAutoConfiguration.DevceDelegatingViewResolverConfiguration;
+import org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration.DeviceDelegatingViewResolverConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -44,7 +44,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
 /**
- * Tests for {@link DevceDelegatingViewResolverAutoConfiguration}.
+ * Tests for {@link DeviceDelegatingViewResolverAutoConfiguration}.
  *
  * @author Roy Clarkson
  */
@@ -65,7 +65,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	public void deviceDelegatingViewResolverDefaultDisabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
 		this.context.register(Config.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		this.context.getBean("deviceDelegatingViewResolver",
 				AbstractDeviceDelegatingViewResolver.class);
@@ -79,7 +79,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		InternalResourceViewResolver internalResourceViewResolver = this.context.getBean(InternalResourceViewResolver.class);
 		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context.getBean(
@@ -104,7 +104,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
 		try {
@@ -125,7 +125,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 				ThymeleafAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		ThymeleafViewResolver thymeleafViewResolver = this.context.getBean(ThymeleafViewResolver.class);
 		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context.getBean(
@@ -148,7 +148,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 				ThymeleafAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
 		assertNotNull(this.context.getBean(ThymeleafViewResolver.class));
@@ -164,7 +164,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
 				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
@@ -221,7 +221,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
 				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
@@ -242,7 +242,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
 				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
@@ -263,7 +263,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
 				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
@@ -284,7 +284,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
 				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
@@ -305,7 +305,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
 				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
@@ -326,7 +326,7 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
-				DevceDelegatingViewResolverConfiguration.class);
+				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
 		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
 				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);

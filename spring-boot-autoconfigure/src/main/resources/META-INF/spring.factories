@@ -29,7 +29,7 @@ org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration,\
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.DeviceResolverAutoConfiguration,\
-org.springframework.boot.autoconfigure.mobile.DevceDelegatingViewResolverAutoConfiguration,\
+org.springframework.boot.autoconfigure.mobile.DeviceDelegatingViewResolverAutoConfiguration,\
 org.springframework.boot.autoconfigure.mobile.SitePreferenceAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoDataAutoConfiguration,\
