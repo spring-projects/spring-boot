@@ -30,13 +30,13 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link HttpMessageConvertersAutoConfiguration}.
- *
+ * 
  * @author Dave Syer
  * @author Oliver Gierke
  */
 public class HttpMessageConvertersAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();;
 
 	@After
 	public void close() {
@@ -47,17 +47,13 @@ public class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	public void customJacksonConverter() throws Exception {
-
-		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(JacksonConfig.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-
 		MappingJackson2HttpMessageConverter converter = this.context
 				.getBean(MappingJackson2HttpMessageConverter.class);
 		assertEquals(this.context.getBean(ObjectMapper.class),
 				converter.getObjectMapper());
-
 		HttpMessageConverters converters = this.context
 				.getBean(HttpMessageConverters.class);
 		assertTrue(converters.getConverters().contains(converter));
@@ -77,5 +73,7 @@ public class HttpMessageConvertersAutoConfigurationTests {
 		public ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
+
 	}
+
 }

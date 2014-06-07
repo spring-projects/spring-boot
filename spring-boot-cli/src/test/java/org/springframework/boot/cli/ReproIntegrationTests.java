@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests to exercise and reproduce specific issues.
- *
+ * 
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

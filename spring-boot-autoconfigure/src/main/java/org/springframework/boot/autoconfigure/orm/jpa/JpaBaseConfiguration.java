@@ -58,6 +58,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Import(DataSourceInitializedPublisher.Registrar.class)
 public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 
+	private static final String[] NO_PACKAGES = new String[0];
+
 	private ConfigurableListableBeanFactory beanFactory;
 
 	@Autowired
@@ -118,7 +120,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 			List<String> basePackages = AutoConfigurationPackages.get(this.beanFactory);
 			return basePackages.toArray(new String[basePackages.size()]);
 		}
-		return new String[0];
+		return NO_PACKAGES;
 	}
 
 	protected void configure(

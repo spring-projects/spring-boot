@@ -57,21 +57,21 @@ public class HypermediaAutoConfigurationTests {
 		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
 		assertTrue(HalLinkDiscoverer.class.isInstance(discoverer));
 	}
-	
+
 	@Test
 	public void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
-		
+
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SampleConfig.class, HypermediaAutoConfiguration.class);
 		this.context.refresh();
-		
+
 		this.context.getBean(LinkDiscoverers.class);
 	}
-	
+
 	@Configuration
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	static class SampleConfig {
-		
+
 	}
 
 }

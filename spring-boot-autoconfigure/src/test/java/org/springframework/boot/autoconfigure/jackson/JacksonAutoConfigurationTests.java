@@ -17,9 +17,8 @@
 package org.springframework.boot.autoconfigure.jackson;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Map;
 
-import org.hamcrest.Matchers;
 import org.joda.time.LocalDateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +39,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JacksonAutoConfiguration}.
- *
+ * 
  * @author Dave Syer
  * @author Oliver Gierke
  */
@@ -72,27 +72,20 @@ public class JacksonAutoConfigurationTests {
 
 	@Test
 	public void registersJodaModuleAutomatically() {
-
 		this.context.register(JacksonAutoConfiguration.class);
 		this.context.refresh();
-
-		Collection<Module> modules = this.context.getBeansOfType(Module.class).values();
-		assertThat(modules, is(Matchers.<Module> iterableWithSize(1)));
-		assertThat(modules.iterator().next(), is(instanceOf(JodaModule.class)));
-
+		Map<String, Module> modules = this.context.getBeansOfType(Module.class);
+		assertThat(modules.size(), greaterThanOrEqualTo(1)); // Depends on the JDK
+		assertThat(modules.get("jacksonJodaModule"), is(instanceOf(JodaModule.class)));
 		ObjectMapper objectMapper = this.context.getBean(ObjectMapper.class);
 		assertThat(objectMapper.canSerialize(LocalDateTime.class), is(true));
 	}
 
 	@Test
 	public void customJacksonModules() throws Exception {
-
-		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(ModulesConfig.class, JacksonAutoConfiguration.class);
 		this.context.refresh();
-
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
-
 		@SuppressWarnings({ "unchecked", "unused" })
 		ObjectMapper result = verify(mapper).registerModules(
 				(Iterable<Module>) argThat(hasItem(this.context.getBean("jacksonModule",
@@ -101,12 +94,9 @@ public class JacksonAutoConfigurationTests {
 
 	@Test
 	public void doubleModuleRegistration() throws Exception {
-
-		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(DoubleModulesConfig.class,
 				HttpMessageConvertersAutoConfiguration.class);
 		this.context.refresh();
-
 		ObjectMapper mapper = this.context.getBean(ObjectMapper.class);
 		assertEquals("{\"foo\":\"bar\"}", mapper.writeValueAsString(new Foo()));
 	}
@@ -124,6 +114,7 @@ public class JacksonAutoConfigurationTests {
 		public ObjectMapper objectMapper() {
 			return Mockito.mock(ObjectMapper.class);
 		}
+
 	}
 
 	@Configuration
@@ -153,6 +144,7 @@ public class JacksonAutoConfigurationTests {
 			mapper.registerModule(jacksonModule());
 			return mapper;
 		}
+
 	}
 
 	protected static class Foo {
@@ -160,7 +152,6 @@ public class JacksonAutoConfigurationTests {
 		private String name;
 
 		private Foo() {
-
 		}
 
 		static Foo create() {
@@ -176,4 +167,5 @@ public class JacksonAutoConfigurationTests {
 		}
 
 	}
+
 }

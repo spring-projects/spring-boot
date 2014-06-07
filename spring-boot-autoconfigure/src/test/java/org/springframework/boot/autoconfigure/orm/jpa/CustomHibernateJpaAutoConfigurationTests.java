@@ -16,11 +16,6 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-
 import javax.sql.DataSource;
 
 import org.junit.After;
@@ -33,6 +28,10 @@ import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
@@ -66,7 +65,7 @@ public class CustomHibernateJpaAutoConfigurationTests {
 		String actual = bean.getHibernateProperties(dataSource).get(
 				"hibernate.hbm2ddl.auto");
 		// Default is generic and safe
-		assertThat(actual, is(nullValue()));
+		assertThat(actual, nullValue());
 	}
 
 	@Test

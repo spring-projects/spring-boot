@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Elasticsearch.
- *
+ * 
  * @author Artur Konczak
  * @author Mohsin Husen
  * @since 1.1.0

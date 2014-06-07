@@ -48,7 +48,7 @@ public abstract class AutoConfigurationPackages {
 
 	/**
 	 * Determine if the auto-configuration base packages for the given bean factory are
-	 * available
+	 * available.
 	 * @param beanFactory the source bean factory
 	 * @return true if there are auto-config packages available
 	 */

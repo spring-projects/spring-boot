@@ -49,7 +49,7 @@ import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
  * <li>auto-registration for all {@link Module} beans with all {@link ObjectMapper} beans
  * (including the defaulted ones).</li>
  * </ul>
- *
+ * 
  * @author Oliver Gierke
  * @since 1.1.0
  */
@@ -65,31 +65,27 @@ public class JacksonAutoConfiguration {
 	private ListableBeanFactory beanFactory;
 
 	@Bean
-	@ConditionalOnMissingBean
 	@Primary
+	@ConditionalOnMissingBean
 	public ObjectMapper jacksonObjectMapper() {
-
 		ObjectMapper objectMapper = new ObjectMapper();
-
 		if (this.properties.isJsonSortKeys()) {
 			objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 		}
-
 		return objectMapper;
 	}
 
 	@PostConstruct
-	public void init() {
-
-		Collection<ObjectMapper> mappers = BeanFactoryUtils
-				.beansOfTypeIncludingAncestors(this.beanFactory, ObjectMapper.class)
-				.values();
-		Collection<Module> modules = BeanFactoryUtils.beansOfTypeIncludingAncestors(
-				this.beanFactory, Module.class).values();
-
-		for (ObjectMapper mapper : mappers) {
-			mapper.registerModules(modules);
+	private void registerModulesWithObjectMappers() {
+		Collection<Module> modules = getBeans(Module.class);
+		for (ObjectMapper objectMapper : getBeans(ObjectMapper.class)) {
+			objectMapper.registerModules(modules);
 		}
+	}
+
+	private <T> Collection<T> getBeans(Class<T> type) {
+		return BeanFactoryUtils.beansOfTypeIncludingAncestors(this.beanFactory, type)
+				.values();
 	}
 
 	@Configuration
@@ -101,6 +97,7 @@ public class JacksonAutoConfiguration {
 		JodaModule jacksonJodaModule() {
 			return new JodaModule();
 		}
+
 	}
 
 	@Configuration
@@ -113,5 +110,6 @@ public class JacksonAutoConfiguration {
 		JSR310Module jacksonJsr310Module() {
 			return new JSR310Module();
 		}
+
 	}
 }

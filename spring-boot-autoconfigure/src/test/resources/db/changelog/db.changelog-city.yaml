@@ -33,4 +33,3 @@ databaseChangeLog:
                   type: varchar(50)
                   constraints:
                     nullable: true
-                    

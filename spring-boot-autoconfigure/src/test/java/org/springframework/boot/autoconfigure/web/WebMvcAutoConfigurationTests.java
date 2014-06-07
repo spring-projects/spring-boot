@@ -319,7 +319,7 @@ public class WebMvcAutoConfigurationTests {
 	}
 
 	@Configuration
-	protected static class Config {
+	public static class Config {
 
 		@Bean
 		public EmbeddedServletContainerFactory containerFactory() {

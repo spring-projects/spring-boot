@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link AetherGrapeEngine}.
- *
+ * 
  * @author Andy Wilkinson
  */
 public class AetherGrapeEngineTests {
@@ -45,7 +45,7 @@ public class AetherGrapeEngineTests {
 	private final AetherGrapeEngine grapeEngine = AetherGrapeEngineFactory.create(
 			this.groovyClassLoader, Arrays.asList(new RepositoryConfiguration("central",
 					URI.create("http://repo1.maven.org/maven2"), false)),
-					new DependencyResolutionContext());
+			new DependencyResolutionContext());
 
 	@Test
 	public void dependencyResolution() {

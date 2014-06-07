@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link HttpMessageConverter}s.
- *
+ * 
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Piotr Maj
@@ -75,5 +75,7 @@ public class HttpMessageConvertersAutoConfiguration {
 			converter.setPrettyPrint(this.properties.isJsonPrettyPrint());
 			return converter;
 		}
+
 	}
+
 }

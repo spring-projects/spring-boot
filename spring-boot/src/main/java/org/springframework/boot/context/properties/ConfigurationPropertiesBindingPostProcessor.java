@@ -383,10 +383,6 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	/**
 	 * Convenience class to flatten out a tree of property sources without losing the
 	 * reference to the backing data (which can therefore be updated in the background).
-	 * 
-	 * @param propertySources some PropertySources, possibly containing environment
-	 * properties
-	 * @return another PropertySources containing the same properties
 	 */
 	private static class FlatPropertySources implements PropertySources {
 
@@ -414,7 +410,7 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 		private MutablePropertySources getFlattened() {
 			MutablePropertySources result = new MutablePropertySources();
-			for (PropertySource<?> propertySource : propertySources) {
+			for (PropertySource<?> propertySource : this.propertySources) {
 				flattenPropertySources(propertySource, result);
 			}
 			return result;

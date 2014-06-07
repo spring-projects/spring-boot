@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
  * Auto-configuration} for Elasticsearch.
- *
+ * 
  * @author Artur Konczak
  * @author Mohsin Husen
  * @author Andy Wilkinson
@@ -54,17 +54,19 @@ public class ElasticsearchAutoConfiguration implements DisposableBean {
 	@Bean
 	public Client elasticsearchClient() {
 		try {
-			if (StringUtils.hasLength(this.properties.getClusterNodes())) {
-				this.client = createTransportClient();
-			}
-			else {
-				this.client = createNodeClient();
-			}
+			this.client = createClient();
+			return this.client;
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);
 		}
-		return this.client;
+	}
+
+	private Client createClient() throws Exception {
+		if (StringUtils.hasLength(this.properties.getClusterNodes())) {
+			return createTransportClient();
+		}
+		return createNodeClient();
 	}
 
 	private Client createNodeClient() throws Exception {

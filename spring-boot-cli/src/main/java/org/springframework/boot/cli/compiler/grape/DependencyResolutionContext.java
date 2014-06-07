@@ -26,7 +26,7 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
  * Context used when resolving dependencies.
- *
+ * 
  * @author Andy Wilkinson
  * @since 1.1.0
  */
@@ -52,7 +52,7 @@ public class DependencyResolutionContext {
 				managedDependencies);
 		this.managedDependencies = new ArrayList<Dependency>(
 				new ManagedDependenciesFactory(managedDependencies)
-				.getManagedDependencies());
+						.getManagedDependencies());
 	}
 
 	public ArtifactCoordinatesResolver getArtifactCoordinatesResolver() {

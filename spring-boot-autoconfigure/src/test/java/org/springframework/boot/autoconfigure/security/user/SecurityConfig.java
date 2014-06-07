@@ -1,4 +1,3 @@
-
 package org.springframework.boot.autoconfigure.security.user;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -53,9 +53,9 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
- * Auto-configuration} to integrate with an HornetQ broker. If the necessary
- * classes are present, embed the broker in the application by default. Otherwise,
- * connect to a broker available on the local machine with the default settings.
+ * Auto-configuration} to integrate with an HornetQ broker. If the necessary classes are
+ * present, embed the broker in the application by default. Otherwise, connect to a broker
+ * available on the local machine with the default settings.
  * 
  * @author Stephane Nicoll
  * @since 1.1.0
