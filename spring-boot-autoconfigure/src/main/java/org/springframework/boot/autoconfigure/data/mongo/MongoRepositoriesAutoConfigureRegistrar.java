@@ -50,7 +50,6 @@ class MongoRepositoriesAutoConfigureRegistrar extends
 
 	@EnableMongoRepositories
 	private static class EnableMongoRepositoriesConfiguration {
-
 	}
 
 }
