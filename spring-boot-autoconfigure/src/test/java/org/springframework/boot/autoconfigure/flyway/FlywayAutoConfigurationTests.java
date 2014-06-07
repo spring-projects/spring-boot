@@ -42,11 +42,12 @@ import static org.junit.Assert.assertNotNull;
  * Tests for {@link FlywayAutoConfiguration}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class FlywayAutoConfigurationTests {
 
 	@Rule
-	public ExpectedException expected = ExpectedException.none();
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();;
 
@@ -64,82 +65,93 @@ public class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	public void testNoDataSource() throws Exception {
-		this.context.register(FlywayAutoConfiguration.class,
+	public void noDataSource() throws Exception {
+		registerAndRefresh(FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(Flyway.class).length);
 	}
 
 	@Test
-	public void testCreateDataSource() throws Exception {
+	public void createDataSource() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"flyway.url:jdbc:hsqldb:mem:flywaytest", "flyway.user:sa");
-		this.context
-				.register(EmbeddedDataSourceConfiguration.class,
-						FlywayAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
 		assertNotNull(flyway.getDataSource());
 	}
 
 	@Test
-	public void testFlywayDataSource() throws Exception {
-		this.context.register(FlywayDataSourceConfiguration.class,
+	public void flywayDataSource() throws Exception {
+		registerAndRefresh(FlywayDataSourceConfiguration.class,
 				EmbeddedDataSourceConfiguration.class, FlywayAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
 		Flyway flyway = this.context.getBean(Flyway.class);
 		assertNotNull(flyway.getDataSource());
 	}
 
 	@Test
-	public void testDefaultFlyway() throws Exception {
-		this.context
-				.register(EmbeddedDataSourceConfiguration.class,
-						FlywayAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	public void defaultFlyway() throws Exception {
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
 		assertEquals("[classpath:db/migration]", Arrays.asList(flyway.getLocations())
 				.toString());
 	}
 
 	@Test
-	public void testOverrideLocations() throws Exception {
+	public void overrideLocations() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"flyway.locations:classpath:db/changelog,classpath:db/migration");
-		this.context
-				.register(EmbeddedDataSourceConfiguration.class,
-						FlywayAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
 		assertEquals("[classpath:db/changelog, classpath:db/migration]",
 				Arrays.asList(flyway.getLocations()).toString());
 	}
 
 	@Test
-	public void testOverrideSchemas() throws Exception {
+	public void overrideSchemas() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context, "flyway.schemas:public");
-		this.context
-				.register(EmbeddedDataSourceConfiguration.class,
-						FlywayAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
 		Flyway flyway = this.context.getBean(Flyway.class);
 		assertEquals("[public]", Arrays.asList(flyway.getSchemas()).toString());
 	}
 
-	@Test(expected = BeanCreationException.class)
-	public void testChangeLogDoesNotExist() throws Exception {
-		EnvironmentTestUtils.addEnvironment(this.context, "flyway.locations:no-such-dir");
-		this.context
-				.register(EmbeddedDataSourceConfiguration.class,
-						FlywayAutoConfiguration.class,
-						PropertyPlaceholderAutoConfiguration.class);
+	@Test
+	public void changeLogDoesNotExist() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations:file:no-such-dir");
+		this.thrown.expect(BeanCreationException.class);
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	@Test
+	public void checkLocationsAllMissing() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations:classpath:db/missing1,classpath:db/migration2",
+				"flyway.check-location:true");
+		this.thrown.expect(BeanCreationException.class);
+		this.thrown.expectMessage("Cannot find migrations location in");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	@Test
+	public void checkLocationsAllExist() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"flyway.locations:classpath:db/changelog,classpath:db/migration",
+				"flyway.check-location:true");
+		registerAndRefresh(EmbeddedDataSourceConfiguration.class,
+				FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class);
+	}
+
+	private void registerAndRefresh(Class<?>... annotatedClasses) {
+		this.context.register(annotatedClasses);
 		this.context.refresh();
+
 	}
 
 	@Configuration
