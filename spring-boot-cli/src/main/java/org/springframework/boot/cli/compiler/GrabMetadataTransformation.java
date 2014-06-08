@@ -39,9 +39,9 @@ import org.codehaus.groovy.control.messages.SyntaxErrorMessage;
 import org.codehaus.groovy.syntax.SyntaxException;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
+import org.springframework.boot.dependency.tools.Dependencies;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
-import org.springframework.boot.dependency.tools.PropertiesFileManagedDependencies;
-import org.springframework.boot.dependency.tools.VersionManagedDependencies;
+import org.springframework.boot.dependency.tools.PropertiesFileDependencies;
 import org.springframework.boot.groovy.GrabMetadata;
 
 /**
@@ -151,11 +151,10 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 			List<Map<String, String>> metadataDependencies) {
 		URI[] uris = Grape.getInstance().resolve(null,
 				metadataDependencies.toArray(new Map[metadataDependencies.size()]));
-		List<ManagedDependencies> managedDependencies = new ArrayList<ManagedDependencies>(
-				uris.length);
+		List<Dependencies> managedDependencies = new ArrayList<Dependencies>(uris.length);
 		for (URI uri : uris) {
 			try {
-				managedDependencies.add(new PropertiesFileManagedDependencies(uri.toURL()
+				managedDependencies.add(new PropertiesFileDependencies(uri.toURL()
 						.openStream()));
 			}
 			catch (IOException ex) {
@@ -164,8 +163,8 @@ public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
 			}
 		}
 
-		this.resolutionContext.setManagedDependencies(new VersionManagedDependencies(
-				managedDependencies));
+		this.resolutionContext.setManagedDependencies(ManagedDependencies
+				.get(managedDependencies));
 	}
 
 	private void handleDuplicateGrabMetadataAnnotation(AnnotationNode annotationNode) {

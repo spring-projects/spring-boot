@@ -21,18 +21,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Abstract base implementation for {@link ManagedDependencies}.
+ * Abstract base implementation for {@link Dependencies}.
  * 
  * @author Phillip Webb
  * @since 1.1.0
  */
-abstract class AbstractManagedDependencies implements ManagedDependencies {
+abstract class AbstractDependencies implements Dependencies {
 
 	private final Map<ArtifactAndGroupId, Dependency> byArtifactAndGroupId;
 
 	private final Map<String, Dependency> byArtifactId;
 
-	public AbstractManagedDependencies() {
+	public AbstractDependencies() {
 		this.byArtifactAndGroupId = new LinkedHashMap<ArtifactAndGroupId, Dependency>();
 		this.byArtifactId = new LinkedHashMap<String, Dependency>();
 	}
@@ -50,12 +50,6 @@ abstract class AbstractManagedDependencies implements ManagedDependencies {
 	@Override
 	public Iterator<Dependency> iterator() {
 		return this.byArtifactAndGroupId.values().iterator();
-	}
-
-	@Override
-	public String getSpringBootVersion() {
-		Dependency dependency = find("org.springframework.boot", "spring-boot");
-		return (dependency == null ? null : dependency.getVersion());
 	}
 
 	protected void add(ArtifactAndGroupId artifactAndGroupId, Dependency dependency) {

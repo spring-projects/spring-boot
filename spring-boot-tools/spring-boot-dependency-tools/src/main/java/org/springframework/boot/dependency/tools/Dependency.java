@@ -16,19 +16,14 @@
 
 package org.springframework.boot.dependency.tools;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 /**
- * A single managed dependency.
+ * A single dependency.
  * 
  * @author Phillip Webb
- * @see ManagedDependencies
+ * @see Dependencies
  */
 public final class Dependency {
 
@@ -133,19 +128,6 @@ public final class Dependency {
 		return false;
 	}
 
-	static Dependency fromDependenciesXml(Element element) throws Exception {
-		String groupId = getTextContent(element, "groupId");
-		String artifactId = getTextContent(element, "artifactId");
-		String version = getTextContent(element, "version");
-		List<Exclusion> exclusions = Exclusion.fromExclusionsXml(element
-				.getElementsByTagName("exclusions"));
-		return new Dependency(groupId, artifactId, version, exclusions);
-	}
-
-	private static String getTextContent(Element element, String tagName) {
-		return element.getElementsByTagName(tagName).item(0).getTextContent();
-	}
-
 	/**
 	 * A dependency exclusion.
 	 */
@@ -155,7 +137,7 @@ public final class Dependency {
 
 		private final String artifactId;
 
-		private Exclusion(String groupId, String artifactId) {
+		Exclusion(String groupId, String artifactId) {
 			Assert.notNull(groupId, "GroupId must not be null");
 			Assert.notNull(groupId, "ArtifactId must not be null");
 			this.groupId = groupId;
@@ -202,31 +184,6 @@ public final class Dependency {
 				return result;
 			}
 			return false;
-		}
-
-		private static List<Exclusion> fromExclusionsXml(NodeList exclusion) {
-			if (exclusion == null || exclusion.getLength() == 0) {
-				return Collections.emptyList();
-			}
-			return fromExclusionsXml(exclusion.item(0));
-		}
-
-		private static List<Exclusion> fromExclusionsXml(Node item) {
-			List<Exclusion> exclusions = new ArrayList<Dependency.Exclusion>();
-			NodeList children = item.getChildNodes();
-			for (int i = 0; i < children.getLength(); i++) {
-				Node child = children.item(i);
-				if (child instanceof Element) {
-					exclusions.add(fromExclusionXml((Element) child));
-				}
-			}
-			return exclusions;
-		}
-
-		private static Exclusion fromExclusionXml(Element element) {
-			String groupId = getTextContent(element, "groupId");
-			String artifactId = getTextContent(element, "artifactId");
-			return new Exclusion(groupId, artifactId);
 		}
 
 	}

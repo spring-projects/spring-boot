@@ -26,22 +26,22 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link VersionManagedDependencies}.
+ * Tests for {@link ManagedDependenciesDelegate}.
  * 
  * @author Phillip Webb
  */
-public class VersionManagedDependenciesTests {
+public class ManagedDependenciesDelegateTests {
 
-	private VersionManagedDependencies dependencies;
+	private ManagedDependenciesDelegate dependencies;
 
 	@Before
 	public void setup() throws Exception {
-		PropertiesFileManagedDependencies root = new PropertiesFileManagedDependencies(
-				getClass().getResourceAsStream("external.properties"));
-		PropertiesFileManagedDependencies extra = new PropertiesFileManagedDependencies(
-				getClass().getResourceAsStream("additional-external.properties"));
-		this.dependencies = new VersionManagedDependencies(root,
-				Collections.<ManagedDependencies> singleton(extra));
+		PropertiesFileDependencies root = new PropertiesFileDependencies(getClass()
+				.getResourceAsStream("external.properties"));
+		PropertiesFileDependencies extra = new PropertiesFileDependencies(getClass()
+				.getResourceAsStream("additional-external.properties"));
+		this.dependencies = new ManagedDependenciesDelegate(root,
+				Collections.<Dependencies> singleton(extra));
 	}
 
 	@Test
@@ -54,12 +54,6 @@ public class VersionManagedDependenciesTests {
 	public void override() throws Exception {
 		assertThat(this.dependencies.find("org.sample", "sample02").toString(),
 				equalTo("org.sample:sample02:2.0.0"));
-	}
-
-	@Test
-	public void getSpringBootVersion() throws Exception {
-		assertThat(this.dependencies.getSpringBootVersion(),
-				equalTo("1.0.0.BUILD-SNAPSHOT"));
 	}
 
 	@Test

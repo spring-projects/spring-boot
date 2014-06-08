@@ -29,10 +29,10 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencyResolveDetails;
 import org.gradle.api.artifacts.ModuleVersionSelector;
+import org.springframework.boot.dependency.tools.Dependencies;
 import org.springframework.boot.dependency.tools.Dependency;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
-import org.springframework.boot.dependency.tools.PropertiesFileManagedDependencies;
-import org.springframework.boot.dependency.tools.VersionManagedDependencies;
+import org.springframework.boot.dependency.tools.PropertiesFileDependencies;
 
 /**
  * A resolution strategy to resolve missing version numbers using the
@@ -58,7 +58,7 @@ public class SpringBootResolutionStrategy {
 
 		private Configuration versionManagementConfiguration;
 
-		private Collection<ManagedDependencies> versionManagedDependencies;
+		private Collection<Dependencies> versionManagedDependencies;
 
 		public VersionResolver(Project project) {
 			this.versionManagementConfiguration = project.getConfigurations().getByName(
@@ -74,7 +74,7 @@ public class SpringBootResolutionStrategy {
 		}
 
 		private void resolve(DependencyResolveDetails resolveDetails) {
-			ManagedDependencies dependencies = new VersionManagedDependencies(
+			ManagedDependencies dependencies = ManagedDependencies.get(
 					getVersionManagedDependencies());
 			ModuleVersionSelector target = resolveDetails.getTarget();
 			if (SPRING_BOOT_GROUP.equals(target.getGroup())) {
@@ -87,10 +87,10 @@ public class SpringBootResolutionStrategy {
 			}
 		}
 
-		private Collection<ManagedDependencies> getVersionManagedDependencies() {
+		private Collection<Dependencies> getVersionManagedDependencies() {
 			if (versionManagedDependencies == null) {
 				Set<File> files = versionManagementConfiguration.resolve();
-				List<ManagedDependencies> dependencies = new ArrayList<ManagedDependencies>(
+				List<Dependencies> dependencies = new ArrayList<Dependencies>(
 						files.size());
 				for (File file : files) {
 					dependencies.add(getPropertiesFileManagedDependencies(file));
@@ -100,12 +100,12 @@ public class SpringBootResolutionStrategy {
 			return versionManagedDependencies;
 		}
 
-		private ManagedDependencies getPropertiesFileManagedDependencies(File file) {
+		private Dependencies getPropertiesFileManagedDependencies(File file) {
 			if (!file.getName().toLowerCase().endsWith(".properties")) {
 				throw new IllegalStateException(file + " is not a version property file");
 			}
 			try {
-				return new PropertiesFileManagedDependencies(new FileInputStream(file));
+				return new PropertiesFileDependencies(new FileInputStream(file));
 			} catch (IOException ex) {
 				throw new IllegalStateException(ex);
 			}

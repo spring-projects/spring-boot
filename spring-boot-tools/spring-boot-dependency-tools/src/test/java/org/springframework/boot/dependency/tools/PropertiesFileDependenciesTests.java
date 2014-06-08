@@ -26,24 +26,18 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link PropertiesFileManagedDependencies}.
+ * Tests for {@link PropertiesFileDependencies}.
  * 
  * @author Phillip Webb
  */
-public class PropertiesFileManagedDependenciesTests {
+public class PropertiesFileDependenciesTests {
 
-	private PropertiesFileManagedDependencies dependencies;
+	private PropertiesFileDependencies dependencies;
 
 	@Before
 	public void setup() throws Exception {
-		this.dependencies = new PropertiesFileManagedDependencies(getClass()
+		this.dependencies = new PropertiesFileDependencies(getClass()
 				.getResourceAsStream("external.properties"));
-	}
-
-	@Test
-	public void springBootVersion() throws Exception {
-		assertThat(this.dependencies.getSpringBootVersion(),
-				equalTo("1.0.0.BUILD-SNAPSHOT"));
 	}
 
 	@Test

@@ -23,23 +23,23 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 /**
- * {@link ManagedDependencies} backed by an external properties file (of the form created
+ * {@link Dependencies} backed by an external properties file (of the form created
  * by the Spring IO platform). The property key should be the groupId and artifactId (in
  * the form {@literal groupId:artifactId}) and the value should be the version.
  * 
  * @author Phillip Webb
  * @since 1.1.0
  */
-public class PropertiesFileManagedDependencies extends AbstractManagedDependencies {
+public class PropertiesFileDependencies extends AbstractDependencies {
 
 	/**
-	 * Create a new {@link PropertiesFileManagedDependencies} instance from the specified
+	 * Create a new {@link PropertiesFileDependencies} instance from the specified
 	 * input stream.
 	 * @param inputStream source input stream (will be closed when properties have been
 	 * loaded)
 	 * @throws IOException
 	 */
-	public PropertiesFileManagedDependencies(InputStream inputStream) throws IOException {
+	public PropertiesFileDependencies(InputStream inputStream) throws IOException {
 		try {
 			Properties properties = new Properties();
 			properties.load(inputStream);

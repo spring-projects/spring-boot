@@ -28,30 +28,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link PomManagedDependencies}.
+ * Tests for {@link PomDependencies}.
  * 
  * @author Phillip Webb
  */
-public class PomManagedDependenciesTests {
+public class PomDependenciesTests {
 
-	private PomManagedDependencies dependencies;
+	private PomDependencies dependencies;
 
 	@Before
 	public void setup() {
 		InputStream x = getResource("test-effective-pom.xml");
-		this.dependencies = new PomManagedDependencies(x);
+		this.dependencies = new PomDependencies(x);
 	}
 
 	private InputStream getResource(String name) {
 		InputStream inputStream = getClass().getResourceAsStream(name);
 		assertNotNull("Unable to read " + name, inputStream);
 		return inputStream;
-	}
-
-	@Test
-	public void springBootVersion() throws Exception {
-		assertThat(this.dependencies.getSpringBootVersion(),
-				equalTo("1.0.0.BUILD-SNAPSHOT"));
 	}
 
 	@Test

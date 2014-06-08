@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.springframework.boot.dependency.tools.VersionManagedDependencies;
+import org.springframework.boot.dependency.tools.ManagedDependencies;
 import org.springframework.util.FileCopyUtils;
 
 import static org.junit.Assert.fail;
@@ -40,7 +40,7 @@ import static org.junit.Assert.fail;
 /**
  * Tests for the various starter projects to check that they don't pull in unwanted
  * transitive dependencies when used with Gradle
- *
+ * 
  * @author Andy Wilkinson
  */
 @RunWith(Parameterized.class)
@@ -89,8 +89,8 @@ public class StarterDependenciesIntegrationTests {
 
 	@BeforeClass
 	public static void determineVersions() throws Exception {
-		springVersion = new VersionManagedDependencies().find("spring-core").getVersion();
-		bootVersion = new VersionManagedDependencies().find("spring-boot").getVersion();
+		springVersion = ManagedDependencies.get().find("spring-core").getVersion();
+		bootVersion = ManagedDependencies.get().find("spring-boot").getVersion();
 	}
 
 	@AfterClass

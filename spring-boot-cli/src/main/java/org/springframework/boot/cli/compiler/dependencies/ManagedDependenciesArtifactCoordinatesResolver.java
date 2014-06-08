@@ -16,13 +16,13 @@
 
 package org.springframework.boot.cli.compiler.dependencies;
 
+import org.springframework.boot.dependency.tools.Dependencies;
 import org.springframework.boot.dependency.tools.Dependency;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
-import org.springframework.boot.dependency.tools.VersionManagedDependencies;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ArtifactCoordinatesResolver} backed by {@link ManagedDependencies}.
+ * {@link ArtifactCoordinatesResolver} backed by {@link Dependencies}.
  * 
  * @author Phillip Webb
  */
@@ -32,7 +32,7 @@ public class ManagedDependenciesArtifactCoordinatesResolver implements
 	private final ManagedDependencies dependencies;
 
 	public ManagedDependenciesArtifactCoordinatesResolver() {
-		this(new VersionManagedDependencies());
+		this(ManagedDependencies.get());
 	}
 
 	public ManagedDependenciesArtifactCoordinatesResolver(ManagedDependencies dependencies) {
