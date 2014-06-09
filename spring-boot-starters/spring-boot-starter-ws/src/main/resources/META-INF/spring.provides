@@ -1,1 +1,1 @@
-provides: spring-ws-core,spring-ws-support,spring-ws-security
+provides: spring-ws-core,spring-ws-support

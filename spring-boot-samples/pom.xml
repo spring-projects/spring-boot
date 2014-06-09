@@ -56,8 +56,8 @@
 		<module>spring-boot-sample-web-ui</module>
 		<module>spring-boot-sample-web-velocity</module>
 		<module>spring-boot-sample-websocket</module>
+		<module>spring-boot-sample-ws</module>
 		<module>spring-boot-sample-xml</module>
-        <module>spring-boot-sample-ws</module>
     </modules>
 	<!-- No dependencies - otherwise the samples won't work if you change the
 		parent -->

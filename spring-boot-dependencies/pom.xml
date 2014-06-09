@@ -80,7 +80,7 @@
 		<jetty.version>8.1.15.v20140411</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jaxen.version>1.1.6</jaxen.version>
-		<jdom.version>2.0.1</jdom.version>
+		<jdom2.version>2.0.5</jdom2.version>
 		<joda-time.version>2.3</joda-time.version>
 		<jolokia.version>1.2.1</jolokia.version>
 		<jstl.version>1.2</jstl.version>
@@ -118,6 +118,7 @@
 		<tomcat.version>7.0.54</tomcat.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
+		<wsdl4j.version>1.6.1</wsdl4j.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.0</maven>
@@ -834,8 +835,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.jdom</groupId>
-				<artifactId>jdom</artifactId>
-				<version>${jdom.version}</version>
+				<artifactId>jdom2</artifactId>
+				<version>${jdom2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.liquibase</groupId>
@@ -1067,6 +1068,26 @@
 				<version>${spring-social.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework.social</groupId>
+				<artifactId>spring-social-facebook</artifactId>
+				<version>${spring-social-facebook.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.social</groupId>
+				<artifactId>spring-social-facebook-web</artifactId>
+				<version>${spring-social-facebook.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.social</groupId>
+				<artifactId>spring-social-linkedin</artifactId>
+				<version>${spring-social-linkedin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.social</groupId>
+				<artifactId>spring-social-twitter</artifactId>
+				<version>${spring-social-twitter.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.ws</groupId>
 				<artifactId>spring-ws-core</artifactId>
 				<version>${spring-ws.version}</version>
@@ -1111,16 +1132,6 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>wsdl4j</groupId>
-				<artifactId>wsdl4j</artifactId>
-				<version>1.6.3</version>
-			</dependency>
-			<dependency>
-				<groupId>xmlunit</groupId>
-				<artifactId>xmlunit</artifactId>
-				<version>1.5</version>
-			</dependency>
-			<dependency>
 				<groupId>org.thymeleaf</groupId>
 				<artifactId>thymeleaf</artifactId>
 				<version>${thymeleaf.version}</version>
@@ -1136,26 +1147,6 @@
 				<version>${thymeleaf-extras-springsecurity3.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-facebook</artifactId>
-				<version>${spring-social-facebook.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-facebook-web</artifactId>
-				<version>${spring-social-facebook.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-twitter</artifactId>
-				<version>${spring-social-twitter.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.social</groupId>
-				<artifactId>spring-social-linkedin</artifactId>
-				<version>${spring-social-linkedin.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
 				<version>${snakeyaml.version}</version>
@@ -1164,6 +1155,11 @@
 				<groupId>redis.clients</groupId>
 				<artifactId>jedis</artifactId>
 				<version>${jedis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>wsdl4j</groupId>
+				<artifactId>wsdl4j</artifactId>
+				<version>${wsdl4j.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
