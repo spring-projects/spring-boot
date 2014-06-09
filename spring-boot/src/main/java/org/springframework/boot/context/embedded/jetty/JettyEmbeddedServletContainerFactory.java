@@ -100,30 +100,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		int port = (getPort() >= 0 ? getPort() : 0);
 		Server server = new Server(new InetSocketAddress(getAddress(), port));
-
-		if (this.resourceLoader != null) {
-			context.setClassLoader(this.resourceLoader.getClassLoader());
-		}
-		String contextPath = getContextPath();
-		context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
-		configureDocumentRoot(context);
-		if (isRegisterDefaultServlet()) {
-			addDefaultServlet(context);
-		}
-		if (isRegisterJspServlet()
-				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
-						.getClassLoader())) {
-			addJspServlet(context);
-		}
-
-		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		Configuration[] configurations = getWebAppContextConfigurations(context,
-				initializersToUse);
-		context.setConfigurations(configurations);
-		context.getSessionHandler().getSessionManager()
-				.setMaxInactiveInterval(getSessionTimeout());
-		postProcessWebAppContext(context);
-
+		configureWebAppContext(context, initializers);
 		server.setHandler(context);
 		this.logger.info("Server initialized with port: " + port);
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
@@ -151,7 +128,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 	}
 
-	private void addDefaultServlet(WebAppContext context) {
+	protected void addDefaultServlet(WebAppContext context) {
 		ServletHolder holder = new ServletHolder();
 		holder.setName("default");
 		holder.setClassName("org.eclipse.jetty.servlet.DefaultServlet");
@@ -161,7 +138,7 @@ public class JettyEmbeddedServletContainerFactory extends
 		context.getServletHandler().getServletMapping("/").setDefault(true);
 	}
 
-	private void addJspServlet(WebAppContext context) {
+	protected void addJspServlet(WebAppContext context) {
 		ServletHolder holder = new ServletHolder();
 		holder.setName("jsp");
 		holder.setClassName(getJspServletClassName());
@@ -344,4 +321,29 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 	}
 
+	protected void configureWebAppContext(WebAppContext context,
+			ServletContextInitializer... initializers) {
+		if (this.resourceLoader != null) {
+			context.setClassLoader(this.resourceLoader.getClassLoader());
+		}
+		String contextPath = getContextPath();
+		context.setContextPath(StringUtils.hasLength(contextPath) ? contextPath : "/");
+		configureDocumentRoot(context);
+		if (isRegisterDefaultServlet()) {
+			addDefaultServlet(context);
+		}
+		if (isRegisterJspServlet()
+				&& ClassUtils.isPresent(getJspServletClassName(), getClass()
+						.getClassLoader())) {
+			addJspServlet(context);
+		}
+
+		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
+		Configuration[] configurations = getWebAppContextConfigurations(context,
+				initializersToUse);
+		context.setConfigurations(configurations);
+		context.getSessionHandler().getSessionManager()
+				.setMaxInactiveInterval(getSessionTimeout());
+		postProcessWebAppContext(context);
+	}
 }
