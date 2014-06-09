@@ -36,7 +36,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
@@ -52,10 +51,10 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass(LiteDeviceDelegatingViewResolver.class)
-@AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@AutoConfigureAfter({ WebMvcAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
+	private static Log logger = LogFactory.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
 
 	private static abstract class AbstractDelegateConfiguration implements
 			EnvironmentAware {
@@ -103,8 +102,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration
-		@ConditionalOnBean(ThymeleafViewResolver.class)
-		@AutoConfigureAfter(ThymeleafAutoConfiguration.class)
+		@ConditionalOnBean(name = "thymeleafViewResolver")
 		protected static class ThymeleafViewResolverViewResolverDelegateConfiguration
 				extends AbstractDelegateConfiguration {
 
@@ -124,7 +122,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 		}
 
 		@Configuration
-		@ConditionalOnMissingBean(ThymeleafViewResolver.class)
+		@ConditionalOnMissingBean(name = "thymeleafViewResolver")
 		@ConditionalOnBean(InternalResourceViewResolver.class)
 		protected static class InternalResourceViewResolverDelegateConfiguration extends
 				AbstractDelegateConfiguration {
