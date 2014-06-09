@@ -45,7 +45,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
  * {@link LiteDeviceDelegatingViewResolver}. If {@link ThymeleafViewResolver} is available
  * it is configured as the delegate view resolver. Otherwise,
  * {@link InternalResourceViewResolver} is used as a fallback.
- *
+ * 
  * @author Roy Clarkson
  * @since 1.1.0
  */
@@ -57,21 +57,49 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 
 	private static Log logger = LogFactory.getLog(WebMvcConfigurerAdapter.class);
 
-	public static final String DEFAULT_NORMAL_PREFIX = "";
+	private static abstract class AbstractDelegateConfiguration implements
+			EnvironmentAware {
 
-	public static final String DEFAULT_MOBILE_PREFIX = "mobile/";
+		private RelaxedPropertyResolver environment;
 
-	public static final String DEFAULT_TABLET_PREFIX = "tablet/";
+		@Override
+		public void setEnvironment(Environment environment) {
+			this.environment = new RelaxedPropertyResolver(environment,
+					"spring.mobile.devicedelegatingviewresolver.");
+		}
 
-	public static final String DEFAULT_NORMAL_SUFFIX = "";
+		protected LiteDeviceDelegatingViewResolver getConfiguredViewResolver(
+				ViewResolver delegate, int delegateOrder) {
+			LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
+					delegate);
+			resolver.setNormalPrefix(getProperty("normal-prefix", ""));
+			resolver.setNormalSuffix(getProperty("normal-suffix", ""));
+			resolver.setMobilePrefix(getProperty("mobile-prefix", "mobile/"));
+			resolver.setMobileSuffix(getProperty("mobile-suffix", ""));
+			resolver.setTabletPrefix(getProperty("tablet-prefix", "tablet/"));
+			resolver.setTabletSuffix(getProperty("tablet-suffix", ""));
+			resolver.setOrder(getAdjustedOrder(delegateOrder));
+			return resolver;
+		}
 
-	public static final String DEFAULT_MOBILE_SUFFIX = "";
+		private String getProperty(String key, String defaultValue) {
+			return this.environment.getProperty(key, defaultValue);
+		}
 
-	public static final String DEFAULT_TABLET_SUFFIX = "";
+		private int getAdjustedOrder(int order) {
+			if (order == Ordered.HIGHEST_PRECEDENCE) {
+				return Ordered.HIGHEST_PRECEDENCE;
+			}
+			// The view resolver must be ordered higher than the delegate view
+			// resolver, otherwise the view names will not be adjusted
+			return order - 1;
+		}
+
+	}
 
 	@Configuration
 	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
-	@ConditionalOnExpression("${spring.mobile.deviceDelegatingViewResolver.enabled:false}")
+	@ConditionalOnExpression("${spring.mobile.devicedelegatingviewresolver.enabled:false}")
 	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration
@@ -81,15 +109,16 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 				extends AbstractDelegateConfiguration {
 
 			@Autowired
-			private ThymeleafViewResolver thymeleafViewResolver;
+			private ThymeleafViewResolver viewResolver;
 
 			@Bean
 			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {
 				if (logger.isDebugEnabled()) {
-					logger.debug("LiteDeviceDelegatingViewResolver delegates to ThymeleafViewResolver");
+					logger.debug("LiteDeviceDelegatingViewResolver delegates to "
+							+ "ThymeleafViewResolver");
 				}
-				return getConfiguredViewResolver(thymeleafViewResolver,
-						thymeleafViewResolver.getOrder());
+				return getConfiguredViewResolver(this.viewResolver,
+						this.viewResolver.getOrder());
 			}
 
 		}
@@ -101,58 +130,16 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 				AbstractDelegateConfiguration {
 
 			@Autowired
-			private InternalResourceViewResolver internalResourceViewResolver;
+			private InternalResourceViewResolver viewResolver;
 
 			@Bean
 			public LiteDeviceDelegatingViewResolver deviceDelegatingViewResolver() {
 				if (logger.isDebugEnabled()) {
-					logger.debug("LiteDeviceDelegatingViewResolver delegates to InternalResourceViewResolver");
+					logger.debug("LiteDeviceDelegatingViewResolver delegates to "
+							+ "InternalResourceViewResolver");
 				}
-				return getConfiguredViewResolver(internalResourceViewResolver,
-						internalResourceViewResolver.getOrder());
-			}
-
-		}
-
-		private static abstract class AbstractDelegateConfiguration implements
-				EnvironmentAware {
-
-			private RelaxedPropertyResolver environment;
-
-			@Override
-			public void setEnvironment(Environment environment) {
-				this.environment = new RelaxedPropertyResolver(environment,
-						"spring.mobile.deviceDelegatingViewResolver.");
-			}
-
-			protected LiteDeviceDelegatingViewResolver getConfiguredViewResolver(
-					ViewResolver delegate, int delegateOrder) {
-				LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
-						delegate);
-				resolver.setNormalPrefix(this.environment.getProperty("normalPrefix",
-						DEFAULT_NORMAL_PREFIX));
-				resolver.setMobilePrefix(this.environment.getProperty("mobilePrefix",
-						DEFAULT_MOBILE_PREFIX));
-				resolver.setTabletPrefix(this.environment.getProperty("tabletPrefix",
-						DEFAULT_TABLET_PREFIX));
-				resolver.setNormalSuffix(this.environment.getProperty("normalSuffix",
-						DEFAULT_NORMAL_SUFFIX));
-				resolver.setMobileSuffix(this.environment.getProperty("mobileSuffix",
-						DEFAULT_MOBILE_SUFFIX));
-				resolver.setTabletSuffix(this.environment.getProperty("tabletSuffix",
-						DEFAULT_TABLET_SUFFIX));
-				resolver.setOrder(getAdjustedOrder(delegateOrder));
-				return resolver;
-			}
-
-			private int getAdjustedOrder(int delegateViewResolverOrder) {
-				if (delegateViewResolverOrder == Ordered.HIGHEST_PRECEDENCE) {
-					return Ordered.HIGHEST_PRECEDENCE;
-				} else {
-					// The view resolver must be ordered higher than the delegate view
-					// resolver, otherwise the view names will not be adjusted
-					return delegateViewResolverOrder - 1;
-				}
+				return getConfiguredViewResolver(this.viewResolver,
+						this.viewResolver.getOrder());
 			}
 
 		}

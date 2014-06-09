@@ -45,9 +45,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @Configuration
 @ConditionalOnClass({ SitePreferenceHandlerInterceptor.class,
-	SitePreferenceHandlerMethodArgumentResolver.class })
+		SitePreferenceHandlerMethodArgumentResolver.class })
 @AutoConfigureAfter(DeviceResolverAutoConfiguration.class)
-@ConditionalOnExpression("${spring.mobile.sitePreference.enabled:true}")
+@ConditionalOnExpression("${spring.mobile.sitepreference.enabled:true}")
 public class SitePreferenceAutoConfiguration {
 
 	@Configuration

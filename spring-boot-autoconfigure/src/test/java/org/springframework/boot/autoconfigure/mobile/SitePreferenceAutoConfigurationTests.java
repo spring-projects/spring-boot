@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -41,9 +38,12 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 /**
  * Tests for {@link SitePreferenceAutoConfiguration}.
- *
+ * 
  * @author Roy Clarkson
  */
 public class SitePreferenceAutoConfigurationTests {
@@ -70,7 +70,8 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test
 	public void sitePreferenceHandlerInterceptorEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(SitePreferenceHandlerInterceptor.class));
@@ -79,7 +80,8 @@ public class SitePreferenceAutoConfigurationTests {
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceHandlerInterceptorDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.sitepreference.enabled:false");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerInterceptor.class);
@@ -90,22 +92,26 @@ public class SitePreferenceAutoConfigurationTests {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertNotNull(this.context
+				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
 	}
 
 	@Test
 	public void sitePreferenceMethodArgumentResolverEnabled() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.sitepreference.enabled:true");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
+		assertNotNull(this.context
+				.getBean(SitePreferenceHandlerMethodArgumentResolver.class));
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void sitePreferenceMethodArgumentResolverDisabled() {
 		this.context = new AnnotationConfigWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context, "spring.mobile.sitePreference.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.sitepreference.enabled:false");
 		this.context.register(SitePreferenceAutoConfiguration.class);
 		this.context.refresh();
 		this.context.getBean(SitePreferenceHandlerMethodArgumentResolver.class);
@@ -120,7 +126,8 @@ public class SitePreferenceAutoConfigurationTests {
 				SitePreferenceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		context.refresh();
-		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context.getBean("requestMappingHandlerMapping");
+		RequestMappingHandlerMapping mapping = (RequestMappingHandlerMapping) context
+				.getBean("requestMappingHandlerMapping");
 		Field interceptorsField = ReflectionUtils.findField(
 				RequestMappingHandlerMapping.class, "interceptors");
 		interceptorsField.setAccessible(true);

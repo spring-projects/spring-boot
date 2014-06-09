@@ -290,16 +290,16 @@ content into your application; rather pick only the properties that you need.
 	spring.social.twitter.appSecret= # your application's Twitter App Secret
 
 	# SPRING MOBILE SITE PREFERENCE ({sc-spring-boot-autoconfigure}/mobile/SitePreferenceAutoConfiguration.{sc-ext}[SitePreferenceAutoConfiguration])
-	spring.mobile.sitePreference.enabled=true # enabled by default
+	spring.mobile.sitepreference.enabled=true # enabled by default
 
 	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DevceDelegatingViewResolverAutoConfiguration.{sc-ext}[DevceDelegatingViewResolverAutoConfiguration])
-	spring.mobile.deviceDelegatingViewResolver.enabled=true # disabled by default
-	spring.mobile.deviceDelegatingViewResolver.normalPrefix=nor/
-	spring.mobile.deviceDelegatingViewResolver.mobilePrefix=mob/ # default is "mobile/"
-	spring.mobile.deviceDelegatingViewResolver.tabletPrefix=tab/ # default is "tablet/"
-	spring.mobile.deviceDelegatingViewResolver.normalSuffix=.nor
-	spring.mobile.deviceDelegatingViewResolver.mobileSuffix=.mob
-	spring.mobile.deviceDelegatingViewResolver.tabletSuffix=.tab
+	spring.mobile.devicedelegatingviewresolver.enabled=true # disabled by default
+	spring.mobile.devicedelegatingviewresolver.normalPrefix=
+	spring.mobile.devicedelegatingviewresolver.normalSuffix=
+	spring.mobile.devicedelegatingviewresolver.mobilePrefix=mobile/
+	spring.mobile.devicedelegatingviewresolver.mobileSuffix=
+	spring.mobile.devicedelegatingviewresolver.tabletPrefix=tablet/
+	spring.mobile.devicedelegatingviewresolver.tabletSuffix=
 
 	# ----------------------------------------
 	# ACTUATOR PROPERTIES

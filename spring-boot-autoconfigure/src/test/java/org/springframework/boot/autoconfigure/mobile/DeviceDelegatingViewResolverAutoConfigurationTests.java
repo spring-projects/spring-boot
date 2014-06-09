@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mobile;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.lang.reflect.Field;
 
 import org.junit.After;
@@ -43,9 +39,13 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for {@link DeviceDelegatingViewResolverAutoConfiguration}.
- *
+ * 
  * @author Roy Clarkson
  */
 public class DeviceDelegatingViewResolverAutoConfigurationTests {
@@ -74,33 +74,36 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void deviceDelegatingInternalResourceViewResolverEnabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		InternalResourceViewResolver internalResourceViewResolver = this.context.getBean(InternalResourceViewResolver.class);
-		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver",
-				AbstractDeviceDelegatingViewResolver.class);
+		InternalResourceViewResolver internalResourceViewResolver = this.context
+				.getBean(InternalResourceViewResolver.class);
+		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						AbstractDeviceDelegatingViewResolver.class);
 		assertNotNull(internalResourceViewResolver);
 		assertNotNull(deviceDelegatingViewResolver);
 		assertTrue(deviceDelegatingViewResolver.getViewResolver() instanceof InternalResourceViewResolver);
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
-		} catch (NoSuchBeanDefinitionException e) {
+		}
+		catch (NoSuchBeanDefinitionException e) {
 			// expected. ThymeleafViewResolver shouldn't be defined.
 		}
-		assertTrue(deviceDelegatingViewResolver.getOrder() == internalResourceViewResolver.getOrder() - 1);
+		assertTrue(deviceDelegatingViewResolver.getOrder() == internalResourceViewResolver
+				.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void deviceDelegatingInternalResourceViewResolverDisabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
@@ -109,7 +112,8 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
 		try {
 			this.context.getBean(ThymeleafViewResolver.class);
-		} catch (NoSuchBeanDefinitionException e) {
+		}
+		catch (NoSuchBeanDefinitionException e) {
 			// expected. ThymeleafViewResolver shouldn't be defined.
 		}
 		this.context.getBean("deviceDelegatingViewResolver",
@@ -119,31 +123,33 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void deviceDelegatingThymeleafViewResolverEnabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				ThymeleafAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		ThymeleafViewResolver thymeleafViewResolver = this.context.getBean(ThymeleafViewResolver.class);
-		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver",
-				AbstractDeviceDelegatingViewResolver.class);
+		ThymeleafViewResolver thymeleafViewResolver = this.context
+				.getBean(ThymeleafViewResolver.class);
+		AbstractDeviceDelegatingViewResolver deviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						AbstractDeviceDelegatingViewResolver.class);
 		assertNotNull(thymeleafViewResolver);
 		assertNotNull(deviceDelegatingViewResolver);
 		assertTrue(deviceDelegatingViewResolver.getViewResolver() instanceof ThymeleafViewResolver);
 		assertNotNull(this.context.getBean(InternalResourceViewResolver.class));
 		assertNotNull(this.context.getBean(ThymeleafViewResolver.class));
-		assertTrue(deviceDelegatingViewResolver.getOrder() == thymeleafViewResolver.getOrder() - 1);
+		assertTrue(deviceDelegatingViewResolver.getOrder() == thymeleafViewResolver
+				.getOrder() - 1);
 	}
 
 	@Test(expected = NoSuchBeanDefinitionException.class)
 	public void deviceDelegatingThymeleafViewResolverDisabled() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:false");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:false");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				ThymeleafAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
@@ -159,15 +165,16 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void defaultPropertyValues() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
 
 		Field normalPrefixField = ReflectionUtils.findField(
 				LiteDeviceDelegatingViewResolver.class, "normalPrefix");
@@ -215,16 +222,17 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void overrideNormalPrefix() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true",
-				"spring.mobile.deviceDelegatingViewResolver.normalPrefix:normal/");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.normalPrefix:normal/");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
 		Field normalPrefixField = ReflectionUtils.findField(
 				LiteDeviceDelegatingViewResolver.class, "normalPrefix");
 		normalPrefixField.setAccessible(true);
@@ -236,16 +244,17 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void overrideMobilePrefix() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true",
-				"spring.mobile.deviceDelegatingViewResolver.mobilePrefix:mob/");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.mobilePrefix:mob/");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
 		Field mobilePrefixField = ReflectionUtils.findField(
 				LiteDeviceDelegatingViewResolver.class, "mobilePrefix");
 		mobilePrefixField.setAccessible(true);
@@ -257,16 +266,17 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void overrideTabletPrefix() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true",
-				"spring.mobile.deviceDelegatingViewResolver.tabletPrefix:tab/");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.tabletPrefix:tab/");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
 		Field tabletPrefixField = ReflectionUtils.findField(
 				LiteDeviceDelegatingViewResolver.class, "tabletPrefix");
 		tabletPrefixField.setAccessible(true);
@@ -278,16 +288,17 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void overrideNormalSuffix() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true",
-				"spring.mobile.deviceDelegatingViewResolver.normalSuffix:.nor");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.normalSuffix:.nor");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
 		Field normalSuffixField = ReflectionUtils.findField(
 				LiteDeviceDelegatingViewResolver.class, "normalSuffix");
 		normalSuffixField.setAccessible(true);
@@ -299,16 +310,17 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void overrideMobileSuffix() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true",
-				"spring.mobile.deviceDelegatingViewResolver.mobileSuffix:.mob");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.mobileSuffix:.mob");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
 		Field mobileSuffixField = ReflectionUtils.findField(
 				LiteDeviceDelegatingViewResolver.class, "mobileSuffix");
 		mobileSuffixField.setAccessible(true);
@@ -320,16 +332,17 @@ public class DeviceDelegatingViewResolverAutoConfigurationTests {
 	@Test
 	public void overrideTabletSuffix() throws Exception {
 		this.context = new AnnotationConfigEmbeddedWebApplicationContext();
-		EnvironmentTestUtils.addEnvironment(context,
-				"spring.mobile.deviceDelegatingViewResolver.enabled:true",
-				"spring.mobile.deviceDelegatingViewResolver.tabletSuffix:.tab");
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.mobile.devicedelegatingviewresolver.enabled:true",
+				"spring.mobile.devicedelegatingviewresolver.tabletSuffix:.tab");
 		this.context.register(Config.class, WebMvcAutoConfiguration.class,
 				HttpMessageConvertersAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class,
 				DeviceDelegatingViewResolverConfiguration.class);
 		this.context.refresh();
-		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context.getBean(
-				"deviceDelegatingViewResolver", LiteDeviceDelegatingViewResolver.class);
+		LiteDeviceDelegatingViewResolver liteDeviceDelegatingViewResolver = this.context
+				.getBean("deviceDelegatingViewResolver",
+						LiteDeviceDelegatingViewResolver.class);
 		Field tabletSuffixField = ReflectionUtils.findField(
 				LiteDeviceDelegatingViewResolver.class, "tabletSuffix");
 		tabletSuffixField.setAccessible(true);
