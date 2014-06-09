@@ -22,9 +22,12 @@ import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaPlugin
 import org.springframework.boot.gradle.agent.AgentPluginFeatures
+import org.springframework.boot.gradle.exclude.ExcludePluginFeatures
 import org.springframework.boot.gradle.repackage.RepackagePluginFeatures
 import org.springframework.boot.gradle.resolve.ResolvePluginFeatures
+import org.springframework.boot.gradle.resolve.SpringBootResolutionStrategy
 import org.springframework.boot.gradle.run.RunPluginFeatures
+
 
 /**
  * Gradle 'Spring Boot' {@link Plugin}.
@@ -41,11 +44,13 @@ class SpringBootPlugin implements Plugin<Project> {
 		project.getPlugins().apply(ApplicationPlugin)
 
 		project.getExtensions().create("springBoot", SpringBootPluginExtension)
+		project.getConfigurations().create(VersionManagedDependencies.CONFIGURATION);
 
 		new AgentPluginFeatures().apply(project)
 		new ResolvePluginFeatures().apply(project)
 		new RepackagePluginFeatures().apply(project)
 		new RunPluginFeatures().apply(project)
+		new ExcludePluginFeatures().apply(project)
 
 		useUtf8Encoding(project)
 	}

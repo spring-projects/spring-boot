@@ -1,5 +1,14 @@
 import org.gradle.api.artifacts.result.UnresolvedDependencyResult;
 
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}")
+	}
+}
+
 repositories {
 	mavenLocal()
 	mavenCentral()
@@ -12,6 +21,8 @@ configurations {
 dependencies {
 	springBootStarter "org.springframework.boot:${project.starter}:${project.bootVersion}"
 }
+
+apply plugin: 'spring-boot'
 
 task checkCommonsLogging {
 	doFirst {
