@@ -66,7 +66,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
-	private String[] keysToSanitize = new String[] { "password", "secret" };
+	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
 
 	private ApplicationContext context;
 
@@ -74,10 +74,6 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	public ConfigurationPropertiesReportEndpoint() {
 		super("configprops");
-	}
-
-	public String[] getKeysToSanitize() {
-		return this.keysToSanitize;
 	}
 
 	@Override

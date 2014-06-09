@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Adapter to expose {@link EnvironmentEndpoint} as an {@link MvcEndpoint}.
  * 
  * @author Dave Syer
+ * @author Christian Dupuis
  */
 public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
 		EnvironmentAware {
@@ -47,7 +48,7 @@ public class EnvironmentMvcEndpoint extends EndpointMvcAdapter implements
 		if (result == null) {
 			throw new NoSuchPropertyException("No such property: " + name);
 		}
-		return EnvironmentEndpoint.sanitize(name, result);
+		return ((EnvironmentEndpoint) getDelegate()).sanitize(name, result);
 	}
 
 	@Override

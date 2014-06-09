@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,22 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EnvironmentEndpoint}.
  * 
  * @author Phillip Webb
+ * @author Christian Dupuis
  */
 public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentEndpoint> {
 
@@ -38,6 +42,19 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void invoke() throws Exception {
 		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testKeySanitization() throws Exception {
+		System.setProperty("dbPassword", "123456");
+		System.setProperty("apiKey", "123456");
+		EnvironmentEndpoint report = getEndpointBean();
+		Map<String, Object> env = report.invoke();
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("dbPassword"));
+		assertEquals("******",
+				((Map<String, Object>) env.get("systemProperties")).get("apiKey"));
 	}
 
 	@Configuration
