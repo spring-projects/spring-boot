@@ -269,25 +269,25 @@ content into your application; rather pick only the properties that you need.
 
 	# AOP
 	spring.aop.auto=
-	spring.aop.proxyTargetClass=
+	spring.aop.proxy-target-class=
 
 	# FILE ENCODING ({sc-spring-boot}/context/FileEncodingApplicationListener.{sc-ext}[FileEncodingApplicationListener])
 	spring.mandatory-file-encoding=false
 
 	# SPRING SOCIAL ({sc-spring-boot-autoconfigure}/social/SocialWebAutoConfiguration.{sc-ext}[SocialWebAutoConfiguration])
-	spring.social.auto_connection_views=true # Set to true for default connection views or false if you provide your own
+	spring.social.auto-connection-views=true # Set to true for default connection views or false if you provide your own
 
 	# SPRING SOCIAL FACEBOOK ({sc-spring-boot-autoconfigure}/social/FacebookAutoConfiguration.{sc-ext}[FacebookAutoConfiguration])
-	spring.social.facebook.appId= # your application's Facebook App ID
-	spring.social.facebook.appSecret= # your application's Facebook App Secret
+	spring.social.facebook.app-id= # your application's Facebook App ID
+	spring.social.facebook.app-secret= # your application's Facebook App Secret
 
 	# SPRING SOCIAL LINKEDIN ({sc-spring-boot-autoconfigure}/social/LinkedInAutoConfiguration.{sc-ext}[LinkedInAutoConfiguration])
-	spring.social.linkedin.appId= # your application's LinkedIn App ID
-	spring.social.linkedin.appSecret= # your application's LinkedIn App Secret
+	spring.social.linkedin.app-id= # your application's LinkedIn App ID
+	spring.social.linkedin.app-secret= # your application's LinkedIn App Secret
 
 	# SPRING SOCIAL TWITTER ({sc-spring-boot-autoconfigure}/social/TwitterAutoConfiguration.{sc-ext}[TwitterAutoConfiguration])
-	spring.social.twitter.appId= # your application's Twitter App ID
-	spring.social.twitter.appSecret= # your application's Twitter App Secret
+	spring.social.twitter.app-id= # your application's Twitter App ID
+	spring.social.twitter.app-secret= # your application's Twitter App Secret
 
 	# SPRING MOBILE SITE PREFERENCE ({sc-spring-boot-autoconfigure}/mobile/SitePreferenceAutoConfiguration.{sc-ext}[SitePreferenceAutoConfiguration])
 	spring.mobile.sitepreference.enabled=true # enabled by default
