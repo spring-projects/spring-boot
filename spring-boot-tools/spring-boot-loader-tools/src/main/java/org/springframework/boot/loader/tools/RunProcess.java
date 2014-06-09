@@ -26,10 +26,11 @@ import java.util.Collection;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Special utility used to run a process.
+ * Utility used to run a process.
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.1.0
  */
 public class RunProcess {
 

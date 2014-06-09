@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * Provides access to the java binary executable, regardless of OS.
  * 
  * @author Phillip Webb
+ * @since 1.1.0
  */
 public class JavaExecutable {
 
@@ -47,7 +48,11 @@ public class JavaExecutable {
 		return command;
 	}
 
-	// TODO: is this used?
+	/**
+	 * Create a new {@link ProcessBuilder} that will run with the Java executable.
+	 * @param arguments the command arguments
+	 * @return a {@link ProcessBuilder}
+	 */
 	public ProcessBuilder processBuilder(String... arguments) {
 		ProcessBuilder processBuilder = new ProcessBuilder(toString());
 		processBuilder.command().addAll(Arrays.asList(arguments));

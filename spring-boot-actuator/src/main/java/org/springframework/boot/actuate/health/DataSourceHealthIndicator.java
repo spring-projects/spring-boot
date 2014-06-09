@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author Dave Syer
  * @author Christian Dupuis
+ * @since 1.1.0
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator {
 

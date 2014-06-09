@@ -105,7 +105,6 @@ public class EndpointWebMvcChildContextConfiguration {
 
 	@Bean
 	public HandlerAdapter handlerAdapter(HttpMessageConverters converters) {
-		// TODO: maybe this needs more configuration for non-basic response use cases
 		RequestMappingHandlerAdapter adapter = new RequestMappingHandlerAdapter();
 		adapter.setMessageConverters(converters.getConverters());
 		return adapter;

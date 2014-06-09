@@ -46,6 +46,7 @@ import com.mongodb.Mongo;
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long
+ * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoTemplate.class })
