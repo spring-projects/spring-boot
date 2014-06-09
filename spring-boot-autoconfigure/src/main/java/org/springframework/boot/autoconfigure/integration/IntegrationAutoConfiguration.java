@@ -16,15 +16,19 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import javax.management.MBeanServer;
+
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.jmx.config.IntegrationMBeanExportConfiguration;
+import org.springframework.jmx.support.MBeanServerFactoryBean;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -50,6 +54,14 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnExpression("${spring.jmx.enabled:true}")
 	@EnableIntegrationMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:mbeanServer}")
 	protected static class IntegrationJmxConfiguration {
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(MBeanServer.class)
+	public MBeanServerFactoryBean mbeanServer() {
+		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
+		factory.setLocateExistingServerIfPossible(true);
+		return factory;
 	}
 
 }
