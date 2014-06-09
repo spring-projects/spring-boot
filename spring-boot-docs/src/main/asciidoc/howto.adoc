@@ -1004,7 +1004,6 @@ Spring Boot tries to guess the location of your `@Repository` definitions, based
 annotation (from Spring Data JPA).
 
 
-
 [[howto-separate-entity-definitions-from-spring-configuration]]
 === Separate @Entity definitions from Spring configuration
 Spring Boot tries to guess the location of your `@Entity` definitions, based on the
@@ -1116,6 +1115,26 @@ See
 https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
 for the default settings.
 
+[[howto-use-spring-data-jpa--and-mongo-repositories]]
+=== Use Spring Data JPA and Mongo repositories 
+
+Spring Data JPA and Spring Data Mongo can both create `Repository`
+implementations for you automatically. If they are both present on the
+classpath, you might have to do some extra configuration to tell
+Spring Boot which one (or both) you want to create repositories for
+you. The most explicit way to do that is to use the standard Spring
+Data `@Enable*Repositories` and tell it the location of your
+`Repository` interfaces (where "*" is "Jpa" or "Mongo" or both).
+
+There are also flags `spring.data.*.repositories.enabled` that you can
+use to switch the autoconfigured repositories on and off in external
+configuration.  This is useful for instance in case you want to switch
+off the Mongo repositories and still use the autoconfigured
+`MongoTemplate`.
+
+The same obstacle and the same features exist for other autoconfigured
+Spring Data repository types (Elasticsearch, Solr). Just change the
+names of the annotations and flags respectively.
 
 
 [[howto-database-initialization]]
