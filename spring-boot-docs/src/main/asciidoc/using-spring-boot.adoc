@@ -287,7 +287,6 @@ and Hibernate.
 
 |`spring-boot-starter-websocket`
 |Support for websocket development with Tomcat.
-|===
 
 |`spring-boot-starter-ws`
 |Support for Spring Web Services
