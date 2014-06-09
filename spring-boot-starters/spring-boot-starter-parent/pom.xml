@@ -28,7 +28,6 @@
 				<artifactId>spring-core</artifactId>
 				<version>${spring.version}</version>
 				<exclusions>
-					<!-- Starters use SLF4J -->
 					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
