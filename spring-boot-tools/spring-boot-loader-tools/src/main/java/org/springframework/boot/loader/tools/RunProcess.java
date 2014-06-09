@@ -27,9 +27,10 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility used to run a process.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 public class RunProcess {
@@ -59,9 +60,10 @@ public class RunProcess {
 		builder.redirectErrorStream(true);
 		boolean inheritedIO = inheritIO(builder);
 		try {
-			this.process = builder.start();
+			Process process = builder.start();
+			this.process = process;
 			if (!inheritedIO) {
-				redirectOutput(this.process);
+				redirectOutput(process);
 			}
 			SignalUtils.attachSignalHandler(new Runnable() {
 				@Override
@@ -70,15 +72,10 @@ public class RunProcess {
 				}
 			});
 			try {
-				this.process.waitFor();
+				return process.waitFor();
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
-			}
-			try {
-				return this.process.exitValue();
-			}
-			catch (IllegalThreadStateException e) {
 				return 1;
 			}
 		}
