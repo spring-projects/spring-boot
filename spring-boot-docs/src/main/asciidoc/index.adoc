@@ -14,6 +14,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :github-repo: spring-projects/spring-boot
 :github-raw: http://raw.github.com/{github-repo}/{github-tag}
 :github-code: http://github.com/{github-repo}/tree/{github-tag}
+:github-wiki: http://github.com/{github-repo}/wiki
 :github-master-code: http://github.com/{github-repo}/tree/master
 :sc-ext: java
 :sc-spring-boot: {github-code}/spring-boot/src/main/java/org/springframework/boot

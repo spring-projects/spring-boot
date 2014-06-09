@@ -373,6 +373,19 @@ output:
 
 
 
+[[getting-started-upgrading-from-an-earlier-version]]
+=== Upgrading from an earlier version of Spring Boot
+If you are upgrading from an earlier release of Spring Boot check the ``release notes''
+hosted on the {github-wiki}[project wiki]. You'll find upgrade instructions along with
+a list of ``new and noteworthy'' features for each release.
+
+To upgrade an existing CLI installation use the appropriate package manager command
+(for example `brew upgrade`) or, if you manually installed the CLI, follow the
+<<getting-started-manual-cli-installation, standard instructions>> remembering to
+update your `PATH` environment variable to remove any older references.
+
+
+
 [[getting-started-first-application]]
 == Developing your first Spring Boot application
 Let's develop a simple ``Hello World!'' web application in Java that highlights some
