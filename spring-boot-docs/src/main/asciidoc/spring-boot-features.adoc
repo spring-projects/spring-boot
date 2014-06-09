@@ -102,7 +102,7 @@ For example:
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy, e.g.
 Web components *must* be contained within the child context, and the same `Environment`
 will be used for both parent and child contexts. See the
-{dc-spring-boot}/builder/SpringApplication.{dc-ext}[`SpringApplicationBuilder` javadoc]
+{dc-spring-boot}/builder/SpringApplicationBuilder.{dc-ext}[`SpringApplicationBuilder` javadoc]
 for full details.
 
 
@@ -1244,7 +1244,7 @@ in `application.properties`:
 	spring.datasource.driverClassName=com.mysql.jdbc.Driver
 ----
 
-See {sc-spring-boot-autoconfigure}/jdbc/AbstractDataSourceConfiguration.{sc-ext}[`AbstractDataSourceConfiguration`]
+See {sc-spring-boot-autoconfigure}/jdbc/DataSourceProperties.{sc-ext}[`DataSourceProperties`]
 for more of the supported options.
 
 NOTE: For a pooling `DataSource` to be created we need to be able to verify that a valid
@@ -1609,7 +1609,7 @@ https://github.com/spring-projects/spring-data-gemfire/blob/master/src/main/java
 === Solr
 http://lucene.apache.org/solr/[Apache Solr] is a search engine. Spring Boot offers basic
 auto-configuration for the solr client library and abstractions on top of it provided by
-https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Solr]. There is
+https://github.com/spring-projects/spring-data-solr[Spring Data Solr]. There is
 a `spring-boot-starter-data-solr` ``Starter POM'' for collecting the dependencies in a
 convenient way.
 
@@ -1662,7 +1662,7 @@ http://projects.spring.io/spring-data-solr/[reference documentation].
 http://www.elasticsearch.org/[Elastic Search] is an open source, distributed,
 real-time search and analytics engine. Spring Boot offers basic auto-configuration for
 the Elasticsearch and abstractions on top of it provided by
-[Spring Data Elasticsearch](https://github.com/spring-projects/spring-data-elasticsearch).
+https://github.com/spring-projects/spring-data-elasticsearch[Spring Data Elasticsearch].
 There is a `spring-boot-starter-data-elasticsearch` ``Starter POM'' for collecting the
 dependencies in a convenient way.
 
@@ -1710,7 +1710,7 @@ infrastructure; so you could take the JPA example from earlier and, assuming tha
 work in the same way.
 
 TIP: For complete details of Spring Data Elasticsearch, refer to their
-http://projects.spring.io/spring-data-elasticsearch/[reference documentation].
+http://docs.spring.io/spring-data/elasticsearch/docs/[reference documentation].
 
 
 
