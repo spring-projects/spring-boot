@@ -289,6 +289,10 @@ and Hibernate.
 |Support for websocket development with Tomcat.
 |===
 
+|`spring-boot-starter-ws`
+|Support for Spring Web Services
+|===
+
 In addition to the application starters, the following starters can be used to
 add '<<production-ready-features.adoc#production-ready, production ready>>' features.
 
