@@ -108,4 +108,9 @@ public class SpringBootPluginExtension {
 	 * Flag to indicate that the agent requires -noverify (and the plugin will refuse to start if it is not set)
 	 */
 	Boolean noverify;
+
+	/**
+	 * If exclude rules should be applied to dependencies based on the spring-dependencies-bom
+	 */
+	boolean applyExcludeRules = true;
 }

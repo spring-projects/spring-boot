@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.resolve;
+package org.springframework.boot.gradle.exclude;
 
-import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.springframework.boot.gradle.PluginFeatures;
+import org.springframework.boot.gradle.SpringBootPluginExtension;
 
 /**
- * {@link PluginFeatures} to add version resolution support.
+ * {@link PluginFeatures} to apply exclusion rules.
  *
  * @author Phillip Webb
  */
-public class ResolvePluginFeatures implements PluginFeatures {
+public class ExcludePluginFeatures implements PluginFeatures {
 
 	@Override
-	public void apply(final Project project) {
-		project.getConfigurations().all(new Action<Configuration>() {
-			@Override
-			public void execute(Configuration configuration) {
-				SpringBootResolutionStrategy.applyToConfiguration(project, configuration);
-			}
-		});
+	public void apply(Project project) {
+		SpringBootPluginExtension extension = project.getExtensions().getByType(
+				SpringBootPluginExtension.class);
+		if (extension.isApplyExcludeRules()) {
+			project.getConfigurations().all(new ApplyExcludeRules(project));
+		}
 	}
 
 }
