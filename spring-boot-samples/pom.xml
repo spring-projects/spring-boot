@@ -58,7 +58,7 @@
 		<module>spring-boot-sample-websocket</module>
 		<module>spring-boot-sample-ws</module>
 		<module>spring-boot-sample-xml</module>
-    </modules>
+	</modules>
 	<!-- No dependencies - otherwise the samples won't work if you change the
 		parent -->
 	<build>

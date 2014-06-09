@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.ws.service;
 
 import java.util.Date;
@@ -31,4 +32,5 @@ public class StubHumanResourceService implements HumanResourceService {
 		this.logger.info("Booking holiday for [{} - {}] for [{}] ", startDate, endDate,
 				name);
 	}
+
 }

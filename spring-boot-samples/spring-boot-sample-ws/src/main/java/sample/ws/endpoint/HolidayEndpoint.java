@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.ws.endpoint;
 
 import java.text.SimpleDateFormat;
@@ -76,4 +77,5 @@ public class HolidayEndpoint {
 
 		this.humanResourceService.bookHoliday(startDate, endDate, name);
 	}
+
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.ws;
 
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
@@ -52,4 +53,5 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 	public XsdSchema countriesSchema() {
 		return new SimpleXsdSchema(new ClassPathResource("META-INF/schemas/hr.xsd"));
 	}
+
 }

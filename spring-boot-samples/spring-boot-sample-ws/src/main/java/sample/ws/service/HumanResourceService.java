@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.ws.service;
 
 import java.util.Date;
@@ -20,4 +21,5 @@ import java.util.Date;
 public interface HumanResourceService {
 
 	void bookHoliday(Date startDate, Date endDate, String name);
+
 }

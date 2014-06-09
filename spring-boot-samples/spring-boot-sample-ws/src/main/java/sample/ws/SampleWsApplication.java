@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package sample.ws;
 
 import org.springframework.boot.SpringApplication;
@@ -28,4 +29,5 @@ public class SampleWsApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleWsApplication.class, args);
 	}
+
 }
