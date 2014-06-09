@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
  * 
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andrey Hihlovskiy
  * @see #setPort(int)
  * @see #setConfigurations(Collection)
  * @see JettyEmbeddedServletContainer
@@ -100,7 +101,24 @@ public class JettyEmbeddedServletContainerFactory extends
 		JettyEmbeddedWebAppContext context = new JettyEmbeddedWebAppContext();
 		int port = (getPort() >= 0 ? getPort() : 0);
 		Server server = new Server(new InetSocketAddress(getAddress(), port));
+		configureWebAppContext(context, initializers);
+		server.setHandler(context);
+		this.logger.info("Server initialized with port: " + port);
+		for (JettyServerCustomizer customizer : getServerCustomizers()) {
+			customizer.customize(server);
+		}
 
+		return getJettyEmbeddedServletContainer(server);
+	}
+
+	/**
+	 * Configure the given Jetty {@link WebAppContext} for use.
+	 * @param context the context to configure
+	 * @param initializers the set of initializers to apply
+	 */
+	protected final void configureWebAppContext(WebAppContext context,
+			ServletContextInitializer... initializers) {
+		Assert.notNull(context, "Context must not be null");
 		if (this.resourceLoader != null) {
 			context.setClassLoader(this.resourceLoader.getClassLoader());
 		}
@@ -123,14 +141,6 @@ public class JettyEmbeddedServletContainerFactory extends
 		context.getSessionHandler().getSessionManager()
 				.setMaxInactiveInterval(getSessionTimeout());
 		postProcessWebAppContext(context);
-
-		server.setHandler(context);
-		this.logger.info("Server initialized with port: " + port);
-		for (JettyServerCustomizer customizer : getServerCustomizers()) {
-			customizer.customize(server);
-		}
-
-		return getJettyEmbeddedServletContainer(server);
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
@@ -151,7 +161,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		}
 	}
 
-	private void addDefaultServlet(WebAppContext context) {
+	/**
+	 * Add Jetty's {@code DefaultServlet} to the given {@link WebAppContext}.
+	 * @param context the jetty {@link WebAppContext}
+	 */
+	protected final void addDefaultServlet(WebAppContext context) {
+		Assert.notNull(context, "Context must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("default");
 		holder.setClassName("org.eclipse.jetty.servlet.DefaultServlet");
@@ -161,7 +176,12 @@ public class JettyEmbeddedServletContainerFactory extends
 		context.getServletHandler().getServletMapping("/").setDefault(true);
 	}
 
-	private void addJspServlet(WebAppContext context) {
+	/**
+	 * Add Jetty's {@code JspServlet} to the given {@link WebAppContext}.
+	 * @param context the jetty {@link WebAppContext}
+	 */
+	protected final void addJspServlet(WebAppContext context) {
+		Assert.notNull(context, "Context must not be null");
 		ServletHolder holder = new ServletHolder();
 		holder.setName("jsp");
 		holder.setClassName(getJspServletClassName());
