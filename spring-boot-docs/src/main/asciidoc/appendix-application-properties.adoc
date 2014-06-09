@@ -292,7 +292,7 @@ content into your application; rather pick only the properties that you need.
 	# SPRING MOBILE SITE PREFERENCE ({sc-spring-boot-autoconfigure}/mobile/SitePreferenceAutoConfiguration.{sc-ext}[SitePreferenceAutoConfiguration])
 	spring.mobile.sitepreference.enabled=true # enabled by default
 
-	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DevceDelegatingViewResolverAutoConfiguration.{sc-ext}[DevceDelegatingViewResolverAutoConfiguration])
+	# SPRING MOBILE DEVICE VIEWS ({sc-spring-boot-autoconfigure}/mobile/DeviceDelegatingViewResolverAutoConfiguration.{sc-ext}[DeviceDelegatingViewResolverAutoConfiguration])
 	spring.mobile.devicedelegatingviewresolver.enabled=true # disabled by default
 	spring.mobile.devicedelegatingviewresolver.normalPrefix=
 	spring.mobile.devicedelegatingviewresolver.normalSuffix=
