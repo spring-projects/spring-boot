@@ -181,6 +181,7 @@ content into your application; rather pick only the properties that you need.
 	spring.data.mongodb.host= # the db host
 	spring.data.mongodb.port=27017 # the connection port (defaults to 27107)
 	spring.data.mongodb.uri=mongodb://localhost/test # connection URL
+	spring.data.mongo.repositories.enabled=true # if spring data repository support is enabled
 
 	# JPA ({sc-spring-boot-autoconfigure}/orm/jpa/JpaBaseConfiguration.{sc-ext}[JpaBaseConfiguration], {sc-spring-boot-autoconfigure}/orm/jpa/HibernateJpaAutoConfiguration.{sc-ext}[HibernateJpaAutoConfiguration])
 	spring.jpa.properties.*= # properties to set on the JPA connection
@@ -191,15 +192,20 @@ content into your application; rather pick only the properties that you need.
 	spring.jpa.generate-ddl=false # ignored by Hibernate, might be useful for other vendors
 	spring.jpa.hibernate.naming-strategy= # naming classname
 	spring.jpa.hibernate.ddl-auto= # defaults to create-drop for embedded dbs
+	spring.data.jpa.repositories.enabled=true # if spring data repository support is enabled
 
 	# SOLR ({sc-spring-boot-autoconfigure}/solr/SolrProperties.{sc-ext}[SolrProperties}])
 	spring.data.solr.host=http://127.0.0.1:8983/solr
 	spring.data.solr.zkHost=
+	spring.data.solr.repositories.enabled=true # if spring data repository support is enabled
 
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties}])
 	spring.data.elasticsearch.cluster-name= # The cluster name (defaults to elasticsearch)
 	spring.data.elasticsearch.cluster-node= # The address(es) of the server node (comma-separated; if not specified starts a client node)
 	spring.data.elasticsearch.local=true # if local mode should be used with client nodes
+	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
+
+
 
 	# FLYWAY ({sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[FlywayProperties])
 	flyway.locations=classpath:db/migrations # locations of migrations scripts
