@@ -54,7 +54,8 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 @AutoConfigureAfter({ WebMvcAutoConfiguration.class, ThymeleafAutoConfiguration.class })
 public class DeviceDelegatingViewResolverAutoConfiguration {
 
-	private static Log logger = LogFactory.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
+	private static Log logger = LogFactory
+			.getLog(DeviceDelegatingViewResolverAutoConfiguration.class);
 
 	private static abstract class AbstractDelegateConfiguration implements
 			EnvironmentAware {
