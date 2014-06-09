@@ -1424,7 +1424,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 technologies including
 http://projects.spring.io/spring-data-mongodb/[MongoDB],
 http://projects.spring.io/spring-data-neo4j/[Neo4J],
-http://projects.spring.io/spring-data-elasticsearch/[Elasticsearch],
+https://github.com/spring-projects/spring-data-elasticsearch/[Elasticsearch],
 http://projects.spring.io/spring-data-solr/[Solr],
 http://projects.spring.io/spring-data-redis/[Redis],
 http://projects.spring.io/spring-data-gemfire/[Gemfire],
