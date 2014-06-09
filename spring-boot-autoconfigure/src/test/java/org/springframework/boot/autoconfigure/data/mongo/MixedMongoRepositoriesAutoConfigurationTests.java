@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
-import org.springframework.boot.autoconfigure.data.mongo.MixedMongoRepositoriesAutoConfigurationTests.BaseConfiguration.Registrar;
 import org.springframework.boot.autoconfigure.data.mongo.country.Country;
 import org.springframework.boot.autoconfigure.data.mongo.country.CountryRepository;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -113,28 +112,6 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration
-	@Import(Registrar.class)
-	protected static class BaseConfiguration {
-
-		protected static class Registrar implements ImportSelector {
-
-			@Override
-			public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-				List<String> names = new ArrayList<String>();
-				for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
-						HibernateJpaAutoConfiguration.class,
-						JpaRepositoriesAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-						MongoRepositoriesAutoConfiguration.class }) {
-					names.add(type.getName());
-				}
-				return names.toArray(new String[0]);
-			}
-		}
-
-	}
-
-	@Configuration
 	@TestAutoConfigurationPackage(MongoAutoConfigurationTests.class)
 	// Not this package or its parent
 	@EnableMongoRepositories(basePackageClasses = Country.class)
@@ -167,4 +144,27 @@ public class MixedMongoRepositoriesAutoConfigurationTests {
 	protected static class OverlapConfiguration {
 
 	}
+
+	@Configuration
+	@Import(Registrar.class)
+	protected static class BaseConfiguration {
+
+	}
+
+	protected static class Registrar implements ImportSelector {
+
+		@Override
+		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+			List<String> names = new ArrayList<String>();
+			for (Class<?> type : new Class<?>[] { DataSourceAutoConfiguration.class,
+					HibernateJpaAutoConfiguration.class,
+					JpaRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class,
+					MongoDataAutoConfiguration.class,
+					MongoRepositoriesAutoConfiguration.class }) {
+				names.add(type.getName());
+			}
+			return names.toArray(new String[0]);
+		}
+	}
+
 }
