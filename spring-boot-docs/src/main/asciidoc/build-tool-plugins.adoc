@@ -282,7 +282,7 @@ To build and run a project artifact, you can type the following:
 
 To build a war file that is both executable and deployable into an external container,
 you need to mark the embedded container dependencies as belonging to a configuration
-named "providedRuntime", e.g:
+named ``providedRuntime'', e.g:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -313,7 +313,7 @@ named "providedRuntime", e.g:
 
 [[build-tool-plugins-gradle-running-applications]]
 === Running a project in-place
-To run a project in place without building a jar first you can use the "bootRun" task:
+To run a project in place without building a jar first you can use the ``bootRun'' task:
 
 [indent=0]
 ----

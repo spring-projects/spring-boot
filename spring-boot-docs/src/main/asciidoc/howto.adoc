@@ -1054,7 +1054,7 @@ for more details.
 [[howto-use-custom-entity-manager]]
 === Use a custom EntityManagerFactory
 To take full control of the configuration of the `EntityManagerFactory`, you need to add
-a `@Bean` named "entityManagerFactory". Spring Boot auto-configuration switches off its
+a `@Bean` named ``entityManagerFactory''. Spring Boot auto-configuration switches off its
 entity manager based on the presence of a bean of that type.
 
 
@@ -1109,7 +1109,7 @@ might be able to use a JTA transaction manager spanning both.
 Spring doesn't require the use of XML to configure the JPA provider, and Spring Boot
 assumes you want to take advantage of that feature. If you prefer to use `persistence.xml`
 then you need to define your own `@Bean` of type `LocalEntityManagerFactoryBean` (with
-id "entityManagerFactory", and set the persistence unit name there.
+id ``entityManagerFactory'', and set the persistence unit name there.
 
 See
 https://github.com/spring-projects/spring-boot/blob/master/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]
@@ -1220,11 +1220,10 @@ independence: usually only one or at most couple of platforms is needed.
 To automatically run Flyway database migrations on startup, add the
 `org.flywaydb:flyway-core` to your classpath.
 
-The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with
-`<VERSION>` an underscore-separated version, e.g. "1" or "2_1"). By
-default they live in a folder `classpath:db/migration` but you can
-modify that using `flyway.locations` (a list). See the Flyway class from
-flyway-core for details of available settings like schemas etc. In
+The migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an
+underscore-separated version, e.g. ``1'' or ``2_1''). By default they live in a folder
+`classpath:db/migration` but you can modify that using `flyway.locations` (a list). See
+the Flyway class from flyway-core for details of available settings like schemas etc. In
 addition Spring Boot provides a small set of properties in
 {sc-spring-boot-autoconfigure}/flyway/FlywayProperties.{sc-ext}[`FlywayProperties`]
 that can be used to disable the migrations, or switch off the location checking.
@@ -1555,7 +1554,7 @@ archive as normal. To make it executable:
 . Use the appropriate launcher as a `Main-Class`, e.g. `JarLauncher` for a jar file, and
   specify the other properties it needs as manifest entries, principally a `Start-Class`.
 
-. Add the runtime dependencies in a nested "lib" directory (for a jar) and the
+. Add the runtime dependencies in a nested ``lib'' directory (for a jar) and the
   `provided` (embedded container) dependencies in a nested `lib-provided` directory.
   Remember *not* to compress the entries in the archive.
 
@@ -1614,7 +1613,7 @@ on the spring.io website and the sample below.
 The war file can also be executable if you use the Spring Boot build tools. In that case
 the embedded container classes (to launch Tomcat for instance) have to be added to the
 war in a `lib-provided` directory. The tools will take care of that as long as the
-dependencies are marked as "provided" in Maven or Gradle. Here's a Maven example
+dependencies are marked as ``provided'' in Maven or Gradle. Here's a Maven example
 {github-code}/spring-boot-samples/spring-boot-sample-traditional/pom.xml[in the Boot Samples].
 
 

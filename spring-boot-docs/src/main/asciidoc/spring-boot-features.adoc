@@ -1151,7 +1151,7 @@ If the Actuator is also in use, you will find:
 
 * The management endpoints are secure even if the application endpoints are unsecure.
 * Security events are transformed into `AuditEvents` and published to the `AuditService`.
-* The default user will have the "ADMIN" role as well as the "USER" role.
+* The default user will have the `ADMIN` role as well as the `USER` role.
 
 The Actuator security features can be modified using external properties
 (`management.security.*`). To override the application access rules
@@ -1674,7 +1674,7 @@ You can inject an auto-configured `ElasticsearchTemplate` or Elasticsearch `Clie
 instance as you would any other Spring Bean. By default the instance will attempt to
 connect to a local in-memory server (a `NodeClient` in Elasticsearch terms), but you can
 switch to a remote server (i.e. a `TransportClient`) by setting
-`spring.data.elasticsearch.clusterNodes` to a comma-separated "host:port" list.
+`spring.data.elasticsearch.clusterNodes` to a comma-separated ``host:port'' list.
 
 [source,java,indent=0]
 ----

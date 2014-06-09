@@ -52,6 +52,8 @@ otherwise, read on for ``classic'' installation instructions.
 TIP: Although Spring Boot is compatible with Java 1.6, if possible, you should consider
 using the latest version of Java.
 
+
+
 [[getting-started-installation-instructions-for-java]]
 === Installation instructions for the Java developer
 You can use Spring Boot in the same way as any standard Java library. Simply include the
