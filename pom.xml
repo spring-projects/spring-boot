@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
-	<version>1.1.0.BUILD-SNAPSHOT</version>
+	<version>1.1.1.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
@@ -153,20 +152,20 @@
 								<inherited>false</inherited>
 								<configuration>
 									<target>
-										<taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
-										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask"/>
-										<var name="version-type" value="${project.version}"/>
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp=".*\.(.*)" replace="\1"/>
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(M)\d+" replace="MILESTONE"/>
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(RC)\d+" replace="MILESTONE"/>
-										<propertyregex property="version-type" override="true" input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT"/>
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+										<taskdef name="stringutil" classname="ise.antelope.tasks.StringUtilTask" />
+										<var name="version-type" value="${project.version}" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp=".*\.(.*)" replace="\1" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(M)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp="(RC)\d+" replace="MILESTONE" />
+										<propertyregex property="version-type" override="true" input="${version-type}" regexp="BUILD-(.*)" replace="SNAPSHOT" />
 										<stringutil string="${version-type}" property="profile">
-											<lowercase/>
+											<lowercase />
 										</stringutil>
-										<echo message="Writing settings for ${profile} profile"/>
+										<echo message="Writing settings for ${profile} profile" />
 										<copy file=".settings-template.xml" tofile="settings.xml" overwrite="true">
 											<filterset>
-												<filter token="profile" value="${profile}"/>
+												<filter token="profile" value="${profile}" />
 											</filterset>
 										</copy>
 									</target>
@@ -181,7 +180,7 @@
 								<inherited>false</inherited>
 								<configuration>
 									<target>
-										<property name="sourceFile" value="spring-boot-dependencies/pom.xml"/>
+										<property name="sourceFile" value="spring-boot-dependencies/pom.xml" />
 										<xslt in="${sourceFile}" out="${sourceFile}.new" force="true">
 											<style>
 												<string><![CDATA[
@@ -204,9 +203,9 @@
 												</string>
 											</style>
 										</xslt>
-										<move file="${sourceFile}" tofile="${sourceFile}.old"/>
-										<move file="${sourceFile}.new" tofile="${sourceFile}"/>
-										<delete file="${sourceFile}.old"/>
+										<move file="${sourceFile}" tofile="${sourceFile}.old" />
+										<move file="${sourceFile}.new" tofile="${sourceFile}" />
+										<delete file="${sourceFile}.old" />
 									</target>
 								</configuration>
 							</execution>
@@ -248,7 +247,7 @@
 										<include>${basedir}/spring-boot-samples/**/build.xml</include>
 									</includes>
 									<token>spring-boot\.version\"\s.*+</token>
-									<value>spring-boot.version" value="${project.version}" /></value>
+									<value>spring-boot.version" value="${project.version}" /&gt;</value>
 								</configuration>
 							</execution>
 						</executions>
