@@ -1459,6 +1459,44 @@ general mechanism to ensure that would be safe for a running application anyway,
 would only ever be a development time trick probably).
 
 
+[[howto-reload-springloaded-gradle-and-intellij]]
+==== Configuring Spring Loaded for use with Gradle and IntelliJ
+You need to jump though a few hoops if you want to use Spring Loaded in combination with
+Gradle and IntelliJ. By default, IntelliJ will compile classes into a different location
+than Gradle, causing Spring Loaded monitoring to fail.
+
+To configure IntelliJ correctly you can use the `idea` Gradle plugin:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	buildscript {
+		repositories { mavenCentral() }
+		dependencies {
+			classpath "org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}"
+			classpath 'org.springframework:springloaded:1.2.0.RELEASE'
+		}
+	}
+
+	apply plugin: 'idea'
+
+	idea {
+		module {
+			inheritOutputDirs = false
+			outputDir = file("$buildDir/classes/main/")
+		}
+	}
+
+	// ...
+
+----
+
+NOTE: Intellij must be configured to use the same Java version as the command line Gradle
+task and `springloaded` *must* be included as a `buildscript` dependency.
+
+You can also additionally enable ``Make Project Automatically'' inside  Intellij to
+automatically compile your code whenever a file is saved.
+
+
 
 [[howto-build]]
 == Build
