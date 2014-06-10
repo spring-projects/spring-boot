@@ -83,7 +83,7 @@ build. To prepare the build, from the root directory use:
 
 [indent=0]
 ----
-	$ mvn -P snapshot,prepare install
+	$ mvn -P snapshot,prepare install -DskipTests
 ----
 
 NOTE: You may notice that preparing the build also changes the
@@ -96,8 +96,7 @@ Once the build has been prepared, you can run a full build using the following c
 
 [indent=0]
 ----
-	$ cd spring-boot-full-build
-	$ mvn -s ../settings.xml -P full clean install
+	$ mvn -s ./settings.xml -f spring-boot-full-build -P full clean install
 ----
 
 NOTE: As for the standard build, you may need to increase the amount of memory available
