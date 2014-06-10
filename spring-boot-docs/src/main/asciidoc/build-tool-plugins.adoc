@@ -261,6 +261,56 @@ to override version numbers if necessary.
 
 
 
+[[build-tool-plugins-gradle-exclude-rules]]
+=== Default exclude rules
+Gradle handles ``exclude rules'' in a slightly different way to Maven which can cause
+unexpected results when using the starter POMs. Specifically, exclusions declared on
+a dependency will not be applied when the dependency can be reached though a different
+path. For example, if a starter POM declares the following:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>4.0.5.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.0.5.RELEASE</version>
+		</dependency>
+	</dependencies>
+----
+
+The `commons-logging` jar will *not* be excluded by Gradle because it is pulled in
+transitively via `spring-context` (`spring-context` -> `spring-core` -> `commons-logging`)
+which does not have an `exclusion` element.
+
+To ensure that correct exclusions are actually applied, the Spring Boot Gradle plugin will
+automatically add exclusion rules. All exclusions defined in the
+`spring-boot-dependencies` POM and the ``starter'' POMs will be added (both direct and
+transitive exclusions).
+
+If you don't want exclusion rules automatically applied you can use the following
+configuration:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	springBoot {
+		applyExcludeRules=false
+	}
+----
+
+
+
 [[build-tool-plugins-gradle-packaging]]
 === Packaging executable jar and war files
 Once the `spring-boot` plugin has been applied to your project it will automatically
