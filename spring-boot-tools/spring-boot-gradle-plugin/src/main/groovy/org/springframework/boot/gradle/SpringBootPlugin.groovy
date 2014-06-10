@@ -56,7 +56,7 @@ class SpringBootPlugin implements Plugin<Project> {
 	}
 
 	private useUtf8Encoding(Project project) {
-		project.tasks.withType(org.gradle.api.tasks.compile.Compile).all {
+		project.tasks.withType(org.gradle.api.tasks.compile.JavaCompile).all {
 			it.doFirst {
 				if(!it.options.encoding) {
 					it.options.encoding = 'UTF-8'
