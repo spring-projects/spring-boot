@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.integration;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.integration.support.channel.HeaderChannelRegistry;
 
@@ -29,14 +30,36 @@ import static org.junit.Assert.assertNotNull;
  */
 public class IntegrationAutoConfigurationTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	public void integrationIsAvailable() {
+		this.context.register(IntegrationAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		this.context.close();
+	}
+
+	@Test
+	public void addJmxAuto() {
 		this.context.register(JmxAutoConfiguration.class,
 				IntegrationAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		this.context.close();
+	}
+
+	@Test
+	public void parentContext() {
+		this.context.register(IntegrationAutoConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext parent = this.context;
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(IntegrationAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(HeaderChannelRegistry.class));
+		((ConfigurableApplicationContext) this.context.getParent()).close();
 		this.context.close();
 	}
 

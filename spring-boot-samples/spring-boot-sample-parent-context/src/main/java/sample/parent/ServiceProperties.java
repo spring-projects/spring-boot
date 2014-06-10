@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample.integration;
+package sample.parent;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
