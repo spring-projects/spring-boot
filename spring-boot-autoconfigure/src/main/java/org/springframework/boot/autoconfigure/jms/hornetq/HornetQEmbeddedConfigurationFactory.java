@@ -62,7 +62,7 @@ class HornetQEmbeddedConfigurationFactory {
 		}
 
 		TransportConfiguration transportConfiguration = new TransportConfiguration(
-				InVMAcceptorFactory.class.getName());
+				InVMAcceptorFactory.class.getName(), properties.generateTransportParameters());
 		configuration.getAcceptorConfigurations().add(transportConfiguration);
 
 		// HORNETQ-1143

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms.hornetq;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -53,10 +55,6 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.SessionCallback;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link HornetQAutoConfiguration}.
@@ -238,6 +236,56 @@ public class HornetQAutoConfigurationTests {
 				((TextMessage) message).getText());
 	}
 
+	@Test
+	public void severalEmbeddedBrokers() {
+		load(EmptyConfiguration.class,
+				"spring.hornetq.embedded.queues=Queue1");
+
+		AnnotationConfigApplicationContext anotherContext = doLoad(EmptyConfiguration.class,
+				"spring.hornetq.embedded.queues=Queue2");
+
+		try {
+			HornetQProperties properties = this.context.getBean(HornetQProperties.class);
+			HornetQProperties anotherProperties = anotherContext.getBean(HornetQProperties.class);
+			assertTrue("ServerId should not match",
+					properties.getEmbedded().getServerId() < anotherProperties.getEmbedded().getServerId());
+
+			DestinationChecker checker = new DestinationChecker(this.context);
+			checker.checkQueue("Queue1", true);
+			checker.checkQueue("Queue2", false);
+
+			DestinationChecker anotherChecker = new DestinationChecker(anotherContext);
+			anotherChecker.checkQueue("Queue2", true);
+			anotherChecker.checkQueue("Queue1", false);
+		}
+		finally {
+   			anotherContext.close();
+		}
+	}
+
+	@Test
+	public void connectToASpecificEmbeddedBroker() {
+		load(EmptyConfiguration.class,
+				"spring.hornetq.embedded.serverId=93",
+				"spring.hornetq.embedded.queues=Queue1");
+
+		AnnotationConfigApplicationContext anotherContext = doLoad(EmptyConfiguration.class,
+				"spring.hornetq.mode=embedded",
+				"spring.hornetq.embedded.serverId=93",  // Connect to the "main" broker
+				"spring.hornetq.embedded.enabled=false"); // do not start a specific one
+
+		try {
+			DestinationChecker checker = new DestinationChecker(this.context);
+			checker.checkQueue("Queue1", true);
+
+			DestinationChecker anotherChecker = new DestinationChecker(anotherContext);
+			anotherChecker.checkQueue("Queue1", true);
+		}
+		finally {
+			anotherContext.close();
+		}
+	}
+
 	private TransportConfiguration assertInVmConnectionFactory(
 			HornetQConnectionFactory connectionFactory) {
 		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
@@ -265,11 +313,16 @@ public class HornetQAutoConfigurationTests {
 	}
 
 	private void load(Class<?> config, String... environment) {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(config);
-		this.context.register(HornetQAutoConfiguration.class, JmsAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context, environment);
-		this.context.refresh();
+		this.context = doLoad(config, environment);
+	}
+
+	private AnnotationConfigApplicationContext doLoad(Class<?> config, String... environment) {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		applicationContext.register(config);
+		applicationContext.register(HornetQAutoConfiguration.class, JmsAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
+		applicationContext.refresh();
+		return applicationContext;
 	}
 
 	private static class DestinationChecker {
