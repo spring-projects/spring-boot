@@ -10,12 +10,12 @@ def processModule(File moduleDir, File generatedResourcesDir) {
 def generateAutoConfigurationClassTable(String module, File factories, PrintWriter writer) {
 	writer.println '[cols="4,1"]'
 	writer.println '|==='
-	writer.println '|Configuration Class | Links'
+	writer.println '| Configuration Class | Links'
 
 	getAutoConfigurationClasses(factories).each {
 		writer.println ''
-		writer.println "|{github-code}/$module/src/main/java/$it.path.{sc-ext}[$it.name]"
-		writer.println "|{dc-root}/$it.path.{dc-ext}[javadoc]"
+		writer.println "| {github-code}/$module/src/main/java/$it.path.{sc-ext}[`$it.name`]"
+		writer.println "| {dc-root}/$it.path.{dc-ext}[javadoc]"
 	}
 
 	writer.println '|==='
