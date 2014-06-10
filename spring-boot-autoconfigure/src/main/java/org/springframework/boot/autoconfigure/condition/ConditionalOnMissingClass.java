@@ -41,7 +41,10 @@ public @interface ConditionalOnMissingClass {
 	 * bytecode it is safe to specify classes here that may ultimately not be on the
 	 * classpath.
 	 * @return the classes that must be present
+	 * @deprecated Since 1.1.0 due to the fact that the reflection errors can occur when
+	 * beans containing the annotation remain in the context. Use {@link #name()} instead.
 	 */
+	@Deprecated
 	public Class<?>[] value() default {};
 
 	/**
