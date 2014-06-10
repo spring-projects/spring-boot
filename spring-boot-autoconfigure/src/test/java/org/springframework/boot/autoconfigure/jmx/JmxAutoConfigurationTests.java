@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +52,9 @@ public class JmxAutoConfigurationTests {
 	public void tearDown() {
 		if (this.context != null) {
 			this.context.close();
+			if (this.context.getParent() != null) {
+				((ConfigurableApplicationContext) this.context.getParent()).close();
+			}
 		}
 	}
 
@@ -102,6 +106,18 @@ public class JmxAutoConfigurationTests {
 				.getField(mBeanExporter, "metadataNamingStrategy");
 		assertEquals("my-test-domain",
 				ReflectionTestUtils.getField(naming, "defaultDomain"));
+	}
+
+	@Test
+	public void testParentContext() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(JmxAutoConfiguration.class);
+		this.context.refresh();
+		AnnotationConfigApplicationContext parent = this.context;
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.setParent(parent);
+		this.context.register(JmxAutoConfiguration.class);
+		this.context.refresh();
 	}
 
 	@Configuration

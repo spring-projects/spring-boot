@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.jmx;
 
 import javax.management.MBeanServer;
 
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -26,7 +28,13 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
+import org.springframework.context.annotation.MBeanExportConfiguration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
+import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
+import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
 
 /**
@@ -42,10 +50,33 @@ import org.springframework.jmx.support.MBeanServerFactoryBean;
 @ConditionalOnExpression("${spring.jmx.enabled:true}")
 public class JmxAutoConfiguration {
 
-	@Configuration
+	@Autowired
+	private Environment environment;
+
+	@Autowired
+	private BeanFactory beanFactory;
+
+	@Autowired
+	private ObjectNamingStrategy namingStrategy;
+
+	@Bean
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
-	@EnableMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:mbeanServer}")
-	public static class MBeanExport {
+	public AnnotationMBeanExporter mbeanExporter() {
+		// Re-use the @EnableMBeanExport configuration
+		MBeanExportConfiguration config = new MBeanExportConfiguration();
+		config.setEnvironment(this.environment);
+		config.setBeanFactory(this.beanFactory);
+		config.setImportMetadata(new StandardAnnotationMetadata(Empty.class));
+		// But add a custom naming strategy
+		AnnotationMBeanExporter exporter = config.mbeanExporter();
+		exporter.setNamingStrategy(this.namingStrategy);
+		return exporter;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ObjectNamingStrategy.class)
+	public ParentAwareNamingStrategy objectNamingStrategy() {
+		return new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
 	}
 
 	@Bean
@@ -54,6 +85,11 @@ public class JmxAutoConfiguration {
 		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
 		factory.setLocateExistingServerIfPossible(true);
 		return factory;
+	}
+
+	@EnableMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:mbeanServer}")
+	private static class Empty {
+
 	}
 
 }

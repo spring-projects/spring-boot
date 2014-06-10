@@ -39,6 +39,7 @@
 		<module>spring-boot-sample-integration</module>
 		<module>spring-boot-sample-jetty</module>
 		<module>spring-boot-sample-liquibase</module>
+		<module>spring-boot-sample-parent-context</module>
 		<module>spring-boot-sample-profile</module>
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-servlet</module>
