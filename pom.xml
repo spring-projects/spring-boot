@@ -108,6 +108,9 @@
 			<modules>
 				<module>spring-boot-versions</module>
 				<module>spring-boot-parent</module>
+				<module>spring-boot</module>
+				<module>spring-boot-autoconfigure</module>
+				<module>spring-boot-actuator</module>
 				<module>spring-boot-starters</module>
 				<module>spring-boot-tools</module>
 			</modules>
