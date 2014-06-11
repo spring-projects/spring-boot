@@ -20,7 +20,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -34,13 +34,7 @@ public class SpringApplicationHierarchyTests {
 
 	@After
 	public void after() {
-		if (this.context != null) {
-			ApplicationContext parentContext = this.context.getParent();
-			if (parentContext instanceof ConfigurableApplicationContext) {
-				((ConfigurableApplicationContext) parentContext).close();
-			}
-			this.context.close();
-		}
+		ApplicationContextTestUtils.closeAll(this.context);
 	}
 
 	@Test
