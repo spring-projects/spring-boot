@@ -23,9 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.gradle.tooling.BuildException;
-import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
-import org.gradle.tooling.internal.consumer.DefaultGradleConnector;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,14 +31,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.boot.gradle.ProjectCreator;
 
 import static org.junit.Assert.fail;
 
 /**
  * Tests for the various starter projects to check that they don't pull in unwanted
  * transitive dependencies when used with Gradle
- * 
+ *
  * @author Andy Wilkinson
  */
 @RunWith(Parameterized.class)
@@ -76,15 +74,7 @@ public class StarterDependenciesIntegrationTests {
 
 	@BeforeClass
 	public static void createProject() throws IOException {
-		File projectDirectory = new File("target/starter-dependencies");
-		projectDirectory.mkdirs();
-
-		File gradleScript = new File(projectDirectory, "build.gradle");
-		FileCopyUtils.copy(new File("src/test/resources/build.gradle"), gradleScript);
-
-		GradleConnector gradleConnector = GradleConnector.newConnector();
-		((DefaultGradleConnector) gradleConnector).embedded(true);
-		project = gradleConnector.forProjectDirectory(projectDirectory).connect();
+		project = new ProjectCreator().createProject("starter-dependencies");
 	}
 
 	@BeforeClass
