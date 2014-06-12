@@ -28,6 +28,8 @@ import org.springframework.util.ClassUtils;
  */
 class TomcatEmbeddedContext extends StandardContext {
 
+	private ServletContextInitializerLifecycleListener starter;
+
 	@Override
 	public void loadOnStartup(Container[] children) {
 	}
@@ -47,6 +49,14 @@ class TomcatEmbeddedContext extends StandardContext {
 		if (existingLoader != null) {
 			ClassUtils.overrideThreadContextClassLoader(existingLoader);
 		}
+	}
+
+	public void setStarter(ServletContextInitializerLifecycleListener starter) {
+		this.starter = starter;
+	}
+
+	public ServletContextInitializerLifecycleListener getStarter() {
+		return this.starter;
 	}
 
 }

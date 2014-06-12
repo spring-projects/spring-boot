@@ -16,12 +16,12 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
-import javax.servlet.ServletException;
-
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.core.StandardContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.util.Assert;
 
@@ -29,10 +29,15 @@ import org.springframework.util.Assert;
  * Tomcat {@link LifecycleListener} that calls {@link ServletContextInitializer}s.
  * 
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class ServletContextInitializerLifecycleListener implements LifecycleListener {
 
+	private static Log logger = LogFactory
+			.getLog(ServletContextInitializerLifecycleListener.class);
+
 	private final ServletContextInitializer[] initializers;
+	private Exception startUpException;
 
 	/**
 	 * Create a new {@link ServletContextInitializerLifecycleListener} instance with the
@@ -44,6 +49,10 @@ public class ServletContextInitializerLifecycleListener implements LifecycleList
 		this.initializers = initializers;
 	}
 
+	public Exception getStartUpException() {
+		return this.startUpException;
+	}
+
 	@Override
 	public void lifecycleEvent(LifecycleEvent event) {
 		if (Lifecycle.CONFIGURE_START_EVENT.equals(event.getType())) {
@@ -53,8 +62,13 @@ public class ServletContextInitializerLifecycleListener implements LifecycleList
 				try {
 					initializer.onStartup(standardContext.getServletContext());
 				}
-				catch (ServletException ex) {
-					throw new IllegalStateException(ex);
+				catch (Exception ex) {
+					this.startUpException = ex;
+					// Prevent Tomcat from logging and re-throwing when we know we can
+					// deal with it in the main thread, but log for information here.
+					logger.error("Error starting Tomcat context: "
+							+ ex.getClass().getName());
+					break;
 				}
 			}
 		}
