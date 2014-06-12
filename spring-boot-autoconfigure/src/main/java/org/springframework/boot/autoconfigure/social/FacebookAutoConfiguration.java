@@ -47,6 +47,7 @@ import org.springframework.web.servlet.View;
  */
 @Configuration
 @ConditionalOnClass({ FacebookConnectionFactory.class })
+@ConditionalOnProperty(prefix="spring.social.facebook.", value="app-id")
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class FacebookAutoConfiguration {
 

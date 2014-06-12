@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure.social;
 
+import static org.junit.Assert.*;
+
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -25,8 +28,6 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link FacebookAutoConfiguration}.
@@ -61,4 +62,16 @@ public class FacebookAutoConfigurationTests {
 		assertNotNull(this.context.getBean(Facebook.class));
 	}
 
+	@Test(expected=NoSuchBeanDefinitionException.class)
+	public void noFacebookBeanCreatedWhenPropertiesArentSet() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(SocialWebAutoConfiguration.class);
+		this.context.register(FacebookAutoConfiguration.class);
+		this.context.refresh();
+		assertNotNull(this.context.getBean(UsersConnectionRepository.class));
+		assertNotNull(this.context.getBean(ConnectionRepository.class));
+		assertNotNull(this.context.getBean(ConnectionFactoryLocator.class));
+		assertNotNull(this.context.getBean(UserIdSource.class));
+		this.context.getBean(Facebook.class);
+	}
 }

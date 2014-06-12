@@ -47,6 +47,7 @@ import org.springframework.web.servlet.View;
  */
 @Configuration
 @ConditionalOnClass({ TwitterConnectionFactory.class })
+@ConditionalOnProperty(prefix="spring.social.twitter.", value="app-id")
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class TwitterAutoConfiguration {
 

@@ -46,6 +46,7 @@ import org.springframework.web.servlet.View;
  */
 @Configuration
 @ConditionalOnClass({ LinkedInConnectionFactory.class })
+@ConditionalOnProperty(prefix="spring.social.linkedin.", value="app-id")
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class LinkedInAutoConfiguration {
 
