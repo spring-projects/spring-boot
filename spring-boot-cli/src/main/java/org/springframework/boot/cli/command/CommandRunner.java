@@ -169,7 +169,9 @@ public class CommandRunner implements Iterable<Command> {
 		try {
 			ExitStatus result = run(argsWithoutDebugFlags);
 			// The caller will hang up if it gets a non-zero status
-			return result==null ? 0 : result.isHangup() ? (result.getCode()>0 ? result.getCode() : 1) : 0;
+			return result == null ? 0
+					: result.isHangup() ? (result.getCode() > 0 ? result.getCode() : 0)
+							: 0;
 		}
 		catch (NoArgumentsException ex) {
 			showUsage();

@@ -265,9 +265,25 @@ executable jar file. For example:
 	$ spring jar my-app.jar *.groovy
 ----
 
-The resulting jar will contain the classes produced by compiling the application and all
-of the application's dependencies so that it can then be run using `java -jar`. The jar
-file will also contain entries from the application's classpath.
+The resulting jar will contain the classes produced by compiling the
+application and all of the application's dependencies so that it can
+then be run using `java -jar`. The jar file will also contain entries
+from the application's classpath. You can add explicit paths to the
+jar using `--include` and `--exclude` (both are comma separated, and
+both accept prefixes to the values "+" and "-" to signify that they
+shoudl be removed from the defaults). The default includes are
+
+[indent=0]
+----
+public/**, resources/**, static/**, templates/**, META-INF/**, *
+----
+
+and the default excludes are 
+
+[indent=0]
+----
+.*, repository/**, build/**, target/**, **/*.jar, **/*.groovy
+----
 
 See the output of `spring help jar` for more information.
 
