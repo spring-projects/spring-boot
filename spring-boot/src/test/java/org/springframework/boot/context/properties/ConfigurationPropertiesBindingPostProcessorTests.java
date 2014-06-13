@@ -20,7 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
@@ -133,7 +132,6 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	}
 
 	@Test
-	@Ignore("WIP")
 	public void testValueBindingForDefaults() throws Exception {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, "default.value:foo");
@@ -294,6 +292,7 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 			return this.value;
 		}
 
+		@Bean
 		public static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
