@@ -18,14 +18,8 @@ package org.springframework.boot.autoconfigure.social;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
 import org.junit.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.social.UserIdSource;
-import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -34,16 +28,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  *
  * @author Craig Walls
  */
-public class TwitterAutoConfigurationTests {
-
-	private AnnotationConfigWebApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+public class TwitterAutoConfigurationTests extends AbstractSocialAutoConfigurationTests {
 
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
@@ -55,24 +40,18 @@ public class TwitterAutoConfigurationTests {
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(UsersConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionFactoryLocator.class));
-		assertNotNull(this.context.getBean(UserIdSource.class));
+		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(Twitter.class));
 	}
 
-	@Test(expected=NoSuchBeanDefinitionException.class)
+	@Test
 	public void noTwitterBeanCreatedWhenPropertiesArentSet() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(UsersConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionFactoryLocator.class));
-		assertNotNull(this.context.getBean(UserIdSource.class));
-		this.context.getBean(Twitter.class);
+		assertNoConnectionFrameworkBeans();
+		assertMissingBean(Twitter.class);
 	}
 
 }

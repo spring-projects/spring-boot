@@ -18,14 +18,8 @@ package org.springframework.boot.autoconfigure.social;
 
 import static org.junit.Assert.*;
 
-import org.junit.After;
 import org.junit.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.social.UserIdSource;
-import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -34,16 +28,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  *
  * @author Craig Walls
  */
-public class FacebookAutoConfigurationTests {
-
-	private AnnotationConfigWebApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurationTests {
 
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
@@ -55,23 +40,17 @@ public class FacebookAutoConfigurationTests {
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(UsersConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionFactoryLocator.class));
-		assertNotNull(this.context.getBean(UserIdSource.class));
+		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(Facebook.class));
 	}
 
-	@Test(expected=NoSuchBeanDefinitionException.class)
+	@Test
 	public void noFacebookBeanCreatedWhenPropertiesArentSet() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
 		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(UsersConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionFactoryLocator.class));
-		assertNotNull(this.context.getBean(UserIdSource.class));
-		this.context.getBean(Facebook.class);
+		assertNoConnectionFrameworkBeans();
+		assertMissingBean(Facebook.class);
 	}
 }

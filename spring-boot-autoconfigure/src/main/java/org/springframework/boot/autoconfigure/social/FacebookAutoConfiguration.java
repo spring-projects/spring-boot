@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.social.config.annotation.EnableSocial;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
@@ -39,52 +38,46 @@ import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.web.servlet.View;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
- * Facebook.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Social
+ * connectivity with Facebook.
  * 
  * @author Craig Walls
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ FacebookConnectionFactory.class })
-@ConditionalOnProperty(prefix="spring.social.facebook.", value="app-id")
+@ConditionalOnProperty(prefix = "spring.social.facebook.", value = "app-id")
+@ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class FacebookAutoConfiguration {
+public class FacebookAutoConfiguration extends SocialAutoConfigurerAdapter {
 
-	@Configuration
-	@EnableSocial
-	@ConditionalOnWebApplication
-	protected static class FacebookAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
+	@Override
+	protected String getPropertyPrefix() {
+		return "spring.social.facebook.";
+	}
 
-		@Override
-		protected String getPropertyPrefix() {
-			return "spring.social.facebook.";
-		}
+	@Override
+	protected ConnectionFactory<?> createConnectionFactory(
+			RelaxedPropertyResolver properties) {
+		return new FacebookConnectionFactory(
+				properties.getRequiredProperty("app-id"),
+				properties.getRequiredProperty("app-secret"));
+	}
 
-		@Override
-		protected ConnectionFactory<?> createConnectionFactory(
-				RelaxedPropertyResolver properties) {
-			return new FacebookConnectionFactory(
-					properties.getRequiredProperty("app-id"),
-					properties.getRequiredProperty("app-secret"));
-		}
+	@Bean
+	@ConditionalOnMissingBean(Facebook.class)
+	@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
+	public Facebook facebook(ConnectionRepository repository) {
+		Connection<Facebook> connection = repository
+				.findPrimaryConnection(Facebook.class);
+		return connection != null ? connection.getApi()
+				: new FacebookTemplate();
+	}
 
-		@Bean
-		@ConditionalOnMissingBean(Facebook.class)
-		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-		public Facebook facebook(ConnectionRepository repository) {
-			Connection<Facebook> connection = repository
-					.findPrimaryConnection(Facebook.class);
-			return connection != null ? connection.getApi() : new FacebookTemplate();
-		}
-
-		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
-		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
-		public View facebookConnectView() {
-			return new GenericConnectionStatusView("facebook", "Facebook");
-		}
-
+	@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
+	@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
+	public View facebookConnectView() {
+		return new GenericConnectionStatusView("facebook", "Facebook");
 	}
 
 }
