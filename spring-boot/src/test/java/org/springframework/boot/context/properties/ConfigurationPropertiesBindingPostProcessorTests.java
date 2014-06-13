@@ -22,10 +22,12 @@ import javax.validation.constraints.NotNull;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -127,6 +129,16 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(PropertyWithEnum.class).getValue(),
 				equalTo(FooEnum.FOO));
+	}
+
+	@Test
+	public void testValueBindingForDefaults() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "default.value:foo");
+		this.context.register(PropertyWithValue.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(PropertyWithValue.class).getValue(),
+				equalTo("foo"));
 	}
 
 	@Configuration
@@ -263,4 +275,27 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 	static enum FooEnum {
 		FOO, BAZ, BAR
 	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	public static class PropertyWithValue {
+
+		@Value("${default.value}")
+		private String value;
+
+		public void setValue(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return this.value;
+		}
+
+		public static PropertySourcesPlaceholderConfigurer configurer() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
 }

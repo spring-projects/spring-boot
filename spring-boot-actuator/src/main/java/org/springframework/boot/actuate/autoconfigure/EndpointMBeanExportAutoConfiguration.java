@@ -29,7 +29,6 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jmx.support.MBeanServerFactoryBean;
 import org.springframework.util.StringUtils;
 
 /**
@@ -65,9 +64,7 @@ public class EndpointMBeanExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MBeanServer.class)
-	public MBeanServerFactoryBean mbeanServer() {
-		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
-		factory.setLocateExistingServerIfPossible(true);
-		return factory;
+	public MBeanServer mbeanServer() {
+		return new JmxAutoConfiguration().mbeanServer();
 	}
 }
