@@ -16,36 +16,37 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.lang.management.ClassLoadingMXBean;
-import java.lang.management.GarbageCollectorMXBean;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryUsage;
-import java.lang.management.ThreadMXBean;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Default implementation of {@link PublicMetrics} that exposes all metrics from a
- * {@link MetricReader} along with memory information.
+ * {@link MetricReader} along with a collection of configurable {@link PublicMetrics}
+ * instances.
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class VanillaPublicMetrics implements PublicMetrics {
 
 	private final MetricReader reader;
-	private long timestamp;
+	private final Collection<PublicMetrics> publicMetrics;
+
+	public VanillaPublicMetrics(MetricReader reader, Collection<PublicMetrics> publicMetrics) {
+		Assert.notNull(reader, "MetricReader must not be null");
+		Assert.notNull(publicMetrics, "PublicMetrics must not be null");
+		this.reader = reader;
+		this.publicMetrics = publicMetrics;
+	}
 
 	public VanillaPublicMetrics(MetricReader reader) {
-		Assert.notNull(reader, "MetricReader must not be null");
-		this.reader = reader;
-		this.timestamp = System.currentTimeMillis();
+		this(reader, Collections.<PublicMetrics>emptyList());
 	}
 
 	@Override
@@ -54,92 +55,11 @@ public class VanillaPublicMetrics implements PublicMetrics {
 		for (Metric<?> metric : this.reader.findAll()) {
 			result.add(metric);
 		}
-
-		addMetrics(result);
-		addHeapMetrics(result);
-		addThreadMetrics(result);
-		addClassLoadingMetrics(result);
-		addGarbageCollecitonMetrics(result);
+		for (PublicMetrics publicMetric : publicMetrics) {
+			result.addAll(publicMetric.metrics());
+		}
 
 		return result;
 	}
 
-	/**
-	 * Add basic system metrics.
-	 */
-	protected void addMetrics(Collection<Metric<?>> result) {
-		result.add(new Metric<Long>("mem",
-				new Long(Runtime.getRuntime().totalMemory()) / 1024));
-		result.add(new Metric<Long>("mem.free", new Long(Runtime.getRuntime()
-				.freeMemory()) / 1024));
-		result.add(new Metric<Integer>("processors", Runtime.getRuntime()
-				.availableProcessors()));
-		// Add JVM uptime in ms
-		result.add(new Metric<Long>("uptime", new Long(ManagementFactory
-				.getRuntimeMXBean().getUptime())));
-		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
-				- this.timestamp));
-	}
-
-	/**
-	 * Add JVM heap metrics.
-	 */
-	protected void addHeapMetrics(Collection<Metric<?>> result) {
-		MemoryUsage memoryUsage = ManagementFactory.getMemoryMXBean()
-				.getHeapMemoryUsage();
-		result.add(new Metric<Long>("heap.committed", memoryUsage.getCommitted() / 1024));
-		result.add(new Metric<Long>("heap.init", memoryUsage.getInit() / 1024));
-		result.add(new Metric<Long>("heap.used", memoryUsage.getUsed() / 1024));
-		result.add(new Metric<Long>("heap", memoryUsage.getMax() / 1024));
-	}
-
-	/**
-	 * Add thread metrics.
-	 */
-	protected void addThreadMetrics(Collection<Metric<?>> result) {
-		ThreadMXBean threadMxBean = ManagementFactory.getThreadMXBean();
-		result.add(new Metric<Long>("threads.peak", new Long(threadMxBean
-				.getPeakThreadCount())));
-		result.add(new Metric<Long>("threads.daemon", new Long(threadMxBean
-				.getDaemonThreadCount())));
-		result.add(new Metric<Long>("threads", new Long(threadMxBean.getThreadCount())));
-	}
-
-	/**
-	 * Add class loading metrics.
-	 */
-	protected void addClassLoadingMetrics(Collection<Metric<?>> result) {
-		ClassLoadingMXBean classLoadingMxBean = ManagementFactory.getClassLoadingMXBean();
-		result.add(new Metric<Long>("classes", new Long(classLoadingMxBean
-				.getLoadedClassCount())));
-		result.add(new Metric<Long>("classes.loaded", new Long(classLoadingMxBean
-				.getTotalLoadedClassCount())));
-		result.add(new Metric<Long>("classes.unloaded", new Long(classLoadingMxBean
-				.getUnloadedClassCount())));
-	}
-
-	/**
-	 * Add garbage collection metrics.
-	 */
-	protected void addGarbageCollecitonMetrics(Collection<Metric<?>> result) {
-		List<GarbageCollectorMXBean> garbageCollectorMxBeans = ManagementFactory
-				.getGarbageCollectorMXBeans();
-		for (int i = 0; i < garbageCollectorMxBeans.size(); i++) {
-			GarbageCollectorMXBean garbageCollectorMXBean = garbageCollectorMxBeans
-					.get(i);
-			String name = beautifyGcName(garbageCollectorMXBean.getName());
-			result.add(new Metric<Long>("gc." + name + ".count", new Long(
-					garbageCollectorMXBean.getCollectionCount())));
-			result.add(new Metric<Long>("gc." + name + ".time", new Long(
-					garbageCollectorMXBean.getCollectionTime())));
-		}
-	}
-
-	/**
-	 * Turn GC names like 'PS Scavenge' or 'PS MarkSweep' into something that is more
-	 * metrics friendly.
-	 */
-	private String beautifyGcName(String name) {
-		return StringUtils.replace(name, " ", "_").toLowerCase();
-	}
 }

@@ -583,8 +583,14 @@ documentation].
 == Metrics
 Spring Boot Actuator includes a metrics service with ``gauge'' and ``counter'' support.
 A ``gauge'' records a single value; and a ``counter'' records a delta (an increment or
-decrement). Metrics for all HTTP requests are automatically recorded, so if you hit the
-`metrics` endpoint should should see a response similar to this:
+decrement). Spring Boot Actuator also provides a
+{sc-spring-boot-actuator}/endpoint/PublicMetrics.{sc-ext}[`PublicMetrics`] interface that
+you can implement to expose metrics that you cannot record via one of those two mechanisms. Look
+at {sc-spring-boot-actuator}/endpoint/SystemPublicMetrics.{sc-ext}[`SystemPublicMetrics`]
+for an example.
+
+Metrics for all HTTP requests are automatically recorded, so if you hit the
+`metrics` endpoint you should see a response similar to this:
 
 [source,json,indent=0]
 ----
@@ -612,9 +618,10 @@ decrement). Metrics for all HTTP requests are automatically recorded, so if you 
 ----
 
 Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
-information along with some HTTP metrics. In this instance the `root` (``/'') and `/metrics`
-URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
-that the `root` URL returned `HTTP 401` (unauthorized) `4` times.
+information provided by `SystemPublicMetrics` along with some HTTP metrics. In this
+instance the `root` (``/'') and `/metrics` URLs have returned `HTTP 200` responses `20`
+and `3` times respectively. It also appears that the `root` URL returned `HTTP 401`
+(unauthorized) `4` times.
 
 The `gauge` shows the last response time for a request. So the last request to `root` took
 `2ms` to respond and the last to `/metrics` took `3ms`.
@@ -661,6 +668,13 @@ TIP: You can use any string as a metric name but you should follow guidelines of
 store/graphing technology. Some good guidelines for Graphite are available on
 http://matt.aimonetti.net/posts/2013/06/26/practical-guide-to-graphite-monitoring/[Matt Aimonetti's Blog].
 
+[[production-ready-public-metrics]]
+=== Adding your own public metrics
+
+To add additional metrics that are computed every time the metrics endpoint is invoked,
+simply register additional `PublicMetrics` implementation bean(s). By default, all such
+beans are gathered by the endpoint. You can easily change that by defining your own
+`MetricsEndpoint`.
 
 
 [[production-ready-metric-repositories]]

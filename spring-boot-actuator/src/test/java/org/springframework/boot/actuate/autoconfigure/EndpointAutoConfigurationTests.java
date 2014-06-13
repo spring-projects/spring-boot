@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
 import org.springframework.boot.actuate.endpoint.BeansEndpoint;
@@ -26,19 +25,27 @@ import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
+import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
@@ -47,17 +54,11 @@ import static org.junit.Assert.assertTrue;
  * @author Phillip Webb
  * @author Greg Turnquist
  * @author Christian Dupuis
+ * @author Stephane Nicoll
  */
 public class EndpointAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
-
-	@Before
-	public void setup() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class);
-		this.context.refresh();
-	}
 
 	@After
 	public void close() {
@@ -68,6 +69,7 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void endpoints() throws Exception {
+		load(EndpointAutoConfiguration.class);
 		assertNotNull(this.context.getBean(BeansEndpoint.class));
 		assertNotNull(this.context.getBean(DumpEndpoint.class));
 		assertNotNull(this.context.getBean(EnvironmentEndpoint.class));
@@ -81,10 +83,8 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void healthEndpoint() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EmbeddedDataSourceConfiguration.class,
+		load(EmbeddedDataSourceConfiguration.class,
 				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
 		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
 		assertNotNull(bean);
 		Health result = bean.invoke();
@@ -94,10 +94,8 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void healthEndpointWithDefaultHealthIndicator() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class,
+		load(EndpointAutoConfiguration.class,
 				HealthIndicatorAutoConfiguration.class);
-		this.context.refresh();
 		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
 		assertNotNull(bean);
 		Health result = bean.invoke();
@@ -105,11 +103,33 @@ public class EndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void autoconfigurationAuditEndpoints() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(EndpointAutoConfiguration.class,
+	public void metricEndpointsHasSystemMetricsByDefault() {
+		load(EndpointAutoConfiguration.class);
+		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
+		Map<String, Object> metrics = endpoint.invoke();
+		assertTrue(metrics.containsKey("mem"));
+		assertTrue(metrics.containsKey("heap.used"));
+	}
+
+	@Test
+	public void metricEndpointCustomPublicMetrics() {
+		load(CustomPublicMetricsConfig.class, EndpointAutoConfiguration.class);
+		MetricsEndpoint endpoint = this.context.getBean(MetricsEndpoint.class);
+		Map<String, Object> metrics = endpoint.invoke();
+
+		// Custom metrics
+		assertTrue(metrics.containsKey("foo"));
+
+		// System metrics still available
+		assertTrue(metrics.containsKey("mem"));
+		assertTrue(metrics.containsKey("heap.used"));
+
+	}
+
+	@Test
+	public void autoConfigurationAuditEndpoints() {
+		load(EndpointAutoConfiguration.class,
 				ConditionEvaluationReport.class);
-		this.context.refresh();
 		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
 	}
 
@@ -135,5 +155,26 @@ public class EndpointAutoConfigurationTests {
 		InfoEndpoint endpoint = this.context.getBean(InfoEndpoint.class);
 		assertNotNull(endpoint);
 		assertNull(endpoint.invoke().get("git"));
+	}
+
+	private void load(Class<?>... config) {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(config);
+		this.context.refresh();
+	}
+
+
+	@Configuration
+	static class CustomPublicMetricsConfig {
+
+		@Bean
+		PublicMetrics customPublicMetrics() {
+			return new PublicMetrics() {
+				@Override
+				public Collection<Metric<?>> metrics() {
+					return Collections.<Metric<?>>singleton(new Metric<Integer>("foo", 1));
+				}
+			};
+		}
 	}
 }
