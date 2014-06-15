@@ -20,6 +20,7 @@ import javax.management.MBeanServer;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -87,7 +88,15 @@ public class JmxAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(MBeanServer.class)
 	public MBeanServer mbeanServer() {
-		return SpecificPlatform.get().getMBeanServer();
+		SpecificPlatform platform = SpecificPlatform.get();
+		if (platform != null) {
+			return platform.getMBeanServer();
+		}
+		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
+		factory.setLocateExistingServerIfPossible(true);
+		factory.afterPropertiesSet();
+		return factory.getObject();
+
 	}
 
 	@EnableMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:mbeanServer}")
@@ -112,16 +121,6 @@ public class JmxAutoConfiguration {
 			public FactoryBean<MBeanServer> getMBeanServerFactory() {
 				return new WebSphereMBeanServerFactoryBean();
 			}
-		},
-
-		GENERIC("org.springframework.jmx.support.MBeanServerFactoryBean") {
-			@Override
-			public FactoryBean<MBeanServer> getMBeanServerFactory() {
-				MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
-				factory.setLocateExistingServerIfPossible(true);
-				factory.afterPropertiesSet();
-				return factory;
-			}
 		};
 
 		private final String identifyingClass;
@@ -131,9 +130,12 @@ public class JmxAutoConfiguration {
 		}
 
 		public MBeanServer getMBeanServer() {
-			Object server;
 			try {
-				server = getMBeanServerFactory().getObject();
+				FactoryBean<?> factory = getMBeanServerFactory();
+				if (factory instanceof InitializingBean) {
+					((InitializingBean) factory).afterPropertiesSet();
+				}
+				Object server = factory.getObject();
 				Assert.isInstanceOf(MBeanServer.class, server);
 				return (MBeanServer) server;
 			}
