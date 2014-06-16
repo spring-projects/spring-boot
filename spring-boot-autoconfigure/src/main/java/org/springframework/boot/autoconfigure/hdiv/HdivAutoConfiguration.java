@@ -29,8 +29,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration 
  * Auto-configuration} for HDIV Integration.
- * 
- * @since 1.1.1
  */
 @Configuration
 @ConditionalOnClass(ValidatorFilter.class)
