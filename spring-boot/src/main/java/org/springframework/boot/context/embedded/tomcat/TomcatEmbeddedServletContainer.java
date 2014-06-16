@@ -77,6 +77,16 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 				engine.setName(engine.getName() + "-" + instanceId);
 			}
 			this.tomcat.start();
+			Container[] children = this.tomcat.getHost().findChildren();
+			for (Container container : children) {
+				if (container instanceof TomcatEmbeddedContext) {
+					Exception exception = ((TomcatEmbeddedContext) container)
+							.getStarter().getStartUpException();
+					if (exception != null) {
+						throw exception;
+					}
+				}
+			}
 			try {
 				// Allow the server to start so the ServletContext is available, but stop
 				// the connector to prevent requests from being handled before the Spring

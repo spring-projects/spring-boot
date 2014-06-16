@@ -1,0 +1,63 @@
+import org.gradle.api.artifacts.result.UnresolvedDependencyResult;
+
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}")
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+configurations {
+	exclusions
+	springVersion
+}
+
+apply plugin: 'spring-boot'
+
+dependencies {
+	exclusions "org.springframework.boot:spring-boot-starter"
+	springVersion "org.springframework:spring-core"
+	versionManagement files('../../src/test/resources/custom-versions.properties')
+}
+
+task checkExclusions {
+	doFirst {
+		def commonsLogging = getResolvedDependencies(configurations.exclusions)
+				.find { it.selected.id.group == 'commons-logging' }
+		if (commonsLogging) {
+			throw new GradleException("commong-logging is a transitive dependency")
+		}
+	}
+}
+
+task checkSpringVersion {
+	doFirst {
+		def springVersions = getResolvedDependencies(configurations.springVersion)
+				.findAll{it.selected.id.group == 'org.springframework'}
+				.collect {it.selected.id.version}
+		if (springVersions.size() != 1 || !springVersions.contains("4.0.3.RELEASE")) {
+			throw new GradleException("Spring version was not 4.0.3.RELEASE")
+		}
+	}
+}
+
+def getResolvedDependencies(def configuration) {
+	def allDependencies = configuration.incoming
+			.resolutionResult.allDependencies
+					.split { it instanceof UnresolvedDependencyResult }
+
+	def unresolved = allDependencies.first()
+	def resolved = allDependencies.last()
+	if (unresolved) {
+		throw new GradleException("Resolution failed: ${unresolved}")
+	}
+	resolved
+}

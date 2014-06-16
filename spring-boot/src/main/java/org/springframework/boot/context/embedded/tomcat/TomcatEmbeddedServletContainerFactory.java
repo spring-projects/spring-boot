@@ -242,8 +242,13 @@ public class TomcatEmbeddedServletContainerFactory extends
 	 */
 	protected void configureContext(Context context,
 			ServletContextInitializer[] initializers) {
-		context.addLifecycleListener(new ServletContextInitializerLifecycleListener(
-				initializers));
+		ServletContextInitializerLifecycleListener starter = new ServletContextInitializerLifecycleListener(
+				initializers);
+		if (context instanceof TomcatEmbeddedContext) {
+			// Should be true
+			((TomcatEmbeddedContext) context).setStarter(starter);
+		}
+		context.addLifecycleListener(starter);
 		for (LifecycleListener lifecycleListener : this.contextLifecycleListeners) {
 			context.addLifecycleListener(lifecycleListener);
 		}

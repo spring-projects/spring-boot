@@ -23,7 +23,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
@@ -39,6 +41,12 @@ import org.springframework.util.AntPathMatcher;
  */
 class ResourceMatcher {
 
+	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**",
+			"static/**", "templates/**", "META-INF/**", "*" };
+
+	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
+			"target/**", "**/*.jar", "**/*.groovy" };
+
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	private final List<String> includes;
@@ -46,8 +54,8 @@ class ResourceMatcher {
 	private final List<String> excludes;
 
 	ResourceMatcher(List<String> includes, List<String> excludes) {
-		this.includes = includes;
-		this.excludes = excludes;
+		this.includes = getOptions(includes, DEFAULT_INCLUDES);
+		this.excludes = getOptions(excludes, DEFAULT_EXCLUDES);
 	}
 
 	public List<MatchedResource> find(List<File> roots) throws IOException {
@@ -91,6 +99,33 @@ class ResourceMatcher {
 			}
 		}
 		return false;
+	}
+
+	private List<String> getOptions(List<String> values, String[] defaults) {
+		Set<String> result = new LinkedHashSet<String>();
+		Set<String> minus = new LinkedHashSet<String>();
+		boolean deltasFound = false;
+		for (String value : values) {
+			if (value.startsWith("+")) {
+				deltasFound = true;
+				value = value.substring(1);
+				result.add(value);
+			}
+			else if (value.startsWith("-")) {
+				deltasFound = true;
+				value = value.substring(1);
+				minus.add(value);
+			}
+			else if (value.trim().length() > 0) {
+				result.add(value);
+			}
+		}
+		for (String value : defaults) {
+			if (!minus.contains(value) || !deltasFound) {
+				result.add(value);
+			}
+		}
+		return new ArrayList<String>(result);
 	}
 
 	/**

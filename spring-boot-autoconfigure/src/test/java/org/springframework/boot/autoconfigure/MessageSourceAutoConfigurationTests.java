@@ -18,9 +18,12 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.Locale;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import static org.junit.Assert.assertEquals;
 
@@ -81,4 +84,20 @@ public class MessageSourceAutoConfigurationTests {
 		assertEquals("blah", this.context.getMessage("foo", null, "blah", Locale.UK));
 	}
 
+	@Test
+	@Ignore("Expected to fail per gh-1075")
+	public void testMessageSourceFromPropertySourceAnnotation() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(Config.class, MessageSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+		assertEquals("bar",
+				this.context.getMessage("foo", null, "Foo message", Locale.UK));
+	}
+
+	@Configuration
+	@PropertySource("classpath:/switch-messages.properties")
+	protected static class Config {
+
+	}
 }

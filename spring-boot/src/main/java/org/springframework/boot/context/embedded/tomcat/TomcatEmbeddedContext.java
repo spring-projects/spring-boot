@@ -18,6 +18,7 @@ package org.springframework.boot.context.embedded.tomcat;
 
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
+import org.springframework.util.ClassUtils;
 
 /**
  * Tomcat {@link StandardContext} used by {@link TomcatEmbeddedServletContainer} to
@@ -27,12 +28,35 @@ import org.apache.catalina.core.StandardContext;
  */
 class TomcatEmbeddedContext extends StandardContext {
 
+	private ServletContextInitializerLifecycleListener starter;
+
 	@Override
 	public void loadOnStartup(Container[] children) {
 	}
 
 	public void deferredLoadOnStartup() {
+		// Some older Servlet frameworks (e.g. Struts, BIRT) use the Thread context class
+		// loader to create servlet instances in this phase. If they do that and then try
+		// to initialize them later the class loader may have changed, so wrap the call to
+		// loadOnStartup in what we think its going to be the main webapp classloader at
+		// runtime.
+		ClassLoader classLoader = getLoader().getClassLoader();
+		ClassLoader existingLoader = null;
+		if (classLoader != null) {
+			existingLoader = ClassUtils.overrideThreadContextClassLoader(classLoader);
+		}
 		super.loadOnStartup(findChildren());
+		if (existingLoader != null) {
+			ClassUtils.overrideThreadContextClassLoader(existingLoader);
+		}
+	}
+
+	public void setStarter(ServletContextInitializerLifecycleListener starter) {
+		this.starter = starter;
+	}
+
+	public ServletContextInitializerLifecycleListener getStarter() {
+		return this.starter;
 	}
 
 }

@@ -119,15 +119,25 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data,
 			JarEntryFilter... filters) throws IOException {
 		super(rootFile.getFile());
+		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
+		this.data = getArchiveData(endRecord, data);
 		this.rootFile = rootFile;
 		this.name = name;
-		this.data = data;
 		this.size = data.getSize();
-		loadJarEntries(filters);
+		loadJarEntries(endRecord, filters);
 	}
 
-	private void loadJarEntries(JarEntryFilter[] filters) throws IOException {
-		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(this.data);
+	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,
+			RandomAccessData data) {
+		long offset = endRecord.getStartOfArchive(data);
+		if (offset == 0) {
+			return data;
+		}
+		return data.getSubsection(offset, data.getSize() - offset);
+	}
+
+	private void loadJarEntries(CentralDirectoryEndRecord endRecord,
+			JarEntryFilter[] filters) throws IOException {
 		RandomAccessData centralDirectory = endRecord.getCentralDirectory(this.data);
 		int numberOfRecords = endRecord.getNumberOfRecords();
 		this.entries = new ArrayList<JarEntryData>(numberOfRecords);

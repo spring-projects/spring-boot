@@ -1174,7 +1174,6 @@ not something you want to be on the classpath in production. It is a Hibernate f
 (nothing to do with Spring).
 
 
-
 [[howto-intialize-a-database-using-spring-jdbc]]
 === Initialize a database using Spring JDBC
 Spring JDBC has a `DataSource` initializer feature. Spring Boot enables it by default and
@@ -1193,6 +1192,13 @@ To disable the failfast you can set `spring.datasource.continueOnError=true`. Th
 useful once an application has matured and been deployed a few times, since the scripts
 can act as ``poor man's migrations'' -- inserts that fail mean that the data is already
 there, so there would be no need to prevent the application from running, for instance.
+
+If you want to use the `schema.sql` initialization in a JPA app (with
+Hibernate) then `ddl-auto=create-drop` will lead to errors if
+Hibernate tries to create the same tables.  To avoid those errors set
+`ddl-auto` explicitly to "" (preferable) or "none". Whether or not you use
+`ddl-auto=create-drop` you can always use `data.sql` to initialize new
+data.
 
 
 

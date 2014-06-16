@@ -17,11 +17,14 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -35,6 +38,8 @@ import org.junit.rules.TemporaryFolder;
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.boot.loader.util.AsciiBytes;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -388,5 +393,19 @@ public class JarFileTests {
 			}
 		}
 		jarFile.close();
+	}
+
+	@Test
+	public void jarFileWithScriptAtTheStart() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		InputStream sourceJarContent = new FileInputStream(this.rootJarFile);
+		FileOutputStream outputStream = new FileOutputStream(file);
+		StreamUtils.copy("#/bin/bash", Charset.defaultCharset(), outputStream);
+		FileCopyUtils.copy(sourceJarContent, outputStream);
+		this.rootJarFile = file;
+		this.jarFile = new JarFile(file);
+		// Call some other tests to verify
+		getEntries();
+		getNestedJarFile();
 	}
 }

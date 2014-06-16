@@ -26,6 +26,7 @@ import org.springframework.boot.loader.tools.JavaExecutable;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -80,7 +81,32 @@ public class JarCommandIT {
 		assertThat(invocation.getStandardOutput(), containsString("/static/static.txt"));
 		assertThat(invocation.getStandardOutput(),
 				containsString("/templates/template.txt"));
+		assertThat(invocation.getStandardOutput(), containsString("Goodbye Mama"));
+	}
+
+	@Test
+	public void jarCreationWithIncludes() throws Exception {
+		File jar = new File("target/test-app.jar");
+		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
+				"--include", "-public/**,-resources/**", "jar.groovy");
+		invocation.await();
+		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
+		assertTrue(jar.exists());
+
+		Process process = new JavaExecutable().processBuilder("-jar",
+				jar.getAbsolutePath()).start();
+		invocation = new Invocation(process);
+		invocation.await();
+
+		assertThat(invocation.getErrorOutput(), equalTo(""));
+		assertThat(invocation.getStandardOutput(), containsString("Hello World!"));
 		assertThat(invocation.getStandardOutput(),
-				containsString("Goodbye Mama"));
+				not(containsString("/public/public.txt")));
+		assertThat(invocation.getStandardOutput(),
+				not(containsString("/resources/resource.txt")));
+		assertThat(invocation.getStandardOutput(), containsString("/static/static.txt"));
+		assertThat(invocation.getStandardOutput(),
+				containsString("/templates/template.txt"));
+		assertThat(invocation.getStandardOutput(), containsString("Goodbye Mama"));
 	}
 }

@@ -20,16 +20,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 import org.springframework.boot.cli.command.jar.ResourceMatcher.MatchedResource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -40,14 +43,24 @@ import static org.junit.Assert.assertTrue;
  */
 public class ResourceMatcherTests {
 
-	private final ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(
-			"alpha/**", "bravo/*", "*"), Arrays.asList(".*", "alpha/**/excluded"));
-
 	@Test
 	public void nonExistentRoot() throws IOException {
-		List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**",
+				"bravo/*", "*"), Arrays.asList(".*", "alpha/**/excluded"));
+		List<MatchedResource> matchedResources = resourceMatcher.find(Arrays
 				.asList(new File("does-not-exist")));
 		assertEquals(0, matchedResources.size());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void defaults() throws Exception {
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
+				Arrays.asList(""));
+		assertTrue(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+				"includes")).contains("static/**"));
+		assertTrue(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+				"excludes")).contains("**/*.jar"));
 	}
 
 	@Test
@@ -57,6 +70,40 @@ public class ResourceMatcherTests {
 		List<MatchedResource> found = resourceMatcher.find(Arrays.asList(new File(
 				"src/test/resources")));
 		assertThat(found, not(hasItem(new FooJarMatcher(MatchedResource.class))));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void includedDeltas() throws Exception {
+		ResourceMatcher resourceMatcher = new ResourceMatcher(
+				Arrays.asList("-static/**"), Arrays.asList(""));
+		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(
+				resourceMatcher, "includes");
+		assertTrue(includes.contains("templates/**"));
+		assertFalse(includes.contains("static/**"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void includedDeltasAndNewEntries() throws Exception {
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("-static/**",
+				"foo.jar"), Arrays.asList("-**/*.jar"));
+		Collection<String> includes = (Collection<String>) ReflectionTestUtils.getField(
+				resourceMatcher, "includes");
+		assertTrue(includes.contains("foo.jar"));
+		assertTrue(includes.contains("templates/**"));
+		assertFalse(includes.contains("static/**"));
+		assertFalse(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+				"excludes")).contains("**/*.jar"));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void excludedDeltas() throws Exception {
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList(""),
+				Arrays.asList("-**/*.jar"));
+		assertFalse(((Collection<String>) ReflectionTestUtils.getField(resourceMatcher,
+				"excludes")).contains("**/*.jar"));
 	}
 
 	@Test
@@ -73,7 +120,9 @@ public class ResourceMatcherTests {
 
 	@Test
 	public void resourceMatching() throws IOException {
-		List<MatchedResource> matchedResources = this.resourceMatcher.find(Arrays.asList(
+		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**",
+				"bravo/*", "*"), Arrays.asList(".*", "alpha/**/excluded"));
+		List<MatchedResource> matchedResources = resourceMatcher.find(Arrays.asList(
 				new File("src/test/resources/resource-matcher/one"), new File(
 						"src/test/resources/resource-matcher/two"), new File(
 						"src/test/resources/resource-matcher/three")));

@@ -16,14 +16,20 @@
 
 package org.springframework.boot.dependency.tools;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
+
+import org.springframework.boot.dependency.tools.Dependency.Exclusion;
 
 /**
  * Abstract base implementation for {@link Dependencies}.
  * 
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 abstract class AbstractDependencies implements Dependencies {
@@ -53,8 +59,21 @@ abstract class AbstractDependencies implements Dependencies {
 	}
 
 	protected void add(ArtifactAndGroupId artifactAndGroupId, Dependency dependency) {
+		Dependency existing = this.byArtifactAndGroupId.get(artifactAndGroupId);
+		if (existing != null) {
+			dependency = mergeDependencies(existing, dependency);
+		}
 		this.byArtifactAndGroupId.put(artifactAndGroupId, dependency);
 		this.byArtifactId.put(dependency.getArtifactId(), dependency);
+	}
+
+	private Dependency mergeDependencies(Dependency existingDependency,
+			Dependency newDependency) {
+		Set<Exclusion> combinedExclusions = new LinkedHashSet<Exclusion>();
+		combinedExclusions.addAll(existingDependency.getExclusions());
+		combinedExclusions.addAll(newDependency.getExclusions());
+		return new Dependency(newDependency.getGroupId(), newDependency.getArtifactId(),
+				newDependency.getVersion(), new ArrayList<Exclusion>(combinedExclusions));
 	}
 
 	/**

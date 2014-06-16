@@ -21,6 +21,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.ModuleDependency;
+import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.internal.artifacts.DefaultExcludeRule;
 import org.gradle.api.logging.Logger;
 import org.springframework.boot.dependency.tools.Dependency.Exclusion;
@@ -45,12 +46,19 @@ public class ApplyExcludeRules implements Action<Configuration> {
 
 	@Override
 	public void execute(Configuration configuration) {
-		configuration.getDependencies().all(new Action<Dependency>() {
-			@Override
-			public void execute(Dependency dependency) {
-				applyExcludeRules(dependency);
-			}
-		});
+		if (!VersionManagedDependencies.CONFIGURATION.equals(configuration.getName())) {
+			configuration.getIncoming().beforeResolve(new Action<ResolvableDependencies>() {
+				@Override
+				public void execute(ResolvableDependencies resolvableDependencies) {
+					resolvableDependencies.getDependencies().all(new Action<Dependency>() {
+						@Override
+						public void execute(Dependency dependency) {
+							applyExcludeRules(dependency);
+						}
+					});
+				}
+			});
+		}
 	}
 
 	private void applyExcludeRules(Dependency dependency) {
