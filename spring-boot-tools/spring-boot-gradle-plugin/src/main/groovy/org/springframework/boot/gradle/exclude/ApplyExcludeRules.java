@@ -47,17 +47,19 @@ public class ApplyExcludeRules implements Action<Configuration> {
 	@Override
 	public void execute(Configuration configuration) {
 		if (!VersionManagedDependencies.CONFIGURATION.equals(configuration.getName())) {
-			configuration.getIncoming().beforeResolve(new Action<ResolvableDependencies>() {
-				@Override
-				public void execute(ResolvableDependencies resolvableDependencies) {
-					resolvableDependencies.getDependencies().all(new Action<Dependency>() {
+			configuration.getIncoming().beforeResolve(
+					new Action<ResolvableDependencies>() {
 						@Override
-						public void execute(Dependency dependency) {
-							applyExcludeRules(dependency);
+						public void execute(ResolvableDependencies resolvableDependencies) {
+							resolvableDependencies.getDependencies().all(
+									new Action<Dependency>() {
+										@Override
+										public void execute(Dependency dependency) {
+											applyExcludeRules(dependency);
+										}
+									});
 						}
 					});
-				}
-			});
 		}
 	}
 
@@ -73,13 +75,10 @@ public class ApplyExcludeRules implements Action<Configuration> {
 		org.springframework.boot.dependency.tools.Dependency managedDependency = managedDependencies
 				.find(dependency.getGroup(), dependency.getName());
 		if (managedDependency != null) {
-			if (managedDependency.getExclusions().isEmpty()) {
-				logger.debug("No exclusions rules applied for managed dependency "
-						+ dependency);
-			}
 			for (Exclusion exclusion : managedDependency.getExclusions()) {
 				addExcludeRule(dependency, exclusion);
 			}
+			addImplicitExcludeRules(dependency);
 		}
 		else {
 			logger.debug("No exclusions rules applied for non-managed dependency "
@@ -92,6 +91,23 @@ public class ApplyExcludeRules implements Action<Configuration> {
 		DefaultExcludeRule rule = new DefaultExcludeRule(exclusion.getGroupId(),
 				exclusion.getArtifactId());
 		dependency.getExcludeRules().add(rule);
+	}
+
+	private void addImplicitExcludeRules(ModuleDependency dependency) {
+		if (isStarter(dependency)) {
+			logger.info("Adding implicit managed exclusion rules to starter "
+					+ dependency);
+			dependency.getExcludeRules().add(
+					new DefaultExcludeRule("commons-logging", "commons-logging"));
+			dependency.getExcludeRules().add(
+					new DefaultExcludeRule("commons-logging", "commons-logging-api"));
+		}
+	}
+
+	private boolean isStarter(ModuleDependency dependency) {
+		return (dependency.getGroup() != null
+				&& dependency.getGroup().equals("org.springframework.boot") && dependency
+				.getName().startsWith("spring-boot-starter"));
 	}
 
 }

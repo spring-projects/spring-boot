@@ -20,7 +20,6 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
-		<!-- If you add a starter remember to also add a dependency in spring-boot-versions -->
 		<module>spring-boot-starter</module>
 		<module>spring-boot-starter-amqp</module>
 		<module>spring-boot-starter-aop</module>

@@ -137,15 +137,11 @@ public final class Dependency {
 
 		private final String artifactId;
 
-		private final ExclusionType type;
-
-		Exclusion(String groupId, String artifactId, ExclusionType type) {
+		Exclusion(String groupId, String artifactId) {
 			Assert.notNull(groupId, "GroupId must not be null");
 			Assert.notNull(groupId, "ArtifactId must not be null");
-			Assert.notNull(type, "Type must not be null");
 			this.groupId = groupId;
 			this.artifactId = artifactId;
-			this.type = type;
 		}
 
 		/**
@@ -160,10 +156,6 @@ public final class Dependency {
 		 */
 		public String getGroupId() {
 			return this.groupId;
-		}
-
-		public ExclusionType getType() {
-			return this.type;
 		}
 
 		@Override
@@ -193,24 +185,6 @@ public final class Dependency {
 			}
 			return false;
 		}
-
-	}
-
-	public static enum ExclusionType {
-
-		/**
-		 * An exclusion that was specified directly on the dependency.
-		 */
-		DIRECT,
-
-		/**
-		 * An exclusion that is was specified on a dependency of this dependency. For
-		 * example if {@literal commons-logging} is directly excluded from
-		 * {@literal spring-core} then it is also transitive exclude on
-		 * {@literal spring-context} (since {@literal spring-context} depends on
-		 * {@literal spring-core}).
-		 */
-		TRANSITIVE
 
 	}
 

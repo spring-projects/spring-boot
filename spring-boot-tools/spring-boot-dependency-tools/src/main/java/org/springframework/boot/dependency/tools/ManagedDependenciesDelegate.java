@@ -57,11 +57,7 @@ class ManagedDependenciesDelegate extends AbstractDependencies {
 
 	private static Dependencies getSpringBootDependencies() {
 		if (springBootDependencies == null) {
-			Dependencies dependencies = new PomDependencies(
-					getResource("effective-pom.xml"));
-			DependencyTree tree = new DependencyTree(getResource("dependency-tree.txt"));
-			dependencies = new DependenciesWithTransitiveExclusions(dependencies, tree);
-			springBootDependencies = dependencies;
+			springBootDependencies = new PomDependencies(getResource("effective-pom.xml"));
 		}
 		return springBootDependencies;
 	}

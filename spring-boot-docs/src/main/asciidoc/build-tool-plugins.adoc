@@ -296,8 +296,7 @@ which does not have an `exclusion` element.
 
 To ensure that correct exclusions are actually applied, the Spring Boot Gradle plugin will
 automatically add exclusion rules. All exclusions defined in the
-`spring-boot-dependencies` POM and the ``starter'' POMs will be added (both direct and
-transitive exclusions).
+`spring-boot-dependencies` POM and implicit rules for the ``starter'' POMs will be added.
 
 If you don't want exclusion rules automatically applied you can use the following
 configuration:

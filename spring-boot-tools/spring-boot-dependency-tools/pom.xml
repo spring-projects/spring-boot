@@ -30,7 +30,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>copy-resources</id>
+						<id>copy-effective-pom</id>
 						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy</goal>
@@ -45,15 +45,6 @@
 									<overWrite>true</overWrite>
 									<outputDirectory>${generated.pom.dir}</outputDirectory>
 									<destFileName>effective-pom.xml</destFileName>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.springframework.boot</groupId>
-									<artifactId>spring-boot-versions</artifactId>
-									<version>${project.version}</version>
-									<type>dependency-tree</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${generated.pom.dir}</outputDirectory>
-									<destFileName>dependency-tree.txt</destFileName>
 								</artifactItem>
 							</artifactItems>
 						</configuration>

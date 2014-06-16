@@ -25,7 +25,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.springframework.boot.dependency.tools.Dependency.Exclusion;
-import org.springframework.boot.dependency.tools.Dependency.ExclusionType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -119,7 +118,7 @@ public class PomDependencies extends AbstractDependencies {
 	private Exclusion createExclusion(Element element) {
 		String groupId = getTextContent(element, "groupId");
 		String artifactId = getTextContent(element, "artifactId");
-		return new Exclusion(groupId, artifactId, ExclusionType.DIRECT);
+		return new Exclusion(groupId, artifactId);
 	}
 
 	private String getTextContent(Element element, String tagName) {

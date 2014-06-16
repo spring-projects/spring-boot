@@ -1,5 +1,0 @@
-org.sample:sample:pom:1.0.0.BUILD-SNAPSHOT
-+- org.sample:sample01:jar:1.0.0:compile
-+- org.sample:sample02:jar:1.0.0:compile
-|  +- (org.sample:sample01:jar:1.0.0:compile - omitted for duplicate)
-\- org.springframework.boot:spring-boot:jar:1.0.0.BUILD-SNAPSHOT:compile
