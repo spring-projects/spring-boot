@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -99,23 +100,26 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	private void extract(String root, Map<String, PropertySource<?>> map,
 			PropertySource<?> source) {
 		if (source instanceof CompositePropertySource) {
-			try {
-				Field field = ReflectionUtils.findField(CompositePropertySource.class,
-						"propertySources");
-				field.setAccessible(true);
-				@SuppressWarnings("unchecked")
-				Set<PropertySource<?>> nested = (Set<PropertySource<?>>) field
-						.get(source);
-				for (PropertySource<?> nest : nested) {
-					extract(source.getName() + ":", map, nest);
-				}
-			}
-			catch (Exception e) {
-				// ignore
+			Set<PropertySource<?>> nested = getNestedPropertySources((CompositePropertySource) source);
+			for (PropertySource<?> nest : nested) {
+				extract(source.getName() + ":", map, nest);
 			}
 		}
 		else {
 			map.put(root + source.getName(), source);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Set<PropertySource<?>> getNestedPropertySources(CompositePropertySource source) {
+		try {
+			Field field = ReflectionUtils.findField(CompositePropertySource.class,
+					"propertySources");
+			field.setAccessible(true);
+			return (Set<PropertySource<?>>) field.get(source);
+		}
+		catch (Exception ex) {
+			return Collections.emptySet();
 		}
 	}
 
