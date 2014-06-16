@@ -114,13 +114,16 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		private void setMainClass(Repackager repackager) {
-			repackager.setMainClass((String) getProject().property("mainClassName"));
-			if (this.extension.getMainClass() != null) {
-				repackager.setMainClass(this.extension.getMainClass());
-			}
+			String mainClass = (String) getProject().property("mainClassName");
 			if (RepackageTask.this.mainClass != null) {
-				repackager.setMainClass(RepackageTask.this.mainClass);
+				mainClass = RepackageTask.this.mainClass;
+			} else if (this.extension.getMainClass() != null) {
+				mainClass = this.extension.getMainClass();
+			} else if (getProject().getTasks().getByName("run").hasProperty("main")) {
+				mainClass = (String) getProject().getTasks().getByName("run").property("main");
 			}
+			getLogger().info("Setting mainClass: " + mainClass);
+			repackager.setMainClass(mainClass);
 		}
 	}
 
