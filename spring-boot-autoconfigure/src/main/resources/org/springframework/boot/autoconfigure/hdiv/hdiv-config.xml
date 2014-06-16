@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:hdiv="http://www.hdiv.org/schema/hdiv"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.hdiv.org/schema/hdiv http://www.hdiv.org/schema/hdiv/hdiv.xsd">
+
+	<hdiv:config excludedExtensions="js,css,png,jpg,woff,ttf,svg,ico">
+		<hdiv:startPages method="get">/</hdiv:startPages>
+		<hdiv:startPages method="get">/webjars/.*</hdiv:startPages>
+		<!-- actuator filters -->
+		<hdiv:startPages>/health</hdiv:startPages>
+		<hdiv:startPages method="get">/beans</hdiv:startPages>
+		<hdiv:startPages method="get">/trace</hdiv:startPages>
+		<hdiv:startPages method="get">/configprops</hdiv:startPages>
+		<hdiv:startPages method="get">/info</hdiv:startPages>
+		<hdiv:startPages method="get">/dump</hdiv:startPages>
+		<hdiv:startPages method="get">/autoconfig</hdiv:startPages>
+		<hdiv:startPages method="get">/metrics, /metrics/.*</hdiv:startPages>
+		<hdiv:startPages method="get">/env, /env/.*</hdiv:startPages>
+		<hdiv:startPages method="get">/mappings</hdiv:startPages>
+	</hdiv:config>
+
+	<!-- Finally, it's necessary to define editable data validation list for 
+		the application -->
+	<hdiv:editableValidations>
+		<hdiv:validationRule url=".*"></hdiv:validationRule>
+	</hdiv:editableValidations>
+
+</beans>

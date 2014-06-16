@@ -63,6 +63,7 @@
 		<groovy.version>2.3.2</groovy.version>
 		<h2.version>1.3.175</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
+		<hdiv.version>2.1.7.RC3-SNAPSHOT</hdiv.version>
 		<hibernate.version>4.3.1.Final</hibernate.version>
 		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
 		<hibernate-jpa-api.version>1.0.1.Final</hibernate-jpa-api.version>
@@ -230,6 +231,11 @@
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-groovy-templates</artifactId>
+				<version>1.1.1.BUILD-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-hdiv</artifactId>
 				<version>1.1.1.BUILD-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -791,6 +797,16 @@
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest-library</artifactId>
 				<version>${hamcrest.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hdiv</groupId>
+				<artifactId>hdiv-config</artifactId>
+				<version>${hdiv.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hdiv</groupId>
+				<artifactId>hdiv-thymeleaf</artifactId>
+				<version>${hdiv.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
