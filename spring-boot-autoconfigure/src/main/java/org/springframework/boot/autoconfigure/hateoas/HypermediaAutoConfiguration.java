@@ -27,6 +27,7 @@ import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.plugin.core.Plugin;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring HATEOAS's
@@ -44,6 +45,7 @@ public class HypermediaAutoConfiguration {
 
 	@Configuration
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
+	@ConditionalOnClass(Plugin.class)
 	@ConditionalOnWebApplication
 	protected static class HypermediaConfiguration {
 
