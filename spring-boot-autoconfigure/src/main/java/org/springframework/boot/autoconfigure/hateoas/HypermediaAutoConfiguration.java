@@ -23,11 +23,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.config.EnableEntityLinks;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.plugin.core.Plugin;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring HATEOAS's
@@ -38,17 +41,21 @@ import org.springframework.plugin.core.Plugin;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(Resource.class)
-@ConditionalOnMissingBean(LinkDiscoverers.class)
+@ConditionalOnClass({ Resource.class, RequestMapping.class, Plugin.class })
+@ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class HypermediaAutoConfiguration {
 
 	@Configuration
+	@ConditionalOnMissingBean(LinkDiscoverers.class)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
-	@ConditionalOnClass(Plugin.class)
-	@ConditionalOnWebApplication
 	protected static class HypermediaConfiguration {
+	}
 
+	@Configuration
+	@ConditionalOnMissingBean(EntityLinks.class)
+	@EnableEntityLinks
+	protected static class EntityLinksConfiguration {
 	}
 
 }
