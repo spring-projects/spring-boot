@@ -55,6 +55,10 @@ public class RepackageTask extends DefaultTask {
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
 	}
+	
+	public String getMainClass() {
+		return mainClass;
+	}
 
 	@TaskAction
 	public void repackage() {

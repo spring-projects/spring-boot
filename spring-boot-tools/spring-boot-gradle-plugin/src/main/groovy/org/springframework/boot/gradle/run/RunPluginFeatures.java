@@ -23,6 +23,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.application.CreateStartScripts;
 import org.springframework.boot.gradle.PluginFeatures;
 
 /**
@@ -47,7 +48,7 @@ public class RunPluginFeatures implements PluginFeatures {
 		project.getTasks().all(new Action<Task>() {
 			@Override
 			public void execute(Task task) {
-				if(task instanceof JavaExec) {
+				if(task instanceof JavaExec || task instanceof CreateStartScripts) {
 					task.dependsOn(FIND_MAIN_CLASS_TASK_NAME);
 				}
 			}

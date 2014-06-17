@@ -16,10 +16,7 @@
 
 package org.springframework.boot.gradle;
 
-import java.io.IOException;
-
 import org.gradle.tooling.ProjectConnection;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 
@@ -30,19 +27,25 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
  */
 public class InstallTests {
 
-	private static ProjectConnection project;
+	private ProjectConnection project;
 
-	private static final String BOOT_VERSION = ManagedDependencies.get()
-			.find("spring-boot").getVersion();
+	private static final String BOOT_VERSION = ManagedDependencies.get().find(
+			"spring-boot").getVersion();
 
-	@BeforeClass
-	public static void createProject() throws IOException {
+	@Test
+	public void cleanInstall() throws Exception {
 		project = new ProjectCreator().createProject("installer");
+		project.newBuild().forTasks("install").withArguments(
+				"-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 
 	@Test
-	public void cleanInstall() {
-		project.newBuild().forTasks("install").withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
+	public void cleanInstallApp() throws Exception {
+		project = new ProjectCreator().createProject("install-app");
+		// "install" from the application plugin was renamed "installApp" in Gradle
+		// 1.0
+		project.newBuild().forTasks("installApp").withArguments(
+				"-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info").run();
 	}
 
 }
