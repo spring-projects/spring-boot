@@ -120,12 +120,6 @@ public class SocialWebAutoConfiguration {
 			return controller;
 		}
 
-		@Bean
-		@ConditionalOnMissingBean(SpringSocialDialect.class)
-		@ConditionalOnClass(SpringTemplateEngine.class)
-		public SpringSocialDialect springSocialDialect() {
-			return new SpringSocialDialect();
-		}
 	}
 
 	@Configuration
@@ -143,7 +137,6 @@ public class SocialWebAutoConfiguration {
 				}
 			};
 		}
-
 	}
 
 	@Configuration
@@ -156,6 +149,18 @@ public class SocialWebAutoConfiguration {
 		@Override
 		public UserIdSource getUserIdSource() {
 			return new SecurityContextUserIdSource();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(SpringTemplateEngine.class)
+	protected static class SpringSocialThymeleafConfig {
+
+		@Bean
+		@ConditionalOnMissingBean(SpringSocialDialect.class)
+		public SpringSocialDialect springSocialDialect() {
+			return new SpringSocialDialect();
 		}
 
 	}
