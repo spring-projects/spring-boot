@@ -790,8 +790,7 @@ added.
   bean of the same type.
 * A `BeanNameViewResolver` with id ``beanNameViewResolver''. This is a useful member of the
   view resolver chain and will pick up any beans with the same name as the `View` being
-  resolved. It can be overridden by providing a bean of the same type, but it's unlikely
-  you will need to do that.
+  resolved. It shouldn't be necessary to override or replace it.
 * A `ContentNegotiatingViewResolver` with id ``viewResolver'' is only added if there *are*
   actually beans of type `View` present. This is a ``master'' resolver, delegating to all
   the others and attempting to find a match to the ``Accept'' HTTP header sent by the
