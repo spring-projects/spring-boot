@@ -115,6 +115,7 @@
 		<thymeleaf.version>2.1.3.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity3.version>2.1.1.RELEASE</thymeleaf-extras-springsecurity3.version>
 		<thymeleaf-layout-dialect.version>1.2.5</thymeleaf-layout-dialect.version>
+		<thymeleaf-extras-data-attribute.version>1.3</thymeleaf-extras-data-attribute.version>
 		<tomcat.version>7.0.54</tomcat.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
@@ -400,6 +401,11 @@
 				<groupId>com.gemstone.gemfire</groupId>
 				<artifactId>gemfire</artifactId>
 				<version>${gemfire.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.mxab.thymeleaf.extras</groupId>
+				<artifactId>thymeleaf-extras-data-attribute</artifactId>
+				<version>${thymeleaf-extras-data-attribute.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>

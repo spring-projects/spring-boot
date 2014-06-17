@@ -47,6 +47,8 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
+import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
  *
@@ -66,7 +68,7 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
-	public static class DefaultTemplateResolverConfiguration  {
+	public static class DefaultTemplateResolverConfiguration {
 
 		@Autowired
 		private ThymeleafProperties properties;
@@ -74,12 +76,12 @@ public class ThymeleafAutoConfiguration {
 		@Autowired
 		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-
 		@PostConstruct
 		public void checkTemplateLocationExists() {
 			Boolean checkTemplateLocation = this.properties.isCheckTemplateLocation();
 			if (checkTemplateLocation) {
-				Resource resource = this.resourceLoader.getResource(this.properties.getPrefix());
+				Resource resource = this.resourceLoader.getResource(this.properties
+						.getPrefix());
 				Assert.state(resource.exists(), "Cannot find template location: "
 						+ resource + " (please add some templates "
 						+ "or check your Thymeleaf configuration)");
@@ -126,7 +128,7 @@ public class ThymeleafAutoConfiguration {
 		private String[] excludedViewNames;
 
 		public boolean isCheckTemplateLocation() {
-			return checkTemplateLocation;
+			return this.checkTemplateLocation;
 		}
 
 		public void setCheckTemplateLocation(boolean checkTemplateLocation) {
@@ -134,7 +136,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public String getPrefix() {
-			return prefix;
+			return this.prefix;
 		}
 
 		public void setPrefix(String prefix) {
@@ -142,7 +144,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public String getSuffix() {
-			return suffix;
+			return this.suffix;
 		}
 
 		public void setSuffix(String suffix) {
@@ -150,7 +152,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public String getMode() {
-			return mode;
+			return this.mode;
 		}
 
 		public void setMode(String mode) {
@@ -158,7 +160,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public String getEncoding() {
-			return encoding;
+			return this.encoding;
 		}
 
 		public void setEncoding(String encoding) {
@@ -166,7 +168,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public String getContentType() {
-			return contentType;
+			return this.contentType;
 		}
 
 		public void setContentType(String contentType) {
@@ -174,7 +176,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public boolean isCache() {
-			return cache;
+			return this.cache;
 		}
 
 		public void setCache(boolean cache) {
@@ -182,7 +184,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public String[] getExcludedViewNames() {
-			return excludedViewNames;
+			return this.excludedViewNames;
 		}
 
 		public void setExcludedViewNames(String[] excludedViewNames) {
@@ -190,7 +192,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		public String[] getViewNames() {
-			return viewNames;
+			return this.viewNames;
 		}
 
 		public void setViewNames(String[] viewNames) {
@@ -235,12 +237,33 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
+	@ConditionalOnClass(DataAttributeDialect.class)
+	protected static class DataAttributeDialectConfiguration {
+
+		@Bean
+		public DataAttributeDialect dialect() {
+			return new DataAttributeDialect();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass({ SpringSecurityDialect.class })
+	protected static class ThymeleafSecurityDialectConfiguration {
+
+		@Bean
+		public SpringSecurityDialect securityDialect() {
+			return new SpringSecurityDialect();
+		}
+
+	}
+
+	@Configuration
 	@ConditionalOnClass({ Servlet.class })
 	protected static class ThymeleafViewResolverConfiguration {
 
 		@Autowired
 		private ThymeleafProperties properties;
-
 
 		@Autowired
 		private SpringTemplateEngine templateEngine;
@@ -266,17 +289,6 @@ public class ThymeleafAutoConfiguration {
 				return type;
 			}
 			return type + ";charset=" + charset;
-		}
-
-	}
-
-	@Configuration
-	@ConditionalOnClass({ SpringSecurityDialect.class })
-	protected static class ThymeleafSecurityDialectConfiguration {
-
-		@Bean
-		public SpringSecurityDialect securityDialect() {
-			return new SpringSecurityDialect();
 		}
 
 	}
