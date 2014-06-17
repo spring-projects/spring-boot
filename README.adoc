@@ -187,37 +187,7 @@ link:spring-boot-cli/samples[spring-boot-cli/samples]. To run the CLI samples ty
 `spring run <sample>.groovy` from samples directory.
 
 Java samples are available in link:spring-boot-samples[spring-boot-samples] and should
-be built with maven and run by invoking `java -jar target/<sample>.jar`. The following
-java samples are provided:
-
-* link:spring-boot-samples/spring-boot-sample-simple[spring-boot-sample-simple]
-  -- A simple command line application
-* link:spring-boot-samples/spring-boot-sample-tomcat[spring-boot-sample-tomcat]
-  --  Embedded Tomcat
-* link:spring-boot-samples/spring-boot-sample-jetty[spring-boot-sample-jetty]
-  -- Embedded Jetty
-* link:spring-boot-samples/spring-boot-sample-actuator[spring-boot-sample-actuator]
-  -- Simple REST service with production features
-* link:spring-boot-samples/spring-boot-sample-actuator-ui[spring-boot-sample-actuator-ui]
-  -- A web UI example with production features
-* link:spring-boot-samples/spring-boot-sample-web-ui[spring-boot-sample-web-ui]
-  -- A thymeleaf web application
-* link:spring-boot-samples/spring-boot-sample-web-static[spring-boot-sample-web-static]
-  -- A web application service static files
-* link:spring-boot-samples/spring-boot-sample-batch[spring-boot-sample-batch]
-  -- Define and run a Batch job in a few lines of code
-* link:spring-boot-samples/spring-boot-sample-data-jpa[spring-boot-sample-data-jpa]
-  -- Spring Data JPA + Hibernate + HSQLDB
-* link:spring-boot-samples/spring-boot-sample-integration[spring-boot-sample-integration]
-  -- A spring integration application
-* link:spring-boot-samples/spring-boot-sample-profile[spring-boot-sample-profile]
-  -- example showing Spring's `@profile` support
-* link:spring-boot-samples/spring-boot-sample-traditional[spring-boot-sample-traditional]
-  -- shows more traditional WAR packaging  (but also executable using `java -jar`)
-* link:spring-boot-samples/spring-boot-sample-xml[spring-boot-sample-xml]
-  -- Example show how Spring Boot can be mixed with traditional XML configuration (we
-  generally recommend using Java `@Configuration` whenever possible)
-
+be built with maven and run by invoking `java -jar target/<sample>.jar`.
 
 
 == Guides
