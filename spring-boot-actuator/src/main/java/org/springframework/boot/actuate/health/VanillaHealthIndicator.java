@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.health;
 
 /**
- * Default implementation of {@link HealthIndicator} that simply returns {@literal "UP"}.
- *
+ * Default implementation of {@link HealthIndicator} that returns {@link Status#UP}.
+ * 
  * @author Dave Syer
  * @author Christian Dupuis
  * @see Status#UP
