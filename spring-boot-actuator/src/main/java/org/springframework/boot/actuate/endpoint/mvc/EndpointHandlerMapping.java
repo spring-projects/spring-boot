@@ -64,7 +64,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
 		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
-		setOrder(LOWEST_PRECEDENCE - 2);
+		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
+		setOrder(-100);
 	}
 
 	@Override

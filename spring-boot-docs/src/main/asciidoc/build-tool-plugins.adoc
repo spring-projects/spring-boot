@@ -296,8 +296,7 @@ which does not have an `exclusion` element.
 
 To ensure that correct exclusions are actually applied, the Spring Boot Gradle plugin will
 automatically add exclusion rules. All exclusions defined in the
-`spring-boot-dependencies` POM and the ``starter'' POMs will be added (both direct and
-transitive exclusions).
+`spring-boot-dependencies` POM and implicit rules for the ``starter'' POMs will be added.
 
 If you don't want exclusion rules automatically applied you can use the following
 configuration:
@@ -452,7 +451,10 @@ The following configuration options are available:
 |`mainClass`
 |The main class that should be run. If not specified the `mainClassName` project property
  will be used or, if the no `mainClassName` id defined the archive will be searched for a
- suitable class.
+ suitable class. "Suitable" means a unique class with a well-formed `main()` method (if
+more than one is found the build will fail). You should also be able to specify the main
+class name via the "run" task (`main` property) and/or the "startScripts" (`mainClassName` 
+property) as an alternative to using the "springBoot" configuration.
 
 |`providedConfiguration`
 |The name of the provided configuration (defaults to `providedRuntime`).

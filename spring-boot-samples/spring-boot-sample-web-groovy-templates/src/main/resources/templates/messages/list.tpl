@@ -20,7 +20,7 @@ layout 'layout.tpl', title: 'Messages : View all',
               td "${message.created}"
               td {
                 a(href:"/${message.id}") {
-                  yield message.getSummary()
+                  yield message.summary
                 }
               }
             }

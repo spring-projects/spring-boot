@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -69,6 +72,8 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @see IntegrationTest
  */
 public class SpringApplicationContextLoader extends AbstractContextLoader {
+
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config)
@@ -148,7 +153,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				.detectDefaultConfigurationClasses(declaringClass);
 	}
 
-	private Map<String, Object> getEnvironmentProperties(MergedContextConfiguration config) {
+	protected Map<String, Object> getEnvironmentProperties(MergedContextConfiguration config) {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
@@ -173,14 +178,24 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 		return Collections.singletonMap("server.port", "-1");
 	}
 
+	// Instead of parsing the keys ourselves, we rely on standard handling
 	private Map<String, String> extractEnvironmentProperties(String[] values) {
+		StringBuilder sb = new  StringBuilder();
+		for (String value : values) {
+			sb.append(value).append(LINE_SEPARATOR);
+		}
+		String content = sb.toString();
+		Properties props = new Properties();
+		try {
+			props.load(new StringReader(content));
+		}
+		catch (IOException e) {
+			throw new IllegalStateException("Unexpected could not load properties from '"+content+"'", e);
+		}
+
 		Map<String, String> properties = new HashMap<String, String>();
-		for (String pair : values) {
-			int index = pair.indexOf(":");
-			index = (index < 0 ? index = pair.indexOf("=") : index);
-			String key = pair.substring(0, index > 0 ? index : pair.length());
-			String value = (index > 0 ? pair.substring(index + 1) : "");
-			properties.put(key.trim(), value.trim());
+		for (String name: props.stringPropertyNames()) {
+			properties.put(name, props.getProperty(name));
 		}
 		return properties;
 	}

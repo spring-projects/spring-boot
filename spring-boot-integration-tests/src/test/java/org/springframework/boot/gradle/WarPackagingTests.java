@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests for war packaging with Gradle to ensure that only the Servlet container and its
  * dependencies are packaged in WEB-INF/lib-provided
- *
+ * 
  * @author Andy Wilkinson
  */
 public class WarPackagingTests {
@@ -54,6 +54,7 @@ public class WarPackagingTests {
 			Arrays.asList(WEB_INF_LIB_PROVIDED_PREFIX + "spring-boot-starter-jetty-",
 					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-util-",
 					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-xml-",
+					WEB_INF_LIB_PROVIDED_PREFIX + "javax.servlet-",
 					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-continuation-",
 					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-io-",
 					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-http-",

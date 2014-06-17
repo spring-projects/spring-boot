@@ -88,6 +88,20 @@ class CentralDirectoryEndRecord {
 	}
 
 	/**
+	 * Returns the location in the data that the archive actually starts. For most files
+	 * the archive data will start at 0, however, it is possible to have prefixed bytes
+	 * (often used for startup scripts) at the beginning of the data.
+	 * @param data the source data
+	 * @return the offset within the data where the archive begins
+	 */
+	public long getStartOfArchive(RandomAccessData data) {
+		long length = Bytes.littleEndianValue(this.block, this.offset + 12, 4);
+		long specifiedOffset = Bytes.littleEndianValue(this.block, this.offset + 16, 4);
+		long actualOffset = data.getSize() - this.size - length;
+		return actualOffset - specifiedOffset;
+	}
+
+	/**
 	 * Return the bytes of the "Central directory" based on the offset indicated in this
 	 * record.
 	 * @param data the source data

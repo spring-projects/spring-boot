@@ -16,12 +16,15 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.CompositePropertySource;
+import org.springframework.core.env.MapPropertySource;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
@@ -42,6 +45,20 @@ public class EnvironmentEndpointTests extends AbstractEndpointTests<EnvironmentE
 	@Test
 	public void invoke() throws Exception {
 		assertThat(getEndpointBean().invoke().size(), greaterThan(0));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testCompositeSource() throws Exception {
+		EnvironmentEndpoint report = getEndpointBean();
+		CompositePropertySource source = new CompositePropertySource("composite");
+		source.addPropertySource(new MapPropertySource("one", Collections.singletonMap(
+				"foo", (Object) "bar")));
+		source.addPropertySource(new MapPropertySource("two", Collections.singletonMap(
+				"foo", (Object) "spam")));
+		this.context.getEnvironment().getPropertySources().addFirst(source);
+		Map<String, Object> env = report.invoke();
+		assertEquals("bar", ((Map<String, Object>) env.get("composite:one")).get("foo"));
 	}
 
 	@SuppressWarnings("unchecked")

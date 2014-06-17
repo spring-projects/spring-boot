@@ -29,7 +29,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
-import org.springframework.jmx.support.MBeanServerFactoryBean;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -59,10 +58,8 @@ public class IntegrationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MBeanServer.class)
-	public MBeanServerFactoryBean mbeanServer() {
-		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
-		factory.setLocateExistingServerIfPossible(true);
-		return factory;
+	public MBeanServer mbeanServer() {
+		return new JmxAutoConfiguration().mbeanServer();
 	}
 
 }

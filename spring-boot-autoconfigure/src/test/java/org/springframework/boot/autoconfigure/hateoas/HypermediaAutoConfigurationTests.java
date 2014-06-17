@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.hateoas;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.hateoas.EntityLinks;
 import org.springframework.hateoas.LinkDiscoverer;
 import org.springframework.hateoas.LinkDiscoverers;
 import org.springframework.hateoas.MediaTypes;
@@ -56,6 +57,15 @@ public class HypermediaAutoConfigurationTests {
 		assertNotNull(discoverers);
 		LinkDiscoverer discoverer = discoverers.getLinkDiscovererFor(MediaTypes.HAL_JSON);
 		assertTrue(HalLinkDiscoverer.class.isInstance(discoverer));
+	}
+
+	@Test
+	public void entityLinksCreated() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(HypermediaAutoConfiguration.class);
+		this.context.refresh();
+		EntityLinks discoverers = this.context.getBean(EntityLinks.class);
+		assertNotNull(discoverers);
 	}
 
 	@Test

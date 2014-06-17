@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.ClassUtils;
@@ -53,6 +54,22 @@ public abstract class SpringBootCondition implements Condition {
 							+ "springframework package (e.g. if you put a @ComponentScan "
 							+ "in the default package by mistake)", ex);
 		}
+		catch (RuntimeException ex) {
+			throw new IllegalStateException("Error processing condition on "
+					+ getName(metadata), ex);
+		}
+	}
+
+	private String getName(AnnotatedTypeMetadata metadata) {
+		if (metadata instanceof AnnotationMetadata) {
+			return ((AnnotationMetadata) metadata).getClassName();
+		}
+		if (metadata instanceof MethodMetadata) {
+			MethodMetadata methodMetadata = (MethodMetadata) metadata;
+			return methodMetadata.getDeclaringClassName() + "."
+					+ methodMetadata.getMethodName();
+		}
+		return metadata.toString();
 	}
 
 	private static String getClassOrMethodName(AnnotatedTypeMetadata metadata) {

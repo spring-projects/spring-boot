@@ -105,7 +105,7 @@ public class HornetQAutoConfiguration {
 	private ConnectionFactory createEmbeddedConnectionFactory() {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
-					InVMConnectorFactory.class.getName());
+					InVMConnectorFactory.class.getName(), properties.getEmbedded().generateTransportParameters());
 			ServerLocator serviceLocator = HornetQClient
 					.createServerLocatorWithoutHA(transportConfiguration);
 			return new HornetQConnectionFactory(serviceLocator);

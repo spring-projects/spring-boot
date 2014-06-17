@@ -29,7 +29,7 @@ import org.springframework.boot.gradle.PluginFeatures;
  */
 public class RepackagePluginFeatures implements PluginFeatures {
 
-	private static final String REPACKAGE_TASK_NAME = "bootRepackage";
+	public static final String REPACKAGE_TASK_NAME = "bootRepackage";
 
 	@Override
 	public void apply(Project project) {

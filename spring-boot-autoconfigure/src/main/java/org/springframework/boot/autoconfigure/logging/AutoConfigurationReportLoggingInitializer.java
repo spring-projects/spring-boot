@@ -16,6 +16,11 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -117,7 +122,8 @@ public class AutoConfigurationReportLoggingInitializer implements
 		message.append("=========================\n\n\n");
 		message.append("Positive matches:\n");
 		message.append("-----------------\n");
-		for (Map.Entry<String, ConditionAndOutcomes> entry : outcomes.entrySet()) {
+		Map<String, ConditionAndOutcomes> shortOutcomes = orderByName(outcomes);
+		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (entry.getValue().isFullMatch()) {
 				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
@@ -125,7 +131,7 @@ public class AutoConfigurationReportLoggingInitializer implements
 		message.append("\n\n");
 		message.append("Negative matches:\n");
 		message.append("-----------------\n");
-		for (Map.Entry<String, ConditionAndOutcomes> entry : outcomes.entrySet()) {
+		for (Map.Entry<String, ConditionAndOutcomes> entry : shortOutcomes.entrySet()) {
 			if (!entry.getValue().isFullMatch()) {
 				addLogMessage(message, entry.getKey(), entry.getValue());
 			}
@@ -134,9 +140,26 @@ public class AutoConfigurationReportLoggingInitializer implements
 		return message;
 	}
 
+	private Map<String, ConditionAndOutcomes> orderByName(
+			Map<String, ConditionAndOutcomes> outcomes) {
+		Map<String, ConditionAndOutcomes> result = new LinkedHashMap<String, ConditionAndOutcomes>();
+		List<String> names = new ArrayList<String>();
+		Map<String, String> classNames = new HashMap<String, String>();
+		for (String name : outcomes.keySet()) {
+			String shortName = ClassUtils.getShortName(name);
+			names.add(shortName);
+			classNames.put(shortName, name);
+		}
+		Collections.sort(names);
+		for (String shortName : names) {
+			result.put(shortName, outcomes.get(classNames.get(shortName)));
+		}
+		return result;
+	}
+
 	private void addLogMessage(StringBuilder message, String source,
 			ConditionAndOutcomes conditionAndOutcomes) {
-		message.append("\n   " + ClassUtils.getShortName(source) + "\n");
+		message.append("\n   " + source + "\n");
 		for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
 			message.append("      - ");
 			if (StringUtils.hasLength(conditionAndOutcome.getOutcome().getMessage())) {

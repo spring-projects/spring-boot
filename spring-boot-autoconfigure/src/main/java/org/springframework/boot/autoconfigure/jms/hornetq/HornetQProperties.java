@@ -16,7 +16,12 @@
 
 package org.springframework.boot.autoconfigure.jms.hornetq;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.hornetq.core.remoting.impl.invm.TransportConstants;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -70,6 +75,10 @@ public class HornetQProperties {
 	 */
 	public static class Embedded {
 
+		private static final AtomicInteger serverIdCounter = new AtomicInteger();
+
+		private int serverId = serverIdCounter.getAndIncrement();
+
 		private boolean enabled = true;
 
 		private boolean persistent;
@@ -83,6 +92,14 @@ public class HornetQProperties {
 		private String clusterPassword = UUID.randomUUID().toString();
 
 		private boolean defaultClusterPassword = true;
+
+		public int getServerId() {
+			return serverId;
+		}
+
+		public void setServerId(int serverId) {
+			this.serverId = serverId;
+		}
 
 		public boolean isEnabled() {
 			return this.enabled;
@@ -135,6 +152,18 @@ public class HornetQProperties {
 
 		public boolean isDefaultClusterPassword() {
 			return this.defaultClusterPassword;
+		}
+
+		/**
+		 * Creates the minimal transport parameters for an embedded transport configuration.
+		 * <p>Specifies the identifier of the server.
+		 *
+		 * @see TransportConstants#SERVER_ID_PROP_NAME
+		 */
+		public Map<String,Object> generateTransportParameters() {
+			Map<String, Object> parameters = new HashMap<String, Object>();
+			parameters.put(TransportConstants.SERVER_ID_PROP_NAME, getServerId());
+			return parameters;
 		}
 
 	}
