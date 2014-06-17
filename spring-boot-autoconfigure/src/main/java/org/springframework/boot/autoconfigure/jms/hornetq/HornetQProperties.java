@@ -22,7 +22,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hornetq.core.remoting.impl.invm.TransportConstants;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -94,7 +93,7 @@ public class HornetQProperties {
 		private boolean defaultClusterPassword = true;
 
 		public int getServerId() {
-			return serverId;
+			return this.serverId;
 		}
 
 		public void setServerId(int serverId) {
@@ -155,12 +154,11 @@ public class HornetQProperties {
 		}
 
 		/**
-		 * Creates the minimal transport parameters for an embedded transport configuration.
-		 * <p>Specifies the identifier of the server.
-		 *
+		 * Creates the minimal transport parameters for an embedded transport
+		 * configuration.
 		 * @see TransportConstants#SERVER_ID_PROP_NAME
 		 */
-		public Map<String,Object> generateTransportParameters() {
+		public Map<String, Object> generateTransportParameters() {
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put(TransportConstants.SERVER_ID_PROP_NAME, getServerId());
 			return parameters;

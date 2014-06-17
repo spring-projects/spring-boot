@@ -22,7 +22,6 @@ import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;

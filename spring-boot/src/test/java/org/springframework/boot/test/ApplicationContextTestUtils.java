@@ -16,21 +16,18 @@
 
 package org.springframework.boot.test;
 
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Application context related test utilities.
- *
+ * Internal application context related test utilities.
+ * 
  * @author Stephane Nicoll
- * @since 1.1.1
  */
 public abstract class ApplicationContextTestUtils {
 
 	/**
-	 * Closes this {@link ApplicationContext} and its parent hierarchy
-	 * if any.
+	 * Closes this {@link ApplicationContext} and its parent hierarchy if any.
 	 * @param context the context to close (can be {@code null})
 	 */
 	public static void closeAll(ApplicationContext context) {

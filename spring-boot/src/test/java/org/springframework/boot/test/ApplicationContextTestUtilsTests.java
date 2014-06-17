@@ -16,23 +16,24 @@
 
 package org.springframework.boot.test;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
- *
+ * Tests for {@link ApplicationContextTestUtils}.
+ * 
  * @author Stephane Nicoll
  */
 public class ApplicationContextTestUtilsTests {
 
 	@Test
 	public void closeNull() {
-	   ApplicationContextTestUtils.closeAll(null);
+		ApplicationContextTestUtils.closeAll(null);
 	}
 
 	@Test
@@ -47,7 +48,6 @@ public class ApplicationContextTestUtilsTests {
 		ConfigurableApplicationContext parent = mock(ConfigurableApplicationContext.class);
 		given(mock.getParent()).willReturn(parent);
 		given(parent.getParent()).willReturn(null);
-
 		ApplicationContextTestUtils.closeAll(mock);
 		verify(mock).getParent();
 		verify(mock).close();
