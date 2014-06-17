@@ -169,13 +169,17 @@ metadata can be found in the <<appendix-dependency-versions, appendix>>.
 ===== Custom ``grab'' metadata
 Spring Boot provides a new annotation, `@GrabMetadata` that can be used to provide custom
 dependency metadata that overrides Spring Boot's defaults. This metadata is specified by
-using the new annotation to provide the coordinates of one or more properties files. For example
-`@GrabMetadata(['com.example:versions-one:1.0.0', 'com.example.versions-two:1.0.0'])`. The
+using this annotation to provide the coordinates of one or more properties files (deployed 
+to a Maven repository with a "type" identifier: "properties"). For example
+`@GrabMetadata(['com.example:versions-one:1.0.0', 'com.example.versions-two:1.0.0'])` will 
+pick up files in a Maven repository in "com/example/versions-*/1.0.0/versions-*-1.0.0.properties". The
 properties files are applied in the order that they're specified. In the example above, this
 means that properties in `versions-two` will override properties in `versions-one`. Each entry
 in each properties file must be in the form `group:module=version`. You can use `@GrabMetadata`
 anywhere that you can use `@Grab`, however, to ensure consistent ordering of the metadata, you
-can only use `@GrabMetadata` at most once in your application.
+can only use `@GrabMetadata` at most once in your application. A useful source of dependency
+metadata (a superset of Spring Boot) is the http://platform.spring.io/[Spring IO Platform], e.g.
+`@GrabMetadata('io.spring.platform:platform-versions:1.0.0.RELEASE')`.
 
 
 
