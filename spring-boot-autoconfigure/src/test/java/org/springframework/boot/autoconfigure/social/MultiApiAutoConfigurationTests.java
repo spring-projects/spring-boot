@@ -39,10 +39,10 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.twitter.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.twitter.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(Twitter.class));
@@ -57,10 +57,10 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.facebook.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.facebook.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(Facebook.class));
@@ -75,10 +75,10 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.linkedin.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.linkedin.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(LinkedIn.class));
@@ -97,10 +97,10 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.linkedin.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.linkedin.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(Facebook.class));
@@ -119,10 +119,10 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.twitter.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.twitter.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(Facebook.class));
@@ -141,10 +141,10 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.twitter.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.twitter.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(LinkedIn.class));
@@ -155,10 +155,10 @@ public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurat
 	@Test
 	public void noSocialBeansCreatedWhenPropertiesArentSet() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(TwitterAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertNoConnectionFrameworkBeans();
 		assertMissingBean(Twitter.class);

@@ -37,8 +37,8 @@ public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurat
 				"spring.social.facebook.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.facebook.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(Facebook.class));
@@ -47,8 +47,8 @@ public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurat
 	@Test
 	public void noFacebookBeanCreatedWhenPropertiesArentSet() throws Exception {
 		this.context = new AnnotationConfigWebApplicationContext();
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(FacebookAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
 		assertNoConnectionFrameworkBeans();
 		assertMissingBean(Facebook.class);
