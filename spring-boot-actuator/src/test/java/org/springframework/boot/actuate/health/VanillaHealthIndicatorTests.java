@@ -22,13 +22,13 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link VanillaHealthIndicator}.
- * 
+ *
  * @author Phillip Webb
  */
 public class VanillaHealthIndicatorTests {
 
 	@Test
-	public void ok() throws Exception {
+	public void indicatesUp() throws Exception {
 		VanillaHealthIndicator healthIndicator = new VanillaHealthIndicator();
 		assertEquals(Status.UP, healthIndicator.health().getStatus());
 	}
