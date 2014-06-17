@@ -59,7 +59,7 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
  */
 @Configuration
 @ConditionalOnClass({ ConnectController.class, SocialConfigurerAdapter.class })
-@ConditionalOnBean(SocialConfigurerAdapter.class)
+@ConditionalOnBean({ ConnectionFactoryLocator.class, UsersConnectionRepository.class })
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class SocialWebAutoConfiguration {
 

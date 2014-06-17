@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.social.config.annotation.EnableSocial;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
@@ -47,41 +49,48 @@ import org.springframework.web.servlet.View;
 @Configuration
 @ConditionalOnClass({ TwitterConnectionFactory.class })
 @ConditionalOnProperty(prefix = "spring.social.twitter.", value = "app-id")
-@ConditionalOnWebApplication
+@AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class TwitterAutoConfiguration extends SocialAutoConfigurerAdapter {
+public class TwitterAutoConfiguration {
 
-	@Override
-	protected String getPropertyPrefix() {
-		return "spring.social.twitter.";
-	}
+	@Configuration
+	@EnableSocial
+	@ConditionalOnWebApplication
+	protected static class TwitterAutoConfigurationAdapter extends SocialAutoConfigurerAdapter {
 
-	@Override
-	protected ConnectionFactory<?> createConnectionFactory(
-			RelaxedPropertyResolver properties) {
-		return new TwitterConnectionFactory(
-				properties.getRequiredProperty("app-id"),
-				properties.getRequiredProperty("app-secret"));
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(TwitterConnectionFactory.class)
-	@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-	public Twitter twitter(ConnectionRepository repository) {
-		Connection<Twitter> connection = repository
-				.findPrimaryConnection(Twitter.class);
-		if (connection != null) {
-			return connection.getApi();
+		@Override
+		protected String getPropertyPrefix() {
+			return "spring.social.twitter.";
 		}
-		String id = getProperties().getRequiredProperty("app-id");
-		String secret = getProperties().getRequiredProperty("app-secret");
-		return new TwitterTemplate(id, secret);
-	}
 
-	@Bean(name = { "connect/twitterConnect", "connect/twitterConnected" })
-	@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
-	public View twitterConnectView() {
-		return new GenericConnectionStatusView("twitter", "Twitter");
-	}
+		@Override
+		protected ConnectionFactory<?> createConnectionFactory(
+				RelaxedPropertyResolver properties) {
+			return new TwitterConnectionFactory(
+					properties.getRequiredProperty("app-id"),
+					properties.getRequiredProperty("app-secret"));
+		}
 
+		@Bean
+		@ConditionalOnMissingBean(Twitter.class)
+		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
+		public Twitter twitter(ConnectionRepository repository) {
+			Connection<Twitter> connection = repository
+					.findPrimaryConnection(Twitter.class);
+			if (connection != null) {
+				return connection.getApi();
+			}
+			String id = getProperties().getRequiredProperty("app-id");
+			String secret = getProperties().getRequiredProperty("app-secret");
+			return new TwitterTemplate(id, secret);
+		}
+
+		@Bean(name = { "connect/twitterConnect", "connect/twitterConnected" })
+		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
+		public View twitterConnectView() {
+			return new GenericConnectionStatusView("twitter", "Twitter");
+		}
+
+	}
+	
 }

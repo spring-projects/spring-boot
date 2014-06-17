@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.social.config.annotation.EnableSocial;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
@@ -46,36 +48,43 @@ import org.springframework.web.servlet.View;
 @Configuration
 @ConditionalOnClass({ LinkedInConnectionFactory.class })
 @ConditionalOnProperty(prefix = "spring.social.linkedin.", value = "app-id")
-@ConditionalOnWebApplication
+@AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
-public class LinkedInAutoConfiguration extends SocialAutoConfigurerAdapter {
+public class LinkedInAutoConfiguration {
 
-	@Override
-	protected String getPropertyPrefix() {
-		return "spring.social.linkedin.";
-	}
+	@Configuration
+	@EnableSocial
+	@ConditionalOnWebApplication
+	protected static class LinkedInAutoConfigurationAdapter extends SocialAutoConfigurerAdapter {
+	
+		@Override
+		protected String getPropertyPrefix() {
+			return "spring.social.linkedin.";
+		}
+	
+		@Override
+		protected ConnectionFactory<?> createConnectionFactory(
+				RelaxedPropertyResolver properties) {
+			return new LinkedInConnectionFactory(
+					properties.getRequiredProperty("app-id"),
+					properties.getRequiredProperty("app-secret"));
+		}
+	
+		@Bean
+		@ConditionalOnMissingBean(LinkedIn.class)
+		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
+		public LinkedIn linkedin(ConnectionRepository repository) {
+			Connection<LinkedIn> connection = repository
+					.findPrimaryConnection(LinkedIn.class);
+			return connection != null ? connection.getApi() : null;
+		}
+	
+		@Bean(name = { "connect/linkedinConnect", "connect/linkedinConnected" })
+		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
+		public View linkedInConnectView() {
+			return new GenericConnectionStatusView("linkedin", "LinkedIn");
+		}
 
-	@Override
-	protected ConnectionFactory<?> createConnectionFactory(
-			RelaxedPropertyResolver properties) {
-		return new LinkedInConnectionFactory(
-				properties.getRequiredProperty("app-id"),
-				properties.getRequiredProperty("app-secret"));
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(LinkedInConnectionFactory.class)
-	@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
-	public LinkedIn linkedin(ConnectionRepository repository) {
-		Connection<LinkedIn> connection = repository
-				.findPrimaryConnection(LinkedIn.class);
-		return connection != null ? connection.getApi() : null;
-	}
-
-	@Bean(name = { "connect/linkedinConnect", "connect/linkedinConnected" })
-	@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
-	public View linkedInConnectView() {
-		return new GenericConnectionStatusView("linkedin", "LinkedIn");
 	}
 
 }
