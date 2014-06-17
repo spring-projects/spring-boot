@@ -16,18 +16,19 @@
 
 package org.springframework.boot.test;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import java.util.Map;
 
 import org.junit.Test;
-
 import org.springframework.test.context.MergedContextConfiguration;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}
- *
+ * 
  * @author Stephane Nicoll
  */
 public class SpringApplicationContextLoaderTests {
@@ -55,12 +56,10 @@ public class SpringApplicationContextLoaderTests {
 		assertKey(config, "anotherKey", "another=Value");
 	}
 
-
 	private Map<String, Object> getEnvironmentProperties(Class<?> testClass) {
 		MergedContextConfiguration configuration = mock(MergedContextConfiguration.class);
 		doReturn(testClass).when(configuration).getTestClass();
-
-		return loader.getEnvironmentProperties(configuration);
+		return this.loader.getEnvironmentProperties(configuration);
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
@@ -68,16 +67,15 @@ public class SpringApplicationContextLoaderTests {
 		assertEquals(value, actual.get(key));
 	}
 
-
-	@IntegrationTest({"key=myValue", "anotherKey:anotherValue"})
+	@IntegrationTest({ "key=myValue", "anotherKey:anotherValue" })
 	static class SimpleConfig {
 	}
 
-	@IntegrationTest({"key=my=Value", "anotherKey:another:Value"})
+	@IntegrationTest({ "key=my=Value", "anotherKey:another:Value" })
 	static class SameSeparatorInValue {
 	}
 
-	@IntegrationTest({"key=my:Value", "anotherKey:another=Value"})
+	@IntegrationTest({ "key=my:Value", "anotherKey:another=Value" })
 	static class AnotherSeparatorInValue {
 	}
 

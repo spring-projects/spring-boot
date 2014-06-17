@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jms.hornetq;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -56,6 +54,11 @@ import org.springframework.jms.core.SessionCallback;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for {@link HornetQAutoConfiguration}.
  * 
@@ -88,8 +91,7 @@ public class HornetQAutoConfigurationTests {
 	@Test
 	public void nativeConnectionFactoryCustomHost() {
 		load(EmptyConfiguration.class, "spring.hornetq.mode:native",
-				"spring.hornetq.host:192.168.1.144",
-				"spring.hornetq.port:9876");
+				"spring.hornetq.host:192.168.1.144", "spring.hornetq.port:9876");
 		HornetQConnectionFactory connectionFactory = this.context
 				.getBean(HornetQConnectionFactory.class);
 		assertNettyConnectionFactory(connectionFactory, "192.168.1.144", 9876);
@@ -146,8 +148,7 @@ public class HornetQAutoConfigurationTests {
 	@Test
 	public void embeddedConnectionFactorEvenIfEmbeddedServiceDisabled() {
 		// No mode is specified
-		load(EmptyConfiguration.class,
-				"spring.hornetq.mode:embedded",
+		load(EmptyConfiguration.class, "spring.hornetq.mode:embedded",
 				"spring.hornetq.embedded.enabled:false");
 
 		assertEquals(0, this.context.getBeansOfType(EmbeddedJMS.class).size());
@@ -157,11 +158,9 @@ public class HornetQAutoConfigurationTests {
 		assertInVmConnectionFactory(connectionFactory);
 	}
 
-
 	@Test
 	public void embeddedServerWithDestinations() {
-		load(EmptyConfiguration.class,
-				"spring.hornetq.embedded.queues=Queue1,Queue2",
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.queues=Queue1,Queue2",
 				"spring.hornetq.embedded.topics=Topic1");
 
 		DestinationChecker checker = new DestinationChecker(this.context);
@@ -184,9 +183,10 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void embeddedServiceWithCustomJmsConfiguration() {
-		load(CustomJmsConfiguration.class,
-				"spring.hornetq.embedded.queues=Queue1,Queue2"); // Ignored with custom
-																	// config
+		load(CustomJmsConfiguration.class, "spring.hornetq.embedded.queues=Queue1,Queue2"); // Ignored
+																							// with
+																							// custom
+																							// config
 		DestinationChecker checker = new DestinationChecker(this.context);
 		checker.checkQueue("custom", true); // See CustomJmsConfiguration
 
@@ -207,8 +207,7 @@ public class HornetQAutoConfigurationTests {
 		File dataFolder = this.folder.newFolder();
 
 		// Start the server and post a message to some queue
-		load(EmptyConfiguration.class,
-				"spring.hornetq.embedded.queues=TestQueue",
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.queues=TestQueue",
 				"spring.hornetq.embedded.persistent:true",
 				"spring.hornetq.embedded.dataDirectory:" + dataFolder.getAbsolutePath());
 
@@ -223,8 +222,7 @@ public class HornetQAutoConfigurationTests {
 		this.context.close(); // Shutdown the broker
 
 		// Start the server again and check if our message is still here
-		load(EmptyConfiguration.class,
-				"spring.hornetq.embedded.queues=TestQueue",
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.queues=TestQueue",
 				"spring.hornetq.embedded.persistent:true",
 				"spring.hornetq.embedded.dataDirectory:" + dataFolder.getAbsolutePath());
 
@@ -238,17 +236,17 @@ public class HornetQAutoConfigurationTests {
 
 	@Test
 	public void severalEmbeddedBrokers() {
-		load(EmptyConfiguration.class,
-				"spring.hornetq.embedded.queues=Queue1");
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.queues=Queue1");
 
-		AnnotationConfigApplicationContext anotherContext = doLoad(EmptyConfiguration.class,
-				"spring.hornetq.embedded.queues=Queue2");
+		AnnotationConfigApplicationContext anotherContext = doLoad(
+				EmptyConfiguration.class, "spring.hornetq.embedded.queues=Queue2");
 
 		try {
 			HornetQProperties properties = this.context.getBean(HornetQProperties.class);
-			HornetQProperties anotherProperties = anotherContext.getBean(HornetQProperties.class);
-			assertTrue("ServerId should not match",
-					properties.getEmbedded().getServerId() < anotherProperties.getEmbedded().getServerId());
+			HornetQProperties anotherProperties = anotherContext
+					.getBean(HornetQProperties.class);
+			assertTrue("ServerId should not match", properties.getEmbedded()
+					.getServerId() < anotherProperties.getEmbedded().getServerId());
 
 			DestinationChecker checker = new DestinationChecker(this.context);
 			checker.checkQueue("Queue1", true);
@@ -259,19 +257,18 @@ public class HornetQAutoConfigurationTests {
 			anotherChecker.checkQueue("Queue1", false);
 		}
 		finally {
-   			anotherContext.close();
+			anotherContext.close();
 		}
 	}
 
 	@Test
 	public void connectToASpecificEmbeddedBroker() {
-		load(EmptyConfiguration.class,
-				"spring.hornetq.embedded.serverId=93",
+		load(EmptyConfiguration.class, "spring.hornetq.embedded.serverId=93",
 				"spring.hornetq.embedded.queues=Queue1");
 
-		AnnotationConfigApplicationContext anotherContext = doLoad(EmptyConfiguration.class,
-				"spring.hornetq.mode=embedded",
-				"spring.hornetq.embedded.serverId=93",  // Connect to the "main" broker
+		AnnotationConfigApplicationContext anotherContext = doLoad(
+				EmptyConfiguration.class, "spring.hornetq.mode=embedded",
+				"spring.hornetq.embedded.serverId=93", // Connect to the "main" broker
 				"spring.hornetq.embedded.enabled=false"); // do not start a specific one
 
 		try {
@@ -316,10 +313,12 @@ public class HornetQAutoConfigurationTests {
 		this.context = doLoad(config, environment);
 	}
 
-	private AnnotationConfigApplicationContext doLoad(Class<?> config, String... environment) {
+	private AnnotationConfigApplicationContext doLoad(Class<?> config,
+			String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(config);
-		applicationContext.register(HornetQAutoConfiguration.class, JmsAutoConfiguration.class);
+		applicationContext.register(HornetQAutoConfiguration.class,
+				JmsAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(applicationContext, environment);
 		applicationContext.refresh();
 		return applicationContext;

@@ -153,7 +153,8 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 				.detectDefaultConfigurationClasses(declaringClass);
 	}
 
-	protected Map<String, Object> getEnvironmentProperties(MergedContextConfiguration config) {
+	protected Map<String, Object> getEnvironmentProperties(
+			MergedContextConfiguration config) {
 		Map<String, Object> properties = new LinkedHashMap<String, Object>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		disableJmx(properties);
@@ -180,7 +181,7 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 
 	// Instead of parsing the keys ourselves, we rely on standard handling
 	private Map<String, String> extractEnvironmentProperties(String[] values) {
-		StringBuilder sb = new  StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		for (String value : values) {
 			sb.append(value).append(LINE_SEPARATOR);
 		}
@@ -190,11 +191,12 @@ public class SpringApplicationContextLoader extends AbstractContextLoader {
 			props.load(new StringReader(content));
 		}
 		catch (IOException e) {
-			throw new IllegalStateException("Unexpected could not load properties from '"+content+"'", e);
+			throw new IllegalStateException("Unexpected could not load properties from '"
+					+ content + "'", e);
 		}
 
 		Map<String, String> properties = new HashMap<String, String>();
-		for (String name: props.stringPropertyNames()) {
+		for (String name : props.stringPropertyNames()) {
 			properties.put(name, props.getProperty(name));
 		}
 		return properties;
