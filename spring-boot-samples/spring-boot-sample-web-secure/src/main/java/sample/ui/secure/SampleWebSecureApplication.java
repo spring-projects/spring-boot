@@ -27,7 +27,6 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -72,7 +71,6 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 	}
 
 	@Bean
-	@DependsOn("dataSourceAutoConfigurationInitializer")
 	public AuthenticationSecurity authenticationSecurity() {
 		return new AuthenticationSecurity();
 	}

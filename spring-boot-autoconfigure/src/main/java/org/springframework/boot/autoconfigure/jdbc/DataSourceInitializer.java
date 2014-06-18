@@ -82,8 +82,8 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	@Override
 	public void onApplicationEvent(DataSourceInitializedEvent event) {
-		// NOTE the even can happen more than once and
-		// the event datasource if not used here
+		// NOTE the event can happen more than once and
+		// the event datasource is not used here
 		if (!this.initialized) {
 			runDataScripts();
 			this.initialized = true;
