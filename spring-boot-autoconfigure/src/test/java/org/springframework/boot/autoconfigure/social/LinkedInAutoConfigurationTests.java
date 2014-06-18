@@ -16,13 +16,8 @@
 
 package org.springframework.boot.autoconfigure.social;
 
-import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.test.EnvironmentTestUtils;
-import org.springframework.social.UserIdSource;
-import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
@@ -30,19 +25,10 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link LinkedInAutoConfiguration}.
- *
+ * 
  * @author Craig Walls
  */
-public class LinkedInAutoConfigurationTests {
-
-	private AnnotationConfigWebApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+public class LinkedInAutoConfigurationTests extends AbstractSocialAutoConfigurationTests {
 
 	@Test
 	public void expectedSocialBeansCreated() throws Exception {
@@ -51,14 +37,21 @@ public class LinkedInAutoConfigurationTests {
 				"spring.social.linkedin.appId:12345");
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.social.linkedin.appSecret:secret");
-		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
 		this.context.refresh();
-		assertNotNull(this.context.getBean(UsersConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionRepository.class));
-		assertNotNull(this.context.getBean(ConnectionFactoryLocator.class));
-		assertNotNull(this.context.getBean(UserIdSource.class));
+		assertConnectionFrameworkBeans();
 		assertNotNull(this.context.getBean(LinkedIn.class));
+	}
+
+	@Test
+	public void noLinkedInBeanCreatedIfPropertiesArentSet() throws Exception {
+		this.context = new AnnotationConfigWebApplicationContext();
+		this.context.register(LinkedInAutoConfiguration.class);
+		this.context.register(SocialWebAutoConfiguration.class);
+		this.context.refresh();
+		assertNoConnectionFrameworkBeans();
+		assertMissingBean(LinkedIn.class);
 	}
 
 }

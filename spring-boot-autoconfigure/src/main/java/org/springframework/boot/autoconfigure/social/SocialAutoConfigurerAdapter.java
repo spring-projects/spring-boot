@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.social;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -31,7 +30,6 @@ import org.springframework.social.connect.ConnectionFactory;
  * @author Phillip Webb
  * @since 1.1.0
  */
-@ConditionalOnClass(SocialConfigurerAdapter.class)
 abstract class SocialAutoConfigurerAdapter extends SocialConfigurerAdapter implements
 		EnvironmentAware {
 
