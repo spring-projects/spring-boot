@@ -427,9 +427,8 @@ public class ShellProperties {
 		}
 
 		public void setRoles(String[] roles) {
-			// 'roles' can be empty. This means no special to access right to connect to
+			// 'roles' can be null. This means no special to access right to connect to
 			// shell is required.
-			Assert.notNull(roles, "roles must not be null");
 			this.roles = roles;
 		}
 

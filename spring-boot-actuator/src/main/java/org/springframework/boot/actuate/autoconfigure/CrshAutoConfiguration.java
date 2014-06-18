@@ -155,6 +155,7 @@ public class CrshAutoConfiguration {
 	 * Class to configure CRaSH to authenticate against Spring Security.
 	 */
 	@Configuration
+	@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
 	@ConditionalOnBean({ AuthenticationManager.class })
 	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
@@ -168,7 +169,6 @@ public class CrshAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
 		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
 		public CrshShellAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
