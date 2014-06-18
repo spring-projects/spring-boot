@@ -16,48 +16,49 @@
 
 package org.springframework.boot.gradle;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.jar.JarFile;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
  * Tests for using the Gradle plugin's support for installing artifacts
- *
+ * 
  * @author Dave Syer
  */
 public class ClassifierTests {
 
 	private ProjectConnection project;
 
-	private static final String BOOT_VERSION = ManagedDependencies.get().find(
-			"spring-boot").getVersion();
+	private static final String BOOT_VERSION = ManagedDependencies.get()
+			.find("spring-boot").getVersion();
 
 	@Test
 	public void classifierInBootTask() throws Exception {
-		project = new ProjectCreator().createProject("classifier");
-		project.newBuild().forTasks("build").withArguments(
-				"-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
+		this.project = new ProjectCreator().createProject("classifier");
+		this.project.newBuild().forTasks("build")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 		checkFilesExist("classifier");
 	}
 
 	@Test
 	public void classifierInBootExtension() throws Exception {
-		project = new ProjectCreator().createProject("classifier-extension");
-		project.newBuild().forTasks("build").withArguments(
-				"-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info").run();
+		this.project = new ProjectCreator().createProject("classifier-extension");
+		this.project.newBuild().forTasks("build")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info")
+				.run();
 	}
 
 	private void checkFilesExist(String name) throws Exception {
-		JarFile jar = new JarFile("target/" + name  + "/build/libs/" + name + ".jar");
+		JarFile jar = new JarFile("target/" + name + "/build/libs/" + name + ".jar");
 		assertNotNull(jar.getManifest());
 		jar.close();
-		jar = new JarFile("target/" + name  + "/build/libs/" + name + "-exec.jar");
+		jar = new JarFile("target/" + name + "/build/libs/" + name + "-exec.jar");
 		assertNotNull(jar.getManifest());
 		jar.close();
 	}
-	
+
 }

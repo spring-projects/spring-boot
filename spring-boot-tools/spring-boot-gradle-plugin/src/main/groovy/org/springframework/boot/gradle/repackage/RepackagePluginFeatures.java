@@ -61,7 +61,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		project.afterEvaluate(new Action<Project>() {
 			@Override
 			public void execute(Project project) {
-				project.getTasks().withType(Jar.class, new OutputAction(task));	
+				project.getTasks().withType(Jar.class, new OutputAction(task));
 			}
 		});
 	}
@@ -89,9 +89,9 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		@Override
 		public void execute(Jar archive) {
 			if ("".equals(archive.getClassifier())) {
-				setClassifier(task, archive);
+				setClassifier(this.task, archive);
 				File file = archive.getArchivePath();
-				String classifier = task.getClassifier();
+				String classifier = this.task.getClassifier();
 				if (classifier != null) {
 					String withClassifer = file.getName();
 					withClassifer = StringUtils.stripFilenameExtension(withClassifer)
@@ -99,8 +99,8 @@ public class RepackagePluginFeatures implements PluginFeatures {
 							+ StringUtils.getFilenameExtension(withClassifer);
 					File out = new File(file.getParentFile(), withClassifer);
 					file = out;
-					task.getOutputs().file(file);
-					task.setOutputFile(file);
+					this.task.getOutputs().file(file);
+					this.task.setOutputFile(file);
 				}
 			}
 

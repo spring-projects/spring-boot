@@ -58,15 +58,15 @@ public class SpringBootPluginExtension {
 	}
 
 	/**
-	 * The main class that should be run. Instead of setting this explicitly you can use the 
-	 * 'mainClassName' of the project or the 'main' of the 'run' task. If not specified the 
+	 * The main class that should be run. Instead of setting this explicitly you can use the
+	 * 'mainClassName' of the project or the 'main' of the 'run' task. If not specified the
 	 * value from the MANIFEST will be used, or if no manifest entry is the archive will be
 	 * searched for a suitable class.
 	 */
 	String mainClass
 
 	/**
-	 * The classifier (file name part before the extension). Instead of setting this explicitly 
+	 * The classifier (file name part before the extension). Instead of setting this explicitly
 	 * you can use the 'classifier' property of the 'bootRepackage' task. If not specified the archive
 	 * will be replaced instead of renamed.
 	 */

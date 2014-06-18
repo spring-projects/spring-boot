@@ -120,8 +120,8 @@ public class RepackageTask extends DefaultTask {
 						try {
 							FileCopyUtils.copy(file, out);
 						}
-						catch (IOException e) {
-							throw new IllegalStateException(e.getMessage(), e);
+						catch (IOException ex) {
+							throw new IllegalStateException(ex.getMessage(), ex);
 						}
 						file = out;
 					}

@@ -89,18 +89,17 @@ public class SampleWebSecureApplication extends WebMvcConfigurerAdapter {
 	}
 
 	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
-	protected static class AuthenticationSecurity extends GlobalAuthenticationConfigurerAdapter {
+	protected static class AuthenticationSecurity extends
+			GlobalAuthenticationConfigurerAdapter {
 
 		@Autowired
 		private DataSource dataSource;
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) throws Exception {
-			// @formatter:off
-			auth.jdbcAuthentication().dataSource(dataSource).withUser("admin").password("admin")
-					.roles("ADMIN", "USER").and().withUser("user").password("user")
-					.roles("USER");
-			// @formatter:on
+			auth.jdbcAuthentication().dataSource(this.dataSource).withUser("admin")
+					.password("admin").roles("ADMIN", "USER").and().withUser("user")
+					.password("user").roles("USER");
 		}
 	}
 
