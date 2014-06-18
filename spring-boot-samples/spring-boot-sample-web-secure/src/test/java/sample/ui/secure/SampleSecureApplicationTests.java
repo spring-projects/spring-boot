@@ -88,7 +88,7 @@ public class SampleSecureApplicationTests {
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.set("username", "user");
-		form.set("password", "password");
+		form.set("password", "user");
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(
 				"http://localhost:" + this.port + "/login", HttpMethod.POST,
 				new HttpEntity<MultiValueMap<String, String>>(form, headers),
