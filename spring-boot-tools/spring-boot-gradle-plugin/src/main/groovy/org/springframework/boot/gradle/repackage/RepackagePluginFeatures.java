@@ -16,11 +16,17 @@
 
 package org.springframework.boot.gradle.repackage;
 
+import java.io.File;
+
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.PluginFeatures;
+import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link PluginFeatures} to add repackage support.
@@ -47,7 +53,17 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		task.dependsOn(project.getConfigurations()
 				.getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
 				.getBuildDependencies());
+		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
+	}
+
+	private void registerOutput(Project project, final RepackageTask task) {
+		project.afterEvaluate(new Action<Project>() {
+			@Override
+			public void execute(Project project) {
+				project.getTasks().withType(Jar.class, new OutputAction(task));	
+			}
+		});
 	}
 
 	private void ensureTaskRunsOnAssembly(Project project, Task task) {
@@ -60,6 +76,53 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	private void registerRepackageTaskProperty(Project project) {
 		project.getExtensions().getExtraProperties()
 				.set("BootRepackage", RepackageTask.class);
+	}
+
+	private class OutputAction implements Action<Jar> {
+
+		private RepackageTask task;
+
+		public OutputAction(RepackageTask task) {
+			this.task = task;
+		}
+
+		@Override
+		public void execute(Jar archive) {
+			if ("".equals(archive.getClassifier())) {
+				setClassifier(task, archive);
+				File file = archive.getArchivePath();
+				String classifier = task.getClassifier();
+				if (classifier != null) {
+					String withClassifer = file.getName();
+					withClassifer = StringUtils.stripFilenameExtension(withClassifer)
+							+ "-" + classifier + "."
+							+ StringUtils.getFilenameExtension(withClassifer);
+					File out = new File(file.getParentFile(), withClassifer);
+					file = out;
+					task.getOutputs().file(file);
+					task.setOutputFile(file);
+				}
+			}
+
+		}
+
+		private void setClassifier(RepackageTask task, Jar archive) {
+			Project project = task.getProject();
+			String classifier = null;
+			SpringBootPluginExtension extension = project.getExtensions().getByType(
+					SpringBootPluginExtension.class);
+			if (task.getClassifier() != null) {
+				classifier = task.getClassifier();
+			}
+			else if (extension.getClassifier() != null) {
+				classifier = extension.getClassifier();
+			}
+			if (classifier != null) {
+				project.getLogger().info("Setting classifier: " + classifier);
+				task.setClassifier(classifier);
+			}
+		}
+
 	}
 
 }

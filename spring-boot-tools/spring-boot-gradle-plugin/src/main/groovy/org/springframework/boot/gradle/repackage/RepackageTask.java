@@ -27,6 +27,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Repackage task.
@@ -44,6 +45,10 @@ public class RepackageTask extends DefaultTask {
 
 	private String mainClass;
 
+	private String classifier;
+
+	private File outputFile;
+
 	public void setCustomConfiguration(String customConfiguration) {
 		this.customConfiguration = customConfiguration;
 	}
@@ -55,9 +60,17 @@ public class RepackageTask extends DefaultTask {
 	public void setMainClass(String mainClass) {
 		this.mainClass = mainClass;
 	}
-	
+
 	public String getMainClass() {
 		return mainClass;
+	}
+
+	public String getClassifier() {
+		return classifier;
+	}
+
+	public void setClassifier(String classifier) {
+		this.classifier = classifier;
 	}
 
 	@TaskAction
@@ -102,13 +115,24 @@ public class RepackageTask extends DefaultTask {
 				File file = archive.getArchivePath();
 				if (file.exists()) {
 					Repackager repackager = new LoggingRepackager(file);
+					File out = RepackageTask.this.outputFile;
+					if (out != null) {
+						try {
+							FileCopyUtils.copy(file, out);
+						}
+						catch (IOException e) {
+							throw new IllegalStateException(e.getMessage(), e);
+						}
+						file = out;
+					}
+					RepackageTask.this.outputFile = file;
 					setMainClass(repackager);
 					if (this.extension.convertLayout() != null) {
 						repackager.setLayout(this.extension.convertLayout());
 					}
 					repackager.setBackupSource(this.extension.isBackupSource());
 					try {
-						repackager.repackage(this.libraries);
+						repackager.repackage(file, this.libraries);
 					}
 					catch (IOException ex) {
 						throw new IllegalStateException(ex.getMessage(), ex);
@@ -121,10 +145,13 @@ public class RepackageTask extends DefaultTask {
 			String mainClass = (String) getProject().property("mainClassName");
 			if (RepackageTask.this.mainClass != null) {
 				mainClass = RepackageTask.this.mainClass;
-			} else if (this.extension.getMainClass() != null) {
+			}
+			else if (this.extension.getMainClass() != null) {
 				mainClass = this.extension.getMainClass();
-			} else if (getProject().getTasks().getByName("run").hasProperty("main")) {
-				mainClass = (String) getProject().getTasks().getByName("run").property("main");
+			}
+			else if (getProject().getTasks().getByName("run").hasProperty("main")) {
+				mainClass = (String) getProject().getTasks().getByName("run")
+						.property("main");
 			}
 			getLogger().info("Setting mainClass: " + mainClass);
 			repackager.setMainClass(mainClass);
@@ -154,4 +181,9 @@ public class RepackageTask extends DefaultTask {
 			}
 		};
 	}
+
+	void setOutputFile(File file) {
+		this.outputFile = file;
+	}
+
 }
