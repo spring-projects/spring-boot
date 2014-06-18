@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass(SolrServer.class)
+@ConditionalOnClass({ HttpSolrServer.class, CloudSolrServer.class })
 @EnableConfigurationProperties(SolrProperties.class)
 public class SolrAutoConfiguration {
 
