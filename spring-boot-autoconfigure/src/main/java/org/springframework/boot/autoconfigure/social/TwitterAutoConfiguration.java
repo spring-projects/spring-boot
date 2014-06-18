@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,22 +40,23 @@ import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 import org.springframework.web.servlet.View;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
- * Twitter.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Social
+ * connectivity with Twitter.
  * 
  * @author Craig Walls
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ TwitterConnectionFactory.class })
+@ConditionalOnProperty(prefix = "spring.social.twitter.", value = "app-id")
+@AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class TwitterAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	protected static class TwitterAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
+	protected static class TwitterAutoConfigurationAdapter extends SocialAutoConfigurerAdapter {
 
 		@Override
 		protected String getPropertyPrefix() {
@@ -64,12 +66,13 @@ public class TwitterAutoConfiguration {
 		@Override
 		protected ConnectionFactory<?> createConnectionFactory(
 				RelaxedPropertyResolver properties) {
-			return new TwitterConnectionFactory(properties.getRequiredProperty("app-id"),
+			return new TwitterConnectionFactory(
+					properties.getRequiredProperty("app-id"),
 					properties.getRequiredProperty("app-secret"));
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(TwitterConnectionFactory.class)
+		@ConditionalOnMissingBean(Twitter.class)
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public Twitter twitter(ConnectionRepository repository) {
 			Connection<Twitter> connection = repository
@@ -89,5 +92,5 @@ public class TwitterAutoConfiguration {
 		}
 
 	}
-
+	
 }

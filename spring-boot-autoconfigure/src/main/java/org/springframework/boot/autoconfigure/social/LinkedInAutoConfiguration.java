@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,28 +39,29 @@ import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
 import org.springframework.web.servlet.View;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
- * LinkedIn.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Social
+ * connectivity with LinkedIn.
  * 
  * @author Craig Walls
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ LinkedInConnectionFactory.class })
+@ConditionalOnProperty(prefix = "spring.social.linkedin.", value = "app-id")
+@AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class LinkedInAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	protected static class LinkedInAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
-
+	protected static class LinkedInAutoConfigurationAdapter extends SocialAutoConfigurerAdapter {
+	
 		@Override
 		protected String getPropertyPrefix() {
 			return "spring.social.linkedin.";
 		}
-
+	
 		@Override
 		protected ConnectionFactory<?> createConnectionFactory(
 				RelaxedPropertyResolver properties) {
@@ -67,16 +69,16 @@ public class LinkedInAutoConfiguration {
 					properties.getRequiredProperty("app-id"),
 					properties.getRequiredProperty("app-secret"));
 		}
-
+	
 		@Bean
-		@ConditionalOnMissingBean(LinkedInConnectionFactory.class)
+		@ConditionalOnMissingBean(LinkedIn.class)
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public LinkedIn linkedin(ConnectionRepository repository) {
 			Connection<LinkedIn> connection = repository
 					.findPrimaryConnection(LinkedIn.class);
 			return connection != null ? connection.getApi() : null;
 		}
-
+	
 		@Bean(name = { "connect/linkedinConnect", "connect/linkedinConnected" })
 		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
 		public View linkedInConnectView() {

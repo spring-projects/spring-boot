@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,22 +40,23 @@ import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.web.servlet.View;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
- * Facebook.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Social
+ * connectivity with Facebook.
  * 
  * @author Craig Walls
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass({ FacebookConnectionFactory.class })
+@ConditionalOnProperty(prefix = "spring.social.facebook.", value = "app-id")
+@AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class FacebookAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	protected static class FacebookAutoConfigurationAdapter extends
-			SocialAutoConfigurerAdapter {
+	protected static class FacebookAutoConfigurationAdapter extends SocialAutoConfigurerAdapter {
 
 		@Override
 		protected String getPropertyPrefix() {
@@ -75,7 +77,8 @@ public class FacebookAutoConfiguration {
 		public Facebook facebook(ConnectionRepository repository) {
 			Connection<Facebook> connection = repository
 					.findPrimaryConnection(Facebook.class);
-			return connection != null ? connection.getApi() : new FacebookTemplate();
+			return connection != null ? connection.getApi()
+					: new FacebookTemplate();
 		}
 
 		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
@@ -85,5 +88,5 @@ public class FacebookAutoConfiguration {
 		}
 
 	}
-
+	
 }
