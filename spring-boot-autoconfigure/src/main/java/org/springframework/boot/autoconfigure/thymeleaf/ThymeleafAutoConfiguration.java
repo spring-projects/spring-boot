@@ -150,7 +150,7 @@ public class ThymeleafAutoConfiguration {
 	}
 
 	@Configuration
-	@ConditionalOnClass(name = "com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect")
+	@ConditionalOnClass(DataAttributeDialect.class)
 	protected static class DataAttributeDialectConfiguration {
 
 		@Bean
