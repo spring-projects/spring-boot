@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -57,7 +58,9 @@ public class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigura
 						"SELECT COUNT(*) from CITY", Integer.class));
 	}
 
-	@Test
+	// This can't succeed because the data SQL is executed immediately after the schema
+	// and Hibernate hasn't initialized yet at that point
+	@Test(expected = BeanCreationException.class)
 	public void testDataScript() throws Exception {
 		EnvironmentTestUtils.addEnvironment(this.context,
 				"spring.datasource.data:classpath:/city.sql");

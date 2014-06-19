@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.social.config.annotation.EnableSocial;
+import org.springframework.social.config.annotation.SocialConfigurerAdapter;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
@@ -45,7 +47,9 @@ import org.springframework.web.servlet.View;
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ LinkedInConnectionFactory.class })
+@ConditionalOnClass({ SocialConfigurerAdapter.class, LinkedInConnectionFactory.class })
+@ConditionalOnProperty(prefix = "spring.social.linkedin.", value = "app-id")
+@AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class LinkedInAutoConfiguration {
 
@@ -69,7 +73,7 @@ public class LinkedInAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(LinkedInConnectionFactory.class)
+		@ConditionalOnMissingBean(LinkedIn.class)
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public LinkedIn linkedin(ConnectionRepository repository) {
 			Connection<LinkedIn> connection = repository

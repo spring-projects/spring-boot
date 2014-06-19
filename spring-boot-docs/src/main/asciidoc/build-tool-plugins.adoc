@@ -372,11 +372,11 @@ To run a project in place without building a jar first you can use the ``bootRun
 Running this way makes your static classpath resources (i.e. in `src/main/resources` by
 default) reloadable in the live application, which can be helpful at development time.
 
-[[build-tool-plugins-gradle-repackage-configuration]]
-=== Repackage configuration
+[[build-tool-plugins-gradle-global-configuration]]
+=== Spring Boot Plugin configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
-for configuration. Simply set the appropriate properties as you would with any other Gradle
-extension (see below for a list of configuration options):
+for global configuration of the Boot plugin. Set the appropriate properties as you would 
+with any other Gradle extension (see below for a list of configuration options):
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -385,6 +385,47 @@ extension (see below for a list of configuration options):
 	}
 ----
 
+
+[[build-tool-plugins-gradle-repackage-configuration]]
+=== Repackage configuration
+The plugin adds a `bootRepackage` task which you can also configure directly, e.g.:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	bootRepackage {
+		mainClass = 'demo.Application'
+	}
+----
+
+The following configuration options are available:
+
+[cols="2,4"]
+|===
+|Name |Description
+
+|`mainClass`
+|The main class that should be run. If not specified the `mainClassName` project property
+ will be used or, if the no `mainClassName` id defined the archive will be searched for a
+ suitable class. "Suitable" means a unique class with a well-formed `main()` method (if
+more than one is found the build will fail). You should also be able to specify the main
+class name via the "run" task (`main` property) and/or the "startScripts" (`mainClassName` 
+property) as an alternative to using the "springBoot" configuration.
+
+|`classifier`
+|A file name segment (before the extension) to add to the archive, so that the original is
+preserved in its original location. Defaults to null in which case the archive is repackaged
+in place. The default is convenient for many purposes, but if you want to use the
+original jar as a dependency in another project, it's best to use an extension to define the
+executable archive.
+
+|`withJarTask`
+|The name of the `Jar` task (defaults to all) which is used to locate the archive to repackage.
+
+|`customConfiguration`
+|The name of the custom configuration whuch is used to populate the nested lib directory
+(without specifying this you get all compile and runtime dependencies).
+
+|===
 
 
 [[build-tool-plugins-gradle-repackage-custom-configuration]]
@@ -449,12 +490,7 @@ The following configuration options are available:
 |Name |Description
 
 |`mainClass`
-|The main class that should be run. If not specified the `mainClassName` project property
- will be used or, if the no `mainClassName` id defined the archive will be searched for a
- suitable class. "Suitable" means a unique class with a well-formed `main()` method (if
-more than one is found the build will fail). You should also be able to specify the main
-class name via the "run" task (`main` property) and/or the "startScripts" (`mainClassName` 
-property) as an alternative to using the "springBoot" configuration.
+|The main class that should be run by the executable archive.
 
 |`providedConfiguration`
 |The name of the provided configuration (defaults to `providedRuntime`).
@@ -486,7 +522,7 @@ usually this is not an issue; however, if you are planning to create a more comp
 project setup, with custom `Jar` and `BootRepackage` tasks, there are few tweaks to
 consider.
 
-If you are 'just' creating custom jar files from your project you can simply disables
+If you are 'just' creating custom jar files from your project you can simply disable
 default `jar` and `bootRepackage` tasks:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]

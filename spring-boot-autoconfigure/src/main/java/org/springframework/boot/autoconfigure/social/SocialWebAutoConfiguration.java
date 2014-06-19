@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,10 +47,12 @@ import org.springframework.social.connect.web.DisconnectInterceptor;
 import org.springframework.social.connect.web.ProviderSignInController;
 import org.springframework.social.connect.web.ProviderSignInInterceptor;
 import org.springframework.social.connect.web.SignInAdapter;
+import org.springframework.social.connect.web.thymeleaf.SpringSocialDialect;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.BeanNameViewResolver;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection
@@ -59,6 +63,8 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
  */
 @Configuration
 @ConditionalOnClass({ ConnectController.class, SocialConfigurerAdapter.class })
+@ConditionalOnBean({ ConnectionFactoryLocator.class, UsersConnectionRepository.class })
+@AutoConfigureBefore(ThymeleafAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class SocialWebAutoConfiguration {
 
@@ -119,7 +125,7 @@ public class SocialWebAutoConfiguration {
 	@Configuration
 	@EnableSocial
 	@ConditionalOnWebApplication
-	@ConditionalOnMissingClass(name="org.springframework.security.core.context.SecurityContextHolder")
+	@ConditionalOnMissingClass(name = "org.springframework.security.core.context.SecurityContextHolder")
 	protected static class AnonymousUserIdSourceConfig extends SocialConfigurerAdapter {
 
 		@Override
@@ -131,7 +137,6 @@ public class SocialWebAutoConfiguration {
 				}
 			};
 		}
-
 	}
 
 	@Configuration
@@ -144,6 +149,18 @@ public class SocialWebAutoConfiguration {
 		@Override
 		public UserIdSource getUserIdSource() {
 			return new SecurityContextUserIdSource();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(SpringTemplateEngine.class)
+	protected static class SpringSocialThymeleafConfig {
+
+		@Bean
+		@ConditionalOnMissingBean
+		public SpringSocialDialect springSocialDialect() {
+			return new SpringSocialDialect();
 		}
 
 	}
