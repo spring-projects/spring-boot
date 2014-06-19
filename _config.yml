@@ -22,9 +22,6 @@ project: spring-boot
 # Project github URL
 github_repo_url: http://github.com/spring-projects/spring-boot
 
-# Project forum URL
-forum: http://forum.spring.io/forum/
-
 # If you want to include a custom pom.xml or gradle template set these value to true and add _include files
 custom_pom_template: true
 custom_gradle_template: true
