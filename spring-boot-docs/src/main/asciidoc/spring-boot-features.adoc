@@ -1720,18 +1720,9 @@ The Spring Framework provides extensive support for integrating with messaging s
 from simplified use of the JMS API using `JmsTemplate` to a complete infrastructure to
 receive messages asynchronously. Spring AMQP provides a similar feature set for the
 ``Advanced Message Queuing Protocol'' and Boot also provides auto-configuration options
-for `RabbitTemplate` and RabbitMQ.
-
-
-
-[[boot-features-integration]]
-== Spring Integration
-Spring Integration provides abstractions over messaging and also other transports such as
-HTTP, TCP etc. If Spring Integration is available on your classpath it will be initialized
-through the `@EnableIntegration` annotation. Message processing statistics will be
-published over JMX if ``spring-integration-jmx'' is also on the classpath.
-See the {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
-class for more details.
+for `RabbitTemplate` and RabbitMQ. There is also support for STOMP messaging natively
+in Spring Websocket and Spring Boot has support for that through starters and a small
+amount of auto configuration.
 
 
 
@@ -1839,6 +1830,16 @@ own beans:
 
 	}
 ----
+
+
+[[boot-features-integration]]
+== Spring Integration
+Spring Integration provides abstractions over messaging and also other transports such as
+HTTP, TCP etc. If Spring Integration is available on your classpath it will be initialized
+through the `@EnableIntegration` annotation. Message processing statistics will be
+published over JMX if ``spring-integration-jmx'' is also on the classpath.
+See the {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
+class for more details.
 
 
 
