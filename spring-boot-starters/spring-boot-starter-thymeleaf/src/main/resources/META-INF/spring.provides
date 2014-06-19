@@ -1,1 +1,1 @@
-provides: thymeleaf-spring4,thymeleaf-layout-dialect
+provides: thymeleaf-spring4,thymeleaf-layout-dialect,thymeleaf-extras-data-attribute
