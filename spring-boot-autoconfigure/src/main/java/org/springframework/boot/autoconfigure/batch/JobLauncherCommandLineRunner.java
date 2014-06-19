@@ -153,7 +153,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 					|| previousExecution.getStatus() == BatchStatus.FAILED) {
 				// Retry a failed or stopped execution
 				jobParameters = previousExecution.getJobParameters();
-				for (Entry<String, JobParameter> parameter : additionals.entrySet()) {
+				for (Entry<String, JobParameter> parameter : new HashMap<String, JobParameter>(
+						additionals).entrySet()) {
 					// Non-identifying additional parameters can be added to a retry
 					if (!parameter.getValue().isIdentifying()) {
 						additionals.remove(parameter.getKey());
