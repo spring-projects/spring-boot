@@ -26,6 +26,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.Ordered;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
@@ -35,7 +36,14 @@ import org.springframework.core.type.AnnotationMetadata;
  * @author Dave Syer
  * @since 1.1.2
  */
-class DataSourceInitializerPostProcessor implements BeanPostProcessor {
+class DataSourceInitializerPostProcessor implements BeanPostProcessor, Ordered {
+
+	private int order = Ordered.HIGHEST_PRECEDENCE;
+
+	@Override
+	public int getOrder() {
+		return this.order;
+	}
 
 	@Autowired
 	private BeanFactory beanFactory;

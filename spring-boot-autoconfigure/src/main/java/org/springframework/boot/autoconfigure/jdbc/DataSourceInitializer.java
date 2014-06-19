@@ -26,8 +26,8 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -48,7 +48,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 	private static Log logger = LogFactory.getLog(DataSourceInitializer.class);
 
 	@Autowired
-	private ApplicationContext applicationContext;
+	private ConfigurableApplicationContext applicationContext;
 
 	@Autowired(required = false)
 	private DataSource dataSource;
@@ -75,8 +75,14 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		List<Resource> scripts = getScripts(this.properties.getSchema(), "schema");
 		if (!scripts.isEmpty()) {
 			runScripts(scripts);
-			this.applicationContext.publishEvent(new DataSourceInitializedEvent(
-					this.dataSource));
+			try {
+				this.applicationContext.publishEvent(new DataSourceInitializedEvent(
+						this.dataSource));
+			}
+			catch (IllegalStateException e) {
+				logger.warn("Could not send event to complete DataSource initialization ("
+						+ e.getMessage() + ")");
+			}
 		}
 	}
 
