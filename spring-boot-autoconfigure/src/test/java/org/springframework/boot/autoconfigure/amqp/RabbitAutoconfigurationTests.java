@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,12 +33,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 /**
  * Tests for {@link RabbitAutoConfiguration}.
- * 
+ *
  * @author Greg Turnquist
  */
 public class RabbitAutoconfigurationTests {
@@ -74,7 +74,7 @@ public class RabbitAutoconfigurationTests {
 				.getBean(CachingConnectionFactory.class);
 		assertEquals("remote-server", connectionFactory.getHost());
 		assertEquals(9000, connectionFactory.getPort());
-		assertEquals("/vhost", connectionFactory.getVirtualHost());
+        assertEquals("vhost", connectionFactory.getVirtualHost());
 	}
 
 	@Test
@@ -87,18 +87,6 @@ public class RabbitAutoconfigurationTests {
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		assertEquals("/", connectionFactory.getVirtualHost());
-	}
-
-	@Test
-	public void testRabbitTemplateVirtualHostMissingSlash() {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(this.context,
-				"spring.rabbitmq.virtual_host:foo");
-		this.context.refresh();
-		CachingConnectionFactory connectionFactory = this.context
-				.getBean(CachingConnectionFactory.class);
-		assertEquals("/foo", connectionFactory.getVirtualHost());
 	}
 
 	@Test
