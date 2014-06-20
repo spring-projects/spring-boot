@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 
+import org.springframework.boot.loader.jar.Handler;
 import org.springframework.boot.loader.jar.JarFile;
 
 /**
@@ -93,7 +94,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
 	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {
-
 		if (this.rootClassLoader == null) {
 			return findResources(name);
 		}
@@ -116,6 +116,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 				}
 				return localResources.nextElement();
 			}
+
 		};
 	}
 
@@ -128,7 +129,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		synchronized (this) {
 			Class<?> loadedClass = findLoadedClass(name);
 			if (loadedClass == null) {
-				loadedClass = doLoadClass(name);
+				Handler.setUseFastConnectionExceptions(true);
+				try {
+					loadedClass = doLoadClass(name);
+				}
+				finally {
+					Handler.setUseFastConnectionExceptions(false);
+				}
 			}
 			if (resolve) {
 				resolveClass(loadedClass);
@@ -214,4 +221,5 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			// Ignore
 		}
 	}
+
 }

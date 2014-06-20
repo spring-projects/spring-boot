@@ -65,5 +65,7 @@ public interface RandomAccessData {
 		 * Obtain access to the underlying resource on each read, releasing it when done.
 		 */
 		PER_READ
+
 	}
+
 }

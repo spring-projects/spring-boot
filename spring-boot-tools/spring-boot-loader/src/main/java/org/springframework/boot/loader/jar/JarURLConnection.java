@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.util.AsciiBytes;
@@ -33,51 +35,73 @@ import org.springframework.boot.loader.util.AsciiBytes;
  */
 class JarURLConnection extends java.net.JarURLConnection {
 
-	static final String PROTOCOL = "jar";
+	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException();
 
-	static final String SEPARATOR = "!/";
+	private static final String SEPARATOR = "!/";
 
-	private static final String PREFIX = PROTOCOL + ":" + "file:";
+	private static final URL EMPTY_JAR_URL;
+
+	static {
+		try {
+			EMPTY_JAR_URL = new URL("jar:", null, 0, "file:!/", new URLStreamHandler() {
+				@Override
+				protected URLConnection openConnection(URL u) throws IOException {
+					// Stub URLStreamHandler to prevent the wrong JAR Handler from being
+					// Instantiated and cached.
+					return null;
+				}
+			});
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException(ex);
+		}
+	}
+
+	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName("");
+
+	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
+
+	private final String jarFileUrlSpec;
 
 	private final JarFile jarFile;
 
 	private JarEntryData jarEntryData;
 
-	private String jarEntryName;
-
-	private String contentType;
-
 	private URL jarFileUrl;
 
+	private JarEntryName jarEntryName;
+
 	protected JarURLConnection(URL url, JarFile jarFile) throws MalformedURLException {
-		super(new URL(buildRootUrl(jarFile)));
+		// What we pass to super is ultimately ignored
+		super(EMPTY_JAR_URL);
 		this.url = url;
 		this.jarFile = jarFile;
-
 		String spec = url.getFile();
 		int separator = spec.lastIndexOf(SEPARATOR);
 		if (separator == -1) {
 			throw new MalformedURLException("no " + SEPARATOR + " found in url spec:"
 					+ spec);
 		}
-		if (separator + 2 != spec.length()) {
-			this.jarEntryName = decode(spec.substring(separator + 2));
-		}
+		this.jarFileUrlSpec = spec.substring(0, separator);
+		this.jarEntryName = getJarEntryName(spec.substring(separator + 2));
+	}
 
-		String container = spec.substring(0, separator);
-		if (container.indexOf(SEPARATOR) == -1) {
-			this.jarFileUrl = new URL(container);
+	private JarEntryName getJarEntryName(String spec) {
+		if (spec.length() == 0) {
+			return EMPTY_JAR_ENTRY_NAME;
 		}
-		else {
-			this.jarFileUrl = new URL("jar:" + container);
-		}
+		return new JarEntryName(spec);
 	}
 
 	@Override
 	public void connect() throws IOException {
-		if (this.jarEntryName != null) {
-			this.jarEntryData = this.jarFile.getJarEntryData(this.jarEntryName);
+		if (!this.jarEntryName.isEmpty()) {
+			this.jarEntryData = this.jarFile.getJarEntryData(this.jarEntryName
+					.asAsciiBytes());
 			if (this.jarEntryData == null) {
+				if (Boolean.TRUE.equals(useFastExceptions.get())) {
+					throw FILE_NOT_FOUND_EXCEPTION;
+				}
 				throw new FileNotFoundException("JAR entry " + this.jarEntryName
 						+ " not found in " + this.jarFile.getName());
 			}
@@ -103,7 +127,22 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public URL getJarFileURL() {
+		if (this.jarFileUrl == null) {
+			this.jarFileUrl = buildJarFileUrl();
+		}
 		return this.jarFileUrl;
+	}
+
+	private URL buildJarFileUrl() {
+		try {
+			if (this.jarFileUrlSpec.indexOf(SEPARATOR) == -1) {
+				return new URL(this.jarFileUrlSpec);
+			}
+			return new URL("jar:" + this.jarFileUrlSpec);
+		}
+		catch (MalformedURLException ex) {
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	@Override
@@ -114,13 +153,13 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public String getEntryName() {
-		return this.jarEntryName;
+		return this.jarEntryName.toString();
 	}
 
 	@Override
 	public InputStream getInputStream() throws IOException {
 		connect();
-		if (this.jarEntryName == null) {
+		if (this.jarEntryName.isEmpty()) {
 			throw new IOException("no entry name specified");
 		}
 		return this.jarEntryData.getInputStream();
@@ -130,8 +169,10 @@ class JarURLConnection extends java.net.JarURLConnection {
 	public int getContentLength() {
 		try {
 			connect();
-			return this.jarEntryData == null ? this.jarFile.size() : this.jarEntryData
-					.getSize();
+			if (this.jarEntryData != null) {
+				return this.jarEntryData.getSize();
+			}
+			return this.jarFile.size();
 		}
 		catch (IOException ex) {
 			return -1;
@@ -146,58 +187,86 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	@Override
 	public String getContentType() {
-		if (this.contentType == null) {
-			// Guess the content type, don't bother with steams as mark is not
-			// supported
-			this.contentType = (this.jarEntryName == null ? "x-java/jar" : null);
-			this.contentType = (this.contentType == null ? guessContentTypeFromName(this.jarEntryName)
-					: this.contentType);
-			this.contentType = (this.contentType == null ? "content/unknown"
-					: this.contentType);
-		}
-		return this.contentType;
+		return this.jarEntryName.getContentType();
 	}
 
-	private static String buildRootUrl(JarFile jarFile) {
-		String path = jarFile.getRootJarFile().getFile().getPath();
-		StringBuilder builder = new StringBuilder(PREFIX.length() + path.length()
-				+ SEPARATOR.length());
-		builder.append(PREFIX);
-		builder.append(path);
-		builder.append(SEPARATOR);
-		return builder.toString();
+	static void setUseFastExceptions(boolean useFastExceptions) {
+		JarURLConnection.useFastExceptions.set(useFastExceptions);
 	}
 
-	private static String decode(String source) {
-		int length = source.length();
-		if ((length == 0) || (source.indexOf('%') < 0)) {
-			return source;
+	/**
+	 * A JarEntryName parsed from a URL String.
+	 */
+	private static class JarEntryName {
+
+		private final AsciiBytes name;
+
+		private String contentType;
+
+		public JarEntryName(String spec) {
+			this.name = decode(spec);
 		}
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(length);
-		for (int i = 0; i < length; i++) {
-			int ch = source.charAt(i);
-			if (ch == '%') {
-				if ((i + 2) >= length) {
-					throw new IllegalArgumentException("Invalid encoded sequence \""
-							+ source.substring(i) + "\"");
-				}
-				ch = decodeEscapeSequence(source, i);
-				i += 2;
+
+		private AsciiBytes decode(String source) {
+			int length = (source == null ? 0 : source.length());
+			if ((length == 0) || (source.indexOf('%') < 0)) {
+				return new AsciiBytes(source);
 			}
-			bos.write(ch);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(length);
+			for (int i = 0; i < length; i++) {
+				int ch = source.charAt(i);
+				if (ch == '%') {
+					if ((i + 2) >= length) {
+						throw new IllegalArgumentException("Invalid encoded sequence \""
+								+ source.substring(i) + "\"");
+					}
+					ch = decodeEscapeSequence(source, i);
+					i += 2;
+				}
+				bos.write(ch);
+			}
+			// AsciiBytes is what is used to store the JarEntries so make it symmetric
+			return new AsciiBytes(bos.toByteArray());
 		}
-		// AsciiBytes is what is used to store the JarEntries so make it symmetric
-		return new AsciiBytes(bos.toByteArray()).toString();
+
+		private char decodeEscapeSequence(String source, int i) {
+			int hi = Character.digit(source.charAt(i + 1), 16);
+			int lo = Character.digit(source.charAt(i + 2), 16);
+			if (hi == -1 || lo == -1) {
+				throw new IllegalArgumentException("Invalid encoded sequence \""
+						+ source.substring(i) + "\"");
+			}
+			return ((char) ((hi << 4) + lo));
+		}
+
+		@Override
+		public String toString() {
+			return this.name.toString();
+		}
+
+		public AsciiBytes asAsciiBytes() {
+			return this.name;
+		}
+
+		public boolean isEmpty() {
+			return this.name.length() == 0;
+		}
+
+		public String getContentType() {
+			if (this.contentType == null) {
+				this.contentType = deduceContentType();
+			}
+			return this.contentType;
+		}
+
+		private String deduceContentType() {
+			// Guess the content type, don't bother with streams as mark is not supported
+			String type = (isEmpty() ? "x-java/jar" : null);
+			type = (type != null ? type : guessContentTypeFromName(toString()));
+			type = (type != null ? type : "content/unknown");
+			return type;
+		}
 
 	}
 
-	private static char decodeEscapeSequence(String source, int i) {
-		int hi = Character.digit(source.charAt(i + 1), 16);
-		int lo = Character.digit(source.charAt(i + 2), 16);
-		if (hi == -1 || lo == -1) {
-			throw new IllegalArgumentException("Invalid encoded sequence \""
-					+ source.substring(i) + "\"");
-		}
-		return ((char) ((hi << 4) + lo));
-	}
 }

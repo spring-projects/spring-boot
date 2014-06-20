@@ -32,4 +32,5 @@ public interface JavaAgentDetector {
 	 * @param url The url to examine
 	 */
 	public boolean isJavaAgentJar(URL url);
+
 }
