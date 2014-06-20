@@ -221,6 +221,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 			this.position += amount;
 			return amount;
 		}
+
 	}
 
 	/**
@@ -277,5 +278,7 @@ public class RandomAccessDataFile implements RandomAccessData {
 				throw new IOException(ex);
 			}
 		}
+
 	}
+
 }

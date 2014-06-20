@@ -76,4 +76,5 @@ class Bytes {
 		}
 		return value;
 	}
+
 }

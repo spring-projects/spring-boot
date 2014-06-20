@@ -119,4 +119,5 @@ class CentralDirectoryEndRecord {
 	public int getNumberOfRecords() {
 		return (int) Bytes.littleEndianValue(this.block, this.offset + 10, 2);
 	}
+
 }

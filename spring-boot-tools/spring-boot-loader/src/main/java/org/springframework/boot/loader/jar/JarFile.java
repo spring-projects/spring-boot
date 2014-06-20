@@ -478,4 +478,5 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		 */
 		SYSTEM_INDEPENDENT
 	}
+
 }
