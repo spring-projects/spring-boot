@@ -30,7 +30,6 @@ import org.gradle.process.ExecResult;
 import org.gradle.process.internal.DefaultJavaExecAction;
 import org.gradle.process.internal.ExecHandle;
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.boot.loader.tools.SignalUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -67,24 +66,29 @@ public class BootRunTask extends JavaExec {
 		}
 	}
 
-    private ExecResult executeReflectively() throws Exception {
+	private ExecResult executeReflectively() throws Exception {
 		Field builder = ReflectionUtils.findField(JavaExec.class, "javaExecHandleBuilder");
 		builder.setAccessible(true);
 		DefaultJavaExecAction action = (DefaultJavaExecAction) builder.get(this);
 		setMain(getMain());
-        final ExecHandle execHandle = action.build();
-        ExecResult execResult = execHandle.start().waitForFinish();
-        if (!isIgnoreExitValue()) {
-            execResult.assertNormalExitValue();
-        }
-        SignalUtils.attachSignalHandler(new Runnable() {
-			@Override
-			public void run() {
-				getLogger().info("Aborting java sub-process");
-				execHandle.abort();
-			}
-		});
-        return execResult;
-    }
+		final ExecHandle execHandle = action.build();
+		try {
+			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					getLogger().info("Aborting java sub-process");
+					execHandle.abort();
+				}
+			}));
+		} catch (Exception e) {
+			getLogger().warn("Could not attach shutdown hook (child process may be orphaned)");
+		}
+		ExecResult execResult = execHandle.start().waitForFinish();
+		if (!isIgnoreExitValue()) {
+			execResult.assertNormalExitValue();
+		}
+		return execResult;
+	}
 
 }
