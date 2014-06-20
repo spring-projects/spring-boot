@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.run;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,7 +26,12 @@ import java.util.Set;
 import org.gradle.api.internal.file.collections.SimpleFileCollection;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.process.ExecResult;
+import org.gradle.process.internal.DefaultJavaExecAction;
+import org.gradle.process.internal.ExecHandle;
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.boot.loader.tools.SignalUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Extension of the standard 'run' task with additional Spring Boot features.
@@ -38,8 +44,8 @@ public class BootRunTask extends JavaExec {
 	@Override
 	public void exec() {
 		SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
-		final File outputDir = (mainSourceSet == null ? null : mainSourceSet.getOutput()
-				.getResourcesDir());
+		final File outputDir = (mainSourceSet == null ? null
+				: mainSourceSet.getOutput().getResourcesDir());
 		final Set<File> resources = new LinkedHashSet<File>();
 		if (mainSourceSet != null) {
 			resources.addAll(mainSourceSet.getResources().getSrcDirs());
@@ -53,7 +59,32 @@ public class BootRunTask extends JavaExec {
 				FileUtils.removeDuplicatesFromOutputDirectory(outputDir, directory);
 			}
 		}
-		super.exec();
+		try {
+			executeReflectively();
+		} catch (Exception e) {
+			getLogger().info("Cannot execute action reflectively");
+			super.exec();
+		}
 	}
+
+    private ExecResult executeReflectively() throws Exception {
+		Field builder = ReflectionUtils.findField(JavaExec.class, "javaExecHandleBuilder");
+		builder.setAccessible(true);
+		DefaultJavaExecAction action = (DefaultJavaExecAction) builder.get(this);
+		setMain(getMain());
+        final ExecHandle execHandle = action.build();
+        ExecResult execResult = execHandle.start().waitForFinish();
+        if (!isIgnoreExitValue()) {
+            execResult.assertNormalExitValue();
+        }
+        SignalUtils.attachSignalHandler(new Runnable() {
+			@Override
+			public void run() {
+				getLogger().info("Aborting java sub-process");
+				execHandle.abort();
+			}
+		});
+        return execResult;
+    }
 
 }
