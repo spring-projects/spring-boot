@@ -3,7 +3,7 @@
 *~
 _site/
 .idea
-*.sw?
+*.sw[op]
 .project
 .settings/
 .classpath
