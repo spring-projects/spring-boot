@@ -42,7 +42,7 @@ public class Handler extends URLStreamHandler {
 
 	private static final String FILE_PROTOCOL = "file:";
 
-	private static final String SEPARATOR = JarURLConnection.SEPARATOR;
+	private static final String SEPARATOR = "!/";
 
 	private static final String[] FALLBACK_HANDLERS = { "sun.net.www.protocol.jar.Handler" };
 
@@ -196,6 +196,16 @@ public class Handler extends URLStreamHandler {
 			rootFileCache = new SoftReference<Map<File, JarFile>>(cache);
 		}
 		cache.put(sourceFile, jarFile);
+	}
+
+	/**
+	 * Set if a generic static exception can be thrown when a URL cannot be connected.
+	 * This optimization is used during class loading to save creating lots of exceptions
+	 * which are then swallowed.
+	 * @param useFastConnectionExceptions if fast connection exceptions can be used.
+	 */
+	public static void setUseFastConnectionExceptions(boolean useFastConnectionExceptions) {
+		JarURLConnection.setUseFastExceptions(useFastConnectionExceptions);
 	}
 
 }

@@ -66,6 +66,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private static final String HANDLERS_PACKAGE = "org.springframework.boot.loader";
 
+	private static final AsciiBytes SLASH = new AsciiBytes("/");
+
 	private final RandomAccessDataFile rootFile;
 
 	private final String name;
@@ -253,6 +255,13 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		if (name == null) {
 			return null;
 		}
+		return getJarEntryData(new AsciiBytes(name));
+	}
+
+	public JarEntryData getJarEntryData(AsciiBytes name) {
+		if (name == null) {
+			return null;
+		}
 		Map<AsciiBytes, JarEntryData> entriesByName = (this.entriesByName == null ? null
 				: this.entriesByName.get());
 		if (entriesByName == null) {
@@ -264,9 +273,9 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 					entriesByName);
 		}
 
-		JarEntryData entryData = entriesByName.get(new AsciiBytes(name));
-		if (entryData == null && !name.endsWith("/")) {
-			entryData = entriesByName.get(new AsciiBytes(name + "/"));
+		JarEntryData entryData = entriesByName.get(name);
+		if (entryData == null && !name.endsWith(SLASH)) {
+			entryData = entriesByName.get(name.append(SLASH));
 		}
 		return entryData;
 	}
