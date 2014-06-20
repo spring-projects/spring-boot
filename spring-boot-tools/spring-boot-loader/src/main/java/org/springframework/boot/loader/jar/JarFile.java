@@ -68,17 +68,15 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private final RandomAccessDataFile rootFile;
 
-	private final RandomAccessData data;
-
 	private final String name;
 
-	private final long size;
+	private final RandomAccessData data;
 
-	private boolean signed;
-
-	private List<JarEntryData> entries;
+	private final List<JarEntryData> entries;
 
 	private SoftReference<Map<AsciiBytes, JarEntryData>> entriesByName;
+
+	private boolean signed;
 
 	private JarEntryData manifestEntry;
 
@@ -108,18 +106,25 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @param rootFile the root jar file
 	 * @param name the name of this file
 	 * @param data the underlying data
-	 * @param filters an optional set of jar entry filters
 	 * @throws IOException
 	 */
-	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data,
-			JarEntryFilter... filters) throws IOException {
+	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data)
+			throws IOException {
 		super(rootFile.getFile());
 		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
-		this.data = getArchiveData(endRecord, data);
 		this.rootFile = rootFile;
 		this.name = name;
-		this.size = data.getSize();
-		loadJarEntries(endRecord, filters);
+		this.data = getArchiveData(endRecord, data);
+		this.entries = loadJarEntries(endRecord);
+	}
+
+	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data,
+			List<JarEntryData> entries, JarEntryFilter... filters) throws IOException {
+		super(rootFile.getFile());
+		this.rootFile = rootFile;
+		this.name = name;
+		this.data = data;
+		this.entries = filterEntries(entries, filters);
 	}
 
 	private RandomAccessData getArchiveData(CentralDirectoryEndRecord endRecord,
@@ -131,35 +136,47 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		return data.getSubsection(offset, data.getSize() - offset);
 	}
 
-	private void loadJarEntries(CentralDirectoryEndRecord endRecord,
-			JarEntryFilter[] filters) throws IOException {
+	private List<JarEntryData> loadJarEntries(CentralDirectoryEndRecord endRecord)
+			throws IOException {
 		RandomAccessData centralDirectory = endRecord.getCentralDirectory(this.data);
 		int numberOfRecords = endRecord.getNumberOfRecords();
-		this.entries = new ArrayList<JarEntryData>(numberOfRecords);
+		List<JarEntryData> entries = new ArrayList<JarEntryData>(numberOfRecords);
 		InputStream inputStream = centralDirectory.getInputStream(ResourceAccess.ONCE);
 		try {
 			JarEntryData entry = JarEntryData.fromInputStream(this, inputStream);
 			while (entry != null) {
-				addJarEntry(entry, filters);
+				entries.add(entry);
+				processEntry(entry);
 				entry = JarEntryData.fromInputStream(this, inputStream);
 			}
 		}
 		finally {
 			inputStream.close();
 		}
+		return entries;
 	}
 
-	private void addJarEntry(JarEntryData entry, JarEntryFilter[] filters) {
-		AsciiBytes name = entry.getName();
-		for (JarEntryFilter filter : filters) {
-			name = (filter == null || name == null ? name : filter.apply(name, entry));
-		}
-		if (name != null) {
-			entry.setName(name);
-			this.entries.add(entry);
-			if (name.startsWith(META_INF)) {
-				processMetaInfEntry(name, entry);
+	private List<JarEntryData> filterEntries(List<JarEntryData> entries,
+			JarEntryFilter[] filters) {
+		List<JarEntryData> filteredEntries = new ArrayList<JarEntryData>(entries.size());
+		for (JarEntryData entry : entries) {
+			AsciiBytes name = entry.getName();
+			for (JarEntryFilter filter : filters) {
+				name = (filter == null || name == null ? name : filter.apply(name, entry));
 			}
+			if (name != null) {
+				JarEntryData filteredCopy = entry.createFilteredCopy(this, name);
+				filteredEntries.add(filteredCopy);
+				processEntry(filteredCopy);
+			}
+		}
+		return filteredEntries;
+	}
+
+	private void processEntry(JarEntryData entry) {
+		AsciiBytes name = entry.getName();
+		if (name.startsWith(META_INF)) {
+			processMetaInfEntry(name, entry);
 		}
 	}
 
@@ -322,8 +339,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	private JarFile getNestedJarFileFromDirectoryEntry(JarEntryData sourceEntry)
 			throws IOException {
 		final AsciiBytes sourceName = sourceEntry.getName();
-		JarEntryFilter[] filtersToUse = new JarEntryFilter[1];
-		filtersToUse[0] = new JarEntryFilter() {
+		JarEntryFilter filter = new JarEntryFilter() {
 			@Override
 			public AsciiBytes apply(AsciiBytes name, JarEntryData entryData) {
 				if (name.startsWith(sourceName) && !name.equals(sourceName)) {
@@ -334,7 +350,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		};
 		return new JarFile(this.rootFile, getName() + "!/"
 				+ sourceEntry.getName().substring(0, sourceName.length() - 1), this.data,
-				filtersToUse);
+				this.entries, filter);
 	}
 
 	private JarFile getNestedJarFileFromFileEntry(JarEntryData sourceEntry)
@@ -355,7 +371,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 */
 	public synchronized JarFile getFilteredJarFile(JarEntryFilter... filters)
 			throws IOException {
-		return new JarFile(this.rootFile, getName(), this.data, filters);
+		return new JarFile(this.rootFile, getName(), this.data, this.entries, filters);
 	}
 
 	private JarEntry getContainedEntry(ZipEntry zipEntry) throws IOException {
@@ -368,7 +384,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	@Override
 	public int size() {
-		return (int) this.size;
+		return (int) this.data.getSize();
 	}
 
 	@Override

@@ -55,18 +55,24 @@ public final class JarEntryData {
 
 	public JarEntryData(JarFile source, byte[] header, InputStream inputStream)
 			throws IOException {
-
 		this.source = source;
 		this.header = header;
 		long nameLength = Bytes.littleEndianValue(header, 28, 2);
 		long extraLength = Bytes.littleEndianValue(header, 30, 2);
 		long commentLength = Bytes.littleEndianValue(header, 32, 2);
-
 		this.name = new AsciiBytes(Bytes.get(inputStream, nameLength));
 		this.extra = Bytes.get(inputStream, extraLength);
 		this.comment = new AsciiBytes(Bytes.get(inputStream, commentLength));
-
 		this.localHeaderOffset = Bytes.littleEndianValue(header, 42, 4);
+	}
+
+	private JarEntryData(JarEntryData master, JarFile source, AsciiBytes name) {
+		this.header = master.header;
+		this.extra = master.extra;
+		this.comment = master.comment;
+		this.localHeaderOffset = master.localHeaderOffset;
+		this.source = source;
+		this.name = name;
 	}
 
 	void setName(AsciiBytes name) {
@@ -152,6 +158,10 @@ public final class JarEntryData {
 
 	public AsciiBytes getComment() {
 		return this.comment;
+	}
+
+	JarEntryData createFilteredCopy(JarFile jarFile, AsciiBytes name) {
+		return new JarEntryData(this, jarFile, name);
 	}
 
 	/**
