@@ -1589,6 +1589,34 @@ Check {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for 
 
 
 
+[[howto-remote-debug-gradle-run]]
+=== Remote debug a Spring Boot application started with Gradle
+To attach a remote debugger to a Spring Boot application started with Gradle you can use
+the `applicationDefaultJvmArgs` in `build.gradle` or `--debug-jvm` command line option.
+
+`build.gradle`:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	applicationDefaultJvmArgs = [
+	    "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+	]
+----
+
+
+Command line:
+
+[indent=0]
+----
+	$ gradle run --debug-jvm
+----
+
+
+Check {gradle-userguide}/application_plugin.html[Gradle Application Plugin] for more
+details.
+
+
+
 [[howto-build-an-executable-archive-with-ant]]
 === Build an executable archive with Ant
 To build with Ant you need to grab dependencies, compile and then create a jar or war
