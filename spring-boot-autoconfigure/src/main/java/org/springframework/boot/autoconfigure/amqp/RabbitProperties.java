@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Rabbit.
- *
+ * 
  * @author Greg Turnquist
  * @author Dave Syer
  */
@@ -110,15 +110,11 @@ public class RabbitProperties {
 	}
 
 	public void setVirtualHost(String virtualHost) {
-        if ("".equals(virtualHost) || virtualHost.equals("/")) {
-            this.virtualHost = "/";
-        } else {
-//            remove all trailing /
-            while (virtualHost.startsWith("/") && virtualHost.length() > 0) {
-                virtualHost = virtualHost.substring(1);
-            }
-            this.virtualHost = virtualHost;
-        }
+		while (virtualHost.startsWith("/") && virtualHost.length() > 0) {
+			virtualHost = virtualHost.substring(1);
+		}
+		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
+
 	}
 
 }
