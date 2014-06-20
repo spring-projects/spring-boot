@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
@@ -54,6 +56,8 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
 		Filter, NonEmbeddedServletContainerFactory {
+
+	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 
@@ -132,7 +136,18 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		request.setAttribute(ERROR_EXCEPTION, ex);
 		request.setAttribute(ERROR_EXCEPTION_TYPE, type.getName());
 		wrapped.sendError(500, ex.getMessage());
-		request.getRequestDispatcher(errorPath).forward(request, response);
+		if (!wrapped.isCommitted()) {
+			wrapped.reset();
+			request.getRequestDispatcher(errorPath).forward(request, wrapped);
+		}
+		else {
+			String message = "Cannot forward to error page for"
+					+ request.getRequestURI()
+					+ " (response is committed), so this response may have the wrong status code";
+			logger.error(message);
+			// User might see the error page without all the data here but the exception
+			// isn't going to help anyone (and it's already been logged)
+		}
 	}
 
 	private String getErrorPath(Map<Integer, String> map, Integer status) {
