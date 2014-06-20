@@ -79,9 +79,9 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 				this.applicationContext.publishEvent(new DataSourceInitializedEvent(
 						this.dataSource));
 			}
-			catch (IllegalStateException e) {
+			catch (IllegalStateException ex) {
 				logger.warn("Could not send event to complete DataSource initialization ("
-						+ e.getMessage() + ")");
+						+ ex.getMessage() + ")");
 			}
 		}
 	}

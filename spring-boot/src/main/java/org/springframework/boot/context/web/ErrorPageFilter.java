@@ -136,18 +136,22 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		request.setAttribute(ERROR_EXCEPTION, ex);
 		request.setAttribute(ERROR_EXCEPTION_TYPE, type.getName());
 		wrapped.sendError(500, ex.getMessage());
-		if (!wrapped.isCommitted()) {
-			wrapped.reset();
-			request.getRequestDispatcher(errorPath).forward(request, wrapped);
-		}
-		else {
-			String message = "Cannot forward to error page for"
-					+ request.getRequestURI()
-					+ " (response is committed), so this response may have the wrong status code";
-			logger.error(message);
+		forwardToErrorPage(errorPath, request, wrapped);
+	}
+
+	private void forwardToErrorPage(String path, HttpServletRequest request,
+			ServletResponse response) throws ServletException, IOException {
+		if (!response.isCommitted()) {
+			String message = "Cannot forward to error page for" + request.getRequestURI()
+					+ " (response is committed), so this response may have "
+					+ "the wrong status code";
 			// User might see the error page without all the data here but the exception
 			// isn't going to help anyone (and it's already been logged)
+			logger.error(message);
+			return;
 		}
+		response.reset();
+		request.getRequestDispatcher(path).forward(request, response);
 	}
 
 	private String getErrorPath(Map<Integer, String> map, Integer status) {
