@@ -18,11 +18,14 @@ package org.springframework.boot.loader.jar;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,6 +56,11 @@ public class Handler extends URLStreamHandler {
 		catch (Exception ex) {
 		}
 		OPEN_CONNECTION_METHOD = method;
+	}
+
+	private static SoftReference<Map<File, JarFile>> rootFileCache;
+	static {
+		rootFileCache = new SoftReference<Map<File, JarFile>>(null);
 	}
 
 	private final Logger logger = Logger.getLogger(getClass().getName());
@@ -153,7 +161,14 @@ public class Handler extends URLStreamHandler {
 				throw new IllegalStateException("Not a file URL");
 			}
 			String path = name.substring(FILE_PROTOCOL.length());
-			return new JarFile(new File(path));
+			File file = new File(path);
+			Map<File, JarFile> cache = rootFileCache.get();
+			JarFile jarFile = (cache == null ? null : cache.get(file));
+			if (jarFile == null) {
+				jarFile = new JarFile(file);
+				addToRootFileCache(file, jarFile);
+			}
+			return jarFile;
 		}
 		catch (Exception ex) {
 			throw new IOException("Unable to open root Jar file '" + name + "'", ex);
@@ -168,4 +183,19 @@ public class Handler extends URLStreamHandler {
 		}
 		return jarFile.getNestedJarFile(jarEntry);
 	}
+
+	/**
+	 * Add the given {@link JarFile} to the root file cache.
+	 * @param sourceFile the source file to add
+	 * @param jarFile the jar file.
+	 */
+	static void addToRootFileCache(File sourceFile, JarFile jarFile) {
+		Map<File, JarFile> cache = rootFileCache.get();
+		if (cache == null) {
+			cache = new ConcurrentHashMap<File, JarFile>();
+			rootFileCache = new SoftReference<Map<File, JarFile>>(cache);
+		}
+		cache.put(sourceFile, jarFile);
+	}
+
 }

@@ -322,13 +322,13 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @return a {@link JarFile} for the entry
 	 * @throws IOException
 	 */
-	public synchronized JarFile getNestedJarFile(final JarEntryData sourceEntry)
+	public synchronized JarFile getNestedJarFile(JarEntryData sourceEntry)
 			throws IOException {
 		try {
-			if (sourceEntry.isDirectory()) {
-				return getNestedJarFileFromDirectoryEntry(sourceEntry);
+			if (sourceEntry.nestedJar == null) {
+				sourceEntry.nestedJar = createJarFileFromEntry(sourceEntry);
 			}
-			return getNestedJarFileFromFileEntry(sourceEntry);
+			return sourceEntry.nestedJar;
 		}
 		catch (IOException ex) {
 			throw new IOException("Unable to open nested jar file '"
@@ -336,7 +336,14 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		}
 	}
 
-	private JarFile getNestedJarFileFromDirectoryEntry(JarEntryData sourceEntry)
+	private JarFile createJarFileFromEntry(JarEntryData sourceEntry) throws IOException {
+		if (sourceEntry.isDirectory()) {
+			return createJarFileFromDirectoryEntry(sourceEntry);
+		}
+		return createJarFileFromFileEntry(sourceEntry);
+	}
+
+	private JarFile createJarFileFromDirectoryEntry(JarEntryData sourceEntry)
 			throws IOException {
 		final AsciiBytes sourceName = sourceEntry.getName();
 		JarEntryFilter filter = new JarEntryFilter() {
@@ -353,7 +360,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 				this.entries, filter);
 	}
 
-	private JarFile getNestedJarFileFromFileEntry(JarEntryData sourceEntry)
+	private JarFile createJarFileFromFileEntry(JarEntryData sourceEntry)
 			throws IOException {
 		if (sourceEntry.getMethod() != ZipEntry.STORED) {
 			throw new IllegalStateException("Unable to open nested compressed entry "
