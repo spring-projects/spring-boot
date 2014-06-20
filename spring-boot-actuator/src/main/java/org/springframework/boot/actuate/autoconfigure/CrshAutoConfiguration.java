@@ -43,6 +43,7 @@ import org.crsh.vfs.spi.AbstractFSDriver;
 import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellAuthenticationProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;
@@ -280,6 +281,7 @@ public class CrshAutoConfiguration {
 		private AuthenticationManager authenticationManager;
 
 		@Autowired(required = false)
+		@Qualifier("shellAccessDecisionManager")
 		private AccessDecisionManager accessDecisionManager;
 
 		private String[] roles = new String[] { "ADMIN" };
