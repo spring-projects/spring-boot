@@ -25,6 +25,10 @@ apply plugin: 'spring-boot'
 
 mainClassName = "sample.ui.SampleWebUiApplication"
 
+springBoot {
+    classifier = 'exec'
+}
+
 jar {
 	baseName = 'spring-boot-sample-web-ui'
 	version =  '0.0.0'

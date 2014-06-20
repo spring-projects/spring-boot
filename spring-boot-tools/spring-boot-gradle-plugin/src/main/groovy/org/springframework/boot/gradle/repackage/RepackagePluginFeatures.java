@@ -93,6 +93,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				File file = archive.getArchivePath();
 				String classifier = this.task.getClassifier();
 				if (classifier != null) {
+					this.task.getInputs().file(archive);
 					String withClassifer = file.getName();
 					withClassifer = StringUtils.stripFilenameExtension(withClassifer)
 							+ "-" + classifier + "."
