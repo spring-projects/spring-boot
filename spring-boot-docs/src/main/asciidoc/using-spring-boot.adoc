@@ -125,9 +125,9 @@ section if you want to use it:
 	</build>
 ----
 
-NOTE: If you use the Spring Boot starter parent pom, you only need to
-add the plugin, there is no need for to configure it unless you want
-to change the settings defined in the parent.
+NOTE: If you use the Spring Boot starter parent pom, you only need to add the plugin,
+there is no need for to configure it unless you want to change the settings defined in
+the parent.
 
 
 

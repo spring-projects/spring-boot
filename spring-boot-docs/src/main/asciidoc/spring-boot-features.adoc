@@ -1832,6 +1832,7 @@ own beans:
 ----
 
 
+
 [[boot-features-integration]]
 == Spring Integration
 Spring Integration provides abstractions over messaging and also other transports such as

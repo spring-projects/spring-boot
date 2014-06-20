@@ -373,9 +373,9 @@ Running this way makes your static classpath resources (i.e. in `src/main/resour
 default) reloadable in the live application, which can be helpful at development time.
 
 [[build-tool-plugins-gradle-global-configuration]]
-=== Spring Boot Plugin configuration
+=== Spring Boot plugin configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
-for global configuration of the Boot plugin. Set the appropriate properties as you would 
+for global configuration of the Boot plugin. Set the appropriate properties as you would
 with any other Gradle extension (see below for a list of configuration options):
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
@@ -384,6 +384,7 @@ with any other Gradle extension (see below for a list of configuration options):
 		backupSource = false
 	}
 ----
+
 
 
 [[build-tool-plugins-gradle-repackage-configuration]]
@@ -407,25 +408,26 @@ The following configuration options are available:
 |The main class that should be run. If not specified the `mainClassName` project property
  will be used or, if the no `mainClassName` id defined the archive will be searched for a
  suitable class. "Suitable" means a unique class with a well-formed `main()` method (if
-more than one is found the build will fail). You should also be able to specify the main
-class name via the "run" task (`main` property) and/or the "startScripts" (`mainClassName` 
-property) as an alternative to using the "springBoot" configuration.
+ more than one is found the build will fail). You should also be able to specify the main
+ class name via the "run" task (`main` property) and/or the "startScripts"
+ (`mainClassName` property) as an alternative to using the "springBoot" configuration.
 
 |`classifier`
 |A file name segment (before the extension) to add to the archive, so that the original is
-preserved in its original location. Defaults to null in which case the archive is repackaged
-in place. The default is convenient for many purposes, but if you want to use the
-original jar as a dependency in another project, it's best to use an extension to define the
-executable archive.
+ preserved in its original location. Defaults to null in which case the archive is
+ repackaged in place. The default is convenient for many purposes, but if you want to use
+ the original jar as a dependency in another project, it's best to use an extension to
+ define the executable archive.
 
 |`withJarTask`
-|The name of the `Jar` task (defaults to all) which is used to locate the archive to repackage.
+|The name of the `Jar` task (defaults to all) which is used to locate the archive to
+ repackage.
 
 |`customConfiguration`
 |The name of the custom configuration whuch is used to populate the nested lib directory
-(without specifying this you get all compile and runtime dependencies).
-
+ (without specifying this you get all compile and runtime dependencies).
 |===
+
 
 
 [[build-tool-plugins-gradle-repackage-custom-configuration]]
