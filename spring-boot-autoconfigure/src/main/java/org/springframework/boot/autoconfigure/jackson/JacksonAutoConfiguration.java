@@ -55,25 +55,10 @@ import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
  */
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
-@EnableConfigurationProperties(HttpMapperProperties.class)
 public class JacksonAutoConfiguration {
 
 	@Autowired
-	private HttpMapperProperties properties = new HttpMapperProperties();
-
-	@Autowired
 	private ListableBeanFactory beanFactory;
-
-	@Bean
-	@Primary
-	@ConditionalOnMissingBean
-	public ObjectMapper jacksonObjectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		if (this.properties.isJsonSortKeys()) {
-			objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-		}
-		return objectMapper;
-	}
 
 	@PostConstruct
 	private void registerModulesWithObjectMappers() {
@@ -87,6 +72,27 @@ public class JacksonAutoConfiguration {
 		return BeanFactoryUtils.beansOfTypeIncludingAncestors(this.beanFactory, type)
 				.values();
 	}
+
+    @Configuration
+    @ConditionalOnClass(ObjectMapper.class)
+    @EnableConfigurationProperties(HttpMapperProperties.class)
+    static class JacksonObjectMapperAutoConfiguration {
+
+        @Autowired
+       	private HttpMapperProperties properties = new HttpMapperProperties();
+
+        @Bean
+       	@Primary
+       	@ConditionalOnMissingBean
+       	public ObjectMapper jacksonObjectMapper() {
+       		ObjectMapper objectMapper = new ObjectMapper();
+       		if (this.properties.isJsonSortKeys()) {
+       			objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+       		}
+       		return objectMapper;
+       	}
+
+    }
 
 	@Configuration
 	@ConditionalOnClass(JodaModule.class)
