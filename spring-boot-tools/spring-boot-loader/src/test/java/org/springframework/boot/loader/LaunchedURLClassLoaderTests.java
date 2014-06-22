@@ -16,20 +16,31 @@
 
 package org.springframework.boot.loader;
 
+import java.io.File;
 import java.net.URL;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.springframework.boot.loader.jar.JarFile;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LaunchedURLClassLoader}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
+@SuppressWarnings("resource")
 public class LaunchedURLClassLoaderTests {
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
 	public void resolveResourceFromWindowsFilesystem() throws Exception {
@@ -74,6 +85,19 @@ public class LaunchedURLClassLoaderTests {
 				"jar:file:src/test/resources/jars/app.jar!/") }, getClass()
 				.getClassLoader());
 		assertTrue(loader.getResources("").hasMoreElements());
+	}
+
+	@Test
+	public void resolveFromNested() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		TestJarCreator.createTestJar(file);
+		JarFile jarFile = new JarFile(file);
+		URL url = jarFile.getUrl();
+		LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url },
+				null);
+		URL resource = loader.getResource("nested.jar!/3.dat");
+		assertThat(resource.toString(), equalTo(url + "nested.jar!/3.dat"));
+		assertThat(resource.openConnection().getInputStream().read(), equalTo(3));
 	}
 
 }

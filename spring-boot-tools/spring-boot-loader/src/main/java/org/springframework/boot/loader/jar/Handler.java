@@ -83,7 +83,7 @@ public class Handler extends URLStreamHandler {
 			return new JarURLConnection(url, this.jarFile);
 		}
 		try {
-			return new JarURLConnection(url, getJarFileFromUrl(url));
+			return new JarURLConnection(url, getRootJarFileFromUrl(url));
 		}
 		catch (Exception ex) {
 			return openFallbackConnection(url, ex);
@@ -135,24 +135,14 @@ public class Handler extends URLStreamHandler {
 		return (URLConnection) OPEN_CONNECTION_METHOD.invoke(handler, url);
 	}
 
-	public JarFile getJarFileFromUrl(URL url) throws IOException {
-
+	public JarFile getRootJarFileFromUrl(URL url) throws IOException {
 		String spec = url.getFile();
-
 		int separatorIndex = spec.indexOf(SEPARATOR);
 		if (separatorIndex == -1) {
 			throw new MalformedURLException("Jar URL does not contain !/ separator");
 		}
-
-		JarFile jar = null;
-		while (separatorIndex != -1) {
-			String name = spec.substring(0, separatorIndex);
-			jar = (jar == null ? getRootJarFile(name) : getNestedJarFile(jar, name));
-			spec = spec.substring(separatorIndex + SEPARATOR.length());
-			separatorIndex = spec.indexOf(SEPARATOR);
-		}
-
-		return jar;
+		String name = spec.substring(0, separatorIndex);
+		return getRootJarFile(name);
 	}
 
 	private JarFile getRootJarFile(String name) throws IOException {
@@ -173,15 +163,6 @@ public class Handler extends URLStreamHandler {
 		catch (Exception ex) {
 			throw new IOException("Unable to open root Jar file '" + name + "'", ex);
 		}
-	}
-
-	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
-		JarEntry jarEntry = jarFile.getJarEntry(name);
-		if (jarEntry == null) {
-			throw new IOException("Unable to find nested jar '" + name + "' from '"
-					+ jarFile + "'");
-		}
-		return jarFile.getNestedJarFile(jarEntry);
 	}
 
 	/**
