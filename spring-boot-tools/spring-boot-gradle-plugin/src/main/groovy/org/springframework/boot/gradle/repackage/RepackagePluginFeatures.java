@@ -89,11 +89,12 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		@Override
 		public void execute(Jar archive) {
 			if ("".equals(archive.getClassifier())) {
-				setClassifier(this.task, archive);
+				setClassifier(archive);
 				File file = archive.getArchivePath();
 				String classifier = this.task.getClassifier();
 				if (classifier != null) {
 					this.task.getInputs().file(archive);
+					task.getInputs().file(task.getDependencies());
 					String withClassifer = file.getName();
 					withClassifer = StringUtils.stripFilenameExtension(withClassifer)
 							+ "-" + classifier + "."
@@ -107,7 +108,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 
 		}
 
-		private void setClassifier(RepackageTask task, Jar archive) {
+		private void setClassifier(Jar archive) {
 			Project project = task.getProject();
 			String classifier = null;
 			SpringBootPluginExtension extension = project.getExtensions().getByType(

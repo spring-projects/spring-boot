@@ -18,6 +18,8 @@ package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.gradle.api.Action;
@@ -26,6 +28,8 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.util.FileCopyUtils;
 
@@ -78,6 +82,30 @@ public class RepackageTask extends DefaultTask {
 		Project project = getProject();
 		SpringBootPluginExtension extension = project.getExtensions().getByType(
 				SpringBootPluginExtension.class);
+		ProjectLibraries libraries = getLibraries();
+		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
+	}
+	
+	public File[] getDependencies() {
+		ProjectLibraries libraries = getLibraries();
+		final List<File> files = new ArrayList<File>();
+		try {
+			libraries.doWithLibraries(new LibraryCallback() {
+				@Override
+				public void library(File file, LibraryScope scope) throws IOException {
+					files.add(file);
+				}
+			});
+		} catch (IOException e) {
+			throw new IllegalStateException("Cannot retrieve dependencies", e);
+		}
+		return files.toArray(new File[files.size()]);
+	}
+
+	private ProjectLibraries getLibraries() {
+		Project project = getProject();
+		SpringBootPluginExtension extension = project.getExtensions().getByType(
+				SpringBootPluginExtension.class);
 		ProjectLibraries libraries = new ProjectLibraries(project);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
@@ -88,7 +116,7 @@ public class RepackageTask extends DefaultTask {
 		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
-		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
+		return libraries;
 	}
 
 	private class RepackageAction implements Action<Jar> {
