@@ -49,10 +49,12 @@ public class ApplyExcludeRules implements Action<Configuration> {
 		if (!VersionManagedDependencies.CONFIGURATION.equals(configuration.getName())) {
 			configuration.getIncoming().beforeResolve(
 					new Action<ResolvableDependencies>() {
+
 						@Override
 						public void execute(ResolvableDependencies resolvableDependencies) {
 							resolvableDependencies.getDependencies().all(
 									new Action<Dependency>() {
+
 										@Override
 										public void execute(Dependency dependency) {
 											applyExcludeRules(dependency);
@@ -70,20 +72,21 @@ public class ApplyExcludeRules implements Action<Configuration> {
 	}
 
 	private void applyExcludeRules(ModuleDependency dependency) {
-		ManagedDependencies managedDependencies = versionManagedDependencies
-				.getManagedDependencies();
-		org.springframework.boot.dependency.tools.Dependency managedDependency = managedDependencies
-				.find(dependency.getGroup(), dependency.getName());
-		if (managedDependency != null) {
-			for (Exclusion exclusion : managedDependency.getExclusions()) {
-				addExcludeRule(dependency, exclusion);
+		ManagedDependencies managedDependencies = versionManagedDependencies.getManagedDependencies();
+		// flat directory repositories do not have groups
+		if (dependency.getGroup() != null) {
+			org.springframework.boot.dependency.tools.Dependency managedDependency = managedDependencies.find(
+					dependency.getGroup(), dependency.getName());
+			if (managedDependency != null) {
+				for (Exclusion exclusion : managedDependency.getExclusions()) {
+					addExcludeRule(dependency, exclusion);
+				}
+				addImplicitExcludeRules(dependency);
+				return;
 			}
-			addImplicitExcludeRules(dependency);
 		}
-		else {
-			logger.debug("No exclusions rules applied for non-managed dependency "
-					+ dependency);
-		}
+		logger.debug("No exclusions rules applied for non-managed dependency "
+				+ dependency);
 	}
 
 	private void addExcludeRule(ModuleDependency dependency, Exclusion exclusion) {
@@ -106,8 +109,8 @@ public class ApplyExcludeRules implements Action<Configuration> {
 
 	private boolean isStarter(ModuleDependency dependency) {
 		return (dependency.getGroup() != null
-				&& dependency.getGroup().equals("org.springframework.boot") && dependency
-				.getName().startsWith("spring-boot-starter"));
+				&& dependency.getGroup().equals("org.springframework.boot") && dependency.getName().startsWith(
+				"spring-boot-starter"));
 	}
 
 }
