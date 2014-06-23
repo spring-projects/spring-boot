@@ -404,6 +404,10 @@ The following configuration options are available:
 |===
 |Name |Description
 
+|`enabled`
+|Boolean flag to switch the repackager off (sometimes useful if you 
+want the other Boot features but not this one)
+
 |`mainClass`
 |The main class that should be run. If not specified the `mainClassName` project property
  will be used or, if the no `mainClassName` id defined the archive will be searched for a
@@ -419,9 +423,10 @@ The following configuration options are available:
  the original jar as a dependency in another project, it's best to use an extension to
  define the executable archive.
 
-|`withJarTask`
-|The name of the `Jar` task (defaults to all) which is used to locate the archive to
- repackage.
+|`withJarTask` 
+|The name or value of the `Jar` task (defaults to all
+tasks of type `Jar`) which is used to locate the archive to
+repackage.
 
 |`customConfiguration`
 |The name of the custom configuration whuch is used to populate the nested lib directory

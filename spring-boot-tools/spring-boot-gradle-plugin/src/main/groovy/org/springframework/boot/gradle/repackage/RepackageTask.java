@@ -53,8 +53,14 @@ public class RepackageTask extends DefaultTask {
 
 	private File outputFile;
 
+	private boolean enabled = true;
+
 	public void setCustomConfiguration(String customConfiguration) {
 		this.customConfiguration = customConfiguration;
+	}
+
+	public Object getWithJarTask() {
+		return withJarTask;
 	}
 
 	public void setWithJarTask(Object withJarTask) {
@@ -77,6 +83,14 @@ public class RepackageTask extends DefaultTask {
 		this.classifier = classifier;
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	@TaskAction
 	public void repackage() {
 		Project project = getProject();
@@ -85,12 +99,13 @@ public class RepackageTask extends DefaultTask {
 		ProjectLibraries libraries = getLibraries();
 		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
 	}
-	
+
 	public File[] getDependencies() {
 		ProjectLibraries libraries = getLibraries();
 		final List<File> files = new ArrayList<File>();
 		try {
 			libraries.doWithLibraries(new LibraryCallback() {
+
 				@Override
 				public void library(File file, LibraryScope scope) throws IOException {
 					files.add(file);
@@ -112,8 +127,7 @@ public class RepackageTask extends DefaultTask {
 		}
 		if (this.customConfiguration != null) {
 			libraries.setCustomConfigurationName(this.customConfiguration);
-		}
-		else if (extension.getCustomConfiguration() != null) {
+		} else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
 		return libraries;
@@ -133,22 +147,30 @@ public class RepackageTask extends DefaultTask {
 
 		@Override
 		public void execute(Jar archive) {
+			if (!enabled) {
+				getLogger().info("Repackage disabled");
+				return;
+			}
 			// if withJarTask is set, compare tasks and bail out if we didn't match
 			if (RepackageTask.this.withJarTask != null
-					&& !archive.equals(RepackageTask.this.withJarTask)) {
+					&& !(archive.equals(RepackageTask.this.withJarTask)
+					|| archive.equals(getProject().getTasks().findByName(
+							RepackageTask.this.withJarTask.toString())))) {
+				getLogger().info(
+						"Jar task not repackaged (didn't match withJarTask): " + archive);
 				return;
 			}
 
-			if ("".equals(archive.getClassifier())) {
+			if ("".equals(archive.getClassifier())
+					|| RepackageTask.this.withJarTask != null) {
 				File file = archive.getArchivePath();
 				if (file.exists()) {
 					Repackager repackager = new LoggingRepackager(file);
 					File out = RepackageTask.this.outputFile;
-					if (out != null) {
+					if (out != null && !file.equals(out)) {
 						try {
 							FileCopyUtils.copy(file, out);
-						}
-						catch (IOException ex) {
+						} catch (IOException ex) {
 							throw new IllegalStateException(ex.getMessage(), ex);
 						}
 						file = out;
@@ -161,8 +183,7 @@ public class RepackageTask extends DefaultTask {
 					repackager.setBackupSource(this.extension.isBackupSource());
 					try {
 						repackager.repackage(file, this.libraries);
-					}
-					catch (IOException ex) {
+					} catch (IOException ex) {
 						throw new IllegalStateException(ex.getMessage(), ex);
 					}
 				}
@@ -173,13 +194,11 @@ public class RepackageTask extends DefaultTask {
 			String mainClass = (String) getProject().property("mainClassName");
 			if (RepackageTask.this.mainClass != null) {
 				mainClass = RepackageTask.this.mainClass;
-			}
-			else if (this.extension.getMainClass() != null) {
+			} else if (this.extension.getMainClass() != null) {
 				mainClass = this.extension.getMainClass();
-			}
-			else if (getProject().getTasks().getByName("run").hasProperty("main")) {
-				mainClass = (String) getProject().getTasks().getByName("run")
-						.property("main");
+			} else if (getProject().getTasks().getByName("run").hasProperty("main")) {
+				mainClass = (String) getProject().getTasks().getByName("run").property(
+						"main");
 			}
 			getLogger().info("Setting mainClass: " + mainClass);
 			repackager.setMainClass(mainClass);
@@ -197,8 +216,7 @@ public class RepackageTask extends DefaultTask {
 			long startTime = System.currentTimeMillis();
 			try {
 				return super.findMainMethod(source);
-			}
-			finally {
+			} finally {
 				long duration = System.currentTimeMillis() - startTime;
 				if (duration > FIND_WARNING_TIMEOUT) {
 					getLogger().warn(

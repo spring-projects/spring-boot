@@ -1579,6 +1579,122 @@ See the {spring-boot-maven-plugin-site}/usage.html[plugin documentation] for ful
 details.
 
 
+[[howto-create-an-additional-executable-jar]]
+=== Create an additional executable JAR
+
+If you want to use your project as a library jar for other projects to
+depend on, and in addition have an executable (e.g. demo) version of
+it, you will want to configure the build in a slightly different way.
+
+For Maven the normal JAR plugin and the Spring Boot plugin both have a
+"classifier" configuration that you can add to create an additional JAR.
+Example (using the Spring Boot Starter Parent to manage the plugin
+versions and other configuration defaults):
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>exec</classifier>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+Two jars are produced, the default one, and an executable one using
+the Boot plugin with classifier "exec". 
+
+For Gradle users the steps are similar. Example:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+bootRepackage  {
+    classifier = 'exec'
+}
+----
+
+[[howto-create-a-nonexecutable-jar]]
+=== Create a non-executable JAR with exclusions
+
+Often if you have an executable and a non-executable jar
+as biuld products, the executable version will have additional
+configuration files that ar enot needed in a library jar. E.g. the
+`application.yml` configuration file might excluded from the
+non-executable JAR.
+
+Here's how to do that in Maven
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>exec</classifier>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>exec</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>exec</classifier>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<!-- Need this to ensure application.yml is excluded -->
+							<forceCreation>true</forceCreation>
+							<excludes>
+								<exclude>application.yml</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+In Gradle you can create a new JAR archive with standard task DSL
+features, and then have the `bootRepackage` task depend on that one
+using its `withJarTask` property:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+jar {
+	baseName = 'spring-boot-sample-profile'
+	version =  '0.0.0'
+	excludes = ['**/application.yml']
+}
+
+task('execJar', type:Jar, dependsOn: 'jar') {
+	baseName = 'spring-boot-sample-profile'
+	version =  '0.0.0'
+	classifier = 'exec'
+	from sourceSets.main.output
+}
+
+bootRepackage  {
+	withJarTask = tasks['execJar']
+}
+----
 
 [[howto-remote-debug-maven-run]]
 === Remote debug a Spring Boot application started with Maven

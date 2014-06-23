@@ -50,18 +50,22 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				+ "archives so that they can be executed from the command "
 				+ "line using 'java -jar'");
 		task.setGroup(BasePlugin.BUILD_GROUP);
-		task.dependsOn(project.getConfigurations()
-				.getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
-				.getBuildDependencies());
+		task.dependsOn(project.getConfigurations().getByName(
+				Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts().getBuildDependencies());
 		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
 	}
 
 	private void registerOutput(Project project, final RepackageTask task) {
 		project.afterEvaluate(new Action<Project>() {
+
 			@Override
 			public void execute(Project project) {
 				project.getTasks().withType(Jar.class, new OutputAction(task));
+				Object withJar = task.getWithJarTask();
+				if (withJar!=null) {
+					task.dependsOn(withJar);
+				}
 			}
 		});
 	}
@@ -74,8 +78,8 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	 * Register BootRepackage so that we can use task {@code foo(type: BootRepackage)}.
 	 */
 	private void registerRepackageTaskProperty(Project project) {
-		project.getExtensions().getExtraProperties()
-				.set("BootRepackage", RepackageTask.class);
+		project.getExtensions().getExtraProperties().set("BootRepackage",
+				RepackageTask.class);
 	}
 
 	private class OutputAction implements Action<Jar> {
@@ -115,8 +119,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 					SpringBootPluginExtension.class);
 			if (task.getClassifier() != null) {
 				classifier = task.getClassifier();
-			}
-			else if (extension.getClassifier() != null) {
+			} else if (extension.getClassifier() != null) {
 				classifier = extension.getClassifier();
 			}
 			if (classifier != null) {
