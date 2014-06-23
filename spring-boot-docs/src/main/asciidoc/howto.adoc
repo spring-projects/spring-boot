@@ -1622,8 +1622,8 @@ bootRepackage  {
 === Create a non-executable JAR with exclusions
 
 Often if you have an executable and a non-executable jar
-as biuld products, the executable version will have additional
-configuration files that ar enot needed in a library jar. E.g. the
+as build products, the executable version will have additional
+configuration files that are not needed in a library jar. E.g. the
 `application.yml` configuration file might excluded from the
 non-executable JAR.
 
