@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,42 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
- * Callback interface used to iterate {@link Libraries}.
+ * Encapsulates information about a single library that may be packed into the archive.
  * 
  * @author Phillip Webb
+ * @since 1.1.2
+ * @see Libraries
  */
-public interface LibraryCallback {
+public class Library {
+
+	private final File file;
+
+	private final LibraryScope scope;
 
 	/**
-	 * Callback to for a single library backed by a {@link File}.
-	 * @param library the library
-	 * @throws IOException
+	 * Create a new {@link Library}.
+	 * @param file the source file
+	 * @param scope the scope of the library
 	 */
-	void library(Library library) throws IOException;
+	public Library(File file, LibraryScope scope) {
+		this.file = file;
+		this.scope = scope;
+	}
+
+	/**
+	 * @return the library file
+	 */
+	public File getFile() {
+		return this.file;
+	}
+
+	/**
+	 * @return the scope of the library
+	 */
+	public LibraryScope getScope() {
+		return this.scope;
+	}
 
 }

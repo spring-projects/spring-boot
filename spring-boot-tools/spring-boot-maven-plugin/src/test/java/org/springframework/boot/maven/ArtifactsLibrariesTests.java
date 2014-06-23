@@ -23,11 +23,16 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -36,7 +41,7 @@ import static org.mockito.Mockito.verify;
  * 
  * @author Phillip Webb
  */
-public class ArtifactsLibrariesTest {
+public class ArtifactsLibrariesTests {
 
 	@Mock
 	private Artifact artifact;
@@ -49,6 +54,9 @@ public class ArtifactsLibrariesTest {
 
 	@Mock
 	private LibraryCallback callback;
+
+	@Captor
+	private ArgumentCaptor<Library> libraryCaptor;
 
 	@Before
 	public void setup() {
@@ -63,6 +71,10 @@ public class ArtifactsLibrariesTest {
 		given(this.artifact.getType()).willReturn("jar");
 		given(this.artifact.getScope()).willReturn("compile");
 		this.libs.doWithLibraries(this.callback);
-		verify(this.callback).library(this.file, LibraryScope.COMPILE);
+		verify(this.callback).library(this.libraryCaptor.capture());
+		Library library = this.libraryCaptor.getValue();
+		assertThat(library.getFile(), equalTo(this.file));
+		assertThat(library.getScope(), equalTo(LibraryScope.COMPILE));
 	}
+
 }

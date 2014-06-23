@@ -141,10 +141,11 @@ public class Repackager {
 
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
-				public void library(File file, LibraryScope scope) throws IOException {
+				public void library(Library library) throws IOException {
+					File file = library.getFile();
 					if (isZip(file)) {
 						String destination = Repackager.this.layout
-								.getLibraryDestination(file.getName(), scope);
+								.getLibraryDestination(file.getName(), library.getScope());
 						if (destination != null) {
 							writer.writeNestedLibrary(destination, file);
 						}

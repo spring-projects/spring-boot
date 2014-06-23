@@ -266,8 +266,8 @@ public class RepackagerTests {
 		repackager.repackage(new Libraries() {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(libJarFile, LibraryScope.COMPILE);
-				callback.library(libNonJarFile, LibraryScope.COMPILE);
+				callback.library(new Library(libJarFile, LibraryScope.COMPILE));
+				callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
 			}
 		});
 		assertThat(hasEntry(file, "lib/" + libJarFile.getName()), equalTo(true));
@@ -290,7 +290,7 @@ public class RepackagerTests {
 		repackager.repackage(new Libraries() {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(libJarFile, scope);
+				callback.library(new Library(libJarFile, scope));
 			}
 		});
 		assertThat(hasEntry(file, "test/" + libJarFile.getName()), equalTo(true));
@@ -331,7 +331,7 @@ public class RepackagerTests {
 		repackager.repackage(new Libraries() {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
-				callback.library(nestedFile, LibraryScope.COMPILE);
+				callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 			}
 		});
 

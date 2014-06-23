@@ -28,8 +28,8 @@ import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.PluginFeatures;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
-import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.util.StringUtils;
 
 /**
@@ -135,9 +135,8 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		private void addLibraryDependencies(final RepackageTask task) {
 			try {
 				task.getLibraries().doWithLibraries(new LibraryCallback() {
-					@Override
-					public void library(File file, LibraryScope scope) throws IOException {
-						task.getInputs().file(file);
+					public void library(Library library) throws IOException {
+						task.getInputs().file(library.getFile());
 					}
 				});
 			}

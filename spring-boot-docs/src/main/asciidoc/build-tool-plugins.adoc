@@ -619,7 +619,7 @@ Here is a typical example repackage:
 				@Override
 				public void doWithLibraries(LibraryCallback callback) throws IOException {
 					// Build system specific implementation, callback for each dependency
-					// callback.library(nestedFile, LibraryScope.COMPILE);
+					// callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 				}
 			});
 ----

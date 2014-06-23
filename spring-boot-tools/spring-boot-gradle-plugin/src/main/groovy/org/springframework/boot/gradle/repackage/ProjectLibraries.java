@@ -23,6 +23,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
@@ -97,7 +98,7 @@ class ProjectLibraries implements Libraries {
 			LibraryCallback callback) throws IOException {
 		if (files != null) {
 			for (File file: files) {
-				callback.library(file, scope);
+				callback.library(new Library(file, scope));
 			}
 		}
 	}

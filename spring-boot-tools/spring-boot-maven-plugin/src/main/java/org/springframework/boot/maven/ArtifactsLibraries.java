@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
@@ -55,7 +56,7 @@ public class ArtifactsLibraries implements Libraries {
 		for (Artifact artifact : this.artifacts) {
 			LibraryScope scope = SCOPES.get(artifact.getScope());
 			if (scope != null && artifact.getFile() != null) {
-				callback.library(artifact.getFile(), scope);
+				callback.library(new Library(artifact.getFile(), scope));
 			}
 		}
 	}
