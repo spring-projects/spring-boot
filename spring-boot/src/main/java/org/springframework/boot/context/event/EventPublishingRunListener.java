@@ -77,6 +77,9 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 
 	@Override
 	public void contextLoaded(ConfigurableApplicationContext context) {
+		for (ApplicationListener<?> listener : this.application.getListeners()) {
+			context.addApplicationListener(listener);
+		}
 		publishEvent(new ApplicationPreparedEvent(this.application, this.args, context));
 	}
 
@@ -85,6 +88,8 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 		if (exception != null) {
 			publishEvent(new ApplicationFailedEvent(this.application, this.args, context,
 					exception));
+		}
+		else {
 		}
 	}
 

@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,9 +32,11 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,6 +44,7 @@ import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -55,8 +59,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertArrayEquals;
@@ -437,6 +443,39 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void registerListener() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setApplicationContextClass(SpyApplicationContext.class);
+		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
+		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+			@Override
+			public void onApplicationEvent(ApplicationEvent event) {
+				events.add(event);
+			}
+		});
+		this.context = application.run();
+		assertThat(events, hasItem(isA(ApplicationPreparedEvent.class)));
+		assertThat(events, hasItem(isA(ContextRefreshedEvent.class)));
+	}
+
+	@Test
+	public void registerListenerWithCustomMulticaster() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class,
+				Multicaster.class);
+		application.setApplicationContextClass(SpyApplicationContext.class);
+		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
+		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+			@Override
+			public void onApplicationEvent(ApplicationEvent event) {
+				events.add(event);
+			}
+		});
+		this.context = application.run();
+		assertThat(events, hasItem(isA(ApplicationPreparedEvent.class)));
+		assertThat(events, hasItem(isA(ContextRefreshedEvent.class)));
+	}
+
+	@Test
 	public void registerShutdownHookOff() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
@@ -548,6 +587,16 @@ public class SpringApplicationTests {
 
 	@Configuration
 	static class ExampleConfig {
+
+	}
+
+	@Configuration
+	static class Multicaster {
+
+		@Bean
+		public SimpleApplicationEventMulticaster applicationEventMulticaster() {
+			return new SimpleApplicationEventMulticaster();
+		}
 
 	}
 
