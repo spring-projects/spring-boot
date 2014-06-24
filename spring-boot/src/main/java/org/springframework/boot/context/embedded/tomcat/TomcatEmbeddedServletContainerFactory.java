@@ -20,9 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,12 +37,10 @@ import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Valve;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
-import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
-import org.apache.naming.resources.FileDirContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -589,95 +584,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 			if (servletContext.getAttribute(this.MERGED_WEB_XML) == null) {
 				servletContext.setAttribute(this.MERGED_WEB_XML, getEmptyWebXml());
 			}
-			addClasspathResources(context);
-		}
-
-		private void addClasspathResources(Context context) {
-			ClassLoader loader = getClass().getClassLoader();
-			if (loader instanceof URLClassLoader) {
-				for (URL url : ((URLClassLoader) loader).getURLs()) {
-					String file = url.getFile();
-					if (file.endsWith(".jar") || file.endsWith(".jar!/")) {
-						addJarContext(context, url);
-					}
-					else if (url.toString().startsWith("file:")) {
-						addDirContext(context, url);
-					}
-				}
-			}
-		}
-
-		private void addJarContext(Context context, URL url) {
-			String jar = url.toString();
-			if (!jar.startsWith("jar:")) {
-				// A jar file in the file system. Convert to Jar URL.
-				jar = "jar:" + jar + "!/";
-			}
-			if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
-				// Tomcat 7
-				try {
-					context.addResourceJarUrl(new URL(jar));
-				}
-				catch (MalformedURLException e) {
-					// Ignore?
-				}
-			}
-			else {
-				// Tomcat 8
-				addResourceSet(context, "RESOURCE_JAR", jar);
-			}
-		}
-
-		private void addDirContext(Context context, URL url) {
-			String dir = url.toString().substring("file:".length());
-			if (new File(dir).isDirectory()) {
-				if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
-					// Tomcat 7
-					if (context instanceof StandardContext) {
-						FileDirContext files = new FileDirContext();
-						files.setDocBase(dir);
-						((StandardContext) context).addResourcesDirContext(files);
-					}
-				}
-				else {
-					// Tomcat 8
-					addResourceSet(context, "RESOURCE_JAR", url.toString());
-				}
-			}
-		}
-
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		private void addResourceSet(Context context, String name, String dir) {
-			Object resources;
-			Method create;
-			Class type;
-			try {
-				Method getResources = ReflectionUtils.findMethod(context.getClass(),
-						"getResources");
-				resources = getResources.invoke(context);
-				type = ClassUtils.resolveClassName(
-						"org.apache.catalina.WebResourceRoot.ResourceSetType", null);
-				create = ReflectionUtils.findMethod(resources.getClass(),
-						"createWebResourceSet", type, String.class, URL.class,
-						String.class);
-			}
-			catch (Exception e) {
-				throw new IllegalStateException("Tomcat 8 reflection failed", e);
-			}
-			try {
-				if (dir.indexOf("!/") < dir.lastIndexOf("!/")) {
-					// It's a nested jar but we now don't want the suffix because Tomcat
-					// is going to try and locate it as a root URL (not the resource
-					// inside it)
-					dir = dir.substring(0, dir.length() - 2);
-				}
-				URL url = new URL(dir);
-				String path = "/META-INF/resources";
-				create.invoke(resources, Enum.valueOf(type, name), "/", url, path);
-			}
-			catch (Exception e) {
-				// Ignore (probably not a directory)
-			}
+			TomcatResources.get(context).addClasspathResources();
 		}
 
 		private String getEmptyWebXml() {
