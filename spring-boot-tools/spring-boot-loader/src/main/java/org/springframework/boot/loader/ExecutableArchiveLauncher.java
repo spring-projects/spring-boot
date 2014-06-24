@@ -30,7 +30,7 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * Base class for executable archive {@link Launcher}s.
- *
+ * 
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
@@ -78,11 +78,11 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected ClassLoader createClassLoader(URL[] urls) throws Exception {
-		Set<URL> copy = new LinkedHashSet<URL>();
+		Set<URL> copy = new LinkedHashSet<URL>(urls.length);
 		ClassLoader loader = getDefaultClassLoader();
 		if (loader instanceof URLClassLoader) {
 			for (URL url : ((URLClassLoader) loader).getURLs()) {
-				if (!this.javaAgentDetector.isJavaAgentJar(url)) {
+				if (addDefaultClassloaderUrl(urls, url)) {
 					copy.add(url);
 				}
 			}
@@ -91,6 +91,16 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 			copy.add(url);
 		}
 		return super.createClassLoader(copy.toArray(new URL[copy.size()]));
+	}
+
+	private boolean addDefaultClassloaderUrl(URL[] urls, URL url) {
+		String jarUrl = "jar:" + url + "!/";
+		for (URL nestedUrl : urls) {
+			if (nestedUrl.equals(url) || nestedUrl.toString().equals(jarUrl)) {
+				return false;
+			}
+		}
+		return !this.javaAgentDetector.isJavaAgentJar(url);
 	}
 
 	/**
