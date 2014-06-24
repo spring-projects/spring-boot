@@ -96,10 +96,11 @@ public class Handler extends URLStreamHandler {
 			return openConnection(getFallbackHandler(), url);
 		}
 		catch (Exception ex) {
-			this.logger.log(Level.WARNING, "Unable to open fallback handler", ex);
 			if (reason instanceof IOException) {
+				this.logger.log(Level.FINEST, "Unable to open fallback handler", ex);
 				throw (IOException) reason;
 			}
+			this.logger.log(Level.WARNING, "Unable to open fallback handler", ex);
 			if (reason instanceof RuntimeException) {
 				throw (RuntimeException) reason;
 			}
@@ -111,7 +112,6 @@ public class Handler extends URLStreamHandler {
 		if (this.fallbackHandler != null) {
 			return this.fallbackHandler;
 		}
-
 		for (String handlerClassName : FALLBACK_HANDLERS) {
 			try {
 				Class<?> handlerClass = Class.forName(handlerClassName);

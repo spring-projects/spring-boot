@@ -50,7 +50,7 @@ public class JarWriter {
 
 	private static final String NESTED_LOADER_JAR = "META-INF/loader/spring-boot-loader.jar";
 
-	private static final int BUFFER_SIZE = 4096;
+	private static final int BUFFER_SIZE = 32 * 1024;
 
 	private final JarOutputStream jarOutput;
 
@@ -122,11 +122,16 @@ public class JarWriter {
 	/**
 	 * Write a nested library.
 	 * @param destination the destination of the library
-	 * @param file the library file
+	 * @param library the library
 	 * @throws IOException if the write fails
 	 */
-	public void writeNestedLibrary(String destination, File file) throws IOException {
+	public void writeNestedLibrary(String destination, Library library)
+			throws IOException {
+		File file = library.getFile();
 		JarEntry entry = new JarEntry(destination + file.getName());
+		if (library.isUnpackRequired()) {
+			entry.setComment("UNPACK:" + FileUtils.sha1Hash(file));
+		}
 		new CrcAndSize(file).setupStoredEntry(entry);
 		writeEntry(entry, new InputStreamEntryWriter(new FileInputStream(file), true));
 	}

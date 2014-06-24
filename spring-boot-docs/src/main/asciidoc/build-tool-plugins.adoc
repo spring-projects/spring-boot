@@ -511,6 +511,11 @@ The following configuration options are available:
 |`layout`
 |The type of archive, corresponding to how the dependencies are laid out inside
  (defaults to a guess based on the archive type).
+
+|`requiresUnpack`
+|A list of dependencies (in the form ``groupId:artifactId'' that must be unpacked from
+ fat jars in order to run. Items are still packaged into the fat jar, but they will be
+ automatically unpacked when it runs.
 |===
 
 

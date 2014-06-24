@@ -101,7 +101,7 @@ public class RepackageTask extends DefaultTask {
 		Project project = getProject();
 		SpringBootPluginExtension extension = project.getExtensions().getByType(
 				SpringBootPluginExtension.class);
-		ProjectLibraries libraries = new ProjectLibraries(project);
+		ProjectLibraries libraries = new ProjectLibraries(project, extension);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}

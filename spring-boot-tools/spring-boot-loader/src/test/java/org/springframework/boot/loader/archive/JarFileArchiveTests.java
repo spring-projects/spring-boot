@@ -29,7 +29,9 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
 import org.springframework.boot.loader.util.AsciiBytes;
 
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -48,8 +50,12 @@ public class JarFileArchiveTests {
 
 	@Before
 	public void setup() throws Exception {
+		setup(false);
+	}
+
+	private void setup(boolean unpackNested) throws Exception {
 		this.rootJarFile = this.temporaryFolder.newFile();
-		TestJarCreator.createTestJar(this.rootJarFile);
+		TestJarCreator.createTestJar(this.rootJarFile, unpackNested);
 		this.archive = new JarFileArchive(this.rootJarFile);
 	}
 
@@ -78,6 +84,15 @@ public class JarFileArchiveTests {
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString(),
 				equalTo("jar:file:" + this.rootJarFile.getPath() + "!/nested.jar!/"));
+	}
+
+	@Test
+	public void getNestedUnpackedArchive() throws Exception {
+		setup(true);
+		Entry entry = getEntriesMap(this.archive).get("nested.jar");
+		Archive nested = this.archive.getNestedArchive(entry);
+		assertThat(nested.getUrl().toString(), startsWith("file:"));
+		assertThat(nested.getUrl().toString(), endsWith(".jar"));
 	}
 
 	@Test

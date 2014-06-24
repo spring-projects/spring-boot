@@ -19,6 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -33,6 +34,7 @@ import org.springframework.boot.loader.tools.sample.ClassWithoutMainMethod;
 import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
@@ -258,6 +260,7 @@ public class RepackagerTests {
 		TestJarFile libJar = new TestJarFile(this.temporaryFolder);
 		libJar.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		final File libJarFile = libJar.getFile();
+		final File libJarFileToUnpack = libJar.getFile();
 		final File libNonJarFile = this.temporaryFolder.newFile();
 		FileCopyUtils.copy(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 }, libNonJarFile);
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
@@ -267,11 +270,17 @@ public class RepackagerTests {
 			@Override
 			public void doWithLibraries(LibraryCallback callback) throws IOException {
 				callback.library(new Library(libJarFile, LibraryScope.COMPILE));
+				callback.library(new Library(libJarFileToUnpack, LibraryScope.COMPILE,
+						true));
 				callback.library(new Library(libNonJarFile, LibraryScope.COMPILE));
 			}
 		});
 		assertThat(hasEntry(file, "lib/" + libJarFile.getName()), equalTo(true));
+		assertThat(hasEntry(file, "lib/" + libJarFileToUnpack.getName()), equalTo(true));
 		assertThat(hasEntry(file, "lib/" + libNonJarFile.getName()), equalTo(false));
+		JarEntry entry = getEntry(file, "lib/" + libJarFileToUnpack.getName());
+		assertThat(entry.getComment(), startsWith("UNPACK:"));
+		assertThat(entry.getComment().length(), equalTo(47));
 	}
 
 	@Test
@@ -345,7 +354,6 @@ public class RepackagerTests {
 		finally {
 			jarFile.close();
 		}
-
 	}
 
 	private boolean hasLauncherClasses(File file) throws IOException {
@@ -354,9 +362,13 @@ public class RepackagerTests {
 	}
 
 	private boolean hasEntry(File file, String name) throws IOException {
+		return getEntry(file, name) != null;
+	}
+
+	private JarEntry getEntry(File file, String name) throws IOException {
 		JarFile jarFile = new JarFile(file);
 		try {
-			return jarFile.getEntry(name) != null;
+			return jarFile.getJarEntry(name);
 		}
 		finally {
 			jarFile.close();

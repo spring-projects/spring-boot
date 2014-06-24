@@ -17,12 +17,14 @@
 package org.springframework.boot.maven;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
@@ -47,8 +49,11 @@ public class ArtifactsLibraries implements Libraries {
 
 	private final Set<Artifact> artifacts;
 
-	public ArtifactsLibraries(Set<Artifact> artifacts) {
+	private final Collection<Dependency> unpacks;
+
+	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks) {
 		this.artifacts = artifacts;
+		this.unpacks = unpacks;
 	}
 
 	@Override
@@ -56,8 +61,21 @@ public class ArtifactsLibraries implements Libraries {
 		for (Artifact artifact : this.artifacts) {
 			LibraryScope scope = SCOPES.get(artifact.getScope());
 			if (scope != null && artifact.getFile() != null) {
-				callback.library(new Library(artifact.getFile(), scope));
+				callback.library(new Library(artifact.getFile(), scope,
+						isUnpackRequired(artifact)));
 			}
 		}
+	}
+
+	private boolean isUnpackRequired(Artifact artifact) {
+		if (this.unpacks != null) {
+			for (Dependency unpack : this.unpacks) {
+				if (artifact.getGroupId().equals(unpack.getGroupId())
+						&& artifact.getArtifactId().equals(unpack.getArtifactId())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

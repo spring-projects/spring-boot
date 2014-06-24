@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -62,7 +63,7 @@ public class ArtifactsLibrariesTests {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		this.artifacts = Collections.singleton(this.artifact);
-		this.libs = new ArtifactsLibraries(this.artifacts);
+		this.libs = new ArtifactsLibraries(this.artifacts, null);
 		given(this.artifact.getFile()).willReturn(this.file);
 	}
 
@@ -75,6 +76,21 @@ public class ArtifactsLibrariesTests {
 		Library library = this.libraryCaptor.getValue();
 		assertThat(library.getFile(), equalTo(this.file));
 		assertThat(library.getScope(), equalTo(LibraryScope.COMPILE));
+		assertThat(library.isUnpackRequired(), equalTo(false));
 	}
 
+	@Test
+	public void callbackWithUnpack() throws Exception {
+		given(this.artifact.getGroupId()).willReturn("gid");
+		given(this.artifact.getArtifactId()).willReturn("aid");
+		given(this.artifact.getType()).willReturn("jar");
+		given(this.artifact.getScope()).willReturn("compile");
+		Dependency unpack = new Dependency();
+		unpack.setGroupId("gid");
+		unpack.setArtifactId("aid");
+		this.libs = new ArtifactsLibraries(this.artifacts, Collections.singleton(unpack));
+		this.libs.doWithLibraries(this.callback);
+		verify(this.callback).library(this.libraryCaptor.capture());
+		assertThat(this.libraryCaptor.getValue().isUnpackRequired(), equalTo(true));
+	}
 }

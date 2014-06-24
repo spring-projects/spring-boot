@@ -17,7 +17,10 @@
 package org.springframework.boot.loader.archive;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
 
+import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 import org.springframework.boot.loader.jar.JarEntryData;
 import org.springframework.boot.loader.jar.JarEntryFilter;
 import org.springframework.boot.loader.jar.JarFile;
@@ -39,12 +43,23 @@ import org.springframework.boot.loader.util.AsciiBytes;
  */
 public class JarFileArchive extends Archive {
 
+	private static final AsciiBytes UNPACK_MARKER = new AsciiBytes("UNPACK:");
+
+	private static final int BUFFER_SIZE = 32 * 1024;
+
 	private final JarFile jarFile;
 
 	private final List<Entry> entries;
 
+	private URL url;
+
 	public JarFileArchive(File file) throws IOException {
+		this(file, null);
+	}
+
+	public JarFileArchive(File file, URL url) throws IOException {
 		this(new JarFile(file));
+		this.url = url;
 	}
 
 	public JarFileArchive(JarFile jarFile) {
@@ -58,6 +73,9 @@ public class JarFileArchive extends Archive {
 
 	@Override
 	public URL getUrl() throws MalformedURLException {
+		if (this.url != null) {
+			return this.url;
+		}
 		return this.jarFile.getUrl();
 	}
 
@@ -84,8 +102,52 @@ public class JarFileArchive extends Archive {
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		JarEntryData data = ((JarFileEntry) entry).getJarEntryData();
+		if (data.getComment().startsWith(UNPACK_MARKER)) {
+			return getUnpackedNestedArchive(data);
+		}
 		JarFile jarFile = this.jarFile.getNestedJarFile(data);
 		return new JarFileArchive(jarFile);
+	}
+
+	private Archive getUnpackedNestedArchive(JarEntryData data) throws IOException {
+		AsciiBytes hash = data.getComment().substring(UNPACK_MARKER.length());
+		String name = data.getName().toString();
+		if (name.lastIndexOf("/") != -1) {
+			name = name.substring(name.lastIndexOf("/") + 1);
+		}
+		File file = new File(getTempUnpackFolder(), hash.toString() + "-" + name);
+		if (!file.exists() || file.length() != data.getSize()) {
+			unpack(data, file);
+		}
+		return new JarFileArchive(file, file.toURI().toURL());
+	}
+
+	private File getTempUnpackFolder() {
+		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
+		File unpackFolder = new File(tempFolder, "spring-boot-libs");
+		unpackFolder.mkdirs();
+		return unpackFolder;
+	}
+
+	private void unpack(JarEntryData data, File file) throws IOException {
+		InputStream inputStream = data.getData().getInputStream(ResourceAccess.ONCE);
+		try {
+			OutputStream outputStream = new FileOutputStream(file);
+			try {
+				byte[] buffer = new byte[BUFFER_SIZE];
+				int bytesRead = -1;
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
+				}
+				outputStream.flush();
+			}
+			finally {
+				outputStream.close();
+			}
+		}
+		finally {
+			inputStream.close();
+		}
 	}
 
 	@Override

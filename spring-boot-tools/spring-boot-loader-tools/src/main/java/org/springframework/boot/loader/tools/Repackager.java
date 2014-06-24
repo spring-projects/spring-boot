@@ -147,7 +147,7 @@ public class Repackager {
 						String destination = Repackager.this.layout
 								.getLibraryDestination(file.getName(), library.getScope());
 						if (destination != null) {
-							writer.writeNestedLibrary(destination, file);
+							writer.writeNestedLibrary(destination, library);
 						}
 					}
 				}
