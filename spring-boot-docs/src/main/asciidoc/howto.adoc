@@ -1581,15 +1581,13 @@ details.
 
 [[howto-create-an-additional-executable-jar]]
 === Create an additional executable JAR
+If you want to use your project as a library jar for other projects to depend on, and in
+addition have an executable (e.g. demo) version of it, you will want to configure the
+build in a slightly different way.
 
-If you want to use your project as a library jar for other projects to
-depend on, and in addition have an executable (e.g. demo) version of
-it, you will want to configure the build in a slightly different way.
-
-For Maven the normal JAR plugin and the Spring Boot plugin both have a
-"classifier" configuration that you can add to create an additional JAR.
-Example (using the Spring Boot Starter Parent to manage the plugin
-versions and other configuration defaults):
+For Maven the normal JAR plugin and the Spring Boot plugin both have a ``classifier''
+configuration that you can add to create an additional JAR. Example (using the Spring
+Boot Starter Parent to manage the plugin versions and other configuration defaults):
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1606,28 +1604,27 @@ versions and other configuration defaults):
 	</build>
 ----
 
-Two jars are produced, the default one, and an executable one using
-the Boot plugin with classifier "exec". 
+Two jars are produced, the default one, and an executable one using the Boot plugin with
+classifier ``exec''.
 
 For Gradle users the steps are similar. Example:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
-bootRepackage  {
-    classifier = 'exec'
-}
+	bootRepackage  {
+		classifier = 'exec'
+	}
 ----
+
+
 
 [[howto-create-a-nonexecutable-jar]]
 === Create a non-executable JAR with exclusions
+Often if you have an executable and a non-executable jar as build products, the executable
+version will have additional configuration files that are not needed in a library jar.
+E.g. the `application.yml` configuration file might excluded from the non-executable JAR.
 
-Often if you have an executable and a non-executable jar
-as build products, the executable version will have additional
-configuration files that are not needed in a library jar. E.g. the
-`application.yml` configuration file might excluded from the
-non-executable JAR.
-
-Here's how to do that in Maven
+Here's how to do that in Maven:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1672,29 +1669,30 @@ Here's how to do that in Maven
 	</build>
 ----
 
-In Gradle you can create a new JAR archive with standard task DSL
-features, and then have the `bootRepackage` task depend on that one
-using its `withJarTask` property:
+In Gradle you can create a new JAR archive with standard task DSL features, and then have
+the `bootRepackage` task depend on that one using its `withJarTask` property:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
-jar {
-	baseName = 'spring-boot-sample-profile'
-	version =  '0.0.0'
-	excludes = ['**/application.yml']
-}
+	jar {
+		baseName = 'spring-boot-sample-profile'
+		version =  '0.0.0'
+		excludes = ['**/application.yml']
+	}
 
-task('execJar', type:Jar, dependsOn: 'jar') {
-	baseName = 'spring-boot-sample-profile'
-	version =  '0.0.0'
-	classifier = 'exec'
-	from sourceSets.main.output
-}
+	task('execJar', type:Jar, dependsOn: 'jar') {
+		baseName = 'spring-boot-sample-profile'
+		version =  '0.0.0'
+		classifier = 'exec'
+		from sourceSets.main.output
+	}
 
-bootRepackage  {
-	withJarTask = tasks['execJar']
-}
+	bootRepackage  {
+		withJarTask = tasks['execJar']
+	}
 ----
+
+
 
 [[howto-remote-debug-maven-run]]
 === Remote debug a Spring Boot application started with Maven

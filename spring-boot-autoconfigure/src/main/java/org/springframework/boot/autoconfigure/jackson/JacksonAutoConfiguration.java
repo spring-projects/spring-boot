@@ -73,26 +73,27 @@ public class JacksonAutoConfiguration {
 				.values();
 	}
 
-    @Configuration
-    @ConditionalOnClass(ObjectMapper.class)
-    @EnableConfigurationProperties(HttpMapperProperties.class)
-    static class JacksonObjectMapperAutoConfiguration {
+	@Configuration
+	@ConditionalOnClass(ObjectMapper.class)
+	@EnableConfigurationProperties(HttpMapperProperties.class)
+	static class JacksonObjectMapperAutoConfiguration {
 
-        @Autowired
-       	private HttpMapperProperties properties = new HttpMapperProperties();
+		@Autowired
+		private HttpMapperProperties properties = new HttpMapperProperties();
 
-        @Bean
-       	@Primary
-       	@ConditionalOnMissingBean
-       	public ObjectMapper jacksonObjectMapper() {
-       		ObjectMapper objectMapper = new ObjectMapper();
-       		if (this.properties.isJsonSortKeys()) {
-       			objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-       		}
-       		return objectMapper;
-       	}
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean
+		public ObjectMapper jacksonObjectMapper() {
+			ObjectMapper objectMapper = new ObjectMapper();
+			if (this.properties.isJsonSortKeys()) {
+				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
+						true);
+			}
+			return objectMapper;
+		}
 
-    }
+	}
 
 	@Configuration
 	@ConditionalOnClass(JodaModule.class)

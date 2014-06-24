@@ -27,7 +27,7 @@ import org.springframework.util.FileSystemUtils;
 
 /**
  * Tests for using the Gradle plugin's support for flat directory repos
- *
+ * 
  * @author Dave Syer
  */
 public class FlatdirTests {
@@ -36,26 +36,26 @@ public class FlatdirTests {
 
 	private File libs = new File("target/flatdir/lib");
 
-	private static final String BOOT_VERSION = ManagedDependencies.get().find(
-			"spring-boot").getVersion();
-	
+	private static final String BOOT_VERSION = ManagedDependencies.get()
+			.find("spring-boot").getVersion();
+
 	@Before
 	public void init() {
-		if (libs.exists()) {
-			FileSystemUtils.deleteRecursively(libs);
+		if (this.libs.exists()) {
+			FileSystemUtils.deleteRecursively(this.libs);
 		}
 	}
 
 	@Test
 	public void flatdir() throws Exception {
-		project = new ProjectCreator().createProject("flatdir");
-		if (!libs.exists()) {
-			libs.mkdirs();
+		this.project = new ProjectCreator().createProject("flatdir");
+		if (!this.libs.exists()) {
+			this.libs.mkdirs();
 		}
-		FileCopyUtils.copy(new File("src/test/resources/foo.jar"),
-				new File(libs, "foo-1.0.0.jar"));
-		project.newBuild().forTasks("build").withArguments(
-				"-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
+		FileCopyUtils.copy(new File("src/test/resources/foo.jar"), new File(this.libs,
+				"foo-1.0.0.jar"));
+		this.project.newBuild().forTasks("build")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 
 }
