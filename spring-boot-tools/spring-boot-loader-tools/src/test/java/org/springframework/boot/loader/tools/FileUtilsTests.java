@@ -17,21 +17,31 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.util.FileSystemUtils;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Tests fir {@link FileUtils}.
  * 
  * @author Dave Syer
+ * @author Phillip Webb
  */
 public class FileUtilsTests {
+
+	@Rule
+	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	private File outputDirectory;
 
@@ -89,6 +99,20 @@ public class FileUtilsTests {
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory,
 				this.originDirectory);
 		assertTrue(file.exists());
+	}
+
+	@Test
+	public void hash() throws Exception {
+		File file = this.temporaryFolder.newFile();
+		OutputStream outputStream = new FileOutputStream(file);
+		try {
+			outputStream.write(new byte[] { 1, 2, 3 });
+		}
+		finally {
+			outputStream.close();
+		}
+		assertThat(FileUtils.sha1Hash(file),
+				equalTo("7037807198c22a7d2b0807371d763779a84fdfcf"));
 	}
 
 }

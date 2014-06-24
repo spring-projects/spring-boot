@@ -18,11 +18,13 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Component;
@@ -108,6 +110,13 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 	@Parameter
 	private LayoutType layout;
 
+	/**
+	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * @since 1.1
+	 */
+	@Parameter
+	private List<Dependency> requiresUnpack;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -144,7 +153,7 @@ public class RepackageMojo extends AbstractDependencyFilterMojo {
 		Set<Artifact> artifacts = filterDependencies(this.project.getArtifacts(),
 				getFilters());
 
-		Libraries libraries = new ArtifactsLibraries(artifacts);
+		Libraries libraries = new ArtifactsLibraries(artifacts, this.requiresUnpack);
 		try {
 			repackager.repackage(target, libraries);
 		}

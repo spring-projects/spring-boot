@@ -56,6 +56,8 @@ import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.Library;
+import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
@@ -248,7 +250,8 @@ public class JarCommand extends OptionParsingCommand {
 		private void addDependency(JarWriter writer, File dependency)
 				throws FileNotFoundException, IOException {
 			if (dependency.isFile()) {
-				writer.writeNestedLibrary("lib/", dependency);
+				writer.writeNestedLibrary("lib/", new Library(dependency,
+						LibraryScope.COMPILE));
 			}
 		}
 

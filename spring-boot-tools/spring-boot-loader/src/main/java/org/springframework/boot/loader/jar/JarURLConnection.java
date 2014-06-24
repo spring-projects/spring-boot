@@ -61,8 +61,6 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<Boolean>();
 
-	private final String jarFileUrlSpec;
-
 	private final JarFile jarFile;
 
 	private JarEntryData jarEntryData;
@@ -71,19 +69,26 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private JarEntryName jarEntryName;
 
-	protected JarURLConnection(URL url, JarFile jarFile) throws MalformedURLException {
+	protected JarURLConnection(URL url, JarFile jarFile) throws IOException {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
-		this.jarFile = jarFile;
-		String spec = url.getFile();
-		int separator = spec.lastIndexOf(SEPARATOR);
-		if (separator == -1) {
-			throw new MalformedURLException("no " + SEPARATOR + " found in url spec:"
-					+ spec);
+		String spec = url.getFile().substring(jarFile.getUrl().getFile().length());
+		int separator;
+		while ((separator = spec.indexOf(SEPARATOR)) > 0) {
+			jarFile = getNestedJarFile(jarFile, spec.substring(0, separator));
+			spec = spec.substring(separator + SEPARATOR.length());
 		}
-		this.jarFileUrlSpec = spec.substring(0, separator);
-		this.jarEntryName = getJarEntryName(spec.substring(separator + 2));
+		this.jarFile = jarFile;
+		this.jarEntryName = getJarEntryName(spec);
+	}
+
+	private JarFile getNestedJarFile(JarFile jarFile, String name) throws IOException {
+		JarEntry jarEntry = jarFile.getJarEntry(name);
+		if (jarEntry == null) {
+			throwFileNotFound(jarEntry, jarFile);
+		}
+		return jarFile.getNestedJarFile(jarEntry);
 	}
 
 	private JarEntryName getJarEntryName(String spec) {
@@ -99,14 +104,18 @@ class JarURLConnection extends java.net.JarURLConnection {
 			this.jarEntryData = this.jarFile.getJarEntryData(this.jarEntryName
 					.asAsciiBytes());
 			if (this.jarEntryData == null) {
-				if (Boolean.TRUE.equals(useFastExceptions.get())) {
-					throw FILE_NOT_FOUND_EXCEPTION;
-				}
-				throw new FileNotFoundException("JAR entry " + this.jarEntryName
-						+ " not found in " + this.jarFile.getName());
+				throwFileNotFound(this.jarEntryName, this.jarFile);
 			}
 		}
 		this.connected = true;
+	}
+
+	private void throwFileNotFound(Object entry, JarFile jarFile) throws FileNotFoundException {
+		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+			throw FILE_NOT_FOUND_EXCEPTION;
+		}
+		throw new FileNotFoundException("JAR entry " + entry + " not found in "
+				+ jarFile.getName());
 	}
 
 	@Override
@@ -135,10 +144,14 @@ class JarURLConnection extends java.net.JarURLConnection {
 
 	private URL buildJarFileUrl() {
 		try {
-			if (this.jarFileUrlSpec.indexOf(SEPARATOR) == -1) {
-				return new URL(this.jarFileUrlSpec);
+			String spec = this.jarFile.getUrl().getFile();
+			if (spec.endsWith(SEPARATOR)) {
+				spec = spec.substring(0, spec.length() - SEPARATOR.length());
 			}
-			return new URL("jar:" + this.jarFileUrlSpec);
+			if (spec.indexOf(SEPARATOR) == -1) {
+				return new URL(spec);
+			}
+			return new URL("jar:" + spec);
 		}
 		catch (MalformedURLException ex) {
 			throw new IllegalStateException(ex);

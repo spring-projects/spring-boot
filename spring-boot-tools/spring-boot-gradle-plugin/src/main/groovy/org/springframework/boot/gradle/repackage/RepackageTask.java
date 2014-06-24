@@ -18,8 +18,6 @@ package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.gradle.api.Action;
@@ -29,8 +27,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
-import org.springframework.boot.loader.tools.LibraryCallback;
-import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.boot.loader.tools.Repackager;
 import org.springframework.util.FileCopyUtils;
 
@@ -101,27 +97,11 @@ public class RepackageTask extends DefaultTask {
 		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
 	}
 
-	public File[] getDependencies() {
-		ProjectLibraries libraries = getLibraries();
-		final List<File> files = new ArrayList<File>();
-		try {
-			libraries.doWithLibraries(new LibraryCallback() {
-				@Override
-				public void library(File file, LibraryScope scope) throws IOException {
-					files.add(file);
-				}
-			});
-		} catch (IOException ex) {
-			throw new IllegalStateException("Cannot retrieve dependencies", ex);
-		}
-		return files.toArray(new File[files.size()]);
-	}
-
-	private ProjectLibraries getLibraries() {
+	public ProjectLibraries getLibraries() {
 		Project project = getProject();
 		SpringBootPluginExtension extension = project.getExtensions().getByType(
 				SpringBootPluginExtension.class);
-		ProjectLibraries libraries = new ProjectLibraries(project);
+		ProjectLibraries libraries = new ProjectLibraries(project, extension);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}

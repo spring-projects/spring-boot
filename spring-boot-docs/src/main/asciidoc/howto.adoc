@@ -1618,6 +1618,50 @@ For Gradle users the steps are similar. Example:
 
 
 
+[[howto-extract-specific-libraries-when-an-executable-jar-runs]]
+=== Extract specific libraries when an executable jar runs
+Most nested libraries in an executable jar do not need to be unpacked in order to run,
+however, certain libraries can have problems. For example, JRuby includes its own nested
+jar support which assumes that the `jruby-complete.jar` is always directly available as a
+file in its own right.
+
+To deal with any problematic libraries, you can flag that specific nested jars should be
+automatically unpacked to the ``temp folder'' when the executable jar first runs.
+
+For example, to indicate that JRuby should be flagged for unpack using the Maven Plugin
+you would add the following configuration:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<requiresUnpack>
+						<dependency>
+							<groupId>org.jruby</groupId>
+							<artifactId>jruby-complete</artifactId>
+						</dependency>
+					</requiresUnpack>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+And to do that same with Gradle:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	springBoot  {
+		requiresUnpack = ['org.jruby:jruby-complete']
+	}
+----
+
+
+
 [[howto-create-a-nonexecutable-jar]]
 === Create a non-executable JAR with exclusions
 Often if you have an executable and a non-executable jar as build products, the executable

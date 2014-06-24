@@ -511,6 +511,11 @@ The following configuration options are available:
 |`layout`
 |The type of archive, corresponding to how the dependencies are laid out inside
  (defaults to a guess based on the archive type).
+
+|`requiresUnpack`
+|A list of dependencies (in the form ``groupId:artifactId'' that must be unpacked from
+ fat jars in order to run. Items are still packaged into the fat jar, but they will be
+ automatically unpacked when it runs.
 |===
 
 
@@ -619,7 +624,7 @@ Here is a typical example repackage:
 				@Override
 				public void doWithLibraries(LibraryCallback callback) throws IOException {
 					// Build system specific implementation, callback for each dependency
-					// callback.library(nestedFile, LibraryScope.COMPILE);
+					// callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 				}
 			});
 ----

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.loader.tools;
+import java.io.*;
+import org.springframework.boot.maven.*;
 
-import java.io.File;
-import java.io.IOException;
-
-/**
- * Callback interface used to iterate {@link Libraries}.
- * 
- * @author Phillip Webb
- */
-public interface LibraryCallback {
-
-	/**
-	 * Callback to for a single library backed by a {@link File}.
-	 * @param library the library
-	 * @throws IOException
-	 */
-	void library(Library library) throws IOException;
-
-}
+File f = new File( basedir, "target/jar-with-unpack-0.0.1.BUILD-SNAPSHOT.jar");
+new Verify.JarArchiveVerification(f, Verify.SAMPLE_APP) {
+	@Override
+	protected void verifyZipEntries(Verify.ArchiveVerifier verifier) throws Exception {
+		super.verifyZipEntries(verifier)
+		verifier.hasUnpackEntry("lib/spring-core-4.0.5.RELEASE.jar")
+		verifier.hasNonUnpackEntry("lib/spring-context-4.0.5.RELEASE.jar")
+	}
+}.verify();

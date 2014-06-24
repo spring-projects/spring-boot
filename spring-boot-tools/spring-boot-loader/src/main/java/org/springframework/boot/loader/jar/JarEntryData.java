@@ -93,7 +93,13 @@ public final class JarEntryData {
 		return inputStream;
 	}
 
-	RandomAccessData getData() throws IOException {
+	/**
+	 * @return the underlying {@link RandomAccessData} for this entry. Generally this
+	 * method should not be called directly and instead data should be accessed via
+	 * {@link JarFile#getInputStream(ZipEntry)}.
+	 * @throws IOException
+	 */
+	public RandomAccessData getData() throws IOException {
 		if (this.data == null) {
 			// aspectjrt-1.7.4.jar has a different ext bytes length in the
 			// local directory to the central directory. We need to re-read

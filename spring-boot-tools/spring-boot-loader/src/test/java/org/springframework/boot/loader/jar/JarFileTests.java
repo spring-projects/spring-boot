@@ -408,4 +408,16 @@ public class JarFileTests {
 		getEntries();
 		getNestedJarFile();
 	}
+
+	@Test
+	public void cannotLoadMissingJar() throws Exception {
+		// relates to gh-1070
+		JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile
+				.getEntry("nested.jar"));
+		URL nestedUrl = nestedJarFile.getUrl();
+		URL url = new URL(nestedUrl, nestedJarFile.getUrl() + "missing.jar!/3.dat");
+		this.thrown.expect(FileNotFoundException.class);
+		url.openConnection().getInputStream();
+	}
+
 }

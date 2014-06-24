@@ -35,6 +35,10 @@ import java.util.zip.ZipEntry;
 public abstract class TestJarCreator {
 
 	public static void createTestJar(File file) throws Exception {
+		createTestJar(file, false);
+	}
+
+	public static void createTestJar(File file, boolean unpackNested) throws Exception {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		JarOutputStream jarOutputStream = new JarOutputStream(fileOutputStream);
 		try {
@@ -50,6 +54,9 @@ public abstract class TestJarCreator {
 			byte[] nestedJarData = getNestedJarData();
 			nestedEntry.setSize(nestedJarData.length);
 			nestedEntry.setCompressedSize(nestedJarData.length);
+			if (unpackNested) {
+				nestedEntry.setComment("UNPACK:0000000000000000000000000000000000000000");
+			}
 			CRC32 crc32 = new CRC32();
 			crc32.update(nestedJarData);
 			nestedEntry.setCrc(crc32.getValue());
