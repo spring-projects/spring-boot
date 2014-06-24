@@ -105,6 +105,9 @@
 				<skipTests>true</skipTests>
 			</properties>
 			<modules>
+				<module>spring-boot-parent</module>
+				<module>spring-boot-dependencies</module>
+				<module>spring-boot-versions</module>
 				<module>spring-boot-tools</module>
 			</modules>
 			<build>
