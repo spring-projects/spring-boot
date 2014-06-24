@@ -90,10 +90,9 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 	@Override
 	public void finished(ConfigurableApplicationContext context, Throwable exception) {
 		if (exception != null) {
-			publishEvent(new ApplicationFailedEvent(this.application, this.args, context,
-					exception));
-		}
-		else {
+			ApplicationFailedEvent event = new ApplicationFailedEvent(this.application,
+					this.args, context, exception);
+			publishEvent(event);
 		}
 	}
 

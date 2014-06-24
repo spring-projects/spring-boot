@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.core.Ordered;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Listener that closes the application context if its parent is closed. It listens for
@@ -77,6 +78,9 @@ public class ParentContextCloserApplicationListener implements
 		return new ContextCloserListener(child);
 	}
 
+	/**
+	 * {@link ApplicationListener} to close the context.
+	 */
 	protected static class ContextCloserListener implements
 			ApplicationListener<ContextClosedEvent> {
 
@@ -99,31 +103,23 @@ public class ParentContextCloserApplicationListener implements
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime
-					* result
-					+ ((this.childContext.get() == null) ? 0 : this.childContext.get()
-							.hashCode());
-			return result;
+			return ObjectUtils.nullSafeHashCode(this.childContext.get());
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (this == obj)
+			if (this == obj) {
 				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ContextCloserListener other = (ContextCloserListener) obj;
-			if (this.childContext.get() == null) {
-				if (other.childContext.get() != null)
-					return false;
 			}
-			else if (!this.childContext.get().equals(other.childContext.get()))
+			if (obj == null) {
 				return false;
-			return true;
+			}
+			if (obj instanceof ContextCloserListener) {
+				ContextCloserListener other = (ContextCloserListener) obj;
+				return ObjectUtils.nullSafeEquals(this.childContext.get(),
+						other.childContext.get());
+			}
+			return super.equals(obj);
 		}
 
 	}
