@@ -18,7 +18,10 @@ package org.springframework.boot.builder;
 
 import java.lang.ref.WeakReference;
 
+import org.springframework.beans.BeansException;
 import org.springframework.boot.builder.ParentContextApplicationContextInitializer.ParentContextAvailableEvent;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
@@ -33,11 +36,21 @@ import org.springframework.core.Ordered;
  * @author Eric Bottard
  */
 public class ParentContextCloserApplicationListener implements
-		ApplicationListener<ParentContextAvailableEvent>, Ordered {
+		ApplicationListener<ParentContextAvailableEvent>, ApplicationContextAware,
+		Ordered {
+
+	private int order = Ordered.LOWEST_PRECEDENCE - 10;
+
+	private ApplicationContext context;
 
 	@Override
 	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE - 10;
+		return this.order;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext context) throws BeansException {
+		this.context = context;
 	}
 
 	@Override
@@ -46,10 +59,12 @@ public class ParentContextCloserApplicationListener implements
 	}
 
 	private void maybeInstallListenerInParent(ConfigurableApplicationContext child) {
-		if (child.getParent() instanceof ConfigurableApplicationContext) {
-			ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
-					.getParent();
-			parent.addApplicationListener(createContextCloserListener(child));
+		if (child == this.context) {
+			if (child.getParent() instanceof ConfigurableApplicationContext) {
+				ConfigurableApplicationContext parent = (ConfigurableApplicationContext) child
+						.getParent();
+				parent.addApplicationListener(createContextCloserListener(child));
+			}
 		}
 	}
 
@@ -80,6 +95,35 @@ public class ParentContextCloserApplicationListener implements
 					&& context.isActive()) {
 				context.close();
 			}
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime
+					* result
+					+ ((this.childContext.get() == null) ? 0 : this.childContext.get()
+							.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ContextCloserListener other = (ContextCloserListener) obj;
+			if (this.childContext.get() == null) {
+				if (other.childContext.get() != null)
+					return false;
+			}
+			else if (!this.childContext.get().equals(other.childContext.get()))
+				return false;
+			return true;
 		}
 
 	}

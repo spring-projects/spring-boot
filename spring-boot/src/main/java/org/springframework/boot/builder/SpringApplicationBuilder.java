@@ -215,7 +215,6 @@ public class SpringApplicationBuilder {
 		this.parent = new SpringApplicationBuilder();
 		this.parent.context = parent;
 		this.parent.running.set(true);
-		initializers(new ParentContextApplicationContextInitializer(parent));
 		return this;
 	}
 

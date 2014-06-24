@@ -19,6 +19,7 @@ package org.springframework.boot.context.event;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationEventMulticaster;
@@ -78,6 +79,9 @@ public class EventPublishingRunListener implements SpringApplicationRunListener 
 	@Override
 	public void contextLoaded(ConfigurableApplicationContext context) {
 		for (ApplicationListener<?> listener : this.application.getListeners()) {
+			if (listener instanceof ApplicationContextAware) {
+				((ApplicationContextAware) listener).setApplicationContext(context);
+			}
 			context.addApplicationListener(listener);
 		}
 		publishEvent(new ApplicationPreparedEvent(this.application, this.args, context));

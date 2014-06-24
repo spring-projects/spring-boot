@@ -53,8 +53,10 @@ public class ParentContextApplicationContextInitializer implements
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.setParent(this.parent);
-		applicationContext.addApplicationListener(EventPublisher.INSTANCE);
+		if (applicationContext != this.parent) {
+			applicationContext.setParent(this.parent);
+			applicationContext.addApplicationListener(EventPublisher.INSTANCE);
+		}
 	}
 
 	private static class EventPublisher implements
@@ -70,7 +72,8 @@ public class ParentContextApplicationContextInitializer implements
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ApplicationContext context = event.getApplicationContext();
-			if (context instanceof ConfigurableApplicationContext) {
+			if (context instanceof ConfigurableApplicationContext
+					&& context == event.getSource()) {
 				context.publishEvent(new ParentContextAvailableEvent(
 						(ConfigurableApplicationContext) context));
 			}
