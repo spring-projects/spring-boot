@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -27,6 +28,8 @@ import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.PluginFeatures;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.util.StringUtils;
 
 /**
@@ -124,9 +127,23 @@ public class RepackagePluginFeatures implements PluginFeatures {
 					+ classifier + "." + StringUtils.getFilenameExtension(outputName);
 			File outputFile = new File(inputFile.getParentFile(), outputName);
 			this.task.getInputs().file(jarTask);
-			this.task.getInputs().file(this.task.getDependencies());
+			addLibraryDependencies(this.task);
 			this.task.getOutputs().file(outputFile);
 			this.task.setOutputFile(outputFile);
+		}
+
+		private void addLibraryDependencies(final RepackageTask task) {
+			try {
+				task.getLibraries().doWithLibraries(new LibraryCallback() {
+					@Override
+					public void library(File file, LibraryScope scope) throws IOException {
+						task.getInputs().file(file);
+					}
+				});
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}
