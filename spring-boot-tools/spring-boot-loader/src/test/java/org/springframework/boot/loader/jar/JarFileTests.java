@@ -97,7 +97,6 @@ public class JarFileTests {
 		assertThat(urlClassLoader.getResource("special/\u00EB.dat"), notNullValue());
 		assertThat(urlClassLoader.getResource("d/9.dat"), notNullValue());
 		jarFile.close();
-
 	}
 
 	@Test

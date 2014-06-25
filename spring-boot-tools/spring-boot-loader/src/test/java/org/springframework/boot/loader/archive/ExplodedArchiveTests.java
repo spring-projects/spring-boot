@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +107,8 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(new File(url.toURI()), equalTo(new File(this.rootFolder.toURI())));
+		assertThat(new File(URLDecoder.decode(url.getFile(), "UTF-8")),
+				equalTo(this.rootFolder));
 	}
 
 	@Test

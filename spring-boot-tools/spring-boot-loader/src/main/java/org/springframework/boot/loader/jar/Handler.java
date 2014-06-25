@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.net.URLStreamHandler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -151,7 +152,7 @@ public class Handler extends URLStreamHandler {
 				throw new IllegalStateException("Not a file URL");
 			}
 			String path = name.substring(FILE_PROTOCOL.length());
-			File file = new File(path);
+			File file = new File(URLDecoder.decode(path, "UTF-8"));
 			Map<File, JarFile> cache = rootFileCache.get();
 			JarFile jarFile = (cache == null ? null : cache.get(file));
 			if (jarFile == null) {
