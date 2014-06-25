@@ -135,13 +135,13 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		setErrorAttributes(request, 500, ex.getMessage());
 		request.setAttribute(ERROR_EXCEPTION, ex);
 		request.setAttribute(ERROR_EXCEPTION_TYPE, type.getName());
-		wrapped.sendError(500, ex.getMessage());
 		forwardToErrorPage(errorPath, request, wrapped, ex);
 	}
 
 	private void forwardToErrorPage(String path, HttpServletRequest request,
-			ServletResponse response, Throwable ex) throws ServletException, IOException {
-		if (!response.isCommitted()) {
+			HttpServletResponse response, Throwable ex) throws ServletException,
+			IOException {
+		if (response.isCommitted()) {
 			String message = "Cannot forward to error page for" + request.getRequestURI()
 					+ " (response is committed), so this response may have "
 					+ "the wrong status code";
@@ -151,6 +151,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			return;
 		}
 		response.reset();
+		response.sendError(500, ex.getMessage());
 		request.getRequestDispatcher(path).forward(request, response);
 	}
 
