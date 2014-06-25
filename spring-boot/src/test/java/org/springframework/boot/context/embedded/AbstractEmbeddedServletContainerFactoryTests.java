@@ -110,7 +110,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
 		this.container.stop();
-		// this.thrown.expect(Exception.class);
+		this.thrown.expect(IOException.class);
 		String response = getResponse(getLocalUrl("/hello"));
 		throw new RuntimeException(response);
 	}
