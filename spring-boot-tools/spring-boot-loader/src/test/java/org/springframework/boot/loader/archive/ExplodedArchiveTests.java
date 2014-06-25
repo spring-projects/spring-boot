@@ -113,9 +113,8 @@ public class ExplodedArchiveTests {
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString(),
-				equalTo("jar:file:" + this.rootFolder.getPath() + File.separator
-						+ "nested.jar!/"));
+		assertThat(nested.getUrl().toString(), equalTo("jar:" + this.rootFolder.toURI()
+				+ "nested.jar!/"));
 	}
 
 	@Test

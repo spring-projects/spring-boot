@@ -70,7 +70,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private final RandomAccessDataFile rootFile;
 
-	private final String name;
+	private final String pathFromRoot;
 
 	private final RandomAccessData data;
 
@@ -99,32 +99,33 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @throws IOException
 	 */
 	JarFile(RandomAccessDataFile file) throws IOException {
-		this(file, file.getFile().getAbsolutePath(), file);
+		this(file, "", file);
 	}
 
 	/**
 	 * Private constructor used to create a new {@link JarFile} either directly or from a
 	 * nested entry.
 	 * @param rootFile the root jar file
-	 * @param name the name of this file
+	 * @param pathFromRoot the name of this file
 	 * @param data the underlying data
 	 * @throws IOException
 	 */
-	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data)
-			throws IOException {
+	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
+			RandomAccessData data) throws IOException {
 		super(rootFile.getFile());
 		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
 		this.rootFile = rootFile;
-		this.name = name;
+		this.pathFromRoot = pathFromRoot;
 		this.data = getArchiveData(endRecord, data);
 		this.entries = loadJarEntries(endRecord);
 	}
 
-	private JarFile(RandomAccessDataFile rootFile, String name, RandomAccessData data,
-			List<JarEntryData> entries, JarEntryFilter... filters) throws IOException {
+	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot,
+			RandomAccessData data, List<JarEntryData> entries, JarEntryFilter... filters)
+			throws IOException {
 		super(rootFile.getFile());
 		this.rootFile = rootFile;
-		this.name = name;
+		this.pathFromRoot = pathFromRoot;
 		this.data = data;
 		this.entries = filterEntries(entries, filters);
 	}
@@ -364,7 +365,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 				return null;
 			}
 		};
-		return new JarFile(this.rootFile, getName() + "!/"
+		return new JarFile(this.rootFile, this.pathFromRoot + "!/"
 				+ sourceEntry.getName().substring(0, sourceName.length() - 1), this.data,
 				this.entries, filter);
 	}
@@ -375,8 +376,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 			throw new IllegalStateException("Unable to open nested compressed entry "
 					+ sourceEntry.getName());
 		}
-		return new JarFile(this.rootFile, getName() + "!/" + sourceEntry.getName(),
-				sourceEntry.getData());
+		return new JarFile(this.rootFile, this.pathFromRoot + "!/"
+				+ sourceEntry.getName(), sourceEntry.getData());
 	}
 
 	/**
@@ -387,7 +388,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 */
 	public synchronized JarFile getFilteredJarFile(JarEntryFilter... filters)
 			throws IOException {
-		return new JarFile(this.rootFile, getName(), this.data, this.entries, filters);
+		return new JarFile(this.rootFile, this.pathFromRoot, this.data, this.entries,
+				filters);
 	}
 
 	private JarEntry getContainedEntry(ZipEntry zipEntry) throws IOException {
@@ -416,7 +418,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 */
 	public URL getUrl() throws MalformedURLException {
 		Handler handler = new Handler(this);
-		String file = "file:" + getName(PathForm.SYSTEM_INDEPENDENT) + "!/";
+		String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
 		return new URL("jar", "", -1, file, handler);
 	}
 
@@ -427,15 +429,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	@Override
 	public String getName() {
-		return getName(PathForm.SYSTEM_DEPENDENT);
-	}
-
-	private String getName(PathForm pathForm) {
-		if (pathForm == PathForm.SYSTEM_INDEPENDENT && File.separatorChar != '/') {
-			return this.name.replace(File.separatorChar, '/');
-		}
-		return this.name;
-
+		String path = this.pathFromRoot;
+		return this.rootFile.getFile() + path;
 	}
 
 	/**
@@ -461,22 +456,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 		catch (Error ex) {
 			// Ignore
 		}
-	}
-
-	/**
-	 * Different forms that paths can be returned.
-	 */
-	private static enum PathForm {
-
-		/**
-		 * Use system dependent paths (i.e. include backslashes on Windows)
-		 */
-		SYSTEM_DEPENDENT,
-
-		/**
-		 * Use system independent paths (i.e. replace backslashes on Windows)
-		 */
-		SYSTEM_INDEPENDENT
 	}
 
 }

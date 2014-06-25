@@ -48,6 +48,8 @@ public class JarFileArchiveTests {
 
 	private JarFileArchive archive;
 
+	private String rootJarFileUrl;
+
 	@Before
 	public void setup() throws Exception {
 		setup(false);
@@ -55,6 +57,8 @@ public class JarFileArchiveTests {
 
 	private void setup(boolean unpackNested) throws Exception {
 		this.rootJarFile = this.temporaryFolder.newFile();
+		this.rootJarFileUrl = rootJarFile.toURI().toString();
+		System.out.println(rootJarFileUrl);
 		TestJarCreator.createTestJar(this.rootJarFile, unpackNested);
 		this.archive = new JarFileArchive(this.rootJarFile);
 	}
@@ -74,7 +78,7 @@ public class JarFileArchiveTests {
 	@Test
 	public void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(url.toString(), equalTo("jar:file:" + this.rootJarFile.getPath()
+		assertThat(url.toString(), equalTo("jar:" + this.rootJarFileUrl
 				+ "!/"));
 	}
 
@@ -83,7 +87,7 @@ public class JarFileArchiveTests {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
 		assertThat(nested.getUrl().toString(),
-				equalTo("jar:file:" + this.rootJarFile.getPath() + "!/nested.jar!/"));
+				equalTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/"));
 	}
 
 	@Test
