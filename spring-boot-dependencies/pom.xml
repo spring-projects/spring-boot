@@ -47,7 +47,7 @@
 		<spring-boot.version>1.1.3.BUILD-SNAPSHOT</spring-boot.version>
 		<!-- Third Party -->
 		<activemq.version>5.9.1</activemq.version>
-		<aspectj.version>1.8.0</aspectj.version>
+		<aspectj.version>1.8.1</aspectj.version>
 		<codahale-metrics.version>3.0.2</codahale-metrics.version>
 		<commons-beanutils.version>1.9.2</commons-beanutils.version>
 		<commons-collections.version>3.2.1</commons-collections.version>
