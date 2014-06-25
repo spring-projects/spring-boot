@@ -61,7 +61,7 @@
 		<gemfire.version>7.0.2</gemfire.version>
 		<gradle.version>1.6</gradle.version>
 		<groovy.version>2.3.3</groovy.version>
-		<h2.version>1.3.175</h2.version>
+		<h2.version>1.3.176</h2.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<hibernate.version>4.3.5.Final</hibernate.version>
 		<hibernate-entitymanager.version>${hibernate.version}</hibernate-entitymanager.version>
