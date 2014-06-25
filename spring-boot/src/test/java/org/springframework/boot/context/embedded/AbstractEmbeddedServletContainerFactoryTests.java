@@ -112,7 +112,7 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container.stop();
 		this.thrown.expect(IOException.class);
 		String response = getResponse(getLocalUrl("/hello"));
-		throw new RuntimeException(response);
+		throw new RuntimeException(this.container.getPort() + " " + response);
 	}
 
 	@Test
