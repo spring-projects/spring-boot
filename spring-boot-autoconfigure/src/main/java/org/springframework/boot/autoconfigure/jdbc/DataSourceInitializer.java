@@ -135,6 +135,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.setContinueOnError(this.properties.isContinueOnError());
 		populator.setSeparator(this.properties.getSeparator());
+		populator.setSqlScriptEncoding(this.properties.getSqlScriptEncoding());
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}
