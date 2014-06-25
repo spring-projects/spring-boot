@@ -117,7 +117,7 @@
 		<tomcat.version>7.0.54</tomcat.version>
 		<velocity.version>1.7</velocity.version>
 		<velocity-tools.version>2.0</velocity-tools.version>
-		<wsdl4j.version>1.6.1</wsdl4j.version>
+		<wsdl4j.version>1.6.3</wsdl4j.version>
 	</properties>
 	<prerequisites>
 		<maven>3.0.0</maven>
