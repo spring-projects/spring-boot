@@ -50,8 +50,6 @@ public class RepackageTask extends DefaultTask {
 
 	private File outputFile;
 
-	private boolean enabled = true;
-
 	public void setCustomConfiguration(String customConfiguration) {
 		this.customConfiguration = customConfiguration;
 	}
@@ -78,14 +76,6 @@ public class RepackageTask extends DefaultTask {
 
 	public void setClassifier(String classifier) {
 		this.classifier = classifier;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
 	}
 
 	@TaskAction
@@ -130,7 +120,7 @@ public class RepackageTask extends DefaultTask {
 
 		@Override
 		public void execute(Jar jarTask) {
-			if (!RepackageTask.this.enabled) {
+			if (!RepackageTask.this.isEnabled()) {
 				getLogger().info("Repackage disabled");
 				return;
 			}
