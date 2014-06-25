@@ -36,6 +36,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * An {@link ApplicationListener} that configures a logging framework depending on what it
@@ -145,6 +146,16 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			if (environment.containsProperty("trace")) {
 				this.springBootLogging = LogLevel.TRACE;
 			}
+		}
+
+		// Logback won't read backslashes so add a clean path for it to use
+		if (!StringUtils.hasLength(System.getProperty("LOG_TEMP"))) {
+			String path = System.getProperty("java.io.tmpdir");
+			path =  StringUtils.cleanPath(path);
+			if(path.endsWith("/")) {
+				path = path.substring(0,path.length()-1);
+			}
+			System.setProperty("LOG_TEMP", path);
 		}
 
 		boolean environmentChanged = false;

@@ -38,6 +38,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.SourceUnit;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Extension of the {@link GroovyClassLoader} with support for obtaining '.class' files as
@@ -222,6 +223,7 @@ public class ExtendedGroovyClassLoader extends GroovyClassLoader {
 		}
 
 		private boolean isGroovyJar(String entry) {
+			entry = StringUtils.cleanPath(entry);
 			for (String jarPrefix : GROOVY_JARS_PREFIXES) {
 				if (entry.contains("/" + jarPrefix + "-")) {
 					return true;
