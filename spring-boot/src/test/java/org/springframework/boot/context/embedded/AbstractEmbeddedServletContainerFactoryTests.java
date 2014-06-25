@@ -109,10 +109,12 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 		this.container = factory
 				.getEmbeddedServletContainer(exampleServletRegistration());
 		this.container.start();
+		int port = this.container.getPort();
 		this.container.stop();
 		this.thrown.expect(IOException.class);
-		String response = getResponse(getLocalUrl("/hello"));
-		throw new RuntimeException(this.container.getPort() + " " + response);
+		String response = getResponse(getLocalUrl(port, "/hello"));
+		throw new RuntimeException("Unexpected response on port " + port + " : "
+				+ response);
 	}
 
 	@Test
@@ -300,6 +302,10 @@ public abstract class AbstractEmbeddedServletContainerFactoryTests {
 
 	protected String getLocalUrl(String resourcePath) {
 		return "http://localhost:" + this.container.getPort() + resourcePath;
+	}
+
+	protected String getLocalUrl(int port, String resourcePath) {
+		return "http://localhost:" + port + resourcePath;
 	}
 
 	protected String getResponse(String url) throws IOException, URISyntaxException {
