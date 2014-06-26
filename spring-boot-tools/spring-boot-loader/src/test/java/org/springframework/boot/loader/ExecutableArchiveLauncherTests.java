@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ExecutableArchiveLauncher}
- *
+ * 
  * @author Andy Wilkinson
  */
 public class ExecutableArchiveLauncherTests {
@@ -74,16 +74,17 @@ public class ExecutableArchiveLauncherTests {
 
 		when(this.javaAgentDetector.isJavaAgentJar(javaAgent)).thenReturn(true);
 
-		doWithTccl(new URLClassLoader(new URL[] { javaAgent, one }), new Callable<Void>() {
+		doWithTccl(new URLClassLoader(new URL[] { javaAgent, one }),
+				new Callable<Void>() {
 
-			@Override
-			public Void call() throws Exception {
-				ClassLoader classLoader = ExecutableArchiveLauncherTests.this.launcher
-						.createClassLoader(new URL[0]);
-				assertClassLoaderUrls(classLoader, new URL[] { one });
-				return null;
-			}
-		});
+					@Override
+					public Void call() throws Exception {
+						ClassLoader classLoader = ExecutableArchiveLauncherTests.this.launcher
+								.createClassLoader(new URL[0]);
+						assertClassLoaderUrls(classLoader, new URL[] { one });
+						return null;
+					}
+				});
 	}
 
 	private void assertClassLoaderUrls(ClassLoader classLoader, URL[] urls) {
@@ -92,7 +93,7 @@ public class ExecutableArchiveLauncherTests {
 	}
 
 	private static final class UnitTestExecutableArchiveLauncher extends
-	ExecutableArchiveLauncher {
+			ExecutableArchiveLauncher {
 
 		public UnitTestExecutableArchiveLauncher(JavaAgentDetector javaAgentDetector) {
 			super(javaAgentDetector);

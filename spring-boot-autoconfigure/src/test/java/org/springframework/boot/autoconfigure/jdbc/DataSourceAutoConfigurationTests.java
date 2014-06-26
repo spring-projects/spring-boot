@@ -16,11 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -50,6 +45,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
  * 
@@ -70,7 +70,7 @@ public class DataSourceAutoConfigurationTests {
 	@After
 	public void restore() {
 		EmbeddedDatabaseConnection.override = null;
-		if (context!=null) {
+		if (context != null) {
 			context.close();
 		}
 	}
@@ -264,6 +264,7 @@ public class DataSourceAutoConfigurationTests {
 			return false;
 		}
 
+		@Override
 		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 			return Mockito.mock(Logger.class);
 		}

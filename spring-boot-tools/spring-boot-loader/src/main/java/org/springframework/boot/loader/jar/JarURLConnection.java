@@ -110,7 +110,8 @@ class JarURLConnection extends java.net.JarURLConnection {
 		this.connected = true;
 	}
 
-	private void throwFileNotFound(Object entry, JarFile jarFile) throws FileNotFoundException {
+	private void throwFileNotFound(Object entry, JarFile jarFile)
+			throws FileNotFoundException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}

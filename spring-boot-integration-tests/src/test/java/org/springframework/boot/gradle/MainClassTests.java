@@ -25,7 +25,7 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
  * Tests for using the Gradle plugin's support for installing artifacts
- *
+ * 
  * @author Dave Syer
  */
 public class MainClassTests {
@@ -42,7 +42,8 @@ public class MainClassTests {
 
 	@Test
 	public void buildFromRunTask() {
-		project.newBuild().forTasks("build").withArguments("-PbootVersion=" + BOOT_VERSION, "--info").run();
+		project.newBuild().forTasks("build")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--info").run();
 	}
 
 }

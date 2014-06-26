@@ -55,8 +55,8 @@ public abstract class GroovyTemplate {
 		return result.toString();
 	}
 
-	private static Template getTemplate(TemplateEngine engine, String name) throws CompilationFailedException,
-			ClassNotFoundException, IOException {
+	private static Template getTemplate(TemplateEngine engine, String name)
+			throws CompilationFailedException, ClassNotFoundException, IOException {
 
 		File file = new File("templates", name);
 		if (file.exists()) {

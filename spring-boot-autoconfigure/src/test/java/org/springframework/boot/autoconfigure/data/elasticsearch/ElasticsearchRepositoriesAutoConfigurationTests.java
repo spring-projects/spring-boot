@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.elasticsearch.CityElasticsearchDbRepository;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.City;
 import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HibernateJpaAutoConfiguration}.
- *
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson

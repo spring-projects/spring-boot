@@ -86,10 +86,11 @@ public class LoggingApplicationListenerTests {
 	}
 
 	private String tmpDir() {
-		String path = this.context.getEnvironment().resolvePlaceholders("${java.io.tmpdir}");
+		String path = this.context.getEnvironment().resolvePlaceholders(
+				"${java.io.tmpdir}");
 		path = path.replace("\\", "/");
-		if(path.endsWith("/")) {
-			path = path.substring(0, path.length()-1);
+		if (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
 		}
 		return path;
 	}

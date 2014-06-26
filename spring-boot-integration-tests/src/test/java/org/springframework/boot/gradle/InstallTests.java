@@ -22,21 +22,21 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
  * Tests for using the Gradle plugin's support for installing artifacts
- *
+ * 
  * @author Dave Syer
  */
 public class InstallTests {
 
 	private ProjectConnection project;
 
-	private static final String BOOT_VERSION = ManagedDependencies.get().find(
-			"spring-boot").getVersion();
+	private static final String BOOT_VERSION = ManagedDependencies.get()
+			.find("spring-boot").getVersion();
 
 	@Test
 	public void cleanInstall() throws Exception {
 		project = new ProjectCreator().createProject("installer");
-		project.newBuild().forTasks("install").withArguments(
-				"-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
+		project.newBuild().forTasks("install")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
 	}
 
 	@Test
@@ -44,8 +44,9 @@ public class InstallTests {
 		project = new ProjectCreator().createProject("install-app");
 		// "install" from the application plugin was renamed "installApp" in Gradle
 		// 1.0
-		project.newBuild().forTasks("installApp").withArguments(
-				"-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info").run();
+		project.newBuild().forTasks("installApp")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace", "--info")
+				.run();
 	}
 
 }

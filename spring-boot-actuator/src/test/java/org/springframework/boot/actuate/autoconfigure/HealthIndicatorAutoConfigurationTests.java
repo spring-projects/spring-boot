@@ -21,11 +21,11 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
-import org.springframework.boot.actuate.health.DataSourceHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
 import org.springframework.boot.actuate.health.VanillaHealthIndicator;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link HealthIndicatorAutoConfiguration}.
- *
+ * 
  * @author Christian Dupuis
  */
 public class HealthIndicatorAutoConfigurationTests {
@@ -149,8 +149,8 @@ public class HealthIndicatorAutoConfigurationTests {
 		Map<String, HealthIndicator> beans = this.context
 				.getBeansOfType(HealthIndicator.class);
 		assertEquals(1, beans.size());
-		assertEquals(DataSourceHealthIndicator.class, beans.values().iterator()
-				.next().getClass());
+		assertEquals(DataSourceHealthIndicator.class, beans.values().iterator().next()
+				.getClass());
 	}
 
 	@Test

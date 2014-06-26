@@ -151,9 +151,9 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		// Logback won't read backslashes so add a clean path for it to use
 		if (!StringUtils.hasLength(System.getProperty("LOG_TEMP"))) {
 			String path = System.getProperty("java.io.tmpdir");
-			path =  StringUtils.cleanPath(path);
-			if(path.endsWith("/")) {
-				path = path.substring(0,path.length()-1);
+			path = StringUtils.cleanPath(path);
+			if (path.endsWith("/")) {
+				path = path.substring(0, path.length() - 1);
 			}
 			System.setProperty("LOG_TEMP", path);
 		}

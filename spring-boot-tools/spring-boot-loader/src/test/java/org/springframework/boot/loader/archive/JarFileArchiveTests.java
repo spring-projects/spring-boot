@@ -78,16 +78,15 @@ public class JarFileArchiveTests {
 	@Test
 	public void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(url.toString(), equalTo("jar:" + this.rootJarFileUrl
-				+ "!/"));
+		assertThat(url.toString(), equalTo("jar:" + this.rootJarFileUrl + "!/"));
 	}
 
 	@Test
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString(),
-				equalTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/"));
+		assertThat(nested.getUrl().toString(), equalTo("jar:" + this.rootJarFileUrl
+				+ "!/nested.jar!/"));
 	}
 
 	@Test

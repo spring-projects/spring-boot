@@ -16,10 +16,6 @@
 
 package sample.actuator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -34,6 +30,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Integration tests for endpoints configuration.
  * 
@@ -42,7 +42,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest({"server.port=0", "server.servletPath=/spring"})
+@IntegrationTest({ "server.port=0", "server.servletPath=/spring" })
 @DirtiesContext
 public class ServletPathSampleActuatorApplicationTests {
 
@@ -53,7 +53,8 @@ public class ServletPathSampleActuatorApplicationTests {
 	public void testErrorPath() throws Exception {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + this.port + "/spring/error", Map.class);
+				.getForEntity("http://localhost:" + this.port + "/spring/error",
+						Map.class);
 		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, entity.getStatusCode());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> body = entity.getBody();

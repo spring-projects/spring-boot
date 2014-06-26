@@ -70,7 +70,8 @@ public abstract class AstUtils {
 			String... annotations) {
 		for (AnnotationNode annotationNode : node.getAnnotations()) {
 			for (String annotation : annotations) {
-				if (PatternMatchUtils.simpleMatch(annotation, annotationNode.getClassNode().getName())) {
+				if (PatternMatchUtils.simpleMatch(annotation, annotationNode
+						.getClassNode().getName())) {
 					return true;
 				}
 			}

@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link SolrHealthIndicator}
- *
+ * 
  * @author Andy Wilkinson
  */
 public class SolrHealthIndicatorTests {

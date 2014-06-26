@@ -16,13 +16,13 @@
 
 package org.springframework.boot.gradle;
 
-import static org.junit.Assert.assertFalse;
-
 import java.io.File;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.Test;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
+
+import static org.junit.Assert.assertFalse;
 
 /**
  * Tests for using the Gradle plugin's support for flat directory repos
