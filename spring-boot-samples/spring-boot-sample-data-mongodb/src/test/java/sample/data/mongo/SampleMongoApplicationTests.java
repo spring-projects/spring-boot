@@ -22,6 +22,7 @@ import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
 
 import com.mongodb.MongoServerSelectionException;
+import com.mongodb.MongoTimeoutException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -55,7 +56,8 @@ public class SampleMongoApplicationTests {
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
 		Throwable root = nested.getRootCause();
-		if (root instanceof MongoServerSelectionException) {
+		if (root instanceof MongoServerSelectionException
+				|| root instanceof MongoTimeoutException) {
 			if (root.getMessage().contains("Unable to connect to any server")) {
 				return true;
 			}
