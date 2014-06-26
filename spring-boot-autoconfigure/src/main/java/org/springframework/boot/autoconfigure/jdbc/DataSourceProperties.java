@@ -56,6 +56,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	private String separator = ";";
 
+	private String sqlScriptEncoding;
+
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
 	private DriverClassNameProvider driverClassNameProvider = new DriverClassNameProvider();
@@ -194,6 +196,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	public void setSeparator(String separator) {
 		this.separator = separator;
+	}
+
+	public String getSqlScriptEncoding() {
+		return sqlScriptEncoding;
+	}
+
+	public void setSqlScriptEncoding(String sqlScriptEncoding) {
+		this.sqlScriptEncoding = sqlScriptEncoding;
 	}
 
 	public ClassLoader getClassLoader() {
