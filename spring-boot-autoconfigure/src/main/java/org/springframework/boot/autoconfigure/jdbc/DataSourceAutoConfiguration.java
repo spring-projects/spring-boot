@@ -58,17 +58,6 @@ public class DataSourceAutoConfiguration {
 
 	public static final String CONFIGURATION_PREFIX = "spring.datasource";
 
-	@Autowired
-	private DataSourceProperties properties;
-
-	@Autowired(required = false)
-	private DataSource dataSource;
-
-	@Bean
-	public DataSourceInitializer dataSourceAutoConfigurationInitializer() {
-		return new DataSourceInitializer();
-	}
-
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
 	 * {@link EmbeddedDataSourceConfiguration}.
@@ -91,6 +80,16 @@ public class DataSourceAutoConfiguration {
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedConfiguration {
 
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(DataSourceInitializer.class)
+	protected static class DataSourceInitializerConfiguration {
+
+		@Bean
+		public DataSourceInitializer dataSourceInitializer() {
+			return new DataSourceInitializer();
+		}
 	}
 
 	@Conditional(DataSourceAutoConfiguration.NonEmbeddedDatabaseCondition.class)

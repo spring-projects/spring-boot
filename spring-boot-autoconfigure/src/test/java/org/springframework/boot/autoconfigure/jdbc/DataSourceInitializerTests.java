@@ -24,8 +24,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ClassUtils;
@@ -65,6 +70,19 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
+	}
+
+	@Test
+	public void testTwoDataSources() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"datasource.one.url=jdbc:hsqldb:mem:/one",
+				"datasource.one.driverClassName=org.hsqldb.Driver",
+				"datasource.two.url=jdbc:hsqldb:mem:/two",
+				"datasource.two.driverClassName=org.hsqldb.Driver");
+		this.context.register(TwoDataSources.class, DataSourceInitializer.class,
+				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
+		this.context.refresh();
+		assertEquals(2, this.context.getBeanNamesForType(DataSource.class).length);
 	}
 
 	@Test
@@ -123,6 +141,25 @@ public class DataSourceInitializerTests {
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
 		assertEquals(new Integer(0),
 				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class TwoDataSources {
+
+		@Bean
+		@Primary
+		@ConfigurationProperties(prefix = "datasource.one")
+		public DataSource oneDataSource() {
+			return DataSourceBuilder.create().build();
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "datasource.two")
+		public DataSource twoDataSource() {
+			return DataSourceBuilder.create().build();
+		}
+
 	}
 
 }
