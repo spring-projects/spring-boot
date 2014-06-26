@@ -84,6 +84,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 
 	private SoftReference<Manifest> manifest;
 
+	private URL url;
+
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
 	 * @param file the root jar file
@@ -417,9 +419,12 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryD
 	 * @throws MalformedURLException
 	 */
 	public URL getUrl() throws MalformedURLException {
-		Handler handler = new Handler(this);
-		String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
-		return new URL("jar", "", -1, file, handler);
+		if (this.url == null) {
+			Handler handler = new Handler(this);
+			String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
+			this.url = new URL("jar", "", -1, file, handler);
+		}
+		return this.url;
 	}
 
 	@Override
