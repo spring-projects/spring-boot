@@ -59,6 +59,9 @@ public class SampleMongoApplicationTests {
 			if (root.getMessage().contains("Unable to connect to any server")) {
 				return true;
 			}
+			if (root.getMessage().contains("Timed out while waiting for a server")) {
+				return true;
+			}
 		}
 		return false;
 	}
