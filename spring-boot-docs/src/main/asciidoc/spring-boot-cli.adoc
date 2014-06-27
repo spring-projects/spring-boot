@@ -343,7 +343,7 @@ external features like middleware declarations. For example:
 
 	beans {
 		service(SharedService) {
-			message "Hello World"
+			message = "Hello World"
 		}
 	}
 ----
