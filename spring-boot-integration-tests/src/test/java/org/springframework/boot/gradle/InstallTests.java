@@ -40,6 +40,13 @@ public class InstallTests {
 	}
 
 	@Test
+	public void cleanInstallVersionManagement() throws Exception {
+		project = new ProjectCreator().createProject("installer-io");
+		project.newBuild().forTasks("install")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "--stacktrace").run();
+	}
+
+	@Test
 	public void cleanInstallApp() throws Exception {
 		project = new ProjectCreator().createProject("install-app");
 		// "install" from the application plugin was renamed "installApp" in Gradle

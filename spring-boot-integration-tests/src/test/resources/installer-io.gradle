@@ -1,0 +1,41 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'spring-boot'
+
+group = 'installer'
+version = '0.0.0'
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+          parent { 
+            groupId 'org.springframework.boot'
+            artifactId 'spring-boot-starter-parent'
+            version "${project.bootVersion}"
+          }
+        }
+    }
+}
+
+jar {
+	baseName =  'installer'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	versionManagement 'io.spring.platform:platform-versions:1.0.0.RELEASE@properties'
+	compile "org.springframework.boot:spring-boot-starter"
+}
