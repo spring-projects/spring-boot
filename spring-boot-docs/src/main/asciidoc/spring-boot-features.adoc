@@ -592,7 +592,7 @@ be marked with `@Profile` to limit when it is loaded:
 ----
 	@Configuration
 	@Profile("production")
-	public class ProductionConfiguraiton {
+	public class ProductionConfiguration {
 
 		// ...
 
