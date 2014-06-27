@@ -833,10 +833,6 @@ Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`W
 [[howto-logging]]
 == Logging
 
-
-
-[[howto-configure-logback-for-loggin]]
-=== Configure Logback for logging
 Spring Boot has no mandatory logging dependence, except for the `commons-logging` API, of
 which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
 you need to include it, and some bindings for `commons-logging` on the classpath. The
@@ -854,10 +850,32 @@ For example, using Maven:
 ----
 
 Spring Boot has a `LoggingSystem` abstraction that attempts to configure logging based on
-the content of the classpath. If Logback is available it is the first choice. So if you
-put a `logback.xml` in the root of your classpath it will be picked up from there. Spring
-Boot provides a default base configuration that you can include if you just want to set
-levels, e.g.
+the content of the classpath. If Logback is available it is the first choice.
+
+If the only change you need to make to logging is to set the levels of various loggers
+then you can do that in `application.properties` using the "logging.level" prefix, e.g.
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+logging.level.org.springframework.web: DEBUG
+logging.level.org.hibernate: ERROR
+----
+
+You can also set the location of a file to log to (in addition to the console) using
+"logging.file". 
+
+To configure the more fine grained settings of a logging system you need to use the native configuration
+format supported by the `LoggingSystem` in question. By default Spring Boot picks up the native
+configuration from its default location for the system (e.g. `classpath:/logback.xml` for Logback), but
+you can set the location of the config file using the "logging.config" property.
+
+
+[[howto-configure-logback-for-loggin]]
+=== Configure Logback for logging
+If you put a `logback.xml` in the root of your classpath it will be
+picked up from there. Spring Boot provides a default base
+configuration that you can include if you just want to set levels,
+e.g.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----

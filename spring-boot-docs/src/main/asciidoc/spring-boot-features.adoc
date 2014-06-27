@@ -724,6 +724,18 @@ using a `logging.file` property.
 
 As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by default.
 
+[[boot-features-custom-log-levels]]
+=== Log Levels
+
+All the supported logging systems can have the logger levels set in the Spring `Environment`
+(so for example in `application.properties`) using "logging.level.*=LEVEL" where "LEVEL" is one of 
+TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. Example `application.properties`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+logging.level.org.springframework.web: DEBUG
+logging.level.org.hibernate: ERROR
+----
 
 
 [[boot-features-custom-log-configuration]]

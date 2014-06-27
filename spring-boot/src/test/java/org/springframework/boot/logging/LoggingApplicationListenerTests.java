@@ -188,6 +188,42 @@ public class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	public void parseLevels() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=TRACE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.trace("testattrace");
+		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
+		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+	}
+
+	@Test
+	public void parseLevelsFails() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=GARBAGE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString(),
+				containsString("Cannot set level: GARBAGE"));
+	}
+
+	@Test
+	public void parseLevelsNone() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=OFF");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.fatal("testatfatal");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString(), not(containsString("testatfatal")));
+	}
+
+	@Test
 	public void parseArgsDisabled() throws Exception {
 		this.initializer.setParseArgs(false);
 		EnvironmentTestUtils.addEnvironment(this.context, "debug");

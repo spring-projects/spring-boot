@@ -19,11 +19,13 @@ package org.springframework.boot.logging;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
@@ -180,7 +182,6 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			try {
 				ResourceUtils.getURL(value).openStream().close();
 				system.initialize(value);
-				return;
 			}
 			catch (Exception ex) {
 				// Swallow exception and continue
@@ -188,10 +189,31 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			this.logger.warn("Logging environment value '" + value
 					+ "' cannot be opened and will be ignored");
 		}
+		else {
 
-		system.initialize();
-		if (this.springBootLogging != null) {
-			initializeLogLevel(system, this.springBootLogging);
+			system.initialize();
+			if (this.springBootLogging != null) {
+				initializeLogLevel(system, this.springBootLogging);
+			}
+
+		}
+
+		setLogLevels(system, environment);
+
+	}
+
+	public void setLogLevels(LoggingSystem system, Environment environment) {
+		Map<String, Object> levels = new RelaxedPropertyResolver(environment)
+				.getSubProperties("logging.level.");
+		for (Entry<String, Object> entry : levels.entrySet()) {
+			try {
+				LogLevel level = LogLevel.valueOf(entry.getValue().toString());
+				system.setLogLevel(entry.getKey(), level);
+			}
+			catch (RuntimeException e) {
+				this.logger.error("Cannot set level: " + entry.getValue() + " for '"
+						+ entry.getKey() + "'");
+			}
 		}
 	}
 
