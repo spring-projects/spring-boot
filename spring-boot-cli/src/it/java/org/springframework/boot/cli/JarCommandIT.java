@@ -60,6 +60,23 @@ public class JarCommandIT {
 	}
 
 	@Test
+	public void jarCreationWithGrabResolver() throws Exception {
+		File jar = new File("target/test-app.jar");
+		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),
+				"bad.groovy");
+		invocation.await();
+		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
+		assertTrue(jar.exists());
+
+		Process process = new JavaExecutable().processBuilder("-jar",
+				jar.getAbsolutePath()).start();
+		invocation = new Invocation(process);
+		invocation.await();
+
+		assertThat(invocation.getErrorOutput(), equalTo(""));
+	}
+
+	@Test
 	public void jarCreation() throws Exception {
 		File jar = new File("target/test-app.jar");
 		Invocation invocation = this.cli.invoke("jar", jar.getAbsolutePath(),

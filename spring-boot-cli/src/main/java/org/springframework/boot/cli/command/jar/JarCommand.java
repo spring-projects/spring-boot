@@ -35,6 +35,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
@@ -278,6 +279,21 @@ public class JarCommand extends OptionParsingCommand {
 				classNode.addAnnotation(annotation);
 				// We only need to do it at most once
 				break;
+			}
+			// Remove GrabReolvers because all the dependencies are local now
+			removeGrabResolver(module.getClasses());
+			removeGrabResolver(module.getImports());
+		}
+
+		private void removeGrabResolver(List<? extends AnnotatedNode> nodes) {
+			for (AnnotatedNode classNode : nodes) {
+				List<AnnotationNode> annotations = classNode.getAnnotations();
+				for (AnnotationNode node : new ArrayList<AnnotationNode>(annotations)) {
+					if (node.getClassNode().getNameWithoutPackage()
+							.equals("GrabResolver")) {
+						annotations.remove(node);
+					}
+				}
 			}
 		}
 
