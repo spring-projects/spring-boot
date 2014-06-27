@@ -67,8 +67,17 @@ public class SpringApplicationRunner {
 		this.sources = sources.clone();
 		this.args = args.clone();
 		this.compiler = new GroovyCompiler(configuration);
-		if (configuration.getLogLevel().intValue() <= Level.FINE.intValue()) {
+		int level = configuration.getLogLevel().intValue();
+		if (level <= Level.FINER.intValue()) {
 			System.setProperty("groovy.grape.report.downloads", "true");
+			System.setProperty("trace", "true");
+		}
+		else if (level <= Level.FINE.intValue()) {
+			System.setProperty("debug", "true");
+		}
+		else if (level == Level.OFF.intValue()) {
+			System.setProperty("spring.main.showBanner", "false");
+			System.setProperty("logging.level.ROOT", "OFF");
 		}
 	}
 

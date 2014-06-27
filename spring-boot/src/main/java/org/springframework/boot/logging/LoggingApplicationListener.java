@@ -206,13 +206,17 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 		Map<String, Object> levels = new RelaxedPropertyResolver(environment)
 				.getSubProperties("logging.level.");
 		for (Entry<String, Object> entry : levels.entrySet()) {
+			String name = entry.getKey();
 			try {
 				LogLevel level = LogLevel.valueOf(entry.getValue().toString());
-				system.setLogLevel(entry.getKey(), level);
+				if (name.equalsIgnoreCase("root")) {
+					name = null;
+				}
+				system.setLogLevel(name, level);
 			}
 			catch (RuntimeException e) {
 				this.logger.error("Cannot set level: " + entry.getValue() + " for '"
-						+ entry.getKey() + "'");
+						+ name + "'");
 			}
 		}
 	}
