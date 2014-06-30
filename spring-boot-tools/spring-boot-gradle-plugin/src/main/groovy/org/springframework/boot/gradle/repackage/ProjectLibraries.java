@@ -112,7 +112,7 @@ class ProjectLibraries implements Libraries {
 		}
 		Set<ResolvedArtifact> result = new LinkedHashSet<ResolvedArtifact>();
 		for (ResolvedArtifact artifact : source) {
-			if (!toRemove.contains(artifact.getFile())) {
+			if (!filesToRemove.contains(artifact.getFile())) {
 				result.add(artifact);
 			}
 		}
