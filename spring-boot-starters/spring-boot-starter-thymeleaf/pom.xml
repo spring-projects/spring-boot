@@ -44,9 +44,5 @@
 			<groupId>nz.net.ultraq.thymeleaf</groupId>
 			<artifactId>thymeleaf-layout-dialect</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.github.mxab.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-data-attribute</artifactId>
-		</dependency>
 	</dependencies>
 </project>

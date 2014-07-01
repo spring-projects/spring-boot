@@ -1,6 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org"
   xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-  xmlns:data="https://github.com/mxab/thymeleaf-extras-data-attribute"
   layout:decorator="layout">
   <head>
     <title>Messages : View</title>
@@ -23,7 +22,7 @@
         <dt>ID</dt>
         <dd id="id" th:text="${message.id}">123</dd>
         <dt>Date</dt>
-        <dd id="created" data:created="${message.created.timeInMillis}"
+        <dd id="created"
             th:text="${#calendars.format(message.created)}">
           July 11, 2012 2:17:16 PM CDT
         </dd>
