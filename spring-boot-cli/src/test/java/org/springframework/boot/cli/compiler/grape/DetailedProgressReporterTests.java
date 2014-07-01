@@ -26,9 +26,17 @@ import org.eclipse.aether.transfer.TransferResource;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
+/**
+ * Tests for {@link DetailedProgressReporter}.
+ * 
+ * @author Andy Wilkinson
+ */
 public final class DetailedProgressReporterTests {
 
 	private static final String REPOSITORY = "http://my.repository.com/";
@@ -63,13 +71,13 @@ public final class DetailedProgressReporterTests {
 	public void downloaded() throws InterruptedException {
 		// Ensure some transfer time
 		Thread.sleep(100);
-
 		TransferEvent completedEvent = new TransferEvent.Builder(this.session,
 				this.resource).addTransferredBytes(4096).build();
 		this.session.getTransferListener().transferSucceeded(completedEvent);
-
-		assertTrue(new String(this.baos.toByteArray()).matches(String.format(
-				"Downloaded: %s%s \\(4KB at [0-9]+(\\.|,)[0-9]KB/sec\\)\\n", REPOSITORY,
-				ARTIFACT)));
+		String message = new String(this.baos.toByteArray()).replace("\\", "/");
+		assertThat(message, startsWith("Downloaded: " + REPOSITORY + ARTIFACT));
+		assertThat(message, containsString("4KB at"));
+		assertThat(message, containsString("KB/sec"));
+		assertThat(message, endsWith("\n"));
 	}
 }

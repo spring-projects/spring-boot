@@ -24,8 +24,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ClassUtils;
@@ -65,6 +70,19 @@ public class DataSourceInitializerTests {
 				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
 		this.context.refresh();
 		assertEquals(0, this.context.getBeanNamesForType(DataSource.class).length);
+	}
+
+	@Test
+	public void testTwoDataSources() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"datasource.one.url=jdbc:hsqldb:mem:/one",
+				"datasource.one.driverClassName=org.hsqldb.Driver",
+				"datasource.two.url=jdbc:hsqldb:mem:/two",
+				"datasource.two.driverClassName=org.hsqldb.Driver");
+		this.context.register(TwoDataSources.class, DataSourceInitializer.class,
+				PropertyPlaceholderAutoConfiguration.class, DataSourceProperties.class);
+		this.context.refresh();
+		assertEquals(2, this.context.getBeanNamesForType(DataSource.class).length);
 	}
 
 	@Test
@@ -123,6 +141,52 @@ public class DataSourceInitializerTests {
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
 		assertEquals(new Integer(0),
 				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
+	}
+
+	@Test
+	public void testDataSourceInitializedWithExplicitSqlScriptEncoding() throws Exception {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(
+				this.context,
+				"spring.datasource.initialize:true",
+				"spring.datasource.sqlScriptEncoding:UTF-8",
+				"spring.datasource.schema:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"encoding-schema.sql"),
+				"spring.datasource.data:"
+						+ ClassUtils.addResourcePathToPackagePath(getClass(),
+								"encoding-data.sql"));
+		this.context.refresh();
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
+		assertNotNull(dataSource);
+		JdbcOperations template = new JdbcTemplate(dataSource);
+		assertEquals(new Integer(2),
+				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
+		assertEquals("bar",
+				template.queryForObject("SELECT name from BAR WHERE id=1", String.class));
+		assertEquals("ばー",
+				template.queryForObject("SELECT name from BAR WHERE id=2", String.class));
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	protected static class TwoDataSources {
+
+		@Bean
+		@Primary
+		@ConfigurationProperties(prefix = "datasource.one")
+		public DataSource oneDataSource() {
+			return DataSourceBuilder.create().build();
+		}
+
+		@Bean
+		@ConfigurationProperties(prefix = "datasource.two")
+		public DataSource twoDataSource() {
+			return DataSourceBuilder.create().build();
+		}
+
 	}
 
 }

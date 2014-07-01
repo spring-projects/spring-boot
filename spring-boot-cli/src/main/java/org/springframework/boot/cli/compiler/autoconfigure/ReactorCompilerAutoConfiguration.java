@@ -46,7 +46,7 @@ public class ReactorCompilerAutoConfiguration extends CompilerAutoConfiguration 
 	public void applyImports(ImportCustomizer imports) {
 		imports.addImports("reactor.core.Reactor", "reactor.core.spec.Reactors",
 				"reactor.core.Observable", "reactor.event.Event",
-				"reactor.function.Functions", "reactor.function.Predicates", 
+				"reactor.function.Functions", "reactor.function.Predicates",
 				"reactor.function.Suppliers",
 				"reactor.spring.context.annotation.Consumer",
 				"reactor.spring.context.annotation.Selector",

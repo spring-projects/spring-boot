@@ -207,8 +207,7 @@ public class JmsAutoConfigurationTests {
 			Class<?>... additionalClasses) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(additionalClasses);
-		context.register(ActiveMQAutoConfiguration.class,
-				JmsAutoConfiguration.class);
+		context.register(ActiveMQAutoConfiguration.class, JmsAutoConfiguration.class);
 		return context;
 	}
 

@@ -128,6 +128,13 @@ public final class AsciiBytes {
 		return append(string.getBytes(UTF_8));
 	}
 
+	public AsciiBytes append(AsciiBytes asciiBytes) {
+		if (asciiBytes == null || asciiBytes.length() == 0) {
+			return this;
+		}
+		return append(asciiBytes.bytes);
+	}
+
 	public AsciiBytes append(byte[] bytes) {
 		if (bytes == null || bytes.length == 0) {
 			return this;

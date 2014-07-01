@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.context.embedded.AbstractConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ErrorPage;
@@ -54,6 +56,8 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
 		Filter, NonEmbeddedServletContainerFactory {
+
+	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
 	// From RequestDispatcher but not referenced to remain compatible with Servlet 2.5
 
@@ -131,8 +135,24 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 		setErrorAttributes(request, 500, ex.getMessage());
 		request.setAttribute(ERROR_EXCEPTION, ex);
 		request.setAttribute(ERROR_EXCEPTION_TYPE, type.getName());
-		wrapped.sendError(500, ex.getMessage());
-		request.getRequestDispatcher(errorPath).forward(request, response);
+		forwardToErrorPage(errorPath, request, wrapped, ex);
+	}
+
+	private void forwardToErrorPage(String path, HttpServletRequest request,
+			HttpServletResponse response, Throwable ex) throws ServletException,
+			IOException {
+		if (response.isCommitted()) {
+			String message = "Cannot forward to error page for" + request.getRequestURI()
+					+ " (response is committed), so this response may have "
+					+ "the wrong status code";
+			// User might see the error page without all the data here but throwing the
+			// exception isn't going to help anyone (we'll log it to be on the safe side)
+			logger.error(message, ex);
+			return;
+		}
+		response.reset();
+		response.sendError(500, ex.getMessage());
+		request.getRequestDispatcher(path).forward(request, response);
 	}
 
 	private String getErrorPath(Map<Integer, String> map, Integer status) {

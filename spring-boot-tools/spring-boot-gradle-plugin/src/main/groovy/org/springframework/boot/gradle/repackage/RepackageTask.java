@@ -24,6 +24,7 @@ import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Repackager;
@@ -53,6 +54,10 @@ public class RepackageTask extends DefaultTask {
 		this.customConfiguration = customConfiguration;
 	}
 
+	public Object getWithJarTask() {
+		return withJarTask;
+	}
+
 	public void setWithJarTask(Object withJarTask) {
 		this.withJarTask = withJarTask;
 	}
@@ -78,19 +83,29 @@ public class RepackageTask extends DefaultTask {
 		Project project = getProject();
 		SpringBootPluginExtension extension = project.getExtensions().getByType(
 				SpringBootPluginExtension.class);
-		ProjectLibraries libraries = new ProjectLibraries(project);
+		ProjectLibraries libraries = getLibraries();
+		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
+	}
+
+	public ProjectLibraries getLibraries() {
+		Project project = getProject();
+		SpringBootPluginExtension extension = project.getExtensions().getByType(
+				SpringBootPluginExtension.class);
+		ProjectLibraries libraries = new ProjectLibraries(project, extension);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
 		if (this.customConfiguration != null) {
 			libraries.setCustomConfigurationName(this.customConfiguration);
-		}
-		else if (extension.getCustomConfiguration() != null) {
+		} else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
-		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
+		return libraries;
 	}
 
+	/**
+	 * Action to repackage JARs.
+	 */
 	private class RepackageAction implements Action<Jar> {
 
 		private final SpringBootPluginExtension extension;
@@ -104,40 +119,60 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		@Override
-		public void execute(Jar archive) {
-			// if withJarTask is set, compare tasks and bail out if we didn't match
-			if (RepackageTask.this.withJarTask != null
-					&& !archive.equals(RepackageTask.this.withJarTask)) {
+		public void execute(Jar jarTask) {
+			if (!RepackageTask.this.isEnabled()) {
+				getLogger().info("Repackage disabled");
 				return;
 			}
-
-			if ("".equals(archive.getClassifier())) {
-				File file = archive.getArchivePath();
+			Object withJarTask = RepackageTask.this.withJarTask;
+			if (isTaskMatch(jarTask, withJarTask)) {
+				getLogger().info(
+						"Jar task not repackaged (didn't match withJarTask): " + jarTask);
+				return;
+			}
+			if ("".equals(jarTask.getClassifier())
+					|| RepackageTask.this.withJarTask != null) {
+				File file = jarTask.getArchivePath();
 				if (file.exists()) {
-					Repackager repackager = new LoggingRepackager(file);
-					File out = RepackageTask.this.outputFile;
-					if (out != null) {
-						try {
-							FileCopyUtils.copy(file, out);
-						}
-						catch (IOException ex) {
-							throw new IllegalStateException(ex.getMessage(), ex);
-						}
-						file = out;
-					}
-					RepackageTask.this.outputFile = file;
-					setMainClass(repackager);
-					if (this.extension.convertLayout() != null) {
-						repackager.setLayout(this.extension.convertLayout());
-					}
-					repackager.setBackupSource(this.extension.isBackupSource());
-					try {
-						repackager.repackage(file, this.libraries);
-					}
-					catch (IOException ex) {
-						throw new IllegalStateException(ex.getMessage(), ex);
-					}
+					repackage(file);
 				}
+			}
+		}
+
+		private boolean isTaskMatch(Jar task, Object compare) {
+			if (compare == null) {
+				return false;
+			}
+			TaskContainer tasks = getProject().getTasks();
+			return task.equals(compare) || task.equals(tasks.findByName(task.toString()));
+		}
+
+		private void repackage(File file) {
+			File outputFile = RepackageTask.this.outputFile;
+			if (outputFile != null && !file.equals(outputFile)) {
+				copy(file, outputFile);
+				file = outputFile;
+			}
+			Repackager repackager = new LoggingRepackager(file);
+			setMainClass(repackager);
+			if (this.extension.convertLayout() != null) {
+				repackager.setLayout(this.extension.convertLayout());
+			}
+			repackager.setBackupSource(this.extension.isBackupSource());
+			try {
+				repackager.repackage(file, this.libraries);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex.getMessage(), ex);
+			}
+		}
+
+		private void copy(File source, File dest) {
+			try {
+				FileCopyUtils.copy(source, dest);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex.getMessage(), ex);
 			}
 		}
 
@@ -145,19 +180,20 @@ public class RepackageTask extends DefaultTask {
 			String mainClass = (String) getProject().property("mainClassName");
 			if (RepackageTask.this.mainClass != null) {
 				mainClass = RepackageTask.this.mainClass;
-			}
-			else if (this.extension.getMainClass() != null) {
+			} else if (this.extension.getMainClass() != null) {
 				mainClass = this.extension.getMainClass();
-			}
-			else if (getProject().getTasks().getByName("run").hasProperty("main")) {
-				mainClass = (String) getProject().getTasks().getByName("run")
-						.property("main");
+			} else if (getProject().getTasks().getByName("run").hasProperty("main")) {
+				mainClass = (String) getProject().getTasks().getByName("run").property(
+						"main");
 			}
 			getLogger().info("Setting mainClass: " + mainClass);
 			repackager.setMainClass(mainClass);
 		}
 	}
 
+	/**
+	 * {@link Repackager} that also logs when searching takes too long.
+	 */
 	private class LoggingRepackager extends Repackager {
 
 		public LoggingRepackager(File source) {
@@ -169,8 +205,7 @@ public class RepackageTask extends DefaultTask {
 			long startTime = System.currentTimeMillis();
 			try {
 				return super.findMainMethod(source);
-			}
-			finally {
+			} finally {
 				long duration = System.currentTimeMillis() - startTime;
 				if (duration > FIND_WARNING_TIMEOUT) {
 					getLogger().warn(

@@ -87,6 +87,15 @@ public class Verify {
 			}
 		}
 
+		public boolean hasNonUnpackEntry(String entry) {
+			return !hasUnpackEntry(entry);
+		}
+
+		public boolean hasUnpackEntry(String entry) {
+			String comment = this.content.get(entry).getComment();
+			return comment != null && comment.startsWith("UNPACK:");
+		}
+
 		public boolean hasEntry(String entry) {
 			return this.content.containsKey(entry);
 		}

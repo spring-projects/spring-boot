@@ -33,7 +33,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
  * <p>
  * This class provides a fluent API for conditionally adding dependencies. For example:
  * {@code dependencies.ifMissing("com.corp.SomeClass").add(module)}.
- *
+ * 
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

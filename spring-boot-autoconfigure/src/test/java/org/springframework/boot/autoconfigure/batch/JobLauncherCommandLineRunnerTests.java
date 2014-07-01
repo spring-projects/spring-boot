@@ -136,7 +136,7 @@ public class JobLauncherCommandLineRunnerTests {
 					}
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
-				.toJobParameters();
+				.addLong("foo", 2L, false).toJobParameters();
 		this.runner.execute(this.job, jobParameters);
 		this.runner.execute(this.job, jobParameters);
 		assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());

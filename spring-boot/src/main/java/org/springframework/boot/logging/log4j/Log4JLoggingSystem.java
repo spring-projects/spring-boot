@@ -49,6 +49,7 @@ public class Log4JLoggingSystem extends AbstractLoggingSystem {
 		levels.put(LogLevel.WARN, Level.WARN);
 		levels.put(LogLevel.ERROR, Level.ERROR);
 		levels.put(LogLevel.FATAL, Level.ERROR);
+		levels.put(LogLevel.OFF, Level.OFF);
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 

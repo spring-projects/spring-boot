@@ -37,7 +37,7 @@ import org.springframework.data.solr.repository.SolrRepository;
  * If active auto configuration does the same as
  * {@link org.springframework.data.solr.repository.config.EnableSolrRepositories} would
  * do.
- *
+ * 
  * @author Christoph Strobl
  * @since 1.1.0
  */

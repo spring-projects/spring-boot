@@ -372,7 +372,7 @@ public class CrshAutoConfigurationTests {
 		}
 
 		@Bean
-		public AccessDecisionManager accessDecisionManager() {
+		public AccessDecisionManager shellAccessDecisionManager() {
 			List<AccessDecisionVoter> voters = new ArrayList<AccessDecisionVoter>();
 			RoleVoter voter = new RoleVoter();
 			voter.setRolePrefix("");
@@ -380,6 +380,7 @@ public class CrshAutoConfigurationTests {
 			AccessDecisionManager result = new UnanimousBased(voters);
 			return result;
 		}
+
 	}
 
 }

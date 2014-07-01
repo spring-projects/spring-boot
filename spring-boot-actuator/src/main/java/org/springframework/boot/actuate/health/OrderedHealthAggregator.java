@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  * <p>
  * If a different order is required or a new {@link Status} type will be used, the order
  * can be set by calling {@link #setStatusOrder(List)}.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */

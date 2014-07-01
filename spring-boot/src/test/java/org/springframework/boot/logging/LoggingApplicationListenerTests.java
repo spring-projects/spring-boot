@@ -86,7 +86,13 @@ public class LoggingApplicationListenerTests {
 	}
 
 	private String tmpDir() {
-		return this.context.getEnvironment().resolvePlaceholders("${java.io.tmpdir}");
+		String path = this.context.getEnvironment().resolvePlaceholders(
+				"${java.io.tmpdir}");
+		path = path.replace("\\", "/");
+		if (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
+		}
+		return path;
 	}
 
 	@Test
@@ -179,6 +185,42 @@ public class LoggingApplicationListenerTests {
 		this.logger.trace("testattrace");
 		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
 		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+	}
+
+	@Test
+	public void parseLevels() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=TRACE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.trace("testattrace");
+		assertThat(this.outputCapture.toString(), containsString("testatdebug"));
+		assertThat(this.outputCapture.toString(), containsString("testattrace"));
+	}
+
+	@Test
+	public void parseLevelsFails() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=GARBAGE");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString(),
+				containsString("Cannot set level: GARBAGE"));
+	}
+
+	@Test
+	public void parseLevelsNone() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"logging.level.org.springframework.boot=OFF");
+		this.initializer.initialize(this.context.getEnvironment(),
+				this.context.getClassLoader());
+		this.logger.debug("testatdebug");
+		this.logger.fatal("testatfatal");
+		assertThat(this.outputCapture.toString(), not(containsString("testatdebug")));
+		assertThat(this.outputCapture.toString(), not(containsString("testatfatal")));
 	}
 
 	@Test

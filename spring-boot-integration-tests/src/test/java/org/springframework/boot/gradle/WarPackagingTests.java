@@ -37,40 +37,27 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests for war packaging with Gradle to ensure that only the Servlet container and its
  * dependencies are packaged in WEB-INF/lib-provided
- * 
+ *
  * @author Andy Wilkinson
  */
 public class WarPackagingTests {
 
 	private static final String WEB_INF_LIB_PROVIDED_PREFIX = "WEB-INF/lib-provided/";
 
+	private static final String WEB_INF_LIB_PREFIX = "WEB-INF/lib/";
+
 	private static final Set<String> TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
-			Arrays.asList(WEB_INF_LIB_PROVIDED_PREFIX + "spring-boot-starter-tomcat-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "tomcat-embed-core-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "tomcat-embed-el-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "tomcat-embed-logging-juli-"));
+			Arrays.asList("spring-boot-starter-tomcat-", "tomcat-embed-core-",
+					"tomcat-embed-el-", "tomcat-embed-logging-juli-"));
 
 	private static final Set<String> JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED = new HashSet<String>(
-			Arrays.asList(WEB_INF_LIB_PROVIDED_PREFIX + "spring-boot-starter-jetty-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-util-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-xml-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "javax.servlet-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-continuation-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-io-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-http-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-server-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-security-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-servlet-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-webapp-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "javax.servlet.jsp-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "org.apache.jasper.glassfish-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "javax.servlet.jsp.jstl-",
-					WEB_INF_LIB_PROVIDED_PREFIX
-							+ "org.apache.taglibs.standard.glassfish-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "javax.el-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "com.sun.el-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "org.eclipse.jdt.core-",
-					WEB_INF_LIB_PROVIDED_PREFIX + "jetty-jsp-"));
+			Arrays.asList("spring-boot-starter-jetty-", "jetty-util-", "jetty-xml-",
+					"javax.servlet-", "jetty-continuation-", "jetty-io-", "jetty-http-",
+					"jetty-server-", "jetty-security-", "jetty-servlet-",
+					"jetty-webapp-", "javax.servlet.jsp-",
+					"org.apache.jasper.glassfish-", "javax.servlet.jsp.jstl-",
+					"org.apache.taglibs.standard.glassfish-", "javax.el-", "com.sun.el-",
+					"org.eclipse.jdt.core-", "jetty-jsp-"));
 
 	private static final String BOOT_VERSION = ManagedDependencies.get()
 			.find("spring-boot").getVersion();
@@ -84,24 +71,32 @@ public class WarPackagingTests {
 
 	@Test
 	public void onlyTomcatIsPackackedInWebInfLibProvided() throws IOException {
-		checkWebInfLibProvidedEntriesForServletContainer("tomcat",
+		checkWebInfEntriesForServletContainer("tomcat",
 				TOMCAT_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
 	@Test
 	public void onlyJettyIsPackackedInWebInfLibProvided() throws IOException {
-		checkWebInfLibProvidedEntriesForServletContainer("jetty",
+		checkWebInfEntriesForServletContainer("jetty",
 				JETTY_EXPECTED_IN_WEB_INF_LIB_PROVIDED);
 	}
 
-	private void checkWebInfLibProvidedEntriesForServletContainer(
-			String servletContainer, Set<String> expectedEntries) throws IOException {
+	private void checkWebInfEntriesForServletContainer(String servletContainer,
+			Set<String> expectedLibProvidedEntries) throws IOException {
 		project.newBuild()
 				.forTasks("clean", "build")
 				.withArguments("-PbootVersion=" + BOOT_VERSION,
 						"-PservletContainer=" + servletContainer).run();
 
 		JarFile war = new JarFile("target/war-packaging/build/libs/war-packaging.war");
+
+		checkWebInfLibProvidedEntries(war, expectedLibProvidedEntries);
+
+		checkWebInfLibEntries(war, expectedLibProvidedEntries);
+	}
+
+	private void checkWebInfLibProvidedEntries(JarFile war, Set<String> expectedEntries)
+			throws IOException {
 		Set<String> entries = getWebInfLibProvidedEntries(war);
 
 		assertEquals(
@@ -118,6 +113,21 @@ public class WarPackagingTests {
 				+ unexpectedLibProvidedEntries, unexpectedLibProvidedEntries.isEmpty());
 	}
 
+	private void checkWebInfLibEntries(JarFile war, Set<String> entriesOnlyInLibProvided)
+			throws IOException {
+		Set<String> entries = getWebInfLibEntries(war);
+
+		List<String> unexpectedLibEntries = new ArrayList<String>();
+		for (String entry : entries) {
+			if (!isExpectedInWebInfLib(entry, entriesOnlyInLibProvided)) {
+				unexpectedLibEntries.add(entry);
+			}
+		}
+
+		assertTrue("Found unexpected entries in WEB-INF/lib: " + unexpectedLibEntries,
+				unexpectedLibEntries.isEmpty());
+	}
+
 	private Set<String> getWebInfLibProvidedEntries(JarFile war) throws IOException {
 		Set<String> webInfLibProvidedEntries = new HashSet<String>();
 		Enumeration<JarEntry> entries = war.entries();
@@ -130,17 +140,42 @@ public class WarPackagingTests {
 		return webInfLibProvidedEntries;
 	}
 
+	private Set<String> getWebInfLibEntries(JarFile war) throws IOException {
+		Set<String> webInfLibEntries = new HashSet<String>();
+		Enumeration<JarEntry> entries = war.entries();
+		while (entries.hasMoreElements()) {
+			String name = entries.nextElement().getName();
+			if (isWebInfLibEntry(name)) {
+				webInfLibEntries.add(name);
+			}
+		}
+		return webInfLibEntries;
+	}
+
 	private boolean isWebInfLibProvidedEntry(String name) {
 		return name.startsWith(WEB_INF_LIB_PROVIDED_PREFIX)
 				&& !name.equals(WEB_INF_LIB_PROVIDED_PREFIX);
 	}
 
+	private boolean isWebInfLibEntry(String name) {
+		return name.startsWith(WEB_INF_LIB_PREFIX) && !name.equals(WEB_INF_LIB_PREFIX);
+	}
+
 	private boolean isExpectedInWebInfLibProvided(String name, Set<String> expectedEntries) {
 		for (String expected : expectedEntries) {
-			if (name.startsWith(expected)) {
+			if (name.startsWith(WEB_INF_LIB_PROVIDED_PREFIX + expected)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private boolean isExpectedInWebInfLib(String name, Set<String> unexpectedEntries) {
+		for (String unexpected : unexpectedEntries) {
+			if (name.startsWith(WEB_INF_LIB_PREFIX + unexpected)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

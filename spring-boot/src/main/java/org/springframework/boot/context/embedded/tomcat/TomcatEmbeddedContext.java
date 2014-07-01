@@ -16,9 +16,12 @@
 
 package org.springframework.boot.context.embedded.tomcat;
 
+import java.lang.reflect.Method;
+
 import org.apache.catalina.Container;
 import org.apache.catalina.core.StandardContext;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Tomcat {@link StandardContext} used by {@link TomcatEmbeddedServletContainer} to
@@ -45,7 +48,12 @@ class TomcatEmbeddedContext extends StandardContext {
 		if (classLoader != null) {
 			existingLoader = ClassUtils.overrideThreadContextClassLoader(classLoader);
 		}
-		super.loadOnStartup(findChildren());
+		if (ClassUtils.isPresent("org.apache.catalina.deploy.ErrorPage", null)) {
+			super.loadOnStartup(findChildren());
+		}
+		else {
+			callSuper(this, "loadOnStartup", findChildren(), Container[].class);
+		}
 		if (existingLoader != null) {
 			ClassUtils.overrideThreadContextClassLoader(existingLoader);
 		}
@@ -57,6 +65,12 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	public ServletContextInitializerLifecycleListener getStarter() {
 		return this.starter;
+	}
+
+	private void callSuper(Object target, String name, Object value, Class<?> type) {
+		Method method = ReflectionUtils.findMethod(target.getClass().getSuperclass(),
+				name, type);
+		ReflectionUtils.invokeMethod(method, target, value);
 	}
 
 }

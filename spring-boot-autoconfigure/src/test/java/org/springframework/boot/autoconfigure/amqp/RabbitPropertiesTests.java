@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNull;
  */
 public class RabbitPropertiesTests {
 
-	private RabbitProperties properties = new RabbitProperties();
+	private final RabbitProperties properties = new RabbitProperties();
 
 	@Test
 	public void addressesNotSet() {
@@ -48,6 +48,30 @@ public class RabbitPropertiesTests {
 		this.properties.setAddresses("myhost:9999,otherhost:1111");
 		assertNull(this.properties.getHost());
 		assertEquals(9999, this.properties.getPort());
+	}
+
+	@Test
+	public void testDefaultVirtualHost() {
+		this.properties.setVirtualHost("/");
+		assertEquals("/", this.properties.getVirtualHost());
+	}
+
+	@Test
+	public void testemptyVirtualHost() {
+		this.properties.setVirtualHost("");
+		assertEquals("/", this.properties.getVirtualHost());
+	}
+
+	@Test
+	public void testCustomVirtualHost() {
+		this.properties.setVirtualHost("myvHost");
+		assertEquals("myvHost", this.properties.getVirtualHost());
+	}
+
+	@Test
+	public void testCustomFalsyVirtualHost() {
+		this.properties.setVirtualHost("/myvHost");
+		assertEquals("myvHost", this.properties.getVirtualHost());
 	}
 
 }

@@ -38,9 +38,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.SmartLifecycle;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.jmx.export.MBeanExportException;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.jmx.export.naming.SelfNaming;
@@ -144,6 +146,18 @@ public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecyc
 	}
 
 	protected void registerEndpoint(String beanName, Endpoint<?> endpoint) {
+		@SuppressWarnings("rawtypes")
+		Class<? extends Endpoint> type = endpoint.getClass();
+		if (AnnotationUtils.findAnnotation(type, ManagedResource.class) != null) {
+			// Already managed
+			return;
+		}
+		if (type.isMemberClass()
+				&& AnnotationUtils.findAnnotation(type.getEnclosingClass(),
+						ManagedResource.class) != null) {
+			// Nested class with @ManagedResource in parent
+			return;
+		}
 		try {
 			registerBeanNameOrInstance(getEndpointMBean(beanName, endpoint), beanName);
 		}

@@ -66,7 +66,7 @@ If you import additional starters, you can safely omit the version number.
 
 [[using-boot-maven-without-a-parent]]
 ==== Using Spring Boot without the parent POM
-No everyone likes inheriting from the `spring-boot-starter-parent` POM. You may have your
+Not everyone likes inheriting from the `spring-boot-starter-parent` POM. You may have your
 own corporate standard parent that you need to use, or you may just prefer to explicitly
 declare all your Maven configuration.
 
@@ -125,8 +125,9 @@ section if you want to use it:
 	</build>
 ----
 
-NOTE: You only need to add the plugin, there is no need for to configure it unless you
-want to change the settings defined in the parent.
+NOTE: If you use the Spring Boot starter parent pom, you only need to add the plugin,
+there is no need for to configure it unless you want to change the settings defined in
+the parent.
 
 
 

@@ -79,9 +79,9 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 				this.applicationContext.publishEvent(new DataSourceInitializedEvent(
 						this.dataSource));
 			}
-			catch (IllegalStateException e) {
+			catch (IllegalStateException ex) {
 				logger.warn("Could not send event to complete DataSource initialization ("
-						+ e.getMessage() + ")");
+						+ ex.getMessage() + ")");
 			}
 		}
 	}
@@ -135,6 +135,7 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.setContinueOnError(this.properties.isContinueOnError());
 		populator.setSeparator(this.properties.getSeparator());
+		populator.setSqlScriptEncoding(this.properties.getSqlScriptEncoding());
 		for (Resource resource : resources) {
 			populator.addScript(resource);
 		}

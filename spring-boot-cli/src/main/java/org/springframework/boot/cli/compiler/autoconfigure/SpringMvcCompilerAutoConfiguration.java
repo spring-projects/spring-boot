@@ -50,8 +50,7 @@ public class SpringMvcCompilerAutoConfiguration extends CompilerAutoConfiguratio
 	public void applyImports(ImportCustomizer imports) {
 		imports.addStarImports("org.springframework.web.bind.annotation",
 				"org.springframework.web.servlet.config.annotation",
-				"org.springframework.web.servlet",
-				"org.springframework.http",
+				"org.springframework.web.servlet", "org.springframework.http",
 				"org.springframework.web.servlet.handler", "org.springframework.http",
 				"org.springframework.ui", "groovy.text");
 		imports.addStaticImport(GroovyTemplate.class.getName(), "template");

@@ -106,7 +106,7 @@ public class RunCommand extends OptionParsingCommand {
 			this.runner = new SpringApplicationRunner(configuration,
 					sourceOptions.getSourcesArray(), sourceOptions.getArgsArray());
 			this.runner.compileAndRun();
-			
+
 			return ExitStatus.OK;
 		}
 

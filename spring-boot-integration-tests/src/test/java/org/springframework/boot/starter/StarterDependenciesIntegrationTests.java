@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 /**
  * Tests for the various starter projects to check that they don't pull in unwanted
  * transitive dependencies when used with Gradle
- *
+ * 
  * @author Andy Wilkinson
  */
 @RunWith(Parameterized.class)

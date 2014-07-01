@@ -108,6 +108,12 @@ public class SpringBootPluginExtension {
 	}
 
 	/**
+	 * Libraries that must be unpacked from fat jars in order to run. Use Strings in the
+	 * form {@literal groupId:artifactId}.
+	 */
+	Set<String> requiresUnpack;
+
+	/**
 	 * Location of an agent jar to attach to the VM when running the application with runJar task.
 	 */
 	File agent;
@@ -121,4 +127,5 @@ public class SpringBootPluginExtension {
 	 * If exclude rules should be applied to dependencies based on the spring-dependencies-bom
 	 */
 	boolean applyExcludeRules = true;
+
 }

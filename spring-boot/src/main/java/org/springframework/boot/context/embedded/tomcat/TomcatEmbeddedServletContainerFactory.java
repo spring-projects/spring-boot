@@ -584,6 +584,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 			if (servletContext.getAttribute(this.MERGED_WEB_XML) == null) {
 				servletContext.setAttribute(this.MERGED_WEB_XML, getEmptyWebXml());
 			}
+			TomcatResources.get(context).addClasspathResources();
 		}
 
 		private String getEmptyWebXml() {

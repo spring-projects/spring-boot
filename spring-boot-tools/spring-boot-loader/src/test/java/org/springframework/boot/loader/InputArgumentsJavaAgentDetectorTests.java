@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link InputArgumentsJavaAgentDetector}
- *
+ * 
  * @author Andy Wilkinson
  */
 public class InputArgumentsJavaAgentDetectorTests {
@@ -39,7 +39,7 @@ public class InputArgumentsJavaAgentDetectorTests {
 		InputArgumentsJavaAgentDetector detector = new InputArgumentsJavaAgentDetector(
 				Arrays.asList("-javaagent:my-agent.jar"));
 		assertFalse(detector.isJavaAgentJar(new File("something-else.jar")
-		.getCanonicalFile().toURI().toURL()));
+				.getCanonicalFile().toURI().toURL()));
 	}
 
 	@Test

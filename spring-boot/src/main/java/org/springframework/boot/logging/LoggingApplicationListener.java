@@ -19,11 +19,13 @@ package org.springframework.boot.logging;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ApplicationPid;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationEvent;
@@ -36,6 +38,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * An {@link ApplicationListener} that configures a logging framework depending on what it
@@ -147,6 +150,16 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			}
 		}
 
+		// Logback won't read backslashes so add a clean path for it to use
+		if (!StringUtils.hasLength(System.getProperty("LOG_TEMP"))) {
+			String path = System.getProperty("java.io.tmpdir");
+			path = StringUtils.cleanPath(path);
+			if (path.endsWith("/")) {
+				path = path.substring(0, path.length() - 1);
+			}
+			System.setProperty("LOG_TEMP", path);
+		}
+
 		boolean environmentChanged = false;
 		for (Map.Entry<String, String> mapping : ENVIRONMENT_SYSTEM_PROPERTY_MAPPING
 				.entrySet()) {
@@ -169,7 +182,6 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			try {
 				ResourceUtils.getURL(value).openStream().close();
 				system.initialize(value);
-				return;
 			}
 			catch (Exception ex) {
 				// Swallow exception and continue
@@ -177,10 +189,35 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			this.logger.warn("Logging environment value '" + value
 					+ "' cannot be opened and will be ignored");
 		}
+		else {
 
-		system.initialize();
-		if (this.springBootLogging != null) {
-			initializeLogLevel(system, this.springBootLogging);
+			system.initialize();
+			if (this.springBootLogging != null) {
+				initializeLogLevel(system, this.springBootLogging);
+			}
+
+		}
+
+		setLogLevels(system, environment);
+
+	}
+
+	public void setLogLevels(LoggingSystem system, Environment environment) {
+		Map<String, Object> levels = new RelaxedPropertyResolver(environment)
+				.getSubProperties("logging.level.");
+		for (Entry<String, Object> entry : levels.entrySet()) {
+			String name = entry.getKey();
+			try {
+				LogLevel level = LogLevel.valueOf(entry.getValue().toString());
+				if (name.equalsIgnoreCase("root")) {
+					name = null;
+				}
+				system.setLogLevel(name, level);
+			}
+			catch (RuntimeException e) {
+				this.logger.error("Cannot set level: " + entry.getValue() + " for '"
+						+ name + "'");
+			}
 		}
 	}
 

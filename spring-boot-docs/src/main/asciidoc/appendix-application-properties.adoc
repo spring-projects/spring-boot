@@ -43,7 +43,8 @@ content into your application; rather pick only the properties that you need.
 	# LOGGING
 	logging.path=/var/logs
 	logging.file=myapp.log
-	logging.config=
+	logging.config= # location of config file (default classpath:/logback.xml for logback)
+    logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
 	spring.application.name=
@@ -158,6 +159,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.initialize=true # populate using data.sql
 	spring.datasource.schema= # a schema (DDL) script resource reference
 	spring.datasource.data= # a data (DML) script resource reference
+	spring.datasource.sqlScriptEncoding= # a charset for reading SQL scripts
 	spring.datasource.platform= # the platform to use in the schema resource (schema-${platform}.sql)
 	spring.datasource.continueOnError=false # continue even if can't be initialized
 	spring.datasource.separator=; # statement separator in SQL initialization scripts

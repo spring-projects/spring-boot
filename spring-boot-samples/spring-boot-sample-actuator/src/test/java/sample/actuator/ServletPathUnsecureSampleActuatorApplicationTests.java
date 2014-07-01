@@ -16,9 +16,6 @@
 
 package sample.actuator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -33,6 +30,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
@@ -42,7 +42,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = SampleActuatorApplication.class)
 @WebAppConfiguration
-@IntegrationTest({ "server.port:0", "security.basic.enabled:false", "server.servletPath:/spring" })
+@IntegrationTest({ "server.port:0", "security.basic.enabled:false",
+		"server.servletPath:/spring" })
 @DirtiesContext
 public class ServletPathUnsecureSampleActuatorApplicationTests {
 

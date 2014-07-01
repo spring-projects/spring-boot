@@ -72,18 +72,20 @@ public class ApplyExcludeRules implements Action<Configuration> {
 	private void applyExcludeRules(ModuleDependency dependency) {
 		ManagedDependencies managedDependencies = versionManagedDependencies
 				.getManagedDependencies();
-		org.springframework.boot.dependency.tools.Dependency managedDependency = managedDependencies
-				.find(dependency.getGroup(), dependency.getName());
-		if (managedDependency != null) {
-			for (Exclusion exclusion : managedDependency.getExclusions()) {
-				addExcludeRule(dependency, exclusion);
+		// flat directory repositories do not have groups
+		if (dependency.getGroup() != null) {
+			org.springframework.boot.dependency.tools.Dependency managedDependency = managedDependencies
+					.find(dependency.getGroup(), dependency.getName());
+			if (managedDependency != null) {
+				for (Exclusion exclusion : managedDependency.getExclusions()) {
+					addExcludeRule(dependency, exclusion);
+				}
+				addImplicitExcludeRules(dependency);
+				return;
 			}
-			addImplicitExcludeRules(dependency);
 		}
-		else {
-			logger.debug("No exclusions rules applied for non-managed dependency "
-					+ dependency);
-		}
+		logger.debug("No exclusions rules applied for non-managed dependency "
+				+ dependency);
 	}
 
 	private void addExcludeRule(ModuleDependency dependency, Exclusion exclusion) {

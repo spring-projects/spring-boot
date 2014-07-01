@@ -19,12 +19,14 @@ package org.springframework.boot.actuate.endpoint.jmx;
 import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * Special endpoint wrapper for {@link ShutdownEndpoint}.
  * 
  * @author Christian Dupuis
  */
+@ManagedResource
 public class ShutdownEndpointMBean extends EndpointMBean {
 
 	public ShutdownEndpointMBean(String beanName, Endpoint<?> endpoint) {

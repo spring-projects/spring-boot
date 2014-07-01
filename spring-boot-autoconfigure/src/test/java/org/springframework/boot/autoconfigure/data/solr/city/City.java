@@ -26,8 +26,11 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
 @SolrDocument(solrCoreName = "collection1")
 public class City {
 
-	private @Id String id;
-	private @Indexed String name;
+	@Id
+	private String id;
+
+	@Indexed
+	private String name;
 
 	public String getId() {
 		return this.id;

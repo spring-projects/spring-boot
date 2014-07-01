@@ -33,6 +33,7 @@ Phillip Webb; Dave Syer; Josh Long; Stéphane Nicoll; Rob Winch; Andy Wilkinson;
 :spring-data-javadoc: http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa
 :spring-data-commons-javadoc: http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data
 :spring-data-mongo-javadoc: http://docs.spring.io/spring-data/mongodb/docs/current/api/org/springframework/data/mongodb
+:gradle-userguide: http://www.gradle.org/docs/current/userguide
 // ======================================================================================
 
 include::documentation-overview.adoc[]
