@@ -727,15 +727,17 @@ As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by 
 [[boot-features-custom-log-levels]]
 === Log Levels
 
-All the supported logging systems can have the logger levels set in the Spring `Environment`
-(so for example in `application.properties`) using "logging.level.*=LEVEL" where "LEVEL" is one of 
-TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. Example `application.properties`:
+All the supported logging systems can have the logger levels set in the Spring
+`Environment` (so for example in `application.properties`) using ``logging.level.*=LEVEL''
+where ``LEVEL'' is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. Example
+`application.properties`:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-logging.level.org.springframework.web: DEBUG
-logging.level.org.hibernate: ERROR
+	logging.level.org.springframework.web: DEBUG
+	logging.level.org.hibernate: ERROR
 ----
+
 
 
 [[boot-features-custom-log-configuration]]
@@ -744,10 +746,10 @@ logging.level.org.hibernate: ERROR
 The various logging systems can be activated by including the appropriate libraries on
 the classpath, and further customized by providing a suitable configuration file in the
 root of the classpath, or in a location specified by the Spring `Environment` property
-`logging.config`. (Note however that since logging is initialized *before* the `ApplicationContext
-is created, it isn't possible to control logging from `@PropertySources` in Spring
-`@Configuration` files.  System properties and the conventional Spring Boot external
-configuration files work just fine.)
+`logging.config`. (Note however that since logging is initialized *before* the
+`ApplicationContext` is created, it isn't possible to control logging from
+`@PropertySources` in Spring `@Configuration` files.  System properties and the
+conventional Spring Boot external configuration files work just fine.)
 
 Depending on your logging system, the following files will be loaded:
 

@@ -857,25 +857,26 @@ then you can do that in `application.properties` using the "logging.level" prefi
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-logging.level.org.springframework.web: DEBUG
-logging.level.org.hibernate: ERROR
+	logging.level.org.springframework.web: DEBUG
+	logging.level.org.hibernate: ERROR
 ----
 
 You can also set the location of a file to log to (in addition to the console) using
-"logging.file". 
+"logging.file".
 
-To configure the more fine grained settings of a logging system you need to use the native configuration
-format supported by the `LoggingSystem` in question. By default Spring Boot picks up the native
-configuration from its default location for the system (e.g. `classpath:/logback.xml` for Logback), but
-you can set the location of the config file using the "logging.config" property.
+To configure the more fine grained settings of a logging system you need to use the native
+configuration format supported by the `LoggingSystem` in question. By default Spring Boot
+picks up the native configuration from its default location for the system (e.g.
+`classpath:/logback.xml` for Logback), but you can set the location of the config file
+using the "logging.config" property.
+
 
 
 [[howto-configure-logback-for-loggin]]
 === Configure Logback for logging
-If you put a `logback.xml` in the root of your classpath it will be
-picked up from there. Spring Boot provides a default base
-configuration that you can include if you just want to set levels,
-e.g.
+If you put a `logback.xml` in the root of your classpath it will be picked up from there.
+Spring Boot provides a default base configuration that you can include if you just want
+to set levels, e.g.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
