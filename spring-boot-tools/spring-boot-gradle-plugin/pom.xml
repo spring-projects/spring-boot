@@ -72,7 +72,7 @@
 					<dependency>
 						<groupId>org.codehaus.groovy</groupId>
 						<artifactId>groovy-eclipse-batch</artifactId>
-						<version>2.1.5-03</version>
+						<version>2.1.8-01</version>
 					</dependency>
 				</dependencies>
 			</plugin>
