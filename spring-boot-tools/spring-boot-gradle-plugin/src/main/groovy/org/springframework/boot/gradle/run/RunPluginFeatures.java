@@ -48,7 +48,7 @@ public class RunPluginFeatures implements PluginFeatures {
 		project.getTasks().all(new Action<Task>() {
 			@Override
 			public void execute(Task task) {
-				if(task instanceof JavaExec || task instanceof CreateStartScripts) {
+				if (task instanceof JavaExec || task instanceof CreateStartScripts) {
 					task.dependsOn(FIND_MAIN_CLASS_TASK_NAME);
 				}
 			}

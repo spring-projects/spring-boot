@@ -97,7 +97,8 @@ public class RepackageTask extends DefaultTask {
 		}
 		if (this.customConfiguration != null) {
 			libraries.setCustomConfigurationName(this.customConfiguration);
-		} else if (extension.getCustomConfiguration() != null) {
+		}
+		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
 		return libraries;
@@ -180,11 +181,13 @@ public class RepackageTask extends DefaultTask {
 			String mainClass = (String) getProject().property("mainClassName");
 			if (RepackageTask.this.mainClass != null) {
 				mainClass = RepackageTask.this.mainClass;
-			} else if (this.extension.getMainClass() != null) {
+			}
+			else if (this.extension.getMainClass() != null) {
 				mainClass = this.extension.getMainClass();
-			} else if (getProject().getTasks().getByName("run").hasProperty("main")) {
-				mainClass = (String) getProject().getTasks().getByName("run").property(
-						"main");
+			}
+			else if (getProject().getTasks().getByName("run").hasProperty("main")) {
+				mainClass = (String) getProject().getTasks().getByName("run")
+						.property("main");
 			}
 			getLogger().info("Setting mainClass: " + mainClass);
 			repackager.setMainClass(mainClass);
@@ -205,7 +208,8 @@ public class RepackageTask extends DefaultTask {
 			long startTime = System.currentTimeMillis();
 			try {
 				return super.findMainMethod(source);
-			} finally {
+			}
+			finally {
 				long duration = System.currentTimeMillis() - startTime;
 				if (duration > FIND_WARNING_TIMEOUT) {
 					getLogger().warn(

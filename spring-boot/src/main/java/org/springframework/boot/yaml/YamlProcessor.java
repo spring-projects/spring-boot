@@ -53,8 +53,8 @@ public abstract class YamlProcessor {
 
 	/**
 	 * A map of document matchers allowing callers to selectively use only some of the
-	 * documents in a YAML resource. In YAML documents are separated by
-	 * <code>---<code> lines, and each document is converted to properties before the match is made. E.g.
+	 * documents in a YAML resource. In YAML documents are separated by <code>---</code>
+	 * lines, and each document is converted to properties before the match is made. E.g.
 	 *
 	 * <pre class="code">
 	 * environment: dev
@@ -66,7 +66,8 @@ public abstract class YamlProcessor {
 	 * name: My Cool App
 	 * </pre>
 	 *
-	 * when mapped with <code>documentMatchers = YamlProcessor.mapMatcher({"environment": "prod"})</code>
+	 * when mapped with
+	 * <code>documentMatchers = YamlProcessor.mapMatcher({"environment": "prod"})</code>
 	 * would end up as
 	 *
 	 * <pre class="code">

@@ -33,6 +33,7 @@ import org.springframework.util.StreamUtils;
 
 import sample.parent.SampleParentContextApplication;
 import sample.parent.producer.ProducerApplication;
+
 import static org.junit.Assert.assertTrue;
 
 /**

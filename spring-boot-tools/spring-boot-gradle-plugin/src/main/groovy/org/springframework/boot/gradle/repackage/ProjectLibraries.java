@@ -123,7 +123,8 @@ class ProjectLibraries implements Libraries {
 			LibraryCallback callback) throws IOException {
 		if (artifacts != null) {
 			for (ResolvedArtifact artifact : artifacts) {
-				callback.library(new Library(artifact.getFile(), scope, isUnpackRequired(artifact)));
+				callback.library(new Library(artifact.getFile(), scope,
+						isUnpackRequired(artifact)));
 			}
 		}
 	}

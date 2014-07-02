@@ -38,8 +38,8 @@ public class BootRunTask extends JavaExec {
 	@Override
 	public void exec() {
 		SourceSet mainSourceSet = SourceSets.findMainSourceSet(getProject());
-		final File outputDir = (mainSourceSet == null ? null
-				: mainSourceSet.getOutput().getResourcesDir());
+		final File outputDir = (mainSourceSet == null ? null : mainSourceSet.getOutput()
+				.getResourcesDir());
 		final Set<File> resources = new LinkedHashSet<File>();
 		if (mainSourceSet != null) {
 			resources.addAll(mainSourceSet.getResources().getSrcDirs());

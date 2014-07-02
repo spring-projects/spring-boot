@@ -1,4 +1,3 @@
-
 package org.springframework.boot.gradle.run;
 
 import java.io.IOException;
@@ -41,8 +40,8 @@ public class FindMainClassTask extends DefaultTask {
 			mainClass = bootExtension.getMainClass();
 		}
 
-		ApplicationPluginConvention application = (ApplicationPluginConvention) project.getConvention().getPlugins().get(
-				"application");
+		ApplicationPluginConvention application = (ApplicationPluginConvention) project
+				.getConvention().getPlugins().get("application");
 		// Try the Application extension setting
 		if (mainClass == null && application.getMainClassName() != null) {
 			mainClass = application.getMainClassName();
@@ -61,9 +60,11 @@ public class FindMainClassTask extends DefaultTask {
 						"Looking for main in: "
 								+ mainSourceSet.getOutput().getClassesDir());
 				try {
-					mainClass = MainClassFinder.findSingleMainClass(mainSourceSet.getOutput().getClassesDir());
+					mainClass = MainClassFinder.findSingleMainClass(mainSourceSet
+							.getOutput().getClassesDir());
 					project.getLogger().info("Computed main class: " + mainClass);
-				} catch (IOException ex) {
+				}
+				catch (IOException ex) {
 					throw new IllegalStateException("Cannot find main class", ex);
 				}
 			}

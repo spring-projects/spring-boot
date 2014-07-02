@@ -55,8 +55,9 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				+ "archives so that they can be executed from the command "
 				+ "line using 'java -jar'");
 		task.setGroup(BasePlugin.BUILD_GROUP);
-		task.dependsOn(project.getConfigurations().getByName(
-				Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts().getBuildDependencies());
+		task.dependsOn(project.getConfigurations()
+				.getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
+				.getBuildDependencies());
 		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
 	}
@@ -68,7 +69,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 				project.getTasks().withType(Jar.class,
 						new RegisterInputsOutputsAction(task));
 				Object withJar = task.getWithJarTask();
-				if (withJar!=null) {
+				if (withJar != null) {
 					task.dependsOn(withJar);
 				}
 			}
@@ -83,8 +84,8 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	 * Register BootRepackage so that we can use task {@code foo(type: BootRepackage)}.
 	 */
 	private void registerRepackageTaskProperty(Project project) {
-		project.getExtensions().getExtraProperties().set("BootRepackage",
-				RepackageTask.class);
+		project.getExtensions().getExtraProperties()
+				.set("BootRepackage", RepackageTask.class);
 	}
 
 	/**
@@ -135,6 +136,7 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		private void addLibraryDependencies(final RepackageTask task) {
 			try {
 				task.getLibraries().doWithLibraries(new LibraryCallback() {
+					@Override
 					public void library(Library library) throws IOException {
 						task.getInputs().file(library.getFile());
 					}

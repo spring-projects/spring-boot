@@ -42,7 +42,7 @@ class SourceSets {
 	private static Iterable<SourceSet> getJavaSourceSets(Project project) {
 		JavaPluginConvention plugin = project.getConvention().getPlugin(
 				JavaPluginConvention.class);
-		if(plugin == null) {
+		if (plugin == null) {
 			return Collections.emptyList();
 		}
 		return plugin.getSourceSets();
