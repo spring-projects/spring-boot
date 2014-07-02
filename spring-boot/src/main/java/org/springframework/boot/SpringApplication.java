@@ -77,38 +77,38 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * Classes that can be used to bootstrap and launch a Spring application from a Java main
  * method. By default class will perform the following steps to bootstrap your
  * application:
- *
+ * 
  * <ul>
  * <li>Create an appropriate {@link ApplicationContext} instance (depending on your
  * classpath)</li>
- *
+ * 
  * <li>Register a {@link CommandLinePropertySource} to expose command line arguments as
  * Spring properties</li>
- *
+ * 
  * <li>Refresh the application context, loading all singleton beans</li>
- *
+ * 
  * <li>Trigger any {@link CommandLineRunner} beans</li>
  * </ul>
- *
+ * 
  * In most circumstances the static {@link #run(Object, String[])} method can be called
  * directly from your {@literal main} method to bootstrap your application:
- *
+ * 
  * <pre class="code">
  * &#064;Configuration
  * &#064;EnableAutoConfiguration
  * public class MyApplication  {
- *
+ * 
  * // ... Bean definitions
- *
+ * 
  * public static void main(String[] args) throws Exception {
  *   SpringApplication.run(MyApplication.class, args);
  * }
  * </pre>
- *
+ * 
  * <p>
  * For more advanced configuration a {@link SpringApplication} instance can be created and
  * customized before being run:
- *
+ * 
  * <pre class="code">
  * public static void main(String[] args) throws Exception {
  *   SpringApplication app = new SpringApplication(MyApplication.class);
@@ -116,29 +116,30 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  *   app.run(args)
  * }
  * </pre>
- *
+ * 
  * {@link SpringApplication}s can read beans from a variety of different sources. It is
  * generally recommended that a single {@code @Configuration} class is used to bootstrap
  * your application, however, any of the following sources can also be used:
- *
+ * 
  * <p>
  * <ul>
  * <li>{@link Class} - A Java class to be loaded by {@link AnnotatedBeanDefinitionReader}</li>
- *
+ * 
  * <li>{@link Resource} - An XML resource to be loaded by {@link XmlBeanDefinitionReader},
  * or a groovy script to be loaded by {@link GroovyBeanDefinitionReader}</li>
- *
+ * 
  * <li>{@link Package} - A Java package to be scanned by
  * {@link ClassPathBeanDefinitionScanner}</li>
- *
+ * 
  * <li>{@link CharSequence} - A class name, resource handle or package name to loaded as
  * appropriate. If the {@link CharSequence} cannot be resolved to class and does not
  * resolve to a {@link Resource} that exists it will be considered a {@link Package}.</li>
  * </ul>
- *
+ * 
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Christian Dupuis
  * @see #run(Object, String[])
  * @see #run(Object[], String[])
  * @see #SpringApplication(Object...)
@@ -152,7 +153,7 @@ public class SpringApplication {
 			+ "boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext";
 
 	private static final String[] WEB_ENVIRONMENT_CLASSES = { "javax.servlet.Servlet",
-	"org.springframework.web.context.ConfigurableWebApplicationContext" };
+			"org.springframework.web.context.ConfigurableWebApplicationContext" };
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
@@ -478,10 +479,11 @@ public class SpringApplication {
 		Resource resource = resourceLoader.getResource(location);
 		if (resource.exists()) {
 			try {
-				System.out.println(StreamUtils.copyToString(
+				String banner = StreamUtils.copyToString(
 						resource.getInputStream(),
 						environment.getProperty("banner.charset", Charset.class,
-								Charset.forName("UTF-8"))));
+								Charset.forName("UTF-8")));
+				System.out.println(environment.resolvePlaceholders(banner));
 				return;
 			}
 			catch (Exception ex) {
@@ -546,7 +548,7 @@ public class SpringApplication {
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext) {
 				((GenericApplicationContext) context)
-				.setResourceLoader(this.resourceLoader);
+						.setResourceLoader(this.resourceLoader);
 			}
 			if (context instanceof DefaultResourceLoader) {
 				((DefaultResourceLoader) context).setClassLoader(this.resourceLoader
@@ -579,7 +581,7 @@ public class SpringApplication {
 	protected void logStartupInfo(boolean isRoot) {
 		if (isRoot) {
 			new StartupInfoLogger(this.mainApplicationClass)
-			.logStarting(getApplicationLog());
+					.logStarting(getApplicationLog());
 		}
 	}
 

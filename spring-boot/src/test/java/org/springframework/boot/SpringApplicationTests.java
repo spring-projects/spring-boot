@@ -79,10 +79,11 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringApplication}.
- *
+ * 
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Christian Dupuis
  */
 public class SpringApplicationTests {
 
@@ -159,6 +160,15 @@ public class SpringApplicationTests {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
 		application.run("--banner.location=classpath:test-banner.txt");
+		verify(application, never()).printBanner();
+	}
+
+	@Test
+	public void customBannerWithProperties() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.run("--banner.location=classpath:test-banner-with-placeholder.txt",
+				"--test.property=123456");
 		verify(application, never()).printBanner();
 	}
 
