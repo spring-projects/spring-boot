@@ -23,7 +23,7 @@ import org.springframework.boot.cli.util.Log;
 
 /**
  * {@link Command} to display the 'version' number.
- * 
+ *
  * @author Phillip Webb
  */
 public class VersionCommand extends AbstractCommand {

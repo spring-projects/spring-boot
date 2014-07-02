@@ -25,7 +25,7 @@ import org.springframework.core.env.Environment;
  * Event published as when a {@link SpringApplication} is starting up and the
  * {@link ApplicationContext} is fully prepared but not refreshed. The bean definitions
  * will be loaded and the {@link Environment} is ready for use at this stage.
- * 
+ *
  * @author Dave Syer
  */
 public class ApplicationPreparedEvent extends SpringApplicationEvent {

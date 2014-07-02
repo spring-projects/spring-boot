@@ -21,7 +21,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 
 /**
  * Configuration properties to configure {@link HttpMessageConverter}s.
- * 
+ *
  * @author Dave Syer
  * @author Piotr Maj
  */

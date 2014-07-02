@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 /**
  * {@link URLStreamHandler} for Spring Boot loader {@link JarFile}s.
- * 
+ *
  * @author Phillip Webb
  * @see JarFile#registerUrlProtocolHandler()
  */

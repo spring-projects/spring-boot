@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EntityManagerFactoryBuilder}.
- * 
+ *
  * @author Dave Syer
  */
 public class EntityManagerFactoryBuilderTests {

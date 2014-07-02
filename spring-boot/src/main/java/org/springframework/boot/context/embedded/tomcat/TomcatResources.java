@@ -32,7 +32,7 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * Abstraction to add resources that works with both Tomcat 8 and 7.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ShellProperties}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class ShellPropertiesTests {

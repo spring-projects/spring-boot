@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
  * Bean to handle {@link DataSource} initialization by running {@literal schema-*.sql} on
  * {@link PostConstruct} and and {@literal data-*.sql} SQL scripts on a
  * {@link DataSourceInitializedEvent}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.1.0

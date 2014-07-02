@@ -48,7 +48,7 @@ import org.springframework.stereotype.Component;
  * accepting error page registrations from Spring Boot's
  * {@link EmbeddedServletContainerCustomizer} (any beans of that type in the context will
  * be applied to this container).
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

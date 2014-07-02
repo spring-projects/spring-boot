@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link ElasticsearchRepositoriesAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ElasticsearchRepositoriesAutoConfigurationTests {

@@ -36,7 +36,7 @@ import org.springframework.util.Assert;
  * stored as zset values and the timestamps as regular values, both against a key composed
  * of the group name prefixed with a constant prefix (default "spring.groups."). The group
  * names are stored as a zset under "keys." + <code>[prefix]</code>.
- * 
+ *
  * @author Dave Syer
  */
 public class RedisMultiMetricRepository implements MultiMetricRepository {

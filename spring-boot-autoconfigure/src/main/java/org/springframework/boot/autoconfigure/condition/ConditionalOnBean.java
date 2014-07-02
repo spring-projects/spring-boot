@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Conditional;
 /**
  * {@link Conditional} that only matches when the specified bean classes and/or names are
  * already contained in the {@link BeanFactory}.
- * 
+ *
  * @author Phillip Webb
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })

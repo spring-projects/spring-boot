@@ -39,7 +39,7 @@ import org.springframework.web.context.WebApplicationContext;
  * Note that a WebApplicationInitializer is only needed if you are building a war file and
  * deploying it. If you prefer to run an embedded container (we do) then you won't need
  * this at all.
- * 
+ *
  * @author Dave Syer
  */
 public abstract class SpringBootServletInitializer implements WebApplicationInitializer {

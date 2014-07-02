@@ -51,7 +51,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * embedded JAR files (as long as their entry is not compressed).</li>
  * <li>Entry data can be accessed as {@link RandomAccessData}.</li>
  * </ul>
- * 
+ *
  * @author Phillip Webb
  */
 public class JarFile extends java.util.jar.JarFile implements Iterable<JarEntryData> {

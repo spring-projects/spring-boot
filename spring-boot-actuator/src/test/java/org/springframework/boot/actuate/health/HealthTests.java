@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link Health}.
- * 
+ *
  * @author Phillip Webb
  */
 public class HealthTests {

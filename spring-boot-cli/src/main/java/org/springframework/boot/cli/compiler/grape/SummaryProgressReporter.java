@@ -28,7 +28,7 @@ import org.eclipse.aether.transfer.TransferEvent;
 
 /**
  * Provide high-level progress feedback for long running resolves.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

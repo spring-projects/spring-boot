@@ -36,7 +36,7 @@ import org.springframework.util.ClassUtils;
  * Liquibase {@link PackageScanClassResolver} implementation that uses Spring's resource
  * scanning to locate classes. This variant is safe to use with Spring Boot packaged
  * executable JARs.
- * 
+ *
  * @author Phillip Webb
  */
 public class SpringPackageScanClassResolver extends DefaultPackageScanClassResolver {

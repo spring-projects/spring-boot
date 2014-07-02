@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ManagementSecurityAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class ManagementSecurityAutoConfigurationTests {

@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  * {@link EmbeddedServletContainer} that can be used to control an embedded Tomcat server.
  * Usually this class should be created using the
  * {@link TomcatEmbeddedServletContainerFactory} and not directly.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see TomcatEmbeddedServletContainerFactory

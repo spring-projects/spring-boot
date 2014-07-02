@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
  * is set, an exponential moving average will be calculated as defined in this <a
  * href="http://www.itl.nist.gov/div898/handbook/pmc/section4/pmc431.htm">NIST
  * document</a>.
- * 
+ *
  * @author Luke Taylor
  */
 public final class RichGauge {
@@ -94,7 +94,7 @@ public final class RichGauge {
 	/**
 	 * Either an exponential weighted moving average or a simple mean, respectively,
 	 * depending on whether the weight 'alpha' has been set for this gauge.
-	 * 
+	 *
 	 * @return The average over all the accumulated values
 	 */
 	public double getAverage() {

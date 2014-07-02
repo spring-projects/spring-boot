@@ -28,7 +28,7 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 /**
  * Strategy that can be used to apply some auto-configuration during the
  * {@link CompilePhase#CONVERSION} Groovy compile phase.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class CompilerAutoConfiguration {

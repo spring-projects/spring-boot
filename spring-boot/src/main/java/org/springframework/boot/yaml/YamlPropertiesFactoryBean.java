@@ -27,7 +27,7 @@ import org.springframework.beans.factory.FactoryBean;
  * properties. It's more or less a superset of JSON, so it has a lot of similar features.
  * The Properties created by this factory have nested paths for hierarchical objects, so
  * for instance this YAML
- * 
+ *
  * <pre class="code">
  * environments:
  *   dev:
@@ -37,33 +37,33 @@ import org.springframework.beans.factory.FactoryBean;
  *     url: http://foo.bar.com
  *     name: My Cool App
  * </pre>
- * 
+ *
  * is transformed into these Properties:
- * 
+ *
  * <pre class="code">
  * environments.dev.url=http://dev.bar.com
  * environments.dev.name=Developer Setup
  * environments.prod.url=http://foo.bar.com
  * environments.prod.name=My Cool App
  * </pre>
- * 
+ *
  * Lists are represented as comma-separated values (useful for simple String values) and
  * also as property keys with <code>[]</code> dereferencers, for example this YAML:
- * 
+ *
  * <pre class="code">
  * servers:
  * - dev.bar.com
  * - foo.bar.com
  * </pre>
- * 
+ *
  * becomes java Properties like this:
- * 
+ *
  * <pre class="code">
  * servers=dev.bar.com,foo.bar.com
  * servers[0]=dev.bar.com
  * servers[1]=foo.bar.com
  * </pre>
- * 
+ *
  * @author Dave Syer
  */
 public class YamlPropertiesFactoryBean extends YamlProcessor implements

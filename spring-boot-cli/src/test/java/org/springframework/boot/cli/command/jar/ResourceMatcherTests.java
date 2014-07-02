@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ResourceMatcher}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class ResourceMatcherTests {

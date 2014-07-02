@@ -26,7 +26,7 @@ import org.eclipse.aether.transfer.TransferResource;
 
 /**
  * Provide detailed progress feedback for long running resolves.
- * 
+ *
  * @author Andy Wilkinson
  */
 final class DetailedProgressReporter implements ProgressReporter {

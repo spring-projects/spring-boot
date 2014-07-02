@@ -36,7 +36,7 @@ import ch.qos.logback.core.AppenderBase;
 /**
  * {@link Appender} that can remap {@link ILoggingEvent} {@link Level}s as they are
  * written.
- * 
+ *
  * @author Phillip Webb
  * @see #setRemapLevels(String)
  * @see #setDestinationLogger(String)

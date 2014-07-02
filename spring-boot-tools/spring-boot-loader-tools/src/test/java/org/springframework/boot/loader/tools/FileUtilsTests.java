@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests fir {@link FileUtils}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

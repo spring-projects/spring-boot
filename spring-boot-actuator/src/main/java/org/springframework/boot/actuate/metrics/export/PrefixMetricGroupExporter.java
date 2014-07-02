@@ -28,7 +28,7 @@ import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
 /**
  * A convenient exporter for a group of metrics from a {@link PrefixMetricReader}. Exports
  * all metrics whose name starts with a prefix (or all metrics if the prefix is empty).
- * 
+ *
  * @author Dave Syer
  */
 public class PrefixMetricGroupExporter extends AbstractMetricExporter {

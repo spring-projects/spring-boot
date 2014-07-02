@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * Common {@link Layout}s.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

@@ -69,7 +69,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
  * <code>${loader.home}/META-INF</code>.</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  * @author Janne Valkealahti
  */

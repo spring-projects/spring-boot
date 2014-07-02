@@ -35,7 +35,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
  * files. Users only need to define a <code>beans{}</code> DSL element, and this
  * transformation will remove it and make it accessible to the Spring application via an
  * interface.
- * 
+ *
  * @author Dave Syer
  */
 public class GroovyBeansTransformation implements ASTTransformation {

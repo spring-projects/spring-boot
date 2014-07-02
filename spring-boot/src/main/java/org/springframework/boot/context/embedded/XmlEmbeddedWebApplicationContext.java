@@ -29,7 +29,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * Note: In case of multiple config locations, later bean definitions will override ones
  * defined in earlier loaded files. This can be leveraged to deliberately override certain
  * bean definitions via an extra XML file.
- * 
+ *
  * @author Phillip Webb
  * @see #setNamespace
  * @see #setConfigLocations

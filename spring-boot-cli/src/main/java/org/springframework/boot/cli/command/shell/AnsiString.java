@@ -23,7 +23,7 @@ import org.fusesource.jansi.AnsiRenderer.Code;
 
 /**
  * Simple utitliy class to build an ANSI string when supported by the {@link Terminal}.
- * 
+ *
  * @author Phillip Webb
  */
 class AnsiString {

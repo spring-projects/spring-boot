@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LogbackLoggingSystem}.
- * 
+ *
  * @author Dave Syer
  */
 public class LogbackLoggingSystemTests {

@@ -25,7 +25,7 @@ import org.springframework.http.HttpStatus;
 
 /**
  * Configuration properties for the {@link HealthMvcEndpoint}.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */

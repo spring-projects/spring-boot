@@ -21,7 +21,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
 
 /**
  * {@link ConfigurationProperties properties} for Spring MVC.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1
  */

@@ -27,7 +27,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data JPA
  * Repositories.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

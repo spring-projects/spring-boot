@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Tests for {@link VcapApplicationListener}.
- * 
+ *
  * @author Dave Syer
  */
 public class VcapApplicationListenerTests {

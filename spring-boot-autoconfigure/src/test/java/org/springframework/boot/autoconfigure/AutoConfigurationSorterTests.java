@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationSorter}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AutoConfigurationSorterTests {

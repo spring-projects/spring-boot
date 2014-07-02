@@ -35,7 +35,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletListenerRegistrationBean}.
- * 
+ *
  * @author Dave Syer
  */
 public class ServletListenerRegistrationBeanTests {

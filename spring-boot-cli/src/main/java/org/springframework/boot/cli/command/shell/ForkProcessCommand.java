@@ -28,7 +28,7 @@ import org.springframework.boot.loader.tools.JavaExecutable;
 
 /**
  * Decorate an existing command to run it by forking the current java process.
- * 
+ *
  * @author Phillip Webb
  */
 class ForkProcessCommand extends RunProcessCommand {

@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BeansEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class BeansEndpointTests extends AbstractEndpointTests<BeansEndpoint> {

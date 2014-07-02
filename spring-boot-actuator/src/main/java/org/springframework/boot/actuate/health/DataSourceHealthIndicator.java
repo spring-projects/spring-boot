@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link HealthIndicator} that tests the status of a {@link DataSource} and optionally
  * runs a test query.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  * @since 1.1.0

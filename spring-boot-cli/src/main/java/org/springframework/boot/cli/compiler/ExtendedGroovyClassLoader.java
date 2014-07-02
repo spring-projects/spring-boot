@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
 /**
  * Extension of the {@link GroovyClassLoader} with support for obtaining '.class' files as
  * resources.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

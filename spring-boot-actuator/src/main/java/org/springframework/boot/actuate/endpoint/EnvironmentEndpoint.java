@@ -37,7 +37,7 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link Endpoint} to expose {@link ConfigurableEnvironment environment} information.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis

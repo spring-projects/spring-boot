@@ -22,7 +22,7 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
  * Tests for using the Gradle plugin's support for installing artifacts
- * 
+ *
  * @author Dave Syer
  */
 public class InstallTests {

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}
- * 
+ *
  * @author Stephane Nicoll
  */
 public class SpringApplicationContextLoaderTests {

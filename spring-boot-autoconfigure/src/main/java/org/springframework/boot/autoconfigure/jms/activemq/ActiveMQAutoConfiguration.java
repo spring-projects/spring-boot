@@ -37,7 +37,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * {@link EnableAutoConfiguration Auto-configuration} to integrate with an ActiveMQ
  * broker. Validates that the classpath contain the necessary classes before starting an
  * embedded broker.
- * 
+ *
  * @author Stephane Nicoll
  * @since 1.1.0
  */

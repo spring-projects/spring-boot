@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  * simple facade over {@link AnnotatedBeanDefinitionReader},
  * {@link XmlBeanDefinitionReader} and {@link ClassPathBeanDefinitionScanner}. See
  * {@link SpringApplication} for the types of sources that are supported.
- * 
+ *
  * @author Phillip Webb
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */

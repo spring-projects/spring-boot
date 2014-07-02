@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Provides access to the java binary executable, regardless of OS.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1.0
  */

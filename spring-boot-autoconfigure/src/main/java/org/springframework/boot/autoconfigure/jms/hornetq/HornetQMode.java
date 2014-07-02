@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.jms.hornetq;
 
 /**
  * Define the mode in which HornetQ can operate.
- * 
+ *
  * @author Stephane Nicoll
  * @since 1.1.0
  */

@@ -31,7 +31,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

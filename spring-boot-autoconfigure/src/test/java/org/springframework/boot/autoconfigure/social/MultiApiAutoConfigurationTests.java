@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for Spring Social configuration with multiple API providers.
- * 
+ *
  * @author Craig Walls
  */
 public class MultiApiAutoConfigurationTests extends AbstractSocialAutoConfigurationTests {

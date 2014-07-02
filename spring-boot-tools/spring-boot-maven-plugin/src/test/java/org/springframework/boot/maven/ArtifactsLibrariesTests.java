@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ArtifactsLibraries}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ArtifactsLibrariesTests {

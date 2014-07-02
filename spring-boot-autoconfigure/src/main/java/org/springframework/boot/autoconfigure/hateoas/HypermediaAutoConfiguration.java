@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring HATEOAS's
  * {@link EnableHypermediaSupport}.
- * 
+ *
  * @author Roy Clarkson
  * @author Oliver Gierke
  * @since 1.1.0

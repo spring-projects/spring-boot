@@ -27,7 +27,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * {@link Command} to run a groovy test script or scripts.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */

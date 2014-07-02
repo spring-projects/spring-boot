@@ -31,7 +31,7 @@ import org.springframework.util.ReflectionUtils;
  * {@link EmbeddedServletContainer} that can be used to control an embedded Jetty server.
  * Usually this class should be created using the
  * {@link JettyEmbeddedServletContainerFactory} and not directly.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see JettyEmbeddedServletContainerFactory

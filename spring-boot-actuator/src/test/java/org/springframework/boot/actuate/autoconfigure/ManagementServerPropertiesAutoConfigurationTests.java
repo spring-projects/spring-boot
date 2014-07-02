@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ManagementServerPropertiesAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagementServerPropertiesAutoConfigurationTests {

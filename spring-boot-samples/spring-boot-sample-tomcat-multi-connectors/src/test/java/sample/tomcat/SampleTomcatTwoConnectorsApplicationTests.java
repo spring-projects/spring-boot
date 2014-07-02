@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Basic integration tests for 2 connector demo application.
- * 
+ *
  * @author Brock Mills
  */
 @RunWith(SpringJUnit4ClassRunner.class)

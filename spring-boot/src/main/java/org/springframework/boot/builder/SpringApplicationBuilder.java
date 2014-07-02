@@ -40,23 +40,23 @@ import org.springframework.core.io.ResourceLoader;
  * Builder for {@link SpringApplication} and {@link ApplicationContext} instances with
  * convenient fluent API and context hierarchy support. Simple example of a context
  * hierarchy:
- * 
+ *
  * <pre class="code">
  * new SpringApplicationBuilder(ParentConfig.class).child(ChildConfig.class).run(args);
  * </pre>
- * 
+ *
  * Another common use case is setting default arguments, e.g. active Spring profiles, to
  * set up the environment for an application:
- * 
+ *
  * <pre class="code">
  * new SpringApplicationBuilder(Application.class).profiles(&quot;server&quot;)
  * 		.defaultArgs(&quot;--transport=local&quot;).run(args);
  * </pre>
- * 
+ *
  * <p>
  * If your needs are simpler, consider using the static convenience methods in
  * SpringApplication instead.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringApplicationBuilder {

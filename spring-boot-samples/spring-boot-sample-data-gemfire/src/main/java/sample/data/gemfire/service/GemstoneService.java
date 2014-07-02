@@ -21,7 +21,7 @@ import sample.data.gemfire.domain.Gemstone;
 /**
  * The GemstoneService interface is a Service interface object contract defining business
  * operations for processing Gemstone domain objects.
- * 
+ *
  * @author John Blum
  */
 public interface GemstoneService {

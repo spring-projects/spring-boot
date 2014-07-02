@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  * Base class for metric exporters that have common features, principally a prefix for
  * exported metrics and filtering by timestamp (so only new values are included in the
  * export).
- * 
+ *
  * @author Dave Syer
  */
 public abstract class AbstractMetricExporter implements Exporter {

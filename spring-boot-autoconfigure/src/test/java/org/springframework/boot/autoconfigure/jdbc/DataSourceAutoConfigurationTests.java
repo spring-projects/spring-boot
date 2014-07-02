@@ -52,7 +52,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class DataSourceAutoConfigurationTests {

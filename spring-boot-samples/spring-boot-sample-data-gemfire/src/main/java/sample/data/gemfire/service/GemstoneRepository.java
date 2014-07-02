@@ -24,7 +24,7 @@ import sample.data.gemfire.domain.Gemstone;
  * The GemstoneRepository interface is an extension of the GemfireRepository abstraction
  * for encapsulating data access and persistence operations (CRUD) on Gemstone domain
  * objects.
- * 
+ *
  * @author John Blum
  */
 public interface GemstoneRepository extends GemfireRepository<Gemstone, Long> {

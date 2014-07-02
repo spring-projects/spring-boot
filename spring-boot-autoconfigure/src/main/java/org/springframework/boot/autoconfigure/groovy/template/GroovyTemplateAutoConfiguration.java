@@ -52,7 +52,7 @@ import org.springframework.core.io.ResourceLoader;
  * Autoconfiguration support for Groovy templates in MVC. By default creates a
  * {@link MarkupTemplateEngine} configured from {@link GroovyTemplateProperties}, but you
  * can override that by providing a {@link TemplateEngine} of a different type.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

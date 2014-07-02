@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ExecutableArchiveLauncher}
- * 
+ *
  * @author Andy Wilkinson
  */
 public class ExecutableArchiveLauncherTests {

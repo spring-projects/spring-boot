@@ -25,7 +25,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /**
  * {@link ConfigurationProperties} for configuring FreeMarker
- * 
+ *
  * @author Dave Syer
  * @author Andy Wilkinson
  * @since 1.1.0

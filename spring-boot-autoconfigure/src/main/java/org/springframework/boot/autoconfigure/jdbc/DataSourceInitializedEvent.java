@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationEvent;
  * {@link ApplicationEvent} used internally to trigger {@link DataSource} initialization.
  * Initialization can occur when {@literal schema-*.sql} files are executed or when
  * external libraries (e.g. JPA) initialize the database.
- * 
+ *
  * @author Dave Syer
  * @see DataSourceInitializer
  * @since 1.1.0

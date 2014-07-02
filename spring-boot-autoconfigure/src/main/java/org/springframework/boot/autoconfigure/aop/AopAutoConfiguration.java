@@ -32,7 +32,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * The configuration will not be activated if {@literal spring.aop.auto=false}. The
  * {@literal proxyTargetClass} attribute will be {@literal false}, by default, but can be
  * overridden by specifying {@literal spring.aop.proxyTargetClass=true}.
- * 
+ *
  * @author Dave Syer
  * @author Josh Long
  * @see EnableAspectJAutoProxy

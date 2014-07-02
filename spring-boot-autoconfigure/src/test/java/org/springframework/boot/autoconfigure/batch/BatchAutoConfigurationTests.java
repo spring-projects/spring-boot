@@ -66,7 +66,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class BatchAutoConfigurationTests {

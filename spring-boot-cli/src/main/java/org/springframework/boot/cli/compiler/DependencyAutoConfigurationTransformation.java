@@ -29,7 +29,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
  * {@link ASTTransformation} to apply
  * {@link CompilerAutoConfiguration#applyDependencies(DependencyCustomizer) dependency
  * auto-configuration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson

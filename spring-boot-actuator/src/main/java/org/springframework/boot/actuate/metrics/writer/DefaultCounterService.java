@@ -20,7 +20,7 @@ import org.springframework.boot.actuate.metrics.CounterService;
 
 /**
  * Default implementation of {@link CounterService}.
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultCounterService implements CounterService {

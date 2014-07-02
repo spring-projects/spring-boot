@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  * {@link JarScanner} decorator allowing alternative default jar pattern matching. This
  * class extends {@link StandardJarScanner} rather than implementing the
  * {@link JarScanner} due to API changes introduced in Tomcat 8.
- * 
+ *
  * @author Phillip Webb
  * @see #apply(TomcatEmbeddedContext, String)
  */

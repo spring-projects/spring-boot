@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link AetherGrapeEngine}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class AetherGrapeEngineTests {

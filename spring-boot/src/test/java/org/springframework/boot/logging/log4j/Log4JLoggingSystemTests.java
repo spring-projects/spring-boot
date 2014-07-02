@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link Log4JLoggingSystem}.
- * 
+ *
  * @author Phillip Webb
  */
 public class Log4JLoggingSystemTests {

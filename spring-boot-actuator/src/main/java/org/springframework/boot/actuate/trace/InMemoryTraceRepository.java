@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * In-memory implementation of {@link TraceRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryTraceRepository implements TraceRepository {

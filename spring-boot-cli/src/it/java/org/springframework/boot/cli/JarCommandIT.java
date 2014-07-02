@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Integration test for {@link JarCommand}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class JarCommandIT {

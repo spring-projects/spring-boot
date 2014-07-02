@@ -21,7 +21,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for Rabbit.
- * 
+ *
  * @author Greg Turnquist
  * @author Dave Syer
  */

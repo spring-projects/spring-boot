@@ -44,7 +44,7 @@ import org.springframework.asm.Type;
 /**
  * Finds any class with a {@code public static main} method by performing a breadth first
  * search.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class MainClassFinder {

@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link RabbitHealthIndicator}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class RabbitHealthIndicatorTests {

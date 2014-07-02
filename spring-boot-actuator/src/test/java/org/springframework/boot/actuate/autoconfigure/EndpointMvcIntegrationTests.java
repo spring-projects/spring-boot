@@ -53,7 +53,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for MVC {@link Endpoint}s.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

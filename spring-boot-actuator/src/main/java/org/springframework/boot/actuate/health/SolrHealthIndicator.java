@@ -20,7 +20,7 @@ import org.apache.solr.client.solrj.SolrServer;
 
 /**
  * {@link HealthIndicator} for Apache Solr.
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

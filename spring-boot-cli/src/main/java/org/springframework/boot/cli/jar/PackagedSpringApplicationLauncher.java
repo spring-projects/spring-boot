@@ -23,7 +23,7 @@ import java.util.jar.Manifest;
 
 /**
  * A launcher for a CLI application that has been compiled and packaged as a jar file.
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */

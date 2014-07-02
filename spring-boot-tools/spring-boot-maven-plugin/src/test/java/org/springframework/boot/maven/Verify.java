@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Verification utility for use with maven-invoker-plugin verification scripts.
- * 
+ *
  * @author Phillip Webb
  */
 public class Verify {

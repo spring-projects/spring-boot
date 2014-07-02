@@ -61,7 +61,7 @@ import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link EmbeddedWebApplicationContext}.
- * 
+ *
  * @author Phillip Webb
  */
 public class EmbeddedWebApplicationContextTests {

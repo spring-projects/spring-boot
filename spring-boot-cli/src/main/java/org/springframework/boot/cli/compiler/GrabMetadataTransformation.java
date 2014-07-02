@@ -46,7 +46,7 @@ import org.springframework.boot.groovy.GrabMetadata;
 
 /**
  * {@link ASTTransformation} for processing {@link GrabMetadata @GrabMetadata}
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link TwitterAutoConfiguration}.
- * 
+ *
  * @author Craig Walls
  */
 public class TwitterAutoConfigurationTests extends AbstractSocialAutoConfigurationTests {

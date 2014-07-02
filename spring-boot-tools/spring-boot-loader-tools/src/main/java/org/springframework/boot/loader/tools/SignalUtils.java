@@ -21,7 +21,7 @@ import sun.misc.SignalHandler;
 
 /**
  * Utilities for working with signal handling.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

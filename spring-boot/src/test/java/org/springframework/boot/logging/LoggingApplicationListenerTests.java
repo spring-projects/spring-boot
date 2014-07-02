@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LoggingApplicationListener}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

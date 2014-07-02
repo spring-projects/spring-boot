@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Tests for {@link DriverClassNameProvider}.
- * 
+ *
  * @author Maciej Walkowiak
  */
 public class DriverClassNameProviderTests {

@@ -43,7 +43,7 @@ import org.springframework.web.socket.WebSocketHandler;
  * <code>spring-websocket</code> is detected on the classpath then we add a listener that
  * installs the Tomcat Websocket initializer. In a non-embedded container it should
  * already be there.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration
@@ -105,7 +105,7 @@ public class WebSocketAutoConfiguration {
 	 * Instead of registering the WsSci directly as a ServletContainerInitializer, we use
 	 * the ApplicationListener provided by Tomcat. Unfortunately the ApplicationListener
 	 * class moved packages in Tomcat 8 so we have to do it reflectively.
-	 * 
+	 *
 	 * @param context the current context
 	 * @param listenerType the type of listener to add
 	 */

@@ -48,7 +48,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for an embedded servlet containers.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

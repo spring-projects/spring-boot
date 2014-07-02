@@ -36,7 +36,7 @@ import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
  * {@link MetricWriter} provided is a {@link MultiMetricRepository} then the values for a
  * gauge will be stored as a group, and hence will be retrievable from the repository in a
  * single query (or optionally individually).
- * 
+ *
  * @author Dave Syer
  */
 public class RichGaugeExporter extends AbstractMetricExporter {

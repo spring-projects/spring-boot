@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DetailedProgressReporter}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public final class DetailedProgressReporterTests {

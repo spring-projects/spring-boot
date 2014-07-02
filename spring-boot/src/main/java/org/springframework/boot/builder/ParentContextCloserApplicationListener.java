@@ -32,7 +32,7 @@ import org.springframework.util.ObjectUtils;
  * Listener that closes the application context if its parent is closed. It listens for
  * refresh events and grabs the current context from there, and then listens for closed
  * events and propagates it down the hierarchy.
- * 
+ *
  * @author Dave Syer
  * @author Eric Bottard
  */

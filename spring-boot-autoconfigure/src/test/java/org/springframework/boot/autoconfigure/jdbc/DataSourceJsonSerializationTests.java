@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Test that a {@link DataSource} can be exposed as JSON for actuator endpoints.
- * 
+ *
  * @author Dave Syer
  */
 public class DataSourceJsonSerializationTests {

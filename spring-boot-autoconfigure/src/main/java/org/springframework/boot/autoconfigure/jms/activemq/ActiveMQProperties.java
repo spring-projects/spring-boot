@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for ActiveMQ
- * 
+ *
  * @author Greg Turnquist
  * @author Stephane Nicoll
  */

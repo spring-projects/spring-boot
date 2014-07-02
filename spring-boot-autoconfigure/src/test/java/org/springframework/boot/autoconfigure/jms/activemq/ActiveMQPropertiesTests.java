@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ActiveMQProperties}.
- * 
+ *
  * @author Stephane Nicoll
  */
 public class ActiveMQPropertiesTests {

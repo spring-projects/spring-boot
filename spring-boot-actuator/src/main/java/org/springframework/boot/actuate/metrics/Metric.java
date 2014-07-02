@@ -25,7 +25,7 @@ import org.springframework.util.ObjectUtils;
  * Immutable class that can be used to hold any arbitrary system measurement value (a
  * named numeric value with a timestamp). For example a metric might record the number of
  * active connections to a server, or the temperature of a meeting room.
- * 
+ *
  * @author Dave Syer
  */
 public class Metric<T extends Number> {

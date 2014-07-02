@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 /**
  * Utility to invoke the command line in the same way as a user would, i.e. via the shell
  * script in the package's bin directory.
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */

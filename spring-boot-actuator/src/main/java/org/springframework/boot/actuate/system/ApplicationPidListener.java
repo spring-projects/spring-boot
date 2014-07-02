@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 /**
  * An {@link org.springframework.context.ApplicationListener} that saves application PID
  * into file. This application listener will be triggered exactly once per JVM.
- * 
+ *
  * @author Jakub Kubrynski
  * @author Dave Syer
  * @author Phillip Webb

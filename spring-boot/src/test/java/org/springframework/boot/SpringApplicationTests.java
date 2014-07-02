@@ -79,7 +79,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringApplication}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson

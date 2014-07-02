@@ -26,7 +26,7 @@ import org.springframework.boot.groovy.DelegateTestRunner;
 
 /**
  * Compile and run groovy based tests.
- * 
+ *
  * @author Phillip Webb
  */
 public class TestRunner {

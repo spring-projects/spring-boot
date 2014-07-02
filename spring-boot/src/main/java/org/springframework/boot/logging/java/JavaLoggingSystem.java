@@ -32,7 +32,7 @@ import org.springframework.util.SystemPropertyUtils;
 
 /**
  * {@link LoggingSystem} for {@link Logger java.util.logging}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

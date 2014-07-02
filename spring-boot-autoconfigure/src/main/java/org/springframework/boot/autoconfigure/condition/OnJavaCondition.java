@@ -26,7 +26,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * {@link Condition} that checks for a required version of Java
- * 
+ *
  * @author Oliver Gierke
  * @author Phillip Webb
  * @see ConditionalOnJava

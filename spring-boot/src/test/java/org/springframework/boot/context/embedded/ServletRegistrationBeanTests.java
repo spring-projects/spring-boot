@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServletRegistrationBean}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ServletRegistrationBeanTests {

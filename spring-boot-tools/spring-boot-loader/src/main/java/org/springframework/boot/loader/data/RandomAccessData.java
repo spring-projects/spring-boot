@@ -22,7 +22,7 @@ import java.io.InputStream;
 /**
  * Interface that provides read-only random access to some underlying data.
  * Implementations must allow concurrent reads in a thread-safe manner.
- * 
+ *
  * @author Phillip Webb
  */
 public interface RandomAccessData {

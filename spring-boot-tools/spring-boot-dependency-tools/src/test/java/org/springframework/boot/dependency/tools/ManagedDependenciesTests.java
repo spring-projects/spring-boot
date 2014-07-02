@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ManagedDependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesTests {

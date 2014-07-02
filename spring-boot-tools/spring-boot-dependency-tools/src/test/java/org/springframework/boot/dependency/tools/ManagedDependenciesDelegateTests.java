@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ManagedDependenciesDelegate}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesDelegateTests {

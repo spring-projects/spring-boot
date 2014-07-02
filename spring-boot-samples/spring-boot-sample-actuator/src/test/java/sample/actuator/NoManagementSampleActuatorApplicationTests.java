@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for switching off management endpoints.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -32,7 +32,7 @@ import org.springframework.core.env.Environment;
  * the {@link LiveBeansView#MBEAN_DOMAIN_PROPERTY_NAME} then all application contexts in
  * the JVM will be shown (and the corresponding MBeans will be registered per the standard
  * behavior of LiveBeansView). Otherwise only the current application context.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.beans", ignoreUnknownFields = false)

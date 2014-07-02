@@ -20,7 +20,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 
 /**
  * A model for a dependency to exclude.
- * 
+ *
  * @author Stephane Nicoll
  * @since 1.1
  */

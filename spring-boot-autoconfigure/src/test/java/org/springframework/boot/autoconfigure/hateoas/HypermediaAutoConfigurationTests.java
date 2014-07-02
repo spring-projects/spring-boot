@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link HypermediaAutoConfiguration}.
- * 
+ *
  * @author Roy Clarkson
  * @author Oliver Gierke
  */

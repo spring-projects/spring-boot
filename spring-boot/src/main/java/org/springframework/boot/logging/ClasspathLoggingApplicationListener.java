@@ -32,7 +32,7 @@ import org.springframework.core.Ordered;
  * events} by logging the classpath of the thread context class loader (TCCL) at
  * {@code DEBUG} level and to {@link ApplicationFailedEvent error events} by logging the
  * TCCL's classpath at {@code INFO} level.
- * 
+ *
  * @author Andy Wilkinson
  */
 public final class ClasspathLoggingApplicationListener implements

@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LevelRemappingAppender}.
- * 
+ *
  * @author Phillip Webb
  */
 public class LevelRemappingAppenderTests {

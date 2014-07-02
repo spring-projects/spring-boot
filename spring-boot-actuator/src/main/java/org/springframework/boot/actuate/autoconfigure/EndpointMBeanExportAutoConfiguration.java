@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable JMX export for
  * {@link Endpoint}s.
- * 
+ *
  * @author Christian Dupuis
  */
 @Configuration

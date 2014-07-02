@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose {@link PublicMetrics}.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.metrics", ignoreUnknownFields = false)
@@ -35,7 +35,7 @@ public class MetricsEndpoint extends AbstractEndpoint<Map<String, Object>> {
 
 	/**
 	 * Create a new {@link MetricsEndpoint} instance.
-	 * 
+	 *
 	 * @param metrics the metrics to expose
 	 */
 	public MetricsEndpoint(PublicMetrics metrics) {

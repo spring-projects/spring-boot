@@ -21,7 +21,7 @@ import java.util.Collection;
 
 /**
  * {@link Dependencies} delegate used internally by {@link ManagedDependencies}.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1.0
  */

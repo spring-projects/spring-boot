@@ -42,7 +42,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist

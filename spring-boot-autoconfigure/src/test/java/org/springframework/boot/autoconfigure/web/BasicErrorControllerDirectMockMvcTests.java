@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
  * {@link SpringJUnit4ClassRunner}.
- * 
+ *
  * @author Dave Syer
  */
 public class BasicErrorControllerDirectMockMvcTests {

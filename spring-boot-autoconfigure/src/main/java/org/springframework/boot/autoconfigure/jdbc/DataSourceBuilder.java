@@ -35,7 +35,7 @@ import org.springframework.util.ClassUtils;
  * the classpath, only a small set of common configuration properties are supported. To
  * inject additional properties into the result you can downcast it, or use
  * <code>@ConfigurationProperties</code>.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

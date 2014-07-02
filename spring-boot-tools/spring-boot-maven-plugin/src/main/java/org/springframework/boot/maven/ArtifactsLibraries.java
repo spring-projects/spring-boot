@@ -32,7 +32,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
  * {@link Libraries} backed by Maven {@link Artifact}s
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

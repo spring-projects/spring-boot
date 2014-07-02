@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertySourcesPropertyValuesTests {

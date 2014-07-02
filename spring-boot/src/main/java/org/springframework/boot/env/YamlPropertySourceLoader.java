@@ -28,7 +28,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Strategy to load '.yml' (or '.yaml') files into a {@link PropertySource}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

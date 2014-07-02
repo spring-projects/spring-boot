@@ -35,7 +35,7 @@ import org.springframework.util.SocketUtils;
 
 /**
  * Sample Application to show Tomcat running 2 connectors
- * 
+ *
  * @author Brock Mills
  */
 @Configuration

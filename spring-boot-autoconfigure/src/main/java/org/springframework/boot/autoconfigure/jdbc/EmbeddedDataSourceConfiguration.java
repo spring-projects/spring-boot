@@ -28,7 +28,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 
 /**
  * Configuration for embedded data sources.
- * 
+ *
  * @author Phillip Webb
  * @see DataSourceAutoConfiguration
  */

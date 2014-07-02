@@ -28,7 +28,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Tests for {@link SpringBootCondition}.
- * 
+ *
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")

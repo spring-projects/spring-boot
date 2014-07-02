@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
  * {@link PropertySource} that returns a random value for any property that starts with
  * {@literal "random."}. Return a {@code byte[]} unless the property name ends with
  * {@literal ".int} or {@literal ".long"}.
- * 
+ *
  * @author Dave Syer
  */
 public class RandomValuePropertySource extends PropertySource<Random> {

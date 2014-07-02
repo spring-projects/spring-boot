@@ -18,7 +18,7 @@ package org.springframework.boot.maven.sample;
 
 /**
  * Sample class with a main method.
- * 
+ *
  * @author Phillip Webb
  */
 public class ClassWithMainMethod {

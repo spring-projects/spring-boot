@@ -43,7 +43,7 @@ import org.springframework.boot.loader.tools.Repackager;
  * Repackages existing JAR and WAR archives so that they can be executed from the command
  * line using {@literal java -jar}. With <code>layout=NONE</code> can also be used simply
  * to package a JAR with nested dependencies (and no main class, so not executable).
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll

@@ -29,7 +29,7 @@ import org.springframework.util.MultiValueMap;
 
 /**
  * {@link Condition} that checks for specific resources.
- * 
+ *
  * @author Dave Syer
  * @see ConditionalOnResource
  */

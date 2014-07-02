@@ -28,7 +28,7 @@ import org.yaml.snakeyaml.nodes.NodeId;
 /**
  * Extended version of snakeyaml's Constructor class to facilitate mapping custom YAML
  * keys to Javabean property names.
- * 
+ *
  * @author Luke Taylor
  */
 public class YamlJavaBeanPropertyConstructor extends Constructor {

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link RepositoryRestMvcAutoConfiguration}.
- * 
+ *
  * @author Rob Winch
  */
 public class RepositoryRestMvcAutoConfigurationTests {

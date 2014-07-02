@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleElasticsearchApplication}.
- * 
+ *
  * @author Artur Konczak
  */
 public class SampleElasticsearchApplicationTests {

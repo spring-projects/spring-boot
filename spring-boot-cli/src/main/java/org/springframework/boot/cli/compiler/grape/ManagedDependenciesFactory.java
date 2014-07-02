@@ -28,7 +28,7 @@ import org.springframework.boot.dependency.tools.PomDependencies;
 
 /**
  * Factory to create Maven {@link Dependency} objects from Boot {@link PomDependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesFactory {

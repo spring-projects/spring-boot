@@ -56,7 +56,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * Generally auto-configuration beans are {@link Conditional @Conditional} beans (most
  * often using {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
- * 
+ *
  * @author Phillip Webb
  * @see ConditionalOnBean
  * @see ConditionalOnMissingBean

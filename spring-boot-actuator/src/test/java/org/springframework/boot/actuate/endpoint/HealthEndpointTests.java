@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HealthEndpoint}.
- * 
+ *
  * @author Phillip Webb
  * @author Christian Dupuis
  */

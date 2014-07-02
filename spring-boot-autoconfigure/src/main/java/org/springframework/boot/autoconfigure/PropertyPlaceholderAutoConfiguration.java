@@ -27,7 +27,7 @@ import org.springframework.core.annotation.Order;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
  * {@link PropertySourcesPlaceholderConfigurer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

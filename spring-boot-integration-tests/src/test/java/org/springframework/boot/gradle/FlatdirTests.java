@@ -27,7 +27,7 @@ import org.springframework.util.FileSystemUtils;
 
 /**
  * Tests for using the Gradle plugin's support for flat directory repos
- * 
+ *
  * @author Dave Syer
  */
 public class FlatdirTests {

@@ -22,7 +22,7 @@ import org.springframework.boot.cli.compiler.grape.RepositoryConfiguration;
 
 /**
  * Configuration for the {@link GroovyCompiler}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link PropertiesFileDependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class PropertiesFileDependenciesTests {

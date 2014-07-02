@@ -25,7 +25,7 @@ import org.springframework.context.ApplicationListener;
 /**
  * {@link ApplicationListener} that listens for {@link AuditEvent}s and stores them in a
  * {@link AuditEventRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class AuditListener implements ApplicationListener<AuditApplicationEvent> {

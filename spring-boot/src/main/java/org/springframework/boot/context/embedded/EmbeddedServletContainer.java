@@ -22,7 +22,7 @@ package org.springframework.boot.context.embedded;
  * <p>
  * Instances of this class are usually obtained via a
  * {@link EmbeddedServletContainerFactory}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see EmbeddedServletContainerFactory

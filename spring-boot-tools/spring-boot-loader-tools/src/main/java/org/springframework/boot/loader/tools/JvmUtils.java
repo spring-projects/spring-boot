@@ -23,7 +23,7 @@ import java.net.URLClassLoader;
 
 /**
  * Java Virtual Machine Utils.
- * 
+ *
  * @author Phillip Webb
  */
 abstract class JvmUtils {

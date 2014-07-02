@@ -25,7 +25,7 @@ import org.springframework.boot.groovy.GroovyTemplate;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring MVC.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

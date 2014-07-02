@@ -26,7 +26,7 @@ import java.util.concurrent.Semaphore;
 
 /**
  * {@link RandomAccessData} implementation backed by a {@link RandomAccessFile}.
- * 
+ *
  * @author Phillip Webb
  */
 public class RandomAccessDataFile implements RandomAccessData {

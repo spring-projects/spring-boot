@@ -29,7 +29,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Properties for the management server (e.g. port and path settings).
- * 
+ *
  * @author Dave Syer
  * @see ServerProperties
  */

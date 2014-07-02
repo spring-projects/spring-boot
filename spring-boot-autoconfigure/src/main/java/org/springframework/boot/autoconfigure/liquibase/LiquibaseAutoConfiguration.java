@@ -44,7 +44,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
- * 
+ *
  * @author Marcel Overdijk
  * @author Dave Syer
  * @author Phillip Webb

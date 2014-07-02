@@ -49,7 +49,7 @@ import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
  * <li>auto-registration for all {@link Module} beans with all {@link ObjectMapper} beans
  * (including the defaulted ones).</li>
  * </ul>
- * 
+ *
  * @author Oliver Gierke
  * @since 1.1.0
  */

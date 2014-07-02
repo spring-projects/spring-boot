@@ -20,7 +20,7 @@ import java.io.File;
 
 /**
  * Encapsulates information about a single library that may be packed into the archive.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1.2
  * @see Libraries

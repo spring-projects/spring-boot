@@ -38,7 +38,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link PropertySourcesPropertyValues} binding.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

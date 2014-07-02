@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link DataSourceInitializer}.
- * 
+ *
  * @author Dave Syer
  */
 public class DataSourceInitializerTests {

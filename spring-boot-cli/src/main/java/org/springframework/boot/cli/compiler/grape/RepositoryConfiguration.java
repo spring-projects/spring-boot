@@ -22,7 +22,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * The configuration of a repository
- * 
+ *
  * @author Andy Wilkinson
  */
 public final class RepositoryConfiguration {

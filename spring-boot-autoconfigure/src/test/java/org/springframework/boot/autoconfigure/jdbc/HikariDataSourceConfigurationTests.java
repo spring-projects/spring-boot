@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link HikariDataSourceConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class HikariDataSourceConfigurationTests {

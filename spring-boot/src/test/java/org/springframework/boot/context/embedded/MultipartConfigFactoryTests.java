@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MultipartConfigFactory}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MultipartConfigFactoryTests {

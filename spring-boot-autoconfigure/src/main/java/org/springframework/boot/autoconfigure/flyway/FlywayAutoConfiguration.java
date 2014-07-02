@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.1.0

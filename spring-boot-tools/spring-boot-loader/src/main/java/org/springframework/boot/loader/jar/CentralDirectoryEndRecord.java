@@ -22,7 +22,7 @@ import org.springframework.boot.loader.data.RandomAccessData;
 
 /**
  * A ZIP File "End of central directory record" (EOCD).
- * 
+ *
  * @author Phillip Webb
  * @see <a href="http://en.wikipedia.org/wiki/Zip_%28file_format%29">Zip File Format</a>
  */

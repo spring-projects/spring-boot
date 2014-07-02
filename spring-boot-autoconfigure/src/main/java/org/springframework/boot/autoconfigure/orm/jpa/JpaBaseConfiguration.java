@@ -49,7 +49,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 /**
  * Base {@link EnableAutoConfiguration Auto-configuration} for JPA.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke

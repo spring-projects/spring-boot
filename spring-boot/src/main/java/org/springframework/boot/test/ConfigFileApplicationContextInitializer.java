@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
  * {@link ApplicationContextInitializer} that can be used with the
  * {@link ContextConfiguration#initializers()} to trigger loading of
  * {@literal application.properties}.
- * 
+ *
  * @author Phillip Webb
  * @see ConfigFileApplicationListener
  */

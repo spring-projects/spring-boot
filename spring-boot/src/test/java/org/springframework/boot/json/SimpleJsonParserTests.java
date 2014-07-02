@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link SimpleJsonParser}.
- * 
+ *
  * @author Dave Syer
  */
 public class SimpleJsonParserTests {

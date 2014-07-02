@@ -29,7 +29,7 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Tests for disabling JMX by default
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -36,7 +36,7 @@ import org.yaml.snakeyaml.Yaml;
 
 /**
  * Base class for Yaml factories.
- * 
+ *
  * @author Dave Syer
  */
 public abstract class YamlProcessor {
@@ -55,7 +55,7 @@ public abstract class YamlProcessor {
 	 * A map of document matchers allowing callers to selectively use only some of the
 	 * documents in a YAML resource. In YAML documents are separated by
 	 * <code>---<code> lines, and each document is converted to properties before the match is made. E.g.
-	 * 
+	 *
 	 * <pre class="code">
 	 * environment: dev
 	 * url: http://dev.bar.com
@@ -65,10 +65,10 @@ public abstract class YamlProcessor {
 	 * url:http://foo.bar.com
 	 * name: My Cool App
 	 * </pre>
-	 * 
+	 *
 	 * when mapped with <code>documentMatchers = YamlProcessor.mapMatcher({"environment": "prod"})</code>
 	 * would end up as
-	 * 
+	 *
 	 * <pre class="code">
 	 * environment=prod
 	 * url=http://foo.bar.com

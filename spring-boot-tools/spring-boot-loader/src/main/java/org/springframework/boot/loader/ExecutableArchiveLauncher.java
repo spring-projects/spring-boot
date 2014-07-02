@@ -30,7 +30,7 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 
 /**
  * Base class for executable archive {@link Launcher}s.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

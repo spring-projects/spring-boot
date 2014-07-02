@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link PropertiesLauncher}.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertiesLauncherTests {

@@ -29,7 +29,7 @@ import java.util.zip.ZipEntry;
 
 /**
  * Creates a simple test jar.
- * 
+ *
  * @author Phillip Webb
  */
 public abstract class TestJarCreator {

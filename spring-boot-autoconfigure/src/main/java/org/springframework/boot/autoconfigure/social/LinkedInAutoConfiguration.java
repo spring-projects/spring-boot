@@ -42,7 +42,7 @@ import org.springframework.web.servlet.View;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
  * LinkedIn.
- * 
+ *
  * @author Craig Walls
  * @since 1.1.0
  */

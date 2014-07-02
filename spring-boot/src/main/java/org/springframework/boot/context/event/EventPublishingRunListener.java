@@ -29,7 +29,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * {@link SpringApplicationRunListener} to publish {@link SpringApplicationEvent}s.
- * 
+ *
  * @author Phillip Webb
  */
 public class EventPublishingRunListener implements SpringApplicationRunListener {

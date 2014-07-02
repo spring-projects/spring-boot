@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link FreeMarkerAutoConfiguration}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class FreeMarkerAutoConfigurationTests {

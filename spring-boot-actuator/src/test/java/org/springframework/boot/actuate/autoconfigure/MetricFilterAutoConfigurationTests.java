@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link MetricFilterAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MetricFilterAutoConfigurationTests {

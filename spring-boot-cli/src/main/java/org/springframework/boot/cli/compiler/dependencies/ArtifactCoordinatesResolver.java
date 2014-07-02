@@ -23,7 +23,7 @@ package org.springframework.boot.cli.compiler.dependencies;
  * the relevant piece from the identifier. Alternatively the identifier may be in the form
  * {@code artifactId}, in which case coordinate resolution uses implementation-specific
  * metadata to resolve the groupId and version.
- * 
+ *
  * @author Andy Wilkinson
  */
 public interface ArtifactCoordinatesResolver {

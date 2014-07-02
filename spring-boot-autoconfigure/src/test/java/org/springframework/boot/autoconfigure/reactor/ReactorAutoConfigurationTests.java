@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link ReactorAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class ReactorAutoConfigurationTests {

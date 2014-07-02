@@ -77,7 +77,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * different port to {@link ServerProperties} a new child context is created, otherwise it
  * is assumed that endpoint requests will be mapped and handled via an already registered
  * {@link DispatcherServlet}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Christian Dupuis

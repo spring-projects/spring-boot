@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  * {@link ClassLoader#getSystemClassLoader() system classloader}. This is required to to
  * ensure that any custom context classloader is always used (as is the case with some
  * executable archives).
- * 
+ *
  * @author Phillip Webb
  */
 public class TomcatEmbeddedWebappClassLoader extends WebappClassLoader {

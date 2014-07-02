@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Abstract base class for {@link EmbeddedServletContainerFactory} implementations.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

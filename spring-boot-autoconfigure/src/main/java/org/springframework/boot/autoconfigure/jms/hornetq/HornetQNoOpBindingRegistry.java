@@ -20,7 +20,7 @@ import org.hornetq.spi.core.naming.BindingRegistry;
 
 /**
  * A no-op implementation of the {@link org.hornetq.spi.core.naming.BindingRegistry}.
- * 
+ *
  * @author Stephane Nicoll
  * @since 1.1.0
  */

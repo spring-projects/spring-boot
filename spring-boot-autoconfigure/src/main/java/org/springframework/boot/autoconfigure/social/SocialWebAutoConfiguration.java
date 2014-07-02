@@ -57,7 +57,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social's web connection
  * support.
- * 
+ *
  * @author Craig Walls
  * @since 1.1.0
  */

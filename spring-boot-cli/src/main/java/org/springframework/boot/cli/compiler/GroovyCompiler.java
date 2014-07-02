@@ -56,13 +56,13 @@ import org.springframework.boot.cli.util.ResourceUtils;
  * <li>{@link CompilerAutoConfiguration} strategies will be read from
  * <code>META-INF/services/org.springframework.boot.cli.compiler.CompilerAutoConfiguration</code>
  * (per the standard java {@link ServiceLoader} contract) and applied during compilation</li>
- * 
+ *
  * <li>Multiple classes can be returned if the Groovy source defines more than one Class</li>
- * 
+ *
  * <li>Generated class files can also be loaded using
  * {@link ClassLoader#getResource(String)}</li>
  * </ul>
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson

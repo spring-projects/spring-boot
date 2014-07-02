@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests for {@link HotelRepository}.
- * 
+ *
  * @author Oliver Gierke
  */
 @RunWith(SpringJUnit4ClassRunner.class)

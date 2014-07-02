@@ -26,7 +26,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 
 /**
  * Repository utility that stores stuff in memory with period-separated String keys.
- * 
+ *
  * @author Dave Syer
  */
 public class SimpleInMemoryRepository<T> {

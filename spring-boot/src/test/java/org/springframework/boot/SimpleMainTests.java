@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SpringApplication} main method.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

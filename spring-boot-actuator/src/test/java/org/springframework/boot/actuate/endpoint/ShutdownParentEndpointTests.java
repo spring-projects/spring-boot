@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ShutdownEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class ShutdownParentEndpointTests {

@@ -29,7 +29,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Abstract base class for testing Spring Social auto-configuration.
- * 
+ *
  * @author Craig Walls
  */
 public class AbstractSocialAutoConfigurationTests {

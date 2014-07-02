@@ -32,7 +32,7 @@ import org.springframework.core.type.AnnotationMetadata;
 /**
  * {@link BeanPostProcessor} used to fire {@link DataSourceInitializedEvent}s. Should only
  * be registered via the inner {@link Registrar} class.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.2
  */

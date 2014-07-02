@@ -20,7 +20,7 @@ import org.eclipse.jetty.server.Server;
 
 /**
  * Callback interface that can be used to customize a Jetty {@link Server}.
- * 
+ *
  * @author Dave Syer
  * @see JettyEmbeddedServletContainerFactory
  */

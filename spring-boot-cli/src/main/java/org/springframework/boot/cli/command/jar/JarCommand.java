@@ -65,7 +65,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Command} to create a self-contained executable jar file from a CLI application
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */

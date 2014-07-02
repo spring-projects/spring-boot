@@ -38,7 +38,7 @@ import org.springframework.util.PatternMatchUtils;
 
 /**
  * General purpose AST utilities.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist

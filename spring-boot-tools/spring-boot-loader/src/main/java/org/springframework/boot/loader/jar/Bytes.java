@@ -24,7 +24,7 @@ import org.springframework.boot.loader.data.RandomAccessData.ResourceAccess;
 
 /**
  * Utilities for dealing with bytes from ZIP files.
- * 
+ *
  * @author Phillip Webb
  */
 class Bytes {

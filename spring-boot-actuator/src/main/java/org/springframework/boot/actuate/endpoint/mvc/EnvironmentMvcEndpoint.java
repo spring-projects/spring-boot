@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * Adapter to expose {@link EnvironmentEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  */

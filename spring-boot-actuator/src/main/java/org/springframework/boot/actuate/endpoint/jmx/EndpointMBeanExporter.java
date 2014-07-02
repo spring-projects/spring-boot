@@ -53,7 +53,7 @@ import org.springframework.util.ObjectUtils;
  * {@link ApplicationListener} that registers all known {@link Endpoint}s with an
  * {@link MBeanServer} using the {@link MBeanExporter} located from the application
  * context.
- * 
+ *
  * @author Christian Dupuis
  */
 public class EndpointMBeanExporter extends MBeanExporter implements SmartLifecycle,

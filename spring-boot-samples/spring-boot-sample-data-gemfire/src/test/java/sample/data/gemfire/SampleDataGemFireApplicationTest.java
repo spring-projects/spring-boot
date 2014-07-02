@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * The SampleDataGemFireApplicationTest class is a test suite with test cases testing the
  * SampleDataGemFireApplication in Spring Boot.
- * 
+ *
  * @author John Blum
  */
 @RunWith(SpringJUnit4ClassRunner.class)

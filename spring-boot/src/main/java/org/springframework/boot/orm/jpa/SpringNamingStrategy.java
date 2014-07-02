@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
  * Hibernate {@link NamingStrategy} that follows Spring recommended naming conventions.
  * Naming conventions implemented here are identical to {@link ImprovedNamingStrategy}
  * with the exception that foreign key columns include the referenced column name.
- * 
+ *
  * @author Phillip Webb
  * @see "http://stackoverflow.com/questions/7689206/ejb3namingstrategy-vs-improvednamingstrategy-foreign-key-naming"
  */

@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
 /**
  * A {@link RepositorySystemSessionAutoConfiguration} that, in the absence of any
  * configuration, applies sensible defaults.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class DefaultRepositorySystemSessionAutoConfiguration implements

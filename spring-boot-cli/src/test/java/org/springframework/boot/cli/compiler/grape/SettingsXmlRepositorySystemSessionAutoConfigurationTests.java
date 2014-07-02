@@ -37,7 +37,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link SettingsXmlRepositorySystemSessionAutoConfiguration}.
- * 
+ *
  * @author Andy Wilkinson
  */
 @RunWith(MockitoJUnitRunner.class)

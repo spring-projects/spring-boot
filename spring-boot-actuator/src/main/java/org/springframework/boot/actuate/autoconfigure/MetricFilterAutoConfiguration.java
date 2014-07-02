@@ -44,7 +44,7 @@ import org.springframework.web.util.UrlPathHelper;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} that records Servlet interactions
  * with a {@link CounterService} and {@link GaugeService}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link FacebookAutoConfiguration}.
- * 
+ *
  * @author Craig Walls
  */
 public class FacebookAutoConfigurationTests extends AbstractSocialAutoConfigurationTests {

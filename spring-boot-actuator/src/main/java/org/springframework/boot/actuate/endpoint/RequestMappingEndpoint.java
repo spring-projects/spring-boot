@@ -33,7 +33,7 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 /**
  * {@link Endpoint} to expose Spring MVC mappings.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "endpoints.mappings", ignoreUnknownFields = false)

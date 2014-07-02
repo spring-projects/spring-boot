@@ -27,7 +27,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Elasticsearch
  * Repositories.
- * 
+ *
  * @author Artur Konczak
  * @author Mohsin Husen
  * @since 1.1.0

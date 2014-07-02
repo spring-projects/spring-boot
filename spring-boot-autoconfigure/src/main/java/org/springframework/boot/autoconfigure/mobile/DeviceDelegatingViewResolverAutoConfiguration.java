@@ -44,7 +44,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
  * {@link LiteDeviceDelegatingViewResolver}. If {@link ThymeleafViewResolver} is available
  * it is configured as the delegate view resolver. Otherwise,
  * {@link InternalResourceViewResolver} is used as a fallback.
- * 
+ *
  * @author Roy Clarkson
  * @since 1.1.0
  */

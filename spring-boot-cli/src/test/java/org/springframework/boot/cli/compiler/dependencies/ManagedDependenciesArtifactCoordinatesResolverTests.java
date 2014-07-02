@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ManagedDependenciesArtifactCoordinatesResolver}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesArtifactCoordinatesResolverTests {

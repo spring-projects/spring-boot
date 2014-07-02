@@ -34,7 +34,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Basic {@link BatchConfigurer} implementation.
- * 
+ *
  * @author Dave Syer
  */
 @Component

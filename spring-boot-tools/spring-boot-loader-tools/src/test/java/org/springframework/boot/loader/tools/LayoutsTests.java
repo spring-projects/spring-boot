@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link Layouts}.
- * 
+ *
  * @author Phillip Webb
  */
 public class LayoutsTests {

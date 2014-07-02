@@ -32,7 +32,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
  * <p>
  * Registers a {@link ElasticsearchTemplate} if no other bean of the same type is
  * configured.
- * 
+ *
  * @author Artur Konczak
  * @author Mohsin Husen
  * @see EnableElasticsearchRepositories

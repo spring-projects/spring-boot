@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests fpr {@link ApplicationPidListener}.
- * 
+ *
  * @author Jakub Kubrynski
  * @author Dave Syer
  */

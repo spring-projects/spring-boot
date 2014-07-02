@@ -40,7 +40,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * {@link #value()} may be specified to define specific packages to scan. If specific
  * packages are not defined scanning will occur from the package of the class with this
  * annotation.
- * 
+ *
  * @author Phillip Webb
  */
 @Target(ElementType.TYPE)

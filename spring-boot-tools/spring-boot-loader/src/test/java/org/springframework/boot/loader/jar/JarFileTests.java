@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JarFile}.
- * 
+ *
  * @author Phillip Webb
  * @author Martin Lau
  */

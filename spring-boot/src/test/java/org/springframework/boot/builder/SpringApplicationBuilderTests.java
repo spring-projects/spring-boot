@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringApplicationBuilder}.
- * 
+ *
  * @author Dave Syer
  */
 public class SpringApplicationBuilderTests {

@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  * limitations with respect to the JSON specification (e.g. only supports String values),
  * so users will probably prefer to have a library handle things instead (Jackson or Snake
  * YAML are supported).
- * 
+ *
  * @author Dave Syer
  * @see JsonParserFactory
  */

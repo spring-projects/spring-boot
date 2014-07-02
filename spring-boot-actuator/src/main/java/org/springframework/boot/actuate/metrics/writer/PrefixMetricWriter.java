@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 /**
  * A writer for metrics that allows efficient storage of groups of metrics with a common
  * name prefix (their group name).
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

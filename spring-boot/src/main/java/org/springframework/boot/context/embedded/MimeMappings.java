@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 /**
  * Simple container-independent abstraction for servlet mime mappings. Roughly equivalent
  * to the {@literal &lt;mime-mapping&gt;} element traditionally found in web.xml.
- * 
+ *
  * @author Phillip Webb
  */
 public final class MimeMappings implements Iterable<Mapping> {

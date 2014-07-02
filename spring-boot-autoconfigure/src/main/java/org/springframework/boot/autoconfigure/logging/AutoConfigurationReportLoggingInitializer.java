@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  * <p>
  * This initializer is not intended to be shared across multiple application context
  * instances.
- * 
+ *
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Phillip Webb

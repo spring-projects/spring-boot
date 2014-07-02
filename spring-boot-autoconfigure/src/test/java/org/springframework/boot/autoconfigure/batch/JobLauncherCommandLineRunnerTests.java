@@ -48,7 +48,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link JobLauncherCommandLineRunner}.
- * 
+ *
  * @author Dave Syer
  */
 public class JobLauncherCommandLineRunnerTests {

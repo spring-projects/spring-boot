@@ -49,7 +49,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link EndpointMBeanExportAutoConfiguration}.
- * 
+ *
  */
 public class EndpointMBeanExportAutoConfigurationTests {
 

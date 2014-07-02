@@ -37,7 +37,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * Base {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data
  * Repositories.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Oliver Gierke

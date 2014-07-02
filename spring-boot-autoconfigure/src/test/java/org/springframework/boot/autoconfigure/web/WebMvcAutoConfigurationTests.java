@@ -69,7 +69,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link WebMvcAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link HornetQEmbeddedConfigurationFactory}.
- * 
+ *
  * @author Stephane Nicol
  * @author Phillip Webb
  */

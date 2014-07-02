@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Integration tests for {@link GrabCommand}
- * 
+ *
  * @author Andy Wilkinson
  * @author Dave Syer
  */

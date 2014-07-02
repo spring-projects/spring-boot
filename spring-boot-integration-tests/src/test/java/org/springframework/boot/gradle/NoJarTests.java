@@ -26,7 +26,7 @@ import static org.junit.Assert.assertFalse;
 
 /**
  * Tests for using the Gradle plugin's support for flat directory repos
- * 
+ *
  * @author Dave Syer
  */
 public class NoJarTests {

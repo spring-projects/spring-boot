@@ -26,7 +26,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * An application process ID.
- * 
+ *
  * @author Phillip Webb
  */
 public class ApplicationPid {

@@ -109,7 +109,7 @@ import org.springframework.util.StringUtils;
  * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
  * add different locations or override the default use
  * <code>shell.command_path_patterns</code> in your application configuration.
- * 
+ *
  * @author Christian Dupuis
  * @see ShellProperties
  */

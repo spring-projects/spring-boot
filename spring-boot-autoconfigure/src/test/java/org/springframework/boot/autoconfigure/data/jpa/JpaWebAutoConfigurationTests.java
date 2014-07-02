@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JpaWebConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class JpaWebAutoConfigurationTests {

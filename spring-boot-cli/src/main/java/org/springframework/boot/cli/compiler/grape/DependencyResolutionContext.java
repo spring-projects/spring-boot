@@ -26,7 +26,7 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 
 /**
  * Context used when resolving dependencies.
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

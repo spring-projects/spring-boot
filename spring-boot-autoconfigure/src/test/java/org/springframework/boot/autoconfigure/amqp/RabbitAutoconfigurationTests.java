@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link RabbitAutoConfiguration}.
- * 
+ *
  * @author Greg Turnquist
  */
 public class RabbitAutoconfigurationTests {

@@ -18,7 +18,7 @@ package org.springframework.boot.json;
 
 /**
  * Tests for {@link JsonParser}.
- * 
+ *
  * @author Dave Syer
  */
 public class JacksonParserTests extends SimpleJsonParserTests {

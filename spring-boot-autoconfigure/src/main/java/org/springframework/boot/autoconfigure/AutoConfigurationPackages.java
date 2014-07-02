@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 /**
  * Class for storing auto-configuration packages for reference later (e.g. by JPA entity
  * scanner).
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

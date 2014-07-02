@@ -41,7 +41,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * NOTE: The default converters used are the same as standard Spring MVC (see
  * {@link WebMvcConfigurationSupport#getMessageConverters} with some slight re-ordering to
  * put XML converters at the back of the list.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @see #HttpMessageConverters(HttpMessageConverter...)

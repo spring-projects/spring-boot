@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * Base {@link HealthAggregator} implementation to allow subclasses to focus on
  * aggregating the {@link Status} instances and not deal with contextual details etc.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */

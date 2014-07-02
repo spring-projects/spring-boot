@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Integration tests for unsecured service endpoints (even with Spring Security on
  * classpath).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

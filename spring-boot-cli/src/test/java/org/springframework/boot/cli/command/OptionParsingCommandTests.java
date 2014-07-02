@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link OptionParsingCommand}.
- * 
+ *
  * @author Dave Syer
  */
 public class OptionParsingCommandTests {

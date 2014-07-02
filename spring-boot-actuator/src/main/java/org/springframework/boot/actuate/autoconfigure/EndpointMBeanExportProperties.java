@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for JMX.
- * 
+ *
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.jmx")

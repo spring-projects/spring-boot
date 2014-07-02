@@ -43,7 +43,7 @@ import org.springframework.web.servlet.View;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
  * Facebook.
- * 
+ *
  * @author Craig Walls
  * @since 1.1.0
  */

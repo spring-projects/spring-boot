@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link LinkedInAutoConfiguration}.
- * 
+ *
  * @author Craig Walls
  */
 public class LinkedInAutoConfigurationTests extends AbstractSocialAutoConfigurationTests {

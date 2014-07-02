@@ -36,13 +36,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * The semantics of {@code @RequestMapping} should be identical to a normal
  * {@code @Controller}, but the endpoints should not be annotated as {@code @Controller}
  * (otherwise they will be mapped by the normal MVC mechanisms).
- * 
+ *
  * <p>
  * One of the aims of the mapping is to support endpoints that work as HTTP endpoints but
  * can still provide useful service interfaces when there is no HTTP server (and no Spring
  * MVC on the classpath). Note that any endpoints having method signaturess will break in
  * a non-servlet environment.
- * 
+ *
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Dave Syer

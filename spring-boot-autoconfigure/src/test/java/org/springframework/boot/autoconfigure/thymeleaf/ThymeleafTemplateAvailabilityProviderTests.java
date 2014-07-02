@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ThymeleafTemplateAvailabilityProvider}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class ThymeleafTemplateAvailabilityProviderTests {

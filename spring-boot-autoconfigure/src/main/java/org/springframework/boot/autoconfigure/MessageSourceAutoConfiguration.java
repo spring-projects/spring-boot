@@ -42,7 +42,7 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link MessageSource}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

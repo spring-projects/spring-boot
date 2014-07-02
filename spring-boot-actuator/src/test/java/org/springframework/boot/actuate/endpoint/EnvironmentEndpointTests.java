@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EnvironmentEndpoint}.
- * 
+ *
  * @author Phillip Webb
  * @author Christian Dupuis
  */

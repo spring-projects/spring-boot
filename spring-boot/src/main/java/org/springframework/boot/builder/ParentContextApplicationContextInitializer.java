@@ -28,7 +28,7 @@ import org.springframework.core.Ordered;
  * {@link ApplicationContextInitializer} for setting the parent context. Also publishes
  * {@link ParentContextAvailableEvent} when the context is refreshed to signal to other
  * listeners that the context is available and has a parent.
- * 
+ *
  * @author Dave Syer
  */
 public class ParentContextApplicationContextInitializer implements

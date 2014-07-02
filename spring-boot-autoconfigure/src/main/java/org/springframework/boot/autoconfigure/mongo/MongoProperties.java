@@ -31,7 +31,7 @@ import com.mongodb.ServerAddress;
 
 /**
  * Configuration properties for Mongo.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Josh Long

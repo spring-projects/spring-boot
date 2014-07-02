@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
  * {@link org.springframework.boot.context.embedded.MultipartConfigFactory} which means
  * you may specify the values using {@literal long} values or using more readable
  * {@literal String} variants that accept {@literal Kb} or {@literal Mb} suffixes.
- * 
+ *
  * @author Josh Long
  * @since 1.1.0
  */

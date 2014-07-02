@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JacksonAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  */

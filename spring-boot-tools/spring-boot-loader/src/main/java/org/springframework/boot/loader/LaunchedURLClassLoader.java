@@ -30,7 +30,7 @@ import org.springframework.boot.loader.jar.JarFile;
 
 /**
  * {@link ClassLoader} used by the {@link Launcher}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

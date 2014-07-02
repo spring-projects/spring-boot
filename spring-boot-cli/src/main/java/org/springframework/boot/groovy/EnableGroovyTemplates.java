@@ -26,7 +26,7 @@ import org.springframework.boot.cli.compiler.autoconfigure.GroovyTemplatesCompil
 
 /**
  * Pseudo annotation used to trigger {@link GroovyTemplatesCompilerAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

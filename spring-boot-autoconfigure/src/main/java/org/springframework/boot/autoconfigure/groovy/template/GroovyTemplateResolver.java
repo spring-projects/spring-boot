@@ -28,7 +28,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
  * A custom {@link groovy.text.markup.TemplateResolver template resolver} which resolves
  * templates using the locale found in the thread locale. This resolver ignores the
  * template engine configuration locale.
- * 
+ *
  * @author Cédric Champeau
  * @since 1.1.0
  */

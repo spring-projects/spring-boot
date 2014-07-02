@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 
 /**
  * Extract source file options (anything following '--' in an {@link OptionSet}).
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist

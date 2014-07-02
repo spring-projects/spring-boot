@@ -37,7 +37,7 @@ import static java.util.Arrays.asList;
 
 /**
  * {@link Command} to 'run' a groovy script or scripts.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson

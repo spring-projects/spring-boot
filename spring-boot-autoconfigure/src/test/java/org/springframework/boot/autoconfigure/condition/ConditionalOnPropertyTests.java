@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConditionalOnProperty}.
- * 
+ *
  * @author Maciej Walkowiak
  */
 public class ConditionalOnPropertyTests {

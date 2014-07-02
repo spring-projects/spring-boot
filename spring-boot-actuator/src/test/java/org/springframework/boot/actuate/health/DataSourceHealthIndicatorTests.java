@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link DataSourceHealthIndicator}.
- * 
+ *
  * @author Dave Syer
  */
 public class DataSourceHealthIndicatorTests {

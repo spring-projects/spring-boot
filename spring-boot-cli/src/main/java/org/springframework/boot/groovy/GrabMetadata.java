@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 /**
  * Used to provide an alternative source of dependency metadata that is used to deduce
  * groups and versions when processing {@code @Grab} dependencies.
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ShutdownMvcEndpoint}.
- * 
+ *
  * @author Dave Syer
  */
 public class ShutdownMvcEndpointTests {

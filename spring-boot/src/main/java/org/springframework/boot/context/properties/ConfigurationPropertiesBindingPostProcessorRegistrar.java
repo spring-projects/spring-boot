@@ -24,7 +24,7 @@ import org.springframework.core.type.AnnotationMetadata;
 /**
  * {@link ImportBeanDefinitionRegistrar} for binding externalized application properties
  * to {@link ConfigurationProperties} beans.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

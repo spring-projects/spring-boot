@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LaunchedURLClassLoader}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

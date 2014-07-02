@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link SolrRepositoriesAutoConfiguration}
- * 
+ *
  * @author Christoph Strobl
  */
 public class SolrRepositoriesAutoConfigurationTests {

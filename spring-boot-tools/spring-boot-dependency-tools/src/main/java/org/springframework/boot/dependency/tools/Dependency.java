@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * A single dependency.
- * 
+ *
  * @author Phillip Webb
  * @see Dependencies
  */

@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Generates relaxed name variations from a given source.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see RelaxedDataBinder

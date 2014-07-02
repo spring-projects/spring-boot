@@ -42,7 +42,7 @@ import com.mongodb.Mongo;
  * <P>
  * Honors the {@literal spring.data.mongodb.database} property if set, otherwise connects
  * to the {@literal test} database.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long

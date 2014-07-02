@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link DataSourceProperties}.
- * 
+ *
  * @author Maciej Walkowiak
  */
 public class DataSourcePropertiesTests {

@@ -25,7 +25,7 @@ import ch.qos.logback.classic.Level;
 
 /**
  * Utility to initialize logback (when present) to use INFO level logging.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

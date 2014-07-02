@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link YamlMapFactoryBean}.
- * 
+ *
  * @author Dave Syer
  */
 public class YamlMapFactoryBeanTests {

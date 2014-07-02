@@ -23,7 +23,7 @@ import org.yaml.snakeyaml.Yaml;
 
 /**
  * Thin wrapper to adapt Snake {@link Yaml} to {@link JsonParser}.
- * 
+ *
  * @author Dave Syer
  * @see JsonParserFactory
  */

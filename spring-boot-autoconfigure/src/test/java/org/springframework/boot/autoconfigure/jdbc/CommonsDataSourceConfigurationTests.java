@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link CommonsDataSourceConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class CommonsDataSourceConfigurationTests {

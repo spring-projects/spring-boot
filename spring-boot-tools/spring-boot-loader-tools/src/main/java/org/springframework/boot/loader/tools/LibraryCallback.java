@@ -21,7 +21,7 @@ import java.io.IOException;
 
 /**
  * Callback interface used to iterate {@link Libraries}.
- * 
+ *
  * @author Phillip Webb
  */
 public interface LibraryCallback {

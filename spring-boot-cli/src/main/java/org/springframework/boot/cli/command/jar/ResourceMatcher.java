@@ -37,7 +37,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Used to match resources for inclusion in a CLI application's jar file
- * 
+ *
  * @author Andy Wilkinson
  */
 class ResourceMatcher {

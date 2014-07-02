@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks for the presence or absence of specific beans.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Jakub Kubrynski

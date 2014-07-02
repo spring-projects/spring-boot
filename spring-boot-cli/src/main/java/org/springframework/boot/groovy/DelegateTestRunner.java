@@ -22,7 +22,7 @@ import org.springframework.boot.cli.command.test.TestRunner;
 
 /**
  * Delegate test runner to launch tests in user application classpath.
- * 
+ *
  * @author Phillip Webb
  * @see TestRunner
  */

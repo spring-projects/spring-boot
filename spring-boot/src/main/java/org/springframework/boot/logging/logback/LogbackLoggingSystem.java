@@ -40,7 +40,7 @@ import ch.qos.logback.classic.util.ContextInitializer;
 
 /**
  * {@link LoggingSystem} for for <a href="http://logback.qos.ch">logback</a>.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

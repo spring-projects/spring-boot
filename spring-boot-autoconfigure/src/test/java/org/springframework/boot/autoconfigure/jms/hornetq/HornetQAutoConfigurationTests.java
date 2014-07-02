@@ -61,7 +61,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link HornetQAutoConfiguration}.
- * 
+ *
  * @author Stephane Nicoll
  */
 public class HornetQAutoConfigurationTests {

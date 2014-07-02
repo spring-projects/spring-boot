@@ -30,7 +30,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 /**
  * Spring MVC {@link ViewResolver} for {@link GroovyTemplateView}s.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  * @see GroovyTemplateView

@@ -38,7 +38,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by a {@link JarFile}.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarFileArchive extends Archive {

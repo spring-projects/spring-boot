@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link InputArgumentsJavaAgentDetector}
- * 
+ *
  * @author Andy Wilkinson
  */
 public class InputArgumentsJavaAgentDetectorTests {

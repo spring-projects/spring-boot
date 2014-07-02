@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link LiquibaseServiceLocatorApplicationListener}.
- * 
+ *
  * @author Phillip Webb
  */
 public class LiquibaseServiceLocatorApplicationListenerTests {

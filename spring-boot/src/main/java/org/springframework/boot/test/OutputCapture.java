@@ -29,7 +29,7 @@ import org.springframework.boot.ansi.AnsiOutput.Enabled;
 
 /**
  * JUnit {@code @Rule} to capture output from System.out and System.err.
- * 
+ *
  * @author Phillip Webb
  */
 public class OutputCapture implements TestRule {

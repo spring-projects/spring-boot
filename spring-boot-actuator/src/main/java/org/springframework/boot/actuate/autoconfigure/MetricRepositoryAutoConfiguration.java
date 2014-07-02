@@ -78,14 +78,14 @@ import com.codahale.metrics.MetricRegistry;
  * updates from the default counter and gauge services. Alternatively you can provide your
  * own counter and gauge services and wire them to whichever writer you choose.
  * </p>
- * 
+ *
  * @see GaugeService
  * @see CounterService
  * @see MetricWriter
  * @see InMemoryMetricRepository
  * @see CodahaleMetricWriter
  * @see Exporter
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

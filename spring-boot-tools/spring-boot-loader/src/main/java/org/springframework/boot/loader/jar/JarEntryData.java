@@ -28,7 +28,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
 /**
  * Holds the underlying data of a {@link JarEntry}, allowing creation to be deferred until
  * the entry is actually needed.
- * 
+ *
  * @author Phillip Webb
  */
 public final class JarEntryData {

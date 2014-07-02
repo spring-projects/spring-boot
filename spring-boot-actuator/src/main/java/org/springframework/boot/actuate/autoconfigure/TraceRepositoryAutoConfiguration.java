@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TraceRepository tracing}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

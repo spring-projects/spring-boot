@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Integration tests for endpoints configuration.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

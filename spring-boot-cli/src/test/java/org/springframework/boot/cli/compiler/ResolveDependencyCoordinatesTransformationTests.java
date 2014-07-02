@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link ResolveDependencyCoordinatesTransformation}
- * 
+ *
  * @author Andy Wilkinson
  */
 public final class ResolveDependencyCoordinatesTransformationTests {

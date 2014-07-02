@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for the shell subsystem.
- * 
+ *
  * @author Christian Dupuis
  * @author Phillip Webb
  */

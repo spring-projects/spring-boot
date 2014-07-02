@@ -46,7 +46,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

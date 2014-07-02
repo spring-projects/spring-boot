@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link AutoConfigurationPackages}.
- * 
+ *
  * @author Phillip Webb
  */
 @SuppressWarnings("resource")

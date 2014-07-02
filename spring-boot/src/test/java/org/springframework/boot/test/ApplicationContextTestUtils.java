@@ -21,7 +21,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Internal application context related test utilities.
- * 
+ *
  * @author Stephane Nicoll
  */
 public abstract class ApplicationContextTestUtils {

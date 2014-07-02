@@ -33,7 +33,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring JMS.
- * 
+ *
  * @author Greg Turnquist
  */
 @Configuration

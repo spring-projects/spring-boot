@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.metrics.Metric;
 
 /**
  * A value object representing an increment in a metric value (usually a counter).
- * 
+ *
  * @author Dave Syer
  */
 public class Delta<T extends Number> extends Metric<T> {

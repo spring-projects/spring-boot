@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for using the Gradle plugin's support for installing artifacts
- * 
+ *
  * @author Dave Syer
  */
 public class ClassifierTests {

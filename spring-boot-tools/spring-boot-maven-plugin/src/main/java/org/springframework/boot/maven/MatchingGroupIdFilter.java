@@ -22,11 +22,11 @@ import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatur
 /**
  * An {@link org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter
  * ArtifactsFilter} that filters by matching groupId.
- * 
+ *
  * Preferred over the
  * {@link org.apache.maven.shared.artifact.filter.collection.GroupIdFilter} due to that
  * classes use of {@link String#startsWith} to match on prefix.
- * 
+ *
  * @author Mark Ingram
  * @since 1.1
  */

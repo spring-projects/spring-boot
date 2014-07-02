@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ErrorPageFilter}.
- * 
+ *
  * @author Dave Syer
  */
 public class ErrorPageFilterTests {

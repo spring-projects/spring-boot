@@ -28,10 +28,10 @@ import org.springframework.core.env.PropertySource;
 /**
  * An mutable, enumerable, composite property source. New sources are added last (and
  * hence resolved with lowest priority).
- * 
+ *
  * @see PropertySource
  * @see EnumerablePropertySource
- * 
+ *
  * @author Dave Syer
  */
 public class EnumerableCompositePropertySource extends

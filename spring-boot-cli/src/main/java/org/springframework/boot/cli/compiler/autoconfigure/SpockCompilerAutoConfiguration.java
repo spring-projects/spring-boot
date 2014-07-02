@@ -25,7 +25,7 @@ import org.springframework.boot.cli.compiler.DependencyCustomizer;
 
 /**
  * {@link CompilerAutoConfiguration} for Spock test framework
- * 
+ *
  * @author Greg Turnquist
  */
 public class SpockCompilerAutoConfiguration extends CompilerAutoConfiguration {

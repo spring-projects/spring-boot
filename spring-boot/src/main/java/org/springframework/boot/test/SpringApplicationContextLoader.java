@@ -67,7 +67,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * <p>
  * If <code>@ActiveProfiles</code> are provided in the test class they will be used to
  * create the application context.
- * 
+ *
  * @author Dave Syer
  * @see IntegrationTest
  */

@@ -26,7 +26,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
  * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.
  * Supports dependencies in {@code WEB-INF/lib} as well as {@code WEB-INF/lib-provided},
  * classes are loaded from {@code WEB-INF/classes}.
- * 
+ *
  * @author Phillip Webb
  */
 public class WarLauncher extends ExecutableArchiveLauncher {

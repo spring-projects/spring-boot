@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  * Tests for {@link RabbitProperties}.
- * 
+ *
  * @author Dave Syer
  */
 public class RabbitPropertiesTests {

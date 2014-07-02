@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link JolokiaAutoConfiguration}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class JolokiaAutoConfigurationTests {

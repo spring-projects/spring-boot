@@ -26,7 +26,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} to store the base package for tests.
- * 
+ *
  * @author Phillip Webb
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)

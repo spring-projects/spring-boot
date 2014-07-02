@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link LiquibaseAutoConfiguration}.
- * 
+ *
  * @author Marcel Overdijk
  */
 public class LiquibaseAutoConfigurationTests {

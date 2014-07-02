@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link DependencyCustomizer}
- * 
+ *
  * @author Andy Wilkinson
  */
 public class DependencyCustomizerTests {

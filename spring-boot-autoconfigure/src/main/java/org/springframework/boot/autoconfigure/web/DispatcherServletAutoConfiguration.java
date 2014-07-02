@@ -46,7 +46,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * {@link DispatcherServlet}. Should work for a standalone application where an embedded
  * servlet container is already present and also for a deployable application using
  * {@link SpringBootServletInitializer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

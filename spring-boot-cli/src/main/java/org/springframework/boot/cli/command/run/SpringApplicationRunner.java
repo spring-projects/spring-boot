@@ -32,7 +32,7 @@ import org.springframework.boot.cli.util.ResourceUtils;
  * Compiles Groovy code running the resulting classes using a {@code SpringApplication}.
  * Takes care of threading and class-loading issues and can optionally monitor sources for
  * changes.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

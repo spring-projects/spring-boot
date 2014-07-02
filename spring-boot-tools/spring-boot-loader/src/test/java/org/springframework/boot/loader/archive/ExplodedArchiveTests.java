@@ -46,7 +46,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ExplodedArchive}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

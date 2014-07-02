@@ -48,7 +48,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests for {@link MultipartAutoConfiguration}. Tests an empty configuration, no
  * multipart configuration, and a multipart configuration (with both Jetty and Tomcat).
- * 
+ *
  * @author Greg Turnquist
  * @author Dave Syer
  * @author Josh Long

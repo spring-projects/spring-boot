@@ -28,7 +28,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * An archive that can be launched by the {@link Launcher}.
- * 
+ *
  * @author Phillip Webb
  * @see JarFileArchive
  */

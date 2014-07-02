@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link VanillaPublicMetrics}.
- * 
+ *
  * @author Phillip Webb
  * @author Christian Dupuis
  */

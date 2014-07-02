@@ -20,7 +20,7 @@ import java.util.Iterator;
 
 /**
  * Interface for accessing a known set of dependencies.
- * 
+ *
  * @author Phillip Webb
  * @see Dependency
  * @since 1.1.0

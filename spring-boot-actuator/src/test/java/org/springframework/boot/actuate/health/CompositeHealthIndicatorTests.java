@@ -34,7 +34,7 @@ import static org.mockito.BDDMockito.given;
 
 /**
  * Tests for {@link CompositeHealthIndicator}
- * 
+ *
  * @author Tyler J. Frederick
  * @author Phillip Webb
  * @author Christian Dupuis

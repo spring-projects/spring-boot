@@ -30,39 +30,39 @@ import org.springframework.beans.factory.FactoryBean;
  * provided the later ones will override entries in the earlier ones hierarchically - that
  * is all entries with the same nested key of type Map at any depth are merged. For
  * example:
- * 
+ *
  * <pre class="code">
  * foo:
  *   bar:
  *    one: two
  * three: four
- * 
+ *
  * </pre>
- * 
+ *
  * plus (later in the list)
- * 
+ *
  * <pre class="code">
  * foo:
  *   bar:
  *    one: 2
  * five: six
- * 
+ *
  * </pre>
- * 
+ *
  * results in an effecive input of
- * 
+ *
  * <pre class="code">
  * foo:
  *   bar:
  *    one: 2
  *    three: four
  * five: six
- * 
+ *
  * </pre>
- * 
+ *
  * Note that the value of "foo" in the first document is not simply replaced with the
  * value in the second, but its nested values are merged.
- * 
+ *
  * @author Dave Syer
  */
 public class YamlMapFactoryBean extends YamlProcessor implements

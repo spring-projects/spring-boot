@@ -32,7 +32,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * WebSecurityConfigurerAdapter, he is trying to use a custom security setup. The app
  * would fail in a confusing way without this shim configuration, which just helpfully
  * defines an empty <code>@EnableWebSecurity</code>.
- * 
+ *
  * @author Dave Syer
  */
 @ConditionalOnExpression("!${security.basic.enabled:true}")

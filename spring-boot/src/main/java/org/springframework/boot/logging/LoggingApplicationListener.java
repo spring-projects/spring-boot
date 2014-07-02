@@ -65,7 +65,7 @@ import org.springframework.util.StringUtils;
  * <li><code>PID</code> is set to the value of the current process ID if it can be
  * determined</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

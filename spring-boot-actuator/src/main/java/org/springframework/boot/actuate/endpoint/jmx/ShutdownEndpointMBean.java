@@ -23,7 +23,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * Special endpoint wrapper for {@link ShutdownEndpoint}.
- * 
+ *
  * @author Christian Dupuis
  */
 @ManagedResource

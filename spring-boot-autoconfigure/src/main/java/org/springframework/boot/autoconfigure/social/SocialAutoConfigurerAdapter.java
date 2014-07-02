@@ -25,7 +25,7 @@ import org.springframework.social.connect.ConnectionFactory;
 
 /**
  * Base class for auto-configured {@link SocialConfigurerAdapter}s.
- * 
+ *
  * @author Craig Walls
  * @author Phillip Webb
  * @since 1.1.0

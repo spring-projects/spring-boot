@@ -20,7 +20,7 @@ package org.springframework.boot.loader.tools;
  * The scope of a library. The common {@link #COMPILE}, {@link #RUNTIME} and
  * {@link #PROVIDED} scopes are defined here and supported by the common {@link Layouts}.
  * A custom {@link Layout} can handle additional scopes as required.
- * 
+ *
  * @author Phillip Webb
  */
 public interface LibraryScope {

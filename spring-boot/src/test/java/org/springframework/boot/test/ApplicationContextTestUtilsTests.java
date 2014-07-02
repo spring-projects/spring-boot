@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ApplicationContextTestUtils}.
- * 
+ *
  * @author Stephane Nicoll
  */
 public class ApplicationContextTestUtilsTests {

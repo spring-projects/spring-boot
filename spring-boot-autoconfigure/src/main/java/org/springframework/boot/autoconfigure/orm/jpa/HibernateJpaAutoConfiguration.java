@@ -42,7 +42,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Hibernate JPA.
- * 
+ *
  * @author Phillip Webb
  */
 @Configuration

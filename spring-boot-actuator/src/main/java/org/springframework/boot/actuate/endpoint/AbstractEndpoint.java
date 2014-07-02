@@ -21,7 +21,7 @@ import javax.validation.constraints.Pattern;
 
 /**
  * Abstract base for {@link Endpoint} implementations.
- * 
+ *
  * @author Phillip Webb
  * @author Christian Dupuis
  */

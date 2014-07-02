@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link MongoDataAutoConfiguration}.
- * 
+ *
  * @author Josh Long
  */
 public class MongoDataAutoConfigurationTests {

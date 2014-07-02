@@ -22,7 +22,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * {@link Command} to quit the {@link Shell}.
- * 
+ *
  * @author Phillip Webb
  */
 class ExitCommand extends AbstractCommand {

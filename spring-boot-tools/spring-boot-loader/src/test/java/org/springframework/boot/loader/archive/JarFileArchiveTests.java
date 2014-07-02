@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link JarFileArchive}.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarFileArchiveTests {

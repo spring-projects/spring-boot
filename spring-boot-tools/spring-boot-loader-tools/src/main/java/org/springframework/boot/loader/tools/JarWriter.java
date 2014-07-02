@@ -42,7 +42,7 @@ import java.util.zip.ZipEntry;
 /**
  * Writes JAR content, ensuring valid directory entries are always create and duplicate
  * items are ignored.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

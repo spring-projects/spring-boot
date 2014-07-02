@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for HornetQ
- * 
+ *
  * @author Stephane Nicoll
  * @since 1.1.0
  */

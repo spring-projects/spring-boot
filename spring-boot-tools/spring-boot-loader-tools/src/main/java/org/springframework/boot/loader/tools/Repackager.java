@@ -26,7 +26,7 @@ import java.util.jar.Manifest;
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
  * '{@literal java -jar}'.
- * 
+ *
  * @author Phillip Webb
  */
 public class Repackager {

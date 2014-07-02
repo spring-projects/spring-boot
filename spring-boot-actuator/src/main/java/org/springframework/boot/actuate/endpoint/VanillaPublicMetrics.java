@@ -33,7 +33,7 @@ import org.springframework.util.StringUtils;
 /**
  * Default implementation of {@link PublicMetrics} that exposes all metrics from a
  * {@link MetricReader} along with memory information.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  */

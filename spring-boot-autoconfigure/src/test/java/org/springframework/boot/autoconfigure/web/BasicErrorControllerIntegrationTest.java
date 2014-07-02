@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests for {@link BasicErrorController} using {@link IntegrationTest} that hit a real
  * HTTP server.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

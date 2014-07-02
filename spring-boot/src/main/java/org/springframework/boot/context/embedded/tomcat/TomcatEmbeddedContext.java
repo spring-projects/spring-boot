@@ -26,7 +26,7 @@ import org.springframework.util.ReflectionUtils;
 /**
  * Tomcat {@link StandardContext} used by {@link TomcatEmbeddedServletContainer} to
  * support deferred initialization.
- * 
+ *
  * @author Phillip Webb
  */
 class TomcatEmbeddedContext extends StandardContext {

@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link JmsAutoConfiguration}.
- * 
+ *
  * @author Greg Turnquist
  */
 public class JmsAutoConfigurationTests {

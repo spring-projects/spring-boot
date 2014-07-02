@@ -34,7 +34,7 @@ import org.springframework.boot.loader.jar.JarFile;
 /**
  * Base class for launchers that can start an application with a fully configured
  * classpath backed by one or more {@link Archive}s.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

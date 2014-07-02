@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Base for testing classes that extends {@link AbstractEmbeddedServletContainerFactory}.
- * 
+ *
  * @author Phillip Webb
  * @author Greg Turnquist
  */

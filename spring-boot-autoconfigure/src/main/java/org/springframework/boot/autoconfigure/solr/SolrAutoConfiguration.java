@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Solr
- * 
+ *
  * @author Christoph Strobl
  * @since 1.1.0
  */
