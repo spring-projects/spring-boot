@@ -24,7 +24,6 @@ import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Repackager;
@@ -35,6 +34,7 @@ import org.springframework.util.FileCopyUtils;
  *
  * @author Phillip Webb
  * @author Janne Valkealahti
+ * @author Andy Wilkinson
  */
 public class RepackageTask extends DefaultTask {
 
@@ -55,7 +55,7 @@ public class RepackageTask extends DefaultTask {
 	}
 
 	public Object getWithJarTask() {
-		return withJarTask;
+		return this.withJarTask;
 	}
 
 	public void setWithJarTask(Object withJarTask) {
@@ -67,11 +67,11 @@ public class RepackageTask extends DefaultTask {
 	}
 
 	public String getMainClass() {
-		return mainClass;
+		return this.mainClass;
 	}
 
 	public String getClassifier() {
-		return classifier;
+		return this.classifier;
 	}
 
 	public void setClassifier(String classifier) {
@@ -126,26 +126,26 @@ public class RepackageTask extends DefaultTask {
 				return;
 			}
 			Object withJarTask = RepackageTask.this.withJarTask;
-			if (isTaskMatch(jarTask, withJarTask)) {
+			if (!isTaskMatch(jarTask, withJarTask)) {
 				getLogger().info(
 						"Jar task not repackaged (didn't match withJarTask): " + jarTask);
 				return;
 			}
-			if ("".equals(jarTask.getClassifier())
-					|| RepackageTask.this.withJarTask != null) {
-				File file = jarTask.getArchivePath();
-				if (file.exists()) {
-					repackage(file);
-				}
+			File file = jarTask.getArchivePath();
+			if (file.exists()) {
+				repackage(file);
 			}
 		}
 
-		private boolean isTaskMatch(Jar task, Object compare) {
-			if (compare == null) {
-				return false;
+		private boolean isTaskMatch(Jar task, Object withJarTask) {
+			if (withJarTask == null) {
+				return isDefaultJarTask(task);
 			}
-			TaskContainer tasks = getProject().getTasks();
-			return task.equals(compare) || task.equals(tasks.findByName(task.toString()));
+			return task.equals(withJarTask) || task.getName().equals(withJarTask);
+		}
+
+		private boolean isDefaultJarTask(Jar jarTask) {
+			return "jar".equals(jarTask.getName());
 		}
 
 		private void repackage(File file) {
