@@ -18,6 +18,8 @@ package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.gradle.api.Action;
@@ -139,13 +141,20 @@ public class RepackageTask extends DefaultTask {
 
 		private boolean isTaskMatch(Jar task, Object withJarTask) {
 			if (withJarTask == null) {
-				return isDefaultJarTask(task);
+				if ("".equals(task.getClassifier())) {
+					Set<Object> tasksWithCustomRepackaging = new HashSet<Object>();
+					for (RepackageTask repackageTask : RepackageTask.this.getProject()
+							.getTasks().withType(RepackageTask.class)) {
+						if (repackageTask.getWithJarTask() != null) {
+							tasksWithCustomRepackaging
+									.add(repackageTask.getWithJarTask());
+						}
+					}
+					return !tasksWithCustomRepackaging.contains(task);
+				}
+				return false;
 			}
 			return task.equals(withJarTask) || task.getName().equals(withJarTask);
-		}
-
-		private boolean isDefaultJarTask(Jar jarTask) {
-			return "jar".equals(jarTask.getName());
 		}
 
 		private void repackage(File file) {
