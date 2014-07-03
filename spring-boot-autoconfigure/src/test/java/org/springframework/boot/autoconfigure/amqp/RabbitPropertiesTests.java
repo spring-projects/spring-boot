@@ -16,10 +16,10 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
 
 /**
  * Tests for {@link RabbitProperties}.
@@ -71,7 +71,7 @@ public class RabbitPropertiesTests {
 	@Test
 	public void testCustomFalsyVirtualHost() {
 		this.properties.setVirtualHost("/myvHost");
-		assertEquals("myvHost", this.properties.getVirtualHost());
+		assertEquals("/myvHost", this.properties.getVirtualHost());
 	}
 
 }
