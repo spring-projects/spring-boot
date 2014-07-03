@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Greg Turnquist
  */
-public class RabbitAutoconfigurationTests {
+public class RabbitAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -74,7 +74,7 @@ public class RabbitAutoconfigurationTests {
 				.getBean(CachingConnectionFactory.class);
 		assertEquals("remote-server", connectionFactory.getHost());
 		assertEquals(9000, connectionFactory.getPort());
-		assertEquals("vhost", connectionFactory.getVirtualHost());
+		assertEquals("/vhost", connectionFactory.getVirtualHost());
 	}
 
 	@Test
@@ -87,6 +87,30 @@ public class RabbitAutoconfigurationTests {
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
 		assertEquals("/", connectionFactory.getVirtualHost());
+	}
+
+	@Test
+	public void testRabbitTemplateVirtualHostNoLeadingSlash() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.rabbitmq.virtual_host:foo");
+		this.context.refresh();
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals("foo", connectionFactory.getVirtualHost());
+	}
+
+	@Test
+	public void testRabbitTemplateVirtualHostMultiLeadingSlashes() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.rabbitmq.virtual_host:///foo");
+		this.context.refresh();
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals("///foo", connectionFactory.getVirtualHost());
 	}
 
 	@Test

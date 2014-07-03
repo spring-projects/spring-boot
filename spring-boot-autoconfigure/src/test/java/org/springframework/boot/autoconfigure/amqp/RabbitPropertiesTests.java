@@ -99,7 +99,7 @@ public class RabbitPropertiesTests {
 	@Test
 	public void testCustomFalsyVirtualHost() {
 		this.properties.setVirtualHost("/myvHost");
-		assertEquals("myvHost", this.properties.getVirtualHost());
+		assertEquals("/myvHost", this.properties.getVirtualHost());
 	}
 
 }
