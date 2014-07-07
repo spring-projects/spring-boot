@@ -70,11 +70,44 @@ public class RabbitProperties {
 	}
 
 	public void setAddresses(String addresses) {
-		this.addresses = addresses;
+		this.addresses = parseAddresses(addresses);
 	}
 
 	public String getAddresses() {
 		return (this.addresses == null ? this.host + ":" + this.port : this.addresses);
+	}
+
+	private String parseAddresses(String addresses) {
+		StringBuilder result = new StringBuilder();
+		for (String address : StringUtils.commaDelimitedListToSet(addresses)) {
+			address = address.trim();
+			if (address.startsWith("amqp://")) {
+				address = address.substring("amqp://".length());
+			}
+			if (address.contains("@")) {
+				String[] split = StringUtils.split(address, "@");
+				String creds = split[0];
+				address = split[1];
+				split = StringUtils.split(creds, ":");
+				this.username = split[0];
+				if (split.length > 0) {
+					this.password = split[1];
+				}
+			}
+			int index = address.indexOf("/");
+			if (index >= 0 && index < address.length()) {
+				this.virtualHost = address.substring(index + 1);
+				address = address.substring(0, index);
+			}
+			if (result.length() > 0) {
+				result.append(",");
+			}
+			if (!address.contains(":")) {
+				address = address + ":" + this.port;
+			}
+			result.append(address);
+		}
+		return result.length() > 0 ? result.toString() : null;
 	}
 
 	public void setPort(int port) {

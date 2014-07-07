@@ -51,6 +51,34 @@ public class RabbitPropertiesTests {
 	}
 
 	@Test
+	public void addressesDoubleValuedWithCredentials() {
+		this.properties.setAddresses("myhost:9999,root:password@otherhost:1111/host");
+		assertNull(this.properties.getHost());
+		assertEquals(9999, this.properties.getPort());
+		assertEquals("root", this.properties.getUsername());
+		assertEquals("host", this.properties.getVirtualHost());
+	}
+
+	@Test
+	public void addressesSingleValuedWithCredentials() {
+		this.properties.setAddresses("amqp://root:password@otherhost:1111/host");
+		assertEquals("otherhost", this.properties.getHost());
+		assertEquals(1111, this.properties.getPort());
+		assertEquals("root", this.properties.getUsername());
+		assertEquals("host", this.properties.getVirtualHost());
+	}
+
+	@Test
+	public void addressesSingleValuedWithCredentialsDefaultPort() {
+		this.properties.setAddresses("amqp://root:password@lemur.cloudamqp.com/host");
+		assertEquals("lemur.cloudamqp.com", this.properties.getHost());
+		assertEquals(5672, this.properties.getPort());
+		assertEquals("root", this.properties.getUsername());
+		assertEquals("host", this.properties.getVirtualHost());
+		assertEquals("lemur.cloudamqp.com:5672", this.properties.getAddresses());
+	}
+
+	@Test
 	public void testDefaultVirtualHost() {
 		this.properties.setVirtualHost("/");
 		assertEquals("/", this.properties.getVirtualHost());
