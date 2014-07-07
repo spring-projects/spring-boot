@@ -23,6 +23,8 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
+import org.springframework.batch.core.explore.JobExplorer;
+import org.springframework.batch.core.explore.support.JobExplorerFactoryBean;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
@@ -36,6 +38,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * Basic {@link BatchConfigurer} implementation.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 @Component
 public class BasicBatchConfigurer implements BatchConfigurer {
@@ -51,6 +54,8 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 	private JobRepository jobRepository;
 
 	private JobLauncher jobLauncher;
+
+	private JobExplorer jobExplorer;
 
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
@@ -86,16 +91,29 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		return this.jobLauncher;
 	}
 
+	@Override
+	public JobExplorer getJobExplorer() throws Exception {
+		return this.jobExplorer;
+	}
+
 	@PostConstruct
 	public void initialize() {
 		try {
 			this.transactionManager = createTransactionManager();
 			this.jobRepository = createJobRepository();
 			this.jobLauncher = createJobLauncher();
+			this.jobExplorer = createJobExplorer();
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to initialize Spring Batch", ex);
 		}
+	}
+
+	private JobExplorer createJobExplorer() throws Exception {
+		JobExplorerFactoryBean jobExplorerFactoryBean = new JobExplorerFactoryBean();
+		jobExplorerFactoryBean.setDataSource(this.dataSource);
+		jobExplorerFactoryBean.afterPropertiesSet();
+		return jobExplorerFactoryBean.getObject();
 	}
 
 	private JobLauncher createJobLauncher() throws Exception {

@@ -39,7 +39,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -177,8 +176,8 @@ public class JobLauncherCommandLineRunnerTests {
 			return launcher;
 		}
 
-		@Bean
-		public JobExplorer jobExplorer() throws Exception {
+		@Override
+		public JobExplorer getJobExplorer() throws Exception {
 			return new MapJobExplorerFactoryBean(this.jobRepositoryFactory).getObject();
 		}
 	}

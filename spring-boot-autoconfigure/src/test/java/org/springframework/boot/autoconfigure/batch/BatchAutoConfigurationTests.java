@@ -248,8 +248,8 @@ public class BatchAutoConfigurationTests {
 			return launcher;
 		}
 
-		@Bean
-		public JobExplorer jobExplorer() throws Exception {
+		@Override
+		public JobExplorer getJobExplorer() throws Exception {
 			MapJobExplorerFactoryBean explorer = new MapJobExplorerFactoryBean(
 					this.factory);
 			explorer.afterPropertiesSet();
