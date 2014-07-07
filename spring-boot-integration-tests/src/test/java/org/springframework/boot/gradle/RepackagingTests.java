@@ -18,13 +18,17 @@ package org.springframework.boot.gradle;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.jar.JarFile;
 
 import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
+import org.springframework.util.FileCopyUtils;
 
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class RepackagingTests {
@@ -111,4 +115,17 @@ public class RepackagingTests {
 		assertTrue(new File(buildLibs, "custom.jar").exists());
 		assertTrue(new File(buildLibs, "custom.jar.original").exists());
 	}
+
+	@Test
+	public void repackageWithFileDependency() throws Exception {
+		FileCopyUtils.copy(new File("src/test/resources/foo.jar"), new File(
+				"target/repackage/foo.jar"));
+		project.newBuild().forTasks("clean", "build")
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true").run();
+		File buildLibs = new File("target/repackage/build/libs");
+		JarFile jarFile = new JarFile(new File(buildLibs, "repackage.jar"));
+		assertThat(jarFile.getEntry("lib/foo.jar"), notNullValue());
+		jarFile.close();
+	}
+
 }
