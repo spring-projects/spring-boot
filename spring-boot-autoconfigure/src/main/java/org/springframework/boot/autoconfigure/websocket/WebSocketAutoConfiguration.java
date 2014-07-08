@@ -34,6 +34,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
 import org.springframework.boot.context.web.NonEmbeddedServletContainerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.socket.WebSocketHandler;
@@ -45,6 +46,7 @@ import org.springframework.web.socket.WebSocketHandler;
  * already be there.
  *
  * @author Dave Syer
+ * @author Phillip Webb
  */
 @Configuration
 @ConditionalOnClass(name = "org.apache.tomcat.websocket.server.WsSci", value = {
@@ -56,38 +58,35 @@ public class WebSocketAutoConfiguration {
 
 	private static final String TOMCAT_8_LISTENER_TYPE = "org.apache.tomcat.util.descriptor.web.ApplicationListener";
 
+	private static final String WS_LISTENER = "org.apache.tomcat.websocket.server.WsContextListener";
+
 	private static Log logger = LogFactory.getLog(WebSocketAutoConfiguration.class);
 
 	@Bean
 	@ConditionalOnMissingBean(name = "websocketContainerCustomizer")
 	public EmbeddedServletContainerCustomizer websocketContainerCustomizer() {
-
-		EmbeddedServletContainerCustomizer customizer = new EmbeddedServletContainerCustomizer() {
+		return new EmbeddedServletContainerCustomizer() {
 
 			@Override
 			public void customize(ConfigurableEmbeddedServletContainer container) {
 				if (container instanceof NonEmbeddedServletContainerFactory) {
-					logger.info("NonEmbeddedServletContainerFactory detected. Websockets support should be native so this normally is not a problem.");
+					logger.info("NonEmbeddedServletContainerFactory detected. Websockets "
+							+ "support should be native so this normally is not a problem.");
 					return;
 				}
-				if (!(container instanceof TomcatEmbeddedServletContainerFactory)) {
-					throw new IllegalStateException(
-							"Websockets are currently only supported in Tomcat (found "
-									+ container.getClass() + "). ");
-				}
-				((TomcatEmbeddedServletContainerFactory) container)
-						.addContextCustomizers(new TomcatContextCustomizer() {
-							@Override
-							public void customize(Context context) {
-								addListener(context, findListenerType());
-							}
-						});
+				Assert.state(container instanceof TomcatEmbeddedServletContainerFactory,
+						"Websockets are currently only supported in Tomcat (found "
+								+ container.getClass() + "). ");
+				TomcatEmbeddedServletContainerFactory tomcatContainer = (TomcatEmbeddedServletContainerFactory) container;
+				tomcatContainer.addContextCustomizers(new TomcatContextCustomizer() {
+					@Override
+					public void customize(Context context) {
+						addListener(context, findListenerType());
+					}
+				});
 			}
 
 		};
-
-		return customizer;
-
 	}
 
 	private static Class<?> findListenerType() {
@@ -97,23 +96,30 @@ public class WebSocketAutoConfiguration {
 		if (ClassUtils.isPresent(TOMCAT_8_LISTENER_TYPE, null)) {
 			return ClassUtils.resolveClassName(TOMCAT_8_LISTENER_TYPE, null);
 		}
-		throw new UnsupportedOperationException(
-				"Cannot find Tomcat 7 or 8 ApplicationListener class");
+		// With Tomcat 8.0.8 ApplicationListener is not required
+		return null;
 	}
 
 	/**
 	 * Instead of registering the WsSci directly as a ServletContainerInitializer, we use
 	 * the ApplicationListener provided by Tomcat. Unfortunately the ApplicationListener
-	 * class moved packages in Tomcat 8 so we have to do it reflectively.
-	 *
+	 * class moved packages in Tomcat 8 and been deleted in 8.0.8 so we have to use
+	 * reflection.
 	 * @param context the current context
 	 * @param listenerType the type of listener to add
 	 */
 	private static void addListener(Context context, Class<?> listenerType) {
-		Object instance = BeanUtils.instantiateClass(ClassUtils
-				.getConstructorIfAvailable(listenerType, String.class, boolean.class),
-				"org.apache.tomcat.websocket.server.WsContextListener", false);
-		ReflectionUtils.invokeMethod(ClassUtils.getMethod(context.getClass(),
-				"addApplicationListener", listenerType), context, instance);
+		if (listenerType == null) {
+			ReflectionUtils.invokeMethod(ClassUtils.getMethod(context.getClass(),
+					"addApplicationListener", String.class), context, WS_LISTENER);
+
+		}
+		else {
+			Object instance = BeanUtils.instantiateClass(
+					ClassUtils.getConstructorIfAvailable(listenerType, String.class,
+							boolean.class), WS_LISTENER, false);
+			ReflectionUtils.invokeMethod(ClassUtils.getMethod(context.getClass(),
+					"addApplicationListener", listenerType), context, instance);
+		}
 	}
 }
