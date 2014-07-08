@@ -17,11 +17,14 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.LifecycleState;
+import org.apache.catalina.Service;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
@@ -34,6 +37,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.inOrder;
@@ -127,11 +131,16 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		Connector[] listeners = new Connector[4];
 		for (int i = 0; i < listeners.length; i++) {
-			listeners[i] = mock(Connector.class);
+			Connector connector = mock(Connector.class);
+			given(connector.getState()).willReturn(LifecycleState.STOPPED);
+			listeners[i] = connector;
 		}
 		factory.addAdditionalTomcatConnectors(listeners);
 		this.container = factory.getEmbeddedServletContainer();
-		assertEquals(listeners.length, factory.getAdditionalTomcatConnectors().size());
+		Map<Service, Connector[]> connectors = ((TomcatEmbeddedServletContainer) this.container)
+				.getServiceConnectors();
+		assertThat(connectors.values().iterator().next().length,
+				equalTo(listeners.length + 1));
 	}
 
 	@Test
