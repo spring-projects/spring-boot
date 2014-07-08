@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link TraceWebFilterAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class TraceWebFilterAutoConfigurationTests {

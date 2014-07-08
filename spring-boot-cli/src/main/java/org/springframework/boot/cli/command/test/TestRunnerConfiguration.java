@@ -20,7 +20,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * Configuration for {@link TestRunner}.
- * 
+ *
  * @author Phillip Webb
  */
 public interface TestRunnerConfiguration extends GroovyCompilerConfiguration {

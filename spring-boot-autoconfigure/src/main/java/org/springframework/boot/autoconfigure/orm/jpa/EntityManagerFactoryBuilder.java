@@ -35,7 +35,7 @@ import org.springframework.util.ClassUtils;
  * most common options are covered in the builder, but you can always manipulate the
  * product of the builder if you need more control, before returning it from a
  * <code>@Bean</code> definition.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

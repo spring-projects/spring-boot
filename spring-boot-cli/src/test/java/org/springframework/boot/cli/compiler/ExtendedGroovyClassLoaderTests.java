@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ExtendedGroovyClassLoader}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ExtendedGroovyClassLoaderTests {

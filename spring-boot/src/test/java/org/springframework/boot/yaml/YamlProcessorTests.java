@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link YamlProcessor}.
- * 
+ *
  * @author Dave Syer
  */
 public class YamlProcessorTests {

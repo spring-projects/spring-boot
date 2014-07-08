@@ -34,7 +34,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link WebRequestTraceFilter
  * tracing}.
- * 
+ *
  * @author Dave Syer
  */
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class, ServletRegistration.class })

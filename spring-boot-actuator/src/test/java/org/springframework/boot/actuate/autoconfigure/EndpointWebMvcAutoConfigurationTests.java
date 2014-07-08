@@ -61,7 +61,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link EndpointWebMvcAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  * @author Greg Turnquist
  */

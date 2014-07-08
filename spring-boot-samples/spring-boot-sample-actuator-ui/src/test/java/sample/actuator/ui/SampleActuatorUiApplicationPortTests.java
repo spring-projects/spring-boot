@@ -36,7 +36,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Integration tests for separate management and main service ports.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link JmxAutoConfiguration}
- * 
+ *
  * @author Christian Dupuis
  */
 public class JmxAutoConfigurationTests {

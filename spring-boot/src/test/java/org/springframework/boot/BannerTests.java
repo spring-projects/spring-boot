@@ -20,7 +20,7 @@ import org.junit.Test;
 
 /**
  * Tests for {@link Banner}.
- * 
+ *
  * @author Phillip Webb
  */
 public class BannerTests {

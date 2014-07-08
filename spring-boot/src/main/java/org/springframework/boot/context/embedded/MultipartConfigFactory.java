@@ -24,12 +24,12 @@ import org.springframework.util.Assert;
  * Factory that can be used to create a {@link MultipartConfigElement}. Size values can be
  * set using traditional {@literal long} values or using more readable {@literal String}
  * variants that accept KB or MB suffixes, for example:
- * 
+ *
  * <pre class="code">
  * factory.setMaxFileSize(&quot;10Mb&quot;);
  * factory.setMaxRequestSize(&quot;100Kb&quot;);
  * </pre>
- * 
+ *
  * @author Phillip Webb
  */
 public class MultipartConfigFactory {

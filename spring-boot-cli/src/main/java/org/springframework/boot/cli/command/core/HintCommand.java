@@ -30,7 +30,7 @@ import org.springframework.boot.cli.util.Log;
 /**
  * Internal {@link Command} to provide hints for shell auto-completion. Expects to be
  * called with the current index followed by a list of arguments already typed.
- * 
+ *
  * @author Phillip Webb
  */
 public class HintCommand extends AbstractCommand {

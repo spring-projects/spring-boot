@@ -31,8 +31,8 @@ import org.springframework.boot.dependency.tools.ManagedDependencies;
 import org.springframework.boot.dependency.tools.PropertiesFileDependencies;
 
 /**
- * Utility to provide access to {@link ManagedDependencies} with support for version
- * file overrides.
+ * Utility to provide access to {@link ManagedDependencies} with support for version file
+ * overrides.
  *
  * @author Phillip Webb
  */

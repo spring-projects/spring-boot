@@ -23,7 +23,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * A single command that can be run from the CLI.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see #run(String...)

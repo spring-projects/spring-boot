@@ -21,7 +21,7 @@ import jline.console.completer.ArgumentCompleter.WhitespaceArgumentDelimiter;
 
 /**
  * Escape aware variant of {@link WhitespaceArgumentDelimiter}.
- * 
+ *
  * @author Phillip Webb
  */
 class EscapeAwareWhiteSpaceArgumentDelimiter extends WhitespaceArgumentDelimiter {

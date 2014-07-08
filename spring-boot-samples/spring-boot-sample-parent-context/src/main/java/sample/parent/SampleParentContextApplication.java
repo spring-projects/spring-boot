@@ -30,13 +30,14 @@ import org.springframework.context.annotation.ImportResource;
 public class SampleParentContextApplication {
 
 	public static void main(String[] args) throws Exception {
-		new SpringApplicationBuilder(Parent.class).child(SampleParentContextApplication.class).run(args);
+		new SpringApplicationBuilder(Parent.class).child(
+				SampleParentContextApplication.class).run(args);
 	}
-	
+
 	@EnableAutoConfiguration
 	@ImportResource("integration-context.xml")
 	protected static class Parent {
-		
+
 	}
 
 }

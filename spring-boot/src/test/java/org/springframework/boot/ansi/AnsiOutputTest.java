@@ -31,7 +31,7 @@ import static org.springframework.boot.ansi.AnsiElement.RED;
 
 /**
  * Tests for {@link AnsiOutput}.
- * 
+ *
  * @author Phillip Webb
  */
 public class AnsiOutputTest {

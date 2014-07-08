@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ManagedDependenciesFactory}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesFactoryTests {

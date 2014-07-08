@@ -33,10 +33,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.StringUtils;
 
 /**
  * Used to match resources for inclusion in a CLI application's jar file
- * 
+ *
  * @author Andy Wilkinson
  */
 class ResourceMatcher {
@@ -186,8 +187,8 @@ class ResourceMatcher {
 		}
 
 		private MatchedResource(File rootFolder, File file) {
-			this.name = file.getAbsolutePath().substring(
-					rootFolder.getAbsolutePath().length() + 1);
+			this.name = StringUtils.cleanPath(file.getAbsolutePath().substring(
+					rootFolder.getAbsolutePath().length() + 1));
 			this.file = file;
 			this.root = false;
 		}

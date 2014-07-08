@@ -26,7 +26,7 @@ import org.springframework.boot.groovy.EnableJmsMessaging;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring JMS.
- * 
+ *
  * @author Greg Turnquist
  */
 public class JmsCompilerAutoConfiguration extends CompilerAutoConfiguration {

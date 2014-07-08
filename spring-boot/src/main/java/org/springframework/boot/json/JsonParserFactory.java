@@ -20,7 +20,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Factory to create a {@link JsonParser}.
- * 
+ *
  * @author Dave Syer
  * @see JacksonJsonParser
  * @see YamlJsonParser

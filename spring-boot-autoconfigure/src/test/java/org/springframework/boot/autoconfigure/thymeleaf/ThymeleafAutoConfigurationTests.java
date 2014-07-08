@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ThymeleafAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class ThymeleafAutoConfigurationTests {

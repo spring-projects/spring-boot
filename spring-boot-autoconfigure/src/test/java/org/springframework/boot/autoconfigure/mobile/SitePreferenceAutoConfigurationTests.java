@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SitePreferenceAutoConfiguration}.
- * 
+ *
  * @author Roy Clarkson
  */
 public class SitePreferenceAutoConfigurationTests {

@@ -29,7 +29,7 @@ import org.springframework.boot.loader.tools.LogbackInitializer;
 /**
  * Spring Command Line Interface. This is the main entry-point for the Spring command line
  * application.
- * 
+ *
  * @author Phillip Webb
  * @see #main(String...)
  * @see CommandRunner

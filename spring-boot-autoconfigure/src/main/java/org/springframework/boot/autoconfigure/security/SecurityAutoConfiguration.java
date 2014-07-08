@@ -39,7 +39,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * provide a <code>@Configuration</code> with <code>@EnableWebSecurity</code>. To just add
  * your own layer of application security in front of the defaults, add a
  * <code>@Configuration</code> of type {@link WebSecurityConfigurerAdapter}.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

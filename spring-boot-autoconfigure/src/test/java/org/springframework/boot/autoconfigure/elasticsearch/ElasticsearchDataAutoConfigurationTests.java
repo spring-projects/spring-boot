@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ElasticsearchDataAutoConfiguration}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ElasticsearchDataAutoConfigurationTests {

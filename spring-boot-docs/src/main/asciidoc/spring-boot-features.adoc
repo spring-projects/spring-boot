@@ -592,7 +592,7 @@ be marked with `@Profile` to limit when it is loaded:
 ----
 	@Configuration
 	@Profile("production")
-	public class ProductionConfiguraiton {
+	public class ProductionConfiguration {
 
 		// ...
 
@@ -724,6 +724,20 @@ using a `logging.file` property.
 
 As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by default.
 
+[[boot-features-custom-log-levels]]
+=== Log Levels
+
+All the supported logging systems can have the logger levels set in the Spring
+`Environment` (so for example in `application.properties`) using ``logging.level.*=LEVEL''
+where ``LEVEL'' is one of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF. Example
+`application.properties`:
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	logging.level.org.springframework.web: DEBUG
+	logging.level.org.hibernate: ERROR
+----
+
 
 
 [[boot-features-custom-log-configuration]]
@@ -732,10 +746,10 @@ As with console output, `ERROR`, `WARN` and `INFO` level messages are logged by 
 The various logging systems can be activated by including the appropriate libraries on
 the classpath, and further customized by providing a suitable configuration file in the
 root of the classpath, or in a location specified by the Spring `Environment` property
-`logging.config`. (Note however that since logging is initialized *before* the `ApplicationContext
-is created, it isn't possible to control logging from `@PropertySources` in Spring
-`@Configuration` files.  System properties and the conventional Spring Boot external
-configuration files work just fine.)
+`logging.config`. (Note however that since logging is initialized *before* the
+`ApplicationContext` is created, it isn't possible to control logging from
+`@PropertySources` in Spring `@Configuration` files.  System properties and the
+conventional Spring Boot external configuration files work just fine.)
 
 Depending on your logging system, the following files will be loaded:
 
@@ -1720,18 +1734,9 @@ The Spring Framework provides extensive support for integrating with messaging s
 from simplified use of the JMS API using `JmsTemplate` to a complete infrastructure to
 receive messages asynchronously. Spring AMQP provides a similar feature set for the
 ``Advanced Message Queuing Protocol'' and Boot also provides auto-configuration options
-for `RabbitTemplate` and RabbitMQ.
-
-
-
-[[boot-features-integration]]
-== Spring Integration
-Spring Integration provides abstractions over messaging and also other transports such as
-HTTP, TCP etc. If Spring Integration is available on your classpath it will be initialized
-through the `@EnableIntegration` annotation. Message processing statistics will be
-published over JMX if ``spring-integration-jmx'' is also on the classpath.
-See the {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
-class for more details.
+for `RabbitTemplate` and RabbitMQ. There is also support for STOMP messaging natively
+in Spring Websocket and Spring Boot has support for that through starters and a small
+amount of auto configuration.
 
 
 
@@ -1839,6 +1844,17 @@ own beans:
 
 	}
 ----
+
+
+
+[[boot-features-integration]]
+== Spring Integration
+Spring Integration provides abstractions over messaging and also other transports such as
+HTTP, TCP etc. If Spring Integration is available on your classpath it will be initialized
+through the `@EnableIntegration` annotation. Message processing statistics will be
+published over JMX if ``spring-integration-jmx'' is also on the classpath.
+See the {sc-spring-boot-autoconfigure}/integration/IntegrationAutoConfiguration.{sc-ext}[`IntegrationAutoConfiguration`]
+class for more details.
 
 
 
@@ -1983,6 +1999,29 @@ in order to run your integration tests using random ports. For example:
 
 See <<howto-discover-the-http-port-at-runtime>> for a description of how you can discover
 the actual port that was allocated for the duration of the tests.
+
+
+
+[[boot-features-testing-spring-boot-applications-with-spock]]
+==== Using Spock to test Spring Boot applications
+
+If you wish to use Spock to test a Spring Boot application then you cannot use the
+`@SpringApplicationConfiguration` annotation that was
+<<boot-features-testing-spring-boot-applications,described above>> as Spock
+https://code.google.com/p/spock/issues/detail?id=349[does not find the
+`@ContextConfiguration` meta-annotation]. To work around this limitation, you should use
+the `@ContextConfiguration` annotation directly and configure it to use the Spring
+Boot specific context loader:
+
+[source,groovy,indent=0]
+----
+	@ContextConfiguration(loader = SpringApplicationContextLoader.class)
+	class ExampleSpec extends Specification {
+
+		// ...
+
+	}
+----
 
 
 

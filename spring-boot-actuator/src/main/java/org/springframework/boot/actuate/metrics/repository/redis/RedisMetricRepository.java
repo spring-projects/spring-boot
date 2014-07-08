@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * multiple metrics repositories all point at the same instance of Redis, it may be useful
  * to change the prefix to be unique (but not if you want them to contribute to the same
  * metrics).
- * 
+ *
  * @author Dave Syer
  */
 public class RedisMetricRepository implements MetricRepository {

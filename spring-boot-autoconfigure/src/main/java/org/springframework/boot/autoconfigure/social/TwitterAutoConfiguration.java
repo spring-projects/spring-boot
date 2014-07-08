@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.social.config.annotation.EnableSocial;
+import org.springframework.social.config.annotation.SocialConfigurerAdapter;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
@@ -41,12 +43,14 @@ import org.springframework.web.servlet.View;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Social connectivity with
  * Twitter.
- * 
+ *
  * @author Craig Walls
  * @since 1.1.0
  */
 @Configuration
-@ConditionalOnClass({ TwitterConnectionFactory.class })
+@ConditionalOnClass({ SocialConfigurerAdapter.class, TwitterConnectionFactory.class })
+@ConditionalOnProperty(prefix = "spring.social.twitter.", value = "app-id")
+@AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class TwitterAutoConfiguration {
 
@@ -69,7 +73,7 @@ public class TwitterAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(TwitterConnectionFactory.class)
+		@ConditionalOnMissingBean
 		@Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
 		public Twitter twitter(ConnectionRepository repository) {
 			Connection<Twitter> connection = repository

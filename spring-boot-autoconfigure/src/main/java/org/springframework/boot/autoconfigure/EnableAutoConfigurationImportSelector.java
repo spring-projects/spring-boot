@@ -35,7 +35,7 @@ import org.springframework.core.type.AnnotationMetadata;
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
  * auto-configuration}.
- * 
+ *
  * @author Phillip Webb
  * @see EnableAutoConfiguration
  */

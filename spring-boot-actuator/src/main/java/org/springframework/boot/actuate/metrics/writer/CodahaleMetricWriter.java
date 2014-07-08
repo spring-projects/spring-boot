@@ -32,7 +32,7 @@ import com.codahale.metrics.Timer;
 /**
  * A {@link MetricWriter} that send data to a Codahale {@link MetricRegistry} based on a
  * naming convention:
- * 
+ *
  * <ul>
  * <li>Updates to {@link #increment(Delta)} with names in "meter.*" are treated as
  * {@link Meter} events</li>
@@ -44,7 +44,7 @@ import com.codahale.metrics.Timer;
  * <li>Other metrics are treated as simple {@link Gauge} values (single valued
  * measurements of type double)</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 public class CodahaleMetricWriter implements MetricWriter {

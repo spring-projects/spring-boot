@@ -40,7 +40,7 @@ import static org.mockito.Mockito.spy;
 
 /**
  * Mock {@link EmbeddedServletContainerFactory}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MockEmbeddedServletContainerFactory extends

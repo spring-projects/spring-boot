@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ExcludeFilter}.
- * 
+ *
  * @author Stephane Nicoll
  */
 @SuppressWarnings("rawtypes")

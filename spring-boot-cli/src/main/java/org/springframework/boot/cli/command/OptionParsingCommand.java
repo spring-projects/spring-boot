@@ -24,7 +24,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * Base class for a {@link Command} that parse options using an {@link OptionHandler}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see OptionHandler

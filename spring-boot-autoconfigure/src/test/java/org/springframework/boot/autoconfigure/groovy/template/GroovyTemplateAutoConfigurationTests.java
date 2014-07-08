@@ -48,7 +48,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for GroovyTemplateAutoConfiguration.
- * 
+ *
  * @author Dave Syer
  */
 public class GroovyTemplateAutoConfigurationTests {

@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for JMS.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */

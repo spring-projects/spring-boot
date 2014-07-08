@@ -46,7 +46,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  */

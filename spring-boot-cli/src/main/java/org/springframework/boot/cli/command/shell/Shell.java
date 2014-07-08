@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
 /**
  * A shell for Spring Boot. Drops the user into an event loop (REPL) where command line
  * completion and history are available without relying on OS shell features.
- * 
+ *
  * @author Jon Brisbin
  * @author Dave Syer
  * @author Phillip Webb

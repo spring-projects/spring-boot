@@ -75,7 +75,7 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  * <li>Add form login for user facing resources: add a
  * {@link WebSecurityConfigurerAdapter} and use {@link HttpSecurity#formLogin()}</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

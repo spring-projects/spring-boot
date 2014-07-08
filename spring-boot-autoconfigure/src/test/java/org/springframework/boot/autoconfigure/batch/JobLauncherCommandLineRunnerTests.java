@@ -39,7 +39,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -48,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link JobLauncherCommandLineRunner}.
- * 
+ *
  * @author Dave Syer
  */
 public class JobLauncherCommandLineRunnerTests {
@@ -136,7 +135,7 @@ public class JobLauncherCommandLineRunnerTests {
 					}
 				}).build()).incrementer(new RunIdIncrementer()).build();
 		JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
-				.toJobParameters();
+				.addLong("foo", 2L, false).toJobParameters();
 		this.runner.execute(this.job, jobParameters);
 		this.runner.execute(this.job, jobParameters);
 		assertEquals(1, this.jobExplorer.getJobInstances("job", 0, 100).size());
@@ -177,8 +176,8 @@ public class JobLauncherCommandLineRunnerTests {
 			return launcher;
 		}
 
-		@Bean
-		public JobExplorer jobExplorer() throws Exception {
+		@Override
+		public JobExplorer getJobExplorer() throws Exception {
 			return new MapJobExplorerFactoryBean(this.jobRepositoryFactory).getObject();
 		}
 	}

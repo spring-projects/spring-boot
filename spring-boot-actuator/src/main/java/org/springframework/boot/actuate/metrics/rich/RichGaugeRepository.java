@@ -20,7 +20,7 @@ import org.springframework.boot.actuate.metrics.writer.MetricWriter;
 
 /**
  * Convenient combination of reader and writer concerns for {@link RichGauge} instances.
- * 
+ *
  * @author Dave Syer
  */
 public interface RichGaugeRepository extends RichGaugeReader, MetricWriter {

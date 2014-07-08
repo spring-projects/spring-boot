@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerPostProcessor.Registrar;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,27 +46,17 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DataSource}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
 @Configuration
 @ConditionalOnClass(EmbeddedDatabaseType.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
+@Import(Registrar.class)
 public class DataSourceAutoConfiguration {
 
 	public static final String CONFIGURATION_PREFIX = "spring.datasource";
-
-	@Autowired
-	private DataSourceProperties properties;
-
-	@Autowired(required = false)
-	private DataSource dataSource;
-
-	@Bean
-	public DataSourceInitializer dataSourceAutoConfigurationInitializer() {
-		return new DataSourceInitializer();
-	}
 
 	/**
 	 * Determines if the {@code dataSource} being used by Spring was created from
@@ -89,6 +80,16 @@ public class DataSourceAutoConfiguration {
 	@Import(EmbeddedDataSourceConfiguration.class)
 	protected static class EmbeddedConfiguration {
 
+	}
+
+	@Configuration
+	@ConditionalOnMissingBean(DataSourceInitializer.class)
+	protected static class DataSourceInitializerConfiguration {
+
+		@Bean
+		public DataSourceInitializer dataSourceInitializer() {
+			return new DataSourceInitializer();
+		}
 	}
 
 	@Conditional(DataSourceAutoConfiguration.NonEmbeddedDatabaseCondition.class)

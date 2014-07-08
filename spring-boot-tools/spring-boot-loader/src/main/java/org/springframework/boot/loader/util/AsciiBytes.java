@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 /**
  * Simple wrapper around a byte array that represents an ASCII. Used for performance
  * reasons to save constructing Strings for ZIP data.
- * 
+ *
  * @author Phillip Webb
  */
 public final class AsciiBytes {
@@ -126,6 +126,13 @@ public final class AsciiBytes {
 			return this;
 		}
 		return append(string.getBytes(UTF_8));
+	}
+
+	public AsciiBytes append(AsciiBytes asciiBytes) {
+		if (asciiBytes == null || asciiBytes.length() == 0) {
+			return this;
+		}
+		return append(asciiBytes.bytes);
 	}
 
 	public AsciiBytes append(byte[] bytes) {

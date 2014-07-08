@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.1.2.BUILD-SNAPSHOT'
+		springBootVersion = '1.1.5.BUILD-SNAPSHOT'
 		springLoadedVersion = '1.2.0.RELEASE'
 	}
 	repositories {
@@ -24,6 +24,10 @@ apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
 mainClassName = "sample.ui.SampleWebUiApplication"
+
+springBoot {
+    classifier = 'exec'
+}
 
 jar {
 	baseName = 'spring-boot-sample-web-ui'

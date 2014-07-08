@@ -25,7 +25,7 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
 /**
  * Smart extension of {@link ImportCustomizer} that will only add a specific import if a
  * class with the same name is not already explicitly imported.
- * 
+ *
  * @author Dave Syer
  * @since 1.1
  */

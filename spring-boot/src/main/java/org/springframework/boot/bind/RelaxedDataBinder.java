@@ -36,7 +36,7 @@ import org.springframework.validation.DataBinder;
  * Binder implementation that allows caller to bind to maps and also allows property names
  * to match a bit loosely (if underscores or dashes are removed and replaced with camel
  * case for example).
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @see RelaxedNames

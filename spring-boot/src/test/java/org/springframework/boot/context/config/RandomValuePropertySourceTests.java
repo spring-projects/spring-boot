@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link RandomValuePropertySource}.
- * 
+ *
  * @author Dave Syer
  */
 public class RandomValuePropertySourceTests {

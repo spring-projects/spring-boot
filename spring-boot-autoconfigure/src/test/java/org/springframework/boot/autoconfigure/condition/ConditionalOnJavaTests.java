@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ConditionalOnJava}.
- * 
+ *
  * @author Oliver Gierke
  * @author Phillip Webb
  */

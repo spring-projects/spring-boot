@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ExplodedArchive}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -106,16 +107,16 @@ public class ExplodedArchiveTests {
 	@Test
 	public void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(new File(url.toURI()), equalTo(new File(this.rootFolder.toURI())));
+		assertThat(new File(URLDecoder.decode(url.getFile(), "UTF-8")),
+				equalTo(this.rootFolder));
 	}
 
 	@Test
 	public void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString(),
-				equalTo("jar:file:" + this.rootFolder.getPath() + File.separator
-						+ "nested.jar!/"));
+		assertThat(nested.getUrl().toString(), equalTo("jar:" + this.rootFolder.toURI()
+				+ "nested.jar!/"));
 	}
 
 	@Test

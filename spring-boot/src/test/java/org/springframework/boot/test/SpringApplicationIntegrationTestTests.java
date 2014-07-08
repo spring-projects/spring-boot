@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotEquals;
 
 /**
  * Tests for {@link IntegrationTest}
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

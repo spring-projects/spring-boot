@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,7 +69,7 @@ import org.springframework.boot.loader.util.SystemPropertyUtils;
  * <code>Start-Class</code> in a <code>MANIFEST.MF</code>, if there is one in
  * <code>${loader.home}/META-INF</code>.</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  * @author Janne Valkealahti
  */
@@ -518,7 +519,8 @@ public class PropertiesLauncher extends Launcher {
 				}
 			}
 			else {
-				lib.add(0, new ExplodedArchive(new File(url.getFile())));
+				String filename = URLDecoder.decode(url.getFile(), "UTF-8");
+				lib.add(0, new ExplodedArchive(new File(filename)));
 			}
 		}
 	}

@@ -24,7 +24,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Common abstraction over logging systems.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

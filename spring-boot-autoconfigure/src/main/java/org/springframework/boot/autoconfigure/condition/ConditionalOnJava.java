@@ -28,7 +28,7 @@ import org.springframework.util.Assert;
 /**
  * {@link Conditional} that matches based on the JVM version the application is running
  * on.
- * 
+ *
  * @author Oliver Gierke
  * @author Phillip Webb
  * @since 1.1.0

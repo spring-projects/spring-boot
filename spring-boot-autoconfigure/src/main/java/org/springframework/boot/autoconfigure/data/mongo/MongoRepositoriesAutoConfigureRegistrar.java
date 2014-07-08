@@ -27,7 +27,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
 /**
  * {@link ImportBeanDefinitionRegistrar} used to auto-configure Spring Data Mongo
  * Repositories.
- * 
+ *
  * @author Dave Syer
  */
 class MongoRepositoriesAutoConfigureRegistrar extends

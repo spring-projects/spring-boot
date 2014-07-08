@@ -26,7 +26,7 @@ import org.springframework.boot.groovy.GroovyTemplate;
 
 /**
  * {@link CompilerAutoConfiguration} for Groovy Templates (outside MVC).
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

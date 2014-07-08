@@ -28,7 +28,7 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterExceptio
  * An {@link org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter
  * ArtifactsFilter} that filters out any artifact matching a configurable list of
  * {@link Exclude} instances.
- * 
+ *
  * @author Stephane Nicoll
  * @since 1.1
  */

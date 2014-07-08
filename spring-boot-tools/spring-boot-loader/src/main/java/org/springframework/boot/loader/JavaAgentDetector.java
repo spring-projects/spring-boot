@@ -20,7 +20,7 @@ import java.net.URL;
 
 /**
  * A strategy for detecting Java agents
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */
@@ -32,4 +32,5 @@ public interface JavaAgentDetector {
 	 * @param url The url to examine
 	 */
 	public boolean isJavaAgentJar(URL url);
+
 }

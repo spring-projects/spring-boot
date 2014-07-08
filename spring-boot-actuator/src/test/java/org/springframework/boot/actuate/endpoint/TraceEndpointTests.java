@@ -31,7 +31,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link TraceEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class TraceEndpointTests extends AbstractEndpointTests<TraceEndpoint> {

@@ -33,7 +33,7 @@ import sample.data.gemfire.domain.Gemstone;
  * The GemstoneServiceImpl class is a Service object implementing the GemstoneService
  * interface containing business logic and rules in addition to data services for
  * processing Gemstones.
- * 
+ *
  * @author John Blum
  */
 @Service("gemstoneService")
@@ -56,7 +56,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	/**
 	 * Returns a count of the number of Gemstones in the GemFire Cache.
 	 * <p/>
-	 * 
+	 *
 	 * @return a long value indicating the number of Gemstones in the GemFire Cache.
 	 */
 	@Override
@@ -68,7 +68,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	/**
 	 * Gets a Gemstone by ID.
 	 * <p/>
-	 * 
+	 *
 	 * @param id a long value indicating the identifier of the Gemstone.
 	 * @return a Gemstone with ID, or null if no Gemstone exists with ID.
 	 * @see sample.data.gemfire.domain.Gemstone
@@ -82,7 +82,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	/**
 	 * Gets a Gemstone by name.
 	 * <p/>
-	 * 
+	 *
 	 * @param name a String value indicating the name of the Gemstone.
 	 * @return a Gemstone with name, or null if no Gemstone exists with name.
 	 * @see sample.data.gemfire.domain.Gemstone
@@ -96,7 +96,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	/**
 	 * Return a listing of Gemstones currently stored in the GemFire Cache.
 	 * <p/>
-	 * 
+	 *
 	 * @return a Iterable object to iterate over the list of Gemstones currently stored in
 	 * the GemFire Cache.
 	 * @see java.lang.Iterable
@@ -111,7 +111,7 @@ public class GemstoneServiceImpl implements GemstoneService {
 	/**
 	 * Saves the specified Gemstone to the GemFire Cache.
 	 * <p/>
-	 * 
+	 *
 	 * @param gemstone the Gemstone to save in the GemFire Cache.
 	 * @return the saved Gemstone.
 	 * @see sample.data.gemfire.domain.Gemstone

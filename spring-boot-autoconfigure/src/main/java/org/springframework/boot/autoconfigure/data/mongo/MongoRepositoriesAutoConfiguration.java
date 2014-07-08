@@ -45,7 +45,7 @@ import com.mongodb.Mongo;
  * using the
  * {@link org.springframework.data.mongodb.repository.config.EnableMongoRepositories}
  * annotation.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  * @author Josh Long

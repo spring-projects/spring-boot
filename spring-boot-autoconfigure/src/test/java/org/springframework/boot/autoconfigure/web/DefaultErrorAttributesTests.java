@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DefaultErrorAttributes}.
- * 
+ *
  * @author Phillip Webb
  */
 public class DefaultErrorAttributesTests {

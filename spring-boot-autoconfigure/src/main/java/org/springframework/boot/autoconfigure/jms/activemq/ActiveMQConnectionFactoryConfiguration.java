@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Creates a {@link ConnectionFactory} based on {@link ActiveMQProperties}.
- * 
+ *
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @since 1.1.0

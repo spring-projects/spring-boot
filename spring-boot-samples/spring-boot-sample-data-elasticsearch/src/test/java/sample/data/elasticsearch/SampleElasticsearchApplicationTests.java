@@ -16,14 +16,14 @@
 
 package sample.data.elasticsearch;
 
-import static org.junit.Assert.*;
-
 import java.net.ConnectException;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.boot.test.OutputCapture;
 import org.springframework.core.NestedCheckedException;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleElasticsearchApplication}.

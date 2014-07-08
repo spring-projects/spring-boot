@@ -22,7 +22,7 @@ import org.springframework.core.io.ResourceLoader;
 /**
  * Indicates the availability of view templates for a particular templating engine such as
  * FreeMarker or Thymeleaf
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

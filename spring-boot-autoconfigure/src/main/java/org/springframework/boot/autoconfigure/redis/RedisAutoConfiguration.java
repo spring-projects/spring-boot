@@ -39,7 +39,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.
- * 
+ *
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Christian Dupuis

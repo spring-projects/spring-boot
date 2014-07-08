@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-tools</artifactId>
-		<version>1.1.2.BUILD-SNAPSHOT</version>
+		<version>1.1.5.BUILD-SNAPSHOT</version>
 	</parent>
 	<artifactId>spring-boot-gradle-plugin</artifactId>
 	<name>Spring Boot Gradle Plugin</name>
@@ -72,7 +72,7 @@
 					<dependency>
 						<groupId>org.codehaus.groovy</groupId>
 						<artifactId>groovy-eclipse-batch</artifactId>
-						<version>2.1.5-03</version>
+						<version>2.1.8-01</version>
 					</dependency>
 				</dependencies>
 			</plugin>

@@ -22,7 +22,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * Configuration for the {@link SpringApplicationRunner}.
- * 
+ *
  * @author Phillip Webb
  */
 public interface SpringApplicationRunnerConfiguration extends GroovyCompilerConfiguration {

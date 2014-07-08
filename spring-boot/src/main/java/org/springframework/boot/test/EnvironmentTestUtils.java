@@ -28,7 +28,7 @@ import org.springframework.core.env.MutablePropertySources;
 
 /**
  * Test utilities for setting environment values.
- * 
+ *
  * @author Dave Syer
  */
 public abstract class EnvironmentTestUtils {

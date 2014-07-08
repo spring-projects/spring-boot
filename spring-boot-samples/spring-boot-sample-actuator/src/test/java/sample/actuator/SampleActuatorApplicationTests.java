@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for service demo application.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

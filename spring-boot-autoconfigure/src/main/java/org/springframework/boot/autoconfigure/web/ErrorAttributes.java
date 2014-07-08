@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Provides access to error attributes which can be logged or presented to the user.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1.0
  * @see DefaultErrorAttributes

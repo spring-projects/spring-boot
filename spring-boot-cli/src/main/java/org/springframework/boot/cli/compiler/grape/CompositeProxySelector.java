@@ -25,7 +25,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 
 /**
  * Composite {@link ProxySelector}.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

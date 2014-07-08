@@ -51,7 +51,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 /**
  * Configuration triggered from {@link EndpointWebMvcAutoConfiguration} when a new
  * {@link EmbeddedServletContainer} running on a different port is required.
- * 
+ *
  * @author Dave Syer
  * @see EndpointWebMvcAutoConfiguration
  */

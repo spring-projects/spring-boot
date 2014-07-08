@@ -39,7 +39,7 @@ import org.springframework.boot.loader.util.AsciiBytes;
 
 /**
  * {@link Archive} implementation backed by an exploded archive directory.
- * 
+ *
  * @author Phillip Webb
  */
 public class ExplodedArchive extends Archive {

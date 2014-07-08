@@ -31,7 +31,7 @@ import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 
 /**
  * A base mojo filtering the dependencies of the project.
- * 
+ *
  * @author Stephane Nicoll
  * @since 1.1
  */

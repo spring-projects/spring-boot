@@ -48,7 +48,7 @@ import org.springframework.web.servlet.ModelAndView;
  * <li>trace - The exception stack trace</li>
  * <li>path - The URL path when the exception was raised</li>
  * </ul>
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @since 1.1.0

@@ -30,7 +30,7 @@ import org.springframework.core.Ordered;
  * or UPPERCASE variant of that) to the name of a character encoding (e.g. "UTF-8") then
  * this initializer throws an exception when the <code>file.encoding</code> System
  * property does not equal it.
- * 
+ *
  * <p>
  * The System property <code>file.encoding</code> is normally set by the JVM in response
  * to the <code>LANG</code> or <code>LC_ALL</code> environment variables. It is used
@@ -39,7 +39,7 @@ import org.springframework.core.Ordered;
  * the file encoding System property on the command line (with standard JVM features), but
  * also consider setting the <code>LANG</code> environment variable to an explicit
  * character-encoding value (e.g. "en_GB.UTF-8").
- * 
+ *
  * @author Dave Syer
  */
 public class FileEncodingApplicationListener implements

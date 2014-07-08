@@ -24,7 +24,7 @@ import com.mongodb.CommandResult;
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
  * Mongo data stores.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */

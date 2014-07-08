@@ -21,7 +21,7 @@ import java.io.InputStream;
 
 /**
  * {@link RandomAccessData} implementation backed by a byte array.
- * 
+ *
  * @author Phillip Webb
  */
 public class ByteArrayRandomAccessData implements RandomAccessData {

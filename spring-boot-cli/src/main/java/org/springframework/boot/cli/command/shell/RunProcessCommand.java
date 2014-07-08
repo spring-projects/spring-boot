@@ -28,7 +28,7 @@ import org.springframework.boot.loader.tools.RunProcess;
 /**
  * Special {@link Command} used to run a process from the shell. NOTE: this command is not
  * directly installed into the shell.
- * 
+ *
  * @author Phillip Webb
  */
 class RunProcessCommand extends AbstractCommand {

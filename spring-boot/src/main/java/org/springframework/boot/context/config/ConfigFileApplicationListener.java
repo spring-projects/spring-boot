@@ -82,7 +82,7 @@ import org.springframework.validation.BindException;
  * ("spring.main.sources" - a CSV list) the flag to indicate a web environment
  * ("spring.main.web_environment=true") or the flag to switch off the banner
  * ("spring.main.show_banner=false").
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

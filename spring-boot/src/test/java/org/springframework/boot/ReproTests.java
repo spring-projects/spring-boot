@@ -25,7 +25,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests to reproduce reported issues.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

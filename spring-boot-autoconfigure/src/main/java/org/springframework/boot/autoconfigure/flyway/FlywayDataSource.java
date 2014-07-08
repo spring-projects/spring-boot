@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 /**
  * Qualifier annotation for a DataSource to be injected in to Flyway. If used for a second
  * data source, the other (main) one would normally be marked as <code>@Primary</code>.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

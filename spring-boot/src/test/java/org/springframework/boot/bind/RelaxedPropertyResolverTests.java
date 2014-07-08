@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedPropertyResolver}.
- * 
+ *
  * @author Phillip Webb
  */
 public class RelaxedPropertyResolverTests {

@@ -37,7 +37,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
  * {@link DeviceResolver}.
- * 
+ *
  * @author Roy Clarkson
  */
 @Configuration

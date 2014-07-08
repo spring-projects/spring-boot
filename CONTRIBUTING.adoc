@@ -112,11 +112,12 @@ marketplace".
 Spring Boot includes project specific source formatting settings, in order to have these
 work with m2eclipse, we provide an additional eclipse plugin that you can install:
 
+* Download `org.eclipse.m2e.maveneclipse.site.zip` from
+  https://github.com/philwebb/m2eclipse-maveneclipse/releases.
 * Select `Install new software` from the `help` menu
 * Click `Add...` to add a new repository
 * Click the `Archive...` button
-* Select `org.eclipse.m2e.maveneclipse.site-0.0.1-SNAPSHOT-site.zip` from the `eclipse`
-  folder in this checkout
+* Select the `org.eclipse.m2e.maveneclipse.site.zip` that you previously downloaded
 * Install "Maven Integration for the maven-eclipse-plugin"
 
 NOTE: This plugin is optional. Projects can be imported without the plugin, your code

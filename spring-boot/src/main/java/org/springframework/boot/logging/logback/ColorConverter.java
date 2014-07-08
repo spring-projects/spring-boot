@@ -31,7 +31,7 @@ import ch.qos.logback.core.pattern.CompositeConverter;
  * Logback {@link CompositeConverter} colors output using the {@link AnsiOutput} class. A
  * single 'color' option can be provided to the converter, or if not specified color will
  * be picked based on the logging level.
- * 
+ *
  * @author Phillip Webb
  */
 public class ColorConverter extends CompositeConverter<ILoggingEvent> {

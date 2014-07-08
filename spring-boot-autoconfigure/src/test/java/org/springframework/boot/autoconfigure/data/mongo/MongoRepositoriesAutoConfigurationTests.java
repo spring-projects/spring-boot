@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MongoRepositoriesAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  */

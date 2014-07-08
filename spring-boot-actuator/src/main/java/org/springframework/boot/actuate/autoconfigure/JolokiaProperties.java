@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Jolokia.
- * 
+ *
  * @author Christian Dupuis
  * @author Dave Syer
  */

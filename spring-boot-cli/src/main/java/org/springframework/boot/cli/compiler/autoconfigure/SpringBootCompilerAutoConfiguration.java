@@ -31,7 +31,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */
@@ -45,8 +45,10 @@ public class SpringBootCompilerAutoConfiguration extends CompilerAutoConfigurati
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("javax.annotation.PostConstruct",
-				"javax.annotation.PreDestroy", "groovy.util.logging.Log",
+		imports.addImports(
+				"javax.annotation.PostConstruct",
+				"javax.annotation.PreDestroy",
+				"groovy.util.logging.Log",
 				"org.springframework.stereotype.Controller",
 				"org.springframework.stereotype.Service",
 				"org.springframework.stereotype.Component",

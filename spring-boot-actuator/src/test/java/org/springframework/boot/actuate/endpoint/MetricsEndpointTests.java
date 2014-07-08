@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link MetricsEndpoint}.
- * 
+ *
  * @author Phillip Webb
  */
 public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint> {

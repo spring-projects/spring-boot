@@ -23,7 +23,7 @@ import org.springframework.boot.cli.command.status.ExitStatus;
 
 /**
  * Clear the {@link Shell} screen.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

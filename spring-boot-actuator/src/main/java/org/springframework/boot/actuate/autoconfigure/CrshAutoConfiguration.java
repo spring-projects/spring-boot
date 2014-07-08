@@ -43,6 +43,7 @@ import org.crsh.vfs.spi.AbstractFSDriver;
 import org.crsh.vfs.spi.FSDriver;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellAuthenticationProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.CrshShellProperties;
 import org.springframework.boot.actuate.autoconfigure.ShellProperties.JaasAuthenticationProperties;
@@ -108,7 +109,7 @@ import org.springframework.util.StringUtils;
  * using the following classpath scanning pattern <code>classpath*:/commands/**</code>. To
  * add different locations or override the default use
  * <code>shell.command_path_patterns</code> in your application configuration.
- * 
+ *
  * @author Christian Dupuis
  * @see ShellProperties
  */
@@ -155,6 +156,7 @@ public class CrshAutoConfiguration {
 	 * Class to configure CRaSH to authenticate against Spring Security.
 	 */
 	@Configuration
+	@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
 	@ConditionalOnBean({ AuthenticationManager.class })
 	@AutoConfigureAfter(CrshAutoConfiguration.class)
 	public static class AuthenticationManagerAdapterAutoConfiguration {
@@ -168,7 +170,6 @@ public class CrshAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnExpression("'${shell.auth:spring}' == 'spring'")
 		@ConditionalOnMissingBean({ CrshShellAuthenticationProperties.class })
 		public CrshShellAuthenticationProperties springAuthenticationProperties() {
 			// In case no shell.auth property is provided fall back to Spring Security
@@ -280,6 +281,7 @@ public class CrshAutoConfiguration {
 		private AuthenticationManager authenticationManager;
 
 		@Autowired(required = false)
+		@Qualifier("shellAccessDecisionManager")
 		private AccessDecisionManager accessDecisionManager;
 
 		private String[] roles = new String[] { "ADMIN" };

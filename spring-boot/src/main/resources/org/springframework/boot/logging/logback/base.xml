@@ -3,7 +3,7 @@
 
 	<include resource="org/springframework/boot/logging/logback/basic.xml"/>
 
-	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${java.io.tmpdir:-/tmp}/}spring.log}"/>
+	<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
 	<property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%t] --- %-40.40logger{39} : %m%n%wex"/>
 
 	<appender name="FILE"

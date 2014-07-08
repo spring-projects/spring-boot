@@ -43,7 +43,7 @@ import org.springframework.util.SocketUtils;
 
 /**
  * {@link TestRule} that can be used to invoke CLI commands.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson

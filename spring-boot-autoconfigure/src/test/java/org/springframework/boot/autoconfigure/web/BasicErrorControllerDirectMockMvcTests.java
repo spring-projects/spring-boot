@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.test.ApplicationContextTestUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -44,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Tests for {@link BasicErrorController} using {@link MockMvc} but not
  * {@link SpringJUnit4ClassRunner}.
- * 
+ *
  * @author Dave Syer
  */
 public class BasicErrorControllerDirectMockMvcTests {
@@ -55,9 +56,7 @@ public class BasicErrorControllerDirectMockMvcTests {
 
 	@After
 	public void close() {
-		if (this.wac != null) {
-			this.wac.close();
-		}
+		ApplicationContextTestUtils.closeAll(this.wac);
 	}
 
 	public void setup(ConfigurableWebApplicationContext context) {

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link DelegatingApplicationContextInitializer}.
- * 
+ *
  * @author Phillip Webb
  */
 public class DelegatingApplicationContextInitializerTests {

@@ -34,7 +34,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * instantiation needs. This test is designed to fail if the Entities can't be scanned
  * because the registrar doesn't get a callback with the right beans (essentially because
  * their instantiation order was accelerated by Security).
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

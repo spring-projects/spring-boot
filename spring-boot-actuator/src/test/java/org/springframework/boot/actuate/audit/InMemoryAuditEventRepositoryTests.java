@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link InMemoryAuditEventRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryAuditEventRepositoryTests {

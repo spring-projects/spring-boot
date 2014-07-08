@@ -24,7 +24,7 @@ import org.springframework.util.ClassUtils;
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for JSP
  * view templates
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

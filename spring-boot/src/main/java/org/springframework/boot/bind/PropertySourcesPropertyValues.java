@@ -36,7 +36,7 @@ import org.springframework.validation.DataBinder;
  * A {@link PropertyValues} implementation backed by a {@link PropertySources}, bridging
  * the two abstractions and allowing (for instance) a regular {@link DataBinder} to be
  * used with the latter.
- * 
+ *
  * @author Dave Syer
  */
 public class PropertySourcesPropertyValues implements PropertyValues {

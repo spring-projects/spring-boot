@@ -23,7 +23,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link ArtifactCoordinatesResolver} backed by {@link Dependencies}.
- * 
+ *
  * @author Phillip Webb
  */
 public class ManagedDependenciesArtifactCoordinatesResolver implements

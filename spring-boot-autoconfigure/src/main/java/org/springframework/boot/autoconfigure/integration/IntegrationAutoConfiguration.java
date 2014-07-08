@@ -33,7 +33,7 @@ import org.springframework.integration.monitor.IntegrationMBeanExporter;
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
  * Auto-configuration} for Spring Integration.
- * 
+ *
  * @author Artem Bilan
  * @author Dave Syer
  * @since 1.1.0

@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
  * They are fault tolerant, and optionally can carry Basic authentication headers. If
  * Apache Http Client 4.3.2 or better is available (recommended) it will be used as the
  * client, and configured to ignore cookies and redirects.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

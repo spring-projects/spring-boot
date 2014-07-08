@@ -24,7 +24,7 @@ import org.springframework.web.context.ConfigurableWebApplicationContext;
 
 /**
  * {@link ApplicationContextInitializer} for setting the servlet context.
- * 
+ *
  * @author Dave Syer
  */
 public class ServletContextApplicationContextInitializer implements

@@ -49,31 +49,16 @@ import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
  * <li>auto-registration for all {@link Module} beans with all {@link ObjectMapper} beans
  * (including the defaulted ones).</li>
  * </ul>
- * 
+ *
  * @author Oliver Gierke
  * @since 1.1.0
  */
 @Configuration
 @ConditionalOnClass(ObjectMapper.class)
-@EnableConfigurationProperties(HttpMapperProperties.class)
 public class JacksonAutoConfiguration {
 
 	@Autowired
-	private HttpMapperProperties properties = new HttpMapperProperties();
-
-	@Autowired
 	private ListableBeanFactory beanFactory;
-
-	@Bean
-	@Primary
-	@ConditionalOnMissingBean
-	public ObjectMapper jacksonObjectMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		if (this.properties.isJsonSortKeys()) {
-			objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-		}
-		return objectMapper;
-	}
 
 	@PostConstruct
 	private void registerModulesWithObjectMappers() {
@@ -86,6 +71,28 @@ public class JacksonAutoConfiguration {
 	private <T> Collection<T> getBeans(Class<T> type) {
 		return BeanFactoryUtils.beansOfTypeIncludingAncestors(this.beanFactory, type)
 				.values();
+	}
+
+	@Configuration
+	@ConditionalOnClass(ObjectMapper.class)
+	@EnableConfigurationProperties(HttpMapperProperties.class)
+	static class JacksonObjectMapperAutoConfiguration {
+
+		@Autowired
+		private HttpMapperProperties properties = new HttpMapperProperties();
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean
+		public ObjectMapper jacksonObjectMapper() {
+			ObjectMapper objectMapper = new ObjectMapper();
+			if (this.properties.isJsonSortKeys()) {
+				objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
+						true);
+			}
+			return objectMapper;
+		}
+
 	}
 
 	@Configuration

@@ -23,7 +23,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 /**
  * Simple wrapper around {@link Endpoint} implementations that provide actuator data of
  * some sort.
- * 
+ *
  * @author Christian Dupuis
  */
 @ManagedResource

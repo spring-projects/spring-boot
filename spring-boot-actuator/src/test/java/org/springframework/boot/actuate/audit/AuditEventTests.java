@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link AuditEvent}.
- * 
+ *
  * @author Dave Syer
  */
 public class AuditEventTests {

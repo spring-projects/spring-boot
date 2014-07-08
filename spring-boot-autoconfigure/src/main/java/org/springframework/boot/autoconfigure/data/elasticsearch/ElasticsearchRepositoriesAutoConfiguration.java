@@ -30,7 +30,7 @@ import org.springframework.data.repository.core.support.RepositoryFactoryBeanSup
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Elasticsearch
  * Repositories.
- * 
+ *
  * @author Artur Konczak
  * @author Mohsin Husen
  * @see EnableElasticsearchRepositories

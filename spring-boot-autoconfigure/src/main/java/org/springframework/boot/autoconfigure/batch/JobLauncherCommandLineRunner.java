@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  * {@link CommandLineRunner} to {@link JobLauncher launch} Spring Batch jobs. Runs all
  * jobs in the surrounding context by default. Can also be used to launch a specific job
  * by providing a jobName
- * 
+ *
  * @author Dave Syer
  */
 @Component
@@ -153,7 +153,8 @@ public class JobLauncherCommandLineRunner implements CommandLineRunner,
 					|| previousExecution.getStatus() == BatchStatus.FAILED) {
 				// Retry a failed or stopped execution
 				jobParameters = previousExecution.getJobParameters();
-				for (Entry<String, JobParameter> parameter : additionals.entrySet()) {
+				for (Entry<String, JobParameter> parameter : new HashMap<String, JobParameter>(
+						additionals).entrySet()) {
 					// Non-identifying additional parameters can be added to a retry
 					if (!parameter.getValue().isIdentifying()) {
 						additionals.remove(parameter.getKey());

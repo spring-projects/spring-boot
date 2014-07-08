@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConditionalOnNotWebApplication}.
- * 
+ *
  * @author Dave Syer
  */
 public class ConditionalOnNotWebApplicationTests {

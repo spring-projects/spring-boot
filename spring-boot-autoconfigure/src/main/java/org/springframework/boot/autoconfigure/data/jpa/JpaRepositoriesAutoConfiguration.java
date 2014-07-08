@@ -48,7 +48,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
  * annotation.
  * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
- * 
+ *
  * @author Phillip Webb
  * @author Josh Long
  * @see EnableJpaRepositories

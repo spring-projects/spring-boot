@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ConditionalOnMissingBean}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Jakub Kubrynski

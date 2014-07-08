@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * <p>
  * {@link Health} instances can be created by using {@link Builder}'s fluent API. Typical
  * usage in a {@link HealthIndicator} would be:
- * 
+ *
  * <pre class="code">
  * try {
  * 	// do some test to determine state of component
@@ -45,7 +45,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  * 	return new Health.Builder().down(ex).build();
  * }
  * </pre>
- * 
+ *
  * @author Christian Dupuis
  * @author Phillip Webb
  * @since 1.1.0

@@ -25,7 +25,6 @@ import org.springframework.boot.gradle.agent.AgentPluginFeatures
 import org.springframework.boot.gradle.exclude.ExcludePluginFeatures
 import org.springframework.boot.gradle.repackage.RepackagePluginFeatures
 import org.springframework.boot.gradle.resolve.ResolvePluginFeatures
-import org.springframework.boot.gradle.resolve.SpringBootResolutionStrategy
 import org.springframework.boot.gradle.run.RunPluginFeatures
 
 
@@ -40,23 +39,23 @@ class SpringBootPlugin implements Plugin<Project> {
 	@Override
 	void apply(Project project) {
 		project.getPlugins().apply(BasePlugin)
-		project.getPlugins().apply(JavaPlugin)
-		project.getPlugins().apply(ApplicationPlugin)
 
 		project.getExtensions().create("springBoot", SpringBootPluginExtension)
 		project.getConfigurations().create(VersionManagedDependencies.CONFIGURATION);
 
+		project.getPlugins().apply(JavaPlugin)
+		project.getPlugins().apply(ApplicationPlugin)
 		new AgentPluginFeatures().apply(project)
-		new ResolvePluginFeatures().apply(project)
 		new RepackagePluginFeatures().apply(project)
 		new RunPluginFeatures().apply(project)
+		new ResolvePluginFeatures().apply(project)
 		new ExcludePluginFeatures().apply(project)
 
 		useUtf8Encoding(project)
 	}
 
 	private useUtf8Encoding(Project project) {
-		project.tasks.withType(org.gradle.api.tasks.compile.Compile).all {
+		project.tasks.withType(org.gradle.api.tasks.compile.JavaCompile).all {
 			it.doFirst {
 				if(!it.options.encoding) {
 					it.options.encoding = 'UTF-8'
@@ -64,5 +63,4 @@ class SpringBootPlugin implements Plugin<Project> {
 			}
 		}
 	}
-
 }

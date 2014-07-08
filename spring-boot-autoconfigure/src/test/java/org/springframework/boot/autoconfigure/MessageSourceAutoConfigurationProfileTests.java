@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link MessageSourceAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 @SpringApplicationConfiguration(classes = { Config.class,

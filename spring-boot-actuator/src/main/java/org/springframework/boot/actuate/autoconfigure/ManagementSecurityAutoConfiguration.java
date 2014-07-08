@@ -62,12 +62,12 @@ import org.springframework.util.StringUtils;
  * Many aspects of the behavior can be controller with {@link ManagementServerProperties}
  * via externalized application properties (or via an bean definition of that type to set
  * the defaults).
- * 
+ *
  * <p>
  * The framework {@link Endpoint}s (used to expose application information to operations)
  * include a {@link Endpoint#isSensitive() sensitive} configuration option which will be
  * used as a security hint by the filter created here.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

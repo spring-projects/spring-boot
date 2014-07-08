@@ -24,7 +24,7 @@ import org.springframework.messaging.MessagingException;
 /**
  * A {@link MessageHandler} that updates {@link Metric} values through a
  * {@link MetricWriter}.
- * 
+ *
  * @author Dave Syer
  */
 public final class MetricWriterMessageHandler implements MessageHandler {

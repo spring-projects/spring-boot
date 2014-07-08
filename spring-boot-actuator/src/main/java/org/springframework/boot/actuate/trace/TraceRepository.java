@@ -21,7 +21,7 @@ import java.util.Map;
 
 /**
  * A repository for {@link Trace}s.
- * 
+ *
  * @author Dave Syer
  */
 public interface TraceRepository {

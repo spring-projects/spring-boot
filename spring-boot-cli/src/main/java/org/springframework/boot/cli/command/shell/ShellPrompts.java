@@ -20,7 +20,7 @@ import java.util.Stack;
 
 /**
  * Abstraction to manage a stack of prompts.
- * 
+ *
  * @author Phillip Webb
  */
 public class ShellPrompts {

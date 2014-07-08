@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.jms.activemq;
 
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQProperties;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.core.env.StandardEnvironment;
 
@@ -25,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link ActiveMQProperties}.
- * 
+ *
  * @author Stephane Nicoll
  */
 public class ActiveMQPropertiesTests {

@@ -31,7 +31,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * Special {@link MvcEndpoint} for handling "/error" path when the management servlet is
  * in a child context. The regular {@link ErrorController} should be available there but
  * because of the way the handler mappings are set up it will not be detected.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "error")

@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Base class for configuration of a database pool.
- * 
+ *
  * @author Dave Syer
  * @author Maciej Walkowiak
  * @since 1.1.0
@@ -55,6 +55,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private boolean continueOnError = false;
 
 	private String separator = ";";
+
+	private String sqlScriptEncoding;
 
 	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
 
@@ -194,6 +196,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	public void setSeparator(String separator) {
 		this.separator = separator;
+	}
+
+	public String getSqlScriptEncoding() {
+		return sqlScriptEncoding;
+	}
+
+	public void setSqlScriptEncoding(String sqlScriptEncoding) {
+		this.sqlScriptEncoding = sqlScriptEncoding;
 	}
 
 	public ClassLoader getClassLoader() {

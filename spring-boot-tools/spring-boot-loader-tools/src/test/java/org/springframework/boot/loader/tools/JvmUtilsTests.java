@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link JvmUtils}.
- * 
+ *
  * @author Phillip Webb
  */
 public class JvmUtilsTests {

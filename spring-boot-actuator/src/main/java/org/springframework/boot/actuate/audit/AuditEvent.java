@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
  * Users can inject a {@link AuditEventRepository} to publish their own events or
  * alternatively use Springs {@link AuthenticationEventPublisher} (usually obtained by
  * implementing {@link ApplicationEventPublisherAware}).
- * 
+ *
  * @author Dave Syer
  * @see AuditEventRepository
  */

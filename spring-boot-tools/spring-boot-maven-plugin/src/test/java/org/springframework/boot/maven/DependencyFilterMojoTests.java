@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AbstractDependencyFilterMojo}.
- * 
+ *
  * @author Stephane Nicoll
  */
 public class DependencyFilterMojoTests {

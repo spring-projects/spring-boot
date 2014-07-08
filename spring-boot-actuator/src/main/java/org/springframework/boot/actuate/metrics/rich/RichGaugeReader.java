@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.metrics.rich;
 
 /**
  * A basic set of read operations for {@link RichGauge} instances.
- * 
+ *
  * @author Dave Syer
  */
 public interface RichGaugeReader {

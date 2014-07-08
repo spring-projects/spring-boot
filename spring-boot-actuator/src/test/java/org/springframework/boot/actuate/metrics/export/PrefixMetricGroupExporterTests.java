@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link PrefixMetricGroupExporter}.
- * 
+ *
  * @author Dave Syer
  */
 public class PrefixMetricGroupExporterTests {

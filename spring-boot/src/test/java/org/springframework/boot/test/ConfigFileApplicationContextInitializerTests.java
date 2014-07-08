@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ConfigFileApplicationContextInitializer}.
- * 
+ *
  * @author Phillip Webb
  */
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ServerProperties}.
- * 
+ *
  * @author Dave Syer
  * @author Stephane Nicoll
  */

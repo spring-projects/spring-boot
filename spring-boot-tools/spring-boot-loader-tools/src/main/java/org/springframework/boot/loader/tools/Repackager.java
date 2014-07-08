@@ -26,7 +26,7 @@ import java.util.jar.Manifest;
 /**
  * Utility class that can be used to repackage an archive so that it can be executed using
  * '{@literal java -jar}'.
- * 
+ *
  * @author Phillip Webb
  */
 public class Repackager {
@@ -141,12 +141,13 @@ public class Repackager {
 
 			libraries.doWithLibraries(new LibraryCallback() {
 				@Override
-				public void library(File file, LibraryScope scope) throws IOException {
+				public void library(Library library) throws IOException {
+					File file = library.getFile();
 					if (isZip(file)) {
 						String destination = Repackager.this.layout
-								.getLibraryDestination(file.getName(), scope);
+								.getLibraryDestination(file.getName(), library.getScope());
 						if (destination != null) {
-							writer.writeNestedLibrary(destination, file);
+							writer.writeNestedLibrary(destination, library);
 						}
 					}
 				}

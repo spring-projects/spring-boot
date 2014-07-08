@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks for the presence or absence of specific classes.
- * 
+ *
  * @author Phillip Webb
  * @see ConditionalOnClass
  * @see ConditionalOnMissingClass

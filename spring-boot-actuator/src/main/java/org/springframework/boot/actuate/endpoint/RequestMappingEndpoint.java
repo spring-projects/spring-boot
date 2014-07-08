@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.web.method.HandlerMethod;
@@ -32,9 +33,10 @@ import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 
 /**
  * {@link Endpoint} to expose Spring MVC mappings.
- * 
+ *
  * @author Dave Syer
  */
+@ConfigurationProperties(prefix = "endpoints.mappings", ignoreUnknownFields = false)
 public class RequestMappingEndpoint extends AbstractEndpoint<Map<String, Object>>
 		implements ApplicationContextAware {
 

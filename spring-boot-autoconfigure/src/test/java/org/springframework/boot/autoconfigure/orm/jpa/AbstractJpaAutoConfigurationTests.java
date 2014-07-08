@@ -58,7 +58,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Base for JPA tests and tests for {@link JpaBaseConfiguration}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

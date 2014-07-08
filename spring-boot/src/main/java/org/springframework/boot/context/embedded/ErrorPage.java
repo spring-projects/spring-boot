@@ -22,7 +22,7 @@ import org.springframework.util.ObjectUtils;
 /**
  * Simple container-independent abstraction for servlet error pages. Roughly equivalent to
  * the {@literal &lt;error-page&gt;} element traditionally found in web.xml.
- * 
+ *
  * @author Dave Syer
  */
 public class ErrorPage {

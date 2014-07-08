@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ShutdownEndpoint}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

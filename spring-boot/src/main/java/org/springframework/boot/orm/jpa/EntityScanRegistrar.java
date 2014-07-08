@@ -38,7 +38,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} used by {@link EntityScan}.
- * 
+ *
  * @author Phillip Webb
  */
 class EntityScanRegistrar implements ImportBeanDefinitionRegistrar {

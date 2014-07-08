@@ -79,7 +79,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * Although this context can be used directly, most developers should consider using the
  * {@link AnnotationConfigEmbeddedWebApplicationContext} or
  * {@link XmlEmbeddedWebApplicationContext} variants.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see AnnotationConfigEmbeddedWebApplicationContext

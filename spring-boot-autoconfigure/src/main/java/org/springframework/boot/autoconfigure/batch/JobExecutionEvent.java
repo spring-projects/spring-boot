@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationEvent;
 
 /**
  * Spring {@link ApplicationEvent} encapsulating a {@link JobExecution}.
- * 
+ *
  * @author Dave Syer
  */
 @SuppressWarnings("serial")

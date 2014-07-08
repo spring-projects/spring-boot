@@ -63,7 +63,7 @@ import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for common management
  * {@link Endpoint}s.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist

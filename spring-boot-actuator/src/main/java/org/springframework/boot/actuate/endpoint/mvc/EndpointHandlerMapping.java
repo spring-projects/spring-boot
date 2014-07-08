@@ -36,13 +36,13 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * The semantics of {@code @RequestMapping} should be identical to a normal
  * {@code @Controller}, but the endpoints should not be annotated as {@code @Controller}
  * (otherwise they will be mapped by the normal MVC mechanisms).
- * 
+ *
  * <p>
  * One of the aims of the mapping is to support endpoints that work as HTTP endpoints but
  * can still provide useful service interfaces when there is no HTTP server (and no Spring
  * MVC on the classpath). Note that any endpoints having method signaturess will break in
  * a non-servlet environment.
- * 
+ *
  * @author Phillip Webb
  * @author Christian Dupuis
  * @author Dave Syer
@@ -64,7 +64,8 @@ public class EndpointHandlerMapping extends RequestMappingHandlerMapping impleme
 	public EndpointHandlerMapping(Collection<? extends MvcEndpoint> endpoints) {
 		this.endpoints = new HashSet<MvcEndpoint>(endpoints);
 		// By default the static resource handler mapping is LOWEST_PRECEDENCE - 1
-		setOrder(LOWEST_PRECEDENCE - 2);
+		// and the RequestMappingHandlerMapping is 0 (we ideally want to be before both)
+		setOrder(-100);
 	}
 
 	@Override

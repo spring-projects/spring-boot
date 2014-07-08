@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link AopAutoConfiguration}.
- * 
+ *
  * @author Eberhard Wolff
  */
 public class AopAutoConfigurationTests {

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
-	<version>1.1.2.BUILD-SNAPSHOT</version>
+	<version>1.1.5.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
@@ -105,13 +105,9 @@
 				<skipTests>true</skipTests>
 			</properties>
 			<modules>
+				<module>spring-boot-parent</module>
 				<module>spring-boot-dependencies</module>
 				<module>spring-boot-versions</module>
-				<module>spring-boot-parent</module>
-				<module>spring-boot</module>
-				<module>spring-boot-autoconfigure</module>
-				<module>spring-boot-actuator</module>
-				<module>spring-boot-starters</module>
 				<module>spring-boot-tools</module>
 			</modules>
 			<build>

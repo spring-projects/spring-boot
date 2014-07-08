@@ -20,7 +20,7 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * Outcome for a condition match, including log message.
- * 
+ *
  * @author Phillip Webb
  */
 public class ConditionOutcome {

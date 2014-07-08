@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose application health.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  */

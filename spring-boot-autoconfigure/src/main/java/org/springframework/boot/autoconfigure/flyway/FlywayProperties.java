@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * that Spring needs to validate and enable the migrations. If you want to control the
  * location or format of the scripts you can use the same prefix ("flyway") to inject
  * properties into the {@link Flyway} instance.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

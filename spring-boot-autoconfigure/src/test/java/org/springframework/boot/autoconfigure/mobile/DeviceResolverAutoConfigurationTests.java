@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link DeviceResolverAutoConfiguration}.
- * 
+ *
  * @author Roy Clarkson
  */
 public class DeviceResolverAutoConfigurationTests {

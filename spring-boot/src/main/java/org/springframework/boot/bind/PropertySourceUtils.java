@@ -26,9 +26,9 @@ import org.springframework.core.env.PropertySources;
 
 /**
  * Convenience class for manipulating PropertySources.
- * 
+ *
  * @author Dave Syer
- * 
+ *
  * @see PropertySource
  * @see PropertySources
  */

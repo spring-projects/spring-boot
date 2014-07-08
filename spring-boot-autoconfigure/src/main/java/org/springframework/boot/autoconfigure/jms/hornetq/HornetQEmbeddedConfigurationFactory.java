@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.jms.hornetq.HornetQProperties.Embe
 
 /**
  * Factory class to create a HornetQ {@link Configuration} from {@link HornetQProperties}.
- * 
+ *
  * @author Stephane Nicol
  * @author Phillip Webb
  * @since 1.1.0
@@ -62,7 +62,8 @@ class HornetQEmbeddedConfigurationFactory {
 		}
 
 		TransportConfiguration transportConfiguration = new TransportConfiguration(
-				InVMAcceptorFactory.class.getName());
+				InVMAcceptorFactory.class.getName(),
+				this.properties.generateTransportParameters());
 		configuration.getAcceptorConfigurations().add(transportConfiguration);
 
 		// HORNETQ-1143

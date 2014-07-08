@@ -36,7 +36,7 @@ import org.springframework.boot.cli.util.Log;
 
 /**
  * JLine {@link Completer} for Spring Boot {@link Command}s.
- * 
+ *
  * @author Jon Brisbin
  * @author Phillip Webb
  */

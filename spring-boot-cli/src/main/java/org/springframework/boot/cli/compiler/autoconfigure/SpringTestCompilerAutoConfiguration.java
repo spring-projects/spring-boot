@@ -33,7 +33,7 @@ import org.springframework.boot.cli.compiler.GroovyCompilerConfiguration;
 
 /**
  * {@link CompilerAutoConfiguration} for Spring Test
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

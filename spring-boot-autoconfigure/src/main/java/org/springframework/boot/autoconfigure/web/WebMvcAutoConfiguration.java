@@ -76,7 +76,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebMvc Web MVC}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson

@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Initialize the Spring Batch schema (ignoring errors, so should be idempotent).
- * 
+ *
  * @author Dave Syer
  */
 @Component

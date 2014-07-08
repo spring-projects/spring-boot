@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * {@link Endpoint} to expose the {@link ConditionEvaluationReport}.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  * @author Dave Syer

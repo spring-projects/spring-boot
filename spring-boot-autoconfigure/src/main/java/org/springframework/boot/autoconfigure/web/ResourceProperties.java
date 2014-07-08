@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Properties used to configure resource handling.
- * 
+ *
  * @author Phillip Webb
  * @since 1.1.0
  */

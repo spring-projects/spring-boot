@@ -175,8 +175,9 @@ placeholders in `application.properties`, e.g.
 	server.port=${port:8080}
 ----
 
-TIP: If you have enabled maven filtering for the `application.properties` you may want
-to avoid using `${*}` for the tokens to filter as it conflicts with those placeholders.
+TIP: If you are inheriting from the `spring-boot-starter-parent` POM, or if have enabled
+maven filtering for the `application.properties` directly, you may want to change the
+default filter token from `${*}` since it conflicts with those placeholders.
 You can either use `@*@` (i.e. `@maven.token@` instead of `${maven.token}`) or you can
 configure the `maven-resources-plugin` to use
 http://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
@@ -790,8 +791,7 @@ added.
   bean of the same type.
 * A `BeanNameViewResolver` with id ``beanNameViewResolver''. This is a useful member of the
   view resolver chain and will pick up any beans with the same name as the `View` being
-  resolved. It can be overridden by providing a bean of the same type, but it's unlikely
-  you will need to do that.
+  resolved. It shouldn't be necessary to override or replace it.
 * A `ContentNegotiatingViewResolver` with id ``viewResolver'' is only added if there *are*
   actually beans of type `View` present. This is a ``master'' resolver, delegating to all
   the others and attempting to find a match to the ``Accept'' HTTP header sent by the
@@ -834,10 +834,6 @@ Check out {sc-spring-boot-autoconfigure}/web/WebMvcAutoConfiguration.{sc-ext}[`W
 [[howto-logging]]
 == Logging
 
-
-
-[[howto-configure-logback-for-loggin]]
-=== Configure Logback for logging
 Spring Boot has no mandatory logging dependence, except for the `commons-logging` API, of
 which there are many implementations to choose from. To use http://logback.qos.ch[Logback]
 you need to include it, and some bindings for `commons-logging` on the classpath. The
@@ -855,10 +851,33 @@ For example, using Maven:
 ----
 
 Spring Boot has a `LoggingSystem` abstraction that attempts to configure logging based on
-the content of the classpath. If Logback is available it is the first choice. So if you
-put a `logback.xml` in the root of your classpath it will be picked up from there. Spring
-Boot provides a default base configuration that you can include if you just want to set
-levels, e.g.
+the content of the classpath. If Logback is available it is the first choice.
+
+If the only change you need to make to logging is to set the levels of various loggers
+then you can do that in `application.properties` using the "logging.level" prefix, e.g.
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+----
+	logging.level.org.springframework.web: DEBUG
+	logging.level.org.hibernate: ERROR
+----
+
+You can also set the location of a file to log to (in addition to the console) using
+"logging.file".
+
+To configure the more fine grained settings of a logging system you need to use the native
+configuration format supported by the `LoggingSystem` in question. By default Spring Boot
+picks up the native configuration from its default location for the system (e.g.
+`classpath:/logback.xml` for Logback), but you can set the location of the config file
+using the "logging.config" property.
+
+
+
+[[howto-configure-logback-for-loggin]]
+=== Configure Logback for logging
+If you put a `logback.xml` in the root of your classpath it will be picked up from there.
+Spring Boot provides a default base configuration that you can include if you just want
+to set levels, e.g.
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -1580,6 +1599,164 @@ See the {spring-boot-maven-plugin-site}/usage.html[plugin documentation] for ful
 details.
 
 
+[[howto-create-an-additional-executable-jar]]
+=== Create an additional executable JAR
+If you want to use your project as a library jar for other projects to depend on, and in
+addition have an executable (e.g. demo) version of it, you will want to configure the
+build in a slightly different way.
+
+For Maven the normal JAR plugin and the Spring Boot plugin both have a ``classifier''
+configuration that you can add to create an additional JAR. Example (using the Spring
+Boot Starter Parent to manage the plugin versions and other configuration defaults):
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>exec</classifier>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+Two jars are produced, the default one, and an executable one using the Boot plugin with
+classifier ``exec''.
+
+For Gradle users the steps are similar. Example:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	bootRepackage  {
+		classifier = 'exec'
+	}
+----
+
+
+
+[[howto-extract-specific-libraries-when-an-executable-jar-runs]]
+=== Extract specific libraries when an executable jar runs
+Most nested libraries in an executable jar do not need to be unpacked in order to run,
+however, certain libraries can have problems. For example, JRuby includes its own nested
+jar support which assumes that the `jruby-complete.jar` is always directly available as a
+file in its own right.
+
+To deal with any problematic libraries, you can flag that specific nested jars should be
+automatically unpacked to the ``temp folder'' when the executable jar first runs.
+
+For example, to indicate that JRuby should be flagged for unpack using the Maven Plugin
+you would add the following configuration:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<requiresUnpack>
+						<dependency>
+							<groupId>org.jruby</groupId>
+							<artifactId>jruby-complete</artifactId>
+						</dependency>
+					</requiresUnpack>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+And to do that same with Gradle:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	springBoot  {
+		requiresUnpack = ['org.jruby:jruby-complete']
+	}
+----
+
+
+
+[[howto-create-a-nonexecutable-jar]]
+=== Create a non-executable JAR with exclusions
+Often if you have an executable and a non-executable jar as build products, the executable
+version will have additional configuration files that are not needed in a library jar.
+E.g. the `application.yml` configuration file might excluded from the non-executable JAR.
+
+Here's how to do that in Maven:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>exec</classifier>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>exec</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>exec</classifier>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<!-- Need this to ensure application.yml is excluded -->
+							<forceCreation>true</forceCreation>
+							<excludes>
+								<exclude>application.yml</exclude>
+							</excludes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+----
+
+In Gradle you can create a new JAR archive with standard task DSL features, and then have
+the `bootRepackage` task depend on that one using its `withJarTask` property:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	jar {
+		baseName = 'spring-boot-sample-profile'
+		version =  '0.0.0'
+		excludes = ['**/application.yml']
+	}
+
+	task('execJar', type:Jar, dependsOn: 'jar') {
+		baseName = 'spring-boot-sample-profile'
+		version =  '0.0.0'
+		classifier = 'exec'
+		from sourceSets.main.output
+	}
+
+	bootRepackage  {
+		withJarTask = tasks['execJar']
+	}
+----
+
+
 
 [[howto-remote-debug-maven-run]]
 === Remote debug a Spring Boot application started with Maven
@@ -1587,6 +1764,34 @@ To attach a remote debugger to a Spring Boot application started with Maven you 
 the `jvmArguments` property of the {spring-boot-maven-plugin-site}/[maven plugin].
 
 Check {spring-boot-maven-plugin-site}/examples/run-debug.html[this example] for more details.
+
+
+
+[[howto-remote-debug-gradle-run]]
+=== Remote debug a Spring Boot application started with Gradle
+To attach a remote debugger to a Spring Boot application started with Gradle you can use
+the `applicationDefaultJvmArgs` in `build.gradle` or `--debug-jvm` command line option.
+
+`build.gradle`:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	applicationDefaultJvmArgs = [
+	    "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+	]
+----
+
+
+Command line:
+
+[indent=0]
+----
+	$ gradle run --debug-jvm
+----
+
+
+Check {gradle-userguide}/application_plugin.html[Gradle Application Plugin] for more
+details.
 
 
 

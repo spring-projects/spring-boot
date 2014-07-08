@@ -41,7 +41,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link TomcatDataSourceConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class TomcatDataSourceConfigurationTests {

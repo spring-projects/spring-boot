@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * External configuration properties for a JPA EntityManagerFactory created by Spring.
- * 
+ *
  * @author Dave Syer
  * @author Andy Wilkinson
  * @since 1.1.0
@@ -104,7 +104,7 @@ public class JpaProperties {
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory.
-	 * 
+	 *
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */

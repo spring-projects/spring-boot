@@ -27,7 +27,7 @@ import javax.servlet.ServletResponse;
 
 /**
  * Simple example Filter used for testing.
- * 
+ *
  * @author Phillip Webb
  */
 public class ExampleFilter implements Filter {

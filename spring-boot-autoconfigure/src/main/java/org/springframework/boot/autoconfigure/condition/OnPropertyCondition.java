@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link Condition} that checks if properties are defined in environment.
- * 
+ *
  * @author Maciej Walkowiak
  * @author Phillip Webb
  * @see ConditionalOnProperty

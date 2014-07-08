@@ -31,7 +31,7 @@ import org.springframework.security.access.event.AuthorizationFailureEvent;
 /**
  * {@link ApplicationListener} expose Spring Security {@link AbstractAuthorizationEvent
  * authorization events} as {@link AuditEvent}s.
- * 
+ *
  * @author Dave Syer
  */
 public class AuthorizationAuditListener implements

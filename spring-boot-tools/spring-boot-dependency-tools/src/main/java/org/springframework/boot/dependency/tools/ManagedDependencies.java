@@ -24,7 +24,7 @@ import java.util.Iterator;
  * {@link Dependencies} used by various spring boot tools. Provides programmatic access to
  * 'spring-boot-dependencies' and can also support user defined version managed
  * dependencies.
- * 
+ *
  * @author Phillip Webb
  * @see Dependency
  */

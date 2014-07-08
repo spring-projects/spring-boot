@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link TestRestTemplate}.
- * 
+ *
  * @author Dave Syer
  */
 public class TestRestTemplateTests {

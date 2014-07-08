@@ -21,7 +21,7 @@ import java.util.logging.LogRecord;
 
 /**
  * Simple test {@link Formatter}.
- * 
+ *
  * @author Dave Syer
  */
 public class TestFormatter extends Formatter {

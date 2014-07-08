@@ -37,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
  * errors can be handled either using Spring MVC abstractions (e.g.
  * {@code @ExceptionHandler}) or by adding servlet
  * {@link AbstractEmbeddedServletContainerFactory#setErrorPages container error pages}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @see ErrorAttributes

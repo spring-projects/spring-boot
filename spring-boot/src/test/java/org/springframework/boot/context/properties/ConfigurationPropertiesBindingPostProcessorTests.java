@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link ConfigurationPropertiesBindingPostProcessor}.
- * 
+ *
  * @author Christian Dupuis
  * @author Phillip Webb
  */

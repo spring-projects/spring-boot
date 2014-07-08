@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-parent</artifactId>
-		<version>1.1.2.BUILD-SNAPSHOT</version>
+		<version>1.1.5.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-parent</relativePath>
 	</parent>
 	<artifactId>spring-boot-starters</artifactId>
@@ -20,7 +20,6 @@
 		<main.basedir>${basedir}/..</main.basedir>
 	</properties>
 	<modules>
-		<!-- If you add a starter remember to also add a dependency in spring-boot-versions -->
 		<module>spring-boot-starter</module>
 		<module>spring-boot-starter-amqp</module>
 		<module>spring-boot-starter-aop</module>

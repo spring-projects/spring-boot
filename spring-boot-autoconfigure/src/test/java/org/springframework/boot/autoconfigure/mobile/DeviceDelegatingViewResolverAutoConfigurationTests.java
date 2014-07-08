@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link DeviceDelegatingViewResolverAutoConfiguration}.
- * 
+ *
  * @author Roy Clarkson
  */
 public class DeviceDelegatingViewResolverAutoConfigurationTests {

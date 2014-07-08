@@ -51,7 +51,7 @@ import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
  * determine the configuration settings
- * 
+ *
  * @author Andy Wilkinson
  */
 public class SettingsXmlRepositorySystemSessionAutoConfiguration implements

@@ -28,11 +28,11 @@ import java.util.Set;
  * between key and value.
  * <p>
  * Adapted from Spring.
- * 
+ *
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Dave Syer
- * 
+ *
  * @see System#getProperty(String)
  */
 public abstract class SystemPropertyUtils {

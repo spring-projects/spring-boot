@@ -29,7 +29,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Connection details for {@link EmbeddedDatabaseType embedded databases}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @see #get(ClassLoader)
@@ -100,7 +100,7 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * Convenience method to determine if a given driver class name represents an embedded
 	 * database type.
-	 * 
+	 *
 	 * @param driverClass the driver class
 	 * @return true if the driver class is one of the embedded types
 	 */
@@ -114,7 +114,7 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * Convenience method to determine if a given data source represents an embedded
 	 * database type.
-	 * 
+	 *
 	 * @param dataSource the data source to interrogate
 	 * @return true if the data sourceis one of the embedded types
 	 */

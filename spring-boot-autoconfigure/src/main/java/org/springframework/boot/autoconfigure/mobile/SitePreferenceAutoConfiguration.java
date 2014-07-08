@@ -39,7 +39,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Mobile's
  * {@link SitePreferenceHandler}. The site preference feature depends on a
  * {@link DeviceResolver} first being registered.
- * 
+ *
  * @author Roy Clarkson
  * @since 1.1.0
  */

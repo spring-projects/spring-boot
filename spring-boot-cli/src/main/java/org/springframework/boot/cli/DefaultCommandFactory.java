@@ -30,7 +30,7 @@ import org.springframework.boot.cli.command.test.TestCommand;
 
 /**
  * Default implementation of {@link CommandFactory}.
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultCommandFactory implements CommandFactory {

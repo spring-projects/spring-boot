@@ -85,7 +85,7 @@ public class CodahaleMetricWriterTests {
 	 * thread is updating the same set of metrics. This would be an example case of the
 	 * writer being used with the MetricsFilter handling several requests/sec to the same
 	 * URL.
-	 * 
+	 *
 	 * @throws Exception if an error occurs
 	 */
 	@Test

@@ -23,7 +23,7 @@ import java.net.UnknownHostException;
 
 /**
  * {@link PropertyEditor} for {@link InetAddress} objects.
- * 
+ *
  * @author Dave Syer
  */
 public class InetAddressEditor extends PropertyEditorSupport implements PropertyEditor {

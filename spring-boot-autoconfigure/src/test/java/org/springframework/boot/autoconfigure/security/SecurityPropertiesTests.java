@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SecurityProperties}.
- * 
+ *
  * @author Dave Syer
  */
 public class SecurityPropertiesTests {

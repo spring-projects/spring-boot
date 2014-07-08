@@ -23,7 +23,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link RunArguments}.
- * 
+ *
  * @author Stephane Nicoll
  */
 public class RunArgumentsTests {

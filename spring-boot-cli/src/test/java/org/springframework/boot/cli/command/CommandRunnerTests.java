@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CommandRunner}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link FlywayAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

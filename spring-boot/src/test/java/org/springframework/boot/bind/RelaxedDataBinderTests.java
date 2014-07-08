@@ -60,7 +60,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link RelaxedDataBinder}.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

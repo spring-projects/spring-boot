@@ -18,10 +18,12 @@ package org.springframework.boot;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -31,9 +33,11 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -41,6 +45,7 @@ import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
@@ -55,8 +60,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertArrayEquals;
@@ -72,10 +79,15 @@ import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SpringApplication}.
- * 
+ *
  * @author Phillip Webb
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Christian Dupuis
  */
 public class SpringApplicationTests {
+
+	private String headlessProperty;
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
@@ -87,6 +99,23 @@ public class SpringApplicationTests {
 			return this.context.getEnvironment();
 		}
 		throw new IllegalStateException("Could not obtain Environment");
+	}
+
+	@Before
+	public void storeAndClearHeadlessProperty() {
+		this.headlessProperty = System.getProperty("java.awt.headless");
+		System.clearProperty("java.awt.headless");
+	}
+
+	@After
+	public void reinstateHeadlessProperty() {
+		if (this.headlessProperty == null) {
+			System.clearProperty("java.awt.headless");
+		}
+		else {
+			System.setProperty("java.awt.headless", this.headlessProperty);
+		}
+
 	}
 
 	@After
@@ -131,6 +160,15 @@ public class SpringApplicationTests {
 		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
 		application.setWebEnvironment(false);
 		application.run("--banner.location=classpath:test-banner.txt");
+		verify(application, never()).printBanner();
+	}
+
+	@Test
+	public void customBannerWithProperties() throws Exception {
+		SpringApplication application = spy(new SpringApplication(ExampleConfig.class));
+		application.setWebEnvironment(false);
+		application.run("--banner.location=classpath:test-banner-with-placeholder.txt",
+				"--test.property=123456");
 		verify(application, never()).printBanner();
 	}
 
@@ -437,6 +475,39 @@ public class SpringApplicationTests {
 	}
 
 	@Test
+	public void registerListener() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setApplicationContextClass(SpyApplicationContext.class);
+		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
+		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+			@Override
+			public void onApplicationEvent(ApplicationEvent event) {
+				events.add(event);
+			}
+		});
+		this.context = application.run();
+		assertThat(events, hasItem(isA(ApplicationPreparedEvent.class)));
+		assertThat(events, hasItem(isA(ContextRefreshedEvent.class)));
+	}
+
+	@Test
+	public void registerListenerWithCustomMulticaster() throws Exception {
+		SpringApplication application = new SpringApplication(ExampleConfig.class,
+				Multicaster.class);
+		application.setApplicationContextClass(SpyApplicationContext.class);
+		final LinkedHashSet<ApplicationEvent> events = new LinkedHashSet<ApplicationEvent>();
+		application.addListeners(new ApplicationListener<ApplicationEvent>() {
+			@Override
+			public void onApplicationEvent(ApplicationEvent event) {
+				events.add(event);
+			}
+		});
+		this.context = application.run();
+		assertThat(events, hasItem(isA(ApplicationPreparedEvent.class)));
+		assertThat(events, hasItem(isA(ContextRefreshedEvent.class)));
+	}
+
+	@Test
 	public void registerShutdownHookOff() throws Exception {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setApplicationContextClass(SpyApplicationContext.class);
@@ -460,6 +531,15 @@ public class SpringApplicationTests {
 		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
 		application.setWebEnvironment(false);
 		application.setHeadless(false);
+		application.run();
+		assertThat(System.getProperty("java.awt.headless"), equalTo("false"));
+	}
+
+	@Test
+	public void headlessSystemPropertyTakesPrecedence() throws Exception {
+		System.setProperty("java.awt.headless", "false");
+		TestSpringApplication application = new TestSpringApplication(ExampleConfig.class);
+		application.setWebEnvironment(false);
 		application.run();
 		assertThat(System.getProperty("java.awt.headless"), equalTo("false"));
 	}
@@ -548,6 +628,16 @@ public class SpringApplicationTests {
 
 	@Configuration
 	static class ExampleConfig {
+
+	}
+
+	@Configuration
+	static class Multicaster {
+
+		@Bean
+		public SimpleApplicationEventMulticaster applicationEventMulticaster() {
+			return new SimpleApplicationEventMulticaster();
+		}
 
 	}
 

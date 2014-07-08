@@ -25,7 +25,7 @@ import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 /**
  * {@link ConfigurationProperties} for configuring Velocity
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

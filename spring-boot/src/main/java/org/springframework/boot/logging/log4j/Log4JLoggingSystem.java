@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link LoggingSystem} for for <a href="http://logging.apache.org/log4j">log4j</a>.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -49,6 +49,7 @@ public class Log4JLoggingSystem extends AbstractLoggingSystem {
 		levels.put(LogLevel.WARN, Level.WARN);
 		levels.put(LogLevel.ERROR, Level.ERROR);
 		levels.put(LogLevel.FATAL, Level.ERROR);
+		levels.put(LogLevel.OFF, Level.OFF);
 		LEVELS = Collections.unmodifiableMap(levels);
 	}
 

@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Servlet {@link Filter} that logs all requests to a {@link TraceRepository}.
- * 
+ *
  * @author Dave Syer
  */
 public class WebRequestTraceFilter extends OncePerRequestFilter implements Ordered {

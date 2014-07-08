@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Simple interface that represents customizations to an
  * {@link EmbeddedServletContainerFactory}.
- * 
+ *
  * @author Dave Syer
  * @see EmbeddedServletContainerFactory
  * @see EmbeddedServletContainerCustomizer

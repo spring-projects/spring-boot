@@ -18,17 +18,19 @@ package org.springframework.boot.actuate.autoconfigure;
 
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
  * Configuration properties for JMX.
- * 
+ *
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.jmx")
 public class EndpointMBeanExportProperties {
 
+	@Value("${spring.jmx.default_domain:}")
 	private String domain;
 
 	private boolean uniqueNames = false;

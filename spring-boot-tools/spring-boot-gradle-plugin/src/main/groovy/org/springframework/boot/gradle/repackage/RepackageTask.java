@@ -18,6 +18,8 @@ package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.gradle.api.Action;
@@ -27,12 +29,14 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Repackage task.
  *
  * @author Phillip Webb
  * @author Janne Valkealahti
+ * @author Andy Wilkinson
  */
 public class RepackageTask extends DefaultTask {
 
@@ -44,8 +48,16 @@ public class RepackageTask extends DefaultTask {
 
 	private String mainClass;
 
+	private String classifier;
+
+	private File outputFile;
+
 	public void setCustomConfiguration(String customConfiguration) {
 		this.customConfiguration = customConfiguration;
+	}
+
+	public Object getWithJarTask() {
+		return this.withJarTask;
 	}
 
 	public void setWithJarTask(Object withJarTask) {
@@ -56,12 +68,32 @@ public class RepackageTask extends DefaultTask {
 		this.mainClass = mainClass;
 	}
 
+	public String getMainClass() {
+		return this.mainClass;
+	}
+
+	public String getClassifier() {
+		return this.classifier;
+	}
+
+	public void setClassifier(String classifier) {
+		this.classifier = classifier;
+	}
+
 	@TaskAction
 	public void repackage() {
 		Project project = getProject();
 		SpringBootPluginExtension extension = project.getExtensions().getByType(
 				SpringBootPluginExtension.class);
-		ProjectLibraries libraries = new ProjectLibraries(project);
+		ProjectLibraries libraries = getLibraries();
+		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
+	}
+
+	public ProjectLibraries getLibraries() {
+		Project project = getProject();
+		SpringBootPluginExtension extension = project.getExtensions().getByType(
+				SpringBootPluginExtension.class);
+		ProjectLibraries libraries = new ProjectLibraries(project, extension);
 		if (extension.getProvidedConfiguration() != null) {
 			libraries.setProvidedConfigurationName(extension.getProvidedConfiguration());
 		}
@@ -71,9 +103,12 @@ public class RepackageTask extends DefaultTask {
 		else if (extension.getCustomConfiguration() != null) {
 			libraries.setCustomConfigurationName(extension.getCustomConfiguration());
 		}
-		project.getTasks().withType(Jar.class, new RepackageAction(extension, libraries));
+		return libraries;
 	}
 
+	/**
+	 * Action to repackage JARs.
+	 */
 	private class RepackageAction implements Action<Jar> {
 
 		private final SpringBootPluginExtension extension;
@@ -87,43 +122,90 @@ public class RepackageTask extends DefaultTask {
 		}
 
 		@Override
-		public void execute(Jar archive) {
-			// if withJarTask is set, compare tasks and bail out if we didn't match
-			if (RepackageTask.this.withJarTask != null
-					&& !archive.equals(RepackageTask.this.withJarTask)) {
+		public void execute(Jar jarTask) {
+			if (!RepackageTask.this.isEnabled()) {
+				getLogger().info("Repackage disabled");
 				return;
 			}
+			Object withJarTask = RepackageTask.this.withJarTask;
+			if (!isTaskMatch(jarTask, withJarTask)) {
+				getLogger().info(
+						"Jar task not repackaged (didn't match withJarTask): " + jarTask);
+				return;
+			}
+			File file = jarTask.getArchivePath();
+			if (file.exists()) {
+				repackage(file);
+			}
+		}
 
-			if ("".equals(archive.getClassifier())) {
-				File file = archive.getArchivePath();
-				if (file.exists()) {
-					Repackager repackager = new LoggingRepackager(file);
-					setMainClass(repackager);
-					if (this.extension.convertLayout() != null) {
-						repackager.setLayout(this.extension.convertLayout());
+		private boolean isTaskMatch(Jar task, Object withJarTask) {
+			if (withJarTask == null) {
+				if ("".equals(task.getClassifier())) {
+					Set<Object> tasksWithCustomRepackaging = new HashSet<Object>();
+					for (RepackageTask repackageTask : RepackageTask.this.getProject()
+							.getTasks().withType(RepackageTask.class)) {
+						if (repackageTask.getWithJarTask() != null) {
+							tasksWithCustomRepackaging
+									.add(repackageTask.getWithJarTask());
+						}
 					}
-					repackager.setBackupSource(this.extension.isBackupSource());
-					try {
-						repackager.repackage(this.libraries);
-					}
-					catch (IOException ex) {
-						throw new IllegalStateException(ex.getMessage(), ex);
-					}
+					return !tasksWithCustomRepackaging.contains(task);
 				}
+				return false;
+			}
+			return task.equals(withJarTask) || task.getName().equals(withJarTask);
+		}
+
+		private void repackage(File file) {
+			File outputFile = RepackageTask.this.outputFile;
+			if (outputFile != null && !file.equals(outputFile)) {
+				copy(file, outputFile);
+				file = outputFile;
+			}
+			Repackager repackager = new LoggingRepackager(file);
+			setMainClass(repackager);
+			if (this.extension.convertLayout() != null) {
+				repackager.setLayout(this.extension.convertLayout());
+			}
+			repackager.setBackupSource(this.extension.isBackupSource());
+			try {
+				repackager.repackage(file, this.libraries);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex.getMessage(), ex);
+			}
+		}
+
+		private void copy(File source, File dest) {
+			try {
+				FileCopyUtils.copy(source, dest);
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex.getMessage(), ex);
 			}
 		}
 
 		private void setMainClass(Repackager repackager) {
-			repackager.setMainClass((String) getProject().property("mainClassName"));
-			if (this.extension.getMainClass() != null) {
-				repackager.setMainClass(this.extension.getMainClass());
-			}
+			String mainClass = (String) getProject().property("mainClassName");
 			if (RepackageTask.this.mainClass != null) {
-				repackager.setMainClass(RepackageTask.this.mainClass);
+				mainClass = RepackageTask.this.mainClass;
 			}
+			else if (this.extension.getMainClass() != null) {
+				mainClass = this.extension.getMainClass();
+			}
+			else if (getProject().getTasks().getByName("run").hasProperty("main")) {
+				mainClass = (String) getProject().getTasks().getByName("run")
+						.property("main");
+			}
+			getLogger().info("Setting mainClass: " + mainClass);
+			repackager.setMainClass(mainClass);
 		}
 	}
 
+	/**
+	 * {@link Repackager} that also logs when searching takes too long.
+	 */
 	private class LoggingRepackager extends Repackager {
 
 		public LoggingRepackager(File source) {
@@ -147,4 +229,9 @@ public class RepackageTask extends DefaultTask {
 			}
 		};
 	}
+
+	void setOutputFile(File file) {
+		this.outputFile = file;
+	}
+
 }

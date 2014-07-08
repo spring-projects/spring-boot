@@ -47,7 +47,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link VelocityAutoConfiguration}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class VelocityAutoConfigurationTests {

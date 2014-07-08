@@ -30,7 +30,7 @@ import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 /**
  * Spring MVC {@link View} that can render Groovy templates.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link SpringApplicationContextLoader}.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(SpringJUnit4ClassRunner.class)

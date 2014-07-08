@@ -22,7 +22,7 @@ import org.springframework.boot.actuate.metrics.writer.PrefixMetricWriter;
 /**
  * A repository for metrics that allows efficient storage and retrieval of groups of
  * metrics with a common name prefix (their group name).
- * 
+ *
  * @author Dave Syer
  */
 public interface MultiMetricRepository extends PrefixMetricReader, PrefixMetricWriter {

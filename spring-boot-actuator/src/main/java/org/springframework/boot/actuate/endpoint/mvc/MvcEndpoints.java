@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
  * A registry for all {@link MvcEndpoint} beans, and a factory for a set of generic ones
  * wrapping existing {@link Endpoint} instances that are not already exposed as MVC
  * endpoints.
- * 
+ *
  * @author Dave Syer
  */
 @Component

@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.web.BasicErrorControllerDirectMock
 
 /**
  * A test suite for probing weird ordering problems in the tests.
- * 
+ *
  * @author Dave Syer
  */
 @RunWith(Suite.class)

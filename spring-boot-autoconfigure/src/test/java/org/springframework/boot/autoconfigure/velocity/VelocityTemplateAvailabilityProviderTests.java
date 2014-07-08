@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link VelocityTemplateAvailabilityProvider}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class VelocityTemplateAvailabilityProviderTests {

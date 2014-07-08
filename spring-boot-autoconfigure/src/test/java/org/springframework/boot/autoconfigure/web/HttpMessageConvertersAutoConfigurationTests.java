@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link HttpMessageConvertersAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  * @author Oliver Gierke
  */

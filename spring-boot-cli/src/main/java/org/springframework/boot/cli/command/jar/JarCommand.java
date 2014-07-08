@@ -35,6 +35,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
 import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.ModuleNode;
@@ -56,13 +57,15 @@ import org.springframework.boot.cli.jar.PackagedSpringApplicationLauncher;
 import org.springframework.boot.loader.tools.JarWriter;
 import org.springframework.boot.loader.tools.Layout;
 import org.springframework.boot.loader.tools.Layouts;
+import org.springframework.boot.loader.tools.Library;
+import org.springframework.boot.loader.tools.LibraryScope;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.Assert;
 
 /**
  * {@link Command} to create a self-contained executable jar file from a CLI application
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
@@ -248,7 +251,8 @@ public class JarCommand extends OptionParsingCommand {
 		private void addDependency(JarWriter writer, File dependency)
 				throws FileNotFoundException, IOException {
 			if (dependency.isFile()) {
-				writer.writeNestedLibrary("lib/", dependency);
+				writer.writeNestedLibrary("lib/", new Library(dependency,
+						LibraryScope.COMPILE));
 			}
 		}
 
@@ -275,6 +279,21 @@ public class JarCommand extends OptionParsingCommand {
 				classNode.addAnnotation(annotation);
 				// We only need to do it at most once
 				break;
+			}
+			// Remove GrabReolvers because all the dependencies are local now
+			removeGrabResolver(module.getClasses());
+			removeGrabResolver(module.getImports());
+		}
+
+		private void removeGrabResolver(List<? extends AnnotatedNode> nodes) {
+			for (AnnotatedNode classNode : nodes) {
+				List<AnnotationNode> annotations = classNode.getAnnotations();
+				for (AnnotationNode node : new ArrayList<AnnotationNode>(annotations)) {
+					if (node.getClassNode().getNameWithoutPackage()
+							.equals("GrabResolver")) {
+						annotations.remove(node);
+					}
+				}
 			}
 		}
 

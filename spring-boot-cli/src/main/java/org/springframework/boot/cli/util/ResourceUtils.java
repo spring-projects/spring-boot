@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Utilities for manipulating resource paths and URLs.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  */

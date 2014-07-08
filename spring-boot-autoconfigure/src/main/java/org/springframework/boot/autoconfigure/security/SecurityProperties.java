@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Properties for the security aspects of an application.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "security", ignoreUnknownFields = false)

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link YamlPropertySourceLoader}.
- * 
+ *
  * @author Dave Syer
  */
 public class YamlPropertySourceLoaderTests {

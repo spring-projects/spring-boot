@@ -30,7 +30,7 @@ import reactor.spring.context.config.EnableReactor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactor.
- * 
+ *
  * @author Dave Syer
  */
 @Configuration

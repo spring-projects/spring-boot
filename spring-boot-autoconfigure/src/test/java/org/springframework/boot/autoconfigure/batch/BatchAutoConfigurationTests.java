@@ -66,7 +66,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
- * 
+ *
  * @author Dave Syer
  */
 public class BatchAutoConfigurationTests {
@@ -248,8 +248,8 @@ public class BatchAutoConfigurationTests {
 			return launcher;
 		}
 
-		@Bean
-		public JobExplorer jobExplorer() throws Exception {
+		@Override
+		public JobExplorer getJobExplorer() throws Exception {
 			MapJobExplorerFactoryBean explorer = new MapJobExplorerFactoryBean(
 					this.factory);
 			explorer.afterPropertiesSet();

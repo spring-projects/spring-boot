@@ -33,17 +33,19 @@ import org.springframework.util.StringUtils;
 /**
  * Default implementation of {@link PublicMetrics} that exposes all metrics from a
  * {@link MetricReader} along with memory information.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  */
 public class VanillaPublicMetrics implements PublicMetrics {
 
 	private final MetricReader reader;
+	private long timestamp;
 
 	public VanillaPublicMetrics(MetricReader reader) {
 		Assert.notNull(reader, "MetricReader must not be null");
 		this.reader = reader;
+		this.timestamp = System.currentTimeMillis();
 	}
 
 	@Override
@@ -75,6 +77,8 @@ public class VanillaPublicMetrics implements PublicMetrics {
 		// Add JVM uptime in ms
 		result.add(new Metric<Long>("uptime", new Long(ManagementFactory
 				.getRuntimeMXBean().getUptime())));
+		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
+				- this.timestamp));
 	}
 
 	/**

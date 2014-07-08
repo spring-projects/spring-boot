@@ -34,7 +34,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
 /**
  * A base class for {@link ASTTransformation AST transformations} that are solely
  * interested in {@link AnnotatedNode AnnotatedNodes}.
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

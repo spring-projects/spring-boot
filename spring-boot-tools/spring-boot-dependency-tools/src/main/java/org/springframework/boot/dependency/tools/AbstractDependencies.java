@@ -27,7 +27,7 @@ import org.springframework.boot.dependency.tools.Dependency.Exclusion;
 
 /**
  * Abstract base implementation for {@link Dependencies}.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.1.0

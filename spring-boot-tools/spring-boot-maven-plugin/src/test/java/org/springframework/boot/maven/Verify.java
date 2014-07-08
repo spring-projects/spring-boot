@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Verification utility for use with maven-invoker-plugin verification scripts.
- * 
+ *
  * @author Phillip Webb
  */
 public class Verify {
@@ -85,6 +85,15 @@ public class Verify {
 							+ " should not have been found");
 				}
 			}
+		}
+
+		public boolean hasNonUnpackEntry(String entry) {
+			return !hasUnpackEntry(entry);
+		}
+
+		public boolean hasUnpackEntry(String entry) {
+			String comment = this.content.get(entry).getComment();
+			return comment != null && comment.startsWith("UNPACK:");
 		}
 
 		public boolean hasEntry(String entry) {

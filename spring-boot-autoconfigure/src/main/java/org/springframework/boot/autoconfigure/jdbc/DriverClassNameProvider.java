@@ -24,7 +24,7 @@ import org.springframework.util.Assert;
 
 /**
  * Provides JDBC driver class name for given JDBC URL.
- * 
+ *
  * @author Maciej Walkowiak
  * @since 1.1.0
  */

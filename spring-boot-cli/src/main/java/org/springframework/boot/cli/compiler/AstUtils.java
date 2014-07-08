@@ -38,7 +38,7 @@ import org.springframework.util.PatternMatchUtils;
 
 /**
  * General purpose AST utilities.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Greg Turnquist
@@ -70,7 +70,8 @@ public abstract class AstUtils {
 			String... annotations) {
 		for (AnnotationNode annotationNode : node.getAnnotations()) {
 			for (String annotation : annotations) {
-				if (PatternMatchUtils.simpleMatch(annotation, annotationNode.getClassNode().getName())) {
+				if (PatternMatchUtils.simpleMatch(annotation, annotationNode
+						.getClassNode().getName())) {
 					return true;
 				}
 			}

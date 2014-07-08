@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link HealthMvcEndpoint}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class HealthMvcEndpointTests {

@@ -37,7 +37,7 @@ import static java.util.Arrays.asList;
 
 /**
  * {@link Command} to 'run' a groovy script or scripts.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -106,7 +106,7 @@ public class RunCommand extends OptionParsingCommand {
 			this.runner = new SpringApplicationRunner(configuration,
 					sourceOptions.getSourcesArray(), sourceOptions.getArgsArray());
 			this.runner.compileAndRun();
-			
+
 			return ExitStatus.OK;
 		}
 

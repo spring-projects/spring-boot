@@ -296,8 +296,7 @@ which does not have an `exclusion` element.
 
 To ensure that correct exclusions are actually applied, the Spring Boot Gradle plugin will
 automatically add exclusion rules. All exclusions defined in the
-`spring-boot-dependencies` POM and the ``starter'' POMs will be added (both direct and
-transitive exclusions).
+`spring-boot-dependencies` POM and implicit rules for the ``starter'' POMs will be added.
 
 If you don't want exclusion rules automatically applied you can use the following
 configuration:
@@ -373,11 +372,11 @@ To run a project in place without building a jar first you can use the ``bootRun
 Running this way makes your static classpath resources (i.e. in `src/main/resources` by
 default) reloadable in the live application, which can be helpful at development time.
 
-[[build-tool-plugins-gradle-repackage-configuration]]
-=== Repackage configuration
+[[build-tool-plugins-gradle-global-configuration]]
+=== Spring Boot plugin configuration
 The gradle plugin automatically extends your build script DSL with a `springBoot` element
-for configuration. Simply set the appropriate properties as you would with any other Gradle
-extension (see below for a list of configuration options):
+for global configuration of the Boot plugin. Set the appropriate properties as you would
+with any other Gradle extension (see below for a list of configuration options):
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
 ----
@@ -385,6 +384,53 @@ extension (see below for a list of configuration options):
 		backupSource = false
 	}
 ----
+
+
+
+[[build-tool-plugins-gradle-repackage-configuration]]
+=== Repackage configuration
+The plugin adds a `bootRepackage` task which you can also configure directly, e.g.:
+
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+	bootRepackage {
+		mainClass = 'demo.Application'
+	}
+----
+
+The following configuration options are available:
+
+[cols="2,4"]
+|===
+|Name |Description
+
+|`enabled`
+|Boolean flag to switch the repackager off (sometimes useful if you
+want the other Boot features but not this one)
+
+|`mainClass`
+|The main class that should be run. If not specified the `mainClassName` project property
+ will be used or, if the no `mainClassName` id defined the archive will be searched for a
+ suitable class. "Suitable" means a unique class with a well-formed `main()` method (if
+ more than one is found the build will fail). You should also be able to specify the main
+ class name via the "run" task (`main` property) and/or the "startScripts"
+ (`mainClassName` property) as an alternative to using the "springBoot" configuration.
+
+|`classifier`
+|A file name segment (before the extension) to add to the archive, so that the original is
+ preserved in its original location. Defaults to null in which case the archive is
+ repackaged in place. The default is convenient for many purposes, but if you want to use
+ the original jar as a dependency in another project, it's best to use an extension to
+ define the executable archive.
+
+|`withJarTask`
+|The name or value of the `Jar` task (defaults to all tasks of type `Jar`) which is used
+ to locate the archive to repackage.
+
+|`customConfiguration`
+|The name of the custom configuration whuch is used to populate the nested lib directory
+ (without specifying this you get all compile and runtime dependencies).
+|===
 
 
 
@@ -450,9 +496,7 @@ The following configuration options are available:
 |Name |Description
 
 |`mainClass`
-|The main class that should be run. If not specified the `mainClassName` project property
- will be used or, if the no `mainClassName` id defined the archive will be searched for a
- suitable class.
+|The main class that should be run by the executable archive.
 
 |`providedConfiguration`
 |The name of the provided configuration (defaults to `providedRuntime`).
@@ -467,6 +511,11 @@ The following configuration options are available:
 |`layout`
 |The type of archive, corresponding to how the dependencies are laid out inside
  (defaults to a guess based on the archive type).
+
+|`requiresUnpack`
+|A list of dependencies (in the form ``groupId:artifactId'' that must be unpacked from
+ fat jars in order to run. Items are still packaged into the fat jar, but they will be
+ automatically unpacked when it runs.
 |===
 
 
@@ -484,7 +533,7 @@ usually this is not an issue; however, if you are planning to create a more comp
 project setup, with custom `Jar` and `BootRepackage` tasks, there are few tweaks to
 consider.
 
-If you are 'just' creating custom jar files from your project you can simply disables
+If you are 'just' creating custom jar files from your project you can simply disable
 default `jar` and `bootRepackage` tasks:
 
 [source,groovy,indent=0,subs="verbatim,attributes"]
@@ -575,7 +624,7 @@ Here is a typical example repackage:
 				@Override
 				public void doWithLibraries(LibraryCallback callback) throws IOException {
 					// Build system specific implementation, callback for each dependency
-					// callback.library(nestedFile, LibraryScope.COMPILE);
+					// callback.library(new Library(nestedFile, LibraryScope.COMPILE));
 				}
 			});
 ----

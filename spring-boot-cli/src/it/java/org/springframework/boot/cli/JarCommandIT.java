@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Integration test for {@link JarCommand}.
- * 
+ *
  * @author Andy Wilkinson
  */
 public class JarCommandIT {
@@ -57,6 +57,26 @@ public class JarCommandIT {
 		assertThat(invocation.getStandardOutput(), equalTo(""));
 		assertThat(invocation.getErrorOutput(), containsString("The name of the "
 				+ "resulting jar and at least one source file must be specified"));
+	}
+
+	@Test
+	public void jarCreationWithGrabResolver() throws Exception {
+		File jar = new File("target/test-app.jar");
+		Invocation invocation = this.cli.invoke("run", jar.getAbsolutePath(),
+				"bad.groovy");
+		invocation.await();
+		assertThat(invocation.getErrorOutput(), equalTo(""));
+		invocation = this.cli.invoke("jar", jar.getAbsolutePath(), "bad.groovy");
+		invocation.await();
+		assertEquals(invocation.getErrorOutput(), 0, invocation.getErrorOutput().length());
+		assertTrue(jar.exists());
+
+		Process process = new JavaExecutable().processBuilder("-jar",
+				jar.getAbsolutePath()).start();
+		invocation = new Invocation(process);
+		invocation.await();
+
+		assertThat(invocation.getErrorOutput(), equalTo(""));
 	}
 
 	@Test

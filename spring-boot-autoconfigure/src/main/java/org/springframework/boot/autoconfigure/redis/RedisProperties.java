@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for Redis.
- * 
+ *
  * @author Dave Syer
  */
 @ConfigurationProperties(prefix = "spring.redis")

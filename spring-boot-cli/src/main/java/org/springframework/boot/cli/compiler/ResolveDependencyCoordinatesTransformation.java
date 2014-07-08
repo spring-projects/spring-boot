@@ -32,7 +32,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
 
 /**
  * {@link ASTTransformation} to resolve {@link Grab} artifact coordinates.
- * 
+ *
  * @author Andy Wilkinson
  * @author Phillip Webb
  */

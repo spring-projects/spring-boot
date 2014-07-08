@@ -35,10 +35,10 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * Tests for {@link RabbitAutoConfiguration}.
- * 
+ *
  * @author Greg Turnquist
  */
-public class RabbitAutoconfigurationTests {
+public class RabbitAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
@@ -90,7 +90,7 @@ public class RabbitAutoconfigurationTests {
 	}
 
 	@Test
-	public void testRabbitTemplateVirtualHostMissingSlash() {
+	public void testRabbitTemplateVirtualHostNoLeadingSlash() {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
 		EnvironmentTestUtils.addEnvironment(this.context,
@@ -98,7 +98,19 @@ public class RabbitAutoconfigurationTests {
 		this.context.refresh();
 		CachingConnectionFactory connectionFactory = this.context
 				.getBean(CachingConnectionFactory.class);
-		assertEquals("/foo", connectionFactory.getVirtualHost());
+		assertEquals("foo", connectionFactory.getVirtualHost());
+	}
+
+	@Test
+	public void testRabbitTemplateVirtualHostMultiLeadingSlashes() {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(TestConfiguration.class, RabbitAutoConfiguration.class);
+		EnvironmentTestUtils.addEnvironment(this.context,
+				"spring.rabbitmq.virtual_host:///foo");
+		this.context.refresh();
+		CachingConnectionFactory connectionFactory = this.context
+				.getBean(CachingConnectionFactory.class);
+		assertEquals("///foo", connectionFactory.getVirtualHost());
 	}
 
 	@Test

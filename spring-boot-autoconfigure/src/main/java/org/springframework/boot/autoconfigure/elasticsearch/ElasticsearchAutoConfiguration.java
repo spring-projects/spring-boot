@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
  * Auto-configuration} for Elasticsearch.
- * 
+ *
  * @author Artur Konczak
  * @author Mohsin Husen
  * @author Andy Wilkinson

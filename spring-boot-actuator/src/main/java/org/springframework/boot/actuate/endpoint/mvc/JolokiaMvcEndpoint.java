@@ -40,7 +40,7 @@ import org.springframework.web.util.UrlPathHelper;
 
 /**
  * {@link MvcEndpoint} to expose Jolokia.
- * 
+ *
  * @author Christian Dupuis
  */
 @ConfigurationProperties(prefix = "endpoints.jolokia", ignoreUnknownFields = false)

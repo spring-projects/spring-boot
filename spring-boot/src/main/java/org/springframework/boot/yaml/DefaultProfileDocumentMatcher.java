@@ -24,7 +24,7 @@ import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
 /**
  * A {@link DocumentMatcher} that matches the default profile implicitly but not
  * explicitly (i.e. matches if "spring.profiles" is not found and not otherwise).
- * 
+ *
  * @author Dave Syer
  */
 public class DefaultProfileDocumentMatcher implements DocumentMatcher {

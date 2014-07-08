@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link BeanFactoryPostProcessor} that can be used to dynamically declare that all
  * {@link EntityManagerFactory} beans should "depend on" a specific bean.
- * 
+ *
  * @author Marcel Overdijk
  * @author Dave Syer
  * @author Phillip Webb

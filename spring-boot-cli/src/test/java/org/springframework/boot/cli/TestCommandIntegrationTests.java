@@ -28,7 +28,7 @@ import static org.junit.Assert.assertThat;
 
 /**
  * Integration tests to exercise the CLI's test command.
- * 
+ *
  * @author Greg Turnquist
  * @author Phillip Webb
  */

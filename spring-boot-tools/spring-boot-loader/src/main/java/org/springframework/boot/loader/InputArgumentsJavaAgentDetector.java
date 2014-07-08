@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * A {@link JavaAgentDetector} that detects jars supplied via the {@code -javaagent} JVM
  * input argument.
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

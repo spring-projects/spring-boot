@@ -21,7 +21,7 @@ import org.springframework.stereotype.Controller;
 /**
  * Marker interface used to indicate that a {@link Controller @Controller} is used to
  * render errors. Primarily used to know the error paths that will not need to be secured.
- * 
+ *
  * @author Phillip Webb
  */
 public interface ErrorController {

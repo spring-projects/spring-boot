@@ -48,7 +48,7 @@ import org.springframework.util.StringUtils;
  * shallow hash with basic information about the application (name, instance id, instance
  * index, etc.), and VCAP_SERVICES is a hash of lists where the keys are service labels
  * and the values are lists of hashes of service instance meta data. Examples are:
- * 
+ *
  * <pre class="code">
  * VCAP_APPLICATION: {"instance_id":"2ce0ac627a6c8e47e936d829a3a47b5b","instance_index":0,
  *   "version":"0138c4a6-2a73-416b-aca0-572c09f7ca53","name":"foo",
@@ -59,19 +59,19 @@ import org.springframework.util.StringUtils;
  *   "username":"urpRuqTf8Cpe6","password":"pxLsGVpsC9A5S"}
  * }]}
  * </pre>
- * 
+ *
  * These objects are flattened into properties. The VCAP_APPLICATION object goes straight
  * to <code>vcap.application.*</code> in a fairly obvious way, and the VCAP_SERVICES
  * object is unwrapped so that it is a hash of objects with key equal to the service
  * instance name (e.g. "mysql" in the example above), and value equal to that instances
  * properties, and then flattened in the same way. E.g.
- * 
+ *
  * <pre class="code">
  * vcap.application.instance_id: 2ce0ac627a6c8e47e936d829a3a47b5b
  * vcap.application.version: 0138c4a6-2a73-416b-aca0-572c09f7ca53
  * vcap.application.name: foo
  * vcap.application.uris[0]: foo.cfapps.io
- * 
+ *
  * vcap.services.mysql.name: mysql
  * vcap.services.mysql.label: rds-mysql-1.0
  * vcap.services.mysql.credentials.name: d04fb13d27d964c62b267bbba1cffb9da
@@ -81,11 +81,11 @@ import org.springframework.util.StringUtils;
  * vcap.services.mysql.credentials.password: pxLsGVpsC9A5S
  * ...
  * </pre>
- * 
+ *
  * N.B. this initializer is mainly intended for informational use (the application and
  * instance ids are particularly useful). For service binding you might find that Spring
  * Cloud is more convenient and more robust against potential changes in Cloud Foundry.
- * 
+ *
  * @author Dave Syer
  */
 public class VcapApplicationListener implements

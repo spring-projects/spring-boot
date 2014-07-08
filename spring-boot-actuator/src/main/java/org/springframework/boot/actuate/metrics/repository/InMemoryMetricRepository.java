@@ -31,7 +31,7 @@ import org.springframework.boot.actuate.metrics.writer.Delta;
 /**
  * {@link MetricRepository} and {@link MultiMetricRepository} implementation that stores
  * metrics in memory.
- * 
+ *
  * @author Dave Syer
  */
 public class InMemoryMetricRepository implements MetricRepository, MultiMetricRepository,

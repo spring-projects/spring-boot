@@ -33,17 +33,17 @@ import org.springframework.util.StringUtils;
  * <li>spring.config.name</li>
  * </ul>
  * If no property is set the ID 'application' will be used.
- * 
+ *
  * <p>
  * In addition the following environment properties will be consulted to append a relevant
  * port or index:
- * 
+ *
  * <ul>
  * <li>spring.application.index</li>
  * <li>vcap.application.instance_index</li>
  * <li>PORT</li>
  * </ul>
- * 
+ *
  * @author Dave Syer
  */
 public class ContextIdApplicationContextInitializer implements

@@ -25,7 +25,7 @@ import org.springframework.util.ObjectUtils;
 /**
  * The Gemstone class is an abstract data type modeling a Gemstone, such as a diamond or a
  * ruby.
- * 
+ *
  * @author John Blum
  */
 @Region("Gemstones")

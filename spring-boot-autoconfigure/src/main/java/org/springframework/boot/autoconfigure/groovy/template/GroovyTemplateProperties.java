@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties} for configuring Groovy templates.
- * 
+ *
  * @author Dave Syer
  * @since 1.1.0
  */

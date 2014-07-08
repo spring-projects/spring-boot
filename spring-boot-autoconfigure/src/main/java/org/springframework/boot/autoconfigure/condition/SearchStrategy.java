@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 /**
  * Some named search strategies for beans in the bean factory hierarchy.
- * 
+ *
  * @author Dave Syer
  */
 public enum SearchStrategy {
@@ -35,7 +35,7 @@ public enum SearchStrategy {
 
 	/**
 	 * Search the entire hierarchy
-	 * 
+	 *
 	 */
 	ALL;
 

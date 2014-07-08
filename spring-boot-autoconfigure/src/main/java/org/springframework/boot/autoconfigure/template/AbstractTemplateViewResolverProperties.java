@@ -23,7 +23,7 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 /**
  * Abstract base class for {@link ConfigurationProperties} for
  * {@link AbstractTemplateViewResolver view resolvers}.
- * 
+ *
  * @author Andy Wilkinson
  * @since 1.1.0
  */

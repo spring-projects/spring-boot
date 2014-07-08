@@ -24,7 +24,7 @@ import java.util.Set;
 /**
  * Runtime exception wrapper that defines additional {@link Option}s that are understood
  * by the {@link CommandRunner}.
- * 
+ *
  * @author Phillip Webb
  */
 public class CommandException extends RuntimeException {

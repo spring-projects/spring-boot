@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link JettyEmbeddedServletContainerFactory} and
  * {@link JettyEmbeddedServletContainer}.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */

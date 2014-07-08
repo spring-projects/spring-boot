@@ -36,4 +36,9 @@ public class WelcomeController {
 		return "welcome";
 	}
 
+	@RequestMapping("/foo")
+	public String foo(Map<String, Object> model) {
+		throw new RuntimeException("Foo");
+	}
+
 }

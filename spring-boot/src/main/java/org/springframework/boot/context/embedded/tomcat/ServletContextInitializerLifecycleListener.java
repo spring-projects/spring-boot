@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 
 /**
  * Tomcat {@link LifecycleListener} that calls {@link ServletContextInitializer}s.
- * 
+ *
  * @author Phillip Webb
  * @author Dave Syer
  */
@@ -37,6 +37,7 @@ public class ServletContextInitializerLifecycleListener implements LifecycleList
 			.getLog(ServletContextInitializerLifecycleListener.class);
 
 	private final ServletContextInitializer[] initializers;
+
 	private Exception startUpException;
 
 	/**

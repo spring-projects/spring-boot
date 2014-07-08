@@ -45,7 +45,7 @@ import org.springframework.security.config.annotation.authentication.configurers
 
 /**
  * Configuration for a Spring Security in-memory {@link AuthenticationManager}.
- * 
+ *
  * @author Dave Syer
  * @author Rob Winch
  */
@@ -102,7 +102,7 @@ public class AuthenticationManagerConfiguration extends
 	 * We must add {@link BootDefaultingAuthenticationConfigurerAdapter} in the init phase
 	 * of the last {@link GlobalAuthenticationConfigurerAdapter}. The reason is that the
 	 * typical flow is something like:
-	 * 
+	 *
 	 * <ul>
 	 * <li>A
 	 * {@link GlobalAuthenticationConfigurerAdapter#init(AuthenticationManagerBuilder)}

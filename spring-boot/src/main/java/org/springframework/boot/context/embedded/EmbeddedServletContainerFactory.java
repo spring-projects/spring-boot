@@ -24,7 +24,7 @@ import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletCon
  * Factory interface that can be used to create {@link EmbeddedServletContainer}s.
  * Implementations are encouraged to extend
  * {@link AbstractEmbeddedServletContainerFactory} when possible.
- * 
+ *
  * @author Phillip Webb
  * @see EmbeddedServletContainer
  * @see AbstractEmbeddedServletContainerFactory

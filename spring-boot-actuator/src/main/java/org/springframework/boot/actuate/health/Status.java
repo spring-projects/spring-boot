@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * {@link #DOWN} or {@link #OUT_OF_SERVICE}.
  * <p>
  * Custom states can also be created and used throughout the Spring Boot Health subsystem.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */

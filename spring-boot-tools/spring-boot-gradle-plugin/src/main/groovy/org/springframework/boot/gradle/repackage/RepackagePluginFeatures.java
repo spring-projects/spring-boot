@@ -16,20 +16,31 @@
 
 package org.springframework.boot.gradle.repackage;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.logging.Logger;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.gradle.PluginFeatures;
+import org.springframework.boot.gradle.SpringBootPluginExtension;
+import org.springframework.boot.loader.tools.Library;
+import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link PluginFeatures} to add repackage support.
  *
  * @author Phillip Webb
+ * @author Dave Syer
  */
 public class RepackagePluginFeatures implements PluginFeatures {
 
-	private static final String REPACKAGE_TASK_NAME = "bootRepackage";
+	public static final String REPACKAGE_TASK_NAME = "bootRepackage";
 
 	@Override
 	public void apply(Project project) {
@@ -47,7 +58,22 @@ public class RepackagePluginFeatures implements PluginFeatures {
 		task.dependsOn(project.getConfigurations()
 				.getByName(Dependency.ARCHIVES_CONFIGURATION).getAllArtifacts()
 				.getBuildDependencies());
+		registerOutput(project, task);
 		ensureTaskRunsOnAssembly(project, task);
+	}
+
+	private void registerOutput(Project project, final RepackageTask task) {
+		project.afterEvaluate(new Action<Project>() {
+			@Override
+			public void execute(Project project) {
+				project.getTasks().withType(Jar.class,
+						new RegisterInputsOutputsAction(task));
+				Object withJar = task.getWithJarTask();
+				if (withJar != null) {
+					task.dependsOn(withJar);
+				}
+			}
+		});
 	}
 
 	private void ensureTaskRunsOnAssembly(Project project, Task task) {
@@ -60,6 +86,67 @@ public class RepackagePluginFeatures implements PluginFeatures {
 	private void registerRepackageTaskProperty(Project project) {
 		project.getExtensions().getExtraProperties()
 				.set("BootRepackage", RepackageTask.class);
+	}
+
+	/**
+	 * Register task input/outputs when classifiers are used
+	 */
+	private static class RegisterInputsOutputsAction implements Action<Jar> {
+
+		private final RepackageTask task;
+
+		private final Project project;
+
+		public RegisterInputsOutputsAction(RepackageTask task) {
+			this.task = task;
+			this.project = task.getProject();
+		}
+
+		@Override
+		public void execute(Jar jarTask) {
+			if ("".equals(jarTask.getClassifier())) {
+				String classifier = this.task.getClassifier();
+				if (classifier == null) {
+					SpringBootPluginExtension extension = this.project.getExtensions()
+							.getByType(SpringBootPluginExtension.class);
+					classifier = extension.getClassifier();
+					this.task.setClassifier(classifier);
+				}
+				if (classifier != null) {
+					setupInputOutputs(jarTask, classifier);
+				}
+			}
+		}
+
+		private void setupInputOutputs(Jar jarTask, String classifier) {
+			Logger logger = this.project.getLogger();
+			logger.debug("Using classifier: " + classifier + " for task "
+					+ task.getName());
+			File inputFile = jarTask.getArchivePath();
+			String outputName = inputFile.getName();
+			outputName = StringUtils.stripFilenameExtension(outputName) + "-"
+					+ classifier + "." + StringUtils.getFilenameExtension(outputName);
+			File outputFile = new File(inputFile.getParentFile(), outputName);
+			this.task.getInputs().file(jarTask);
+			addLibraryDependencies(this.task);
+			this.task.getOutputs().file(outputFile);
+			this.task.setOutputFile(outputFile);
+		}
+
+		private void addLibraryDependencies(final RepackageTask task) {
+			try {
+				task.getLibraries().doWithLibraries(new LibraryCallback() {
+					@Override
+					public void library(Library library) throws IOException {
+						task.getInputs().file(library.getFile());
+					}
+				});
+			}
+			catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
 	}
 
 }

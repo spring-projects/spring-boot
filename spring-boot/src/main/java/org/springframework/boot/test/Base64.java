@@ -18,7 +18,7 @@ package org.springframework.boot.test;
 
 /**
  * Base64 Encoding Support. Copied from Spring Security Crypto.
- * 
+ *
  * @author Luke Taylor
  */
 final class Base64 {
@@ -314,7 +314,7 @@ final class Base64 {
 	 * <p>
 	 * This is the lowest level of the encoding methods with all possible parameters.
 	 * </p>
-	 * 
+	 *
 	 * @param source the array to convert
 	 * @param srcOffset the index where conversion begins
 	 * @param numSigBytes the number of significant bytes in your array
@@ -371,7 +371,7 @@ final class Base64 {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param source The data to convert
 	 * @param off Offset in array where conversion should begin
 	 * @param len Length of data to convert
@@ -466,8 +466,8 @@ final class Base64 {
 	 * <p>
 	 * This is the lowest level of the decoding methods with all possible parameters.
 	 * </p>
-	 * 
-	 * 
+	 *
+	 *
 	 * @param source the array to convert
 	 * @param srcOffset the index where conversion begins
 	 * @param destination the array to hold the conversion
@@ -557,7 +557,7 @@ final class Base64 {
 	 * recommended method, although it is used internally as part of the decoding process.
 	 * Special case: if len = 0, an empty array is returned. Still, if you need more speed
 	 * and reduced memory footprint (and aren't gzipping), consider this method.
-	 * 
+	 *
 	 * @param source The Base64 encoded data
 	 * @param off The offset of where to begin decoding
 	 * @param len The length of characters to decode

@@ -26,7 +26,7 @@ import java.util.jar.Manifest;
 
 /**
  * Extended variant of {@link java.util.jar.JarEntry} returned by {@link JarFile}s.
- * 
+ *
  * @author Phillip Webb
  */
 public class JarEntry extends java.util.jar.JarEntry {

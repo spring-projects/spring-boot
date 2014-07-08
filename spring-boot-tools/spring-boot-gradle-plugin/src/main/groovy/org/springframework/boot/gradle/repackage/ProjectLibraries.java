@@ -18,11 +18,19 @@ package org.springframework.boot.gradle.repackage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.FileCollection;
+import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.artifacts.FileCollectionDependency;
+import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ResolvedArtifact;
+import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
@@ -36,22 +44,24 @@ class ProjectLibraries implements Libraries {
 
 	private final Project project;
 
+	private final SpringBootPluginExtension extension;
+
 	private String providedConfigurationName = "providedRuntime";
 
 	private String customConfigurationName = null;
 
 	/**
 	 * Create a new {@link ProjectLibraries} instance of the specified {@link Project}.
-	 *
 	 * @param project the gradle project
+	 * @param extension the extension
 	 */
-	public ProjectLibraries(Project project) {
+	public ProjectLibraries(Project project, SpringBootPluginExtension extension) {
 		this.project = project;
+		this.extension = extension;
 	}
 
 	/**
 	 * Set the name of the provided configuration. Defaults to 'providedRuntime'.
-	 *
 	 * @param providedConfigurationName the providedConfigurationName to set
 	 */
 	public void setProvidedConfigurationName(String providedConfigurationName) {
@@ -64,41 +74,100 @@ class ProjectLibraries implements Libraries {
 
 	@Override
 	public void doWithLibraries(LibraryCallback callback) throws IOException {
-
-		FileCollection custom = this.customConfigurationName != null ? this.project
-				.getConfigurations().findByName(this.customConfigurationName) : null;
-
+		Set<Library> custom = getLibraries(this.customConfigurationName,
+				LibraryScope.CUSTOM);
 		if (custom != null) {
-			libraries(LibraryScope.CUSTOM, custom, callback);
+			libraries(custom, callback);
 		}
 		else {
-			FileCollection compile = this.project.getConfigurations()
-					.getByName("compile");
+			Set<Library> compile = getLibraries("compile", LibraryScope.COMPILE);
 
-			FileCollection runtime = this.project.getConfigurations()
-					.getByName("runtime");
-			runtime = runtime.minus(compile);
+			Set<Library> runtime = getLibraries("runtime", LibraryScope.RUNTIME);
+			runtime = minus(runtime, compile);
 
-			FileCollection provided = this.project.getConfigurations()
-					.findByName(this.providedConfigurationName);
-
+			Set<Library> provided = getLibraries(this.providedConfigurationName,
+					LibraryScope.PROVIDED);
 			if (provided != null) {
-				compile = compile.minus(provided);
-				runtime = runtime.minus(provided);
+				compile = minus(compile, provided);
+				runtime = minus(runtime, provided);
 			}
 
-			libraries(LibraryScope.COMPILE, compile, callback);
-			libraries(LibraryScope.RUNTIME, runtime, callback);
-			libraries(LibraryScope.PROVIDED, provided, callback);
+			libraries(compile, callback);
+			libraries(runtime, callback);
+			libraries(provided, callback);
 		}
 	}
 
-	private void libraries(LibraryScope scope, FileCollection files,
-			LibraryCallback callback) throws IOException {
-		if (files != null) {
-			for (File file: files) {
-				callback.library(file, scope);
+	private Set<Library> getLibraries(String configurationName, LibraryScope scope) {
+		Configuration configuration = (configurationName == null ? null : this.project
+				.getConfigurations().findByName(configurationName));
+		if (configuration == null) {
+			return null;
+		}
+		Set<Library> libraries = new LinkedHashSet<Library>();
+		for (ResolvedArtifact artifact : configuration.getResolvedConfiguration()
+				.getResolvedArtifacts()) {
+			libraries.add(new ResolvedArtifactLibrary(artifact, scope));
+		}
+		for (Dependency dependency : configuration.getIncoming().getDependencies()) {
+			if (dependency instanceof FileCollectionDependency) {
+				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
+				for (File file : fileDependency.resolve()) {
+					libraries.add(new Library(file, scope));
+				}
+			}
+		}
+		return libraries;
+	}
+
+	private Set<Library> minus(Set<Library> source, Set<Library> toRemove) {
+		if (source == null || toRemove == null) {
+			return source;
+		}
+		Set<File> filesToRemove = new HashSet<File>();
+		for (Library library : toRemove) {
+			filesToRemove.add(library.getFile());
+		}
+		Set<Library> result = new LinkedHashSet<Library>();
+		for (Library library : source) {
+			if (!filesToRemove.contains(library.getFile())) {
+				result.add(library);
+			}
+		}
+		return result;
+	}
+
+	private void libraries(Set<Library> libraries, LibraryCallback callback)
+			throws IOException {
+		if (libraries != null) {
+			for (Library library : libraries) {
+				callback.library(library);
 			}
 		}
 	}
+
+	/**
+	 * Adapts a {@link ResolvedArtifact} to a {@link Library}.
+	 */
+	private class ResolvedArtifactLibrary extends Library {
+
+		private final ResolvedArtifact artifact;
+
+		public ResolvedArtifactLibrary(ResolvedArtifact artifact, LibraryScope scope) {
+			super(artifact.getFile(), scope);
+			this.artifact = artifact;
+		}
+
+		@Override
+		public boolean isUnpackRequired() {
+			if (ProjectLibraries.this.extension.getRequiresUnpack() != null) {
+				ModuleVersionIdentifier id = artifact.getModuleVersion().getId();
+				return ProjectLibraries.this.extension.getRequiresUnpack().contains(
+						id.getGroup() + ":" + id.getName());
+			}
+			return false;
+		}
+
+	}
+
 }

@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.health.Health.Builder;
  * This implementation is only suitable if an {@link Exception} raised from
  * {@link #doHealthCheck(org.springframework.boot.actuate.health.Health.Builder)} should
  * create a {@link Status#DOWN} health status.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */

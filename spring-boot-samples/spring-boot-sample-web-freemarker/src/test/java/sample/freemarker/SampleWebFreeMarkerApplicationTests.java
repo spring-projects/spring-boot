@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Basic integration tests for FreeMarker application.
- * 
+ *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */

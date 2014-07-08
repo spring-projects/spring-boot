@@ -43,7 +43,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Flyway database migrations.
- * 
+ *
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.1.0
@@ -117,7 +117,7 @@ public class FlywayAutoConfiguration {
 
 	/**
 	 * Additional configuration to ensure that {@link EntityManagerFactory} beans
-	 * depend-on the liquibase bean.
+	 * depend-on the flyway bean.
 	 */
 	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)

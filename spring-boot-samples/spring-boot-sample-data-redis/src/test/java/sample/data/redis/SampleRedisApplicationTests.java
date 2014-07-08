@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SampleRedisApplication}.
- * 
+ *
  * @author Dave Syer
  */
 public class SampleRedisApplicationTests {

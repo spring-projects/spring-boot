@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link OrderedHealthAggregator}.
- * 
+ *
  * @author Christian Dupuis
  */
 public class OrderedHealthAggregatorTests {

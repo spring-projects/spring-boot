@@ -1,0 +1,29 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.bootVersion}")
+	}
+}
+
+apply plugin: 'spring-boot'
+
+group = 'flatdir'
+version = '0.0.0'
+
+run {
+  main = 'Foo'
+}
+
+jar {
+	baseName =  'flatdir'
+}
+
+repositories {
+	flatDir( dirs:'lib' )
+}
+
+dependencies {
+	compile ':foo:1.0.0'
+}
