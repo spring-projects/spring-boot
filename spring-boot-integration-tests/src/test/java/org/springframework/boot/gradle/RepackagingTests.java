@@ -31,6 +31,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Integration tests for gradle repackaging.
+ *
+ * @author Andy Wilkinson
+ */
 public class RepackagingTests {
 
 	private static final String BOOT_VERSION = ManagedDependencies.get()
