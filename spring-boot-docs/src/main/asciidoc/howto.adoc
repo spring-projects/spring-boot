@@ -175,8 +175,9 @@ placeholders in `application.properties`, e.g.
 	server.port=${port:8080}
 ----
 
-TIP: If you have enabled maven filtering for the `application.properties` you may want
-to avoid using `${*}` for the tokens to filter as it conflicts with those placeholders.
+TIP: If you are inheriting from the `spring-boot-starter-parent` POM, or if have enabled
+maven filtering for the `application.properties` directly, you may want to change the
+default filter token from `${*}` since it conflicts with those placeholders.
 You can either use `@*@` (i.e. `@maven.token@` instead of `${maven.token}`) or you can
 configure the `maven-resources-plugin` to use
 http://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
