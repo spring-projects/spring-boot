@@ -143,11 +143,7 @@ public class RabbitProperties {
 	}
 
 	public void setVirtualHost(String virtualHost) {
-		while (virtualHost.startsWith("/") && virtualHost.length() > 0) {
-			virtualHost = virtualHost.substring(1);
-		}
 		this.virtualHost = ("".equals(virtualHost) ? "/" : virtualHost);
-
 	}
 
 }
