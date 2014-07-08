@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-dependencies</artifactId>
-		<version>1.1.4.BUILD-SNAPSHOT</version>
+		<version>1.1.5.BUILD-SNAPSHOT</version>
 		<relativePath>../spring-boot-dependencies</relativePath>
 	</parent>
 	<artifactId>spring-boot-parent</artifactId>
@@ -345,7 +345,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
