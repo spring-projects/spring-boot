@@ -96,7 +96,7 @@
 		<snakeyaml.version>1.13</snakeyaml.version>
 		<solr.version>4.7.2</solr.version>
 		<spock.version>0.7-groovy-2.0</spock.version>
-		<spring.version>4.0.5.RELEASE</spring.version>
+		<spring.version>4.0.6.RELEASE</spring.version>
 		<spring-amqp.version>1.3.5.RELEASE</spring-amqp.version>
 		<spring-batch.version>3.0.1.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Dijkstra-SR1</spring-data-releasetrain.version>
