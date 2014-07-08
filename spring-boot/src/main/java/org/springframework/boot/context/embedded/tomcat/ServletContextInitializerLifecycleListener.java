@@ -37,6 +37,7 @@ public class ServletContextInitializerLifecycleListener implements LifecycleList
 			.getLog(ServletContextInitializerLifecycleListener.class);
 
 	private final ServletContextInitializer[] initializers;
+
 	private Exception startUpException;
 
 	/**
