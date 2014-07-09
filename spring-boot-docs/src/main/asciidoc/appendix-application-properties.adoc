@@ -109,9 +109,9 @@ content into your application; rather pick only the properties that you need.
 
 	# FREEMARKER ({sc-spring-boot-autoconfigure}/freemarker/FreeMarkerAutoConfiguration.{sc-ext}[FreeMarkerAutoConfiguration])
 	spring.freemarker.allowRequestOverride=false
-	spring.freemarker.allowSessionOverride=false
 	spring.freemarker.cache=true
 	spring.freemarker.checkTemplateLocation=true
+	spring.freemarker.charSet=UTF-8
 	spring.freemarker.contentType=text/html
 	spring.freemarker.exposeRequestAttributes=false
 	spring.freemarker.exposeSessionAttributes=false
@@ -120,26 +120,23 @@ content into your application; rather pick only the properties that you need.
 	spring.freemarker.requestContextAttribute=
 	spring.freemarker.settings.*=
 	spring.freemarker.suffix=.ftl
-	spring.freemarker.templateEncoding=UTF-8
 	spring.freemarker.templateLoaderPath=classpath:/templates/
 	spring.freemarker.viewNames= # whitelist of view names that can be resolved
 
 	# GROOVY TEMPLATES ({sc-spring-boot-autoconfigure}/groovy/template/GroovyTemplateAutoConfiguration.{sc-ext}[GroovyTemplateAutoConfiguration])
-	spring.groovy.template.allowRequestOverride=false
-	spring.groovy.template.allowSessionOverride=false
 	spring.groovy.template.cache=true
+	spring.groovy.template.charSet=UTF-8
 	spring.groovy.template.configuration.*= # See Groovy's TemplateConfiguration
 	spring.groovy.template.contentType=text/html
 	spring.groovy.template.prefix=classpath:/templates/
 	spring.groovy.template.suffix=.tpl
-	spring.groovy.template.templateEncoding=UTF-8
 	spring.groovy.template.viewNames= # whitelist of view names that can be resolved
 
 	# VELOCITY TEMPLATES ({sc-spring-boot-autoconfigure}/velocity/VelocityAutoConfiguration.{sc-ext}[VelocityAutoConfiguration])
 	spring.velocity.allowRequestOverride=false
-	spring.velocity.allowSessionOverride=false
 	spring.velocity.cache=true
 	spring.velocity.checkTemplateLocation=true
+	spring.velocity.charSet=UTF-8
 	spring.velocity.contentType=text/html
 	spring.velocity.dateToolAttribute=
 	spring.velocity.exposeRequestAttributes=false
@@ -151,7 +148,6 @@ content into your application; rather pick only the properties that you need.
 	spring.velocity.requestContextAttribute=
 	spring.velocity.resourceLoaderPath=classpath:/templates/
 	spring.velocity.suffix=.vm
-	spring.velocity.templateEncoding=UTF-8
 	spring.velocity.viewNames= # whitelist of view names that can be resolved
 
 	# INTERNATIONALIZATION ({sc-spring-boot-autoconfigure}/MessageSourceAutoConfiguration.{sc-ext}[MessageSourceAutoConfiguration])
@@ -201,7 +197,7 @@ content into your application; rather pick only the properties that you need.
 	spring.datasource.test-while-idle=
 	spring.datasource.time-between-eviction-runs-millis=
 	spring.datasource.min-evictable-idle-time-millis=
-	spring.datasource.max-wait-millis=
+	spring.datasource.max-wait=
 
 	# MONGODB ({sc-spring-boot-autoconfigure}/mongo/MongoProperties.{sc-ext}[MongoProperties])
 	spring.data.mongodb.host= # the db host
@@ -232,7 +228,6 @@ content into your application; rather pick only the properties that you need.
 	# ELASTICSEARCH ({sc-spring-boot-autoconfigure}/elasticsearch/ElasticsearchProperties.{sc-ext}[ElasticsearchProperties}])
 	spring.data.elasticsearch.cluster-name= # The cluster name (defaults to elasticsearch)
 	spring.data.elasticsearch.cluster-nodes= # The address(es) of the server node (comma-separated; if not specified starts a client node)
-	spring.data.elasticsearch.local=true # if local mode should be used with client nodes
 	spring.data.elasticsearch.repositories.enabled=true # if spring data repository support is enabled
 
 	# DATA RESET ({spring-data-rest-javadoc}/core/config/RepositoryRestConfiguration.{dc-ext}[RepositoryRestConfiguration}])
@@ -242,8 +237,8 @@ content into your application; rather pick only the properties that you need.
 	flyway.locations=classpath:db/migrations # locations of migrations scripts
 	flyway.schemas= # schemas to update
 	flyway.initVersion= 1 # version to start migration
-	flyway.prefix=V
-	flyway.suffix=.sql
+	flyway.sql-migration-prefix=V
+	flyway.sql-migration-suffix=.sql
 	flyway.enabled=true
 	flyway.url= # JDBC url if you want Flyway to create its own DataSource
 	flyway.user= # JDBC username if you want Flyway to create its own DataSource
@@ -268,7 +263,7 @@ content into your application; rather pick only the properties that you need.
 	spring.rabbitmq.addresses= # connection addresses (e.g. myhost:9999,otherhost:1111)
 	spring.rabbitmq.username= # login user
 	spring.rabbitmq.password= # login password
-	spring.rabbitmq.virtualhost=
+	spring.rabbitmq.virtualHost=
 	spring.rabbitmq.dynamic=
 
 	# REDIS ({sc-spring-boot-autoconfigure}/redis/RedisProperties.{sc-ext}[RedisProperties])
@@ -393,7 +388,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.jolokia.path=jolokia
 	endpoints.jolokia.sensitive=true
 	endpoints.jolokia.enabled=true # when using Jolokia
-	endpoints.error.path=/error
 
 	# JMX ENDPOINT ({sc-spring-boot-actuator}/autoconfigure/EndpointMBeanExportProperties.{sc-ext}[EndpointMBeanExportProperties])
 	endpoints.jmx.enabled=true
@@ -407,7 +401,7 @@ content into your application; rather pick only the properties that you need.
 	# REMOTE SHELL
 	shell.auth=simple # jaas, key, simple, spring
 	shell.command-refresh-interval=-1
-	shell.command-path-pattern= # classpath*:/commands/**, classpath*:/crash/commands/**
+	shell.command-path-patterns= # classpath*:/commands/**, classpath*:/crash/commands/**
 	shell.config-path-patterns= # classpath*:/crash/*
 	shell.disabled-plugins=false # don't expose plugins
 	shell.ssh.enabled= # ssh settings ...
