@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Login</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+	href="../../css/bootstrap.min.css" />
+</head>
+<body>
+	<div class="container">
+		<div class="navbar">
+			<div class="navbar-inner">
+				<a class="brand" href="#"> HDIV Spring Boot sample </a>
+				<ul class="nav">
+					<li><a th:href="@{/}" href="home.html"> Home </a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="content">
+			<h2>Sample form</h2>
+			<form action="#" th:action="@{/form}" th:object="${formBean}" method="post">
+				
+				<div class="form-group">
+					<label for="name">Name</label>
+					<input type="text" th:field="*{name}" />
+				</div>
+				
+				<div class="form-group">
+					<label for="type">Type</label>
+					<select th:field="*{type}">
+						<option th:value="One">One</option>
+						<option th:value="Two">Two</option>
+						<option th:value="Three">Three</option>
+					</select>
+				</div>
+		
+				<button type="submit" class="btn btn-primary">Submit</button>
+		
+			</form>
+		</div>
+	</div>
+</body>
+</html>
