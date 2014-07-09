@@ -16,25 +16,36 @@
 
 package org.springframework.boot.autoconfigure.social;
 
-import org.springframework.core.env.Environment;
-import org.springframework.social.config.annotation.ConnectionFactoryConfigurer;
-import org.springframework.social.config.annotation.SocialConfigurerAdapter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.social.connect.ConnectionFactory;
 
 /**
- * Base class for auto-configured {@link SocialConfigurerAdapter}s.
+ * Base {@link ConfigurationProperties properties} for spring social.
  *
- * @author Craig Walls
- * @author Phillip Webb
- * @since 1.1.0
+ * @author Stephane Nicoll
+ * @since 1.2.0
  */
-abstract class SocialAutoConfigurerAdapter extends SocialConfigurerAdapter {
+abstract class SocialProperties {
 
-	protected abstract SocialProperties getSocialProperties();
+	private String appId;
 
-	@Override
-	public void addConnectionFactories(ConnectionFactoryConfigurer configurer,
-			Environment environment) {
-		configurer.addConnectionFactory(getSocialProperties().createConnectionFactory());
+	private String appSecret;
+
+	public String getAppId() {
+		return appId;
 	}
 
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
+
+	public String getAppSecret() {
+		return appSecret;
+	}
+
+	public void setAppSecret(String appSecret) {
+		this.appSecret = appSecret;
+	}
+
+	public abstract ConnectionFactory<?> createConnectionFactory();
 }

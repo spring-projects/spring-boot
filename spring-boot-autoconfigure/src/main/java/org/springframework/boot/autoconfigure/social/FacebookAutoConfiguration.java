@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.social;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -24,7 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -56,21 +58,17 @@ public class FacebookAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
+	@EnableConfigurationProperties(FaceBookProperties.class)
 	@ConditionalOnWebApplication
 	protected static class FacebookAutoConfigurationAdapter extends
 			SocialAutoConfigurerAdapter {
 
-		@Override
-		protected String getPropertyPrefix() {
-			return "spring.social.facebook.";
-		}
+		@Autowired
+		private FaceBookProperties faceBookProperties;
 
 		@Override
-		protected ConnectionFactory<?> createConnectionFactory(
-				RelaxedPropertyResolver properties) {
-			return new FacebookConnectionFactory(
-					properties.getRequiredProperty("app-id"),
-					properties.getRequiredProperty("app-secret"));
+		protected SocialProperties getSocialProperties() {
+			return faceBookProperties;
 		}
 
 		@Bean
@@ -86,6 +84,16 @@ public class FacebookAutoConfiguration {
 		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
 		public View facebookConnectView() {
 			return new GenericConnectionStatusView("facebook", "Facebook");
+		}
+
+	}
+
+	@ConfigurationProperties("spring.social.facebook")
+	public static class FaceBookProperties extends SocialProperties {
+
+		public ConnectionFactory<?> createConnectionFactory() {
+			return new FacebookConnectionFactory(
+					getAppId(), getAppSecret());
 		}
 
 	}
