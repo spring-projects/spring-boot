@@ -39,6 +39,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class BatchDatabaseInitializer implements EnvironmentAware {
 
+  private static final String DEFAULT_SCHEMA_DROP_LOCATION = "classpath:org/springframework/"
+      + "batch/core/schema-drop-@@platform@@.sql";
+
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 			+ "batch/core/schema-@@platform@@.sql";
 
@@ -50,6 +53,9 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 
 	@Value("${spring.batch.initializer.enabled:true}")
 	private boolean enabled = true;
+
+  @Value("${spring.jpa.hibernate.ddl-auto:create}")
+  private String ddl_auto = "create";
 
 	private RelaxedPropertyResolver environment;
 
@@ -71,7 +77,16 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 			if ("oracle".equals(platform)) {
 				platform = "oracle10g";
 			}
-			ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+
+      ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+
+      if(shouldDrop())
+      {
+        String schemaDropLocation = this.environment.getProperty("schema-drop", DEFAULT_SCHEMA_DROP_LOCATION);
+        schemaDropLocation = schemaDropLocation.replace("@@platform@@", platform);
+        populator.addScript(this.resourceLoader.getResource(schemaDropLocation));
+      }
+
 			String schemaLocation = this.environment.getProperty("schema",
 					DEFAULT_SCHEMA_LOCATION);
 			schemaLocation = schemaLocation.replace("@@platform@@", platform);
@@ -81,7 +96,18 @@ public class BatchDatabaseInitializer implements EnvironmentAware {
 		}
 	}
 
-	private String getDatabaseType() {
+  /***
+   * Should drop batch tables
+   * @return true if hibernate.ddl-auto is true or false
+   */
+  public boolean shouldDrop()
+  {
+    if(ddl_auto == null)
+      return true;
+    return ddl_auto.contains("create");
+  }
+
+  private String getDatabaseType() {
 		try {
 			return DatabaseType.fromMetaData(this.dataSource).toString().toLowerCase();
 		}
