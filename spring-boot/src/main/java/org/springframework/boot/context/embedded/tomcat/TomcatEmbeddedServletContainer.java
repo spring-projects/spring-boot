@@ -95,6 +95,7 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 				this.tomcat.stop();
 				throw new IllegalStateException("Tomcat connector in failed state");
 			}
+
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -150,6 +151,15 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		Connector connector = this.tomcat.getConnector();
 		if (connector != null && this.autoStart) {
 			startConnector(connector);
+		}
+		// Ensure process isn't left running if it actually failed to start
+		if (LifecycleState.FAILED.equals(this.tomcat.getConnector().getState())) {
+			try {
+				this.tomcat.stop();
+			}
+			catch (LifecycleException e) {
+			}
+			throw new IllegalStateException("Tomcat connector in failed state");
 		}
 	}
 
@@ -213,11 +223,11 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		try {
 			try {
 				this.tomcat.stop();
+				this.tomcat.destroy();
 			}
 			catch (LifecycleException ex) {
 				// swallow and continue
 			}
-			this.tomcat.destroy();
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException("Unable to stop embedded Tomcat",
