@@ -16,9 +16,7 @@
 
 package org.springframework.boot.autoconfigure;
 
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.io.IOException;
 
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -34,6 +32,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.StringUtils;
 
@@ -102,23 +102,28 @@ public class MessageSourceAutoConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			String basename = context.getEnvironment().getProperty(
 					"spring.messages.basename", "messages");
-			if (!StringUtils.hasText(basename)) {
-				return ConditionOutcome.noMatch("Empty spring.messages.basename");
-			}
 			for (String name : commaDelimitedListToStringArray(trimAllWhitespace(basename))) {
+				Resource[] resources;
 				try {
-					ResourceBundle.getBundle(name, Locale.getDefault(),
-							context.getClassLoader());
+					resources = new PathMatchingResourcePatternResolver(
+							context.getClassLoader()).getResources("classpath*:" + name
+							+ "*.properties");
 				}
-				catch (MissingResourceException e) {
-					return ConditionOutcome
-							.noMatch("Bundle found for spring.messages.basename: " + name);
+				catch (IOException e) {
+					continue;
+				}
+				for (Resource resource : resources) {
+
+					if (resource.exists()) {
+						return ConditionOutcome
+								.match("Bundle found for spring.messages.basename: "
+										+ name);
+					}
 				}
 			}
-			return ConditionOutcome.match("Bundle found for spring.messages.basename: "
-					+ basename);
+			return ConditionOutcome
+					.noMatch("No bundle found for spring.messages.basename: " + basename);
 		}
-
 	}
 
 }
