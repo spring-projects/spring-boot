@@ -63,6 +63,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Tests for {@link BatchAutoConfiguration}.
@@ -175,6 +176,59 @@ public class BatchAutoConfigurationTests {
 		assertNotNull(this.context.getBean(JobLauncher.class));
 		assertEquals(0, this.context.getBeanNamesForType(CommandLineRunner.class).length);
 	}
+
+  @Test
+  public void testTableShouldDropt() throws Exception
+  {
+    this.context = new AnnotationConfigApplicationContext();
+    //No setting for spring.jpa.hibernate.ddl-auto
+
+    this.context.register(JobConfiguration.class,
+        EmbeddedDataSourceConfiguration.class,
+        BatchAutoConfiguration.class,
+        PropertyPlaceholderAutoConfiguration.class);
+
+    this.context.refresh();
+
+    BatchDatabaseInitializer initializer = this.context.getBean(BatchDatabaseInitializer.class);
+    assertTrue(initializer.shouldDrop());
+  }
+
+  @Test
+  public void testTableNotDrop() throws Exception
+  {
+    this.context = new AnnotationConfigApplicationContext();
+    EnvironmentTestUtils.addEnvironment(this.context,
+        "spring.jpa.hibernate.ddl-auto:update");
+
+    this.context.register(JobConfiguration.class,
+        EmbeddedDataSourceConfiguration.class,
+        BatchAutoConfiguration.class,
+        PropertyPlaceholderAutoConfiguration.class);
+
+    this.context.refresh();
+
+    BatchDatabaseInitializer initializer = this.context.getBean(BatchDatabaseInitializer.class);
+    assertFalse(initializer.shouldDrop());
+  }
+
+  @Test
+  public void testTableShouldDropByDefault() throws Exception
+  {
+    this.context = new AnnotationConfigApplicationContext();
+    EnvironmentTestUtils.addEnvironment(this.context,
+        "spring.jpa.hibernate.ddl-auto:create");
+
+    this.context.register(JobConfiguration.class,
+        EmbeddedDataSourceConfiguration.class,
+        BatchAutoConfiguration.class,
+        PropertyPlaceholderAutoConfiguration.class);
+
+    this.context.refresh();
+
+    BatchDatabaseInitializer initializer = this.context.getBean(BatchDatabaseInitializer.class);
+    assertTrue(initializer.shouldDrop());
+  }
 
 	@Test
 	public void testDisableSchemaLoader() throws Exception {
