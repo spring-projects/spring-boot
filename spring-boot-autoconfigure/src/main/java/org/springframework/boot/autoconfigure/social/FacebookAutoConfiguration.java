@@ -58,17 +58,17 @@ public class FacebookAutoConfiguration {
 
 	@Configuration
 	@EnableSocial
-	@EnableConfigurationProperties(FaceBookProperties.class)
+	@EnableConfigurationProperties(FacebookProperties.class)
 	@ConditionalOnWebApplication
 	protected static class FacebookAutoConfigurationAdapter extends
 			SocialAutoConfigurerAdapter {
 
 		@Autowired
-		private FaceBookProperties faceBookProperties;
+		private FacebookProperties facebookProperties;
 
 		@Override
 		protected SocialProperties getSocialProperties() {
-			return faceBookProperties;
+			return facebookProperties;
 		}
 
 		@Bean
@@ -89,7 +89,7 @@ public class FacebookAutoConfiguration {
 	}
 
 	@ConfigurationProperties("spring.social.facebook")
-	public static class FaceBookProperties extends SocialProperties {
+	public static class FacebookProperties extends SocialProperties {
 
 		public ConnectionFactory<?> createConnectionFactory() {
 			return new FacebookConnectionFactory(
