@@ -28,6 +28,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DataBinder;
@@ -46,6 +47,8 @@ public class RelaxedDataBinder extends DataBinder {
 	private String namePrefix;
 
 	private boolean ignoreNestedProperties;
+
+	private ConversionService relaxedConversionService;
 
 	/**
 	 * Create a new {@link RelaxedDataBinder} instance.
@@ -77,11 +80,18 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	@Override
+	public void setConversionService(ConversionService conversionService) {
+		super.setConversionService(conversionService);
+		this.relaxedConversionService = new RelaxedConversionService(getConversionService());
+	}
+
+	@Override
 	public void initBeanPropertyAccess() {
 		super.initBeanPropertyAccess();
+		this.relaxedConversionService = (this.relaxedConversionService != null
+				?  this.relaxedConversionService : new RelaxedConversionService(getConversionService()));
 		// Hook in the RelaxedConversionService
-		getInternalBindingResult().initConversion(
-				new RelaxedConversionService(getConversionService()));
+		getInternalBindingResult().initConversion(relaxedConversionService);
 	}
 
 	@Override
@@ -111,6 +121,7 @@ public class RelaxedDataBinder extends DataBinder {
 		}
 
 		BeanWrapper targetWrapper = new BeanWrapperImpl(target);
+		targetWrapper.setConversionService(this.relaxedConversionService);
 		targetWrapper.setAutoGrowNestedPaths(true);
 
 		List<PropertyValue> list = propertyValues.getPropertyValueList();
@@ -189,7 +200,6 @@ public class RelaxedDataBinder extends DataBinder {
 		TypeDescriptor descriptor = wrapper.getPropertyTypeDescriptor(name);
 		if (descriptor == null || descriptor.isMap()) {
 			if (descriptor != null) {
-				wrapper.getPropertyValue(name + "[foo]");
 				TypeDescriptor valueDescriptor = descriptor.getMapValueTypeDescriptor();
 				if (valueDescriptor != null) {
 					Class<?> valueType = valueDescriptor.getObjectType();
