@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.BeansException;
 import org.springframework.boot.context.properties.ConfigurationBeanFactoryMetaData;
@@ -66,7 +67,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
-	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
+	private Pattern patternToSanitize = Pattern.compile(".*(password|secret|key)$");
 
 	private ApplicationContext context;
 
@@ -86,9 +87,37 @@ public class ConfigurationPropertiesReportEndpoint extends
 		this.beanFactoryMetaData = beanFactoryMetaData;
 	}
 
+	/**
+	 * set suffix keys to sanitize.
+	 *
+	 * @param keysToSanitize keys to sanitize
+	 */
 	public void setKeysToSanitize(String... keysToSanitize) {
 		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
-		this.keysToSanitize = keysToSanitize;
+		StringBuilder pattern = new StringBuilder(".*(");
+		pattern.append(StringUtils.arrayToDelimitedString(keysToSanitize, "|"));
+		pattern.append(")$");
+		this.setPatternToSanitize(pattern.toString());
+	}
+
+	/**
+	 * set pattern to sanitize.
+	 *
+	 * @param patternToSanitize keys to sanitize
+	 */
+	public void setPatternToSanitize(Pattern patternToSanitize) {
+		Assert.notNull(patternToSanitize, "patternToSanitize must not be null");
+		this.patternToSanitize = patternToSanitize;
+	}
+
+	/**
+	 * set pattern string to sanitize.
+	 *
+	 * @param patternToSanitize keys to sanitize
+	 */
+	public void setPatternToSanitize(String patternToSanitize) {
+		Assert.notNull(patternToSanitize, "patternToSanitize must not be null");
+		this.patternToSanitize = Pattern.compile(patternToSanitize);
 	}
 
 	@Override
@@ -199,10 +228,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 	}
 
 	private Object sanitize(String name, Object object) {
-		for (String keyToSanitize : this.keysToSanitize) {
-			if (name.toLowerCase().endsWith(keyToSanitize)) {
-				return (object == null ? null : "******");
-			}
+		if (patternToSanitize.matcher(name.toLowerCase()).matches()) {
+			return (object == null ? null : "******");
 		}
 		return object;
 	}
