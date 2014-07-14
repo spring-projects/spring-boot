@@ -362,7 +362,6 @@ content into your application; rather pick only the properties that you need.
 	endpoints.jmx.enabled=true
 	endpoints.jmx.domain= # the JMX domain, defaults to 'org.springboot'
 	endpoints.jmx.unique-names=false
-	endpoints.jmx.enabled=true
 	endpoints.jmx.staticNames=
 
 	# JOLOKIA ({sc-spring-boot-actuator}/autoconfigure/JolokiaProperties.{sc-ext}[JolokiaProperties])

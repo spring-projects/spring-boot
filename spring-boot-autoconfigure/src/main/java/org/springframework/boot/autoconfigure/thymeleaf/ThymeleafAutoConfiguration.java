@@ -30,12 +30,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -53,8 +52,10 @@ import org.thymeleaf.templateresolver.TemplateResolver;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @Configuration
+@EnableConfigurationProperties(ThymeleafAutoConfiguration.ThymeleafProperties.class)
 @ConditionalOnClass(SpringTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ThymeleafAutoConfiguration {
@@ -65,26 +66,20 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
-	public static class DefaultTemplateResolverConfiguration implements EnvironmentAware {
+	public static class DefaultTemplateResolverConfiguration  {
+
+		@Autowired
+		private ThymeleafProperties properties;
 
 		@Autowired
 		private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-		private RelaxedPropertyResolver environment;
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = new RelaxedPropertyResolver(environment,
-					"spring.thymeleaf.");
-		}
 
 		@PostConstruct
 		public void checkTemplateLocationExists() {
-			Boolean checkTemplateLocation = this.environment.getProperty(
-					"checkTemplateLocation", Boolean.class, true);
+			Boolean checkTemplateLocation = this.properties.isCheckTemplateLocation();
 			if (checkTemplateLocation) {
-				Resource resource = this.resourceLoader.getResource(this.environment
-						.getProperty("prefix", DEFAULT_PREFIX));
+				Resource resource = this.resourceLoader.getResource(this.properties.getPrefix());
 				Assert.state(resource.exists(), "Cannot find template location: "
 						+ resource + " (please add some templates "
 						+ "or check your Thymeleaf configuration)");
@@ -95,19 +90,111 @@ public class ThymeleafAutoConfiguration {
 		public ITemplateResolver defaultTemplateResolver() {
 			TemplateResolver resolver = new TemplateResolver();
 			resolver.setResourceResolver(thymeleafResourceResolver());
-			resolver.setPrefix(this.environment.getProperty("prefix", DEFAULT_PREFIX));
-			resolver.setSuffix(this.environment.getProperty("suffix", DEFAULT_SUFFIX));
-			resolver.setTemplateMode(this.environment.getProperty("mode", "HTML5"));
-			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
-					"UTF-8"));
-			resolver.setCacheable(this.environment.getProperty("cache", Boolean.class,
-					true));
+			resolver.setPrefix(this.properties.getPrefix());
+			resolver.setSuffix(this.properties.getSuffix());
+			resolver.setTemplateMode(this.properties.getMode());
+			resolver.setCharacterEncoding(this.properties.getEncoding());
+			resolver.setCacheable(this.properties.isCache());
 			return resolver;
 		}
 
 		@Bean
 		protected SpringResourceResourceResolver thymeleafResourceResolver() {
 			return new SpringResourceResourceResolver();
+		}
+	}
+
+	@ConfigurationProperties("spring.thymeleaf")
+	public static class ThymeleafProperties {
+
+		private boolean checkTemplateLocation = true;
+
+		private String prefix = DEFAULT_PREFIX;
+
+		private String suffix = DEFAULT_SUFFIX;
+
+		private String mode = "HTML5";
+
+		private String encoding = "UTF-8";
+
+		private String contentType = "text/html";
+
+		private boolean cache = true;
+
+		private String[] viewNames;
+
+		private String[] excludedViewNames;
+
+		public boolean isCheckTemplateLocation() {
+			return checkTemplateLocation;
+		}
+
+		public void setCheckTemplateLocation(boolean checkTemplateLocation) {
+			this.checkTemplateLocation = checkTemplateLocation;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
+		public String getSuffix() {
+			return suffix;
+		}
+
+		public void setSuffix(String suffix) {
+			this.suffix = suffix;
+		}
+
+		public String getMode() {
+			return mode;
+		}
+
+		public void setMode(String mode) {
+			this.mode = mode;
+		}
+
+		public String getEncoding() {
+			return encoding;
+		}
+
+		public void setEncoding(String encoding) {
+			this.encoding = encoding;
+		}
+
+		public String getContentType() {
+			return contentType;
+		}
+
+		public void setContentType(String contentType) {
+			this.contentType = contentType;
+		}
+
+		public boolean isCache() {
+			return cache;
+		}
+
+		public void setCache(boolean cache) {
+			this.cache = cache;
+		}
+
+		public String[] getExcludedViewNames() {
+			return excludedViewNames;
+		}
+
+		public void setExcludedViewNames(String[] excludedViewNames) {
+			this.excludedViewNames = excludedViewNames;
+		}
+
+		public String[] getViewNames() {
+			return viewNames;
+		}
+
+		public void setViewNames(String[] viewNames) {
+			this.viewNames = viewNames;
 		}
 	}
 
@@ -149,15 +236,11 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class })
-	protected static class ThymeleafViewResolverConfiguration implements EnvironmentAware {
+	protected static class ThymeleafViewResolverConfiguration {
 
-		private RelaxedPropertyResolver environment;
+		@Autowired
+		private ThymeleafProperties properties;
 
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = new RelaxedPropertyResolver(environment,
-					"spring.thymeleaf.");
-		}
 
 		@Autowired
 		private SpringTemplateEngine templateEngine;
@@ -167,15 +250,11 @@ public class ThymeleafAutoConfiguration {
 		public ThymeleafViewResolver thymeleafViewResolver() {
 			ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 			resolver.setTemplateEngine(this.templateEngine);
-			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
-					"UTF-8"));
-			resolver.setContentType(appendCharset(
-					this.environment.getProperty("contentType", "text/html"),
+			resolver.setCharacterEncoding(this.properties.getEncoding());
+			resolver.setContentType(appendCharset(this.properties.getContentType(),
 					resolver.getCharacterEncoding()));
-			resolver.setExcludedViewNames(this.environment.getProperty(
-					"excludedViewNames", String[].class));
-			resolver.setViewNames(this.environment.getProperty("viewNames",
-					String[].class));
+			resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
+			resolver.setViewNames(this.properties.getViewNames());
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
