@@ -30,14 +30,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -58,6 +55,7 @@ import org.thymeleaf.templateresolver.TemplateResolver;
  * @author Stephane Nicoll
  */
 @Configuration
+@EnableConfigurationProperties(ThymeleafAutoConfiguration.ThymeleafProperties.class)
 @ConditionalOnClass(SpringTemplateEngine.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class ThymeleafAutoConfiguration {
@@ -67,7 +65,6 @@ public class ThymeleafAutoConfiguration {
 	public static final String DEFAULT_SUFFIX = ".html";
 
 	@Configuration
-	@EnableConfigurationProperties(ThymeleafProperties.class)
 	@ConditionalOnMissingBean(name = "defaultTemplateResolver")
 	public static class DefaultTemplateResolverConfiguration  {
 
@@ -120,7 +117,13 @@ public class ThymeleafAutoConfiguration {
 
 		private String encoding = "UTF-8";
 
+		private String contentType = "text/html";
+
 		private boolean cache = true;
+
+		private String[] viewNames;
+
+		private String[] excludedViewNames;
 
 		public boolean isCheckTemplateLocation() {
 			return checkTemplateLocation;
@@ -162,12 +165,36 @@ public class ThymeleafAutoConfiguration {
 			this.encoding = encoding;
 		}
 
+		public String getContentType() {
+			return contentType;
+		}
+
+		public void setContentType(String contentType) {
+			this.contentType = contentType;
+		}
+
 		public boolean isCache() {
 			return cache;
 		}
 
 		public void setCache(boolean cache) {
 			this.cache = cache;
+		}
+
+		public String[] getExcludedViewNames() {
+			return excludedViewNames;
+		}
+
+		public void setExcludedViewNames(String[] excludedViewNames) {
+			this.excludedViewNames = excludedViewNames;
+		}
+
+		public String[] getViewNames() {
+			return viewNames;
+		}
+
+		public void setViewNames(String[] viewNames) {
+			this.viewNames = viewNames;
 		}
 	}
 
@@ -209,15 +236,11 @@ public class ThymeleafAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass({ Servlet.class })
-	protected static class ThymeleafViewResolverConfiguration implements EnvironmentAware {
+	protected static class ThymeleafViewResolverConfiguration {
 
-		private RelaxedPropertyResolver environment;
+		@Autowired
+		private ThymeleafProperties properties;
 
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.environment = new RelaxedPropertyResolver(environment,
-					"spring.thymeleaf.");
-		}
 
 		@Autowired
 		private SpringTemplateEngine templateEngine;
@@ -227,15 +250,11 @@ public class ThymeleafAutoConfiguration {
 		public ThymeleafViewResolver thymeleafViewResolver() {
 			ThymeleafViewResolver resolver = new ThymeleafViewResolver();
 			resolver.setTemplateEngine(this.templateEngine);
-			resolver.setCharacterEncoding(this.environment.getProperty("encoding",
-					"UTF-8"));
-			resolver.setContentType(appendCharset(
-					this.environment.getProperty("contentType", "text/html"),
+			resolver.setCharacterEncoding(this.properties.getEncoding());
+			resolver.setContentType(appendCharset(this.properties.getContentType(),
 					resolver.getCharacterEncoding()));
-			resolver.setExcludedViewNames(this.environment.getProperty(
-					"excludedViewNames", String[].class));
-			resolver.setViewNames(this.environment.getProperty("viewNames",
-					String[].class));
+			resolver.setExcludedViewNames(this.properties.getExcludedViewNames());
+			resolver.setViewNames(this.properties.getViewNames());
 			// This resolver acts as a fallback resolver (e.g. like a
 			// InternalResourceViewResolver) so it needs to have low precedence
 			resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
