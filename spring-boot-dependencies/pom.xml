@@ -82,6 +82,7 @@
 		<jdom2.version>2.0.5</jdom2.version>
 		<joda-time.version>2.3</joda-time.version>
 		<jolokia.version>1.2.2</jolokia.version>
+		<json-path.version>0.9.1</json-path.version>
 		<jstl.version>1.2</jstl.version>
 		<junit.version>4.11</junit.version>
 		<liquibase.version>3.0.8</liquibase.version>
@@ -404,6 +405,11 @@
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
 				<version>${h2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jayway.jsonpath</groupId>
+				<artifactId>json-path</artifactId>
+				<version>${json-path.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.zaxxer</groupId>
