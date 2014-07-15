@@ -183,13 +183,11 @@ public class LoggingApplicationListener implements SmartApplicationListener {
 			try {
 				ResourceUtils.getURL(value).openStream().close();
 				system.initialize(value);
-				return;
 			}
 			catch (Exception ex) {
-				// Swallow exception and continue
+				this.logger.warn("Logging environment value '" + value
+						+ "' cannot be opened and will be ignored");
 			}
-			this.logger.warn("Logging environment value '" + value
-					+ "' cannot be opened and will be ignored");
 		}
 		else {
 
