@@ -100,7 +100,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 				// that's better than nothing...
 				for (String propertyName : exacts) {
 					Object value;
-					value = source.getProperty(propertyName);
+					value = resolver.getProperty(propertyName);
 					if (value != null && !this.propertyValues.containsKey(propertyName)) {
 						this.propertyValues.put(propertyName, new PropertyValue(
 								propertyName, value));
