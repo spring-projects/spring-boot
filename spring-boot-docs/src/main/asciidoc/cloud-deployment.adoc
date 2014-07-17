@@ -153,7 +153,7 @@ for our starter REST application:
 
 [indent=0]
 ----
-	web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
+	web: java -Dserver.port=$PORT $JAVA_OPTS -jar target/demo-0.0.1-SNAPSHOT.jar
 ----
 
 Spring Boot makes `-D` arguments available as properties accessible from a Spring
