@@ -156,7 +156,8 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	@ConditionalOnExpression("${endpoints.health.enabled:true}")
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
-		if (this.healthMvcEndpointProperties.getMapping() != null) {
+		if (this.healthMvcEndpointProperties.getMapping() != null
+				&& this.healthMvcEndpointProperties.getMapping().size() > 0) {
 			healthMvcEndpoint.setStatusMapping(this.healthMvcEndpointProperties
 					.getMapping());
 		}
