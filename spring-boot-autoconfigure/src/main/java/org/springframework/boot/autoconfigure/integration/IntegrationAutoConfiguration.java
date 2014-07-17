@@ -20,8 +20,8 @@ import javax.management.MBeanServer;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -51,7 +51,7 @@ public class IntegrationAutoConfiguration {
 	@Configuration
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
-	@ConditionalOnExpression("${spring.jmx.enabled:true}")
+	@ConditionalOnProperty(value = "spring.jmx.enabled", match = "true", defaultMatch = true)
 	@EnableIntegrationMBeanExport(defaultDomain = "${spring.jmx.default_domain:}", server = "${spring.jmx.server:mbeanServer}")
 	protected static class IntegrationJmxConfiguration {
 	}

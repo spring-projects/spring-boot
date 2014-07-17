@@ -28,8 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -136,7 +136,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnWebApplication
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
 			OpenEntityManagerInViewFilter.class })
-	@ConditionalOnExpression("${spring.jpa.openInView:${spring.jpa.open_in_view:true}}")
+	@ConditionalOnProperty(prefix = "spring.jpa", value = "openInView", match = "true", defaultMatch = true)
 	protected static class JpaWebConfiguration extends WebMvcConfigurerAdapter {
 
 		@Override

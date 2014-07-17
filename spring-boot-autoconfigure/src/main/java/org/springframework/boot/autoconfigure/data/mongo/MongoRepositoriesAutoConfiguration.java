@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.data.mongo;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -54,7 +54,7 @@ import com.mongodb.Mongo;
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoRepository.class })
 @ConditionalOnMissingBean(RepositoryFactoryBeanSupport.class)
-@ConditionalOnExpression("${spring.data.mongo.repositories.enabled:true}")
+@ConditionalOnProperty(value = "spring.data.mongo.repositories.enabled", match="true", defaultMatch = true)
 @Import(MongoRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)
 public class MongoRepositoriesAutoConfiguration {

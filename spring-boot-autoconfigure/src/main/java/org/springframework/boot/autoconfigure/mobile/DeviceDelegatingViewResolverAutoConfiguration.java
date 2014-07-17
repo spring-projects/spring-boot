@@ -23,13 +23,12 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -84,7 +83,8 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 	@Configuration
 	@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
-	@ConditionalOnExpression("${spring.mobile.devicedelegatingviewresolver.enabled:false}")
+	@ConditionalOnProperty(value = "spring.mobile.devicedelegatingviewresolver.enabled",
+			match = "true", defaultMatch = false)
 	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration
