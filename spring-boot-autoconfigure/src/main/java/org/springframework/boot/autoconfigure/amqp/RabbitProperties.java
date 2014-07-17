@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -78,8 +81,8 @@ public class RabbitProperties {
 	}
 
 	private String parseAddresses(String addresses) {
-		StringBuilder result = new StringBuilder();
-		for (String address : StringUtils.commaDelimitedListToSet(addresses)) {
+		Set<String> result = new LinkedHashSet<String>();
+		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
 			address = address.trim();
 			if (address.startsWith("amqp://")) {
 				address = address.substring("amqp://".length());
@@ -99,15 +102,12 @@ public class RabbitProperties {
 				this.virtualHost = address.substring(index + 1);
 				address = address.substring(0, index);
 			}
-			if (result.length() > 0) {
-				result.append(",");
-			}
 			if (!address.contains(":")) {
 				address = address + ":" + this.port;
 			}
-			result.append(address);
+			result.add(address);
 		}
-		return result.length() > 0 ? result.toString() : null;
+		return result.isEmpty() ? null : StringUtils.collectionToCommaDelimitedString(result);
 	}
 
 	public void setPort(int port) {
