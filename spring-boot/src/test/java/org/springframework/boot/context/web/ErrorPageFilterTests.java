@@ -16,6 +16,11 @@
 
 package org.springframework.boot.context.web;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -29,12 +34,9 @@ import org.junit.Test;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ErrorPageFilter}.
@@ -95,6 +97,21 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
+	}
+
+	@Test
+	public void oncePerRequest() throws Exception {
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				((HttpServletResponse) response).sendError(400, "BAD");
+				assertNotNull(request.getAttribute("FILTER.FILTERED"));
+				super.doFilter(request, response);
+			}
+		};
+		filter.init(new MockFilterConfig("FILTER"));
+		this.filter.doFilter(this.request, this.response, this.chain);
 	}
 
 	@Test
