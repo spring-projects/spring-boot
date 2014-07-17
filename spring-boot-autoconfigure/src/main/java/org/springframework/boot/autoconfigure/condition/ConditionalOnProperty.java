@@ -25,10 +25,66 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link Conditional} that only matches when the specified properties are defined in
- * {@link Environment} and not "false".
+ * {@link Conditional} that checks if the specified properties
+ * have the requested matching value. By default the properties
+ * must be present in the {@link Environment} ant <strong>not</strong>
+ * equal to {@code false}. The {@link #match()} and {@link #defaultMatch()}
+ * attributes allow to further customize the condition.
+ *
+ * <p>The {@link #match} attribute provides the value that the property
+ * should have. The {@link #defaultMatch()} flag specifies if the
+ * condition <strong>also</strong> matches if the property is not present
+ * at all.
+ *
+ * <p>The table below defines when a condition match according to the
+ * property value and the {@link #match()} value
+ *
+ * <table border="1">
+ * <th>
+ *   <td>no {@code match} value</td>
+ *   <td>{@code true}</td>
+ *   <td>{@code false}</td>
+ *   <td>{@code foo}</td>
+ * </th>
+ * <tr>
+ *     <td>not set ({@code defaultMatch = false})</td>
+ *     <td>no</td>
+ *     <td>no</td>
+ *     <td>no</td>
+ *     <td>no</td>
+ * </tr>
+ * <tr>
+ *     <td>not set ({@code defaultMatch = true})</td>
+ *     <td>yes</td>
+ *     <td>yes</td>
+ *     <td>yes</td>
+ *     <td>yes</td>
+ * </tr>
+ * <tr>
+ *     <td>{@code true}</td>
+ *     <td>yes</td>
+ *     <td>yes</td>
+ *     <td>no</td>
+ *     <td>no</td>
+ * </tr>
+ * <tr>
+ *     <td>{@code false}</td>
+ *     <td>no</td>
+ *     <td>no</td>
+ *     <td>yes</td>
+ *     <td>no</td>
+ * </tr>
+ * <tr>
+ *     <td>{@code foo}</td>
+ *     <td>yes</td>
+ *     <td>no</td>
+ *     <td>no</td>
+ *     <td>yes</td>
+ * </tr>
+ * </table>
  *
  * @author Maciej Walkowiak
+ * @author Stephane Nicoll
  * @since 1.1.0
  */
 @Conditional(OnPropertyCondition.class)
@@ -38,15 +94,37 @@ public @interface ConditionalOnProperty {
 
 	/**
 	 * A prefix that should be applied to each property.
+	 * <p>Defaults to no prefix. The prefix automatically
+	 * ends with a dot if not specified.
 	 */
 	String prefix() default "";
 
 	/**
-	 * One or more properties that must be present. If you are checking relaxed names you
-	 * should specify the property in its dashed form.
+	 * One or more properties to validate against the
+	 * {@link #match} value. If a prefix has been defined, it
+	 * is applied to compute the full key of each property. For
+	 * instance if the prefix is {@code app.config} and one
+	 * value is {@code my-value}, the fully key would be
+	 * {@code app.config.my-value}
+	 * <p>Use the dashed notation to specify each property, that
+	 * is all lower case with a "-" to separate words (e.g.
+	 * {@code my-long-property}).
 	 * @return the property names
 	 */
 	String[] value();
+
+	/**
+	 * The string representation of the expected value for the
+	 * properties. If not specified, the property must
+	 * <strong>not</strong> be equals to {@code false}
+	 */
+	String match() default "";
+
+	/**
+	 * Specify if the condition should match if the property is not set.
+	 * Defaults to {@code false}
+	 */
+	boolean defaultMatch() default false;
 
 	/**
 	 * If relaxed names should be checked. Defaults to {@code true}.
