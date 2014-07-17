@@ -20,6 +20,7 @@ import javax.persistence.EntityManagerFactory;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
@@ -54,13 +55,8 @@ public class JpaRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testDefaultRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(TestConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		prepareApplicationContext(TestConfiguration.class);
+
 		assertNotNull(this.context.getBean(CityRepository.class));
 		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
 		assertNotNull(this.context.getBean(EntityManagerFactory.class));
@@ -68,17 +64,29 @@ public class JpaRepositoriesAutoConfigurationTests {
 
 	@Test
 	public void testOverrideRepositoryConfiguration() throws Exception {
-		this.context = new AnnotationConfigApplicationContext();
-		this.context.register(CustomConfiguration.class,
-				EmbeddedDataSourceConfiguration.class,
-				HibernateJpaAutoConfiguration.class,
-				JpaRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+		prepareApplicationContext(CustomConfiguration.class);
+
 		assertNotNull(this.context
 				.getBean(org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class));
 		assertNotNull(this.context.getBean(PlatformTransactionManager.class));
 		assertNotNull(this.context.getBean(EntityManagerFactory.class));
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
+
+		this.context.getBean(CityRepository.class);
+	}
+
+	private void prepareApplicationContext(Class<?>... configurationClasses) {
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(configurationClasses);
+		this.context.register(EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class,
+				JpaRepositoriesAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
 	}
 
 	@Configuration
@@ -96,4 +104,11 @@ public class JpaRepositoriesAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	// To not find any repositories
+	@EnableJpaRepositories("foo.bar")
+	@TestAutoConfigurationPackage(City.class)
+	protected static class SortOfInvalidCustomConfiguration {
+
+	}
 }

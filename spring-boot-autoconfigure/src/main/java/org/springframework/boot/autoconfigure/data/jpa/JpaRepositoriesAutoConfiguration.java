@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
@@ -56,7 +57,8 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 @Configuration
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
-@ConditionalOnMissingBean(RepositoryFactoryBeanSupport.class)
+@ConditionalOnMissingBean({ RepositoryFactoryBeanSupport.class,
+		JpaRepositoryConfigExtension.class })
 @ConditionalOnProperty(value = "spring.data.jpa.repositories.enabled", match = "true", defaultMatch = true)
 @Import(JpaRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
