@@ -29,10 +29,10 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link PublicMetrics} implementation that provides various
- * system-related metrics.
- *
+ * A {@link PublicMetrics} implementation that provides various system-related metrics.
+ * 
  * @author Dave Syer
+ * @author Christian Dupuis
  * @author Stephane Nicoll
  * @since 1.2.0
  */
@@ -57,20 +57,17 @@ public class SystemPublicMetrics implements PublicMetrics {
 		return result;
 	}
 
-
 	/**
 	 * Add basic system metrics.
 	 */
 	protected void addBasicMetrics(Collection<Metric<?>> result) {
-		result.add(new Metric<Long>("mem",
-				Runtime.getRuntime().totalMemory() / 1024));
-		result.add(new Metric<Long>("mem.free", Runtime.getRuntime()
-				.freeMemory() / 1024));
+		result.add(new Metric<Long>("mem", Runtime.getRuntime().totalMemory() / 1024));
+		result.add(new Metric<Long>("mem.free", Runtime.getRuntime().freeMemory() / 1024));
 		result.add(new Metric<Integer>("processors", Runtime.getRuntime()
 				.availableProcessors()));
 		// Add JVM up time in ms
-		result.add(new Metric<Long>("uptime", ManagementFactory
-				.getRuntimeMXBean().getUptime()));
+		result.add(new Metric<Long>("uptime", ManagementFactory.getRuntimeMXBean()
+				.getUptime()));
 		result.add(new Metric<Long>("instance.uptime", System.currentTimeMillis()
 				- this.timestamp));
 	}
@@ -120,8 +117,10 @@ public class SystemPublicMetrics implements PublicMetrics {
 				.getGarbageCollectorMXBeans();
 		for (GarbageCollectorMXBean garbageCollectorMXBean : garbageCollectorMxBeans) {
 			String name = beautifyGcName(garbageCollectorMXBean.getName());
-			result.add(new Metric<Long>("gc." + name + ".count", garbageCollectorMXBean.getCollectionCount()));
-			result.add(new Metric<Long>("gc." + name + ".time", garbageCollectorMXBean.getCollectionTime()));
+			result.add(new Metric<Long>("gc." + name + ".count", garbageCollectorMXBean
+					.getCollectionCount()));
+			result.add(new Metric<Long>("gc." + name + ".time", garbageCollectorMXBean
+					.getCollectionTime()));
 		}
 	}
 
