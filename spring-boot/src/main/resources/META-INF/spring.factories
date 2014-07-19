@@ -14,6 +14,7 @@ org.springframework.boot.context.config.DelegatingApplicationContextInitializer
 
 # Application Listeners
 org.springframework.context.ApplicationListener=\
+org.springframework.boot.ansi.AnsiOutputApplicationListener,\
 org.springframework.boot.builder.ParentContextCloserApplicationListener,\
 org.springframework.boot.cloudfoundry.VcapApplicationListener,\
 org.springframework.boot.context.FileEncodingApplicationListener,\
@@ -22,4 +23,3 @@ org.springframework.boot.context.config.DelegatingApplicationListener,\
 org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener,\
 org.springframework.boot.logging.ClasspathLoggingApplicationListener,\
 org.springframework.boot.logging.LoggingApplicationListener
-

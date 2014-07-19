@@ -121,8 +121,26 @@ public abstract class AnsiOutput {
 		}
 	}
 
+	/**
+	 * Possible values to pass to {@link AnsiOutput#setEnabled}. Determines when to output
+	 * ANSI escape sequences for coloring application output.
+	 */
 	public static enum Enabled {
-		DETECT, ALWAYS, NEVER
+		/**
+		 * Try to detect whether ANSI coloring capabilities are available. The default
+		 * value for {@link AnsiOutput}.
+		 */
+		DETECT,
+
+		/**
+		 * Enable ANSI-colored output
+		 */
+		ALWAYS,
+
+		/**
+		 * Disable ANSI-colored output
+		 */
+		NEVER
 	};
 
 }
