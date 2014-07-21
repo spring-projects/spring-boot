@@ -420,7 +420,7 @@ that sets up the connector to be secure:
 		@Override
 		public void customize(ConfigurableEmbeddedServletContainer factory) {
 			if(factory instanceof TomcatEmbeddedServletContainerFactory) {
-				customizeTomcat((TomcatEmbeddedServletContainerFactory) factory));
+				customizeTomcat((TomcatEmbeddedServletContainerFactory) factory);
 			}
 		}
 
