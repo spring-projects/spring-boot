@@ -868,7 +868,7 @@ You can also set the location of a file to log to (in addition to the console) u
 To configure the more fine grained settings of a logging system you need to use the native
 configuration format supported by the `LoggingSystem` in question. By default Spring Boot
 picks up the native configuration from its default location for the system (e.g.
-`classpath:/logback.xml` for Logback), but you can set the location of the config file
+`classpath:logback.xml` for Logback), but you can set the location of the config file
 using the "logging.config" property.
 
 
