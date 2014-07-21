@@ -50,6 +50,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 
 	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
 
+	private static final String SANITIZE_PATTERN_PREFIX = "REGEX:";
+
 	/**
 	 * Create a new {@link EnvironmentEndpoint} instance.
 	 */
@@ -125,7 +127,9 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 
 	public Object sanitize(String name, Object object) {
 		for (String keyToSanitize : this.keysToSanitize) {
-			if (name.toLowerCase().endsWith(keyToSanitize)) {
+			if ((keyToSanitize.startsWith(SANITIZE_PATTERN_PREFIX)
+					&& name.toLowerCase().matches(keyToSanitize.substring(SANITIZE_PATTERN_PREFIX.length()).trim()))
+					|| (name.toLowerCase().endsWith(keyToSanitize))) {
 				return (object == null ? null : "******");
 			}
 		}

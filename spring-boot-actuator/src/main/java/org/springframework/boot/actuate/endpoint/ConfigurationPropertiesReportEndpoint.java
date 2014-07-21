@@ -68,6 +68,8 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
 
+	private static final String SANITIZE_PATTERN_PREFIX = "REGEX:";
+
 	private ApplicationContext context;
 
 	private ConfigurationBeanFactoryMetaData beanFactoryMetaData;
@@ -200,7 +202,9 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private Object sanitize(String name, Object object) {
 		for (String keyToSanitize : this.keysToSanitize) {
-			if (name.toLowerCase().endsWith(keyToSanitize)) {
+			if ((keyToSanitize.startsWith(SANITIZE_PATTERN_PREFIX)
+					&& name.toLowerCase().matches(keyToSanitize.substring(SANITIZE_PATTERN_PREFIX.length()).trim()))
+					|| (name.toLowerCase().endsWith(keyToSanitize))) {
 				return (object == null ? null : "******");
 			}
 		}
