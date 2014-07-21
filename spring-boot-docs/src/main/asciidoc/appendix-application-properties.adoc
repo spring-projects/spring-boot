@@ -43,7 +43,7 @@ content into your application; rather pick only the properties that you need.
 	# LOGGING
 	logging.path=/var/logs
 	logging.file=myapp.log
-	logging.config= # location of config file (default classpath:/logback.xml for logback)
+	logging.config= # location of config file (default classpath:logback.xml for logback)
     logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
