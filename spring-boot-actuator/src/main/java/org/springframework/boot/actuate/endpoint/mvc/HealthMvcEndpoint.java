@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Adapter to expose {@link HealthEndpoint} as an {@link MvcEndpoint}.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
@@ -50,7 +50,7 @@ public class HealthMvcEndpoint extends EndpointMvcAdapter {
 	}
 
 	/**
-	 * Set specific status mappings
+	 * Set specific status mappings.
 	 * @param statusMapping a map of status code to {@link HttpStatus}
 	 */
 	public void setStatusMapping(Map<String, HttpStatus> statusMapping) {
@@ -59,7 +59,16 @@ public class HealthMvcEndpoint extends EndpointMvcAdapter {
 	}
 
 	/**
-	 * Add a status mapping to the existing set
+	 * Add specfic status mappings to the existing set.
+	 * @param statusMapping a map of status code to {@link HttpStatus}
+	 */
+	public void addStatusMapping(Map<String, HttpStatus> statusMapping) {
+		Assert.notNull(statusMapping, "StatusMapping must not be null");
+		this.statusMapping.putAll(statusMapping);
+	}
+
+	/**
+	 * Add a status mapping to the existing set.
 	 * @param status the status to map
 	 * @param httpStatus the http status
 	 */
@@ -70,7 +79,7 @@ public class HealthMvcEndpoint extends EndpointMvcAdapter {
 	}
 
 	/**
-	 * Add a status mapping to the existing set
+	 * Add a status mapping to the existing set.
 	 * @param statusCode the status code to map
 	 * @param httpStatus the http status
 	 */
