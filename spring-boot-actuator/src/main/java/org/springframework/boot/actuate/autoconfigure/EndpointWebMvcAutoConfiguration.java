@@ -157,7 +157,7 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 	public HealthMvcEndpoint healthMvcEndpoint(HealthEndpoint delegate) {
 		HealthMvcEndpoint healthMvcEndpoint = new HealthMvcEndpoint(delegate);
 		if (this.healthMvcEndpointProperties.getMapping() != null) {
-			healthMvcEndpoint.setStatusMapping(this.healthMvcEndpointProperties
+			healthMvcEndpoint.addStatusMapping(this.healthMvcEndpointProperties
 					.getMapping());
 		}
 		return healthMvcEndpoint;
