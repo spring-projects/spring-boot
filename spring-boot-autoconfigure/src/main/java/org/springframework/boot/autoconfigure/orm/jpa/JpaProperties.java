@@ -115,7 +115,7 @@ public class JpaProperties {
 
 		private Class<?> namingStrategy;
 
-		private static Class<?> DEFAULT_NAMING_STRATEGY = SpringNamingStrategy.class;
+		private static String DEFAULT_NAMING_STRATEGY = "org.springframework.boot.orm.jpa.SpringNamingStrategy";
 
 		private String ddlAuto;
 
@@ -151,7 +151,7 @@ public class JpaProperties {
 			}
 			else if (this.namingStrategy == null) {
 				result.put("hibernate.ejb.naming_strategy",
-						DEFAULT_NAMING_STRATEGY.getName());
+						DEFAULT_NAMING_STRATEGY);
 			}
 			String ddlAuto = getOrDeduceDdlAuto(existing, dataSource);
 			if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
