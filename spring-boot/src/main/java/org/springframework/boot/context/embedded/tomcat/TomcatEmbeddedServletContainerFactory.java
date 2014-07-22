@@ -17,6 +17,7 @@
 package org.springframework.boot.context.embedded.tomcat;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -41,6 +42,7 @@ import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.startup.Tomcat.FixContextListener;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.EmbeddedServletContainer;
@@ -49,12 +51,16 @@ import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.boot.context.embedded.MimeMappings;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.context.embedded.Ssl.ClientAuth;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EmbeddedServletContainerFactory} that can be used to create
@@ -230,9 +236,62 @@ public class TomcatEmbeddedServletContainerFactory extends
 		// If ApplicationContext is slow to start we want Tomcat not to bind to the socket
 		// prematurely...
 		connector.setProperty("bindOnInit", "false");
+
+		if (getSsl() != null) {
+			if (connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol) {
+				AbstractHttp11JsseProtocol jsseProtocol = (AbstractHttp11JsseProtocol) connector
+						.getProtocolHandler();
+				configureJsseProtocol(jsseProtocol, getSsl());
+				connector.setScheme("https");
+				connector.setSecure(true);
+			}
+			else {
+				throw new IllegalStateException(
+						"To use SSL, the connector's protocol handler must be an AbstractHttp11JsseProtocol subclass");
+			}
+		}
+
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
 			customizer.customize(connector);
 		}
+	}
+
+	protected void configureJsseProtocol(AbstractHttp11JsseProtocol jsseProtocol, Ssl ssl) {
+		jsseProtocol.setSSLEnabled(true);
+		jsseProtocol.setSslProtocol(getSsl().getProtocol());
+		if (getSsl().getClientAuth() == ClientAuth.NEED) {
+			jsseProtocol.setClientAuth(Boolean.TRUE.toString());
+		}
+		else if (getSsl().getClientAuth() == ClientAuth.WANT) {
+			jsseProtocol.setClientAuth("want");
+		}
+		jsseProtocol.setKeystorePass(getSsl().getKeyStorePassword());
+		jsseProtocol.setKeyPass(getSsl().getKeyPassword());
+		jsseProtocol.setKeyAlias(getSsl().getKeyAlias());
+		try {
+			jsseProtocol.setKeystoreFile(ResourceUtils.getFile(getSsl().getKeyStore())
+					.getAbsolutePath());
+		}
+		catch (FileNotFoundException e) {
+			throw new EmbeddedServletContainerException("Could not find key store "
+					+ getSsl().getKeyStore(), e);
+		}
+
+		jsseProtocol.setCiphers(StringUtils.arrayToCommaDelimitedString(getSsl()
+				.getCiphers()));
+
+		if (getSsl().getTrustStore() != null) {
+			try {
+				jsseProtocol.setTruststoreFile(ResourceUtils.getFile(
+						getSsl().getTrustStore()).getAbsolutePath());
+			}
+			catch (FileNotFoundException e) {
+				throw new EmbeddedServletContainerException("Could not find trust store "
+						+ getSsl().getTrustStore(), e);
+			}
+		}
+
+		jsseProtocol.setTruststorePass(getSsl().getTrustStorePassword());
 	}
 
 	/**

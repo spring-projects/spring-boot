@@ -21,11 +21,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ssl.SslConnector;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.springframework.boot.context.embedded.AbstractEmbeddedServletContainerFactoryTests;
+import org.springframework.boot.context.embedded.Ssl;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -39,6 +41,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
 public class JettyEmbeddedServletContainerFactoryTests extends
 		AbstractEmbeddedServletContainerFactoryTests {
@@ -92,6 +95,25 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		JettyEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(1, TimeUnit.MINUTES);
 		assertTimeout(factory, 60);
+	}
+
+	@Test
+	public void sslCiphersConfiguration() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyStorePassword("secret");
+		ssl.setKeyPassword("password");
+		ssl.setCiphers(new String[] { "ALPHA", "BRAVO", "CHARLIE" });
+
+		JettyEmbeddedServletContainerFactory factory = getFactory();
+		factory.setSsl(ssl);
+
+		this.container = factory.getEmbeddedServletContainer();
+		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
+		SslConnector sslConnector = (SslConnector) jettyContainer.getServer()
+				.getConnectors()[0];
+		assertThat(sslConnector.getSslContextFactory().getIncludeCipherSuites(),
+				equalTo(new String[] { "ALPHA", "BRAVO", "CHARLIE" }));
 	}
 
 	private void assertTimeout(JettyEmbeddedServletContainerFactory factory, int expected) {

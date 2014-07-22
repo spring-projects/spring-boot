@@ -56,6 +56,14 @@ content into your application; rather pick only the properties that you need.
 	server.session-timeout= # session timeout in seconds
 	server.context-path= # the context path, defaults to '/'
 	server.servlet-path= # the servlet path, defaults to '/'
+	server.ssl.client-auth= # want or need
+	server.ssl.key-alias=
+	server.ssl.key-password=
+	server.ssl.key-store=
+	server.ssl.key-store-password=
+	server.ssl.protocol=TLS
+	server.ssl.trust-store=
+	server.ssl.trust-store-password=
 	server.tomcat.access-log-pattern= # log pattern of the access log
 	server.tomcat.access-log-enabled=false # is access logging enabled
 	server.tomcat.protocol-header=x-forwarded-proto # ssl forward headers

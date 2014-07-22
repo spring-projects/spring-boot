@@ -33,6 +33,7 @@ import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletCont
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizerBeanPostProcessor;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
+import org.springframework.boot.context.embedded.Ssl;
 import org.springframework.boot.context.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
@@ -46,6 +47,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = false)
 public class ServerProperties implements EmbeddedServletContainerCustomizer {
@@ -57,6 +59,8 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 	private Integer sessionTimeout;
 
 	private String contextPath;
+
+	private Ssl ssl;
 
 	@NotNull
 	private String servletPath = "/";
@@ -131,6 +135,14 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		this.sessionTimeout = sessionTimeout;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
 	public void setLoader(String value) {
 		// no op to support Tomcat running as a traditional container (not embedded)
 	}
@@ -149,10 +161,39 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		if (getSessionTimeout() != null) {
 			container.setSessionTimeout(getSessionTimeout());
 		}
+		if (getSsl() != null) {
+			container.setSsl(getSsl());
+		}
 		if (container instanceof TomcatEmbeddedServletContainerFactory) {
 			getTomcat()
 					.customizeTomcat((TomcatEmbeddedServletContainerFactory) container);
 		}
+	}
+
+	public String[] getPathsArray(Collection<String> paths) {
+		String[] result = new String[paths.size()];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public String[] getPathsArray(String[] paths) {
+		String[] result = new String[paths.length];
+		int i = 0;
+		for (String path : paths) {
+			result[i++] = getPath(path);
+		}
+		return result;
+	}
+
+	public String getPath(String path) {
+		String prefix = getServletPrefix();
+		if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
+		return prefix + path;
 	}
 
 	public static class Tomcat {
@@ -313,31 +354,4 @@ public class ServerProperties implements EmbeddedServletContainerCustomizer {
 		}
 
 	}
-
-	public String[] getPathsArray(Collection<String> paths) {
-		String[] result = new String[paths.size()];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
-	}
-
-	public String[] getPathsArray(String[] paths) {
-		String[] result = new String[paths.length];
-		int i = 0;
-		for (String path : paths) {
-			result[i++] = getPath(path);
-		}
-		return result;
-	}
-
-	public String getPath(String path) {
-		String prefix = getServletPrefix();
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		return prefix + path;
-	}
-
 }
