@@ -48,7 +48,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 
 	private Environment environment;
 
-	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
+	private String[] keysToSanitize = new String[] { SANITIZE_PATTERN_PREFIX + ".*(password|secret|key)$" };
 
 	private static final String SANITIZE_PATTERN_PREFIX = "REGEX:";
 

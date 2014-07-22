@@ -66,7 +66,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
-	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
+	private String[] keysToSanitize = new String[] { SANITIZE_PATTERN_PREFIX + ".*(password|secret|key)$" };
 
 	private static final String SANITIZE_PATTERN_PREFIX = "REGEX:";
 
