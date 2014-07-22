@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.EnvironmentAware;
@@ -34,6 +35,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Endpoint} to expose {@link ConfigurableEnvironment environment} information.
@@ -48,7 +50,7 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 
 	private Environment environment;
 
-	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
+	private Pattern patternToSanitize = Pattern.compile(".*(password|secret|key)$");
 
 	/**
 	 * Create a new {@link EnvironmentEndpoint} instance.
@@ -57,9 +59,37 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 		super("env");
 	}
 
+	/**
+	 * set suffix keys to sanitize.
+	 *
+	 * @param keysToSanitize keys to sanitize
+	 */
 	public void setKeysToSanitize(String... keysToSanitize) {
 		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
-		this.keysToSanitize = keysToSanitize;
+		StringBuilder pattern = new StringBuilder(".*(");
+		pattern.append(StringUtils.arrayToDelimitedString(keysToSanitize, "|"));
+		pattern.append(")$");
+		this.setPatternToSanitize(pattern.toString());
+	}
+
+	/**
+	 * set pattern to sanitize.
+	 *
+	 * @param patternToSanitize keys to sanitize
+	 */
+	public void setPatternToSanitize(Pattern patternToSanitize) {
+		Assert.notNull(patternToSanitize, "patternToSanitize must not be null");
+		this.patternToSanitize = patternToSanitize;
+	}
+
+	/**
+	 * set pattern string to sanitize.
+	 *
+	 * @param patternToSanitize keys to sanitize
+	 */
+	public void setPatternToSanitize(String patternToSanitize) {
+		Assert.notNull(patternToSanitize, "patternToSanitize must not be null");
+		this.patternToSanitize = Pattern.compile(patternToSanitize);
 	}
 
 	@Override
@@ -124,10 +154,8 @@ public class EnvironmentEndpoint extends AbstractEndpoint<Map<String, Object>> i
 	}
 
 	public Object sanitize(String name, Object object) {
-		for (String keyToSanitize : this.keysToSanitize) {
-			if (name.toLowerCase().endsWith(keyToSanitize)) {
-				return (object == null ? null : "******");
-			}
+		if (patternToSanitize.matcher(name.toLowerCase()).matches()) {
+			return (object == null ? null : "******");
 		}
 		return object;
 	}
