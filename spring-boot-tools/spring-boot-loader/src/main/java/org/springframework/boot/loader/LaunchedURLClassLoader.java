@@ -33,10 +33,31 @@ import org.springframework.boot.loader.jar.JarFile;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Gleb M Borisov
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
 	private final ClassLoader rootClassLoader;
+	private static final boolean useClassLoaderLocking;
+
+	/**
+	 * Detect Runtime version and enable {@link ClassLoader} level locking.
+	 */
+	static {
+		boolean supportLocking = false;
+		try {
+			final String javaVersion = System.getProperty("java.version");
+			supportLocking = javaVersion != null && !javaVersion.startsWith("1.6");
+		} catch (SecurityException e) {
+			// ok, we have no access to properties, so no parallel class loading
+		}
+
+		if (supportLocking) {
+			supportLocking = ClassLoader.registerAsParallelCapable();
+		}
+
+		useClassLoaderLocking = supportLocking;
+	}
 
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
@@ -126,7 +147,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		synchronized (this) {
+		synchronized (getLockingObject(name)) {
 			Class<?> loadedClass = findLoadedClass(name);
 			if (loadedClass == null) {
 				Handler.setUseFastConnectionExceptions(true);
@@ -142,6 +163,18 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 			}
 			return loadedClass;
 		}
+	}
+
+	/**
+	 * Returns locking object for given class.
+	 *
+	 * When we're running on Java 6 runtime we lock on {@code this} object, starting from Java 7
+	 * we have internal {@link ClassLoader} method which respects parallel class loading.
+	 *
+	 * This wrapper code should be removed in case of dropping support for Java 6 runtime.
+	 */
+	private Object getLockingObject(String name) {
+		return useClassLoaderLocking ? getClassLoadingLock(name) : this;
 	}
 
 	private Class<?> doLoadClass(String name) throws ClassNotFoundException {
