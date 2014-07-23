@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>spring-boot-sample-web-groovy-templates</artifactId>
 	<name>spring-boot-sample-web-groovy-templates</name>
-	<description>Spring Boot Web UI Sample</description>
+	<description>Spring Boot Web Groovy Templates Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
