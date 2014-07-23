@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>spring-boot-sample-parent-context</artifactId>
 	<name>spring-boot-sample-parent-context</name>
-	<description>Spring Boot Integration Sample</description>
+	<description>Spring Boot Parent Context Sample</description>
 	<url>http://projects.spring.io/spring-boot/</url>
 	<organization>
 		<name>Pivotal Software, Inc.</name>
