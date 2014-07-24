@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link MongoHealthIndicator}.
- *
+ * 
  * @author Christian Dupuis
  */
 public class MongoHealthIndicatorTests {
@@ -67,7 +67,7 @@ public class MongoHealthIndicatorTests {
 		CommandResult commandResult = Mockito.mock(CommandResult.class);
 		Mockito.when(commandResult.getString("version")).thenReturn("2.6.4");
 		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
-		Mockito.when(mongoTemplate.executeCommand("{ serverStatus: 1 }")).thenReturn(
+		Mockito.when(mongoTemplate.executeCommand("{ buildInfo: 1 }")).thenReturn(
 				commandResult);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
@@ -76,13 +76,13 @@ public class MongoHealthIndicatorTests {
 		assertEquals("2.6.4", health.getDetails().get("version"));
 
 		Mockito.verify(commandResult).getString("version");
-		Mockito.verify(mongoTemplate).executeCommand("{ serverStatus: 1 }");
+		Mockito.verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 
 	@Test
 	public void mongoIsDown() throws Exception {
 		MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
-		Mockito.when(mongoTemplate.executeCommand("{ serverStatus: 1 }")).thenThrow(
+		Mockito.when(mongoTemplate.executeCommand("{ buildInfo: 1 }")).thenThrow(
 				new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 
@@ -91,6 +91,6 @@ public class MongoHealthIndicatorTests {
 		assertTrue(((String) health.getDetails().get("error"))
 				.contains("Connection failed"));
 
-		Mockito.verify(mongoTemplate).executeCommand("{ serverStatus: 1 }");
+		Mockito.verify(mongoTemplate).executeCommand("{ buildInfo: 1 }");
 	}
 }

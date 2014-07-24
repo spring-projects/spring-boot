@@ -24,7 +24,7 @@ import com.mongodb.CommandResult;
 /**
  * Simple implementation of a {@link HealthIndicator} returning status information for
  * Mongo data stores.
- *
+ * 
  * @author Christian Dupuis
  * @since 1.1.0
  */
@@ -39,7 +39,7 @@ public class MongoHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		CommandResult result = this.mongoTemplate.executeCommand("{ serverStatus: 1 }");
+		CommandResult result = this.mongoTemplate.executeCommand("{ buildInfo: 1 }");
 		builder.up().withDetail("version", result.getString("version"));
 	}
 
