@@ -47,6 +47,7 @@ import org.eclipse.aether.util.repository.DefaultProxySelector;
 import org.sonatype.plexus.components.cipher.DefaultPlexusCipher;
 import org.sonatype.plexus.components.cipher.PlexusCipherException;
 import org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher;
+import org.springframework.boot.cli.util.Log;
 
 /**
  * Auto-configuration for a RepositorySystemSession that uses Maven's settings.xml to
@@ -76,8 +77,8 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decryptionResult = decryptSettings(settings);
 		if (!decryptionResult.getProblems().isEmpty()) {
-			throw new IllegalStateException("Settings decryption failed: "
-					+ decryptionResult.getProblems());
+			Log.error("Settings decryption failed: " + decryptionResult.getProblems());
+			// Continue - the encrypted credentials may not be used
 		}
 
 		session.setOffline(settings.isOffline());
