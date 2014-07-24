@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
  * @see TomcatEmbeddedServletContainer
  */
 public class TomcatEmbeddedServletContainerFactory extends
-		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
@@ -226,7 +226,7 @@ public class TomcatEmbeddedServletContainerFactory extends
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
 				((AbstractProtocol) connector.getProtocolHandler())
-						.setAddress(getAddress());
+				.setAddress(getAddress());
 			}
 		}
 		if (getUriEncoding() != null) {
@@ -258,40 +258,40 @@ public class TomcatEmbeddedServletContainerFactory extends
 
 	protected void configureJsseProtocol(AbstractHttp11JsseProtocol jsseProtocol, Ssl ssl) {
 		jsseProtocol.setSSLEnabled(true);
-		jsseProtocol.setSslProtocol(getSsl().getProtocol());
-		if (getSsl().getClientAuth() == ClientAuth.NEED) {
+		jsseProtocol.setSslProtocol(ssl.getProtocol());
+		if (ssl.getClientAuth() == ClientAuth.NEED) {
 			jsseProtocol.setClientAuth(Boolean.TRUE.toString());
 		}
-		else if (getSsl().getClientAuth() == ClientAuth.WANT) {
+		else if (ssl.getClientAuth() == ClientAuth.WANT) {
 			jsseProtocol.setClientAuth("want");
 		}
-		jsseProtocol.setKeystorePass(getSsl().getKeyStorePassword());
-		jsseProtocol.setKeyPass(getSsl().getKeyPassword());
-		jsseProtocol.setKeyAlias(getSsl().getKeyAlias());
+		jsseProtocol.setKeystorePass(ssl.getKeyStorePassword());
+		jsseProtocol.setKeyPass(ssl.getKeyPassword());
+		jsseProtocol.setKeyAlias(ssl.getKeyAlias());
 		try {
-			jsseProtocol.setKeystoreFile(ResourceUtils.getFile(getSsl().getKeyStore())
+			jsseProtocol.setKeystoreFile(ResourceUtils.getFile(ssl.getKeyStore())
 					.getAbsolutePath());
 		}
 		catch (FileNotFoundException e) {
 			throw new EmbeddedServletContainerException("Could not find key store "
-					+ getSsl().getKeyStore(), e);
+					+ ssl.getKeyStore(), e);
 		}
 
-		jsseProtocol.setCiphers(StringUtils.arrayToCommaDelimitedString(getSsl()
-				.getCiphers()));
+		jsseProtocol
+				.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
 
-		if (getSsl().getTrustStore() != null) {
+		if (ssl.getTrustStore() != null) {
 			try {
-				jsseProtocol.setTruststoreFile(ResourceUtils.getFile(
-						getSsl().getTrustStore()).getAbsolutePath());
+				jsseProtocol.setTruststoreFile(ResourceUtils.getFile(ssl.getTrustStore())
+						.getAbsolutePath());
 			}
 			catch (FileNotFoundException e) {
 				throw new EmbeddedServletContainerException("Could not find trust store "
-						+ getSsl().getTrustStore(), e);
+						+ ssl.getTrustStore(), e);
 			}
 		}
 
-		jsseProtocol.setTruststorePass(getSsl().getTrustStorePassword());
+		jsseProtocol.setTruststorePass(ssl.getTrustStorePassword());
 	}
 
 	/**
