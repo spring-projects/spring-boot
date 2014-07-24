@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -99,16 +101,31 @@ public final class CommandLineInvoker {
 		}
 
 		public String getErrorOutput() {
-			return this.err.toString();
+			return postProcessLines(getLines(this.err));
 		}
 
 		public String getStandardOutput() {
-			return this.out.toString();
+			return postProcessLines(getStandardOutputLines());
 		}
 
 		public List<String> getStandardOutputLines() {
-			BufferedReader reader = new BufferedReader(new StringReader(
-					this.out.toString()));
+			return getLines(this.out);
+		}
+
+		private String postProcessLines(List<String> lines) {
+			StringWriter out = new StringWriter();
+			PrintWriter printOut = new PrintWriter(out);
+			for (String line : lines) {
+				if (!line.startsWith("Maven settings decryption failed")) {
+					printOut.println(line);
+				}
+			}
+			return out.toString();
+		}
+
+		private List<String> getLines(StringBuffer buffer) {
+			BufferedReader reader = new BufferedReader(
+					new StringReader(buffer.toString()));
 			String line;
 			List<String> lines = new ArrayList<String>();
 			try {
@@ -117,7 +134,7 @@ public final class CommandLineInvoker {
 				}
 			}
 			catch (IOException ex) {
-				throw new RuntimeException("Failed to read standard output");
+				throw new RuntimeException("Failed to read output");
 			}
 			return lines;
 		}

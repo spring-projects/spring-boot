@@ -77,7 +77,7 @@ public class SettingsXmlRepositorySystemSessionAutoConfiguration implements
 		Settings settings = loadSettings();
 		SettingsDecryptionResult decryptionResult = decryptSettings(settings);
 		if (!decryptionResult.getProblems().isEmpty()) {
-			Log.error("Settings decryption failed: " + decryptionResult.getProblems());
+			Log.error("Maven settings decryption failed. Some Maven repositories may be inaccessible");
 			// Continue - the encrypted credentials may not be used
 		}
 
