@@ -16,6 +16,7 @@
 
 package org.springframework.boot.bind;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -24,12 +25,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.PatternMatchUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -73,47 +76,74 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 				.toArray(new String[0]);
 		String[] exacts = names == null ? new String[0] : names.toArray(new String[0]);
 		for (PropertySource<?> source : propertySources) {
-			if (source instanceof EnumerablePropertySource) {
-				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				if (enumerable.getPropertyNames().length > 0) {
-					for (String propertyName : enumerable.getPropertyNames()) {
-						if (this.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
-								&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
-							continue;
-						}
-						Object value = source.getProperty(propertyName);
-						try {
-							value = resolver.getProperty(propertyName);
-						}
-						catch (RuntimeException ex) {
-							// Probably could not resolve placeholders, ignore it here
-						}
-						if (!this.propertyValues.containsKey(propertyName)) {
-							this.propertyValues.put(propertyName, new PropertyValue(
-									propertyName, value));
-						}
+			processPropertSource(source, resolver, includes, exacts);
+		}
+	}
+
+	private void processPropertSource(PropertySource<?> source,
+			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
+		if (source instanceof EnumerablePropertySource) {
+			EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
+			if (enumerable.getPropertyNames().length > 0) {
+				for (String propertyName : enumerable.getPropertyNames()) {
+					if (this.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
+							&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
+						continue;
+					}
+					Object value = source.getProperty(propertyName);
+					try {
+						value = resolver.getProperty(propertyName);
+					}
+					catch (RuntimeException ex) {
+						// Probably could not resolve placeholders, ignore it here
+					}
+					if (!this.propertyValues.containsKey(propertyName)) {
+						this.propertyValues.put(propertyName, new PropertyValue(
+								propertyName, value));
 					}
 				}
 			}
-			else {
-				// We can only do exact matches for non-enumerable property names, but
-				// that's better than nothing...
-				for (String propertyName : exacts) {
-					Object value;
-					value = resolver.getProperty(propertyName);
-					if (value != null && !this.propertyValues.containsKey(propertyName)) {
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
-						continue;
-					}
-					value = source.getProperty(propertyName.toUpperCase());
-					if (value != null && !this.propertyValues.containsKey(propertyName)) {
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
-						continue;
-					}
+		}
+		else if (source instanceof CompositePropertySource) {
+			CompositePropertySource composite = (CompositePropertySource) source;
+			for (PropertySource<?> nested : extractSources(composite)) {
+				processPropertSource(nested, resolver, includes, exacts);
+			}
+		}
+		else {
+			// We can only do exact matches for non-enumerable property names, but
+			// that's better than nothing...
+			for (String propertyName : exacts) {
+				Object value;
+				value = resolver.getProperty(propertyName);
+				if (value != null && !this.propertyValues.containsKey(propertyName)) {
+					this.propertyValues.put(propertyName, new PropertyValue(propertyName,
+							value));
+					continue;
+				}
+				value = source.getProperty(propertyName.toUpperCase());
+				if (value != null && !this.propertyValues.containsKey(propertyName)) {
+					this.propertyValues.put(propertyName, new PropertyValue(propertyName,
+							value));
+					continue;
 				}
 			}
+		}
+	}
+
+	private Collection<PropertySource<?>> extractSources(CompositePropertySource composite) {
+		Field field = ReflectionUtils.findField(CompositePropertySource.class,
+				"propertySources");
+		field.setAccessible(true);
+		try {
+			@SuppressWarnings("unchecked")
+			Collection<PropertySource<?>> collection = (Collection<PropertySource<?>>) field
+					.get(composite);
+			return collection;
+		}
+		catch (Exception e) {
+			throw new IllegalStateException(
+					"Cannot extract property sources from composite", e);
 		}
 	}
 

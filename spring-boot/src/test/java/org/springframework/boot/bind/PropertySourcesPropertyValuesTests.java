@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -61,6 +62,17 @@ public class PropertySourcesPropertyValuesTests {
 
 	@Test
 	public void testNonEnumeratedValue() {
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+				this.propertySources);
+		assertEquals("bar", propertyValues.getPropertyValue("foo").getValue());
+	}
+
+	@Test
+	public void testCompositeValue() {
+		PropertySource<?> map = this.propertySources.get("map");
+		CompositePropertySource composite = new CompositePropertySource("composite");
+		composite.addPropertySource(map);
+		this.propertySources.replace("map", composite);
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
 		assertEquals("bar", propertyValues.getPropertyValue("foo").getValue());
