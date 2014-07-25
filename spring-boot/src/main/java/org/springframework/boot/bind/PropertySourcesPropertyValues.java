@@ -76,11 +76,11 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 				.toArray(new String[0]);
 		String[] exacts = names == null ? new String[0] : names.toArray(new String[0]);
 		for (PropertySource<?> source : propertySources) {
-			processPropertSource(source, resolver, includes, exacts);
+			processPropertySource(source, resolver, includes, exacts);
 		}
 	}
 
-	private void processPropertSource(PropertySource<?> source,
+	private void processPropertySource(PropertySource<?> source,
 			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
 		if (source instanceof EnumerablePropertySource) {
 			EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
@@ -107,7 +107,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		else if (source instanceof CompositePropertySource) {
 			CompositePropertySource composite = (CompositePropertySource) source;
 			for (PropertySource<?> nested : extractSources(composite)) {
-				processPropertSource(nested, resolver, includes, exacts);
+				processPropertySource(nested, resolver, includes, exacts);
 			}
 		}
 		else {
