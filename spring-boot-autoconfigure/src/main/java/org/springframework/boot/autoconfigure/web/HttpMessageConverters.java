@@ -75,15 +75,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	public HttpMessageConverters(Collection<HttpMessageConverter<?>> additionalConverters) {
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
 		List<HttpMessageConverter<?>> defaultConverters = getDefaultConverters();
-		for (HttpMessageConverter<?> converter : additionalConverters) {
-			int defaultConverterIndex = indexOfItemClass(defaultConverters, converter);
-			if (defaultConverterIndex == -1) {
-				converters.add(converter);
-			}
-			else {
-				defaultConverters.set(defaultConverterIndex, converter);
-			}
-		}
+		converters.addAll(additionalConverters);
 		converters.addAll(defaultConverters);
 		this.converters = Collections.unmodifiableList(converters);
 	}
@@ -118,16 +110,6 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 			}
 		}
 		converters.addAll(xml);
-	}
-
-	private <E> int indexOfItemClass(List<E> list, E item) {
-		Class<? extends Object> itemClass = item.getClass();
-		for (int i = 0; i < list.size(); i++) {
-			if (list.get(i).getClass().isAssignableFrom(itemClass)) {
-				return i;
-			}
-		}
-		return -1;
 	}
 
 	@Override
