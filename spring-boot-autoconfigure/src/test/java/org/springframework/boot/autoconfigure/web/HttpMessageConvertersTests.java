@@ -69,6 +69,15 @@ public class HttpMessageConvertersTests {
 		MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter);
 		assertTrue(converters.getConverters().contains(converter));
+		int count = 0;
+		for (HttpMessageConverter<?> httpMessageConverter : converters) {
+			if (httpMessageConverter instanceof MappingJackson2HttpMessageConverter) {
+				count++;
+			}
+		}
+		// The existing converter is still there, but with a lower priority
+		assertEquals(2, count);
+		assertEquals(0, converters.getConverters().indexOf(converter));
 	}
 
 	@Test
