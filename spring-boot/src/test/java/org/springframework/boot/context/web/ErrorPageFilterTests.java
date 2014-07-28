@@ -16,11 +16,6 @@
 
 package org.springframework.boot.context.web;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -37,6 +32,11 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link ErrorPageFilter}.
@@ -110,7 +110,7 @@ public class ErrorPageFilterTests {
 				super.doFilter(request, response);
 			}
 		};
-		filter.init(new MockFilterConfig("FILTER"));
+		this.filter.init(new MockFilterConfig("FILTER"));
 		this.filter.doFilter(this.request, this.response, this.chain);
 	}
 

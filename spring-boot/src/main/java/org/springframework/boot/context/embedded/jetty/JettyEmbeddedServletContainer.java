@@ -76,14 +76,18 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 			this.server.start();
 		}
 		catch (Exception ex) {
-			try {
-				// Ensure process isn't left running
-				this.server.stop();
-			}
-			catch (Exception e) {
-			}
+			// Ensure process isn't left running
+			stopSilently();
 			throw new EmbeddedServletContainerException(
 					"Unable to start embedded Jetty servlet container", ex);
+		}
+	}
+
+	private void stopSilently() {
+		try {
+			this.server.stop();
+		}
+		catch (Exception ex) {
 		}
 	}
 

@@ -77,14 +77,13 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 	private final Map<Class<?>, String> exceptions = new HashMap<Class<?>, String>();
 
 	private final Map<Class<?>, Class<?>> subtypes = new HashMap<Class<?>, Class<?>>();
-	
-	private final OncePerRequestFilter delegate = new OncePerRequestFilter(
-			) {
-		
+
+	private final OncePerRequestFilter delegate = new OncePerRequestFilter() {
+
 		@Override
 		protected void doFilterInternal(HttpServletRequest request,
-				HttpServletResponse response, FilterChain chain)
-				throws ServletException, IOException {
+				HttpServletResponse response, FilterChain chain) throws ServletException,
+				IOException {
 			ErrorPageFilter.this.doFilter(request, response, chain);
 		}
 
@@ -92,13 +91,13 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		delegate.init(filterConfig);
+		this.delegate.init(filterConfig);
 	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		delegate.doFilter(request, response, chain);
+		this.delegate.doFilter(request, response, chain);
 	}
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response,

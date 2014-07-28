@@ -93,10 +93,8 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		if (ClassUtils
-				.isPresent(
-						"org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport",
-						null)) {
+		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation."
+				+ "WebMvcConfigurationSupport", null)) {
 			converters.addAll(new WebMvcConfigurationSupport() {
 				public List<HttpMessageConverter<?>> defaultMessageConverters() {
 					return super.getMessageConverters();

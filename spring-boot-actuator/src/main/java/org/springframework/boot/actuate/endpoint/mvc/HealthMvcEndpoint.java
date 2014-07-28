@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Adapter to expose {@link HealthEndpoint} as an {@link MvcEndpoint}.
- * 
+ *
  * @author Christian Dupuis
  * @since 1.1.0
  */
