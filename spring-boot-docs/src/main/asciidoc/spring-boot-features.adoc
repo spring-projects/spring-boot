@@ -2004,7 +2004,6 @@ the actual port that was allocated for the duration of the tests.
 
 [[boot-features-testing-spring-boot-applications-with-spock]]
 ==== Using Spock to test Spring Boot applications
-
 If you wish to use Spock to test a Spring Boot application you should add a dependency
 on Spock's `spock-spring` module to your application's build. `spock-spring` integrates
 Spring's test framework into Spock.

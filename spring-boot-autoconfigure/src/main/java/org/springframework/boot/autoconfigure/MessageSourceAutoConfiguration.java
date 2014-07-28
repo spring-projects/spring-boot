@@ -53,6 +53,8 @@ import static org.springframework.util.StringUtils.trimAllWhitespace;
 @ConfigurationProperties(prefix = "spring.messages")
 public class MessageSourceAutoConfiguration {
 
+	private static final Resource[] NO_RESOURCES = {};
+
 	private String basename = "messages";
 
 	private String encoding = "utf-8";
@@ -103,27 +105,27 @@ public class MessageSourceAutoConfiguration {
 			String basename = context.getEnvironment().getProperty(
 					"spring.messages.basename", "messages");
 			for (String name : commaDelimitedListToStringArray(trimAllWhitespace(basename))) {
-				Resource[] resources;
-				try {
-					resources = new PathMatchingResourcePatternResolver(
-							context.getClassLoader()).getResources("classpath*:" + name
-							+ "*.properties");
-				}
-				catch (IOException e) {
-					continue;
-				}
-				for (Resource resource : resources) {
-
+				for (Resource resource : getResources(context.getClassLoader(), name)) {
 					if (resource.exists()) {
-						return ConditionOutcome
-								.match("Bundle found for spring.messages.basename: "
-										+ name);
+						return ConditionOutcome.match("Bundle found for "
+								+ "spring.messages.basename: " + name);
 					}
 				}
 			}
-			return ConditionOutcome
-					.noMatch("No bundle found for spring.messages.basename: " + basename);
+			return ConditionOutcome.noMatch("No bundle found for "
+					+ "spring.messages.basename: " + basename);
 		}
+
+		private Resource[] getResources(ClassLoader classLoader, String name) {
+			try {
+				return new PathMatchingResourcePatternResolver(classLoader)
+						.getResources("classpath*:" + name + "*.properties");
+			}
+			catch (IOException ex) {
+				return NO_RESOURCES;
+			}
+		}
+
 	}
 
 }
