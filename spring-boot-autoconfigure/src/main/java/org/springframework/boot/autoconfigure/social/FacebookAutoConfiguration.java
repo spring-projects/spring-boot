@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,12 +63,7 @@ public class FacebookAutoConfiguration {
 			SocialAutoConfigurerAdapter {
 
 		@Autowired
-		private FacebookProperties facebookProperties;
-
-		@Override
-		protected SocialProperties getSocialProperties() {
-			return facebookProperties;
-		}
+		private FacebookProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean(Facebook.class)
@@ -86,14 +80,10 @@ public class FacebookAutoConfiguration {
 			return new GenericConnectionStatusView("facebook", "Facebook");
 		}
 
-	}
-
-	@ConfigurationProperties("spring.social.facebook")
-	public static class FacebookProperties extends SocialProperties {
-
-		public ConnectionFactory<?> createConnectionFactory() {
-			return new FacebookConnectionFactory(
-					getAppId(), getAppSecret());
+		@Override
+		protected ConnectionFactory<?> createConnectionFactory() {
+			return new FacebookConnectionFactory(this.properties.getAppId(),
+					this.properties.getAppSecret());
 		}
 
 	}

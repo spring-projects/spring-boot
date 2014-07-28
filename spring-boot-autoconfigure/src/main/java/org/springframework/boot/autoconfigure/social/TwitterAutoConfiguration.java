@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,12 +63,7 @@ public class TwitterAutoConfiguration {
 			SocialAutoConfigurerAdapter {
 
 		@Autowired
-		private TwitterProperties twitterProperties;
-
-		@Override
-		protected SocialProperties getSocialProperties() {
-			return twitterProperties;
-		}
+		private TwitterProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -80,7 +74,8 @@ public class TwitterAutoConfiguration {
 			if (connection != null) {
 				return connection.getApi();
 			}
-			return new TwitterTemplate(twitterProperties.getAppId(), twitterProperties.getAppSecret());
+			return new TwitterTemplate(this.properties.getAppId(),
+					this.properties.getAppSecret());
 		}
 
 		@Bean(name = { "connect/twitterConnect", "connect/twitterConnected" })
@@ -89,14 +84,10 @@ public class TwitterAutoConfiguration {
 			return new GenericConnectionStatusView("twitter", "Twitter");
 		}
 
-	}
-
-	@ConfigurationProperties("spring.social.twitter")
-	public static class TwitterProperties extends SocialProperties {
-
-		public ConnectionFactory<?> createConnectionFactory() {
-			return new TwitterConnectionFactory(
-					getAppId(), getAppSecret());
+		@Override
+		protected ConnectionFactory<?> createConnectionFactory() {
+			return new TwitterConnectionFactory(this.properties.getAppId(),
+					this.properties.getAppSecret());
 		}
 
 	}

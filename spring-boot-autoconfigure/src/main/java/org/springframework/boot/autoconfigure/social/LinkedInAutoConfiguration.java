@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,12 +62,7 @@ public class LinkedInAutoConfiguration {
 			SocialAutoConfigurerAdapter {
 
 		@Autowired
-		private LinkedInProperties linkedInProperties;
-
-		@Override
-		protected SocialProperties getSocialProperties() {
-			return linkedInProperties;
-		}
+		private LinkedInProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean(LinkedIn.class)
@@ -85,16 +79,11 @@ public class LinkedInAutoConfiguration {
 			return new GenericConnectionStatusView("linkedin", "LinkedIn");
 		}
 
-	}
-
-	@ConfigurationProperties("spring.social.linkedin")
-	public static class LinkedInProperties extends SocialProperties {
-
-		public ConnectionFactory<?> createConnectionFactory() {
-			return new LinkedInConnectionFactory(
-					getAppId(), getAppSecret());
+		@Override
+		protected ConnectionFactory<?> createConnectionFactory() {
+			return new LinkedInConnectionFactory(this.properties.getAppId(),
+					this.properties.getAppSecret());
 		}
-
 	}
 
 }

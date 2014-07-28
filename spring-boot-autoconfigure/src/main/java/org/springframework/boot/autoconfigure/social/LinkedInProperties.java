@@ -19,31 +19,12 @@ package org.springframework.boot.autoconfigure.social;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Base {@link ConfigurationProperties properties} for spring social.
+ * Properties for Spring Social LinkedIn.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-abstract class SocialProperties {
-
-	private String appId;
-
-	private String appSecret;
-
-	public String getAppId() {
-		return this.appId;
-	}
-
-	public void setAppId(String appId) {
-		this.appId = appId;
-	}
-
-	public String getAppSecret() {
-		return this.appSecret;
-	}
-
-	public void setAppSecret(String appSecret) {
-		this.appSecret = appSecret;
-	}
+@ConfigurationProperties("spring.social.linkedin")
+public class LinkedInProperties extends SocialProperties {
 
 }

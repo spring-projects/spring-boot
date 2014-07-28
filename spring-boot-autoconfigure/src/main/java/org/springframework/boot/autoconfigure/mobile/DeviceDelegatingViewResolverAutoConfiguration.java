@@ -64,7 +64,12 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 				ViewResolver delegate, int delegateOrder) {
 			LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
 					delegate);
-			viewResolverProperties.apply(resolver);
+			resolver.setNormalPrefix(this.viewResolverProperties.getNormalPrefix());
+			resolver.setNormalSuffix(this.viewResolverProperties.getNormalSuffix());
+			resolver.setMobilePrefix(this.viewResolverProperties.getMobilePrefix());
+			resolver.setMobileSuffix(this.viewResolverProperties.getMobileSuffix());
+			resolver.setTabletPrefix(this.viewResolverProperties.getTabletPrefix());
+			resolver.setTabletSuffix(this.viewResolverProperties.getTabletSuffix());
 			resolver.setOrder(getAdjustedOrder(delegateOrder));
 			return resolver;
 		}
@@ -83,8 +88,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 	@Configuration
 	@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
-	@ConditionalOnProperty(value = "spring.mobile.devicedelegatingviewresolver.enabled",
-			match = "true", defaultMatch = false)
+	@ConditionalOnProperty(value = "spring.mobile.devicedelegatingviewresolver.enabled", match = "true", defaultMatch = false)
 	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration

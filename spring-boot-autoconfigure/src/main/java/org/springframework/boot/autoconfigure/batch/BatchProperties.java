@@ -30,7 +30,6 @@ public class BatchProperties {
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 			+ "batch/core/schema-@@platform@@.sql";
 
-
 	private String schema = DEFAULT_SCHEMA_LOCATION;
 
 	private final Initializer initializer = new Initializer();
@@ -38,7 +37,7 @@ public class BatchProperties {
 	private final Job job = new Job();
 
 	public String getSchema() {
-		return schema;
+		return this.schema;
 	}
 
 	public void setSchema(String schema) {
@@ -46,11 +45,11 @@ public class BatchProperties {
 	}
 
 	public Initializer getInitializer() {
-		return initializer;
+		return this.initializer;
 	}
 
 	public Job getJob() {
-		return job;
+		return this.job;
 	}
 
 	public static class Initializer {
@@ -58,12 +57,13 @@ public class BatchProperties {
 		private boolean enabled = true;
 
 		public boolean isEnabled() {
-			return enabled;
+			return this.enabled;
 		}
 
 		public void setEnabled(boolean enabled) {
 			this.enabled = enabled;
 		}
+
 	}
 
 	public static class Job {
@@ -71,11 +71,12 @@ public class BatchProperties {
 		private String names = "";
 
 		public String getNames() {
-			return names;
+			return this.names;
 		}
 
 		public void setNames(String names) {
 			this.names = names;
 		}
+
 	}
 }
