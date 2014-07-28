@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,6 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Config.class, locations = "classpath:test.groovy")
-@Ignore("classes and locations together are not supported in Spring Test (for legacy reasons)")
 public class SpringApplicationConfigurationMixedConfigurationTests {
 
 	@Autowired
