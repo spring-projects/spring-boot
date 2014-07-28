@@ -67,16 +67,27 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	/**
 	 * Create a new {@link HttpMessageConverters} instance with the specified additional
 	 * converters.
-	 * @param additionalConverters additional converters to be added. New converters will
-	 * be added to the front of the list, overrides will replace existing items without
-	 * changing the order. The {@link #getConverters()} methods can be used for further
-	 * converter manipulation.
+	 * @param additionalConverters additional converters to be added. Items are added just
+	 * before any default converter of the same type (or at the front of the list if no
+	 * default converter is found) The {@link #getConverters()} methods can be used for
+	 * further converter manipulation.
 	 */
 	public HttpMessageConverters(Collection<HttpMessageConverter<?>> additionalConverters) {
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>();
-		List<HttpMessageConverter<?>> defaultConverters = getDefaultConverters();
-		converters.addAll(additionalConverters);
-		converters.addAll(defaultConverters);
+		List<HttpMessageConverter<?>> processing = new ArrayList<HttpMessageConverter<?>>(
+				additionalConverters);
+		for (HttpMessageConverter<?> defaultConverter : getDefaultConverters()) {
+			Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
+			while (iterator.hasNext()) {
+				HttpMessageConverter<?> candidate = iterator.next();
+				if (ClassUtils.isAssignableValue(defaultConverter.getClass(), candidate)) {
+					converters.add(candidate);
+					iterator.remove();
+				}
+			}
+			converters.add(defaultConverter);
+		}
+		converters.addAll(0, processing);
 		this.converters = Collections.unmodifiableList(converters);
 	}
 
