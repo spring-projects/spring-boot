@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  */
 public class JettyEmbeddedServletContainerFactoryTests extends
-		AbstractEmbeddedServletContainerFactoryTests {
+AbstractEmbeddedServletContainerFactoryTests {
 
 	@Override
 	protected JettyEmbeddedServletContainerFactory getFactory() {
@@ -109,6 +109,8 @@ public class JettyEmbeddedServletContainerFactoryTests extends
 		factory.setSsl(ssl);
 
 		this.container = factory.getEmbeddedServletContainer();
+		this.container.start();
+
 		JettyEmbeddedServletContainer jettyContainer = (JettyEmbeddedServletContainer) this.container;
 		SslConnector sslConnector = (SslConnector) jettyContainer.getServer()
 				.getConnectors()[0];
