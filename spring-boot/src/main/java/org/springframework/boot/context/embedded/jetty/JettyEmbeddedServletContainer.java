@@ -44,6 +44,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	private final boolean autoStart;
 
+	private Connector[] connectors;
+
 	/**
 	 * Create a new {@link JettyEmbeddedServletContainer} instance.
 	 * @param server the underlying Jetty server
@@ -65,14 +67,13 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	private synchronized void initialize() {
 		try {
+			// Cache and clear the connectors to prevent requests being handled before
+			// the application context is ready
+			this.connectors = this.server.getConnectors();
+			this.server.setConnectors(null);
+
+			// Start the server so that the ServletContext is available
 			this.server.start();
-			// Start the server so the ServletContext is available, but stop the
-			// connectors to prevent requests from being handled before the Spring context
-			// is ready:
-			Connector[] connectors = this.server.getConnectors();
-			for (Connector connector : connectors) {
-				connector.stop();
-			}
 		}
 		catch (Exception ex) {
 			try {
@@ -88,6 +89,8 @@ public class JettyEmbeddedServletContainer implements EmbeddedServletContainer {
 
 	@Override
 	public void start() throws EmbeddedServletContainerException {
+		this.server.setConnectors(this.connectors);
+
 		if (!this.autoStart) {
 			return;
 		}
