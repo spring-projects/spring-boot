@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.health;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +26,12 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.IncorrectResultSetColumnCountException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,6 +40,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator {
@@ -86,8 +93,23 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator {
 		String query = detectQuery(product);
 		if (StringUtils.hasText(query)) {
 			try {
-				builder.withDetail("hello",
-						this.jdbcTemplate.queryForObject(query, Object.class));
+				builder.withDetail("hello", DataAccessUtils
+						.requiredSingleResult(this.jdbcTemplate.query(query,
+								new RowMapper<Object>() {
+
+									@Override
+									public Object mapRow(ResultSet rs, int rowNum)
+											throws SQLException {
+										ResultSetMetaData rsmd = rs.getMetaData();
+										int nrOfColumns = rsmd.getColumnCount();
+										if (nrOfColumns != 1) {
+											throw new IncorrectResultSetColumnCountException(
+													1, nrOfColumns);
+										}
+										return JdbcUtils.getResultSetValue(rs, 1);
+									}
+
+								})));
 			}
 			catch (Exception ex) {
 				builder.down(ex);
