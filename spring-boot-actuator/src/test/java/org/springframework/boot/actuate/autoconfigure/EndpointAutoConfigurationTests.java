@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.boot.actuate.endpoint.AutoConfigurationReportEndpoint;
@@ -42,10 +46,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
@@ -83,8 +83,8 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void healthEndpoint() {
-		load(EmbeddedDataSourceConfiguration.class,
-				EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
+		load(EmbeddedDataSourceConfiguration.class, EndpointAutoConfiguration.class,
+				HealthIndicatorAutoConfiguration.class);
 		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
 		assertNotNull(bean);
 		Health result = bean.invoke();
@@ -94,8 +94,7 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void healthEndpointWithDefaultHealthIndicator() {
-		load(EndpointAutoConfiguration.class,
-				HealthIndicatorAutoConfiguration.class);
+		load(EndpointAutoConfiguration.class, HealthIndicatorAutoConfiguration.class);
 		HealthEndpoint bean = this.context.getBean(HealthEndpoint.class);
 		assertNotNull(bean);
 		Health result = bean.invoke();
@@ -128,8 +127,7 @@ public class EndpointAutoConfigurationTests {
 
 	@Test
 	public void autoConfigurationAuditEndpoints() {
-		load(EndpointAutoConfiguration.class,
-				ConditionEvaluationReport.class);
+		load(EndpointAutoConfiguration.class, ConditionEvaluationReport.class);
 		assertNotNull(this.context.getBean(AutoConfigurationReportEndpoint.class));
 	}
 
@@ -163,7 +161,6 @@ public class EndpointAutoConfigurationTests {
 		this.context.refresh();
 	}
 
-
 	@Configuration
 	static class CustomPublicMetricsConfig {
 
@@ -172,9 +169,11 @@ public class EndpointAutoConfigurationTests {
 			return new PublicMetrics() {
 				@Override
 				public Collection<Metric<?>> metrics() {
-					return Collections.<Metric<?>>singleton(new Metric<Integer>("foo", 1));
+					Metric<Integer> metric = new Metric<Integer>("foo", 1);
+					return Collections.<Metric<?>> singleton(metric);
 				}
 			};
 		}
+
 	}
 }

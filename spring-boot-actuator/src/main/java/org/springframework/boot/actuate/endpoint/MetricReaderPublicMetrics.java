@@ -16,39 +16,37 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.reader.MetricReader;
 import org.springframework.util.Assert;
 
 /**
- * Default implementation of {@link PublicMetrics} that exposes all metrics from a
- * {@link MetricReader} along with memory information.
+ * {@link PublicMetrics} exposed from a {@link MetricReader}.
  *
  * @author Dave Syer
  * @author Christian Dupuis
- * @deprecated since 1.2 in favor of {@link SystemPublicMetrics},
- * {@code MetricReaderPublicMetrics}
+ * @author Stephane Nicoll
+ * @author Phillip Webb
  */
-@Deprecated
-public class VanillaPublicMetrics extends SystemPublicMetrics {
+public class MetricReaderPublicMetrics implements PublicMetrics {
 
-	private final MetricReader reader;
+	private final MetricReader metricReader;
 
-	public VanillaPublicMetrics(MetricReader reader) {
-		Assert.notNull(reader, "MetricReader must not be null");
-		this.reader = reader;
+	public MetricReaderPublicMetrics(MetricReader metricReader) {
+		Assert.notNull(metricReader, "MetricReader must not be null");
+		this.metricReader = metricReader;
 	}
 
 	@Override
 	public Collection<Metric<?>> metrics() {
-		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
-		for (Metric<?> metric : this.reader.findAll()) {
+		List<Metric<?>> result = new ArrayList<Metric<?>>();
+		for (Metric<?> metric : this.metricReader.findAll()) {
 			result.add(metric);
 		}
-		result.addAll(super.metrics());
 		return result;
 	}
 

@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -32,13 +34,13 @@ import org.springframework.boot.actuate.endpoint.Endpoint;
 import org.springframework.boot.actuate.endpoint.EnvironmentEndpoint;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.InfoEndpoint;
+import org.springframework.boot.actuate.endpoint.MetricReaderPublicMetrics;
 import org.springframework.boot.actuate.endpoint.MetricsEndpoint;
 import org.springframework.boot.actuate.endpoint.PublicMetrics;
 import org.springframework.boot.actuate.endpoint.RequestMappingEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.boot.actuate.endpoint.SystemPublicMetrics;
 import org.springframework.boot.actuate.endpoint.TraceEndpoint;
-import org.springframework.boot.actuate.endpoint.VanillaPublicMetrics;
 import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.OrderedHealthAggregator;
@@ -85,10 +87,10 @@ public class EndpointAutoConfiguration {
 	Map<String, HealthIndicator> healthIndicators = new HashMap<String, HealthIndicator>();
 
 	@Autowired(required = false)
-	private MetricReader metricRepository = new InMemoryMetricRepository();
+	private MetricReader metricReader = new InMemoryMetricRepository();
 
 	@Autowired(required = false)
-	private Collection<PublicMetrics> allMetrics;
+	private Collection<PublicMetrics> publicMetrics;
 
 	@Autowired(required = false)
 	private TraceRepository traceRepository = new InMemoryTraceRepository();
@@ -129,8 +131,13 @@ public class EndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public MetricsEndpoint metricsEndpoint() {
-		PublicMetrics metrics = new VanillaPublicMetrics(this.metricRepository, this.allMetrics);
-		return new MetricsEndpoint(metrics);
+		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
+		publicMetrics.add(new SystemPublicMetrics());
+		publicMetrics.add(new MetricReaderPublicMetrics(this.metricReader));
+		if (this.publicMetrics != null) {
+			publicMetrics.addAll(this.publicMetrics);
+		}
+		return new MetricsEndpoint(publicMetrics);
 	}
 
 	@Bean
@@ -158,19 +165,6 @@ public class EndpointAutoConfiguration {
 		return new ShutdownEndpoint();
 	}
 
-	@Configuration
-	@ConditionalOnClass(AbstractHandlerMethodMapping.class)
-	protected static class RequestMappingEndpointConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public RequestMappingEndpoint requestMappingEndpoint() {
-			RequestMappingEndpoint endpoint = new RequestMappingEndpoint();
-			return endpoint;
-		}
-
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
@@ -180,11 +174,14 @@ public class EndpointAutoConfiguration {
 	}
 
 	@Configuration
-	protected static class CorePublicMetrics {
+	@ConditionalOnClass(AbstractHandlerMethodMapping.class)
+	protected static class RequestMappingEndpointConfiguration {
 
 		@Bean
-		SystemPublicMetrics systemPublicMetrics() {
-			return new SystemPublicMetrics();
+		@ConditionalOnMissingBean
+		public RequestMappingEndpoint requestMappingEndpoint() {
+			RequestMappingEndpoint endpoint = new RequestMappingEndpoint();
+			return endpoint;
 		}
 
 	}

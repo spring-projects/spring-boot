@@ -16,16 +16,25 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -35,6 +44,12 @@ import static org.junit.Assert.assertThat;
  */
 public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint> {
 
+	private Metric<Number> metric1 = new Metric<Number>("a", 1);
+
+	private Metric<Number> metric2 = new Metric<Number>("b", 2);;
+
+	private Metric<Number> metric3 = new Metric<Number>("c", 3);;
+
 	public MetricsEndpointTests() {
 		super(Config.class, MetricsEndpoint.class, "metrics", true, "endpoints.metrics");
 	}
@@ -42,6 +57,43 @@ public class MetricsEndpointTests extends AbstractEndpointTests<MetricsEndpoint>
 	@Test
 	public void invoke() throws Exception {
 		assertThat(getEndpointBean().invoke().get("a"), equalTo((Object) 0.5f));
+	}
+
+	@Test
+	public void ordered() {
+		List<PublicMetrics> publicMetrics = new ArrayList<PublicMetrics>();
+		publicMetrics.add(new TestPublicMetrics(2, this.metric2, this.metric2,
+				this.metric3));
+		publicMetrics.add(new TestPublicMetrics(1, this.metric1));
+		Map<String, Object> metrics = new MetricsEndpoint(publicMetrics).invoke();
+		Iterator<Entry<String, Object>> iterator = metrics.entrySet().iterator();
+		assertEquals("a", iterator.next().getKey());
+		assertEquals("b", iterator.next().getKey());
+		assertEquals("c", iterator.next().getKey());
+		assertFalse(iterator.hasNext());
+	}
+
+	private static class TestPublicMetrics implements PublicMetrics, Ordered {
+
+		private final int order;
+
+		private final List<Metric<?>> metrics;
+
+		public TestPublicMetrics(int order, Metric<?>... metrics) {
+			this.order = order;
+			this.metrics = Arrays.asList(metrics);
+		}
+
+		@Override
+		public int getOrder() {
+			return this.order;
+		}
+
+		@Override
+		public Collection<Metric<?>> metrics() {
+			return this.metrics;
+		}
+
 	}
 
 	@Configuration

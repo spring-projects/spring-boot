@@ -16,14 +16,13 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import static org.junit.Assert.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-
 import org.springframework.boot.actuate.metrics.Metric;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link SystemPublicMetrics}

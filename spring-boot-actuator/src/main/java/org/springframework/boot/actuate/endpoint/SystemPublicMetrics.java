@@ -26,17 +26,18 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.springframework.boot.actuate.metrics.Metric;
+import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 
 /**
  * A {@link PublicMetrics} implementation that provides various system-related metrics.
- * 
+ *
  * @author Dave Syer
  * @author Christian Dupuis
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-public class SystemPublicMetrics implements PublicMetrics {
+public class SystemPublicMetrics implements PublicMetrics, Ordered {
 
 	private long timestamp;
 
@@ -45,15 +46,18 @@ public class SystemPublicMetrics implements PublicMetrics {
 	}
 
 	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE + 10;
+	}
+
+	@Override
 	public Collection<Metric<?>> metrics() {
 		Collection<Metric<?>> result = new LinkedHashSet<Metric<?>>();
-
 		addBasicMetrics(result);
 		addHeapMetrics(result);
 		addThreadMetrics(result);
 		addClassLoadingMetrics(result);
 		addGarbageCollectionMetrics(result);
-
 		return result;
 	}
 

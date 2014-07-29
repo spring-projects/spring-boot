@@ -16,12 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.junit.Test;
@@ -29,15 +25,16 @@ import org.springframework.boot.actuate.metrics.Metric;
 import org.springframework.boot.actuate.metrics.repository.InMemoryMetricRepository;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link VanillaPublicMetrics}.
  *
  * @author Phillip Webb
  * @author Christian Dupuis
- * @author Stephane Nicoll
  */
+@Deprecated
 public class VanillaPublicMetricsTests {
 
 	@Test
@@ -49,38 +46,36 @@ public class VanillaPublicMetricsTests {
 		for (Metric<?> metric : publicMetrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}
+		assertTrue(results.containsKey("mem"));
+		assertTrue(results.containsKey("mem.free"));
 		assertThat(results.get("a").getValue().doubleValue(), equalTo(0.5));
 	}
 
 	@Test
-	public void testAdditionalMetrics() throws Exception {
+	public void testSystemMetrics() throws Exception {
 		InMemoryMetricRepository repository = new InMemoryMetricRepository();
-		Collection<PublicMetrics> allMetrics = new ArrayList<PublicMetrics>();
-		allMetrics.add(new ImmutablePublicMetrics(new Metric<Number>("first", 2L)));
-		allMetrics.add(new ImmutablePublicMetrics(new Metric<Number>("second", 4L)));
-
-		VanillaPublicMetrics publicMetrics = new VanillaPublicMetrics(repository, allMetrics);
+		repository.set(new Metric<Double>("a", 0.5, new Date()));
+		VanillaPublicMetrics publicMetrics = new VanillaPublicMetrics(repository);
 		Map<String, Metric<?>> results = new HashMap<String, Metric<?>>();
 		for (Metric<?> metric : publicMetrics.metrics()) {
 			results.put(metric.getName(), metric);
 		}
-		assertTrue(results.containsKey("first"));
-		assertTrue(results.containsKey("second"));
-		assertEquals(2, results.size());
-	}
+		assertTrue(results.containsKey("mem"));
+		assertTrue(results.containsKey("mem.free"));
+		assertTrue(results.containsKey("processors"));
+		assertTrue(results.containsKey("uptime"));
 
+		assertTrue(results.containsKey("heap.committed"));
+		assertTrue(results.containsKey("heap.init"));
+		assertTrue(results.containsKey("heap.used"));
+		assertTrue(results.containsKey("heap"));
 
-	private static class ImmutablePublicMetrics implements PublicMetrics {
-		private final Collection<Metric<?>> metrics;
+		assertTrue(results.containsKey("threads.peak"));
+		assertTrue(results.containsKey("threads.daemon"));
+		assertTrue(results.containsKey("threads"));
 
-		private ImmutablePublicMetrics(Metric<?> metrics) {
-			this.metrics = new LinkedHashSet<Metric<?>>();
-			this.metrics.addAll(Arrays.asList(metrics));
-		}
-
-		@Override
-		public Collection<Metric<?>> metrics() {
-			return metrics;
-		}
+		assertTrue(results.containsKey("classes.loaded"));
+		assertTrue(results.containsKey("classes.unloaded"));
+		assertTrue(results.containsKey("classes"));
 	}
 }
