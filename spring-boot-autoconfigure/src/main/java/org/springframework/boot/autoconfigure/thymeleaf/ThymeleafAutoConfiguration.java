@@ -47,6 +47,8 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
+import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
  *
@@ -230,6 +232,17 @@ public class ThymeleafAutoConfiguration {
 		@Bean
 		public LayoutDialect layoutDialect() {
 			return new LayoutDialect();
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnClass(DataAttributeDialect.class)
+	protected static class DataAttributeDialectConfiguration {
+
+		@Bean
+		public DataAttributeDialect dialect() {
+			return new DataAttributeDialect();
 		}
 
 	}
