@@ -337,13 +337,14 @@ content into your application; rather pick only the properties that you need.
 	endpoints.configprops.id=configprops
 	endpoints.configprops.sensitive=true
 	endpoints.configprops.enabled=true
-	endpoints.configprops.keys-to-sanitize=password,secret
+	endpoints.configprops.keys-to-sanitize=password,secret,key # suffix or regex
 	endpoints.dump.id=dump
 	endpoints.dump.sensitive=true
 	endpoints.dump.enabled=true
 	endpoints.env.id=env
 	endpoints.env.sensitive=true
 	endpoints.env.enabled=true
+	endpoints.env.keys-to-sanitize=password,secret,key # suffix or regex
 	endpoints.health.id=health
 	endpoints.health.sensitive=false
 	endpoints.health.enabled=true
