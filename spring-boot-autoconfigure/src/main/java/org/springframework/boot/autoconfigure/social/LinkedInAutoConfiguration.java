@@ -49,7 +49,7 @@ import org.springframework.web.servlet.View;
  */
 @Configuration
 @ConditionalOnClass({ SocialConfigurerAdapter.class, LinkedInConnectionFactory.class })
-@ConditionalOnProperty(prefix = "spring.social.linkedin.", value = "app-id")
+@ConditionalOnProperty(prefix = "spring.social.linkedin", name = "app-id")
 @AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class LinkedInAutoConfiguration {
@@ -74,7 +74,7 @@ public class LinkedInAutoConfiguration {
 		}
 
 		@Bean(name = { "connect/linkedinConnect", "connect/linkedinConnected" })
-		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
+		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
 		public View linkedInConnectView() {
 			return new GenericConnectionStatusView("linkedin", "LinkedIn");
 		}

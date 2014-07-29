@@ -59,7 +59,7 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport;
 @ConditionalOnClass(JpaRepository.class)
 @ConditionalOnMissingBean({ RepositoryFactoryBeanSupport.class,
 		JpaRepositoryConfigExtension.class })
-@ConditionalOnProperty(value = "spring.data.jpa.repositories.enabled", match = "true", defaultMatch = true)
+@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(JpaRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 public class JpaRepositoriesAutoConfiguration {

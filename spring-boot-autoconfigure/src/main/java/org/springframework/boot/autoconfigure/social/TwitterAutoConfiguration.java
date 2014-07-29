@@ -50,7 +50,7 @@ import org.springframework.web.servlet.View;
  */
 @Configuration
 @ConditionalOnClass({ SocialConfigurerAdapter.class, TwitterConnectionFactory.class })
-@ConditionalOnProperty(prefix = "spring.social.twitter.", value = "app-id")
+@ConditionalOnProperty(prefix = "spring.social.twitter", name = "app-id")
 @AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class TwitterAutoConfiguration {
@@ -79,7 +79,7 @@ public class TwitterAutoConfiguration {
 		}
 
 		@Bean(name = { "connect/twitterConnect", "connect/twitterConnected" })
-		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
+		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
 		public View twitterConnectView() {
 			return new GenericConnectionStatusView("twitter", "Twitter");
 		}

@@ -17,22 +17,30 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.internal.matchers.ThrowableMessageMatcher.hasMessage;
 
 /**
  * Tests for {@link ConditionalOnProperty}.
  *
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 public class ConditionalOnPropertyTests {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -45,29 +53,28 @@ public class ConditionalOnPropertyTests {
 
 	@Test
 	public void allPropertiesAreDefined() {
-		load(MultiplePropertiesRequiredConfiguration.class,
-				"property1=value1", "property2=value2");
+		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1",
+				"property2=value2");
 		assertTrue(this.context.containsBean("foo"));
 	}
 
 	@Test
 	public void notAllPropertiesAreDefined() {
-		load(MultiplePropertiesRequiredConfiguration.class,
-				"property1=value1");
+		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1");
 		assertFalse(this.context.containsBean("foo"));
 	}
 
 	@Test
 	public void propertyValueEqualsFalse() {
-		load(MultiplePropertiesRequiredConfiguration.class,
-				"property1=false", "property2=value2");
+		load(MultiplePropertiesRequiredConfiguration.class, "property1=false",
+				"property2=value2");
 		assertFalse(this.context.containsBean("foo"));
 	}
 
 	@Test
 	public void propertyValueEqualsFALSE() {
-		load(MultiplePropertiesRequiredConfiguration.class,
-				"property1=FALSE", "property2=value2");
+		load(MultiplePropertiesRequiredConfiguration.class, "property1=FALSE",
+				"property2=value2");
 		assertFalse(this.context.containsBean("foo"));
 	}
 
@@ -87,12 +94,12 @@ public class ConditionalOnPropertyTests {
 
 	@Test
 	public void nonRelaxedName() throws Exception {
-		load(NonRelaxedPropertiesRequiredConfiguration.class,
-				"theRelaxedProperty=value1");
+		load(NonRelaxedPropertiesRequiredConfiguration.class, "theRelaxedProperty=value1");
 		assertFalse(this.context.containsBean("foo"));
 	}
 
-	@Test // Enabled by default
+	@Test
+	// Enabled by default
 	public void enabledIfNotConfiguredOtherwise() {
 		load(EnabledIfNotConfiguredOtherwiseConfig.class);
 		assertTrue(this.context.containsBean("foo"));
@@ -110,7 +117,8 @@ public class ConditionalOnPropertyTests {
 		assertFalse(this.context.containsBean("foo"));
 	}
 
-	@Test // Disabled by default
+	@Test
+	// Disabled by default
 	public void disableIfNotConfiguredOtherwise() {
 		load(DisabledIfNotConfiguredOtherwiseConfig.class);
 		assertFalse(this.context.containsBean("foo"));
@@ -184,7 +192,8 @@ public class ConditionalOnPropertyTests {
 
 	@Test
 	public void multiValuesAllSet() {
-		load(MultiValuesConfig.class, "simple.my-property:bar", "simple.my-another-property:bar");
+		load(MultiValuesConfig.class, "simple.my-property:bar",
+				"simple.my-another-property:bar");
 		assertTrue(this.context.containsBean("foo"));
 	}
 
@@ -194,6 +203,28 @@ public class ConditionalOnPropertyTests {
 		assertFalse(this.context.containsBean("foo"));
 	}
 
+	@Test
+	public void usingValueAttribute() throws Exception {
+		load(ValueAttribute.class, "some.property");
+		assertTrue(this.context.containsBean("foo"));
+	}
+
+	@Test
+	public void nameOrValueMustBeSpecified() throws Exception {
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectCause(hasMessage(containsString("The name or "
+				+ "value attribute of @ConditionalOnProperty must be specified")));
+		load(NoNameOrValueAttribute.class, "some.property");
+	}
+
+	@Test
+	public void nameAndValueMustNotBeSpecified() throws Exception {
+		this.thrown.expect(IllegalStateException.class);
+		this.thrown.expectCause(hasMessage(containsString("The name and "
+				+ "value attributes of @ConditionalOnProperty are exclusive")));
+		load(NameAndValueAttribute.class, "some.property");
+	}
+
 	private void load(Class<?> config, String... environment) {
 		this.context = new AnnotationConfigApplicationContext();
 		EnvironmentTestUtils.addEnvironment(this.context, environment);
@@ -201,9 +232,8 @@ public class ConditionalOnPropertyTests {
 		this.context.refresh();
 	}
 
-
 	@Configuration
-	@ConditionalOnProperty({ "property1", "property2" })
+	@ConditionalOnProperty(name = { "property1", "property2" })
 	protected static class MultiplePropertiesRequiredConfiguration {
 
 		@Bean
@@ -214,7 +244,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring.", value = "the-relaxed-property")
+	@ConditionalOnProperty(prefix = "spring.", name = "the-relaxed-property")
 	protected static class RelaxedPropertiesRequiredConfiguration {
 
 		@Bean
@@ -225,7 +255,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "spring", value = "property")
+	@ConditionalOnProperty(prefix = "spring", name = "property")
 	protected static class RelaxedPropertiesRequiredConfigurationWithShortPrefix {
 
 		@Bean
@@ -236,7 +266,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(value = "the-relaxed-property", relaxedNames = false)
+	@ConditionalOnProperty(name = "the-relaxed-property", relaxedNames = false)
 	protected static class NonRelaxedPropertiesRequiredConfiguration {
 
 		@Bean
@@ -246,8 +276,9 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration // ${simple.myProperty:true}
-	@ConditionalOnProperty(prefix = "simple", value = "my-property", match = "true", defaultMatch = true)
+	@Configuration
+	// i.e ${simple.myProperty:true}
+	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "true", matchIfMissing = true)
 	static class EnabledIfNotConfiguredOtherwiseConfig {
 
 		@Bean
@@ -257,8 +288,9 @@ public class ConditionalOnPropertyTests {
 
 	}
 
-	@Configuration // ${simple.myProperty:false}
-	@ConditionalOnProperty(prefix = "simple", value = "my-property", match = "true", defaultMatch = false)
+	@Configuration
+	// i.e ${simple.myProperty:false}
+	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "true", matchIfMissing = false)
 	static class DisabledIfNotConfiguredOtherwiseConfig {
 
 		@Bean
@@ -269,7 +301,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "simple", value = "my-property", match = "bar")
+	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "bar")
 	static class SimpleValueConfig {
 
 		@Bean
@@ -280,7 +312,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(value = "simple.myProperty", match = "bar", defaultMatch = true)
+	@ConditionalOnProperty(name = "simple.myProperty", havingValue = "bar", matchIfMissing = true)
 	static class DefaultValueConfig {
 
 		@Bean
@@ -291,7 +323,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "simple", value = "my-property", match = "bar")
+	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "bar")
 	static class PrefixValueConfig {
 
 		@Bean
@@ -302,7 +334,7 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "simple", value = "my-property", match = "bar", relaxedNames = false)
+	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "bar", relaxedNames = false)
 	static class StrictNameConfig {
 
 		@Bean
@@ -313,7 +345,8 @@ public class ConditionalOnPropertyTests {
 	}
 
 	@Configuration
-	@ConditionalOnProperty(prefix = "simple", value = {"my-property", "my-another-property"}, match = "bar")
+	@ConditionalOnProperty(prefix = "simple", name = { "my-property",
+			"my-another-property" }, havingValue = "bar")
 	static class MultiValuesConfig {
 
 		@Bean
@@ -323,4 +356,36 @@ public class ConditionalOnPropertyTests {
 
 	}
 
+	@Configuration
+	@ConditionalOnProperty("some.property")
+	protected static class ValueAttribute {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnProperty
+	protected static class NoNameOrValueAttribute {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnProperty(value = "x", name = "y")
+	protected static class NameAndValueAttribute {
+
+		@Bean
+		public String foo() {
+			return "foo";
+		}
+
+	}
 }

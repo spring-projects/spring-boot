@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.aop;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.Advice;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -40,19 +39,18 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  */
 @Configuration
 @ConditionalOnClass({ EnableAspectJAutoProxy.class, Aspect.class, Advice.class })
-@ConditionalOnProperty(value = "spring.aop.auto", match = "true", defaultMatch = true)
+@ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue = "true", matchIfMissing = true)
 public class AopAutoConfiguration {
 
 	@Configuration
 	@EnableAspectJAutoProxy(proxyTargetClass = false)
-	@ConditionalOnProperty(value = "spring.aop.proxyTargetClass", match = "false", defaultMatch = true)
+	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false", matchIfMissing = true)
 	public static class JdkDynamicAutoProxyConfiguration {
 	}
 
 	@Configuration
 	@EnableAspectJAutoProxy(proxyTargetClass = true)
-	@ConditionalOnExpression("${spring.aop.proxyTargetClass:false}")
-	@ConditionalOnProperty(value = "spring.aop.proxyTargetClass", match = "true", defaultMatch = false)
+	@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "true", matchIfMissing = false)
 	public static class CglibAutoProxyConfiguration {
 	}
 

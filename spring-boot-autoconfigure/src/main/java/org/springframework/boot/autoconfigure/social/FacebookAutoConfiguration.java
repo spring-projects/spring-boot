@@ -50,7 +50,7 @@ import org.springframework.web.servlet.View;
  */
 @Configuration
 @ConditionalOnClass({ SocialConfigurerAdapter.class, FacebookConnectionFactory.class })
-@ConditionalOnProperty(prefix = "spring.social.facebook.", value = "app-id")
+@ConditionalOnProperty(prefix = "spring.social.facebook", name = "app-id")
 @AutoConfigureBefore(SocialWebAutoConfiguration.class)
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class FacebookAutoConfiguration {
@@ -75,7 +75,7 @@ public class FacebookAutoConfiguration {
 		}
 
 		@Bean(name = { "connect/facebookConnect", "connect/facebookConnected" })
-		@ConditionalOnProperty(prefix = "spring.social.", value = "auto-connection-views")
+		@ConditionalOnProperty(prefix = "spring.social", name = "auto-connection-views")
 		public View facebookConnectView() {
 			return new GenericConnectionStatusView("facebook", "Facebook");
 		}

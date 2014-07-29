@@ -53,7 +53,7 @@ import org.springframework.util.ClassUtils;
  */
 @Configuration
 @ConditionalOnClass({ MBeanExporter.class })
-@ConditionalOnProperty(value = "spring.jmx.enabled", match = "true", defaultMatch = true)
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class JmxAutoConfiguration {
 
 	@Autowired

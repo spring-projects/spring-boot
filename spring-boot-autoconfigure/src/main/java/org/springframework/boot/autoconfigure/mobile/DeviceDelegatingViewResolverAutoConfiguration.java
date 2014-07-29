@@ -88,7 +88,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 	@Configuration
 	@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
-	@ConditionalOnProperty(value = "spring.mobile.devicedelegatingviewresolver.enabled", match = "true", defaultMatch = false)
+	@ConditionalOnProperty(prefix = "spring.mobile.devicedelegatingviewresolver", name = "enabled", havingValue = "true", matchIfMissing = false)
 	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration

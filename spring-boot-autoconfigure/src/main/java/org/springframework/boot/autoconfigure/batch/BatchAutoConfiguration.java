@@ -78,7 +78,7 @@ public class BatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnProperty(value = "spring.batch.job.enabled", match = "true", defaultMatch = true)
+	@ConditionalOnProperty(prefix = "spring.batch.job", name = "enabled", havingValue = "true", matchIfMissing = true)
 	public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(
 			JobLauncher jobLauncher, JobExplorer jobExplorer) {
 		JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(

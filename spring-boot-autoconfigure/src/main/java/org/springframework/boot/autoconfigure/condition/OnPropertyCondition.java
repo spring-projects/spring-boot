@@ -23,8 +23,10 @@ import java.util.Map;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -42,41 +44,35 @@ class OnPropertyCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context,
 			AnnotatedTypeMetadata metadata) {
 
-		Map<String, Object> annotationAttributes = metadata.getAnnotationAttributes(
-				ConditionalOnProperty.class.getName());
+		AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata
+				.getAnnotationAttributes(ConditionalOnProperty.class.getName()));
 
-		String prefix = getPrefix(annotationAttributes);
-		String expectedValue = getExpectedValue(annotationAttributes);
-		String[] names = (String[]) annotationAttributes.get("value");
-		boolean relaxedNames = (Boolean) annotationAttributes.get("relaxedNames");
-		boolean matchDefault = (Boolean) annotationAttributes.get("defaultMatch");
-
-		List<String> missingProperties = new ArrayList<String>();
-		List<String> nonMatchingProperties = new ArrayList<String>();
+		String prefix = annotationAttributes.getString("prefix").trim();
+		if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
+			prefix = prefix + ".";
+		}
+		String havingValue = annotationAttributes.getString("havingValue");
+		String[] names = getNames(annotationAttributes);
+		boolean relaxedNames = annotationAttributes.getBoolean("relaxedNames");
+		boolean matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
 
 		PropertyResolver resolver = context.getEnvironment();
 		if (relaxedNames) {
 			resolver = new RelaxedPropertyResolver(resolver, prefix);
-			prefix = "";
 		}
 
+		List<String> missingProperties = new ArrayList<String>();
+		List<String> nonMatchingProperties = new ArrayList<String>();
 		for (String name : names) {
-			name = prefix + name;
-			boolean hasProperty = resolver.containsProperty(name);
-			if (!hasProperty) {  // property not set
-				if (!matchDefault) { // property is mandatory
-					missingProperties.add(name);
+			String key = (relaxedNames ? name : prefix + name);
+			if (resolver.containsProperty(key)) {
+				if (!isMatch(resolver.getProperty(key), havingValue)) {
+					nonMatchingProperties.add(name);
 				}
 			}
 			else {
-				String actualValue = resolver.getProperty(name);
-				if (expectedValue == null) {
-					if ("false".equalsIgnoreCase(actualValue)) {
-						nonMatchingProperties.add(name);
-					}
-				}
-				else if (!expectedValue.equalsIgnoreCase(actualValue)) {
-					nonMatchingProperties.add(name);
+				if (!matchIfMissing) {
+					missingProperties.add(name);
 				}
 			}
 		}
@@ -85,42 +81,45 @@ class OnPropertyCondition extends SpringBootCondition {
 			return ConditionOutcome.match();
 		}
 
-		StringBuilder sb = new StringBuilder("@ConditionalOnProperty ");
-		if (!matchDefault && !missingProperties.isEmpty()) {
-			sb.append("missing required properties ")
-					.append(StringUtils.arrayToCommaDelimitedString(missingProperties.toArray()))
-					.append(" ");
+		StringBuilder message = new StringBuilder("@ConditionalOnProperty ");
+		if (!missingProperties.isEmpty()) {
+			message.append("missing required properties "
+					+ expandNames(prefix, missingProperties) + " ");
 		}
 		if (!nonMatchingProperties.isEmpty()) {
-			String expected = expectedValue == null ? "!false" : expectedValue;
-			sb.append("expected '").append(expected).append("' for properties: ")
-					.append(StringUtils.arrayToCommaDelimitedString(nonMatchingProperties.toArray()));
+			String expected = havingValue == null ? "!false" : havingValue;
+			message.append("expected '").append(expected).append("' for properties ")
+					.append(expandNames(prefix, nonMatchingProperties));
 		}
 
-		return ConditionOutcome.noMatch(sb.toString());
+		return ConditionOutcome.noMatch(message.toString());
 	}
 
-	/**
-	 * Return the prefix to use or an empty String if it's not set.
-	 * <p>Add a dot at the end if it is not present already.
-	 */
-	private static String getPrefix(Map<String, Object> annotationAttributes) {
-		String prefix = ((String) annotationAttributes.get("prefix")).trim();
-		if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
-			prefix = prefix + ".";
-		}
-		return prefix;
+	private String[] getNames(Map<String, Object> annotationAttributes) {
+		String[] value = (String[]) annotationAttributes.get("value");
+		String[] name = (String[]) annotationAttributes.get("name");
+		Assert.state(value.length > 0 || name.length > 0,
+				"The name or value attribute of @ConditionalOnProperty must be specified");
+		Assert.state(value.length == 0 || name.length == 0,
+				"The name and value attributes of @ConditionalOnProperty are exclusive");
+		return (value.length > 0 ? value : name);
 	}
 
-	/**
-	 * Return the expected value to match against or {@code null} if no
-	 * match value is set.
-	 */
-	private static String getExpectedValue(Map<String, Object> annotationAttributes) {
-		String match = (String) annotationAttributes.get("match");
-		if (StringUtils.hasText(match)) {
-			return match;
+	private boolean isMatch(String value, String requiredValue) {
+		if (StringUtils.hasLength(requiredValue)) {
+			return requiredValue.equalsIgnoreCase(value);
 		}
-		return null;
+		return !"false".equalsIgnoreCase(value);
 	}
+
+	private String expandNames(String prefix, List<String> names) {
+		StringBuffer expanded = new StringBuffer();
+		for (String name : names) {
+			expanded.append(expanded.length() == 0 ? "" : ", ");
+			expanded.append(prefix);
+			expanded.append(name);
+		}
+		return expanded.toString();
+	}
+
 }

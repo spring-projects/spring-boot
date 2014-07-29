@@ -136,7 +136,7 @@ public abstract class JpaBaseConfiguration implements BeanFactoryAware {
 	@ConditionalOnWebApplication
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class,
 			OpenEntityManagerInViewFilter.class })
-	@ConditionalOnProperty(prefix = "spring.jpa", value = "openInView", match = "true", defaultMatch = true)
+	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
 	protected static class JpaWebConfiguration extends WebMvcConfigurerAdapter {
 
 		@Override

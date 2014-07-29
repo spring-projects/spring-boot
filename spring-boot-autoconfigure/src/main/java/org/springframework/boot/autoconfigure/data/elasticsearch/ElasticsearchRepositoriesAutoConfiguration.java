@@ -38,8 +38,7 @@ import org.springframework.data.repository.core.support.RepositoryFactoryBeanSup
  */
 @Configuration
 @ConditionalOnClass({ Client.class, ElasticsearchRepository.class })
-@ConditionalOnProperty(value = "spring.data.elasticsearch.repositories.enabled",
-		match = "true", defaultMatch = true)
+@ConditionalOnProperty(prefix = "spring.data.elasticsearch.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @ConditionalOnMissingBean(RepositoryFactoryBeanSupport.class)
 @Import(ElasticsearchRepositoriesAutoConfigureRegistrar.class)
 public class ElasticsearchRepositoriesAutoConfiguration {
