@@ -19,6 +19,7 @@ package org.springframework.boot.context.embedded.jetty;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,7 +70,7 @@ import org.springframework.util.StringUtils;
  * @see JettyEmbeddedServletContainer
  */
 public class JettyEmbeddedServletContainerFactory extends
-AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private List<Configuration> configurations = new ArrayList<Configuration>();
 
@@ -115,7 +116,7 @@ AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 		if (getSsl() != null) {
 			SslContextFactory sslContextFactory = new SslContextFactory();
-			configureSslContextFactory(sslContextFactory, getSsl());
+			configureSsl(sslContextFactory, getSsl());
 
 			SslSocketConnector sslConnector = new SslSocketConnector(sslContextFactory);
 			sslConnector.setPort(port);
@@ -129,47 +130,65 @@ AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 		return getJettyEmbeddedServletContainer(server);
 	}
 
-	protected void configureSslContextFactory(SslContextFactory sslContextFactory, Ssl ssl) {
-		sslContextFactory.setProtocol(ssl.getProtocol());
+	/**
+	 * Configure the SSL connection.
+	 * @param factory the Jetty {@link SslContextFactory}.
+	 * @param ssl the ssl details.
+	 */
+	protected void configureSsl(SslContextFactory factory, Ssl ssl) {
+		factory.setProtocol(ssl.getProtocol());
+		configureSslClientAuth(factory, ssl);
+		configureSslPasswords(factory, ssl);
+		factory.setCertAlias(ssl.getKeyAlias());
+		configureSslKeyStore(factory, ssl);
+		if (ssl.getCiphers() != null) {
+			factory.setIncludeCipherSuites(ssl.getCiphers());
+		}
+		configureSslTrustStore(factory, ssl);
+	}
+
+	private void configureSslClientAuth(SslContextFactory factory, Ssl ssl) {
 		if (ssl.getClientAuth() == ClientAuth.NEED) {
-			sslContextFactory.setNeedClientAuth(true);
-			sslContextFactory.setWantClientAuth(true);
+			factory.setNeedClientAuth(true);
+			factory.setWantClientAuth(true);
 		}
 		else if (ssl.getClientAuth() == ClientAuth.WANT) {
-			sslContextFactory.setWantClientAuth(true);
+			factory.setWantClientAuth(true);
 		}
+	}
+
+	private void configureSslPasswords(SslContextFactory factory, Ssl ssl) {
 		if (ssl.getKeyStorePassword() != null) {
-			sslContextFactory.setKeyStorePassword(ssl.getKeyStorePassword());
+			factory.setKeyStorePassword(ssl.getKeyStorePassword());
 		}
 		if (ssl.getKeyPassword() != null) {
-			sslContextFactory.setKeyManagerPassword(ssl.getKeyPassword());
+			factory.setKeyManagerPassword(ssl.getKeyPassword());
 		}
-		sslContextFactory.setCertAlias(ssl.getKeyAlias());
+	}
+
+	private void configureSslKeyStore(SslContextFactory factory, Ssl ssl) {
 		try {
-			sslContextFactory.setKeyStoreResource(Resource.newResource(ResourceUtils
-					.getURL(ssl.getKeyStore())));
+			URL url = ResourceUtils.getURL(ssl.getKeyStore());
+			factory.setKeyStoreResource(Resource.newResource(url));
 		}
-		catch (IOException e) {
+		catch (IOException ex) {
 			throw new EmbeddedServletContainerException("Could not find key store '"
-					+ ssl.getKeyStore() + "'", e);
+					+ ssl.getKeyStore() + "'", ex);
 		}
+	}
 
-		if (ssl.getCiphers() != null) {
-			sslContextFactory.setIncludeCipherSuites(ssl.getCiphers());
-		}
-
+	private void configureSslTrustStore(SslContextFactory factory, Ssl ssl) {
 		if (ssl.getTrustStorePassword() != null) {
-			sslContextFactory.setTrustStorePassword(ssl.getTrustStorePassword());
+			factory.setTrustStorePassword(ssl.getTrustStorePassword());
 		}
-
 		if (ssl.getTrustStore() != null) {
 			try {
-				sslContextFactory.setTrustStoreResource(Resource
-						.newResource(ResourceUtils.getURL(ssl.getTrustStore())));
+				URL url = ResourceUtils.getURL(ssl.getTrustStore());
+				factory.setTrustStoreResource(Resource.newResource(url));
 			}
-			catch (IOException e) {
+			catch (IOException ex) {
 				throw new EmbeddedServletContainerException(
-						"Could not find trust store '" + ssl.getTrustStore() + "'", e);
+						"Could not find trust store '" + ssl.getTrustStore() + "'", ex);
 			}
 		}
 	}
@@ -202,7 +221,7 @@ AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 				initializersToUse);
 		context.setConfigurations(configurations);
 		context.getSessionHandler().getSessionManager()
-		.setMaxInactiveInterval(getSessionTimeout());
+				.setMaxInactiveInterval(getSessionTimeout());
 		postProcessWebAppContext(context);
 	}
 
@@ -211,8 +230,8 @@ AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 		if (root != null) {
 			try {
 				if (!root.isDirectory()) {
-					handler.setBaseResource(Resource.newResource("jar:" + root.toURI()
-							+ "!"));
+					Resource resource = Resource.newResource("jar:" + root.toURI() + "!");
+					handler.setBaseResource(resource);
 				}
 				else {
 					handler.setBaseResource(Resource.newResource(root));

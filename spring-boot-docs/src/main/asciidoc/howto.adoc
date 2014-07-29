@@ -387,6 +387,8 @@ and then inject the actual (``local'') port as a `@Value`. For example:
 	}
 ----
 
+
+
 [[howto-configure-ssl]]
 === Configure SSL
 SSL can be configured declaratively by setting the various `server.ssl.*` properties,

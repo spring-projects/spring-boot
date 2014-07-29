@@ -31,4 +31,5 @@ public class SampleTomcatSslApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SampleTomcatSslApplication.class, args);
 	}
+
 }

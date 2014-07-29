@@ -79,7 +79,7 @@ import org.springframework.util.StringUtils;
  * @see TomcatEmbeddedServletContainer
  */
 public class TomcatEmbeddedServletContainerFactory extends
-AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
+		AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 
 	private static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
 
@@ -226,7 +226,7 @@ AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			if (getAddress() != null) {
 				((AbstractProtocol) connector.getProtocolHandler())
-				.setAddress(getAddress());
+						.setAddress(getAddress());
 			}
 		}
 		if (getUriEncoding() != null) {
@@ -238,17 +238,14 @@ AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 		connector.setProperty("bindOnInit", "false");
 
 		if (getSsl() != null) {
-			if (connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol) {
-				AbstractHttp11JsseProtocol jsseProtocol = (AbstractHttp11JsseProtocol) connector
-						.getProtocolHandler();
-				configureJsseProtocol(jsseProtocol, getSsl());
-				connector.setScheme("https");
-				connector.setSecure(true);
-			}
-			else {
-				throw new IllegalStateException(
-						"To use SSL, the connector's protocol handler must be an AbstractHttp11JsseProtocol subclass");
-			}
+			Assert.state(
+					connector.getProtocolHandler() instanceof AbstractHttp11JsseProtocol,
+					"To use SSL, the connector's protocol handler must be an "
+							+ "AbstractHttp11JsseProtocol subclass");
+			configureSsl((AbstractHttp11JsseProtocol) connector.getProtocolHandler(),
+					getSsl());
+			connector.setScheme("https");
+			connector.setSecure(true);
 		}
 
 		for (TomcatConnectorCustomizer customizer : this.tomcatConnectorCustomizers) {
@@ -256,42 +253,56 @@ AbstractEmbeddedServletContainerFactory implements ResourceLoaderAware {
 		}
 	}
 
-	protected void configureJsseProtocol(AbstractHttp11JsseProtocol jsseProtocol, Ssl ssl) {
-		jsseProtocol.setSSLEnabled(true);
-		jsseProtocol.setSslProtocol(ssl.getProtocol());
+	/**
+	 * Configure Tomcat's {@link AbstractHttp11JsseProtocol} for SSL.
+	 * @param protocol the protocol
+	 * @param ssl the ssl details
+	 */
+	protected void configureSsl(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
+		protocol.setSSLEnabled(true);
+		protocol.setSslProtocol(ssl.getProtocol());
+		configureSslClientAuth(protocol, ssl);
+		protocol.setKeystorePass(ssl.getKeyStorePassword());
+		protocol.setKeyPass(ssl.getKeyPassword());
+		protocol.setKeyAlias(ssl.getKeyAlias());
+		configureSslKeyStore(protocol, ssl);
+		String ciphers = StringUtils.arrayToCommaDelimitedString(ssl.getCiphers());
+		protocol.setCiphers(ciphers);
+		configureSslTrustStore(protocol, ssl);
+	}
+
+	private void configureSslClientAuth(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
 		if (ssl.getClientAuth() == ClientAuth.NEED) {
-			jsseProtocol.setClientAuth(Boolean.TRUE.toString());
+			protocol.setClientAuth(Boolean.TRUE.toString());
 		}
 		else if (ssl.getClientAuth() == ClientAuth.WANT) {
-			jsseProtocol.setClientAuth("want");
+			protocol.setClientAuth("want");
 		}
-		jsseProtocol.setKeystorePass(ssl.getKeyStorePassword());
-		jsseProtocol.setKeyPass(ssl.getKeyPassword());
-		jsseProtocol.setKeyAlias(ssl.getKeyAlias());
+	}
+
+	private void configureSslKeyStore(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
 		try {
-			jsseProtocol.setKeystoreFile(ResourceUtils.getFile(ssl.getKeyStore())
-					.getAbsolutePath());
+			File file = ResourceUtils.getFile(ssl.getKeyStore());
+			protocol.setKeystoreFile(file.getAbsolutePath());
 		}
-		catch (FileNotFoundException e) {
+		catch (FileNotFoundException ex) {
 			throw new EmbeddedServletContainerException("Could not find key store "
-					+ ssl.getKeyStore(), e);
+					+ ssl.getKeyStore(), ex);
 		}
+	}
 
-		jsseProtocol
-				.setCiphers(StringUtils.arrayToCommaDelimitedString(ssl.getCiphers()));
-
+	private void configureSslTrustStore(AbstractHttp11JsseProtocol protocol, Ssl ssl) {
 		if (ssl.getTrustStore() != null) {
 			try {
-				jsseProtocol.setTruststoreFile(ResourceUtils.getFile(ssl.getTrustStore())
-						.getAbsolutePath());
+				File file = ResourceUtils.getFile(ssl.getTrustStore());
+				protocol.setTruststoreFile(file.getAbsolutePath());
 			}
-			catch (FileNotFoundException e) {
+			catch (FileNotFoundException ex) {
 				throw new EmbeddedServletContainerException("Could not find trust store "
-						+ ssl.getTrustStore(), e);
+						+ ssl.getTrustStore(), ex);
 			}
 		}
-
-		jsseProtocol.setTruststorePass(ssl.getTrustStorePassword());
+		protocol.setTruststorePass(ssl.getTrustStorePassword());
 	}
 
 	/**
