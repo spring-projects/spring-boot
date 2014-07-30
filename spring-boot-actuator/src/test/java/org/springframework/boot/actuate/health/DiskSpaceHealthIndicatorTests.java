@@ -16,9 +16,11 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.nio.file.FileStore;
+import java.io.File;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -37,8 +39,11 @@ public class DiskSpaceHealthIndicatorTests {
 
 	static final long THRESHOLD_BYTES = 1024;
 
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
+
 	@Mock
-	FileStore fileStoreMock;
+	File fileMock;
 
 	HealthIndicator healthIndicator;
 
@@ -47,12 +52,12 @@ public class DiskSpaceHealthIndicatorTests {
 		this.healthIndicator =
 				new DiskSpaceHealthIndicator(DiskSpaceHealthIndicatorTests.class.getResource("").getPath(),
 				THRESHOLD_BYTES);
-		ReflectionTestUtils.setField(this.healthIndicator, "fileStore", this.fileStoreMock);
+		ReflectionTestUtils.setField(this.healthIndicator, "path", this.fileMock);
 	}
 
 	@Test
 	public void diskSpaceIsUp() throws Exception {
-		when(this.fileStoreMock.getUnallocatedSpace()).thenReturn(THRESHOLD_BYTES + 10);
+		when(this.fileMock.getFreeSpace()).thenReturn(THRESHOLD_BYTES + 10);
 
 		Health health = this.healthIndicator.health();
 		assertEquals(Status.UP, health.getStatus());
@@ -60,9 +65,25 @@ public class DiskSpaceHealthIndicatorTests {
 
 	@Test
 	public void diskSpaceIsDown() throws Exception {
-		when(this.fileStoreMock.getUnallocatedSpace()).thenReturn(THRESHOLD_BYTES - 10);
+		when(this.fileMock.getFreeSpace()).thenReturn(THRESHOLD_BYTES - 10);
 
 		Health health = this.healthIndicator.health();
 		assertEquals(Status.DOWN, health.getStatus());
+	}
+
+	@Test
+	public void throwsExceptionForUnknownPath() {
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage("Path does not exist: an_path_that_does_not_exist");
+
+		new DiskSpaceHealthIndicator("an_path_that_does_not_exist", THRESHOLD_BYTES);
+	}
+
+	@Test
+	public void throwsExceptionForNegativeThreshold() {
+		exception.expect(IllegalArgumentException.class);
+		exception.expectMessage("thresholdBytes must be greater than 0");
+
+		new DiskSpaceHealthIndicator(DiskSpaceHealthIndicatorTests.class.getResource("").getPath(), -1);
 	}
 }
