@@ -34,6 +34,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -59,6 +60,7 @@ public class ErrorPageFilterTests {
 		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
@@ -79,6 +81,7 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
+		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
@@ -97,6 +100,7 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
+		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
@@ -199,6 +203,62 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "BAD"));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) IllegalStateException.class.getName()));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsNotCommitedWhenRequestIsAsync() throws Exception {
+		this.request.setAsyncStarted(true);
+
+		this.filter.doFilter(this.request, this.response, this.chain);
+
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertFalse(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsCommitedWhenRequestIsAsyncAndExceptionIsThrown()
+			throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		this.request.setAsyncStarted(true);
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				throw new RuntimeException("BAD");
+			}
+		};
+
+		this.filter.doFilter(this.request, this.response, this.chain);
+
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsCommitedWhenRequestIsAsyncAndStatusIs400Plus() throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		this.request.setAsyncStarted(true);
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				((HttpServletResponse) response).sendError(400, "BAD");
+			}
+		};
+
+		this.filter.doFilter(this.request, this.response, this.chain);
+
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
 	}
 
 }
