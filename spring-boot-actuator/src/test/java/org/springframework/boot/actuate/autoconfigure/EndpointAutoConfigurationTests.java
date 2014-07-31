@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointAutoConfiguration}.
- *
+ * 
  * @author Dave Syer
  * @author Phillip Webb
  * @author Greg Turnquist
@@ -89,7 +89,7 @@ public class EndpointAutoConfigurationTests {
 		assertNotNull(bean);
 		Health result = bean.invoke();
 		assertNotNull(result);
-		assertTrue("Wrong result: " + result, result.getDetails().containsKey("database"));
+		assertTrue("Wrong result: " + result, result.getDetails().containsKey("db"));
 	}
 
 	@Test

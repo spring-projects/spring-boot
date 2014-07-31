@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint} to expose application health.
- *
+ * 
  * @author Dave Syer
  * @author Christian Dupuis
  */
@@ -46,17 +46,12 @@ public class HealthEndpoint extends AbstractEndpoint<Health> {
 		Assert.notNull(healthAggregator, "HealthAggregator must not be null");
 		Assert.notNull(healthIndicators, "HealthIndicators must not be null");
 
-		if (healthIndicators.size() == 1) {
-			this.healthIndicator = healthIndicators.values().iterator().next();
+		CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
+				healthAggregator);
+		for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
+			healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
 		}
-		else {
-			CompositeHealthIndicator healthIndicator = new CompositeHealthIndicator(
-					healthAggregator);
-			for (Map.Entry<String, HealthIndicator> h : healthIndicators.entrySet()) {
-				healthIndicator.addHealthIndicator(getKey(h.getKey()), h.getValue());
-			}
-			this.healthIndicator = healthIndicator;
-		}
+		this.healthIndicator = healthIndicator;
 	}
 
 	/**
