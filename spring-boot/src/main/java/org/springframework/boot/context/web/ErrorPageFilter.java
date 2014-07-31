@@ -56,7 +56,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
-		Filter, NonEmbeddedServletContainerFactory {
+Filter, NonEmbeddedServletContainerFactory {
 
 	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
@@ -109,18 +109,21 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			int status = wrapped.getStatus();
 			if (status >= 400) {
 				handleErrorStatus(request, response, status, wrapped.getMessage());
+				response.flushBuffer();
+			}
+			else if (!request.isAsyncStarted()) {
+				response.flushBuffer();
 			}
 		}
 		catch (Throwable ex) {
 			handleException(request, response, wrapped, ex);
+			response.flushBuffer();
 		}
-		response.flushBuffer();
-
 	}
 
 	private void handleErrorStatus(HttpServletRequest request,
 			HttpServletResponse response, int status, String message)
-			throws ServletException, IOException {
+					throws ServletException, IOException {
 		String errorPath = getErrorPath(this.statuses, status);
 		if (errorPath == null) {
 			response.sendError(status, message);
@@ -132,7 +135,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 	private void handleException(HttpServletRequest request,
 			HttpServletResponse response, ErrorWrapperResponse wrapped, Throwable ex)
-			throws IOException, ServletException {
+					throws IOException, ServletException {
 		Class<?> type = ex.getClass();
 		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
