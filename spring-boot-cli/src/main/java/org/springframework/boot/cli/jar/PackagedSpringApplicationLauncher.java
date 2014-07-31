@@ -19,6 +19,7 @@ package org.springframework.boot.cli.jar;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Enumeration;
 import java.util.jar.Manifest;
 
 /**
@@ -31,6 +32,8 @@ public class PackagedSpringApplicationLauncher {
 
 	public static final String SOURCE_MANIFEST_ENTRY = "Spring-Application-Source-Classes";
 
+	public static final String MAIN_CLASS_MANIFEST_ENTRY = "Start-Class";
+
 	private static final String SPRING_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
 
 	private void run(String[] args) throws Exception {
@@ -42,10 +45,19 @@ public class PackagedSpringApplicationLauncher {
 	}
 
 	private Object[] getSources(URLClassLoader classLoader) throws Exception {
-		URL url = classLoader.findResource("META-INF/MANIFEST.MF");
-		Manifest manifest = new Manifest(url.openStream());
-		String attribute = manifest.getMainAttributes().getValue(SOURCE_MANIFEST_ENTRY);
-		return loadClasses(classLoader, attribute.split(","));
+		for (Enumeration<URL> urls = classLoader.findResources("META-INF/MANIFEST.MF"); urls
+				.hasMoreElements();) {
+			URL url = urls.nextElement();
+			Manifest manifest = new Manifest(url.openStream());
+			if (getClass().getName().equals(
+					manifest.getMainAttributes().getValue(MAIN_CLASS_MANIFEST_ENTRY))) {
+				String attribute = manifest.getMainAttributes().getValue(
+						SOURCE_MANIFEST_ENTRY);
+				return loadClasses(classLoader, attribute.split(","));
+			}
+		}
+		throw new IllegalStateException("Cannot locate " + SOURCE_MANIFEST_ENTRY
+				+ " in MANIFEST.MF");
 	}
 
 	private Class<?>[] loadClasses(ClassLoader classLoader, String[] names)
