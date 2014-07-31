@@ -255,4 +255,11 @@ public class DependencyCustomizer {
 	protected boolean canAdd() {
 		return true;
 	}
+
+	/**
+	 * @return the dependencyResolutionContext
+	 */
+	public DependencyResolutionContext getDependencyResolutionContext() {
+		return this.dependencyResolutionContext;
+	}
 }
