@@ -156,15 +156,15 @@ public class TomcatEmbeddedServletContainerFactoryTests extends
 	@Test
 	public void sessionTimeout() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
-		factory.setSessionTimeout(10);
-		assertTimeout(factory, 10);
+		factory.setSessionTimeout(120);
+		assertTimeout(factory, 2);
 	}
 
 	@Test
 	public void sessionTimeoutInMins() throws Exception {
 		TomcatEmbeddedServletContainerFactory factory = getFactory();
 		factory.setSessionTimeout(1, TimeUnit.MINUTES);
-		assertTimeout(factory, 60);
+		assertTimeout(factory, 1);
 	}
 
 	@Test
