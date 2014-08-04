@@ -56,7 +56,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer implements
-Filter, NonEmbeddedServletContainerFactory {
+		Filter, NonEmbeddedServletContainerFactory {
 
 	private static Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
@@ -123,19 +123,20 @@ Filter, NonEmbeddedServletContainerFactory {
 
 	private void handleErrorStatus(HttpServletRequest request,
 			HttpServletResponse response, int status, String message)
-					throws ServletException, IOException {
+			throws ServletException, IOException {
 		String errorPath = getErrorPath(this.statuses, status);
 		if (errorPath == null) {
 			response.sendError(status, message);
 			return;
 		}
+		response.setStatus(status);
 		setErrorAttributes(request, status, message);
 		request.getRequestDispatcher(errorPath).forward(request, response);
 	}
 
 	private void handleException(HttpServletRequest request,
 			HttpServletResponse response, ErrorWrapperResponse wrapped, Throwable ex)
-					throws IOException, ServletException {
+			throws IOException, ServletException {
 		Class<?> type = ex.getClass();
 		String errorPath = getErrorPath(type);
 		if (errorPath == null) {
