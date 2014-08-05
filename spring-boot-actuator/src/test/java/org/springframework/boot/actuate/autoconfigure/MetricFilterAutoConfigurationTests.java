@@ -16,6 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 
@@ -27,16 +38,16 @@ import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.willAnswer;
-import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Tests for {@link MetricFilterAutoConfiguration}.
@@ -44,6 +55,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  */
 public class MetricFilterAutoConfigurationTests {
+	
 
 	@Test
 	public void recordsHttpInteractions() throws Exception {
@@ -64,6 +76,54 @@ public class MetricFilterAutoConfigurationTests {
 		filter.doFilter(request, response, chain);
 		verify(context.getBean(CounterService.class)).increment("status.200.test.path");
 		verify(context.getBean(GaugeService.class)).submit(eq("response.test.path"),
+				anyDouble());
+		context.close();
+	}
+	
+	@Test
+	public void recordsHttpInteractionsWithTemplateVariable() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController()).addFilter(filter).build();
+		mvc.perform(get("/templateVarTest/foo"))
+		.andExpect(status().isOk());
+		
+		verify(context.getBean(CounterService.class)).increment("status.200.templateVarTest.-someVariable-");
+		verify(context.getBean(GaugeService.class)).submit(eq("response.templateVarTest.-someVariable-"),
+				anyDouble());
+		context.close();
+	}
+	
+	@Test
+	public void recordsKnown404HttpInteractionsAsSingleMetricWithPathAndTemplateVariable() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController()).addFilter(filter).build();
+		mvc.perform(get("/knownPath/foo"))
+		.andExpect(status().isNotFound());
+		
+		verify(context.getBean(CounterService.class)).increment("status.404.knownPath.-someVariable-");
+		verify(context.getBean(GaugeService.class)).submit(eq("response.knownPath.-someVariable-"),
+				anyDouble());
+		context.close();
+	}
+	
+	@Test
+	public void records404HttpInteractionsAsSingleMetric() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				Config.class, MetricFilterAutoConfiguration.class);
+		Filter filter = context.getBean(Filter.class);
+		MockMvc mvc = MockMvcBuilders.standaloneSetup(new MetricFilterTestController()).addFilter(filter).build();
+		mvc.perform(get("/unknownPath/1"))
+		.andExpect(status().isNotFound());
+		
+		mvc.perform(get("/unknownPath/2"))
+		.andExpect(status().isNotFound());
+		
+		verify(context.getBean(CounterService.class), times(2)).increment("status.404.unknownPath");
+		verify(context.getBean(GaugeService.class), times(2)).submit(eq("response.unknownPath"),
 				anyDouble());
 		context.close();
 	}
@@ -88,6 +148,27 @@ public class MetricFilterAutoConfigurationTests {
 		public GaugeService gaugeService() {
 			return mock(GaugeService.class);
 		}
+		
 	}
 
+}
+
+
+@RestController
+class MetricFilterTestController
+{
+	
+	@RequestMapping("templateVarTest/{someVariable}")
+	public String testTemplateVariableResolution(@PathVariable String someVariable)
+	{
+		return someVariable;
+	}
+	
+	@RequestMapping("knownPath/{someVariable}")
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	@ResponseBody
+	public String testKnownPathWith404Response(@PathVariable String someVariable)
+	{
+		return someVariable;
+	}
 }
