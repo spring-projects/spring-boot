@@ -79,6 +79,7 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
+            <version>1.4.0.BUILD-SNAPSHOT</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
