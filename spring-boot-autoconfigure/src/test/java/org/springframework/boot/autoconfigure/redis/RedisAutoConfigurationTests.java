@@ -17,25 +17,34 @@
 package org.springframework.boot.autoconfigure.redis;
 
 import org.junit.Test;
+import org.junit.internal.AssumptionViolatedException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link RedisAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Christoph Strobl
  */
 public class RedisAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
+    private List<String> sentinels = Arrays.asList("127.0.0.1:26379","127.0.0.1:26380");
 
 	@Test
 	public void testDefaultRedisConfiguration() throws Exception {
@@ -71,5 +80,53 @@ public class RedisAutoConfigurationTests {
 		assertEquals(1, this.context.getBean(JedisConnectionFactory.class)
 				.getPoolConfig().getMaxIdle());
 	}
+
+    @Test
+    public void testRedisConfigurationWithSentinel() throws Exception {
+
+        assertSentinelAvailable();
+
+        this.context = new AnnotationConfigApplicationContext();
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.sentinel.master:mymaster");
+        EnvironmentTestUtils.addEnvironment(this.context, "spring.redis.sentinel.nodes:"+ StringUtils.collectionToCommaDelimitedString(sentinels));
+        this.context.register(RedisAutoConfiguration.class,
+                PropertyPlaceholderAutoConfiguration.class);
+        this.context.refresh();
+
+        assertTrue(this.context.getBean(JedisConnectionFactory.class).isRedisSentinelAware());
+    }
+
+    private void assertSentinelAvailable() {
+
+        for(String sentinel : sentinels) {
+            if(isAvailable(sentinel)) {
+                return;
+            }
+        }
+
+        throw new AssumptionViolatedException("Expected to have at least one sentinel available");
+    }
+
+    private boolean isAvailable(String node) {
+        Jedis jedis = null;
+        try {
+            String [] hostAndPort = node.split(",");
+            jedis = new Jedis(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
+            jedis.connect();
+            jedis.ping();
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (jedis != null) {
+                try {
+                    jedis.disconnect();
+                    jedis.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return true;
+    }
 
 }
