@@ -141,6 +141,26 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 				equalTo("foo"));
 	}
 
+	@Test
+	public void placeholderResolutionWithCustomLocation() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "fooValue:bar");
+		this.context.register(CustomConfigurationLocation.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(CustomConfigurationLocation.class).getFoo(),
+				equalTo("bar"));
+	}
+
+	@Test
+	public void placeholderResolutionWithUnmergedCustomLocation() throws Exception {
+		this.context = new AnnotationConfigApplicationContext();
+		EnvironmentTestUtils.addEnvironment(this.context, "fooValue:bar");
+		this.context.register(UnmergedCustomConfigurationLocation.class);
+		this.context.refresh();
+		assertThat(this.context.getBean(UnmergedCustomConfigurationLocation.class)
+				.getFoo(), equalTo("${fooValue}"));
+	}
+
 	@Configuration
 	@EnableConfigurationProperties
 	public static class TestConfigurationWithValidatingSetter {
@@ -295,6 +315,38 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		@Bean
 		public static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(locations = "custom-location.yml")
+	public static class CustomConfigurationLocation {
+
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(locations = "custom-location.yml", merge = false)
+	public static class UnmergedCustomConfigurationLocation {
+
+		private String foo;
+
+		public String getFoo() {
+			return this.foo;
+		}
+
+		public void setFoo(String foo) {
+			this.foo = foo;
 		}
 
 	}

@@ -78,10 +78,20 @@ public @interface ConfigurationProperties {
 	boolean exceptionIfInvalid() default true;
 
 	/**
-	 * Optionally provide an explicit resource locations to bind to instead of using the
-	 * default environment.
+	 * Optionally provide explicit resource locations to bind to. By default the
+	 * configuration at these specified locations will be merged with the default
+	 * configuration.
 	 * @return the path (or paths) of resources to bind to
+	 * @see #merge()
 	 */
 	String[] locations() default {};
+
+	/**
+	 * Flag to indicate that configuration loaded from the specified locations should be
+	 * merged with the default configuration.
+	 * @return the flag value (default true)
+	 * @see #locations()
+	 */
+	boolean merge() default true;
 
 }
