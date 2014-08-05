@@ -37,8 +37,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UrlPathHelper;
 
 /**
@@ -55,6 +57,7 @@ import org.springframework.web.util.UrlPathHelper;
 public class MetricFilterAutoConfiguration {
 
 	private static final int UNDEFINED_HTTP_STATUS = 999;
+	private static final String UNKNOWN_PATH_SUFFIX = "/unmapped";
 
 	@Autowired
 	private CounterService counterService;
@@ -86,10 +89,19 @@ public class MetricFilterAutoConfiguration {
 			}
 			finally {
 				stopWatch.stop();
+				int status = getStatus(response);
+				if (request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE) != null) {
+					suffix = request
+							.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE)
+							.toString().replaceAll("[{}]", "-");
+				}
+				else if (HttpStatus.valueOf(status).is4xxClientError()) {
+					suffix = UNKNOWN_PATH_SUFFIX;
+				}
 				String gaugeKey = getKey("response" + suffix);
 				MetricFilterAutoConfiguration.this.gaugeService.submit(gaugeKey,
 						stopWatch.getTotalTimeMillis());
-				String counterKey = getKey("status." + getStatus(response) + suffix);
+				String counterKey = getKey("status." + status + suffix);
 				MetricFilterAutoConfiguration.this.counterService.increment(counterKey);
 			}
 		}
