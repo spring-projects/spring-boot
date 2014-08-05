@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.redis;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
@@ -23,15 +26,20 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.StringUtils;
+
+import redis.clients.jedis.Jedis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link RedisAutoConfiguration}.
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Christoph Strobl
  */
 public class RedisAutoConfigurationTests {
 
@@ -72,6 +80,62 @@ public class RedisAutoConfigurationTests {
 				.getHostName());
 		assertEquals(1, this.context.getBean(JedisConnectionFactory.class)
 				.getPoolConfig().getMaxIdle());
+	}
+
+	@Test
+	public void testRedisConfigurationWithSentinel() throws Exception {
+		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+
+		if (isAtLeastOneSentinelAvailable(sentinels)) {
+			this.context = new AnnotationConfigApplicationContext();
+			EnvironmentTestUtils.addEnvironment(this.context,
+					"spring.redis.sentinel.master:mymaster");
+			EnvironmentTestUtils.addEnvironment(
+					this.context,
+					"spring.redis.sentinel.nodes:"
+							+ StringUtils.collectionToCommaDelimitedString(sentinels));
+			this.context.register(RedisAutoConfiguration.class,
+					PropertyPlaceholderAutoConfiguration.class);
+			this.context.refresh();
+
+			assertTrue(this.context.getBean(JedisConnectionFactory.class)
+					.isRedisSentinelAware());
+		}
+	}
+
+	private boolean isAtLeastOneSentinelAvailable(List<String> sentinels) {
+		for (String sentinel : sentinels) {
+			if (isSentinelAvailable(sentinel)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean isSentinelAvailable(String node) {
+		Jedis jedis = null;
+		try {
+			String[] hostAndPort = node.split(":");
+			jedis = new Jedis(hostAndPort[0], Integer.valueOf(hostAndPort[1]));
+			jedis.connect();
+			jedis.ping();
+			return true;
+		}
+		catch (Exception ex) {
+			return false;
+		}
+		finally {
+			if (jedis != null) {
+				try {
+					jedis.disconnect();
+					jedis.close();
+				}
+				catch (Exception ex) {
+					// Continue
+				}
+			}
+		}
 	}
 
 }

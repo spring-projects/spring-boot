@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Redis.
  *
  * @author Dave Syer
+ * @author Christoph Strobl
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -35,6 +36,8 @@ public class RedisProperties {
 	private int port = 6379;
 
 	private RedisProperties.Pool pool;
+
+    private RedisProperties.Sentinel sentinel;
 
 	public String getHost() {
 		return this.host;
@@ -76,7 +79,16 @@ public class RedisProperties {
 		this.database = database;
 	}
 
-	/**
+
+	public void setSentinel(Sentinel sentinel) {
+		this.sentinel = sentinel;
+	}
+
+	public Sentinel getSentinel() {
+		return sentinel;
+	}
+
+    /**
 	 * Pool properties.
 	 */
 	public static class Pool {
@@ -122,4 +134,28 @@ public class RedisProperties {
 		}
 	}
 
+    /**
+     * Properties for configuring redis sentinels.
+     */
+    public static class Sentinel {
+
+        private String master;
+        private String nodes;
+
+        public String getMaster() {
+            return master;
+        }
+
+        public void setMaster(String master) {
+            this.master = master;
+        }
+
+        public String getNodes() {
+            return nodes;
+        }
+
+        public void setNodes(String nodes) {
+            this.nodes = nodes;
+        }
+    }
 }

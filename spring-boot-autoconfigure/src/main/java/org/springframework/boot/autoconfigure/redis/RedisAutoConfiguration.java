@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.redis;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +26,19 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.redis.RedisProperties.Sentinel;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.StringUtils;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
@@ -43,6 +49,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Christian Dupuis
+ * @author Christoph Strobl
  */
 @Configuration
 @ConditionalOnClass({ JedisConnection.class, RedisOperations.class, Jedis.class })
@@ -55,17 +62,58 @@ public class RedisAutoConfiguration {
 		return new RedisProperties();
 	}
 
-	@Configuration
-	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
-	protected static class RedisConnectionConfiguration {
+	protected abstract static class RedisHAConnectionConfiguration {
 
 		@Autowired
-		private RedisProperties properties;
+		protected RedisProperties properties;
+
+		@Autowired(required = false)
+		private RedisSentinelConfiguration sentinelConfiguration;
+
+		protected RedisSentinelConfiguration potentiallyGetSentinelConfig() {
+
+			if (this.sentinelConfiguration == null
+					&& this.properties.getSentinel() == null) {
+				return null;
+			}
+
+			RedisSentinelConfiguration sentinelConfig = this.sentinelConfiguration;
+			if (sentinelConfig == null && this.properties.getSentinel() != null) {
+				sentinelConfig = new RedisSentinelConfiguration().master(this.properties
+						.getSentinel().getMaster());
+				sentinelConfig.setSentinels(createRedisNodesForSentinel(this.properties
+						.getSentinel()));
+			}
+			return sentinelConfig;
+		}
+
+		private List<RedisNode> createRedisNodesForSentinel(Sentinel sentinel) {
+
+			String[] nodeStrings = StringUtils.commaDelimitedListToStringArray(sentinel
+					.getNodes());
+
+			List<RedisNode> nodes = new ArrayList<RedisNode>(nodeStrings.length);
+
+			for (String hostAndPort : nodeStrings) {
+				String[] args = StringUtils.split(hostAndPort, ":");
+				nodes.add(new RedisNode(args[0], Integer.valueOf(args[1])));
+			}
+
+			return nodes;
+		}
+
+	}
+
+	@Configuration
+	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
+	protected static class RedisConnectionConfiguration extends
+			RedisHAConnectionConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-			JedisConnectionFactory factory = new JedisConnectionFactory();
+			JedisConnectionFactory factory = new JedisConnectionFactory(
+					potentiallyGetSentinelConfig());
 			applyConnectionFactoryProperties(factory, this.properties);
 			return factory;
 		}
@@ -74,10 +122,8 @@ public class RedisAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(GenericObjectPool.class)
-	protected static class RedisPooledConnectionConfiguration {
-
-		@Autowired
-		private RedisProperties properties;
+	protected static class RedisPooledConnectionConfiguration extends
+			RedisHAConnectionConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -88,10 +134,14 @@ public class RedisAutoConfiguration {
 		}
 
 		private JedisConnectionFactory createJedisConnectionFactory() {
+
 			if (this.properties.getPool() != null) {
-				return new JedisConnectionFactory(jedisPoolConfig());
+				return new JedisConnectionFactory(potentiallyGetSentinelConfig(),
+						jedisPoolConfig());
 			}
-			return new JedisConnectionFactory();
+			else {
+				return new JedisConnectionFactory(potentiallyGetSentinelConfig());
+			}
 		}
 
 		private JedisPoolConfig jedisPoolConfig() {
