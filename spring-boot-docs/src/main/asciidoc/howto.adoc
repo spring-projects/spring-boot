@@ -654,15 +654,43 @@ conversion in an HTTP exchange. If Jackson is on the classpath you already get a
 converter with a vanilla `ObjectMapper`. Spring Boot has some features to make it easier
 to customize this behavior.
 
-The smallest change that might work is to just add beans of type
-`com.fasterxml.jackson.databind.Module` to your context. They will be registered with the
-default `ObjectMapper` and then injected into the default message converter. To replace
-the default `ObjectMapper` completely, define a `@Bean` of that type and mark it as
-`@Primary`.
+You can configure the vanilla `ObjectMapper` using the environment. Jackson provides an
+extensive suite of simple on/off features that can be used to configure various aspects
+of its processing. These features are described in five enums in Jackson which map onto
+properties in the environment:
 
-In addition, if your context contains any beans of type `ObjectMapper` then all of the
-`Module` beans will be registered with all of the mappers. So there is a global mechanism
-for contributing custom modules when you add new features to your application.
+|===
+|Jackson enum|Environment property
+
+|`com.fasterxml.jackson.databind.DeserializationFeature`
+|`spring.jackson.deserialization.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.core.JsonGenerator.Feature`
+|`spring.jackson.generator.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.databind.MapperFeature`
+|`spring.jackson.mapper.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.core.JsonParser.Feature`
+|`spring.jackson.parser.<feature_name>=true\|false`
+
+|`com.fasterxml.jackson.databind.SerializationFeature`
+|`spring.jackson.serialization.<feature_name>=true\|false`
+|===
+
+For example, to allow deserialization to continue when an unknown property is encountered
+during deserialization, set `spring.jackson.deserialization.fail_on_unknown_properties=false`.
+Note that, thanks to the use of <<boot-features-external-config-relaxed-binding, relaxed binding>>,
+the case of `fail_on_unknown_properties` doesn't have to match the case of the corresponding
+enum constant which is `FAIL_ON_UNKNOWN_PROPERTIES`.
+
+If you want to replace the default `ObjectMapper` completely, define a `@Bean` of that type
+and mark it as `@Primary`.
+
+Another way to customize Jackson is to add beans of type
+`com.fasterxml.jackson.databind.Module` to your context. They will be registered with every
+bean of type `ObjectMapper`, providing a global mechanism for contributing custom modules
+when you add new features to your application.
 
 Finally, if you provide any `@Beans` of type `MappingJackson2HttpMessageConverter` then
 they will replace the default value in the MVC configuration. Also, a convenience bean is
