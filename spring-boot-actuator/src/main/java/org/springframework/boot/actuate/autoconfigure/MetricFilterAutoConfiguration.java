@@ -57,6 +57,7 @@ import org.springframework.web.util.UrlPathHelper;
 public class MetricFilterAutoConfiguration {
 
 	private static final int UNDEFINED_HTTP_STATUS = 999;
+
 	private static final String UNKNOWN_PATH_SUFFIX = "/unmapped";
 
 	@Autowired
@@ -90,10 +91,10 @@ public class MetricFilterAutoConfiguration {
 			finally {
 				stopWatch.stop();
 				int status = getStatus(response);
-				if (request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE) != null) {
-					suffix = request
-							.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE)
-							.toString().replaceAll("[{}]", "-");
+				Object bestMatchingPattern = request
+						.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+				if (bestMatchingPattern != null) {
+					suffix = bestMatchingPattern.toString().replaceAll("[{}]", "-");
 				}
 				else if (HttpStatus.valueOf(status).is4xxClientError()) {
 					suffix = UNKNOWN_PATH_SUFFIX;

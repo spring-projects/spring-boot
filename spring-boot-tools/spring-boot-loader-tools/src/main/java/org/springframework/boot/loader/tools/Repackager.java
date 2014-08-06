@@ -139,11 +139,10 @@ public class Repackager {
 
 	private boolean alreadyRepackaged() throws IOException {
 		JarFile jarFile = new JarFile(this.source);
-
 		try {
 			Manifest manifest = jarFile.getManifest();
-			return manifest != null
-					&& manifest.getMainAttributes().getValue(BOOT_VERSION_ATTRIBUTE) != null;
+			return (manifest != null && manifest.getMainAttributes().getValue(
+					BOOT_VERSION_ATTRIBUTE) != null);
 		}
 		finally {
 			jarFile.close();
@@ -226,7 +225,7 @@ public class Repackager {
 		String launcherClassName = this.layout.getLauncherClassName();
 		if (launcherClassName != null) {
 			manifest.getMainAttributes()
-			.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
+					.putValue(MAIN_CLASS_ATTRIBUTE, launcherClassName);
 			if (startClass == null) {
 				throw new IllegalStateException("Unable to find main class");
 			}

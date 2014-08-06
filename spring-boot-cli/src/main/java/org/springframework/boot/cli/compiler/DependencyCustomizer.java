@@ -257,7 +257,8 @@ public class DependencyCustomizer {
 	}
 
 	/**
-	 * @return the dependencyResolutionContext
+	 * Returns the {@link DependencyResolutionContext}.
+	 * @return the dependency resolution context
 	 */
 	public DependencyResolutionContext getDependencyResolutionContext() {
 		return this.dependencyResolutionContext;

@@ -191,7 +191,7 @@ public class JarCommand extends OptionParsingCommand {
 			manifest.getMainAttributes().putValue("Start-Class",
 					PackagedSpringApplicationLauncher.class.getName());
 			manifest.getMainAttributes().putValue(
-					PackagedSpringApplicationLauncher.SOURCE_MANIFEST_ENTRY,
+					PackagedSpringApplicationLauncher.SOURCE_ENTRY,
 					commaDelimitedClassNames(compiledClasses));
 			writer.writeManifest(manifest);
 		}
