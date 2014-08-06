@@ -313,6 +313,7 @@ content into your application; rather pick only the properties that you need.
 	management.port= # defaults to 'server.port'
 	management.address= # bind to a specific NIC
 	management.contextPath= # default to '/'
+	management.add-application-context-header= # default to true
 
 	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
 	endpoints.autoconfig.id=autoconfig

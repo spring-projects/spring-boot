@@ -246,18 +246,40 @@ public class EndpointWebMvcAutoConfiguration implements ApplicationContextAware,
 
 		@Bean
 		public Filter applicationContextIdFilter(ApplicationContext context) {
-			final String id = context.getId();
-			return new OncePerRequestFilter() {
-
-				@Override
-				protected void doFilterInternal(HttpServletRequest request,
-						HttpServletResponse response, FilterChain filterChain)
-						throws ServletException, IOException {
-					response.addHeader("X-Application-Context", id);
-					filterChain.doFilter(request, response);
-				}
-			};
+			return new ApplicationContextHeaderFilter(context);
 		}
+
+	}
+
+	/**
+	 * {@link OncePerRequestFilter} to add the {@literal X-Application-Context} if
+	 * required.
+	 */
+	private static class ApplicationContextHeaderFilter extends OncePerRequestFilter {
+
+		private final ApplicationContext applicationContext;
+
+		private ManagementServerProperties properties;
+
+		public ApplicationContextHeaderFilter(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request,
+				HttpServletResponse response, FilterChain filterChain)
+				throws ServletException, IOException {
+			if (this.properties == null) {
+				this.properties = this.applicationContext
+						.getBean(ManagementServerProperties.class);
+			}
+			if (this.properties.getAddApplicationContextHeader()) {
+				response.addHeader("X-Application-Context",
+						this.applicationContext.getId());
+			}
+			filterChain.doFilter(request, response);
+		}
+
 	}
 
 	protected static enum ManagementServerPort {

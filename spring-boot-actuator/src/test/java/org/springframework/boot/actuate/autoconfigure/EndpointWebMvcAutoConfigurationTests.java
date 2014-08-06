@@ -57,7 +57,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests for {@link EndpointWebMvcAutoConfiguration}.
@@ -92,6 +94,19 @@ public class EndpointWebMvcAutoConfigurationTests {
 		assertContent("/endpoint", ports.get().server, "endpointoutput");
 		assertContent("/controller", ports.get().management, null);
 		assertContent("/endpoint", ports.get().management, null);
+		assertTrue(hasHeader("/endpoint", ports.get().server, "X-Application-Context"));
+		this.applicationContext.close();
+		assertAllClosed();
+	}
+
+	@Test
+	public void onSamePortWithoutHeader() throws Exception {
+		EnvironmentTestUtils.addEnvironment(this.applicationContext,
+				"management.add-application-context-header:false");
+		this.applicationContext.register(RootConfig.class, BaseConfiguration.class,
+				ServerPortConfig.class, EndpointWebMvcAutoConfiguration.class);
+		this.applicationContext.refresh();
+		assertFalse(hasHeader("/endpoint", ports.get().server, "X-Application-Context"));
 		this.applicationContext.close();
 		assertAllClosed();
 	}
@@ -242,6 +257,14 @@ public class EndpointWebMvcAutoConfigurationTests {
 			}
 			throw ex;
 		}
+	}
+
+	public boolean hasHeader(String url, int port, String header) throws Exception {
+		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(new URI(
+				"http://localhost:" + port + url), HttpMethod.GET);
+		ClientHttpResponse response = request.execute();
+		return response.getHeaders().containsKey(header);
 	}
 
 	private static class Ports {
