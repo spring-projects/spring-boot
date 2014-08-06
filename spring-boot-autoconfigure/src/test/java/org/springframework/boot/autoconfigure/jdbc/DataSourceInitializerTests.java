@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.SQLException;
 import java.util.Random;
 
 import javax.sql.DataSource;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ClassUtils;
@@ -38,6 +40,7 @@ import org.springframework.util.ClassUtils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link DataSourceInitializer}.
@@ -96,7 +99,7 @@ public class DataSourceInitializerTests {
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
 		assertNotNull(dataSource);
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
+		assertEquals(new Integer(1),
 				template.queryForObject("SELECT COUNT(*) from BAR", Integer.class));
 	}
 
@@ -104,32 +107,40 @@ public class DataSourceInitializerTests {
 	public void testDataSourceInitializedWithExplicitScript() throws Exception {
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
-		EnvironmentTestUtils.addEnvironment(
-				this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"schema.sql"));
+		EnvironmentTestUtils
+				.addEnvironment(
+						this.context,
+						"spring.datasource.initialize:true",
+						"spring.datasource.schema:"
+								+ ClassUtils.addResourcePathToPackagePath(getClass(),
+										"schema.sql"),
+						"spring.datasource.data:"
+								+ ClassUtils.addResourcePathToPackagePath(getClass(),
+										"data.sql"));
 		this.context.refresh();
 		DataSource dataSource = this.context.getBean(DataSource.class);
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
 		assertNotNull(dataSource);
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
+		assertEquals(new Integer(1),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
 	}
 
 	@Test
 	public void testDataSourceInitializedWithMultipleScripts() throws Exception {
-		EnvironmentTestUtils.addEnvironment(
-				this.context,
-				"spring.datasource.initialize:true",
-				"spring.datasource.schema:"
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"schema.sql")
-						+ ","
-						+ ClassUtils.addResourcePathToPackagePath(getClass(),
-								"another.sql"));
+		EnvironmentTestUtils
+				.addEnvironment(
+						this.context,
+						"spring.datasource.initialize:true",
+						"spring.datasource.schema:"
+								+ ClassUtils.addResourcePathToPackagePath(getClass(),
+										"schema.sql")
+								+ ","
+								+ ClassUtils.addResourcePathToPackagePath(getClass(),
+										"another.sql"),
+						"spring.datasource.data:"
+								+ ClassUtils.addResourcePathToPackagePath(getClass(),
+										"data.sql"));
 		this.context.register(DataSourceAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
@@ -137,7 +148,7 @@ public class DataSourceInitializerTests {
 		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
 		assertNotNull(dataSource);
 		JdbcOperations template = new JdbcTemplate(dataSource);
-		assertEquals(new Integer(0),
+		assertEquals(new Integer(1),
 				template.queryForObject("SELECT COUNT(*) from FOO", Integer.class));
 		assertEquals(new Integer(0),
 				template.queryForObject("SELECT COUNT(*) from SPAM", Integer.class));
@@ -168,6 +179,31 @@ public class DataSourceInitializerTests {
 				template.queryForObject("SELECT name from BAR WHERE id=1", String.class));
 		assertEquals("ばー",
 				template.queryForObject("SELECT name from BAR WHERE id=2", String.class));
+	}
+
+	@Test
+	public void testInitializationDisabled() throws Exception {
+		this.context.register(DataSourceAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
+		this.context.refresh();
+
+		DataSource dataSource = this.context.getBean(DataSource.class);
+
+		this.context.publishEvent(new DataSourceInitializedEvent(dataSource));
+
+		assertTrue(dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource);
+		assertNotNull(dataSource);
+		JdbcOperations template = new JdbcTemplate(dataSource);
+
+		try {
+			template.queryForObject("SELECT COUNT(*) from BAR", Integer.class);
+			fail("Query should have failed as BAR table does not exist");
+		}
+		catch (BadSqlGrammarException ex) {
+			SQLException sqlException = ex.getSQLException();
+			int expectedCode = -5501; // user lacks privilege or object not found
+			assertEquals(expectedCode, sqlException.getErrorCode());
+		}
 	}
 
 	@Configuration
