@@ -28,7 +28,6 @@ import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.DataBinder;
@@ -47,8 +46,6 @@ public class RelaxedDataBinder extends DataBinder {
 	private String namePrefix;
 
 	private boolean ignoreNestedProperties;
-
-	private ConversionService relaxedConversionService;
 
 	/**
 	 * Create a new {@link RelaxedDataBinder} instance.
@@ -80,18 +77,11 @@ public class RelaxedDataBinder extends DataBinder {
 	}
 
 	@Override
-	public void setConversionService(ConversionService conversionService) {
-		super.setConversionService(conversionService);
-		this.relaxedConversionService = new RelaxedConversionService(getConversionService());
-	}
-
-	@Override
 	public void initBeanPropertyAccess() {
 		super.initBeanPropertyAccess();
-		this.relaxedConversionService = (this.relaxedConversionService != null
-				?  this.relaxedConversionService : new RelaxedConversionService(getConversionService()));
 		// Hook in the RelaxedConversionService
-		getInternalBindingResult().initConversion(relaxedConversionService);
+		getInternalBindingResult().initConversion(
+				new RelaxedConversionService(getConversionService()));
 	}
 
 	@Override
@@ -120,13 +110,13 @@ public class RelaxedDataBinder extends DataBinder {
 			propertyValues = addMapPrefix(propertyValues);
 		}
 
-		BeanWrapper targetWrapper = new BeanWrapperImpl(target);
-		targetWrapper.setConversionService(this.relaxedConversionService);
-		targetWrapper.setAutoGrowNestedPaths(true);
+		BeanWrapper wrapper = new BeanWrapperImpl(target);
+		wrapper.setConversionService(new RelaxedConversionService(getConversionService()));
+		wrapper.setAutoGrowNestedPaths(true);
 
 		List<PropertyValue> list = propertyValues.getPropertyValueList();
 		for (int i = 0; i < list.size(); i++) {
-			modifyProperty(propertyValues, targetWrapper, list.get(i), i);
+			modifyProperty(propertyValues, wrapper, list.get(i), i);
 		}
 		return propertyValues;
 	}

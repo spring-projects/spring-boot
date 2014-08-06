@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
@@ -30,9 +31,9 @@ import java.util.jar.Manifest;
  */
 public class PackagedSpringApplicationLauncher {
 
-	public static final String SOURCE_MANIFEST_ENTRY = "Spring-Application-Source-Classes";
+	public static final String SOURCE_ENTRY = "Spring-Application-Source-Classes";
 
-	public static final String MAIN_CLASS_MANIFEST_ENTRY = "Start-Class";
+	public static final String START_CLASS_ENTRY = "Start-Class";
 
 	private static final String SPRING_APPLICATION_CLASS = "org.springframework.boot.SpringApplication";
 
@@ -45,19 +46,23 @@ public class PackagedSpringApplicationLauncher {
 	}
 
 	private Object[] getSources(URLClassLoader classLoader) throws Exception {
-		for (Enumeration<URL> urls = classLoader.findResources("META-INF/MANIFEST.MF"); urls
-				.hasMoreElements();) {
+		Enumeration<URL> urls = classLoader.findResources("META-INF/MANIFEST.MF");
+		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
 			Manifest manifest = new Manifest(url.openStream());
-			if (getClass().getName().equals(
-					manifest.getMainAttributes().getValue(MAIN_CLASS_MANIFEST_ENTRY))) {
-				String attribute = manifest.getMainAttributes().getValue(
-						SOURCE_MANIFEST_ENTRY);
-				return loadClasses(classLoader, attribute.split(","));
+			if (isCliPackaged(manifest)) {
+				String sources = manifest.getMainAttributes().getValue(SOURCE_ENTRY);
+				return loadClasses(classLoader, sources.split(","));
 			}
 		}
-		throw new IllegalStateException("Cannot locate " + SOURCE_MANIFEST_ENTRY
+		throw new IllegalStateException("Cannot locate " + SOURCE_ENTRY
 				+ " in MANIFEST.MF");
+	}
+
+	private boolean isCliPackaged(Manifest manifest) {
+		Attributes attributes = manifest.getMainAttributes();
+		String startClass = attributes.getValue(START_CLASS_ENTRY);
+		return getClass().getName().equals(startClass);
 	}
 
 	private Class<?>[] loadClasses(ClassLoader classLoader, String[] names)
