@@ -26,12 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
@@ -54,7 +56,8 @@ import org.springframework.security.config.annotation.authentication.configurers
 @ConditionalOnMissingBean(AuthenticationManager.class)
 @Order(Ordered.LOWEST_PRECEDENCE - 3)
 public class AuthenticationManagerConfiguration extends
-		GlobalAuthenticationConfigurerAdapter {
+		GlobalAuthenticationConfigurerAdapter implements
+		ApplicationListener<ContextRefreshedEvent> {
 
 	private static Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
@@ -79,23 +82,23 @@ public class AuthenticationManagerConfiguration extends
 	}
 
 	@Bean
-	// avoid issues with scopedTarget (SPR-11548)
 	@Primary
-	public AuthenticationManager authenticationManager() {
-		return lazyAuthenticationManager();
-	}
-
-	@Bean
 	@Lazy
 	@Scope(proxyMode = ScopedProxyMode.INTERFACES)
-	protected AuthenticationManager lazyAuthenticationManager() {
+	public AuthenticationManager authenticationManager() {
+		AuthenticationManager manager = this.configurer.getAuthenticationManagerBuilder()
+				.getOrBuild();
+		return manager;
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
 		AuthenticationManager manager = this.configurer.getAuthenticationManagerBuilder()
 				.getOrBuild();
 		if (manager instanceof ProviderManager) {
 			((ProviderManager) manager)
 					.setAuthenticationEventPublisher(this.authenticationEventPublisher);
 		}
-		return manager;
 	}
 
 	/**
