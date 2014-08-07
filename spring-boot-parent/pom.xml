@@ -220,18 +220,6 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>spring-ext</id>
-			<url>http://repo.spring.io/ext-release-local/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -469,6 +457,16 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<repositories>
+				<repository>
+					<id>spring-ext</id>
+					<url>http://repo.spring.io/ext-release-local/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
 				<repository>
 					<id>spring-milestones</id>
 					<name>Spring Milestones</name>
