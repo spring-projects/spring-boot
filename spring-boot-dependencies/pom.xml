@@ -460,6 +460,11 @@
 				<version>${commons-pool.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>javax.cache</groupId>
+				<artifactId>cache-api</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			<dependency>
 				<groupId>javax.jms</groupId>
 				<artifactId>jms-api</artifactId>
 				<version>1.1-rev-1</version>
