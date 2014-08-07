@@ -75,6 +75,7 @@
 		<jackson.version>2.3.3</jackson.version>
 		<janino.version>2.6.1</janino.version>
 		<javassist.version>3.18.1-GA</javassist.version> <!-- Same as Hibernate -->
+		<javax-cache.version>1.0.0</javax-cache.version>
 		<jedis.version>2.4.2</jedis.version>
 		<jetty.version>8.1.15.v20140411</jetty.version>
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
@@ -458,6 +459,11 @@
 				<groupId>commons-pool</groupId>
 				<artifactId>commons-pool</artifactId>
 				<version>${commons-pool.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.cache</groupId>
+				<artifactId>cache-api</artifactId>
+				<version>${javax-cache.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.jms</groupId>
