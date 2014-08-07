@@ -504,6 +504,21 @@
 			</pluginRepositories>
 		</profile>
 		<profile>
+			<id>prepare</id>
+			<repositories>
+				<repository>
+					<id>spring-ext</id>
+					<url>http://repo.spring.io/ext-release-local/</url>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+		</profile>
+		<profile>
 			<id>full</id>
 			<build>
 				<plugins>
