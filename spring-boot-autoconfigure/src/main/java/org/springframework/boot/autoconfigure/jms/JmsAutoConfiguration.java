@@ -29,12 +29,17 @@ import org.springframework.boot.autoconfigure.jms.hornetq.HornetQAutoConfigurati
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListenerAnnotationBeanPostProcessor;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring JMS.
  *
  * @author Greg Turnquist
+ * @author Stephane Nicoll
  */
 @Configuration
 @ConditionalOnClass(JmsTemplate.class)
@@ -55,6 +60,31 @@ public class JmsAutoConfiguration {
 		JmsTemplate jmsTemplate = new JmsTemplate(this.connectionFactory);
 		jmsTemplate.setPubSubDomain(this.properties.isPubSubDomain());
 		return jmsTemplate;
+	}
+
+	@ConditionalOnClass(JmsMessagingTemplate.class)
+	@ConditionalOnMissingBean(JmsMessagingTemplate.class)
+	protected static class MessagingTemplateConfiguration {
+
+		@Bean
+		public JmsMessagingTemplate jmsMessagingTemplate(JmsTemplate jmsTemplate) {
+			return new JmsMessagingTemplate(jmsTemplate);
+		}
+
+	}
+
+	@ConditionalOnClass(EnableJms.class)
+	@ConditionalOnBean(JmsListenerAnnotationBeanPostProcessor.class)
+	protected static class AnnotationDrivenConfiguration {
+
+		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
+		@Bean
+		public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+			factory.setConnectionFactory(connectionFactory);
+			return factory;
+		}
+
 	}
 
 }
