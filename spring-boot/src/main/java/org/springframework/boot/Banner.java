@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,50 +18,22 @@ package org.springframework.boot;
 
 import java.io.PrintStream;
 
-import org.springframework.boot.ansi.AnsiOutput;
-
-import static org.springframework.boot.ansi.AnsiElement.DEFAULT;
-import static org.springframework.boot.ansi.AnsiElement.FAINT;
-import static org.springframework.boot.ansi.AnsiElement.GREEN;
+import org.springframework.core.env.Environment;
 
 /**
- * Writes the 'Spring' banner.
+ * Interface class for writing a banner programmatically.
  *
  * @author Phillip Webb
+ * @author Michael Stummvoll
+ * @since 1.2.0
  */
-abstract class Banner {
-
-	private static final String[] BANNER = { "",
-			"  .   ____          _            __ _ _",
-			" /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\",
-			"( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\",
-			" \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )",
-			"  '  |____| .__|_| |_|_| |_\\__, | / / / /",
-			" =========|_|==============|___/=/_/_/_/" };
-
-	private static final String SPRING_BOOT = " :: Spring Boot :: ";
-
-	private static final int STRAP_LINE_SIZE = 42;
+public interface Banner {
 
 	/**
 	 * Write the banner to the specified print stream.
-	 * @param printStream the output print stream
+	 * @param environment the spring environment
+	 * @param out the output print stream
 	 */
-	public static void write(PrintStream printStream) {
-		for (String line : BANNER) {
-			printStream.println(line);
-		}
-		String version = Banner.class.getPackage().getImplementationVersion();
-		version = (version == null ? "" : " (v" + version + ")");
-		String padding = "";
-		while (padding.length() < STRAP_LINE_SIZE
-				- (version.length() + SPRING_BOOT.length())) {
-			padding += " ";
-		}
-
-		printStream.println(AnsiOutput.toString(GREEN, SPRING_BOOT, DEFAULT, padding,
-				FAINT, version));
-		printStream.println();
-	}
+	void write(Environment environment, PrintStream out);
 
 }

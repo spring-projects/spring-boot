@@ -157,6 +157,8 @@ public class SpringApplication {
 
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
+	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
+
 	private final Log log = LogFactory.getLog(getClass());
 
 	private final Set<Object> sources = new LinkedHashSet<Object>();
@@ -168,6 +170,8 @@ public class SpringApplication {
 	private boolean logStartupInfo = true;
 
 	private boolean addCommandLineProperties = true;
+
+	private Banner banner;
 
 	private ResourceLoader resourceLoader;
 
@@ -478,20 +482,30 @@ public class SpringApplication {
 				: new DefaultResourceLoader(getClassLoader());
 		Resource resource = resourceLoader.getResource(location);
 		if (resource.exists()) {
-			try {
-				String banner = StreamUtils.copyToString(
-						resource.getInputStream(),
-						environment.getProperty("banner.charset", Charset.class,
-								Charset.forName("UTF-8")));
-				System.out.println(environment.resolvePlaceholders(banner));
-				return;
-			}
-			catch (Exception ex) {
-				this.log.warn("Banner not printable: " + resource + " (" + ex.getClass()
-						+ ": '" + ex.getMessage() + "')", ex);
-			}
+			printBannerResource(environment, resource);
+			return;
 		}
+
+		if (this.banner != null) {
+			this.banner.write(environment, System.out);
+			return;
+		}
+
 		printBanner();
+	}
+
+	private void printBannerResource(Environment environment, Resource resource) {
+		try {
+			String banner = StreamUtils.copyToString(
+					resource.getInputStream(),
+					environment.getProperty("banner.charset", Charset.class,
+							Charset.forName("UTF-8")));
+			System.out.println(environment.resolvePlaceholders(banner));
+		}
+		catch (Exception ex) {
+			this.log.warn("Banner not printable: " + resource + " (" + ex.getClass()
+					+ ": '" + ex.getMessage() + "')", ex);
+		}
 	}
 
 	/**
@@ -499,9 +513,11 @@ public class SpringApplication {
 	 * to provide additional or alternative banners.
 	 * @see #setShowBanner(boolean)
 	 * @see #printBanner(Environment)
+	 * @deprecated since 1.2.0 in favor of {@link #setBanner(Banner)}
 	 */
+	@Deprecated
 	protected void printBanner() {
-		Banner.write(System.out);
+		DEFAULT_BANNER.write(null, System.out);
 	}
 
 	/**
@@ -747,6 +763,15 @@ public class SpringApplication {
 	 */
 	public void setRegisterShutdownHook(boolean registerShutdownHook) {
 		this.registerShutdownHook = registerShutdownHook;
+	}
+
+	/**
+	 * Sets the {@link Banner} instance which will be used to print the banner when no
+	 * static banner file is provided.
+	 * @param banner The Banner instance to use
+	 */
+	public void setBanner(Banner banner) {
+		this.banner = banner;
 	}
 
 	/**
