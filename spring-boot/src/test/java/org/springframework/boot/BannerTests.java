@@ -31,6 +31,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BannerTests {
 
+	@Test
+	public void testCustomBanner() throws Exception {
+		SpringApplication app = new SpringApplication(BannerTests.class);
+		app.setWebEnvironment(false);
+		DummyBanner dummyBanner = new DummyBanner();
+		app.setBanner(dummyBanner);
+		app.run();
+		Assert.assertEquals(1, dummyBanner.writeCount);
+	}
+
 	static class DummyBanner implements Banner {
 
 		private int writeCount;
@@ -41,16 +51,6 @@ public class BannerTests {
 			++writeCount;
 		}
 
-	}
-
-	@Test
-	public void testCustomBanner() throws Exception {
-		SpringApplication app = new SpringApplication(BannerTests.class);
-		app.setWebEnvironment(false);
-		DummyBanner dummyBanner = new DummyBanner();
-		app.setBanner(dummyBanner);
-		app.run();
-		Assert.assertEquals(1, dummyBanner.writeCount);
 	}
 
 }
