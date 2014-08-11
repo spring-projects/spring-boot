@@ -23,7 +23,7 @@ package org.springframework.boot.actuate.health;
  * @author Christian Dupuis
  * @see Status#UP
  */
-public class VanillaHealthIndicator extends AbstractHealthIndicator {
+public class ApplicationHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {

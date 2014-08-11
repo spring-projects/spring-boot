@@ -21,15 +21,15 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests for {@link VanillaHealthIndicator}.
+ * Tests for {@link ApplicationHealthIndicator}.
  *
  * @author Phillip Webb
  */
-public class VanillaHealthIndicatorTests {
+public class ApplicationHealthIndicatorTests {
 
 	@Test
 	public void indicatesUp() throws Exception {
-		VanillaHealthIndicator healthIndicator = new VanillaHealthIndicator();
+		ApplicationHealthIndicator healthIndicator = new ApplicationHealthIndicator();
 		assertEquals(Status.UP, healthIndicator.health().getStatus());
 	}
 
