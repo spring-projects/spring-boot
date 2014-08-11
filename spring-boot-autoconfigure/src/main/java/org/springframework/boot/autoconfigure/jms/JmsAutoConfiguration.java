@@ -79,7 +79,8 @@ public class JmsAutoConfiguration {
 
 		@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
 		@Bean
-		public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+		public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+				ConnectionFactory connectionFactory) {
 			DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 			factory.setConnectionFactory(connectionFactory);
 			return factory;
