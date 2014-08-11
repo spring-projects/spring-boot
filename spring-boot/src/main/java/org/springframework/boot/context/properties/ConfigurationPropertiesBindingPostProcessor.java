@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -203,15 +204,10 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private PropertySources deducePropertySources() {
-		try {
-			PropertySourcesPlaceholderConfigurer configurer = this.beanFactory
-					.getBean(PropertySourcesPlaceholderConfigurer.class);
-			PropertySources propertySources = configurer.getAppliedPropertySources();
+		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
+		if (configurer != null) {
 			// Flatten the sources into a single list so they can be iterated
-			return new FlatPropertySources(propertySources);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			// Continue if no PropertySourcesPlaceholderConfigurer bean
+			return new FlatPropertySources(configurer.getAppliedPropertySources());
 		}
 
 		if (this.environment instanceof ConfigurableEnvironment) {
@@ -222,6 +218,20 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 		// empty, so not very useful, but fulfils the contract
 		return new MutablePropertySources();
+	}
+
+	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
+		// Take care not to cause early instantiation of all FactoryBeans
+		if (this.beanFactory instanceof ListableBeanFactory) {
+			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
+			Map<String, PropertySourcesPlaceholderConfigurer> beans = listableBeanFactory
+					.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false,
+							false);
+			if (beans.size() == 1) {
+				return beans.values().iterator().next();
+			}
+		}
+		return null;
 	}
 
 	private <T> T getOptionalBean(String name, Class<T> type) {

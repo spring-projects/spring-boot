@@ -21,8 +21,13 @@ import javax.validation.constraints.NotNull;
 
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.test.EnvironmentTestUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,8 +41,10 @@ import org.springframework.validation.Validator;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -159,6 +166,26 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 		this.context.refresh();
 		assertThat(this.context.getBean(UnmergedCustomConfigurationLocation.class)
 				.getFoo(), equalTo("${fooValue}"));
+	}
+
+	@Test
+	public void configurationPropertiesWithFactoryBean() throws Exception {
+		ConfigurationPropertiesWithFactoryBean.factoryBeanInit = false;
+		this.context = new AnnotationConfigApplicationContext() {
+			@Override
+			protected void onRefresh() throws BeansException {
+				assertFalse("Init too early",
+						ConfigurationPropertiesWithFactoryBean.factoryBeanInit);
+				super.onRefresh();
+			}
+		};
+		this.context.register(ConfigurationPropertiesWithFactoryBean.class);
+		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
+		beanDefinition.setBeanClass(FactoryBeanTester.class);
+		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+		this.context.registerBeanDefinition("test", beanDefinition);
+		this.context.refresh();
+		assertTrue("No init", ConfigurationPropertiesWithFactoryBean.factoryBeanInit);
 	}
 
 	@Configuration
@@ -347,6 +374,40 @@ public class ConfigurationPropertiesBindingPostProcessorTests {
 
 		public void setFoo(String foo) {
 			this.foo = foo;
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties
+	public static class ConfigurationPropertiesWithFactoryBean {
+
+		public static boolean factoryBeanInit;
+
+	}
+
+	@SuppressWarnings("rawtypes")
+	// Must be a raw type
+	static class FactoryBeanTester implements FactoryBean, InitializingBean {
+
+		@Override
+		public Object getObject() throws Exception {
+			return Object.class;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return null;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
+		}
+
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			ConfigurationPropertiesWithFactoryBean.factoryBeanInit = true;
 		}
 
 	}
