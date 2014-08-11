@@ -25,11 +25,11 @@ import java.io.PrintStream;
 import org.springframework.boot.ansi.AnsiOutput;
 
 /**
- * Default Banner Implementation which Writes the 'Spring' banner.
+ * Default Banner implementation which writes the 'Spring' banner.
  *
  * @author Phillip Webb
  */
-public class SpringBanner implements Banner {
+class SpringBanner implements Banner {
 
 	private static final String[] BANNER = { "",
 			"  .   ____          _            __ _ _",
