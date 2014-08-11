@@ -223,7 +223,7 @@ public class SpringApplication {
 	 *
 	 * @return The Banner instance.
 	 */
-	public Banner getBanner() {
+	private Banner getBanner() {
 		return this.banner;
 	}
 
@@ -525,7 +525,7 @@ public class SpringApplication {
 	 * @see #printBanner(Environment)
 	 */
 	protected void printBanner() {
-		banner.write(System.out);
+		getBanner().write(System.out);
 	}
 
 	/**
