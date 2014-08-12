@@ -53,6 +53,7 @@
 		<module>spring-boot-sample-web-groovy-templates</module>
 		<module>spring-boot-sample-web-method-security</module>
 		<module>spring-boot-sample-web-secure</module>
+		<module>spring-boot-sample-web-secure-custom</module>
 		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-jsp</module>
 		<module>spring-boot-sample-web-ui</module>

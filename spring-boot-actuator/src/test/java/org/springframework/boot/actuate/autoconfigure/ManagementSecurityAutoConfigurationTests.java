@@ -31,8 +31,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -95,7 +93,7 @@ public class ManagementSecurityAutoConfigurationTests {
 				HttpMessageConvertersAutoConfiguration.class,
 				ManagementServerPropertiesAutoConfiguration.class,
 				SecurityAutoConfiguration.class,
-				ManagementSecurityAutoConfiguration.class, UserDetailsExposed.class,
+				ManagementSecurityAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		UserDetails user = getUser();
@@ -105,9 +103,8 @@ public class ManagementSecurityAutoConfigurationTests {
 	}
 
 	private UserDetails getUser() {
-		ProviderManager manager = this.context.getBean(ProviderManager.class);
-		ProviderManager parent = (ProviderManager) ReflectionTestUtils.getField(manager,
-				"parent");
+		ProviderManager parent = (ProviderManager) this.context
+				.getBean(AuthenticationManager.class);
 		DaoAuthenticationProvider provider = (DaoAuthenticationProvider) parent
 				.getProviders().get(0);
 		UserDetailsService service = (UserDetailsService) ReflectionTestUtils.getField(
@@ -177,26 +174,6 @@ public class ManagementSecurityAutoConfigurationTests {
 		this.context.refresh();
 		assertEquals(this.context.getBean(TestConfiguration.class).authenticationManager,
 				this.context.getBean(AuthenticationManager.class));
-	}
-
-	@Configuration
-	protected static class UserDetailsExposed implements
-			WebSecurityConfigurer<WebSecurity> {
-
-		@Override
-		public void init(WebSecurity builder) throws Exception {
-		}
-
-		@Override
-		public void configure(WebSecurity builder) throws Exception {
-		}
-
-		@Bean
-		public AuthenticationManager authenticationManager(
-				AuthenticationManagerBuilder builder) throws Exception {
-			return builder.getOrBuild();
-		}
-
 	}
 
 	@Configuration

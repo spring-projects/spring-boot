@@ -29,10 +29,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -81,10 +78,13 @@ public class AuthenticationManagerConfiguration extends
 		auth.apply(this.configurer);
 	}
 
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+		this.configurer.configureParent(auth);
+	}
+
 	@Bean
 	@Primary
-	@Lazy
-	@Scope(proxyMode = ScopedProxyMode.INTERFACES)
 	public AuthenticationManager authenticationManager() {
 		AuthenticationManager manager = this.configurer.getAuthenticationManagerBuilder()
 				.getOrBuild();
@@ -127,6 +127,13 @@ public class AuthenticationManagerConfiguration extends
 			GlobalAuthenticationConfigurerAdapter {
 
 		private AuthenticationManagerBuilder defaultAuth;
+		private AuthenticationManager parent;
+
+		public void configureParent(AuthenticationManagerBuilder auth) {
+			if (!auth.isConfigured() && this.parent != null) {
+				auth.parentAuthenticationManager(this.parent);
+			}
+		}
 
 		public AuthenticationManagerBuilder getAuthenticationManagerBuilder() {
 			return this.defaultAuth;
@@ -150,11 +157,14 @@ public class AuthenticationManagerConfiguration extends
 
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
 
-			AuthenticationManager parent = this.defaultAuth.inMemoryAuthentication()
+			this.parent = this.defaultAuth.inMemoryAuthentication()
 					.withUser(user.getName()).password(user.getPassword())
 					.roles(roles.toArray(new String[roles.size()])).and().and().build();
 
-			auth.parentAuthenticationManager(parent);
+			// Defer actually setting the parent on the AuthenticationManagerBuilder
+			// because it makes it "configured" and we are only in the init() phase here.
+
 		}
 	}
+
 }
