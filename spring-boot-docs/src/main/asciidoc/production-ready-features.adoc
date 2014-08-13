@@ -597,7 +597,9 @@ endpoint you should see a response similar to this:
 	{
 		"counter.status.200.root": 20,
 		"counter.status.200.metrics": 3,
+		"counter.status.200.**": 5,
 		"counter.status.401.root": 4,
+		"gauge.response.**": 6,
 		"gauge.response.root": 2,
 		"gauge.response.metrics": 3,
 		"classes": 5808,
@@ -618,10 +620,10 @@ endpoint you should see a response similar to this:
 ----
 
 Here we can see basic `memory`, `heap`, `class loading`, `processor` and `thread pool`
-information provided by `SystemPublicMetrics` along with some HTTP metrics. In this
-instance the `root` (``/'') and `/metrics` URLs have returned `HTTP 200` responses `20`
-and `3` times respectively. It also appears that the `root` URL returned `HTTP 401`
-(unauthorized) `4` times.
+information along with some HTTP metrics. In this instance the `root` (``/'') and `/metrics`
+URLs have returned `HTTP 200` responses `20` and `3` times respectively. It also appears
+that the `root` URL returned `HTTP 401` (unauthorized) `4` times. The double asterix (`**`)
+comes from a request matched by Spring MVC as `/**` (normally a static resource).
 
 The `gauge` shows the last response time for a request. So the last request to `root` took
 `2ms` to respond and the last to `/metrics` took `3ms`.
