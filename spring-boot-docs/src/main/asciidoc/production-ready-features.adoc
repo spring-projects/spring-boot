@@ -500,7 +500,7 @@ and `endpoint` commands.
 
 [[production-ready-remote-shell-credentials]]
 ==== Remote shell credentials
-You can use the `shell.auth.simple.username` and `shell.auth.simple.password` properties
+You can use the `shell.auth.simple.user.name` and `shell.auth.simple.user.password` properties
 to configure custom connection credentials. It is also possible to use a
 ``Spring Security'' `AuthenticationManager` to handle login duties. See the
 {dc-spring-boot-actuator}/autoconfigure/CrshAutoConfiguration.{dc-ext}[`CrshAutoConfiguration`]
