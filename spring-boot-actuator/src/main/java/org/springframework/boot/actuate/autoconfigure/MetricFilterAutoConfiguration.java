@@ -93,10 +93,17 @@ public class MetricFilterAutoConfiguration {
 				int status = getStatus(response);
 				Object bestMatchingPattern = request
 						.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+				HttpStatus httpStatus = HttpStatus.OK;
+				try {
+					httpStatus = HttpStatus.valueOf(status);
+				}
+				catch (Exception e) {
+					// not convertible
+				}
 				if (bestMatchingPattern != null) {
 					suffix = bestMatchingPattern.toString().replaceAll("[{}]", "-");
 				}
-				else if (HttpStatus.valueOf(status).is4xxClientError()) {
+				else if (httpStatus.is4xxClientError()) {
 					suffix = UNKNOWN_PATH_SUFFIX;
 				}
 				String gaugeKey = getKey("response" + suffix);

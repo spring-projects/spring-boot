@@ -206,6 +206,21 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
+	public void statusCode() throws Exception {
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				assertThat(((HttpServletResponse) response).getStatus(), equalTo(200));
+				super.doFilter(request, response);
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(200));
+	}
+
+	@Test
 	public void subClassExceptionError() throws Exception {
 		this.filter.addErrorPages(new ErrorPage(RuntimeException.class, "/500"));
 		this.chain = new MockFilterChain() {

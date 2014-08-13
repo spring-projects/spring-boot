@@ -239,6 +239,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 		public ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
+			this.status = response.getStatus();
 		}
 
 		@Override
