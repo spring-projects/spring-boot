@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.redis;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +30,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisNode;
+import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.StringUtils;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
@@ -49,17 +54,54 @@ import redis.clients.jedis.JedisPoolConfig;
 @EnableConfigurationProperties
 public class RedisAutoConfiguration {
 
+	protected abstract static class RedisHAConnectionConfiguration {
+
+		@Autowired protected RedisProperties properties;
+
+		@Autowired(required = false) private RedisSentinelConfiguration sentinelConfiguration;
+
+		protected RedisSentinelConfiguration potentiallyGetSentinelConfig() {
+
+			if (this.sentinelConfiguration == null && this.properties.getSentinel() == null) {
+				return null;
+			}
+
+			RedisSentinelConfiguration sentinelConfig = sentinelConfiguration;
+			if (sentinelConfig == null && this.properties.getSentinel() != null) {
+				sentinelConfig = new RedisSentinelConfiguration().master(this.properties.getSentinel().getMaster());
+				sentinelConfig.setSentinels(createRedisNodesForProperties());
+			}
+			return sentinelConfig;
+		}
+
+		private List<RedisNode> createRedisNodesForProperties() {
+
+			List<RedisNode> nodes = new ArrayList<RedisNode>();
+
+			if (StringUtils.hasText(this.properties.getSentinel().getNodes())) {
+
+				String[] nodesString = this.properties.getSentinel().getNodes().split(",");
+
+				for (String hostAndPort : nodesString) {
+					String[] args = StringUtils.split(hostAndPort, ":");
+					nodes.add(new RedisNode(args[0], Integer.valueOf(args[1])));
+				}
+			}
+
+			return nodes;
+		}
+
+	}
+
 	@Configuration
 	@ConditionalOnMissingClass(name = "org.apache.commons.pool2.impl.GenericObjectPool")
-	protected static class RedisConnectionConfiguration {
-
-		@Autowired
-		private RedisProperties properties;
+	protected static class RedisConnectionConfiguration extends RedisHAConnectionConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
 		RedisConnectionFactory redisConnectionFactory() throws UnknownHostException {
-			JedisConnectionFactory factory = new JedisConnectionFactory();
+
+			JedisConnectionFactory factory = new JedisConnectionFactory(potentiallyGetSentinelConfig());
 			factory.setHostName(this.properties.getHost());
 			factory.setPort(this.properties.getPort());
 			if (this.properties.getPassword() != null) {
@@ -72,10 +114,7 @@ public class RedisAutoConfiguration {
 
 	@Configuration
 	@ConditionalOnClass(GenericObjectPool.class)
-	protected static class RedisPooledConnectionConfiguration {
-
-		@Autowired
-		private RedisProperties properties;
+	protected static class RedisPooledConnectionConfiguration extends RedisHAConnectionConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -90,10 +129,11 @@ public class RedisAutoConfiguration {
 		}
 
 		private JedisConnectionFactory createJedisConnectionFactory() {
-			if (this.properties.getPool() != null) {
-				return new JedisConnectionFactory(jedisPoolConfig());
-			}
-			return new JedisConnectionFactory();
+
+			JedisPoolConfig poolConfig = this.properties.getPool() != null ? jedisPoolConfig() : null;
+			RedisSentinelConfiguration sentinelConfiguration = potentiallyGetSentinelConfig();
+
+			return new JedisConnectionFactory(sentinelConfiguration, poolConfig);
 		}
 
 		private JedisPoolConfig jedisPoolConfig() {
@@ -119,13 +159,11 @@ public class RedisAutoConfiguration {
 	@Configuration
 	protected static class RedisConfiguration {
 
-		@Autowired
-		private RedisProperties properties;
+		@Autowired private RedisProperties properties;
 
 		@Bean
 		@ConditionalOnMissingBean(name = "redisTemplate")
-		RedisOperations<Object, Object> redisTemplate(
-				RedisConnectionFactory redisConnectionFactory)
+		RedisOperations<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory)
 				throws UnknownHostException {
 			RedisTemplate<Object, Object> template = new RedisTemplate<Object, Object>();
 			template.setConnectionFactory(redisConnectionFactory);
@@ -134,9 +172,7 @@ public class RedisAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(StringRedisTemplate.class)
-		StringRedisTemplate stringRedisTemplate(
-				RedisConnectionFactory redisConnectionFactory)
-				throws UnknownHostException {
+		StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
 			StringRedisTemplate template = new StringRedisTemplate();
 			template.setConnectionFactory(redisConnectionFactory);
 			return template;
