@@ -59,6 +59,8 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 
 	private int sessionTimeout;
 
+	private Ssl ssl;
+
 	/**
 	 * Create a new {@link AbstractConfigurableEmbeddedServletContainer} instance.
 	 */
@@ -240,6 +242,15 @@ public abstract class AbstractConfigurableEmbeddedServletContainer implements
 	 */
 	public boolean isRegisterDefaultServlet() {
 		return this.registerDefaultServlet;
+	}
+
+	@Override
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
 	}
 
 	@Override

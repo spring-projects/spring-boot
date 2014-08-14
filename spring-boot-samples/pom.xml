@@ -45,6 +45,7 @@
 		<module>spring-boot-sample-secure</module>
 		<module>spring-boot-sample-servlet</module>
 		<module>spring-boot-sample-simple</module>
+		<module>spring-boot-sample-tomcat-ssl</module>
 		<module>spring-boot-sample-tomcat</module>
 		<module>spring-boot-sample-tomcat-multi-connectors</module>
 		<module>spring-boot-sample-tomcat8-jsp</module>
@@ -53,6 +54,7 @@
 		<module>spring-boot-sample-web-groovy-templates</module>
 		<module>spring-boot-sample-web-method-security</module>
 		<module>spring-boot-sample-web-secure</module>
+		<module>spring-boot-sample-web-secure-custom</module>
 		<module>spring-boot-sample-web-static</module>
 		<module>spring-boot-sample-web-jsp</module>
 		<module>spring-boot-sample-web-ui</module>

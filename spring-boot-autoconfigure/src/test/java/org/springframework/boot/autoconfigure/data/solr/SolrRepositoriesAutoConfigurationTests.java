@@ -20,6 +20,7 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.junit.After;
 import org.junit.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.alt.solr.CitySolrRepository;
@@ -36,9 +37,10 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link SolrRepositoriesAutoConfiguration}
+ * Tests for {@link SolrRepositoriesAutoConfiguration}.
  *
  * @author Christoph Strobl
+ * @author Oliver Gierke
  */
 public class SolrRepositoriesAutoConfigurationTests {
 
@@ -71,6 +73,13 @@ public class SolrRepositoriesAutoConfigurationTests {
 		assertThat(this.context.getBean(CitySolrRepository.class), notNullValue());
 	}
 
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+
+		initContext(SortOfInvalidCustomConfiguration.class);
+		this.context.getBean(CityRepository.class);
+	}
+
 	private void initContext(Class<?> configClass) {
 
 		this.context = new AnnotationConfigApplicationContext();
@@ -99,4 +108,10 @@ public class SolrRepositoriesAutoConfigurationTests {
 
 	}
 
+	@Configuration
+	@TestAutoConfigurationPackage(SolrRepositoriesAutoConfigurationTests.class)
+	// To not find any repositories
+	@EnableSolrRepositories("foo.bar")
+	protected static class SortOfInvalidCustomConfiguration {
+	}
 }

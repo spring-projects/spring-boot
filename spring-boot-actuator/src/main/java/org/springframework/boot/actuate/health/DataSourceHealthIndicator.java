@@ -17,15 +17,22 @@
 package org.springframework.boot.actuate.health;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.IncorrectResultSetColumnCountException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,6 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Dave Syer
  * @author Christian Dupuis
+ * @author Andy Wilkinson
  * @since 1.1.0
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator {
@@ -45,8 +53,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator {
 	private static Map<String, String> queries = new HashMap<String, String>();
 
 	static {
-		queries.put("HSQL Database Engine",
-				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS");
+		queries.put("HSQL Database Engine", "SELECT COUNT(*) FROM "
+				+ "INFORMATION_SCHEMA.SYSTEM_USERS");
 		queries.put("Oracle", "SELECT 'Hello' from DUAL");
 		queries.put("Apache Derby", "SELECT 1 FROM SYSIBM.SYSDUMMY1");
 	}
@@ -86,8 +94,11 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator {
 		String query = detectQuery(product);
 		if (StringUtils.hasText(query)) {
 			try {
-				builder.withDetail("hello",
-						this.jdbcTemplate.queryForObject(query, Object.class));
+				// Avoid calling getObject as it breaks MySQL on Java 7
+				List<Object> results = this.jdbcTemplate.query(query,
+						new SingleColumnRowMapper());
+				Object result = DataAccessUtils.requiredSingleResult(results);
+				builder.withDetail("hello", result);
 			}
 			catch (Exception ex) {
 				builder.down(ex);
@@ -123,6 +134,23 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator {
 
 	public void setQuery(String query) {
 		this.query = query;
+	}
+
+	/**
+	 * {@link RowMapper} that expects and returns results from a single column.
+	 */
+	private static class SingleColumnRowMapper implements RowMapper<Object> {
+
+		@Override
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ResultSetMetaData metaData = rs.getMetaData();
+			int columns = metaData.getColumnCount();
+			if (columns != 1) {
+				throw new IncorrectResultSetColumnCountException(1, columns);
+			}
+			return JdbcUtils.getResultSetValue(rs, 1);
+		}
+
 	}
 
 }

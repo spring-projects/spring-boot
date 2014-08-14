@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
@@ -26,12 +27,17 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
 import org.springframework.boot.test.EnvironmentTestUtils;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -41,6 +47,8 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link SecurityAutoConfiguration}.
@@ -102,6 +110,27 @@ public class SecurityAutoConfigurationTests {
 				PropertyPlaceholderAutoConfiguration.class);
 		this.context.refresh();
 		assertNotNull(this.context.getBean(AuthenticationManager.class));
+	}
+
+	@Test
+	public void testEventPublisherInjected() throws Exception {
+		testAuthenticationManagerCreated();
+		final AtomicReference<ApplicationEvent> wrapper = new AtomicReference<ApplicationEvent>();
+		this.context.addApplicationListener(new ApplicationListener<ApplicationEvent>() {
+			@Override
+			public void onApplicationEvent(ApplicationEvent event) {
+				wrapper.set(event);
+			};
+		});
+		AuthenticationManager manager = this.context.getBean(AuthenticationManager.class);
+		try {
+			manager.authenticate(new UsernamePasswordAuthenticationToken("foo", "bar"));
+			fail("Expected BadCredentialsException");
+		}
+		catch (BadCredentialsException e) {
+			// expected
+		}
+		assertTrue(wrapper.get() instanceof AuthenticationFailureBadCredentialsEvent);
 	}
 
 	@Test

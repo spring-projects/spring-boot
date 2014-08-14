@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -203,15 +204,10 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 	}
 
 	private PropertySources deducePropertySources() {
-		try {
-			PropertySourcesPlaceholderConfigurer configurer = this.beanFactory
-					.getBean(PropertySourcesPlaceholderConfigurer.class);
-			PropertySources propertySources = configurer.getAppliedPropertySources();
+		PropertySourcesPlaceholderConfigurer configurer = getSinglePropertySourcesPlaceholderConfigurer();
+		if (configurer != null) {
 			// Flatten the sources into a single list so they can be iterated
-			return new FlatPropertySources(propertySources);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			// Continue if no PropertySourcesPlaceholderConfigurer bean
+			return new FlatPropertySources(configurer.getAppliedPropertySources());
 		}
 
 		if (this.environment instanceof ConfigurableEnvironment) {
@@ -222,6 +218,20 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 
 		// empty, so not very useful, but fulfils the contract
 		return new MutablePropertySources();
+	}
+
+	private PropertySourcesPlaceholderConfigurer getSinglePropertySourcesPlaceholderConfigurer() {
+		// Take care not to cause early instantiation of all FactoryBeans
+		if (this.beanFactory instanceof ListableBeanFactory) {
+			ListableBeanFactory listableBeanFactory = (ListableBeanFactory) this.beanFactory;
+			Map<String, PropertySourcesPlaceholderConfigurer> beans = listableBeanFactory
+					.getBeansOfType(PropertySourcesPlaceholderConfigurer.class, false,
+							false);
+			if (beans.size() == 1) {
+				return beans.values().iterator().next();
+			}
+		}
+		return null;
 	}
 
 	private <T> T getOptionalBean(String name, Class<T> type) {
@@ -262,7 +272,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		PropertiesConfigurationFactory<Object> factory = new PropertiesConfigurationFactory<Object>(
 				target);
 		if (annotation != null && annotation.locations().length != 0) {
-			factory.setPropertySources(loadPropertySources(annotation.locations()));
+			factory.setPropertySources(loadPropertySources(annotation.locations(),
+					annotation.merge()));
 		}
 		else {
 			factory.setPropertySources(this.propertySources);
@@ -301,7 +312,8 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 		return this.validator;
 	}
 
-	private PropertySources loadPropertySources(String[] locations) {
+	private PropertySources loadPropertySources(String[] locations,
+			boolean mergeDefaultSources) {
 		try {
 			PropertySourcesLoader loader = new PropertySourcesLoader();
 			for (String location : locations) {
@@ -314,7 +326,14 @@ public class ConfigurationPropertiesBindingPostProcessor implements BeanPostProc
 				}
 				loader.load(resource);
 			}
-			return loader.getPropertySources();
+
+			MutablePropertySources loaded = loader.getPropertySources();
+			if (mergeDefaultSources) {
+				for (PropertySource<?> propertySource : this.propertySources) {
+					loaded.addLast(propertySource);
+				}
+			}
+			return loaded;
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);

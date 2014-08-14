@@ -197,14 +197,14 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(LocaleResolver.class)
-		@ConditionalOnProperty(prefix = "spring.mvc.", value = "locale")
+		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale")
 		public LocaleResolver localeResolver() {
 			return new FixedLocaleResolver(
 					StringUtils.parseLocaleString(this.mvcProperties.getLocale()));
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.mvc.", value = "date-format")
+		@ConditionalOnProperty(prefix = "spring.mvc", name = "date-format")
 		public Formatter<Date> dateFormatter() {
 			return new DateFormatter(this.mvcProperties.getDateFormat());
 		}

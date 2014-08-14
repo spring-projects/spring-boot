@@ -23,13 +23,12 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -65,7 +64,12 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 				ViewResolver delegate, int delegateOrder) {
 			LiteDeviceDelegatingViewResolver resolver = new LiteDeviceDelegatingViewResolver(
 					delegate);
-			viewResolverProperties.apply(resolver);
+			resolver.setNormalPrefix(this.viewResolverProperties.getNormalPrefix());
+			resolver.setNormalSuffix(this.viewResolverProperties.getNormalSuffix());
+			resolver.setMobilePrefix(this.viewResolverProperties.getMobilePrefix());
+			resolver.setMobileSuffix(this.viewResolverProperties.getMobileSuffix());
+			resolver.setTabletPrefix(this.viewResolverProperties.getTabletPrefix());
+			resolver.setTabletSuffix(this.viewResolverProperties.getTabletSuffix());
 			resolver.setOrder(getAdjustedOrder(delegateOrder));
 			return resolver;
 		}
@@ -84,7 +88,7 @@ public class DeviceDelegatingViewResolverAutoConfiguration {
 	@Configuration
 	@EnableConfigurationProperties(DeviceDelegatingViewResolverProperties.class)
 	@ConditionalOnMissingBean(name = "deviceDelegatingViewResolver")
-	@ConditionalOnExpression("${spring.mobile.devicedelegatingviewresolver.enabled:false}")
+	@ConditionalOnProperty(prefix = "spring.mobile.devicedelegatingviewresolver", name = "enabled", havingValue = "true", matchIfMissing = false)
 	protected static class DeviceDelegatingViewResolverConfiguration {
 
 		@Configuration

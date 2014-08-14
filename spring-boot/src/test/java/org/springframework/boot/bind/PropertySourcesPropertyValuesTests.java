@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -67,10 +68,38 @@ public class PropertySourcesPropertyValuesTests {
 	}
 
 	@Test
+	public void testCompositeValue() {
+		PropertySource<?> map = this.propertySources.get("map");
+		CompositePropertySource composite = new CompositePropertySource("composite");
+		composite.addPropertySource(map);
+		this.propertySources.replace("map", composite);
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+				this.propertySources);
+		assertEquals("bar", propertyValues.getPropertyValue("foo").getValue());
+	}
+
+	@Test
 	public void testEnumeratedValue() {
 		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
 				this.propertySources);
 		assertEquals("bar", propertyValues.getPropertyValue("name").getValue());
+	}
+
+	@Test
+	public void testNonEnumeratedPlaceholder() {
+		this.propertySources.addFirst(new PropertySource<String>("another", "baz") {
+			@Override
+			public Object getProperty(String name) {
+				if (name.equals(getSource())) {
+					return "${foo}";
+				}
+				return null;
+			}
+
+		});
+		PropertySourcesPropertyValues propertyValues = new PropertySourcesPropertyValues(
+				this.propertySources, null, Collections.singleton("baz"));
+		assertEquals("bar", propertyValues.getPropertyValue("baz").getValue());
 	}
 
 	@Test

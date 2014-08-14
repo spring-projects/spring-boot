@@ -19,13 +19,14 @@ package org.springframework.boot.autoconfigure.data.mongo;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.mongodb.repository.config.MongoRepositoryConfigurationExtension;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 
 import com.mongodb.Mongo;
@@ -53,8 +54,9 @@ import com.mongodb.Mongo;
  */
 @Configuration
 @ConditionalOnClass({ Mongo.class, MongoRepository.class })
-@ConditionalOnMissingBean(RepositoryFactoryBeanSupport.class)
-@ConditionalOnExpression("${spring.data.mongo.repositories.enabled:true}")
+@ConditionalOnMissingBean({ RepositoryFactoryBeanSupport.class,
+		MongoRepositoryConfigurationExtension.class })
+@ConditionalOnProperty(prefix = "spring.data.mongo.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(MongoRepositoriesAutoConfigureRegistrar.class)
 @AutoConfigureAfter(MongoAutoConfiguration.class)
 public class MongoRepositoriesAutoConfiguration {

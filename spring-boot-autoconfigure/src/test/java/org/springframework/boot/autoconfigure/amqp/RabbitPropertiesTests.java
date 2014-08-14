@@ -60,6 +60,13 @@ public class RabbitPropertiesTests {
 	}
 
 	@Test
+	public void addressesDoubleValuedPreservesOrder() {
+		this.properties.setAddresses("myhost:9999,ahost:1111/host");
+		assertNull(this.properties.getHost());
+		assertEquals("myhost:9999,ahost:1111", properties.getAddresses());
+	}
+
+	@Test
 	public void addressesSingleValuedWithCredentials() {
 		this.properties.setAddresses("amqp://root:password@otherhost:1111/host");
 		assertEquals("otherhost", this.properties.getHost());

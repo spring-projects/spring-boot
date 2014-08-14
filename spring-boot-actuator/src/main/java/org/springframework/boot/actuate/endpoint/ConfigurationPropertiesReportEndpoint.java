@@ -29,7 +29,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -66,7 +65,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 
 	private static final String CGLIB_FILTER_ID = "cglibFilter";
 
-	private String[] keysToSanitize = new String[] { "password", "secret", "key" };
+	private final Sanitizer sanitizer = new Sanitizer();
 
 	private ApplicationContext context;
 
@@ -87,8 +86,7 @@ public class ConfigurationPropertiesReportEndpoint extends
 	}
 
 	public void setKeysToSanitize(String... keysToSanitize) {
-		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
-		this.keysToSanitize = keysToSanitize;
+		this.sanitizer.setKeysToSanitize(keysToSanitize);
 	}
 
 	@Override
@@ -192,19 +190,10 @@ public class ConfigurationPropertiesReportEndpoint extends
 				map.put(entry.getKey(), sanitize((Map<String, Object>) entry.getValue()));
 			}
 			else {
-				map.put(entry.getKey(), sanitize(entry.getKey(), entry.getValue()));
+				map.put(entry.getKey(), this.sanitizer.sanitize(entry.getKey(), entry.getValue()));
 			}
 		}
 		return map;
-	}
-
-	private Object sanitize(String name, Object object) {
-		for (String keyToSanitize : this.keysToSanitize) {
-			if (name.toLowerCase().endsWith(keyToSanitize)) {
-				return (object == null ? null : "******");
-			}
-		}
-		return object;
 	}
 
 	/**

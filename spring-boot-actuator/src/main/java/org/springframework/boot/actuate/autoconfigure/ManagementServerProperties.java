@@ -60,6 +60,8 @@ public class ManagementServerProperties implements SecurityPrequisite {
 	@NotNull
 	private String contextPath = "";
 
+	private boolean addApplicationContextHeader = true;
+
 	private final Security security = maybeCreateSecurity();
 
 	/**
@@ -97,6 +99,14 @@ public class ManagementServerProperties implements SecurityPrequisite {
 
 	public Security getSecurity() {
 		return this.security;
+	}
+
+	public boolean getAddApplicationContextHeader() {
+		return this.addApplicationContextHeader;
+	}
+
+	public void setAddApplicationContextHeader(boolean addApplicationContextHeader) {
+		this.addApplicationContextHeader = addApplicationContextHeader;
 	}
 
 	/**

@@ -88,6 +88,10 @@ class DataSourceInitializer implements ApplicationListener<DataSourceInitialized
 
 	@Override
 	public void onApplicationEvent(DataSourceInitializedEvent event) {
+		if (!this.properties.isInitialize()) {
+			logger.debug("Initialization disabled (not running data scripts)");
+			return;
+		}
 		// NOTE the event can happen more than once and
 		// the event datasource is not used here
 		if (!this.initialized) {

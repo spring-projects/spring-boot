@@ -16,6 +16,7 @@
 
 package org.springframework.boot.bind;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -24,12 +25,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.PropertyValues;
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySources;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.PatternMatchUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.DataBinder;
 
 /**
@@ -69,50 +72,94 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 		this.propertySources = propertySources;
 		PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
 				propertySources);
-		String[] includes = patterns == null ? new String[0] : patterns
-				.toArray(new String[0]);
-		String[] exacts = names == null ? new String[0] : names.toArray(new String[0]);
+		String[] includes = toArray(patterns);
+		String[] exacts = toArray(names);
 		for (PropertySource<?> source : propertySources) {
-			if (source instanceof EnumerablePropertySource) {
-				EnumerablePropertySource<?> enumerable = (EnumerablePropertySource<?>) source;
-				if (enumerable.getPropertyNames().length > 0) {
-					for (String propertyName : enumerable.getPropertyNames()) {
-						if (this.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
-								&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
-							continue;
-						}
-						Object value = source.getProperty(propertyName);
-						try {
-							value = resolver.getProperty(propertyName);
-						}
-						catch (RuntimeException ex) {
-							// Probably could not resolve placeholders, ignore it here
-						}
-						if (!this.propertyValues.containsKey(propertyName)) {
-							this.propertyValues.put(propertyName, new PropertyValue(
-									propertyName, value));
-						}
-					}
+			processPropertySource(source, resolver, includes, exacts);
+		}
+	}
+
+	private String[] toArray(Collection<String> strings) {
+		if (strings == null) {
+			return new String[0];
+		}
+		return strings.toArray(new String[strings.size()]);
+	}
+
+	private void processPropertySource(PropertySource<?> source,
+			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
+		if (source instanceof EnumerablePropertySource) {
+			processEnumerablePropertySource((EnumerablePropertySource<?>) source,
+					resolver, includes, exacts);
+		}
+		else if (source instanceof CompositePropertySource) {
+			processCompositePropertySource((CompositePropertySource) source, resolver,
+					includes, exacts);
+		}
+		else {
+			// We can only do exact matches for non-enumerable property names, but
+			// that's better than nothing...
+			processDefaultPropertySource(source, resolver, includes, exacts);
+		}
+	}
+
+	private void processEnumerablePropertySource(EnumerablePropertySource<?> source,
+			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
+		if (source.getPropertyNames().length > 0) {
+			for (String propertyName : source.getPropertyNames()) {
+				if (this.NON_ENUMERABLE_ENUMERABLES.contains(source.getName())
+						&& !PatternMatchUtils.simpleMatch(includes, propertyName)) {
+					continue;
+				}
+				Object value = source.getProperty(propertyName);
+				try {
+					value = resolver.getProperty(propertyName);
+				}
+				catch (RuntimeException ex) {
+					// Probably could not resolve placeholders, ignore it here
+				}
+				if (!this.propertyValues.containsKey(propertyName)) {
+					this.propertyValues.put(propertyName, new PropertyValue(propertyName,
+							value));
 				}
 			}
-			else {
-				// We can only do exact matches for non-enumerable property names, but
-				// that's better than nothing...
-				for (String propertyName : exacts) {
-					Object value;
-					value = source.getProperty(propertyName);
-					if (value != null && !this.propertyValues.containsKey(propertyName)) {
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
-						continue;
-					}
-					value = source.getProperty(propertyName.toUpperCase());
-					if (value != null && !this.propertyValues.containsKey(propertyName)) {
-						this.propertyValues.put(propertyName, new PropertyValue(
-								propertyName, value));
-						continue;
-					}
-				}
+		}
+	}
+
+	private void processCompositePropertySource(CompositePropertySource source,
+			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
+		for (PropertySource<?> nested : extractSources(source)) {
+			processPropertySource(nested, resolver, includes, exacts);
+		}
+	}
+
+	private Collection<PropertySource<?>> extractSources(CompositePropertySource composite) {
+		Field field = ReflectionUtils.findField(CompositePropertySource.class,
+				"propertySources");
+		field.setAccessible(true);
+		try {
+			@SuppressWarnings("unchecked")
+			Collection<PropertySource<?>> collection = (Collection<PropertySource<?>>) field
+					.get(composite);
+			return collection;
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(
+					"Cannot extract property sources from composite", ex);
+		}
+	}
+
+	private void processDefaultPropertySource(PropertySource<?> source,
+			PropertySourcesPropertyResolver resolver, String[] includes, String[] exacts) {
+		for (String propertyName : exacts) {
+			Object value = resolver.getProperty(propertyName);
+			if (value == null) {
+				value = source.getProperty(propertyName.toUpperCase());
+			}
+			if (value != null && !this.propertyValues.containsKey(propertyName)) {
+				this.propertyValues.put(propertyName, new PropertyValue(propertyName,
+						value));
+				continue;
 			}
 		}
 	}

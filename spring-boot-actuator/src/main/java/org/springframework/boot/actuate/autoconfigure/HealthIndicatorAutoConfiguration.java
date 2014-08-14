@@ -34,7 +34,7 @@ import org.springframework.boot.actuate.health.OrderedHealthAggregator;
 import org.springframework.boot.actuate.health.RabbitHealthIndicator;
 import org.springframework.boot.actuate.health.RedisHealthIndicator;
 import org.springframework.boot.actuate.health.SolrHealthIndicator;
-import org.springframework.boot.actuate.health.VanillaHealthIndicator;
+import org.springframework.boot.actuate.health.ApplicationHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -81,8 +81,8 @@ public class HealthIndicatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HealthIndicator.class)
-	public HealthIndicator statusHealthIndicator() {
-		return new VanillaHealthIndicator();
+	public HealthIndicator applicationHealthIndicator() {
+		return new ApplicationHealthIndicator();
 	}
 
 	@Configuration

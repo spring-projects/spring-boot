@@ -95,7 +95,6 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 				this.tomcat.stop();
 				throw new IllegalStateException("Tomcat connector in failed state");
 			}
-
 		}
 		catch (Exception ex) {
 			throw new EmbeddedServletContainerException(
@@ -154,12 +153,16 @@ public class TomcatEmbeddedServletContainer implements EmbeddedServletContainer 
 		}
 		// Ensure process isn't left running if it actually failed to start
 		if (LifecycleState.FAILED.equals(this.tomcat.getConnector().getState())) {
-			try {
-				this.tomcat.stop();
-			}
-			catch (LifecycleException e) {
-			}
+			stopSilently();
 			throw new IllegalStateException("Tomcat connector in failed state");
+		}
+	}
+
+	private void stopSilently() {
+		try {
+			this.tomcat.stop();
+		}
+		catch (LifecycleException ex) {
 		}
 	}
 

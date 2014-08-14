@@ -19,8 +19,8 @@ package org.springframework.boot.yaml;
 import java.util.Properties;
 import java.util.Set;
 
-import org.springframework.boot.yaml.YamlProcessor.DocumentMatcher;
-import org.springframework.boot.yaml.YamlProcessor.MatchStatus;
+import org.springframework.beans.factory.config.YamlProcessor.DocumentMatcher;
+import org.springframework.beans.factory.config.YamlProcessor.MatchStatus;
 import org.springframework.util.StringUtils;
 
 /**

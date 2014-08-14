@@ -38,6 +38,7 @@ import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * A special {@link AbstractConfigurableEmbeddedServletContainer} for non-embedded
@@ -77,20 +78,26 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 	private final Map<Class<?>, Class<?>> subtypes = new HashMap<Class<?>, Class<?>>();
 
+	private final OncePerRequestFilter delegate = new OncePerRequestFilter() {
+
+		@Override
+		protected void doFilterInternal(HttpServletRequest request,
+				HttpServletResponse response, FilterChain chain) throws ServletException,
+				IOException {
+			ErrorPageFilter.this.doFilter(request, response, chain);
+		}
+
+	};
+
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		this.delegate.init(filterConfig);
 	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
-		if (request instanceof HttpServletRequest
-				&& response instanceof HttpServletResponse) {
-			doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
-		}
-		else {
-			chain.doFilter(request, response);
-		}
+		this.delegate.doFilter(request, response, chain);
 	}
 
 	private void doFilter(HttpServletRequest request, HttpServletResponse response,
@@ -102,13 +109,16 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			int status = wrapped.getStatus();
 			if (status >= 400) {
 				handleErrorStatus(request, response, status, wrapped.getMessage());
+				response.flushBuffer();
+			}
+			else if (!request.isAsyncStarted()) {
+				response.flushBuffer();
 			}
 		}
 		catch (Throwable ex) {
 			handleException(request, response, wrapped, ex);
+			response.flushBuffer();
 		}
-		response.flushBuffer();
-
 	}
 
 	private void handleErrorStatus(HttpServletRequest request,
@@ -119,6 +129,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 			response.sendError(status, message);
 			return;
 		}
+		response.setStatus(status);
 		setErrorAttributes(request, status, message);
 		request.getRequestDispatcher(errorPath).forward(request, response);
 	}
@@ -228,6 +239,7 @@ class ErrorPageFilter extends AbstractConfigurableEmbeddedServletContainer imple
 
 		public ErrorWrapperResponse(HttpServletResponse response) {
 			super(response);
+			this.status = response.getStatus();
 		}
 
 		@Override

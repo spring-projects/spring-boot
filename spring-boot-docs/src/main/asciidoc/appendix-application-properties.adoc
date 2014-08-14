@@ -43,7 +43,7 @@ content into your application; rather pick only the properties that you need.
 	# LOGGING
 	logging.path=/var/logs
 	logging.file=myapp.log
-	logging.config= # location of config file (default classpath:/logback.xml for logback)
+	logging.config= # location of config file (default classpath:logback.xml for logback)
     logging.level.*= # levels for loggers, e.g. "logging.level.org.springframework=DEBUG" (TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF)
 
 	# IDENTITY ({sc-spring-boot}/context/ContextIdApplicationContextInitializer.{sc-ext}[ContextIdApplicationContextInitializer])
@@ -56,6 +56,14 @@ content into your application; rather pick only the properties that you need.
 	server.session-timeout= # session timeout in seconds
 	server.context-path= # the context path, defaults to '/'
 	server.servlet-path= # the servlet path, defaults to '/'
+	server.ssl.client-auth= # want or need
+	server.ssl.key-alias=
+	server.ssl.key-password=
+	server.ssl.key-store=
+	server.ssl.key-store-password=
+	server.ssl.protocol=TLS
+	server.ssl.trust-store=
+	server.ssl.trust-store-password=
 	server.tomcat.access-log-pattern= # log pattern of the access log
 	server.tomcat.access-log-enabled=false # is access logging enabled
 	server.tomcat.protocol-header=x-forwarded-proto # ssl forward headers
@@ -318,6 +326,7 @@ content into your application; rather pick only the properties that you need.
 	management.port= # defaults to 'server.port'
 	management.address= # bind to a specific NIC
 	management.contextPath= # default to '/'
+	management.add-application-context-header= # default to true
 
 	# ENDPOINTS ({sc-spring-boot-actuator}/endpoint/AbstractEndpoint.{sc-ext}[AbstractEndpoint] subclasses)
 	endpoints.autoconfig.id=autoconfig
@@ -329,13 +338,14 @@ content into your application; rather pick only the properties that you need.
 	endpoints.configprops.id=configprops
 	endpoints.configprops.sensitive=true
 	endpoints.configprops.enabled=true
-	endpoints.configprops.keys-to-sanitize=password,secret
+	endpoints.configprops.keys-to-sanitize=password,secret,key # suffix or regex
 	endpoints.dump.id=dump
 	endpoints.dump.sensitive=true
 	endpoints.dump.enabled=true
 	endpoints.env.id=env
 	endpoints.env.sensitive=true
 	endpoints.env.enabled=true
+	endpoints.env.keys-to-sanitize=password,secret,key # suffix or regex
 	endpoints.health.id=health
 	endpoints.health.sensitive=false
 	endpoints.health.enabled=true

@@ -17,10 +17,9 @@
 package org.springframework.boot.autoconfigure.mobile;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver;
 
 /**
- * {@link ConfigurationProperties properties} for device view resolver.
+ * Properties for device view resolver.
  *
  * @author Stephane Nicoll
  * @since 1.2.0
@@ -41,7 +40,7 @@ public class DeviceDelegatingViewResolverProperties {
 	private String tabletSuffix = "";
 
 	public String getNormalPrefix() {
-		return normalPrefix;
+		return this.normalPrefix;
 	}
 
 	public void setNormalPrefix(String normalPrefix) {
@@ -49,7 +48,7 @@ public class DeviceDelegatingViewResolverProperties {
 	}
 
 	public String getNormalSuffix() {
-		return normalSuffix;
+		return this.normalSuffix;
 	}
 
 	public void setNormalSuffix(String normalSuffix) {
@@ -57,7 +56,7 @@ public class DeviceDelegatingViewResolverProperties {
 	}
 
 	public String getMobilePrefix() {
-		return mobilePrefix;
+		return this.mobilePrefix;
 	}
 
 	public void setMobilePrefix(String mobilePrefix) {
@@ -65,7 +64,7 @@ public class DeviceDelegatingViewResolverProperties {
 	}
 
 	public String getMobileSuffix() {
-		return mobileSuffix;
+		return this.mobileSuffix;
 	}
 
 	public void setMobileSuffix(String mobileSuffix) {
@@ -73,7 +72,7 @@ public class DeviceDelegatingViewResolverProperties {
 	}
 
 	public String getTabletPrefix() {
-		return tabletPrefix;
+		return this.tabletPrefix;
 	}
 
 	public void setTabletPrefix(String tabletPrefix) {
@@ -81,20 +80,11 @@ public class DeviceDelegatingViewResolverProperties {
 	}
 
 	public String getTabletSuffix() {
-		return tabletSuffix;
+		return this.tabletSuffix;
 	}
 
 	public void setTabletSuffix(String tabletSuffix) {
 		this.tabletSuffix = tabletSuffix;
-	}
-
-	public void apply(LiteDeviceDelegatingViewResolver resolver) {
-		resolver.setNormalPrefix(getNormalPrefix());
-		resolver.setNormalSuffix(getNormalSuffix());
-		resolver.setMobilePrefix(getMobilePrefix());
-		resolver.setMobileSuffix(getMobileSuffix());
-		resolver.setTabletPrefix(getTabletPrefix());
-		resolver.setTabletSuffix(getTabletSuffix());
 	}
 
 }

@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.social;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.social.connect.ConnectionFactory;
 
 /**
  * Base {@link ConfigurationProperties properties} for spring social.
@@ -32,7 +31,7 @@ abstract class SocialProperties {
 	private String appSecret;
 
 	public String getAppId() {
-		return appId;
+		return this.appId;
 	}
 
 	public void setAppId(String appId) {
@@ -40,12 +39,11 @@ abstract class SocialProperties {
 	}
 
 	public String getAppSecret() {
-		return appSecret;
+		return this.appSecret;
 	}
 
 	public void setAppSecret(String appSecret) {
 		this.appSecret = appSecret;
 	}
 
-	public abstract ConnectionFactory<?> createConnectionFactory();
 }

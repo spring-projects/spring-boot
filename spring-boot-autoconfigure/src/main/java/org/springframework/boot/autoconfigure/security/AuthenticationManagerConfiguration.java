@@ -26,12 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
@@ -54,7 +53,8 @@ import org.springframework.security.config.annotation.authentication.configurers
 @ConditionalOnMissingBean(AuthenticationManager.class)
 @Order(Ordered.LOWEST_PRECEDENCE - 3)
 public class AuthenticationManagerConfiguration extends
-		GlobalAuthenticationConfigurerAdapter {
+		GlobalAuthenticationConfigurerAdapter implements
+		ApplicationListener<ContextRefreshedEvent> {
 
 	private static Log logger = LogFactory
 			.getLog(AuthenticationManagerConfiguration.class);
@@ -78,24 +78,27 @@ public class AuthenticationManagerConfiguration extends
 		auth.apply(this.configurer);
 	}
 
-	@Bean
-	// avoid issues with scopedTarget (SPR-11548)
-	@Primary
-	public AuthenticationManager authenticationManager() {
-		return lazyAuthenticationManager();
+	@Override
+	public void configure(AuthenticationManagerBuilder auth) throws Exception {
+		this.configurer.configureParent(auth);
 	}
 
 	@Bean
-	@Lazy
-	@Scope(proxyMode = ScopedProxyMode.INTERFACES)
-	protected AuthenticationManager lazyAuthenticationManager() {
+	@Primary
+	public AuthenticationManager authenticationManager() {
+		AuthenticationManager manager = this.configurer.getAuthenticationManagerBuilder()
+				.getOrBuild();
+		return manager;
+	}
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
 		AuthenticationManager manager = this.configurer.getAuthenticationManagerBuilder()
 				.getOrBuild();
 		if (manager instanceof ProviderManager) {
 			((ProviderManager) manager)
 					.setAuthenticationEventPublisher(this.authenticationEventPublisher);
 		}
-		return manager;
 	}
 
 	/**
@@ -124,6 +127,13 @@ public class AuthenticationManagerConfiguration extends
 			GlobalAuthenticationConfigurerAdapter {
 
 		private AuthenticationManagerBuilder defaultAuth;
+		private AuthenticationManager parent;
+
+		public void configureParent(AuthenticationManagerBuilder auth) {
+			if (!auth.isConfigured() && this.parent != null) {
+				auth.parentAuthenticationManager(this.parent);
+			}
+		}
 
 		public AuthenticationManagerBuilder getAuthenticationManagerBuilder() {
 			return this.defaultAuth;
@@ -147,11 +157,14 @@ public class AuthenticationManagerConfiguration extends
 
 			Set<String> roles = new LinkedHashSet<String>(user.getRole());
 
-			AuthenticationManager parent = this.defaultAuth.inMemoryAuthentication()
+			this.parent = this.defaultAuth.inMemoryAuthentication()
 					.withUser(user.getName()).password(user.getPassword())
 					.roles(roles.toArray(new String[roles.size()])).and().and().build();
 
-			auth.parentAuthenticationManager(parent);
+			// Defer actually setting the parent on the AuthenticationManagerBuilder
+			// because it makes it "configured" and we are only in the init() phase here.
+
 		}
 	}
+
 }

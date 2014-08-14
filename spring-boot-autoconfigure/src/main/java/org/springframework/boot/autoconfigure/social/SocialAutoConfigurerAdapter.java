@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.social;
 import org.springframework.core.env.Environment;
 import org.springframework.social.config.annotation.ConnectionFactoryConfigurer;
 import org.springframework.social.config.annotation.SocialConfigurerAdapter;
+import org.springframework.social.connect.ConnectionFactory;
 
 /**
  * Base class for auto-configured {@link SocialConfigurerAdapter}s.
@@ -29,12 +30,12 @@ import org.springframework.social.config.annotation.SocialConfigurerAdapter;
  */
 abstract class SocialAutoConfigurerAdapter extends SocialConfigurerAdapter {
 
-	protected abstract SocialProperties getSocialProperties();
-
 	@Override
 	public void addConnectionFactories(ConnectionFactoryConfigurer configurer,
 			Environment environment) {
-		configurer.addConnectionFactory(getSocialProperties().createConnectionFactory());
+		configurer.addConnectionFactory(createConnectionFactory());
 	}
+
+	protected abstract ConnectionFactory<?> createConnectionFactory();
 
 }

@@ -29,10 +29,13 @@ import org.junit.Test;
 import org.springframework.boot.context.embedded.ErrorPage;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
+import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -57,6 +60,29 @@ public class ErrorPageFilterTests {
 		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
 				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void unauthorizedWithErrorPath() throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				((HttpServletResponse) response).sendError(401, "UNAUTHORIZED");
+				super.doFilter(request, response);
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		HttpServletResponseWrapper wrapper = (HttpServletResponseWrapper) this.chain
+				.getResponse();
+		assertThat(wrapper.getResponse(), equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
+		assertThat(wrapper.getStatus(), equalTo(401));
+		// The real response has to be 401 as well...
+		assertThat(this.response.getStatus(), equalTo(401));
 	}
 
 	@Test
@@ -77,6 +103,7 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
+		assertTrue(this.response.isCommitted());
 	}
 
 	@Test
@@ -95,6 +122,22 @@ public class ErrorPageFilterTests {
 				equalTo((ServletResponse) this.response));
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
 				equalTo(400));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void oncePerRequest() throws Exception {
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				((HttpServletResponse) response).sendError(400, "BAD");
+				assertNotNull(request.getAttribute("FILTER.FILTERED"));
+				super.doFilter(request, response);
+			}
+		};
+		this.filter.init(new MockFilterConfig("FILTER"));
+		this.filter.doFilter(this.request, this.response, this.chain);
 	}
 
 	@Test
@@ -163,6 +206,21 @@ public class ErrorPageFilterTests {
 	}
 
 	@Test
+	public void statusCode() throws Exception {
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				assertThat(((HttpServletResponse) response).getStatus(), equalTo(200));
+				super.doFilter(request, response);
+			}
+		};
+		this.filter.doFilter(this.request, this.response, this.chain);
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus(),
+				equalTo(200));
+	}
+
+	@Test
 	public void subClassExceptionError() throws Exception {
 		this.filter.addErrorPages(new ErrorPage(RuntimeException.class, "/500"));
 		this.chain = new MockFilterChain() {
@@ -182,6 +240,62 @@ public class ErrorPageFilterTests {
 				equalTo((Object) "BAD"));
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE),
 				equalTo((Object) IllegalStateException.class.getName()));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsNotCommitedWhenRequestIsAsync() throws Exception {
+		this.request.setAsyncStarted(true);
+
+		this.filter.doFilter(this.request, this.response, this.chain);
+
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertFalse(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsCommitedWhenRequestIsAsyncAndExceptionIsThrown()
+			throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		this.request.setAsyncStarted(true);
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				throw new RuntimeException("BAD");
+			}
+		};
+
+		this.filter.doFilter(this.request, this.response, this.chain);
+
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
+	}
+
+	@Test
+	public void responseIsCommitedWhenRequestIsAsyncAndStatusIs400Plus() throws Exception {
+		this.filter.addErrorPages(new ErrorPage("/error"));
+		this.request.setAsyncStarted(true);
+		this.chain = new MockFilterChain() {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response)
+					throws IOException, ServletException {
+				super.doFilter(request, response);
+				((HttpServletResponse) response).sendError(400, "BAD");
+			}
+		};
+
+		this.filter.doFilter(this.request, this.response, this.chain);
+
+		assertThat(this.chain.getRequest(), equalTo((ServletRequest) this.request));
+		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getResponse(),
+				equalTo((ServletResponse) this.response));
+		assertTrue(this.response.isCommitted());
 	}
 
 }

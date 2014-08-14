@@ -107,6 +107,11 @@ public class Repackager {
 		if (libraries == null) {
 			throw new IllegalArgumentException("Libraries must not be null");
 		}
+
+		if (alreadyRepackaged()) {
+			return;
+		}
+
 		destination = destination.getAbsoluteFile();
 		File workingSource = this.source;
 		if (this.source.equals(destination)) {
@@ -129,6 +134,18 @@ public class Repackager {
 			if (!this.backupSource && !this.source.equals(workingSource)) {
 				deleteFile(workingSource);
 			}
+		}
+	}
+
+	private boolean alreadyRepackaged() throws IOException {
+		JarFile jarFile = new JarFile(this.source);
+		try {
+			Manifest manifest = jarFile.getManifest();
+			return (manifest != null && manifest.getMainAttributes().getValue(
+					BOOT_VERSION_ATTRIBUTE) != null);
+		}
+		finally {
+			jarFile.close();
 		}
 	}
 
