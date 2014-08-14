@@ -19,6 +19,10 @@
 			<h2>Sample form</h2>
 			<form action="#" th:action="@{/form}" th:object="${formBean}" method="post">
 				
+				<div th:if="${#fields.hasErrors('*')}" class="alert alert-error">
+					<strong th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</strong>
+				</div>
+				
 				<div class="form-group">
 					<label for="name">Name</label>
 					<input type="text" th:field="*{name}" />

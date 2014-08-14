@@ -23,8 +23,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -34,10 +32,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
-public class Application {
+public class SampleHdivApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(SampleHdivApplication.class, args);
 	}
 
 	@Bean
@@ -45,7 +43,6 @@ public class Application {
 		return new WebConfig();
 	}
 	
-	@Order(Ordered.LOWEST_PRECEDENCE - 9)
 	protected static class WebConfig extends WebMvcConfigurerAdapter{
 		
 		@Override
@@ -59,7 +56,6 @@ public class Application {
 		return new ApplicationSecurity();
 	}
 
-	@Order(Ordered.LOWEST_PRECEDENCE - 8)
 	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
 		
 		@Override
@@ -77,18 +73,15 @@ public class Application {
 				.authorizeRequests().anyRequest().fullyAuthenticated().and()
 				.formLogin()
 					.loginPage("/login")
-					.failureUrl("/login?error").permitAll().and()
-				.csrf().disable();// Disable Spring Security CSRF to use HDIVs
+					.failureUrl("/login?error").permitAll();
 		}
 	}
-	
 	
 	@Bean
 	public ApplicationWebSecurity applicationWebSecurity() {
 		return new ApplicationWebSecurity();
 	}
 
-	@Order(Ordered.LOWEST_PRECEDENCE - 7)
 	protected static class ApplicationWebSecurity extends HdivWebSecurityConfigurerAdapter {
 
 		@Override

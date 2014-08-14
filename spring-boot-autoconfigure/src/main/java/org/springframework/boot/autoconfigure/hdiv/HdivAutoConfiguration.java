@@ -17,7 +17,6 @@ package org.springframework.boot.autoconfigure.hdiv;
 
 import java.util.EnumSet;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import javax.servlet.ServletContext;
@@ -29,18 +28,14 @@ import org.hdiv.config.annotation.ValidationConfigurer;
 import org.hdiv.config.annotation.configuration.HdivWebSecurityConfigurerAdapter;
 import org.hdiv.filter.ValidatorFilter;
 import org.hdiv.listener.InitListener;
-import org.hdiv.web.validator.EditableParameterValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.context.annotation.Import;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration Auto-configuration} for HDIV Integration.
@@ -49,32 +44,12 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @ConditionalOnClass(ValidatorFilter.class)
 @ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
+@Import(EditableValidationConfiguration.class)
 public class HdivAutoConfiguration {
 
 	@Configuration
 	@EnableHdivWebSecurity
 	protected static class HdivDefaultConfiguration extends HdivWebSecurityConfigurerAdapter {
-
-		@Autowired
-		private ApplicationContext context;
-
-		@PostConstruct
-		public void init() {
-
-			// Add HDIVs Validator for editable validation to Spring MVC
-			EditableParameterValidator hdivEditableValidator = (EditableParameterValidator) context
-					.getBean("hdivEditableValidator");
-
-			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
-			ConfigurableWebBindingInitializer initializer = (ConfigurableWebBindingInitializer) handlerAdapter
-					.getWebBindingInitializer();
-			if (initializer.getValidator() != null) {
-				// Wrap existing validator
-				hdivEditableValidator.setInnerValidator(initializer.getValidator());
-			}
-			initializer.setValidator(hdivEditableValidator);
-
-		}
 
 		@Override
 		public void addExclusions(ExclusionRegistry registry) {
@@ -106,6 +81,9 @@ public class HdivAutoConfiguration {
 			registry.addUrlExclusions("/metrics", "/metrics/.*").method("GET");
 			registry.addUrlExclusions("/env", "/env/.*").method("GET");
 			registry.addUrlExclusions("/mappings").method("GET");
+
+			// Spring Security
+			registry.addParamExclusions("_csrf");
 		}
 
 		@Override
