@@ -16,18 +16,57 @@
 
 package org.springframework.boot;
 
+import java.io.PrintStream;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.test.OutputCapture;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link Banner}.
+ * Tests for {@link Banner} and its usage by {@link SpringApplication}.
  *
  * @author Phillip Webb
+ * @author Michael Stummvoll
  */
 public class BannerTests {
 
+	@Rule
+	public OutputCapture out = new OutputCapture();
+
 	@Test
-	public void visualBannder() throws Exception {
-		Banner.write(System.out);
+	public void testDefaultBanner() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		application.run();
+		assertThat(this.out.toString(), containsString(":: Spring Boot ::"));
+	}
+
+	@Test
+	public void testCustomBanner() throws Exception {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebEnvironment(false);
+		application.setBanner(new DummyBanner());
+		application.run();
+		assertThat(this.out.toString(), containsString("My Banner"));
+	}
+
+	static class DummyBanner implements Banner {
+
+		@Override
+		public void write(Environment environment, PrintStream out) {
+			out.println("My Banner");
+		}
+
+	}
+
+	@Configuration
+	public static class Config {
+
 	}
 
 }
