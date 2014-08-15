@@ -137,7 +137,7 @@ public class EntityManagerFactoryBuilder {
 		 * @param properties the properties to use
 		 * @return the builder for fluent usage
 		 */
-		public Builder properties(Map<String, String> properties) {
+		public Builder properties(Map<String, ?> properties) {
 			this.properties.putAll(properties);
 			return this;
 		}
