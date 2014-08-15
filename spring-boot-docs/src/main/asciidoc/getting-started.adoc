@@ -182,11 +182,7 @@ Here is a typical `build.gradle` file:
 ----
 	buildscript {
 		repositories {
-			mavenCentral()
-ifndef::release[]
-			maven { url "http://repo.spring.io/snapshot" }
-			maven { url "http://repo.spring.io/milestone" }
-endif::release[]
+			jcenter()
 		}
 		dependencies {
 			classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-version}")
@@ -202,11 +198,7 @@ endif::release[]
 	}
 
 	repositories {
-		mavenCentral()
-ifndef::release[]
-		maven { url "http://repo.spring.io/snapshot" }
-		maven { url "http://repo.spring.io/milestone" }
-endif::release[]
+		jcenter()
 	}
 
 	dependencies {
