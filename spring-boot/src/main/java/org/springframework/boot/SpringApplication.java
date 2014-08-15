@@ -169,6 +169,8 @@ public class SpringApplication {
 
 	private boolean addCommandLineProperties = true;
 
+	private Banner banner;
+
 	private ResourceLoader resourceLoader;
 
 	private BeanNameGenerator beanNameGenerator;
@@ -205,6 +207,27 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Sets the {@link Banner} instance which will be used to print the banner
+	 * when no static banner file is provided.
+	 *
+	 * @param banner
+	 *            The Banner instance to use
+	 */
+	public void setBanner(Banner banner) {
+		this.banner = banner;
+	}
+
+	/**
+	 * returns the {@link Banner} instance which will be used to print the
+	 * banner when no static banner file is provided.
+	 *
+	 * @return The Banner instance.
+	 */
+	private Banner getBanner() {
+		return this.banner;
+	}
+
+	/**
 	 * Crate a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified sources (see {@link SpringApplication class-level}
 	 * documentation for details. The instance can be customized before calling
@@ -224,6 +247,7 @@ public class SpringApplication {
 		if (sources != null && sources.length > 0) {
 			this.sources.addAll(Arrays.asList(sources));
 		}
+		this.banner = new SpringBanner();
 		this.webEnvironment = deduceWebEnvironment();
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
@@ -501,7 +525,7 @@ public class SpringApplication {
 	 * @see #printBanner(Environment)
 	 */
 	protected void printBanner() {
-		Banner.write(System.out);
+		getBanner().write(System.out);
 	}
 
 	/**

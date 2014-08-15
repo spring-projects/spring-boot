@@ -16,18 +16,41 @@
 
 package org.springframework.boot;
 
+import java.io.PrintStream;
+
+import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Tests for {@link Banner}.
+ * Tests for {@link Banner} and its usage by {@link SpringApplication}.
  *
  * @author Phillip Webb
+ * @author Michael Stummvoll
  */
+@Configuration
 public class BannerTests {
 
 	@Test
-	public void visualBannder() throws Exception {
-		Banner.write(System.out);
+	public void testCustomBanner() throws Exception {
+		SpringApplication app = new SpringApplication(BannerTests.class);
+		app.setWebEnvironment(false);
+		DummyBanner dummyBanner = new DummyBanner();
+		app.setBanner(dummyBanner);
+		app.run();
+		Assert.assertEquals(1, dummyBanner.writeCount);
+	}
+
+	static class DummyBanner implements Banner {
+
+		private int writeCount;
+
+		@Override
+		public void write(PrintStream out) {
+			out.println("Dummy Banner");
+			++writeCount;
+		}
+
 	}
 
 }

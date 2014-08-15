@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -83,6 +84,18 @@ public class SpringApplicationBuilder {
 		this.application = createSpringApplication(sources);
 	}
 
+	/**
+	 * Sets the {@link Banner} instance which will be used to print the banner
+	 * when no static banner file is provided.
+	 *
+	 * @param banner
+	 *            The Banner instance to use
+	 */
+	public SpringApplicationBuilder banner(Banner banner) {
+		this.application.setBanner(banner);
+		return this;
+	}
+	
 	/**
 	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
 	 * given sources. Subclasses may override in order to provide a custom subclass of
