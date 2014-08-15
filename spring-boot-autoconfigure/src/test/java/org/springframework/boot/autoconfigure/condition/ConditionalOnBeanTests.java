@@ -77,6 +77,14 @@ public class ConditionalOnBeanTests {
 	}
 
 	@Test
+	public void testClassOnBeanClassNameCondition() {
+		this.context.register(FooConfiguration.class, OnBeanClassNameConfiguration.class);
+		this.context.refresh();
+		assertTrue(this.context.containsBean("bar"));
+		assertEquals("bar", this.context.getBean("bar"));
+	}
+
+	@Test
 	public void testOnBeanConditionWithXml() {
 		this.context.register(XmlConfiguration.class, OnBeanNameConfiguration.class);
 		this.context.refresh();
@@ -98,6 +106,14 @@ public class ConditionalOnBeanTests {
 		this.context.refresh();
 		assertTrue(this.context.containsBean("bar"));
 		assertEquals("bar", this.context.getBean("bar"));
+	}
+
+	@Test
+	public void testOnMissingBeanType() throws Exception {
+		this.context.register(FooConfiguration.class,
+				OnBeanMissingClassConfiguration.class);
+		this.context.refresh();
+		assertFalse(this.context.containsBean("bar"));
 	}
 
 	@Configuration
@@ -130,6 +146,24 @@ public class ConditionalOnBeanTests {
 	@Configuration
 	@ConditionalOnBean(String.class)
 	protected static class OnBeanClassConfiguration {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnBean(type = "java.lang.String")
+	protected static class OnBeanClassNameConfiguration {
+		@Bean
+		public String bar() {
+			return "bar";
+		}
+	}
+
+	@Configuration
+	@ConditionalOnBean(type = "some.type.Missing")
+	protected static class OnBeanMissingClassConfiguration {
 		@Bean
 		public String bar() {
 			return "bar";

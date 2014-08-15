@@ -290,6 +290,7 @@ class OnBeanCondition extends SpringBootCondition implements ConfigurationCondit
 					.getAllAnnotationAttributes(annotationType.getName(), true);
 			collect(attributes, "name", this.names);
 			collect(attributes, "value", this.types);
+			collect(attributes, "type", this.types);
 			collect(attributes, "annotation", this.annotations);
 			if (this.types.isEmpty() && this.names.isEmpty()) {
 				addDeducedBeanType(context, metadata, this.types);

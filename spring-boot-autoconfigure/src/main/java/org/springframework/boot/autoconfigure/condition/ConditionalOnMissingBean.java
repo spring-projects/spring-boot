@@ -47,6 +47,13 @@ public @interface ConditionalOnMissingBean {
 	Class<?>[] value() default {};
 
 	/**
+	 * The class type names of bean that should be checked. The condition matches when
+	 * each class specified is missing in the {@link ApplicationContext}.
+	 * @return the class type names of beans to check
+	 */
+	String[] type() default {};
+
+	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
 	 * when each class specified is missing from all beans in the
 	 * {@link ApplicationContext}.
