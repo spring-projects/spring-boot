@@ -487,7 +487,7 @@ public class SpringApplication {
 		}
 
 		if (this.banner != null) {
-			this.banner.write(environment, System.out);
+			this.banner.printBanner(environment, System.out);
 			return;
 		}
 
@@ -517,7 +517,7 @@ public class SpringApplication {
 	 */
 	@Deprecated
 	protected void printBanner() {
-		DEFAULT_BANNER.write(null, System.out);
+		DEFAULT_BANNER.printBanner(null, System.out);
 	}
 
 	/**

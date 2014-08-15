@@ -30,10 +30,10 @@ import org.springframework.core.env.Environment;
 public interface Banner {
 
 	/**
-	 * Write the banner to the specified print stream.
+	 * Print the banner to the specified print stream.
 	 * @param environment the spring environment
 	 * @param out the output print stream
 	 */
-	void write(Environment environment, PrintStream out);
+	void printBanner(Environment environment, PrintStream out);
 
 }

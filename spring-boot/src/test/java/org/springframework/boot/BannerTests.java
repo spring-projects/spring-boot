@@ -58,7 +58,7 @@ public class BannerTests {
 	static class DummyBanner implements Banner {
 
 		@Override
-		public void write(Environment environment, PrintStream out) {
+		public void printBanner(Environment environment, PrintStream out) {
 			out.println("My Banner");
 		}
 
