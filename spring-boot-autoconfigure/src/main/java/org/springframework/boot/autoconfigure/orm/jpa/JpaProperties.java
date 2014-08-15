@@ -104,7 +104,6 @@ public class JpaProperties {
 	/**
 	 * Get configuration properties for the initialization of the main Hibernate
 	 * EntityManagerFactory.
-	 *
 	 * @param dataSource the DataSource in case it is needed to determine the properties
 	 * @return some Hibernate properties for configuration
 	 */
