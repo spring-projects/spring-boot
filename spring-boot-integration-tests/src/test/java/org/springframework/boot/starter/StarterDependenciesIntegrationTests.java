@@ -61,7 +61,7 @@ public class StarterDependenciesIntegrationTests {
 	public static List<String[]> getStarters() {
 		List<String[]> starters = new ArrayList<String[]>();
 		for (File file : new File("../spring-boot-starters").listFiles()) {
-			if (file.isDirectory()) {
+			if (file.isDirectory() && new File(file, "pom.xml").exists()) {
 				String name = file.getName();
 				if (name.startsWith(STARTER_NAME_PREFIX)
 						&& !EXCLUDED_STARTERS.contains(file.getName())) {
