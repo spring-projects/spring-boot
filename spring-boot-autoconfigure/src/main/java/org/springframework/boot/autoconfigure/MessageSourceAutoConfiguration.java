@@ -17,7 +17,14 @@
 package org.springframework.boot.autoconfigure;
 
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -118,11 +125,74 @@ public class MessageSourceAutoConfiguration {
 
 		private Resource[] getResources(ClassLoader classLoader, String name) {
 			try {
-				return new PathMatchingResourcePatternResolver(classLoader)
+				return new ExtendedPathMatchingResourcePatternResolver(classLoader)
 						.getResources("classpath*:" + name + "*.properties");
 			}
 			catch (IOException ex) {
 				return NO_RESOURCES;
+			}
+		}
+
+	}
+
+	/**
+	 * Extended version of {@link PathMatchingResourcePatternResolver} to deal with the
+	 * fact that "{@code classpath*:...*.properties}" patterns don't work with
+	 * {@link URLClassLoader}s.
+	 */
+	private static class ExtendedPathMatchingResourcePatternResolver extends
+			PathMatchingResourcePatternResolver {
+
+		private static final Log logger = LogFactory
+				.getLog(PathMatchingResourcePatternResolver.class);
+
+		public ExtendedPathMatchingResourcePatternResolver(ClassLoader classLoader) {
+			super(classLoader);
+		}
+
+		@Override
+		protected Resource[] findAllClassPathResources(String location)
+				throws IOException {
+			String path = location;
+			if (path.startsWith("/")) {
+				path = path.substring(1);
+			}
+			if ("".equals(path)) {
+				Set<Resource> result = new LinkedHashSet<Resource>(16);
+				result.addAll(Arrays.asList(super.findAllClassPathResources(location)));
+				addAllClassLoaderJarUrls(getClassLoader(), result);
+				return result.toArray(new Resource[result.size()]);
+			}
+			return super.findAllClassPathResources(location);
+		}
+
+		private void addAllClassLoaderJarUrls(ClassLoader classLoader,
+				Set<Resource> result) {
+			if (classLoader != null) {
+				if (classLoader instanceof URLClassLoader) {
+					addAllClassLoaderJarUrls(((URLClassLoader) classLoader).getURLs(),
+							result);
+				}
+				addAllClassLoaderJarUrls(classLoader.getParent(), result);
+			}
+		}
+
+		private void addAllClassLoaderJarUrls(URL[] urls, Set<Resource> result) {
+			for (URL url : urls) {
+				if ("file".equals(url.getProtocol())
+						&& url.toString().toLowerCase().endsWith(".jar")) {
+					try {
+						URL jarUrl = new URL("jar:" + url.toString() + "!/");
+						jarUrl.openConnection();
+						result.add(convertClassLoaderURL(jarUrl));
+					}
+					catch (Exception ex) {
+						if (logger.isWarnEnabled()) {
+							logger.warn("Cannot search for matching files underneath "
+									+ url + " because it cannot be accessed as a JAR", ex);
+						}
+					}
+				}
 			}
 		}
 

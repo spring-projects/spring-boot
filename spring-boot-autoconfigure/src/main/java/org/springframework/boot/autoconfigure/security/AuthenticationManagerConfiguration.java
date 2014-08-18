@@ -127,6 +127,7 @@ public class AuthenticationManagerConfiguration extends
 			GlobalAuthenticationConfigurerAdapter {
 
 		private AuthenticationManagerBuilder defaultAuth;
+
 		private AuthenticationManager parent;
 
 		public void configureParent(AuthenticationManagerBuilder auth) {
