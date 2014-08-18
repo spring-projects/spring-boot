@@ -43,6 +43,8 @@ import org.springframework.boot.dependency.tools.Dependencies;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
 import org.springframework.boot.dependency.tools.PropertiesFileDependencies;
 import org.springframework.boot.groovy.GrabMetadata;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link ASTTransformation} for processing {@link GrabMetadata @GrabMetadata}
@@ -50,7 +52,10 @@ import org.springframework.boot.groovy.GrabMetadata;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
+@Order(GrabMetadataTransformation.ORDER)
 public class GrabMetadataTransformation extends AnnotatedNodeASTTransformation {
+
+	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	private static final Set<String> GRAB_METADATA_ANNOTATION_NAMES = Collections
 			.unmodifiableSet(new HashSet<String>(Arrays.asList(
