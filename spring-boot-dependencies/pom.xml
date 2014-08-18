@@ -81,7 +81,7 @@
 		<jetty-jsp.version>2.2.0.v201112011158</jetty-jsp.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<jdom2.version>2.0.5</jdom2.version>
-		<joda-time.version>2.3</joda-time.version>
+		<joda-time.version>2.4</joda-time.version>
 		<jolokia.version>1.2.2</jolokia.version>
 		<json-path.version>0.9.1</json-path.version>
 		<jstl.version>1.2</jstl.version>
