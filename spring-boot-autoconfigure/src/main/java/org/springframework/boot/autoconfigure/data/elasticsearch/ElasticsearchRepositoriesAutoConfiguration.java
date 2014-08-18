@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
-import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
+import org.springframework.data.elasticsearch.repository.support.ElasticsearchRepositoryFactoryBean;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Elasticsearch
@@ -39,7 +39,7 @@ import org.springframework.data.repository.core.support.RepositoryFactoryBeanSup
 @Configuration
 @ConditionalOnClass({ Client.class, ElasticsearchRepository.class })
 @ConditionalOnProperty(prefix = "spring.data.elasticsearch.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnMissingBean(RepositoryFactoryBeanSupport.class)
+@ConditionalOnMissingBean(ElasticsearchRepositoryFactoryBean.class)
 @Import(ElasticsearchRepositoriesAutoConfigureRegistrar.class)
 public class ElasticsearchRepositoriesAutoConfiguration {
 

@@ -22,9 +22,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.solr.repository.SolrRepository;
 import org.springframework.data.solr.repository.config.SolrRepositoryConfigExtension;
+import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBean;
 
 /**
  * Enables auto configuration for Spring Data Solr repositories.
@@ -45,7 +45,7 @@ import org.springframework.data.solr.repository.config.SolrRepositoryConfigExten
  */
 @Configuration
 @ConditionalOnClass({ SolrServer.class, SolrRepository.class })
-@ConditionalOnMissingBean({ RepositoryFactoryBeanSupport.class,
+@ConditionalOnMissingBean({ SolrRepositoryFactoryBean.class,
 		SolrRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.solr.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(SolrRepositoriesAutoConfigureRegistrar.class)
