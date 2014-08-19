@@ -263,12 +263,41 @@ public class AetherGrapeEngine implements GrapeEngine {
 		if (this.repositories.contains(repository)) {
 			return;
 		}
+
+		repository = getPossibleMirror(repository);
+		repository = applyProxy(repository);
+		repository = applyAuthentication(repository);
+
+		this.repositories.add(0, repository);
+	}
+
+	private RemoteRepository getPossibleMirror(RemoteRepository remoteRepository) {
+		RemoteRepository mirror = this.session.getMirrorSelector().getMirror(
+				remoteRepository);
+		if (mirror != null) {
+			return mirror;
+		}
+
+		return remoteRepository;
+	}
+
+	private RemoteRepository applyProxy(RemoteRepository repository) {
 		if (repository.getProxy() == null) {
 			RemoteRepository.Builder builder = new RemoteRepository.Builder(repository);
 			builder.setProxy(this.session.getProxySelector().getProxy(repository));
 			repository = builder.build();
 		}
-		this.repositories.add(0, repository);
+		return repository;
+	}
+
+	private RemoteRepository applyAuthentication(RemoteRepository repository) {
+		if (repository.getAuthentication() == null) {
+			RemoteRepository.Builder builder = new RemoteRepository.Builder(repository);
+			builder.setAuthentication(this.session.getAuthenticationSelector()
+					.getAuthentication(repository));
+			repository = builder.build();
+		}
+		return repository;
 	}
 
 	@Override
