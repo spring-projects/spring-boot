@@ -44,8 +44,9 @@ import org.springframework.boot.cli.util.Log;
 import org.springframework.util.SystemPropertyUtils;
 
 /**
- * @author Dave Syer
+ * {@link Command} to install additional dependencies into the CLI.
  *
+ * @author Dave Syer
  */
 public class InstallCommand extends OptionParsingCommand {
 
@@ -123,9 +124,9 @@ public class InstallCommand extends OptionParsingCommand {
 				}
 				FileUtils.deleteDirectory(tmpdir.toFile());
 			}
-			catch (Exception e) {
-				String message = e.getMessage();
-				Log.error(message != null ? message : e.getClass().toString());
+			catch (Exception ex) {
+				String message = ex.getMessage();
+				Log.error(message != null ? message : ex.getClass().toString());
 			}
 			finally {
 				if (grapeRoot != null) {
