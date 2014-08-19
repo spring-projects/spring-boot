@@ -456,7 +456,7 @@ public class PropertiesLauncher extends Launcher {
 		String root = cleanupPath(stripFileUrlPrefix(path));
 		List<Archive> lib = new ArrayList<Archive>();
 		File file = new File(root);
-		if (!root.startsWith("/")) {
+		if (!isAbsolutePath(root)) {
 			file = new File(this.home, root);
 		}
 		if (file.isDirectory()) {
@@ -477,6 +477,11 @@ public class PropertiesLauncher extends Launcher {
 			lib.add(nested);
 		}
 		return lib;
+	}
+
+	private boolean isAbsolutePath(String root) {
+		// Windows contains ":" others start with "/"
+		return root.contains(":") || root.startsWith("/");
 	}
 
 	private Archive getArchive(File file) throws IOException {
@@ -534,6 +539,10 @@ public class PropertiesLauncher extends Launcher {
 
 	private String cleanupPath(String path) {
 		path = path.trim();
+		// No need for current dir path
+		if (path.startsWith("./")) {
+			path = path.substring(2);
+		}
 		if (path.toLowerCase().endsWith(".jar") || path.toLowerCase().endsWith(".zip")) {
 			return path;
 		}
@@ -542,13 +551,9 @@ public class PropertiesLauncher extends Launcher {
 		}
 		else {
 			// It's a directory
-			if (!path.endsWith("/")) {
+			if (!path.endsWith("/") && !path.equals(".")) {
 				path = path + "/";
 			}
-		}
-		// No need for current dir path
-		if (path.startsWith("./")) {
-			path = path.substring(2);
 		}
 		return path;
 	}
@@ -593,8 +598,7 @@ public class PropertiesLauncher extends Launcher {
 
 		@Override
 		public boolean matches(Entry entry) {
-			return entry.isDirectory() || entry.getName().endsWith(DOT_JAR)
-					|| entry.getName().endsWith(DOT_ZIP);
+			return entry.getName().endsWith(DOT_JAR) || entry.getName().endsWith(DOT_ZIP);
 		}
 	}
 
