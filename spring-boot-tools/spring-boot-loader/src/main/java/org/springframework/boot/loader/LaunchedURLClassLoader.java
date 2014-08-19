@@ -36,18 +36,9 @@ import org.springframework.boot.loader.jar.JarFile;
  */
 public class LaunchedURLClassLoader extends URLClassLoader {
 
-	static {
-		try {
-			ClassLoader.registerAsParallelCapable();
-		}
-		catch (NoSuchMethodError ex) {
-			// Not available on earlier JDKs
-		}
-	}
+	private static LockProvider LOCK_PROVIDER = setupLockProvider();
 
 	private final ClassLoader rootClassLoader;
-
-	private final LockProvider lockProvider;
 
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
@@ -57,17 +48,6 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 		this.rootClassLoader = findRootClassLoader(parent);
-		this.lockProvider = createLockProvider();
-	}
-
-	private LockProvider createLockProvider() {
-		try {
-			ClassLoader.class.getMethod("getClassLoadingLock", String.class);
-			return new Java7LockProvider();
-		}
-		catch (NoSuchMethodException ex) {
-			return new LockProvider();
-		}
 	}
 
 	private ClassLoader findRootClassLoader(ClassLoader classLoader) {
@@ -148,7 +128,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
-		synchronized (this.lockProvider.getLock(this, name)) {
+		synchronized (LaunchedURLClassLoader.LOCK_PROVIDER.getLock(this, name)) {
 			Class<?> loadedClass = findLoadedClass(name);
 			if (loadedClass == null) {
 				Handler.setUseFastConnectionExceptions(true);
@@ -241,6 +221,16 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 		}
 		catch (java.security.PrivilegedActionException ex) {
 			// Ignore
+		}
+	}
+
+	private static LockProvider setupLockProvider() {
+		try {
+			ClassLoader.registerAsParallelCapable();
+			return new Java7LockProvider();
+		}
+		catch (NoSuchMethodError ex) {
+			return new LockProvider();
 		}
 	}
 
