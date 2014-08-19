@@ -123,6 +123,10 @@ public class InstallCommand extends OptionParsingCommand {
 				}
 				FileUtils.deleteDirectory(tmpdir.toFile());
 			}
+			catch (Exception e) {
+				String message = e.getMessage();
+				Log.error(message != null ? message : e.getClass().toString());
+			}
 			finally {
 				if (grapeRoot != null) {
 					System.setProperty("grape.root", grapeRoot);
