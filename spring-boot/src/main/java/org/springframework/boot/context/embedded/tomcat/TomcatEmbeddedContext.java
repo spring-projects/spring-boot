@@ -34,7 +34,8 @@ class TomcatEmbeddedContext extends StandardContext {
 	private ServletContextInitializerLifecycleListener starter;
 
 	@Override
-	public void loadOnStartup(Container[] children) {
+	public boolean loadOnStartup(Container[] children) {
+		return true;
 	}
 
 	public void deferredLoadOnStartup() {
