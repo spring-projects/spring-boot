@@ -147,6 +147,7 @@ public class ExplodedArchiveTests {
 				new URL[] { filteredArchive.getUrl() });
 		assertThat(classLoader.getResourceAsStream("1.dat").read(), equalTo(1));
 		assertThat(classLoader.getResourceAsStream("2.dat"), nullValue());
+		classLoader.close();
 	}
 
 	@Test
@@ -171,6 +172,25 @@ public class ExplodedArchiveTests {
 		assertNotNull(archive.getManifest());
 		Map<String, Archive.Entry> entries = getEntriesMap(archive);
 		assertThat(entries.size(), equalTo(3));
+	}
+
+	@Test
+	public void getResourceAsStream() throws Exception {
+		ExplodedArchive archive = new ExplodedArchive(new File("src/test/resources/root"));
+		assertNotNull(archive.getManifest());
+		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
+		assertNotNull(loader.getResourceAsStream("META-INF/spring/application.xml"));
+		loader.close();
+	}
+
+	@Test
+	public void getResourceAsStreamNonRecursive() throws Exception {
+		ExplodedArchive archive = new ExplodedArchive(
+				new File("src/test/resources/root"), false);
+		assertNotNull(archive.getManifest());
+		URLClassLoader loader = new URLClassLoader(new URL[] { archive.getUrl() });
+		assertNotNull(loader.getResourceAsStream("META-INF/spring/application.xml"));
+		loader.close();
 	}
 
 	private Map<String, Archive.Entry> getEntriesMap(Archive archive) {
