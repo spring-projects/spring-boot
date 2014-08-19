@@ -103,7 +103,7 @@
 		<spring-batch.version>3.0.1.RELEASE</spring-batch.version>
 		<spring-data-releasetrain.version>Dijkstra-SR3</spring-data-releasetrain.version>
 		<spring-hateoas.version>0.16.0.RELEASE</spring-hateoas.version>
-		<spring-integration.version>4.0.2.RELEASE</spring-integration.version>
+		<spring-integration.version>4.0.3.RELEASE</spring-integration.version>
 		<spring-loaded.version>1.2.0.RELEASE</spring-loaded.version>
 		<spring-mobile.version>1.1.2.RELEASE</spring-mobile.version>
 		<spring-social.version>1.1.0.RELEASE</spring-social.version>
