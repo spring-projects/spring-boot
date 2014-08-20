@@ -122,7 +122,7 @@ public class ManagementSecurityAutoConfiguration {
 		@Autowired
 		private SecurityProperties security;
 
-		@Autowired
+		@Autowired(required = false)
 		private ServerProperties server;
 
 		@Override
@@ -148,8 +148,10 @@ public class ManagementSecurityAutoConfiguration {
 			if (this.errorController != null) {
 				ignored.add(normalizePath(this.errorController.getErrorPath()));
 			}
-			String[] paths = this.server.getPathsArray(ignored);
-			ignoring.antMatchers(paths);
+			if (this.server != null) {
+				String[] paths = this.server.getPathsArray(ignored);
+				ignoring.antMatchers(paths);
+			}
 		}
 
 		private String normalizePath(String errorPath) {
