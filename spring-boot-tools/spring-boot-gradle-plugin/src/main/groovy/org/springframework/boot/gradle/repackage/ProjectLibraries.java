@@ -27,6 +27,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.FileCollectionDependency;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.springframework.boot.gradle.SpringBootPluginExtension;
 import org.springframework.boot.loader.tools.Libraries;
@@ -109,12 +110,25 @@ class ProjectLibraries implements Libraries {
 				.getResolvedArtifacts()) {
 			libraries.add(new ResolvedArtifactLibrary(artifact, scope));
 		}
+		libraries.addAll(getLibrariesForFileDependencies(configuration, scope));
+
+		return libraries;
+	}
+
+	private Set<Library> getLibrariesForFileDependencies(Configuration configuration,
+			LibraryScope scope) {
+		Set<Library> libraries = new LinkedHashSet<Library>();
 		for (Dependency dependency : configuration.getIncoming().getDependencies()) {
 			if (dependency instanceof FileCollectionDependency) {
 				FileCollectionDependency fileDependency = (FileCollectionDependency) dependency;
 				for (File file : fileDependency.resolve()) {
 					libraries.add(new Library(file, scope));
 				}
+			}
+			else if (dependency instanceof ProjectDependency) {
+				ProjectDependency projectDependency = (ProjectDependency) dependency;
+				libraries.addAll(getLibrariesForFileDependencies(
+						projectDependency.getProjectConfiguration(), scope));
 			}
 		}
 		return libraries;
@@ -161,7 +175,7 @@ class ProjectLibraries implements Libraries {
 		@Override
 		public boolean isUnpackRequired() {
 			if (ProjectLibraries.this.extension.getRequiresUnpack() != null) {
-				ModuleVersionIdentifier id = artifact.getModuleVersion().getId();
+				ModuleVersionIdentifier id = this.artifact.getModuleVersion().getId();
 				return ProjectLibraries.this.extension.getRequiresUnpack().contains(
 						id.getGroup() + ":" + id.getName());
 			}

@@ -23,6 +23,7 @@ import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 import org.gradle.tooling.internal.consumer.DefaultGradleConnector;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 
 /**
  * @author Andy Wilkinson
@@ -34,8 +35,15 @@ public class ProjectCreator {
 		projectDirectory.mkdirs();
 
 		File gradleScript = new File(projectDirectory, "build.gradle");
-		FileCopyUtils.copy(new File("src/test/resources/" + name + ".gradle"),
-				gradleScript);
+
+		if (new File("src/test/resources", name).isDirectory()) {
+			FileSystemUtils.copyRecursively(new File("src/test/resources", name),
+					projectDirectory);
+		}
+		else {
+			FileCopyUtils.copy(new File("src/test/resources/" + name + ".gradle"),
+					gradleScript);
+		}
 
 		GradleConnector gradleConnector = GradleConnector.newConnector();
 		((DefaultGradleConnector) gradleConnector).embedded(true);
