@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerPropertiesAutoConfiguration;
@@ -55,6 +56,7 @@ public class ManagementServerPropertiesAutoConfiguration {
 	// In case server auto configuration hasn't been included
 	@Bean
 	@ConditionalOnMissingBean
+	@ConditionalOnWebApplication
 	public ServerProperties serverProperties() {
 		return new ServerProperties();
 	}
