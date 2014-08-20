@@ -100,6 +100,9 @@
 			</modules>
 		</profile>
 		<profile>
+			<id>full</id>
+		</profile>
+		<profile>
 			<id>prepare</id>
 			<properties>
 				<skipTests>true</skipTests>
@@ -250,9 +253,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
-			<id>full</id>
 		</profile>
 	</profiles>
 </project>
