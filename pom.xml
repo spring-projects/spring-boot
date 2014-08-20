@@ -79,8 +79,8 @@
 			</activation>
 			<modules>
 				<module>spring-boot-dependencies</module>
-				<module>spring-boot-versions</module>
 				<module>spring-boot-parent</module>
+				<module>spring-boot-versions</module>
 				<module>spring-boot-tools</module>
 				<module>spring-boot</module>
 				<module>spring-boot-autoconfigure</module>
@@ -105,8 +105,8 @@
 				<skipTests>true</skipTests>
 			</properties>
 			<modules>
-				<module>spring-boot-parent</module>
 				<module>spring-boot-dependencies</module>
+				<module>spring-boot-parent</module>
 				<module>spring-boot-versions</module>
 				<module>spring-boot-tools</module>
 			</modules>
