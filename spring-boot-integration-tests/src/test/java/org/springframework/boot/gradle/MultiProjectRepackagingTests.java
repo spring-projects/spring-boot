@@ -24,7 +24,6 @@ import org.gradle.tooling.ProjectConnection;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.boot.dependency.tools.ManagedDependencies;
-import org.springframework.util.FileCopyUtils;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -48,10 +47,8 @@ public class MultiProjectRepackagingTests {
 
 	@Test
 	public void repackageWithTransitiveFileDependency() throws Exception {
-		FileCopyUtils.copy(new File("src/test/resources/foo.jar"), new File(
-				"target/multi-project-repackage/foo.jar"));
 		project.newBuild().forTasks("clean", "build")
-		.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true").run();
+				.withArguments("-PbootVersion=" + BOOT_VERSION, "-Prepackage=true").run();
 		File buildLibs = new File("target/multi-project-repackage/main/build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, "main.jar"));
 		assertThat(jarFile.getEntry("lib/commons-logging-1.1.3.jar"), notNullValue());
